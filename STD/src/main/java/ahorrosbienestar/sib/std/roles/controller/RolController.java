@@ -50,7 +50,7 @@ public class RolController {
 		}
 		
 		//Metodo para obtener listado de todos los roles
-		@GetMapping
+		@GetMapping("/roles")
 		public ResponseEntity<?> findAll(){
 			return ResponseEntity.ok(rolService.findAll());
 		}

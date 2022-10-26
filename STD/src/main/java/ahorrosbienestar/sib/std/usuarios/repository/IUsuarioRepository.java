@@ -1,11 +1,36 @@
 package ahorrosbienestar.sib.std.usuarios.repository;
 
+
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Repository
 public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
+	//@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
+	//Consulta para obtener usuarios que lo conforme por el parametro
+	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO LIKE CONCAT('%',:nombreUsuario,'%')", nativeQuery = true)
+	public List<Usuario> findByNombreUsuario(@ Param ( "nombreUsuario" ) String nombreUsuario);
+	
+	//Consulta para obtener el usuario por nombre de usuario
+	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
+	public List<Usuario> obtenerNombreUsuario(@ Param ( "nombreUsuario" ) String nombreUsuario);
+	
+	//Consulta para actualizar el estatus de un usuario mediante ID
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_CAT_USUARIOS u SET VC_ESTATUS_SESION = 'INACTIVO' WHERE PK_ID_USUARIO = :id", nativeQuery=true)
+	public int bajaUsuarioSesion( @Param("id") Integer id);
+	
+	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.PK_ID_USUARIO = :id", nativeQuery = true)
+	public Optional<Usuario> findById(@Param ( "id" ) Integer id);
 	
 }

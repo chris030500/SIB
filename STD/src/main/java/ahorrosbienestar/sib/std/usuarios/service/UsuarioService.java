@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -38,6 +39,13 @@ public class UsuarioService {
 		return iUsuarioRepository.save(usuario);
 	}
 	
+	//Metodo para buscar usuario por nombre de usuario
+	public List<Usuario> findByNombreUsuario(String nombreUsuario){
+		return iUsuarioRepository.findByNombreUsuario(nombreUsuario);
+	}
 	
+	public int bajaUsuarioSesion(Integer id) {
+		return iUsuarioRepository.bajaUsuarioSesion(id);
+	}
 
 }

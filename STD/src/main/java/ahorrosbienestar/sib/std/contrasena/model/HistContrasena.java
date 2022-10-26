@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -22,7 +23,8 @@ public class HistContrasena {
 	
 	@Column(name = "PK_ID_PARAMETROS")
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="hist_contrasenia_seq")
+	@SequenceGenerator(name = "hist_contrasenia_seq", sequenceName = "hist_contrasenia_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_parametros;
 	
 	@Column(name = "DT_VIG_CONT_INICIO")
@@ -31,10 +33,10 @@ public class HistContrasena {
 	@Column(name = "DT_VIG_CONT_FIN")
 	private Date dt_vig_cont_fin;
 	
-	@Column(name = "VC_CONTRASENIA")
+	@Column(name = "VC_CONTRASENIA", columnDefinition = "VARCHAR(45)")
 	private String vc_contrasenia;
 	
-	@Column(name = "VC_INDICADOR_ACTIVO")
+	@Column(name = "VC_INDICADOR_ACTIVO", columnDefinition = "VARCHAR(45)")
 	private String vc_indicador_activo;
 	
 	@ManyToOne

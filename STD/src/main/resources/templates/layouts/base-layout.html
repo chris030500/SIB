@@ -1,0 +1,156 @@
+<! DOCTYPE html>
+	<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+	<head th:fragment="head">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Bienestar</title>
+
+		<!-- Bootstrap core CSS -->
+		<!--<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">-->
+		<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+		<link th:href="@{/vendor/bootstrap-icons/bootstrap-icons.css}" rel="stylesheet">
+
+		<!-- Theme style -->
+		<link rel="stylesheet" th:href="@{/css/style.css}">
+		<!--<link rel="stylesheet" th:href="@{/css/jqgrid-4.8.2/ui.jqgrid.css}">
+        <link rel="stylesheet" th:href="@{/css/jqgrid-4.8.2/ui.jqgrid-bootstarp.css}">
+      	-->
+
+		<link rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
+
+
+
+	</head>
+
+	<header id="header" class="header fixed-top d-flex align-items-center">
+
+		<div class="d-flex align-items-center justify-content-between">
+			<a href="index.html" class="logo d-flex align-items-center">
+				<img src="assets/img/logo.png" alt="">
+				<span class="d-none d-lg-block">Bienestar</span>
+			</a>
+			<i class="fa fa-bars toggle-sidebar-btn"></i>
+		</div><!-- End Logo -->
+
+
+
+		<nav class="header-nav ms-auto">
+			<ul class="d-flex align-items-center">
+
+				<li class="nav-item dropdown pe-3">
+
+					<a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+						<!--<img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">-->
+						<span class="d-none d-md-block dropdown-toggle ps-2">Osvaldo Escamilla</span>
+					</a><!-- End Profile Iamge Icon -->
+
+				</li><!-- End Profile Nav -->
+
+			</ul>
+		</nav><!-- End Icons Navigation -->
+
+	</header><!-- End Header -->
+
+	<body class="hold-transition sidebar-mini layout-fixed" th:fragment="body">
+
+		<div class="wrapper">
+
+
+
+			<!-- Navbar -->
+			<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+
+			</nav>
+			<!-- /.navbar -->
+
+			<!-- Main Sidebar Container -->
+			<aside id="sidebar" class="sidebar">
+
+				<ul class="sidebar-nav" id="sidebar-nav">
+					<!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+
+					<li class="nav-item">STD</li>
+
+
+
+					<li class="nav-item">
+
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav"
+							data-bs-toggle="collapse">
+							<i class="bi bi-gear"></i><span>Configuración</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+
+						<ul id="config-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li class="nav-item">
+								<a th:href="@{/configuracion/contrasena}">
+									<i class="fa fa-key"></i><span>Contraseña</span>
+								</a>
+							</li>
+							
+							<li class="nav-item">
+								<a th:href="@{/configuracion/bloqueoSesiones}">
+									<i class="fa fa-user-circle"></i><span>Sesiones</span>
+								</a>
+							</li>
+							
+							<li class="nav-item">
+								<a th:href="@{/configuracion/sesionesInactiva}">
+									<i class="fa fa-user-circle"></i><span>Sesiones inactivas</span>
+								</a>
+							</li>
+
+						</ul>
+					</li>
+
+					<li class="nav-header"></li>
+
+					<a href="#" class="nav-link">
+						<i class="nav-icon far fa-circle text-warning"></i><span>Cerrar sesión</span>
+					</a>
+
+				</ul>
+
+				<!-- /.sidebar -->
+			</aside>
+
+			<!-- Content Wrapper. Contains page content -->
+			<main id="main" class="main">
+
+				<!-- Main content -->
+				<section class="content" layout:fragment="page-content">
+					<div class="container-fluid">
+							
+					</div><!-- /.container-fluid -->
+				</section>
+				<!-- /.content -->
+			</main>
+			<!-- Control Sidebar -->
+			<footer th:replace="layouts/footer :: footer"> </footer>
+			<aside class="control-sidebar control-sidebar-dark">
+				<!-- Control sidebar content goes here -->
+			</aside>
+			<!-- /.control-sidebar -->
+		</div>
+
+
+		<!-- jQuery -->
+		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<script src="https://kit.fontawesome.com/e98bc5a543.js" crossorigin="anonymous"></script>
+		<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+		<script th:src="@{/js/main.js}"></script>
+		<!-- Bootstrap core JavaScript -->
+
+		<!--<script th:src="@{/vendor/js/bootstrap.bundle.min.js}"></script>-->
+
+		<th:block layout:fragment="page-scripts">
+
+		</th:block>
+	</body>
+
+	</html>
