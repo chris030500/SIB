@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.usuarios.model;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,24 +31,29 @@ public class Usuario {
 	
 	@Column(name = "PK_ID_USUARIO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="usuario_seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="usuario_seq")
 	@SequenceGenerator(name = "usuario_seq", sequenceName = "usuario_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_usuario;
 	
 	@Column(name = "VC_NOMBRE_USUARIO", columnDefinition = "VARCHAR(45)")
 	private String vc_nombre_usuario;
 	
-	@Column(name = "VC_ESTATUS_USUARIO", columnDefinition = "TINYINT(1)")
-	private int vc_estatus_usuario;
+	@Column(name = "I_ESTATUS_USUARIO", columnDefinition = "TINYINT(1)")
+	private int i_estatus_usuario;
 	
-	@Column(name = "VC_ESTATUS_SESION", columnDefinition = "VARCHAR(45)")
-	private String vc_estatus_sesion;
+	@Column(name = "I_ESTATUS_SESION", columnDefinition = "TINYINT(1)")
+	private int i_estatus_sesion;
 	
-	@Column(name = "VC_ESTATUS_CUENTA", columnDefinition = "TINYINT(1)")
-	private boolean vc_estatus_cuenta;
+	@Column(name = "I_ESTATUS_CUENTA", columnDefinition = "TINYINT(1)")
+	private int i_estatus_cuenta;
 	
 	@Column(name = "I_INTENTOS_FALLIDOS")
 	private int i_intentos_fallidos;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "DT_FECHA_ULTIMO_INGRESO")
+	private LocalDate dt_fecha_ultimo_ingreso;
 	
 	//Tiene relacion con TBL_CAT_ROLI que es 1:1
 	@OneToOne
@@ -65,29 +76,30 @@ public class Usuario {
 		this.vc_nombre_usuario = vc_nombre_usuario;
 	}
 
-	public int getVc_estatus_usuario() {
-		return vc_estatus_usuario;
+	public int getI_estatus_usuario() {
+		return i_estatus_usuario;
 	}
 
-	public void setVc_estatus_usuario(int vc_estatus_usuario) {
-		this.vc_estatus_usuario = vc_estatus_usuario;
+	public void setI_estatus_usuario(int i_estatus_usuario) {
+		this.i_estatus_usuario = i_estatus_usuario;
 	}
 
-	public String getVc_estatus_sesion() {
-		return vc_estatus_sesion;
+	public int getI_estatus_sesion() {
+		return i_estatus_sesion;
 	}
 
-	public void setVc_estatus_sesion(String vc_estatus_sesion) {
-		this.vc_estatus_sesion = vc_estatus_sesion;
+	public void setI_estatus_sesion(int i_estatus_sesion) {
+		this.i_estatus_sesion = i_estatus_sesion;
 	}
 
-	public boolean isVc_estatus_cuenta() {
-		return vc_estatus_cuenta;
+	public int getI_estatus_cuenta() {
+		return i_estatus_cuenta;
 	}
 
-	public void setVc_estatus_cuenta(boolean vc_estatus_cuenta) {
-		this.vc_estatus_cuenta = vc_estatus_cuenta;
+	public void setI_estatus_cuenta(int i_estatus_cuenta) {
+		this.i_estatus_cuenta = i_estatus_cuenta;
 	}
+	
 
 	public int getI_intentos_fallidos() {
 		return i_intentos_fallidos;

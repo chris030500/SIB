@@ -30,25 +30,28 @@
 						<div class="card-header"></div>
 						<br>
 						<div class="card-body">
-							<form th:action="@{/}" method="post">
+							<form  th:action="@{/configuracion/cambioSesiones}" id="formDesbloqueo" method="post">
 								<p>
 									Buscar usuario: <input type="search" name="busquedaUsuario"
 										placeholder="Nombre de usuario" onkeyup="buscar_ajax(this.value);">
 								</p>
 								<div>
 									Elige un usuario
-									<select class="select-css" id="selectUsuario"></select>
+									<select class="select-css" id="selectUsuario" name="selectUsuario">
+									</select>
 								</div>
-								<select class="select-css" name="select">
-									<option value="Inactivar">Inactivar</option>
-									<option value="Activar" selected>Activar</option>
-								</select>
+								<p>¿Que desea realizar:</p>
+								  <input type="checkbox" id="desbloquearSesion" name="desbloqueo" value="desbloquearSesion" onclick="desmarcar()">
+								  <label for="desbloquearSesion">Desbloquear sesión</label><br>
+								
+								  <input type="checkbox" id="desbloquearCuenta" name="desbloqueo" value="desbloquearCuenta" onclick="desmarcar()">
+								  <label for="desbloquearCuenta">Desbloquear cuenta</label><br>
+								
 								<br>
 								<div class="col-sm-2">
-									<button type="submit" class="btn btn-success">Guardar</button>
+									<button type="button" onclick="desbloquearUsuario()" class="btn btn-success">Guardar</button>
 								</div>
 							</form>
-							<div id="mostrar"></div>
 						</div>
 					</div>
 				</div>

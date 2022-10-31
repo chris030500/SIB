@@ -45,9 +45,9 @@ public class UsuarioController {
 	}
 	
 	//Metodo para dar de baja al usuario (cambia estatus de sesion)
-	@GetMapping("/bajaUsuario/{id}")
-	public ResponseEntity<?> bajaUsuarioSesion(@PathVariable("id") Integer id) throws IOException{
-		return ResponseEntity.ok(usuarioService.bajaUsuarioSesion(id));			
+	@GetMapping("/activarUsuario/{id}")
+	public ResponseEntity<?> activarUsuarioSesion(@PathVariable("id") Integer id) throws IOException{
+		return ResponseEntity.ok(usuarioService.activarUsuarioSesion(id));			
 	}
 
 	// Metodo para obtener listado de todos los usuarios

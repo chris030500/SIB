@@ -44,8 +44,12 @@ public class UsuarioService {
 		return iUsuarioRepository.findByNombreUsuario(nombreUsuario);
 	}
 	
-	public int bajaUsuarioSesion(Integer id) {
-		return iUsuarioRepository.bajaUsuarioSesion(id);
+	public int activarUsuarioSesion(Integer id) {
+		return iUsuarioRepository.activarUsuarioSesion(id);
+	}
+	
+	public int activarUsuarioCuenta(Integer id) {
+		return iUsuarioRepository.activarUsuarioCuenta(id);
 	}
 
 }

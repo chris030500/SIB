@@ -24,11 +24,17 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
 	public List<Usuario> obtenerNombreUsuario(@ Param ( "nombreUsuario" ) String nombreUsuario);
 	
-	//Consulta para actualizar el estatus de un usuario mediante ID
+	//Consulta para activar la sesion de un usuario mediante ID
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_CAT_USUARIOS u SET VC_ESTATUS_SESION = 'INACTIVO' WHERE PK_ID_USUARIO = :id", nativeQuery=true)
-	public int bajaUsuarioSesion( @Param("id") Integer id);
+	@Query(value = "UPDATE TBL_CAT_USUARIOS u SET I_ESTATUS_SESION = 1 WHERE PK_ID_USUARIO = :id", nativeQuery=true)
+	public int activarUsuarioSesion( @Param("id") Integer id);
+	
+	//Consulta para activar la cuenta de un usuario mediante ID
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_CAT_USUARIOS u SET I_ESTATUS_CUENTA = 1 WHERE PK_ID_USUARIO = :id", nativeQuery=true)
+	public int activarUsuarioCuenta( @Param("id") Integer id);
 	
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.PK_ID_USUARIO = :id", nativeQuery = true)
 	public Optional<Usuario> findById(@Param ( "id" ) Integer id);

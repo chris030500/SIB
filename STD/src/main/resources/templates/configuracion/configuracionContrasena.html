@@ -30,7 +30,7 @@
 					<div class="card mb-4">
 						<div class="card-header">Agregar parametros</div>
 						<div class="card-body">
-							<form th:action="@{/configuracion/guardarConfContrasena}" method="post">
+							<form th:action="@{/configuracion/guardarConfContrasena}" enctype="multipart/form-data" method="POST" id="ConfContrasena">
 								<div class="form-group">
 									<label for="longitud">Longitud de la contraseña:</label> <input type="number"
 										class="form-control" id="longitud" name="longitud" required
@@ -67,7 +67,7 @@
 
 								<br>
 								<div class="col-sm-2">
-									<button type="submit" class="btn btn-success">Guardar</button>
+									<button type="submit" onclick="mensaje()" class="btn btn-success">Guardar</button>
 								</div>
 							</form>
 						</div>

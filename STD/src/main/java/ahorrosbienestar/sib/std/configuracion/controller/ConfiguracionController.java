@@ -9,22 +9,32 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import ahorrosbienestar.sib.std.configuracion.model.ConfContrasena;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 
 @Controller
 @RequestMapping("/configuracion")
 public class ConfiguracionController {
 
+	@Autowired
+	private UsuarioService usuarioService;
 
 	// Cargamos la vista de la configuracion de los parametros de la contraseña
 
@@ -33,7 +43,7 @@ public class ConfiguracionController {
 		model.addAttribute("titulo", "configuracion");
 		
 		//model.addAttribute("longitud", properties.getProperty(configuracion.getLongitud()));
-//		String PROPERTIES_FILE = "confContrasena.properties";
+		//String PROPERTIES_FILE = "confContrasena.properties";
 		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
 
         Properties properties = new Properties();
@@ -51,9 +61,12 @@ public class ConfiguracionController {
 
 	// Guardamos la configuracion de los parametros de la contraseña
 	@PostMapping("/guardarConfContrasena")
-	public String guardarConfContrasena(Model model, @RequestParam(name = "longitud") String longitud,
-			@RequestParam(name = "mayusculas") String mayusculas, @RequestParam(name = "minusculas") String minusculas,
-			@RequestParam(name = "numeros") String numeros, @RequestParam(name = "caracteres") String caracteres) {
+	public String guardarConfContrasena(Model model, @RequestParam(name = "longitud", required = false) String longitud,
+			@RequestParam(name = "mayusculas", required = false) String mayusculas, 
+			@RequestParam(name = "minusculas",required = false) String minusculas,
+			@RequestParam(name = "numeros",required = false) String numeros, 
+			@RequestParam(name = "caracteres", required = false) String caracteres,
+			RedirectAttributes redirAttrs) {
 
 		String max = longitud;
 
@@ -114,7 +127,7 @@ public class ConfiguracionController {
 		} catch (IOException ex) {
 			System.out.println("Error: No se ha podido crear el archivo de propiedades");
 		}
-
+		//redirAttrs.addFlashAttribute("message", "This is message from flash");
 		return "redirect:/configuracion/contrasena";
 	}
 
@@ -200,4 +213,24 @@ public class ConfiguracionController {
 		model.addAttribute("titulo", "Sesiones inactivas");
 		return "configuracion/bloqueoInactividad";
 	}
+	
+	@PostMapping("/cambioSesiones")
+	public String CambioSesiones(@RequestParam(name = "desbloqueo", required = true) String desbloqueo,
+								 @RequestParam(name = "selectUsuario", required = true) String[] selectUsuario ) {
+		
+//		System.out.println("Usted a seleccionado la opción: " +desbloqueo);
+//		System.out.println("Ha seleccionado el usuario : " + Arrays.toString(selectUsuario).toString());
+		Integer i = Integer.parseInt(selectUsuario[0]);
+//		System.out.println("i :" + i);
+		if(desbloqueo.equals("desbloquearSesion") ) {
+			System.out.println("Entro en desbloquear sesion");
+			usuarioService.activarUsuarioSesion(i);
+			
+		} else if(desbloqueo.equals("desbloquearCuenta")) {
+			System.out.println("Entro en desbloquear cuenta");
+			usuarioService.activarUsuarioCuenta(i);
+		}
+		return "redirect:/configuracion/sesionesInactiva";
+	}
+	
 }
