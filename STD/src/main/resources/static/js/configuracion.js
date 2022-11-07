@@ -24,7 +24,6 @@ function numMaximoParametrosContrasena(longitud) {
 }
 
 
-
 function mensaje() {
 	swal({
 		type: 'success',
@@ -34,6 +33,16 @@ function mensaje() {
 	});
 }
 
+function guardarConfSesion() {
+	swal({
+		type: 'success',
+		title: 'Configuración guardada',
+		showConfirmButton: false,
+		timer: 68000 // es ms (mili-segundos)
+	});
+}
+
+//Funcion para desbloquear sesion o cuenta del usuario seleccionado
 function desbloquearUsuario() {
 
 
@@ -113,4 +122,57 @@ function desmarcar() {
 			sesion.checked = null;
 		}
 	}
+}
+
+//Funcion para que genere la contraseña
+function generarContrasena() {
+	console.log("Entro en generarContrasena");
+	var contrasenia = $('#contrasena').val();
+
+	//var contrasena = $('#contrasena').val();
+	//let mensaje = data.value;
+	console.log("Contraeña: " + contrasenia);
+	$.ajax({
+		url: "http://localhost:8090/configuracion/mensajeContrasena?contrasena=" + contrasenia,
+		type: "GET",
+		data: contrasenia,
+		success: function(respuesta) {
+			console.log("Entro en success1: " + respuesta);
+			if (respuesta != "Si cumple con los parametros requeridos") {
+				swal({
+					type: 'warning',
+					title: respuesta,
+					showConfirmButton: false
+
+				});
+			}
+			$.ajax({
+				url: "http://localhost:8090/configuracion/guardarContrasena?contrasena=" + contrasenia,
+				type: "POST",
+				data: contrasenia,
+				success: function() {
+					console.log("Entro en guardar contraseña");
+					swal({
+						type: 'success',
+						title: 'Contraseña cambiada correctamente',
+						showConfirmButton: false
+					}).then((result) => {
+						window.location.reload();
+					});
+
+				}
+			});
+
+		},
+		error: function(respuesta) {
+			console.log("Entro en error");
+			swal({
+					type: 'warning',
+					title: respuesta,
+					showConfirmButton: false
+
+				});
+
+		}
+	});
 }

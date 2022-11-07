@@ -44,19 +44,17 @@
 										autocomplete="off">
 								</div>
 
-								<!--Especifica el periodo durante el cual el usuario puede intentar iniciar sesión 
-								en la aplicación. Cuando se supera el número máximo de intentos de inicio de sesión fallidos 
-								dentro de este periodo, la cuenta se bloquea. -->
+								<!--Especifica el periodo en días que tiene permitido estar activa . -->
 								<div class="form-group">
-									<label for="pIntentos">Periodo de intentos de inicio de sesión (MINUTOS):</label>
-									<input type="number" class="form-control" id="pIntentos" name="pIntentos" required
-										placeholder="Periodo se supera el número máximo de intentos de inicio de sesión fallidos dentro de este periodo, la cuenta se bloquea."
+									<label for="pDias">Periodo que se encontrará activa la cuenta (días):</label>
+									<input type="number" class="form-control" id="pDias" name="pDias" required
+										placeholder="Periodo para la inactividad de la cuenta, la cuenta se bloquea."
 										autocomplete="off">
 								</div>
 
 								<br>
 								<div class="col-sm-2">
-									<button type="submit" onclick="mensaje()" class="btn btn-success">Guardar</button>
+									<button type="submit" onclick="guardarConfSesion()" class="btn btn-success">Guardar</button>
 								</div>
 							</form>
 						</div>
@@ -80,9 +78,9 @@
 							</div>
 
 							<div class="form-group">
-								<label for="pIntentos">Periodo de intentos de inicio de sesión (MINUTOS):</label> <input
-									type="number" class="form-control" th:value="${pIntentos}" placeholder="Periodo se supera el número máximo de intentos de inicio de sesión fallidos 
-								dentro de este periodo, la cuenta se bloquea.">
+								<label for="pDias">Periodo que se encontrará activa la cuenta (días):</label> <input
+									type="number" class="form-control" th:value="${pDias}" 
+									placeholder="Periodo para la inactividad de la cuenta, la cuenta se bloquea.">
 							</div>
 						</div>
 					</div>
@@ -92,6 +90,14 @@
 			</div>
 		</div>
 	</section>
+	
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<script th:src="@{/js/configuracion.js}"></script>
+	</th:block>
 
 </body>
 
