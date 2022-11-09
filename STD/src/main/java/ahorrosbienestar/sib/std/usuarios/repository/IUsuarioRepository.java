@@ -18,11 +18,11 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	//@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
 	//Consulta para obtener usuarios que lo conforme por el parametro
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO LIKE CONCAT('%',:nombreUsuario,'%')", nativeQuery = true)
-	public List<Usuario> findByNombreUsuario(@ Param ( "nombreUsuario" ) String nombreUsuario);
+	public List<Usuario> findByNombreUsuario(@Param ( "nombreUsuario" ) String nombreUsuario);
 	
 	//Consulta para obtener el usuario por nombre de usuario
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
-	public List<Usuario> obtenerNombreUsuario(@ Param ( "nombreUsuario" ) String nombreUsuario);
+	public List<Usuario> obtenerNombreUsuario(@Param ( "nombreUsuario" ) String nombreUsuario);
 	
 	//Consulta para activar la sesion de un usuario mediante ID
 	@Modifying

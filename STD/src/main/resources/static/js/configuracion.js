@@ -145,8 +145,8 @@ function generarContrasena() {
 					showConfirmButton: false
 
 				});
-			}
-			$.ajax({
+			} else if (respuesta == "Si cumple con los parametros requeridos"){
+				$.ajax({
 				url: "http://localhost:8090/configuracion/guardarContrasena?contrasena=" + contrasenia,
 				type: "POST",
 				data: contrasenia,
@@ -162,6 +162,8 @@ function generarContrasena() {
 
 				}
 			});
+			}
+			
 
 		},
 		error: function(respuesta) {

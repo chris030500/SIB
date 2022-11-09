@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Usuarios</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"></h5>
+
+
+							<!-- Basic Modal -->
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+								data-bs-target="#basicModal">
+								Agregar Usuarios
+							</button>
+
+							<div class="modal fade" id="basicModal" tabindex="-1">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Agregar Usuario</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<form class="row g-3">
+												<div class="col-12">
+													<label for="busquedaEmpleado" class="form-label">Buscar nombre de
+														usuario</label>
+													<input type="search" class="form-control" name="busquedaEmpleado"
+														placeholder="Nombre de empleado" onkeyup="">
+
+												</div>
+												<div class="col-sm-12">
+													<label for="selectEmpleado" class="form-label">Elige un
+														empleado</label>
+
+													<select class="form-select" multiple
+														aria-label="multiple select example" id="selectEmpleado"
+														name="selectEmpleado">
+													</select>
+												</div>
+												<div class="col-12">
+													<label for="inputNanme4" class="form-label">Nombre de
+														usuario</label>
+													<input type="text" class="form-control" id="inputNanme4">
+												</div>
+
+												<div class="col-12">
+													<label for="inputPassword4" class="form-label">Contraseña</label>
+													<input type="password" class="form-control" id="inputPassword4">
+												</div>
+
+											</form>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary"
+												data-bs-dismiss="modal">Cerrar</button>
+											<button type="button" class="btn btn-primary">Guardar</button>
+										</div>
+									</div>
+								</div>
+							</div> <!-- End Basic Modal-->
+
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/configuracion.js}"></script>
+	</th:block>
+</body>
+
+</html>

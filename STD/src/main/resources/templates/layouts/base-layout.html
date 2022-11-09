@@ -80,7 +80,7 @@
 
 						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav"
 							data-bs-toggle="collapse">
-							<i class="bi bi-gear"></i><span>Configuración</span>
+							<i class="bi bi-file-lock-fill"></i><span>Seguridad</span>
 							<i class="bi bi-chevron-down ms-auto"></i>
 						</a>
 
@@ -108,6 +108,26 @@
 									<i class="fa fa-user-circle"></i><span>Sesiones inactivas</span>
 								</a>
 							</li>
+
+						</ul>
+					</li>
+					
+					<li class="nav-item">
+
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-administracion"
+							data-bs-toggle="collapse">
+							<i class="bi bi-building"></i><span>Administración</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+
+						<ul id="config-nav-administracion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li class="nav-item">
+								<a th:href="@{/usuario/formulario}">
+									<i class="bi bi-file-person"></i><span>Usuarios</span>
+								</a>
+							</li>
+							
+							
 
 						</ul>
 					</li>

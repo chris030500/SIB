@@ -30,29 +30,38 @@
 						<div class="card-header"></div>
 						<br>
 						<div class="card-body">
-							<form th:action="@{/configuracion/cambioSesiones}" id="formDesbloqueo" method="post">
-								<p>
-									Buscar usuario: <input type="search" name="busquedaUsuario"
+							<form class="row g-3" th:action="@{/configuracion/cambioSesiones}" id="formDesbloqueo"
+								method="post">
+								<div class="col-12">
+									<label for="buscarUsuario" class="form-label">Buscar
+										usuario</label>
+									<input type="search" class="form-control" name="busquedaUsuario"
 										placeholder="Nombre de usuario" onkeyup="buscar_ajax(this.value);">
-								</p>
-								<div>
-									Elige un usuario
-									<select class="select-css" id="selectUsuario" name="selectUsuario">
+
+								</div>
+								<div class="col-sm-6">
+									<label for="buscarUsuario" class="form-label">Elige un usuario</label>
+
+									<select class="form-select" multiple aria-label="multiple select example"
+										id="selectUsuario" name="selectUsuario">
 									</select>
 								</div>
-								<p>¿Que desea realizar:</p>
-								  <input type="checkbox" id="desbloquearSesion" name="desbloqueo"
-									value="desbloquearSesion" onclick="desmarcar()">
-								  <label for="desbloquearSesion">Desbloquear sesión</label><br>
-
-								  <input type="checkbox" id="desbloquearCuenta" name="desbloqueo"
-									value="desbloquearCuenta" onclick="desmarcar()">
-								  <label for="desbloquearCuenta">Desbloquear cuenta</label><br>
-
-								<br>
+								<div class="col-sm-6">
+									<label for="buscarUsuario" class="form-label">¿Que desea realizar:</label>
+									<div>
+										<input type="checkbox" id="desbloquearSesion" name="desbloqueo"
+											value="desbloquearSesion" onclick="desmarcar()">
+										  <label for="desbloquearSesion">Desbloquear sesión</label><br>
+									</div>
+									<div>
+										<input type="checkbox" id="desbloquearCuenta" name="desbloqueo"
+											value="desbloquearCuenta" onclick="desmarcar()">
+										  <label for="desbloquearCuenta">Desbloquear cuenta</label><br>
+									</div>
+								</div>
 								<div class="col-sm-2">
-									<button type="submit" onclick="desbloquearUsuario()"
-										class="btn btn-success">Guardar</button>
+									<button type="button" onclick="desbloquearUsuario()"
+										class="btn btn-primary">Guardar</button>
 								</div>
 							</form>
 						</div>
