@@ -49,10 +49,10 @@ public class HistContrasena {
 	@Column(name = "DT_VIG_CONT_FIN")
 	private LocalDate dt_vig_cont_fin;
 	
-	@Column(name = "VC_CONTRASENIA", columnDefinition = "VARCHAR(45)")
+	@Column(name = "VC_CONTRASENIA", columnDefinition = "VARCHAR(60)")
 	private String vc_contrasenia;
 	
-	@Column(name = "VC_INDICADOR_ACTIVO", columnDefinition = "VARCHAR(45)")
+	@Column(name = "VC_INDICADOR_ACTIVO", columnDefinition = "TINYINT(1)")
 	private String vc_indicador_activo;
 	
 	@ManyToOne

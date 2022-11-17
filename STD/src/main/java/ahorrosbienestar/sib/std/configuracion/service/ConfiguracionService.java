@@ -1,5 +1,9 @@
 package ahorrosbienestar.sib.std.configuracion.service;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,11 @@ public class ConfiguracionService {
 		char clave;
 		String specialChars = "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
 		if (contrasena.length() > longitud) {
-			System.out.println("La contraseña excede el número de la longitud");
 			
 			return mensaje = 1;
 
 		} else if (contrasena.length() == longitud) {
-			System.out.println("Puede continuar, cumple con la longitud");
+			
 			for (int i = 0; i < contrasena.length(); i++) {
 				clave = contrasena.charAt(i);
 				String passValue = String.valueOf(clave);
@@ -46,24 +49,15 @@ public class ConfiguracionService {
 
 			if (contarMayus == mayusculas && contarMinus == minusculas && contarNum == numeros
 					&& contarCaracteres == caracteres) {
-				System.out.println("Si cumple con los parametros requeridos");
-				System.out.println("conteo de mayusculas: " + contarMayus);
-				System.out.println("conteo de minusculas: " + contarMinus);
-				System.out.println("conteo de numeros: " + contarNum);
-				System.out.println("conteo de especiales: " + contarCaracteres);
+				
 				return mensaje = 2;
 			} else {
-				System.out.println("La contraseña debe de tener los siguientes parametros");
-				System.out.println("Debe de tener " + mayusculas + " mayusculas y se han agregado " + contarMayus);
-				System.out.println("Debe de tener " + minusculas + " minusculas y se han agregado " + contarMinus);
-				System.out.println("Debe de tener " + numeros + " caracteres numericos y se han agregado " + contarNum);
-				System.out.println("Debe de tener " + caracteres + " caracteres especiales y se han agregado " + contarCaracteres);
 				return mensaje = 3;
 			}
 
 
 		} else if (contrasena.length() < longitud) {
-			System.out.println("La contraseña es menor a la longitud establecida");
+			
 			return mensaje = 4;
 		}
 
@@ -120,4 +114,21 @@ public class ConfiguracionService {
 		return mensaje = "No ha ingresado una contraseña";
 
 	}
+	
+	public static String getMD5(String contrasena) {
+		 try {
+		 MessageDigest md = MessageDigest.getInstance("MD5");
+		 byte[] messageDigest = md.digest(contrasena.getBytes());
+		 BigInteger number = new BigInteger(1, messageDigest);
+		 String hashtext = number.toString(16);
+
+		 while (hashtext.length() < 32) {
+		 hashtext = "0" + hashtext;
+		 }
+		 return hashtext;
+		 }
+		 catch (NoSuchAlgorithmException e) {
+		 throw new RuntimeException(e);
+		 }
+		 }
 }

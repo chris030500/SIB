@@ -32,59 +32,94 @@
 
 
 							<!-- Basic Modal -->
-							<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-								data-bs-target="#basicModal">
-								Agregar Usuarios
-							</button>
 
-							<div class="modal fade" id="basicModal" tabindex="-1">
+							<!--<div class="modal fade" id="basicModal" tabindex="-1">
 								<div class="modal-dialog">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h5 class="modal-title">Agregar Usuario</h5>
+											<h5 class="modal-title">Basic Modal</h5>
 											<button type="button" class="btn-close" data-bs-dismiss="modal"
 												aria-label="Close"></button>
 										</div>
 										<div class="modal-body">
-											<form class="row g-3">
-												<div class="col-12">
-													<label for="busquedaEmpleado" class="form-label">Buscar nombre de
-														usuario</label>
-													<input type="search" class="form-control" name="busquedaEmpleado"
-														placeholder="Nombre de empleado" onkeyup="">
 
-												</div>
-												<div class="col-sm-12">
-													<label for="selectEmpleado" class="form-label">Elige un
-														empleado</label>
 
-													<select class="form-select" multiple
-														aria-label="multiple select example" id="selectEmpleado"
-														name="selectEmpleado">
-													</select>
-												</div>
+											<form id="edit-form" th:method="post" th:action="@{/usuario/update}"
+											th:object="${usuario}">
 												<div class="col-12">
 													<label for="inputNanme4" class="form-label">Nombre de
 														usuario</label>
-													<input type="text" class="form-control" id="inputNanme4">
+													<input type="text" class="form-control" id="nombre"
+														th:field="*{vc_nombre_usuario}"
+														th:value="${usuario.vc_nombre_usuario}">
 												</div>
-
-												<div class="col-12">
-													<label for="inputPassword4" class="form-label">Contraseña</label>
-													<input type="password" class="form-control" id="inputPassword4">
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
 												</div>
-
 											</form>
 										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-secondary"
-												data-bs-dismiss="modal">Cerrar</button>
-											<button type="button" class="btn btn-primary">Guardar</button>
-										</div>
+										
 									</div>
 								</div>
-							</div> <!-- End Basic Modal-->
+							</div>-->
+							<!-- End Basic Modal-->
 
+							
+							<div class="row mb-3">
+								<form method="get" th:action="@{/usuario/altaUsuario}">
+									<button type="submit" class="btn btn-primary">
+										Agregar Usuarios
+									</button>
+								</form>
+							</div>
+							<div class="row">
+
+								<table class="table table-striped">
+									<tr>
+										<th>Nombre Usuario</th>
+										<th>Estatus Usuario</th>
+										<th>Estatus Sesión</th>
+										<th>Acciones</th>
+									</tr>
+									<tr th:each="usuario : ${usuarios}">
+										<td th:text="${usuario.vc_nombre_usuario}"></td>
+										<td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
+										<td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
+										<td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
+										<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
+										<td>
+											<div class="dt-buttons">
+												<button class="btn btn-info" tabindex="0" data-bs-toggle="tooltip"
+													data-bs-placement="top" title="Editar"
+													aria-controls="table-datatable" type="button" data-tooltip="Add">
+													<i class="bi bi-file-person-fill"></i>
+												</button>
+												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
+													data-bs-placement="top" title="Baja Usuario"
+													aria-controls="table-datatable" type="button"
+													data-tooltip="Refresh">
+													<i class="bi bi-file-lock"></i>
+												</button>
+												<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip"
+													data-bs-placement="top" title="Reactivar Usuario"
+													aria-controls="table-datatable" type="button"
+													data-tooltip="Show filters">
+													<i class="bi bi-unlock"></i>
+												</button>
+												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+													data-bs-target="#basicModal"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">
+													Prueba modal
+												</button>-->
+
+												<!--<a data-toggle="modal" data-target="#basicModal"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">Edit</a>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -95,7 +130,7 @@
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
-		<script th:src="@{/js/configuracion.js}"></script>
+		<script th:src="@{/js/usuario/usuarios.js}"></script>
 	</th:block>
 </body>
 

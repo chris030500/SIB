@@ -17,6 +17,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-
+import ahorrosbienestar.sib.std.configuracion.login.SeguridadAppInicializador;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
@@ -45,6 +45,9 @@ public class ConfiguracionController {
 	
 	@Autowired
 	private HistContrasenaService histContrasenaService;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	// Cargamos la vista de la configuracion de los parametros de la contraseña
 
@@ -228,10 +231,9 @@ public class ConfiguracionController {
 	public String CambioSesiones(@RequestParam(name = "desbloqueo", required = true) String desbloqueo,
 			@RequestParam(name = "selectUsuario", required = true) String[] selectUsuario) {
 
-//		System.out.println("Usted a seleccionado la opción: " +desbloqueo);
-//		System.out.println("Ha seleccionado el usuario : " + Arrays.toString(selectUsuario).toString());
+
 		Integer i = Integer.parseInt(selectUsuario[0]);
-//		System.out.println("i :" + i);
+
 		if (desbloqueo.equals("desbloquearSesion")) {
 			System.out.println("Entro en desbloquear sesion");
 			usuarioService.activarUsuarioSesion(i);
@@ -271,12 +273,13 @@ public class ConfiguracionController {
 		properties.load(inputStream);
 		String contrasenaAnterior = properties.getProperty("contrasena");
 		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
+		System.out.println("contraseña con MD5: " + passwordEncoder.encode(contrasenaAnterior));
 		
 		//Se agregan los campos para cada campo del historico de contraseña
 		//NOTA: FALTA AGREGAR EL USUARIO QUE REALIZA CIERTA MODIFICACIÓN Y LA FECHA DE VIGENCIA
-		histContrasena.setVc_contrasenia(contrasenaAnterior);
+		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
-		histContrasena.setVc_indicador_activo("ACTIVO");
+		histContrasena.setVc_indicador_activo("A");
 		histContrasena.setDt_vig_cont_fin(localDate);
 		System.out.println("Historico de contraseña: " + histContrasena);
 		histContrasenaService.save(histContrasena);
