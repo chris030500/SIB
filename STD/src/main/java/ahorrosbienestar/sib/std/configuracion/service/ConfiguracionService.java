@@ -75,7 +75,7 @@ public class ConfiguracionService {
 		char clave;
 		String specialChars = "~`!@#$%^&*()-_=+\\|[{]};:'\",<.>/?";
 		if (contrasena.length() > longitud) {
-			return mensaje = "La contraseña excede el número de la longitud";
+			return mensaje = "La contraseña excede el número de la longitud ("+longitud+" caracteres)";
 		} else if (contrasena.length() == longitud) {
 			
 			for (int i = 0; i < contrasena.length(); i++) {
@@ -108,7 +108,7 @@ public class ConfiguracionService {
 
 		} else if (contrasena.length() < longitud) {
 			
-			return mensaje = "La contraseña es menor a la longitud establecida";
+			return mensaje = "La contraseña es menor a la longitud establecida("+longitud+" caracteres)";
 		}
 
 		return mensaje = "No ha ingresado una contraseña";

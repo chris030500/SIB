@@ -57,6 +57,19 @@ public class UsuarioService {
 		return iUsuarioRepository.findByNombre(nombre);
 	}
 	
+	public Usuario findByNombreUsuarioBoolean(String nombre){
+		return iUsuarioRepository.findByNombreUsuarioBoolean(nombre);
+	}
+	
+	public Usuario findByIdEmpleadoBoolean(Integer idEmpleado) {
+		return iUsuarioRepository.findByIdEmpleadoBoolean(idEmpleado);
+	}
+	
+	public Optional<Usuario> findByUsuarioNombre(String nombre) {
+		return iUsuarioRepository.findByUsuarioNombre(nombre);
+	}
+	
+	
 //	public List<Usuario> encontrarUsuarioAndFecha(String nombre) {
 //		return iUsuarioRepository.encontrarUsuarioAndFecha(nombre);
 //	}

@@ -50,6 +50,9 @@ public class Usuario {
 	@Column(name = "I_INTENTOS_FALLIDOS")
 	private int i_intentos_fallidos;
 	
+	@Column(name = "I_ID_EMPLEADO", columnDefinition = "BIGINT")
+	private int i_id_empleado;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_ULTIMO_INGRESO")
@@ -117,6 +120,23 @@ public class Usuario {
 		this.rol_idRol = rol_idRol;
 	}
 
+	public int getI_id_empleado() {
+		return i_id_empleado;
+	}
+
+	public void setI_id_empleado(int i_id_empleado) {
+		this.i_id_empleado = i_id_empleado;
+	}
+
+	public LocalDate getDt_fecha_ultimo_ingreso() {
+		return dt_fecha_ultimo_ingreso;
+	}
+
+	public void setDt_fecha_ultimo_ingreso(LocalDate dt_fecha_ultimo_ingreso) {
+		this.dt_fecha_ultimo_ingreso = dt_fecha_ultimo_ingreso;
+	}
+
+	
 	
 	
 	//Tiene relacion con TBL_CAT_EMPLEADOS que es 1:1

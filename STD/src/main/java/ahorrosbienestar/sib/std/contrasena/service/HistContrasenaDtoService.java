@@ -46,4 +46,27 @@ public class HistContrasenaDtoService {
 	      
 	      return ls;
 	  }
+	
+	public List<HistContrasenaDto> obtenerUsuarioActivo(String nombre) {
+	      String sql = "SELECT u.PK_ID_USUARIO, u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA\r\n"
+	      		+ "FROM TBL_CAT_USUARIOS as u\r\n"
+	      		+ "inner join TBL_CAT_ROL as r\r\n"
+	      		+ "on (u.Rol_idRol = r.PK_ID_ROL)\r\n"
+	      		+ "inner join TBL_HIST_CONTRASENIA as hc\r\n"
+	      		+ "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)\r\n"
+	      		+ "where hc.VC_INDICADOR_ACTIVO = 1 and hc.DT_VIG_CONT_FIN = current_date() and u.VC_NOMBRE_USUARIO = ?;";
+	      List<HistContrasenaDto> ls = jdbcTemplate.query(sql, new Object[] {nombre},
+	              new RowMapper<HistContrasenaDto>() {
+	                  public HistContrasenaDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+	                	  HistContrasenaDto e = new HistContrasenaDto();
+	                	  e.setPk_id_usuario(rs.getInt(1));
+							e.setVc_nombre_usuario(rs.getString(2));
+							e.setVc_contrasenia(rs.getString(3));
+
+	                      return e;
+	                  }
+	              });
+	      
+	      return ls;
+	  }
 }
