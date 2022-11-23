@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Roles</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"></h5>
+
+
+						<div class="d-flex gap-5 justify-content-center">
+						
+						  <div class="list-group mx-0 w-auto">
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios1" value="" checked>
+      <span>
+        Admin
+        <small class="d-block text-muted">Admin</small>
+      </span>
+    </label>
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios2" value="">
+      <span>
+     Ejecutivo
+        <small class="d-block text-muted">Ejecutivo</small>
+      </span>
+    </label>
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios3" value="">
+      <span>
+     Consulta
+        <small class="d-block text-muted">Consulta</small>
+      </span>
+    </label>
+  </div>
+  <div class="list-group mx-0 w-auto">
+  <div class="container">
+  <div class="row">
+    <div class="col-12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Modulo</th>
+            <th scope="col">Descripcion</th>
+           
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
+               
+              </div>
+            </td>
+            <td>Carga de documentos</td>
+            <td>El usuario carga los documentos de acuerdo al producto</td>
+           
+          </tr>
+          <tr>
+            <td>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck2">
+                 
+              </div>
+            </td>
+            <td>Consulta de documentos</td>
+            <td>El usuario puede realizar consultas</td>
+           
+          </tr>
+          <tr>
+            <td>
+              <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck3">
+
+              </div>
+            </td>
+            <td>Valida documentos</td>
+            <td>El usuario puede validar documentos conforme lo que se subio</td>
+            
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+  </div>
+
+
+</div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+<button class="btn btn-primary me-md-2" type="button">Guardar</button>
+</div>
+					</div>
+				</div>
+
+			</div>
+			
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+	<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<!--JavaScript-->
+	</th:block>
+</body>
+</html>

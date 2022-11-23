@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Controller
 @RequestMapping("rol")
@@ -25,6 +27,16 @@ public class RolController {
 	public RolController (RolService rolService) {
 		this.rolService = rolService;
 	}
+	
+	//Inicio de roles
+		@GetMapping("/index")
+		public String InicioUsuario(Model model) {
+			Rol rol = new Rol();
+			model.addAttribute("rol", rol);
+			//Mostramos todos los usuarios
+			model.addAttribute("rol", rolService.findAll());
+			return "roles/index";
+		}
 	
 	//Dar de alta un rol utilizando metodo POST
 		@PostMapping

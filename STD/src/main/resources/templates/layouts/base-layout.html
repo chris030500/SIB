@@ -133,6 +133,11 @@
 									<i class="bi bi-file-person"></i><span>Usuarios</span>
 								</a>
 							</li>
+								<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/rol/index}">
+									<i class="bi bi-person-lines-fill"></i><span>Roles</span>
+								</a>
+							</li>
 							<li sec:authorize="hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_ADMIN')" class="nav-item">
 								<a th:href="@{/configuracion/sesionesInactiva}">
 									<i class="fa fa-unlock"></i><span>Desbloqueo de usuarios</span>
