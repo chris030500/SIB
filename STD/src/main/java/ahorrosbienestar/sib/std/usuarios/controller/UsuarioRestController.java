@@ -73,12 +73,13 @@ public class UsuarioRestController {
 		return ResponseEntity.ok(usuarioService.findByNombreUsuario(nombreUsuario));
 	}
 	
+	//Buscar usuario por nombre y trae toda su información
 	@GetMapping("/nombreUsuario/{nombre}")
 	public ResponseEntity<?> findByUsuarioNombre(@PathVariable (name ="nombre") String nombre) {
 		return ResponseEntity.ok(usuarioService.findByUsuarioNombre(nombre));
 	}
 	
-	
+	//Buscar usuario por nombre (true = existe, false = no existe)
 	@GetMapping("/nombre/{nombreUsuario}")
 	public boolean findByNombreUsuarioBoolean(@PathVariable ("nombreUsuario") String nombreUsuario) {
 		Usuario u = new Usuario();
@@ -105,6 +106,7 @@ public class UsuarioRestController {
 		
 	}
 	
+	//Guardar Usuario
 	@RequestMapping(value={"/guardar_usuario"}, method = RequestMethod.POST)
 	public ResponseEntity<?> guardarUsuario( 
 			@RequestParam("EmpleadoId") Integer EmpleadoId, 
@@ -134,6 +136,18 @@ public class UsuarioRestController {
 		
 		
 		return ResponseEntity.ok(usuarioService.save(usuario));
+	}
+	
+	@RequestMapping(value={"/baja_usuario"}, method = RequestMethod.POST)
+	public ResponseEntity<?> bajaUsuario(@RequestParam("usuario") Integer usuario){
+		System.out.println("Usuario: " + usuario);
+		return ResponseEntity.ok(usuarioService.bajaUsuarioEstatus(usuario)); 
+	}
+	
+	@RequestMapping(value={"/reactivar_usuario"}, method = RequestMethod.POST)
+	public ResponseEntity<?> reactivarUsuario(@RequestParam("usuario") Integer usuario){
+		System.out.println("Usuario: " + usuario);
+		return ResponseEntity.ok(usuarioService.activarUsuarioEstatus(usuario)); 
 	}
 	
 	

@@ -127,74 +127,6 @@ function populateModal(data) {
 	//$('#update-name').val(data.name);
 }
 
-function altaUsuariotest() {
-	var nombreUsuario = document.getElementById('nombreUsuario').value;
-	$.ajax({
-		url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			//console.log("respuesta lenght" + respuesta.lenght);
-
-			if (nombreUsuario == '') {
-				console.log("Esta vacio el campo");
-			} else {
-				if (respuesta != null) {
-					var data = {
-						dt_vig_cont_fin: (new Date()).toISOString().split('T')[0],
-						dt_vig_cont_inicio: (new Date()).toISOString().split('T')[0],
-						vc_indicador_activo: 1,
-						usr_historico_contrasena_id: respuesta
-					};
-					console.log("Data: " + JSON.stringify(data));
-					console.log("Tiene información");
-					console.log("Respuestas");
-					console.log(respuesta);
-					console.log("PK: " + respuesta.pk_id_usuario);
-					$.ajax({
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-						url: "http://localhost:8090/hist_contrasena/",
-						type: "POST",
-						data: JSON.stringify(data),
-						dataType: "json",
-						success: function(respuesta) {
-							/*console.log("Entro en success de get");
-							console.log("Respuesta: " +respuesta);*/
-							console.log("Se guardo la contraseña en historial contraseña: ");
-							swal({
-								type: 'success',
-								title: "Registro de usuario exitoso.",
-								showConfirmButton: false
-
-							});
-
-						},
-						error: function(respuesta) {
-							console.log("Entro en error");
-							swal({
-								type: 'warning',
-								title: respuesta,
-								showConfirmButton: false
-
-							});
-
-						}
-					});
-
-				} else {
-					console.log("No tiene información");
-				}
-			}
-
-
-
-		}
-	});
-}
-
 function altaUsuario() {
 	var nombreUsuario = document.getElementById('nombreUsuario').value;
 	var idEmpleado = document.getElementById('EmpleadoId').value;
@@ -288,6 +220,8 @@ function altaUsuario() {
 																		title: "Registro de usuario exitoso.",
 																		showConfirmButton: false
 
+																	}).then((result) => {
+																		window.location.replace("http://localhost:8090/usuario/formulario");
 																	});
 
 																},
@@ -323,8 +257,6 @@ function altaUsuario() {
 												title: "No se pudo agregar el usuario",
 												showConfirmButton: false
 
-											}).then((result) => {
-												window.location.replace("http://localhost:8090/usuario/formulario");
 											});
 
 										}
@@ -382,6 +314,77 @@ function validarNombreUsuario(nombreUsuario) {
 				title: respuesta,
 				showConfirmButton: false
 
+			});
+
+		}
+	});
+}
+
+function bajaUsuario(usuario) {
+	console.log("Entro en dar baja usuario");
+	console.log("Usuario: " + usuario);
+	$.ajax({
+		url: "http://localhost:8090/usuario/baja_usuario?usuario=" + usuario,
+		type: "POST",
+		success: function() {
+			/*console.log("Entro en success de get");
+			console.log("Respuesta: " +respuesta);*/
+			console.log("Validar NombreUsuario: ");
+			swal({
+				type: 'success',
+				title: "Baja de usuario correctamente.",
+				showConfirmButton: false
+
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		},
+		error: function() {
+			console.log("Entro en error");
+			swal({
+				type: 'warning',
+				title: "No se realizo la baja del usuario",
+				showConfirmButton: false
+
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		}
+	});
+}
+
+function reactivarUsuario(usuario) {
+	console.log("Entro en reactivar usuario");
+	console.log("Usuario: " + usuario);
+	$.ajax({
+		url: "http://localhost:8090/usuario/reactivar_usuario?usuario=" + usuario,
+		type: "POST",
+		success: function() {
+			/*console.log("Entro en success de get");
+			console.log("Respuesta: " +respuesta);*/
+			console.log("Validar NombreUsuario: ");
+			
+			swal({
+				type: 'success',
+				title: "Reactivación de usuario correctamente.",
+				showConfirmButton: false
+
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		},
+		error: function() {
+			console.log("Entro en error");
+			swal({
+				type: 'warning',
+				title: "No se reactivo el usuario",
+				showConfirmButton: false
+
+			}).then((result) => {
+				window.location.reload();
 			});
 
 		}

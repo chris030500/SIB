@@ -98,13 +98,13 @@
 												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
 													data-bs-placement="top" title="Baja Usuario"
 													aria-controls="table-datatable" type="button"
-													data-tooltip="Refresh">
+													data-tooltip="Refresh" th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
 													<i class="bi bi-file-lock"></i>
 												</button>
 												<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip"
 													data-bs-placement="top" title="Reactivar Usuario"
 													aria-controls="table-datatable" type="button"
-													data-tooltip="Show filters">
+													data-tooltip="Show filters" th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
 													<i class="bi bi-unlock"></i>
 												</button>
 												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
