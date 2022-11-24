@@ -273,13 +273,13 @@ public class ConfiguracionController {
 		properties.load(inputStream);
 		String contrasenaAnterior = properties.getProperty("contrasena");
 		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
-		System.out.println("contraseña con MD5: " + passwordEncoder.encode(contrasenaAnterior));
+		System.out.println("contraseña con Bcryp: " + passwordEncoder.encode(contrasenaAnterior));
 		
 		//Se agregan los campos para cada campo del historico de contraseña
 		//NOTA: FALTA AGREGAR EL USUARIO QUE REALIZA CIERTA MODIFICACIÓN Y LA FECHA DE VIGENCIA
 		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
-		histContrasena.setVc_indicador_activo("A");
+		histContrasena.setVc_indicador_activo(1);
 		histContrasena.setDt_vig_cont_fin(localDate);
 		System.out.println("Historico de contraseña: " + histContrasena);
 		histContrasenaService.save(histContrasena);

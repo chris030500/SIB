@@ -53,7 +53,7 @@ public class HistContrasena {
 	private String vc_contrasenia;
 	
 	@Column(name = "VC_INDICADOR_ACTIVO", columnDefinition = "TINYINT(1)")
-	private String vc_indicador_activo;
+	private int vc_indicador_activo;
 	
 	@ManyToOne
 	@JoinColumn(name = "usr_id_Usr")
@@ -97,11 +97,13 @@ public class HistContrasena {
 		this.vc_contrasenia = vc_contrasenia;
 	}
 
-	public String getVc_indicador_activo() {
+	
+
+	public int getVc_indicador_activo() {
 		return vc_indicador_activo;
 	}
 
-	public void setVc_indicador_activo(String vc_indicador_activo) {
+	public void setVc_indicador_activo(int vc_indicador_activo) {
 		this.vc_indicador_activo = vc_indicador_activo;
 	}
 

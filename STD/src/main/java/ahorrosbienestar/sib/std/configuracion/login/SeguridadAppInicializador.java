@@ -40,7 +40,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		http.
 		csrf().disable().
 		authorizeRequests().antMatchers("/css/**", "/js/**", "/images/**").permitAll()
-		.antMatchers("/configuracion/sesionesInactiva").hasAnyRole("EJECUTIVO", "ADMIN")
+		.antMatchers("/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**").hasAnyRole("EJECUTIVO", "ADMIN")
 		.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").hasAnyRole("ADMIN")
 		.anyRequest().authenticated()
 		.and()

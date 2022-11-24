@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Carga de documentos</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Usuarios</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"></h5>
+
+
+							<div class="row">
+								<form class="row g-3">
+									<div class="col-md-3">
+										<label for="inputEmail5" class="form-label">Solicitud de crédito</label>
+									</div>
+									<div class="col-md-5">
+										<input type="text" placeholder="Ingresa la solicitud de crédito"
+											class="form-control" id="solicitudCredito">
+									</div>
+									<div class="col-md-4">
+										<button type="submit" class="btn btn-primary">Buscar</button>
+									</div>
+								</form>
+								<form class="row g-3">
+
+									<div class="col-sm-2">
+										<label for="solicitud" class="form-label">Solicitud</label>
+										<input type="text" class="form-control" id="solicitud">
+									</div>
+									<div class="col-sm-2">
+										<label for="producto" class="form-label">Producto</label>
+										<input type="text" class="form-control" id="producto">
+									</div>
+									<div class="col-sm-2">
+										<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
+										<input type="text" class="form-control" id="montoSolicitado">
+									</div>
+									<div class="col-sm-2">
+										<label for="montoAutorizado" class="form-label">Monto Autorizado</label>
+										<input type="text" class="form-control" id="montoAutorizado">
+									</div>
+									<div class="col-sm-2">
+										<label for="plazo" class="form-label">Plazo</label>
+										<input type="text" class="form-control" id="plazo">
+									</div>
+									<div class="col-sm-2">
+										<label for="tasaNormal" class="form-label">Tasa Normal</label>
+										<input type="text" class="form-control" id="tasaNormal">
+									</div>
+
+								</form>
+
+								<table class="table">
+									<thead>
+										<tr>
+											<th scope="col">Nombre</th>
+											<th scope="col">Rol</th>
+											<th scope="col">Tel. Celular</th>
+											<th scope="col">Correo</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Brandon Jacob</td>
+											<td>Titular</td>
+											<td>4444444444</td>
+											<td>test@gmail.com</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+
+	</th:block>
+</body>
+
+</html>

@@ -1,62 +1,158 @@
 package ahorrosbienestar.sib.std.index;
 
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Optional;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.dto.HistContrasenaDto;
+import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaDtoService;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
-
 @Controller
 public class IndexController {
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
 	@Autowired
 	private HistContrasenaDtoService histContrasenaDtoService;
+
+	@Autowired
+	private HistContrasenaService histContrasenaService;
+
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
+	@Autowired 
+	private ConfiguracionService configuracionService;
+
 	protected final Log logger = LogFactory.getLog(this.getClass());
-	
-	@RequestMapping(value={"/","/inicio"}, method = RequestMethod.GET)
-	public String index(Authentication authentication) {
-		if(authentication != null) {
+
+	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
+	public String index(Authentication authentication, Principal principal) {
+		if (authentication != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(authentication.getName()));
-			
+
 		}
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();	
-		
-		if(auth != null) {
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (auth != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(auth.getName()));
 		}
 		String nombreUsuario = auth.getName();
 		System.out.println("Nombre del usuario: " + nombreUsuario);
+		System.out.println("PrincipalgetName: " + principal.getName());
 		int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
 		System.out.println("C dto: " + estatusFecha);
-		if(estatusFecha == 0) {
+		if (estatusFecha == 1) {
 			System.out.println("Debe de cambiar la contraseña");
-			return ("Cambio de contraseña");
-		}
-		System.out.println("Puede acceder al sistema");
-		//System.out.println("DTO: "+histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha);
-		//Usuario u = usuarioService.findByNombre(auth.getName());
-		//System.out.println("Usuario u : " +u.getRol_idRol().);
+
+			return "redirect:/cambio_contrasena";
+		} else
+			System.out.println("Puede acceder al sistema");
+		// System.out.println("DTO:
+		// "+histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha);
+		// Usuario u = usuarioService.findByNombre(auth.getName());
+		// System.out.println("Usuario u : " +u.getRol_idRol().);
 		return "index";
+	}
+
+	@RequestMapping(value = { "/cambio_contrasena" }, method = RequestMethod.GET)
+	public String cambioContrasena(HttpServletRequest request, HttpServletResponse response) {
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//	    if (auth != null){    
+//	        new SecurityContextLogoutHandler().logout(request, response, auth);
+//	    }
+		return "cambioContrasena";
+	}
+
+	// Metodo que guarda la contraseña nueva al momento de almacenarla
+	@RequestMapping(value = { "/guardar_contrasena" }, method = RequestMethod.POST)
+	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println("Password: " + password);
+		// Buscamos la información del usuario
+		Usuario usu = usuarioService.findByNombre(auth.getName());
+		System.out.println("Pk_Usu: " + usu.getPk_id_usuario());
+		// Con el id del usuario vamos a dar de baja la contraseña que se tiene
+		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
+
+		// Vamos a obtener el parametro de los días de vigencia de la contraseña
+		Properties properties = new Properties();
+		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
+		properties.load(inputStream);
+
+		properties.getProperty("pDias");
+
+		// Establecemos el formato de la fecha
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		// Obtenemos la fecha en String
+		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
+		// Casteamos la fechaActual a localDate
+		LocalDate localDate = LocalDate.parse(fechaActual);
+		LocalDate localDateHoy = LocalDate.parse(fechaActual);
+		// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
+
+		localDate = localDate.plusDays(Long.parseLong(properties.getProperty("pDias")));
+
+		HistContrasena hc = new HistContrasena();
+		hc.setDt_vig_cont_fin(localDate);
+		hc.setDt_vig_cont_inicio(localDateHoy);
+		hc.setVc_indicador_activo(1);
+		hc.setUsr_historico_contrasena_id(usu);
+		hc.setVc_contrasenia(passwordEncoder.encode(password));
+		// histContrasenaService.save(hc);
+		System.out.println("Guardar en historico");
+		// return null;
+		return ResponseEntity.ok(histContrasenaService.save(hc));
+	}
+
+	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña
+	@GetMapping("/mensajeContrasena")
+	public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
+		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
+
+		Properties properties = new Properties();
+		properties.load(inputStream);
+
+		return ResponseEntity.ok(
+				configuracionService.mensajeParametros(contrasena, Integer.parseInt(properties.getProperty("longitud")),
+						Integer.parseInt(properties.getProperty("mayusculas")),
+						Integer.parseInt(properties.getProperty("minusculas")),
+						Integer.parseInt(properties.getProperty("numeros")),
+						Integer.parseInt(properties.getProperty("caracteres"))));
 	}
 
 }

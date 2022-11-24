@@ -53,32 +53,30 @@ public class UsuarioService {
 		return iUsuarioRepository.activarUsuarioCuenta(id);
 	}
 	
+	public int activarUsuarioEstatus(Integer id) {
+		return iUsuarioRepository.activarUsuarioEstatus(id);
+	}
+	
+	public int bajaUsuarioEstatus(Integer id) {
+		return iUsuarioRepository.bajaUsuarioEstatus(id);
+	}
+	
 	public Usuario findByNombre(String nombre){
 		return iUsuarioRepository.findByNombre(nombre);
 	}
 	
-//	public List<Usuario> encontrarUsuarioAndFecha(String nombre) {
-//		return iUsuarioRepository.encontrarUsuarioAndFecha(nombre);
-//	}
-
-//	@Override
-//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//		Usuario us = iUsuarioRepository.findByUsuarioAndEstatusUsuario(username);
-//		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-//		
-//		logger.error("El usuaruario es: "+us);
-//		if(us == null) {
-//			logger.error("El usuaruario es: "+us);
-//		}
-//		
-//		
-//		System.out.println("Logger : "+ us);
-//		for(Rol role: us.getRol_idRol()) {
-//			authorities.add(new SimpleGrantedAuthority(role.getVc_nombre_rol()));
-//		}
-//
-//		return new User(us.getVc_nombre_usuario(), "12345", rol);
-//	}
+	public Usuario findByNombreUsuarioBoolean(String nombre){
+		return iUsuarioRepository.findByNombreUsuarioBoolean(nombre);
+	}
+	
+	public Usuario findByIdEmpleadoBoolean(Integer idEmpleado) {
+		return iUsuarioRepository.findByIdEmpleadoBoolean(idEmpleado);
+	}
+	
+	public Optional<Usuario> findByUsuarioNombre(String nombre) {
+		return iUsuarioRepository.findByUsuarioNombre(nombre);
+	}
+	
 	
 	
 
