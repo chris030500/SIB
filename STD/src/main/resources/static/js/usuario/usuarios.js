@@ -1,14 +1,3 @@
-function agregarUsuario() {
-	$.ajax({
-		url: "http://localhost:8090/usuario/altaUsuario",
-		type: "GET",
-		success: function() {
-			console.log("Entro en success de get");
-
-
-		}
-	});
-}
 
 function buscarEmpleado(empleado) {
 	//var selectUsuario = $('#selectUsuario');
@@ -122,8 +111,9 @@ function loadEntity(url) {
 
 // Assign the data values to the modal form.
 function populateModal(data) {
-	console.log("Data en populateModal: " + data)
+	console.log("Data en populateModal: " + JSON.stringify(data));
 	$('#nombre').val(data.vc_nombre_usuario);
+	$('#idUsuario').val(data.pk_id_usuario);
 	//$('#update-name').val(data.name);
 }
 
@@ -216,7 +206,7 @@ function altaUsuario() {
 																	console.log("Respuesta: " +respuesta);*/
 																	console.log("Se guardo la contraseña en historial contraseña: ");
 																	swal({
-																		type: 'success',
+																		icon: "success",
 																		title: "Registro de usuario exitoso.",
 																		showConfirmButton: false
 
@@ -228,7 +218,7 @@ function altaUsuario() {
 																error: function(respuesta) {
 																	console.log("Entro en error");
 																	swal({
-																		type: 'warning',
+																		icon: "warning",
 																		title: respuesta,
 																		showConfirmButton: false
 
@@ -242,18 +232,14 @@ function altaUsuario() {
 														}
 													}
 
-
-
 												}
 											});
-
-
 
 										},
 										error: function(respuesta) {
 											console.log("Entro en error");
 											swal({
-												type: 'warning',
+												icon: "warning",
 												title: "No se pudo agregar el usuario",
 												showConfirmButton: false
 
@@ -267,7 +253,7 @@ function altaUsuario() {
 							error: function(respuesta) {
 								console.log("Entro en error");
 								swal({
-									type: 'warning',
+									icon: 'warning',
 									title: respuesta,
 									showConfirmButton: false
 
@@ -281,7 +267,7 @@ function altaUsuario() {
 				error: function(respuesta) {
 					console.log("Entro en error");
 					swal({
-						type: 'warning',
+						icon: 'warning',
 						title: respuesta,
 						showConfirmButton: false
 
@@ -310,7 +296,7 @@ function validarNombreUsuario(nombreUsuario) {
 		error: function(respuesta) {
 			console.log("Entro en error");
 			swal({
-				type: 'warning',
+				icon: 'warning',
 				title: respuesta,
 				showConfirmButton: false
 
@@ -320,6 +306,7 @@ function validarNombreUsuario(nombreUsuario) {
 	});
 }
 
+//funcion para dar de baja al usuario (Estatus Usuario == false)
 function bajaUsuario(usuario) {
 	console.log("Entro en dar baja usuario");
 	console.log("Usuario: " + usuario);
@@ -331,7 +318,7 @@ function bajaUsuario(usuario) {
 			console.log("Respuesta: " +respuesta);*/
 			console.log("Validar NombreUsuario: ");
 			swal({
-				type: 'success',
+				icon: 'success',
 				title: "Baja de usuario correctamente.",
 				showConfirmButton: false
 
@@ -343,7 +330,7 @@ function bajaUsuario(usuario) {
 		error: function() {
 			console.log("Entro en error");
 			swal({
-				type: 'warning',
+				icon: 'warning',
 				title: "No se realizo la baja del usuario",
 				showConfirmButton: false
 
@@ -355,6 +342,7 @@ function bajaUsuario(usuario) {
 	});
 }
 
+//funcion para reacitvar el usuario (Estatus Usuario = true)
 function reactivarUsuario(usuario) {
 	console.log("Entro en reactivar usuario");
 	console.log("Usuario: " + usuario);
@@ -365,9 +353,9 @@ function reactivarUsuario(usuario) {
 			/*console.log("Entro en success de get");
 			console.log("Respuesta: " +respuesta);*/
 			console.log("Validar NombreUsuario: ");
-			
+
 			swal({
-				type: 'success',
+				icon: 'success',
 				title: "Reactivación de usuario correctamente.",
 				showConfirmButton: false
 
@@ -379,7 +367,7 @@ function reactivarUsuario(usuario) {
 		error: function() {
 			console.log("Entro en error");
 			swal({
-				type: 'warning',
+				icon: 'warning',
 				title: "No se reactivo el usuario",
 				showConfirmButton: false
 
@@ -389,5 +377,91 @@ function reactivarUsuario(usuario) {
 
 		}
 	});
+}
+
+//función para editar usuarios desde el modal
+function editarUsuario() {
+
+	var idUsuario = document.getElementById('idUsuario').value;
+	var nombreUsuario = document.getElementById('nombre').value;
+
+	//Primero validamos que el nombre de usuario no exista.
+	if (nombreUsuario == "") {
+		console.log("Ingresa un nombre de usuario");
+		swal({
+			icon: 'warning',
+			title: "El campo de nombre de usuario está vacío, ingresa un nombre",
+			showConfirmButton: false
+
+		});
+	} else {
+		console.log("Puede continuar");
+		$.ajax({
+			url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
+			type: "GET",
+			dataType: "JSON",
+			success: function(respuesta) {
+				/*console.log("Entro en success de get");
+				console.log("Respuesta: " +respuesta);*/
+				console.log("Validar NombreUsuario: ");
+				console.log("Respuesta: " + JSON.stringify(respuesta));
+				if (respuesta != null) {
+					console.log("El nombre de usuario ya existe");
+					swal({
+						icon: 'warning',
+						title: "El nombre de usuario ya existe, favor de usar otro nombre",
+						showConfirmButton: false
+
+					});
+				} else if (respuesta == null) {
+					console.log("El nombre de usuario no existe");
+					$.ajax({
+						url: "http://localhost:8090/usuario/editar_usuario?usuario=" + nombreUsuario + "&idUsuario="+idUsuario,
+						type: "POST",
+						success: function() {
+							/*console.log("Entro en success de get");
+							console.log("Respuesta: " +respuesta);*/
+							
+
+							swal({
+								icon: 'success',
+								title: "Se cambio correctamente el nombre de usuario.",
+								showConfirmButton: false
+
+							}).then((result) => {
+								window.location.reload();
+							});
+
+						},
+						error: function() {
+							console.log("Entro en error");
+							swal({
+								icon: 'warning',
+								title: "No se reactivo el usuario",
+								showConfirmButton: false
+
+							}).then((result) => {
+								window.location.reload();
+							});
+
+						}
+					});
+
+				}
+
+			},
+			error: function(respuesta) {
+				console.log("Entro en error");
+				swal({
+					icon: 'warning',
+					title: respuesta,
+					showConfirmButton: false
+
+				});
+
+			}
+		});
+	}
+
 }
 

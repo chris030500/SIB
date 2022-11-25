@@ -30,16 +30,19 @@
 						<div class="card-header">Agregar parametros</div>
 						<div class="card-body">
 							<form th:action="@{/configuracion/guardarBloqueoSesiones}" method="post">
+								
 								<div class="form-group">
-									<label for="intentos">Número máximo de intentos:</label> <input type="number"
-										class="form-control" id="intentos" name="intentos" required
-										placeholder="Intentos de inicio de sesión fallidos" autocomplete="off">
+									<label for="intento">Número máximo de intentos:</label>
+									<input type="number" class="form-control" id="intento" name="intento" 
+										placeholder="Intentos de inicio de sesión fallidos."
+										autocomplete="off">
 								</div>
+								
 								<!--Especifica el periodo de tiempo durante el cual un usuario no puede iniciar sesión 
 								en la aplicación después de exceder el número máximo de intentos de inicio de sesión fallidos. -->
 								<div class="form-group">
 									<label for="pBloqueo">Periodo de bloqueo (MINUTOS):</label> <input type="number"
-										class="form-control" id="pBloqueo" name="pBloqueo" required
+										class="form-control" id="pBloqueo" name="pBloqueo" 
 										placeholder="Periodo durante el cual el usuario no puede iniciar sesión"
 										autocomplete="off">
 								</div>
@@ -47,14 +50,14 @@
 								<!--Especifica el periodo en días que tiene permitido estar activa . -->
 								<div class="form-group">
 									<label for="pDias">Periodo que se encontrará activa la cuenta (días):</label>
-									<input type="number" class="form-control" id="pDias" name="pDias" required
+									<input type="number" class="form-control" id="pDias" name="pDias" 
 										placeholder="Periodo para la inactividad de la cuenta, la cuenta se bloquea."
 										autocomplete="off">
 								</div>
 
 								<br>
 								<div class="col-sm-2">
-									<button type="submit" onclick="guardarConfSesion()" class="btn btn-primary">Guardar</button>
+									<button type="button" onclick="guardarConfSesion()" class="btn btn-primary">Guardar</button>
 								</div>
 							</form>
 						</div>
