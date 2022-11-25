@@ -61,6 +61,10 @@ public class UsuarioService {
 		return iUsuarioRepository.bajaUsuarioEstatus(id);
 	}
 	
+	public int cambiarNombreUsuario(String usuario, Integer idUsuario) {
+		return iUsuarioRepository.cambiarNombreUsuario(usuario, idUsuario);
+	}
+	
 	public Usuario findByNombre(String nombre){
 		return iUsuarioRepository.findByNombre(nombre);
 	}

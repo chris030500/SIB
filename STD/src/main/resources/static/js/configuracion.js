@@ -34,12 +34,62 @@ function mensaje() {
 }
 
 function guardarConfSesion() {
-	swal({
+	var intento = $('#intento').val();
+	var pBloqueo = $('#pBloqueo').val();
+	var pDias = $('#pDias').val();
+	console.log("Intentos: " + intento);
+	if (intentos = '') {
+		swal({
+			icon: "warning",
+			title: "Agrega un valor en el campo de intentos",
+			showConfirmButton: false
+
+		});
+	} else if (pBloqueo == '') {
+		swal({
+			icon: "warning",
+			title: "Agrega un valor en el campo periodo de bloqueo",
+			showConfirmButton: false
+
+		});
+	} else if (pDias == '') {
+		swal({
+			icon: "warning",
+			title: "Agrega un valor en el campo periodo que se encontrará activa la cuenta",
+			showConfirmButton: false
+
+		});
+	} else {
+		$.ajax({
+			url: "http://localhost:8090/configuracion/guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
+			type: "POST",
+			success: function() {
+				swal({
+					icon: 'success',
+					title: 'Configuración de parametros de sesión exitosa',
+					showConfirmButton: false,
+					timer: 24000 // es ms (mili-segundos)
+				}).then((result) => {
+					window.location.reload();
+				});
+
+			},
+			error: function() {
+				swal({
+					icon: 'warning',
+					title: 'No se realizo correctamente el desbloqueo',
+					showConfirmButton: false
+					//timer: 24000 // es ms (mili-segundos)
+				});
+			}
+		});
+	}
+	/*swal({
 		type: 'success',
 		title: 'Configuración guardada',
 		showConfirmButton: false,
 		timer: 68000 // es ms (mili-segundos)
-	});
+	});*/
 }
 
 //Funcion para desbloquear sesion o cuenta del usuario seleccionado
@@ -124,8 +174,48 @@ function desmarcar() {
 	}
 }
 
-//Funcion para que genere la contraseña
 function generarContrasena() {
+	console.log("Entro en generarContrasena");
+	var contrasenia = $('#contrasena').val();
+	if (contrasenia != '') {
+		console.log("La contraseña contine info");
+		$.ajax({
+			url: "http://localhost:8090/configuracion/guardarContrasena?contrasena=" + contrasenia,
+			type: "POST",
+			success: function() {
+				swal({
+					type: 'success',
+					title: 'Contraseña por default guardada',
+					showConfirmButton: false,
+					timer: 24000 // es ms (mili-segundos)
+				}).then((result) => {
+					window.location.reload();
+				});
+
+			},
+			error: function() {
+				swal({
+					type: 'warning',
+					title: 'No se guardo la nueva contraseña por default',
+					showConfirmButton: false
+					//timer: 24000 // es ms (mili-segundos)
+				});
+			}
+		});
+		
+	} else {
+		console.log("La contraseña es vacía");
+		swal({
+			icon: 'warning',
+			title: 'No se ha ingresado una contraseña, favor de ingresar una',
+			showConfirmButton: false
+			//timer: 24000 // es ms (mili-segundos)
+		});
+	}
+}
+
+//Funcion para que genere la contraseña
+function generarContrasenaOld() {
 	console.log("Entro en generarContrasena");
 	var contrasenia = $('#contrasena').val();
 
@@ -145,35 +235,35 @@ function generarContrasena() {
 					showConfirmButton: false
 
 				});
-			} else if (respuesta == "Si cumple con los parametros requeridos"){
+			} else if (respuesta == "Si cumple con los parametros requeridos") {
 				$.ajax({
-				url: "http://localhost:8090/configuracion/guardarContrasena?contrasena=" + contrasenia,
-				type: "POST",
-				data: contrasenia,
-				success: function() {
-					console.log("Entro en guardar contraseña");
-					swal({
-						type: 'success',
-						title: 'Contraseña cambiada correctamente',
-						showConfirmButton: false
-					}).then((result) => {
-						window.location.reload();
-					});
+					url: "http://localhost:8090/configuracion/guardarContrasena?contrasena=" + contrasenia,
+					type: "POST",
+					data: contrasenia,
+					success: function() {
+						console.log("Entro en guardar contraseña");
+						swal({
+							type: 'success',
+							title: 'Contraseña cambiada correctamente',
+							showConfirmButton: false
+						}).then((result) => {
+							window.location.reload();
+						});
 
-				}
-			});
+					}
+				});
 			}
-			
+
 
 		},
 		error: function(respuesta) {
 			console.log("Entro en error");
 			swal({
-					type: 'warning',
-					title: respuesta,
-					showConfirmButton: false
+				type: 'warning',
+				title: respuesta,
+				showConfirmButton: false
 
-				});
+			});
 
 		}
 	});

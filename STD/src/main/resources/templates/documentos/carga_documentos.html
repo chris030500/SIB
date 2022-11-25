@@ -48,31 +48,33 @@
 
 									<div class="col-sm-2">
 										<label for="solicitud" class="form-label">Solicitud</label>
-										<input type="text" class="form-control" id="solicitud">
+										<input type="text" class="form-control" id="solicitud" readonly>
 									</div>
 									<div class="col-sm-2">
 										<label for="producto" class="form-label">Producto</label>
-										<input type="text" class="form-control" id="producto">
+										<input type="text" class="form-control" id="producto" readonly>
 									</div>
 									<div class="col-sm-2">
 										<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
-										<input type="text" class="form-control" id="montoSolicitado">
+										<input type="text" class="form-control" id="montoSolicitado" readonly>
 									</div>
 									<div class="col-sm-2">
 										<label for="montoAutorizado" class="form-label">Monto Autorizado</label>
-										<input type="text" class="form-control" id="montoAutorizado">
+										<input type="text" class="form-control" id="montoAutorizado" readonly>
 									</div>
 									<div class="col-sm-2">
 										<label for="plazo" class="form-label">Plazo</label>
-										<input type="text" class="form-control" id="plazo">
+										<input type="text" class="form-control" id="plazo" readonly>
 									</div>
 									<div class="col-sm-2">
 										<label for="tasaNormal" class="form-label">Tasa Normal</label>
-										<input type="text" class="form-control" id="tasaNormal">
+										<input type="text" class="form-control" id="tasaNormal" readonly>
 									</div>
 
 								</form>
 
+							</div>
+							<div>
 								<table class="table">
 									<thead>
 										<tr>
@@ -92,6 +94,66 @@
 									</tbody>
 								</table>
 							</div>
+
+							<div class="container">
+								<div class="row">
+									<table border="1" class="table" id="tablaDocumentos">
+										<thead class="thead-dark">
+											<tr>
+												<th>Nombre de documento</th>
+												<th>Ubicación</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td><input type="text" name="nombre1" id="nombre1" value="nombre1" readonly></td>
+												<td><input class="form-control" type="file" id="formFile1"
+														value="formFile1" accept=".pdf"></td>
+												<!--<td>Nombre</td>
+												<td><input class="form-control" type="file" id="formFile" accept=".pdf" required></td>-->
+											</tr>
+										</tbody>
+									</table>
+
+									<div class="form-group">
+										<button type="button" class="btn btn-primary mr-2"
+											onclick="agregarFila()">Agregar otro documento</button>
+										<button type="button" class="btn btn-danger" onclick="eliminarFila()">Eliminar
+											último documento</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="container">
+								<div class="row">
+									<form class="row g-3">
+										<div class="row">
+											<div class="col-sm-2">
+												<label for="fEnvio" class="form-label">Fecha Envío</label>
+												<input type="date" class="form-control" id="fEnvio">
+											</div>
+											<div class="col-sm-3">
+												<label for="fCancelacion" class="form-label">Fecha Cancelación</label>
+												<input type="text" class="form-control" id="fCancelacion">
+											</div>
+											<div class="col-sm-3">
+												<label for="hCancelacion" class="form-label">Hora Cancelación</label>
+												<input type="time" class="form-control" id="hCancelacion">
+											</div>
+											<div class="col-sm-4">
+												<label for="comentarioValidacion" class="form-label">Comentarios de
+													Validación</label>
+												<input type="text" class="form-control" id="comentarioValidacion">
+											</div>
+										</div>
+										<div class="col-sm-2">
+											<button type="button" class="btn btn-primary">
+												Guardar
+											</button>
+										</div>
+									</form>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -102,7 +164,7 @@
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
-
+		<script th:src="@{/js/cargaDocumentos/carga_documentos.js}"></script>
 	</th:block>
 </body>
 

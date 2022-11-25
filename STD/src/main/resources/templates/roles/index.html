@@ -6,7 +6,7 @@
 <head th:replace="layouts/base-layout :: head">
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 
@@ -25,8 +25,8 @@
 				</div>
 			</div>
 
-			
-			
+
+
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="card">
@@ -34,102 +34,58 @@
 							<h5 class="card-title"></h5>
 
 
-						<div class="d-flex gap-5 justify-content-center">
-						
-						  <div class="list-group mx-0 w-auto">
-    <label class="list-group-item d-flex gap-2">
-      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios1" value="" checked>
-      <span>
-        Admin
-        <small class="d-block text-muted">Admin</small>
-      </span>
-    </label>
-    <label class="list-group-item d-flex gap-2">
-      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios2" value="">
-      <span>
-     Ejecutivo
-        <small class="d-block text-muted">Ejecutivo</small>
-      </span>
-    </label>
-    <label class="list-group-item d-flex gap-2">
-      <input class="form-check-input flex-shrink-0" type="radio" name="listGroupRadios" id="listGroupRadios3" value="">
-      <span>
-     Consulta
-        <small class="d-block text-muted">Consulta</small>
-      </span>
-    </label>
-  </div>
-  <div class="list-group mx-0 w-auto">
-  <div class="container">
-  <div class="row">
-    <div class="col-12">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Modulo</th>
-            <th scope="col">Descripcion</th>
-           
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
-               
-              </div>
-            </td>
-            <td>Carga de documentos</td>
-            <td>El usuario carga los documentos de acuerdo al producto</td>
-           
-          </tr>
-          <tr>
-            <td>
-              <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="customCheck2">
-                 
-              </div>
-            </td>
-            <td>Consulta de documentos</td>
-            <td>El usuario puede realizar consultas</td>
-           
-          </tr>
-          <tr>
-            <td>
-              <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="customCheck3">
-
-              </div>
-            </td>
-            <td>Valida documentos</td>
-            <td>El usuario puede validar documentos conforme lo que se subio</td>
-            
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-  </div>
+							<div class="d-flex gap-5 justify-content-center">
 
 
-</div>
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-<button class="btn btn-primary me-md-2" type="button">Guardar</button>
-</div>
+								<table class="table table-bordered table-striped">
+
+									<thead>
+										<tr>
+											<th>Rol</th>
+											<th>Descripcion</th>
+											<th>Estatus</th>
+											<th>Componentes Asignados</th>
+
+										</tr>
+									</thead>
+
+									<tbody>
+
+										<tr th:each="rol: ${roles}">
+
+											<td th:text="${rol.vc_nombre_rol}">
+											<td th:text="${rol.vc_descripcion_rol}">
+											<td th:text="${rol.vc_estatus}">
+											<td th:text="${rol.vc_estatus}">
+											
+										</tr>
+
+										<tr th:if="${#lists.isEmpty(roles)}">
+											<td colspan="6">
+												A&uacute;n no se registran roles en el sistema
+											</td>
+										</tr>
+
+									</tbody>
+
+								</table>
+
+
+							</div>
+
+						</div>
 					</div>
+
 				</div>
 
 			</div>
-			
-		</div> 
 	</section>
 	<th:block layout:fragment="page-scripts">
-	<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>	
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<!--JavaScript-->
 	</th:block>
 </body>
+
 </html>

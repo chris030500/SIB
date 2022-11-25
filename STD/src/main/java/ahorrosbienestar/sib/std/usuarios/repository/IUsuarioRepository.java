@@ -49,14 +49,10 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.PK_ID_USUARIO = :id", nativeQuery = true)
 	public Optional<Usuario> findById(@Param ( "id" ) Integer id);
 	
-//	@Query(value = "SELECT u.PK_ID_USUARIO,u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA \r\n"
-//			+ "FROM TBL_CAT_USUARIOS as u \r\n"
-//			+ "inner join TBL_CAT_ROL as r \r\n"
-//			+ "on u.Rol_idRol = r.PK_ID_ROL \r\n"
-//			+ "inner join TBL_HIST_CONTRASENIA as hc \r\n"
-//			+ "on hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO \r\n"
-//			+ "where hc.VC_INDICADOR_ACTIVO = 1 and  u.VC_NOMBRE_USUARIO = :nombre", nativeQuery = true)
-//	public List<Usuario> encontrarUsuarioAndFecha(@Param ( "id" ) String nombre);
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_CAT_USUARIOS set VC_NOMBRE_USUARIO = :usuario WHERE PK_ID_USUARIO = :idUsuario", nativeQuery=true)
+	public int cambiarNombreUsuario( @Param("usuario") String usuario, @Param("idUsuario") Integer idUsuario);
 	
 	@Query(value = "SELECT * FROM TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = ?1", nativeQuery = true)
 	public Usuario findByNombre(String nombre);

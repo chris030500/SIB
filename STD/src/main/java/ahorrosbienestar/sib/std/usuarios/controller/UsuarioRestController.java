@@ -41,19 +41,19 @@ public class UsuarioRestController {
 		return ResponseEntity.ok(usu);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<?> edit(@RequestBody @Valid Usuario usuario, @PathVariable(name = "id") Integer id) {
-		// Creamos Usuario
-		Usuario u = new Usuario();
-		// Buscamos el Usuario
-		u = usuarioService.findById(id).get();
-
-		if (u != null) {
-			return ResponseEntity.ok(usuarioService.save(usuario));
-		}
-		return ResponseEntity.notFound().build();
-
-	}
+//	@PutMapping("/{id}")
+//	public ResponseEntity<?> edit(@RequestBody @Valid Usuario usuario, @PathVariable(name = "id") Integer id) {
+//		// Creamos Usuario
+//		Usuario u = new Usuario();
+//		// Buscamos el Usuario
+//		u = usuarioService.findById(id).get();
+//
+//		if (u != null) {
+//			return ResponseEntity.ok(usuarioService.save(usuario));
+//		}
+//		return ResponseEntity.notFound().build();
+//
+//	}
 	
 	//Metodo para desactivar al usuario (cambia estatus de sesion)
 	@GetMapping("/activarUsuario/{id}")
@@ -136,6 +136,19 @@ public class UsuarioRestController {
 		
 		
 		return ResponseEntity.ok(usuarioService.save(usuario));
+	}
+	
+	@RequestMapping(value={"/editar_usuario"}, method = RequestMethod.POST)
+	public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("usuario") String usuario, @RequestParam("idUsuario") Integer idUsuario){
+		System.out.println("Usuario: " + usuario);
+		System.out.println("IdUsuario: " +idUsuario);
+		if(usuario != null && idUsuario != null) {
+			System.out.println("Puede realizar el cambio de usuario");
+			return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario));
+		}
+		System.out.println("No puede realizar el cambio de usuario");
+		return ResponseEntity.notFound().build();
+		
 	}
 	
 	@RequestMapping(value={"/baja_usuario"}, method = RequestMethod.POST)

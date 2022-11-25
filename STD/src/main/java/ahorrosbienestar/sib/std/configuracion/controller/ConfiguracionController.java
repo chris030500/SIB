@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Properties;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.configuracion.login.SeguridadAppInicializador;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
@@ -42,30 +43,27 @@ public class ConfiguracionController {
 
 	@Autowired
 	private ConfiguracionService configuracionService;
-	
+
 	@Autowired
 	private HistContrasenaService histContrasenaService;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+
+	@Autowired
+	private ConfigService configService;
 
 	// Cargamos la vista de la configuracion de los parametros de la contraseña
 
 	@GetMapping("/contrasena")
 	public String Inicio(Model model) throws IOException {
 		model.addAttribute("titulo", "configuracion");
-
-		// Establecemos el nombre del archivo properties
-		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
-
-		Properties properties = new Properties();
-		properties.load(inputStream);
-		model.addAttribute("longitud", properties.getProperty("longitud"));
-		model.addAttribute("mayusculas", properties.getProperty("mayusculas"));
-		model.addAttribute("minusculas", properties.getProperty("minusculas"));
-		model.addAttribute("numeros", properties.getProperty("numeros"));
-		model.addAttribute("caracteres", properties.getProperty("caracteres"));
-
+		model.addAttribute("longitud", configService.findAll().get(0).getVc_valor_propiedad());
+		model.addAttribute("caracteres", configService.findAll().get(1).getVc_valor_propiedad());
+		model.addAttribute("numeros", configService.findAll().get(2).getVc_valor_propiedad());
+		model.addAttribute("minusculas", configService.findAll().get(3).getVc_valor_propiedad());
+		model.addAttribute("mayusculas", configService.findAll().get(4).getVc_valor_propiedad());
+		
 		return "configuracion/configuracionContrasena";
 	}
 
@@ -77,67 +75,12 @@ public class ConfiguracionController {
 			@RequestParam(name = "numeros", required = false) String numeros,
 			@RequestParam(name = "caracteres", required = false) String caracteres) {
 
-		String max = longitud;
+		configService.cambiarLongitud(longitud);
+		configService.cambiarCaracteres(caracteres);
+		configService.cambiarMayusculas(mayusculas);
+		configService.cambiarMinusculas(minusculas);
+		configService.cambiarNumeros(numeros);
 
-		String minUppercase = mayusculas;
-
-		String minLowercase = minusculas;
-
-		String numDigitos = numeros;
-
-		String especial = caracteres;
-
-		// Establecemos el nombre del archivo properties
-		final String PROPERTIES_FILE = "confContrasena.properties";
-
-		Calendar lastAccess = null;
-
-		Properties properties = new Properties();
-
-		try {
-			properties.load(new BufferedReader(new FileReader(PROPERTIES_FILE)));
-			max = properties.getProperty("longitud", max);
-			minUppercase = properties.getProperty("mayusculas", mayusculas);
-			minLowercase = properties.getProperty("minusculas", minusculas);
-			numDigitos = properties.getProperty("numeros", numeros);
-			especial = properties.getProperty("caracteres", caracteres);
-			// La fecha y hora del último acceso está guardado como tiempo en milisegundos
-			long lastAccessInMillis = Long.valueOf(properties.getProperty("lastAccess"));
-			lastAccess = Calendar.getInstance();
-			lastAccess.setTimeInMillis(lastAccessInMillis);
-		} catch (Exception ex) {
-			// Si hay algún error, por ejemplo que no exista el archivo de propiedades
-
-		}
-
-		// Muestra en pantalla los valores de las variables language y lastAccess
-		System.out.println("longitud: " + longitud);
-		if (lastAccess != null) {
-			String strLastAccess = (DateFormat.getDateTimeInstance()).format(lastAccess.getTime());
-			System.out.println("Ultimo acceso: " + strLastAccess);
-		} else {
-			System.out.println("Es la primera vez que usa esta aplicación");
-		}
-
-		properties.setProperty("longitud", longitud);
-		properties.setProperty("mayusculas", mayusculas);
-		properties.setProperty("minusculas", minusculas);
-		properties.setProperty("numeros", numeros);
-		properties.setProperty("caracteres", caracteres);
-		// Toma el valor que se almacenará en la propiedad lastAccess
-		// en función de la hora actual, y en formato de milisegundos
-		lastAccess = Calendar.getInstance();
-		String lastAccessInMillis = String.valueOf(lastAccess.getTimeInMillis());
-		properties.setProperty("lastAccess", lastAccessInMillis);
-
-		try {
-			// Crea el archivo de propiedades
-			properties.store(new BufferedWriter(new FileWriter("src/main/resources/" + PROPERTIES_FILE)),
-					"Configuración de contraseña");
-		} catch (IOException ex) {
-			System.out.println("Error: No se ha podido crear el archivo de propiedades");
-		}
-		// redirAttrs.addFlashAttribute("message", "This is message from flash");
 		return "redirect:/configuracion/contrasena";
 	}
 
@@ -146,74 +89,24 @@ public class ConfiguracionController {
 	public String Sesiones(Model model) throws IOException {
 		model.addAttribute("titulo", "Configuración de sesiones");
 
-		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
-
-		Properties properties = new Properties();
-		properties.load(inputStream);
-		model.addAttribute("intentos", properties.getProperty("intentos"));
-		model.addAttribute("pBloqueo", properties.getProperty("pBloqueo"));
-		model.addAttribute("pDias", properties.getProperty("pDias"));
+		
+		model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
+		model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
+		model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
+		
 		return "configuracion/bloqueoSesiones";
 	}
 
 	@PostMapping("/guardarBloqueoSesiones")
-	public String guardarBloqueoSesiones(Model model, @RequestParam(name = "intentos") String intentos,
+	public String guardarBloqueoSesiones(@RequestParam(name = "intento") String intento,
 			@RequestParam(name = "pBloqueo") String pBloqueo, @RequestParam(name = "pDias") String pDias) {
 
-		String numIntentos = intentos;
-
-		String peridoBloqueo = pBloqueo;
-
-		String peridoDias = pDias;
-
-		final String PROPERTIES_FILE = "confSesion.properties";
-
-		Calendar ultimoAcceso = null;
-
-		Properties properties = new Properties();
-
-		try {
-			properties.load(new BufferedReader(new FileReader(PROPERTIES_FILE)));
-			numIntentos = properties.getProperty("intentos", intentos);
-			peridoBloqueo = properties.getProperty("pBloqueo", pBloqueo);
-			peridoDias = properties.getProperty("pDias", pDias);
-			;
-			// La fecha y hora del último acceso está guardado como tiempo en milisegundos
-			long ultimoAccesoMillis = Long.valueOf(properties.getProperty("ultimoAcceso"));
-			ultimoAcceso = Calendar.getInstance();
-			ultimoAcceso.setTimeInMillis(ultimoAccesoMillis);
-		} catch (Exception ex) {
-			// Si hay algún error, por ejemplo que no exista el archivo de propiedades
-
-		}
-
-		// Muestra en pantalla los valores de las variables language y lastAccess
-		System.out.println("intentos: " + intentos);
-		System.out.println("pDias: " + pDias);
-		if (ultimoAcceso != null) {
-			String strultimoAcceso = (DateFormat.getDateTimeInstance()).format(ultimoAcceso.getTime());
-			System.out.println("Ultimo acceso: " + strultimoAcceso);
-		} else {
-			System.out.println("Es la primera vez que usa esta aplicación");
-		}
-
-		properties.setProperty("intentos", intentos);
-		properties.setProperty("pBloqueo", pBloqueo);
-		properties.setProperty("pDias", pDias);
-
-		// Toma el valor que se almacenará en la propiedad ultimoAcceso
-		// en función de la hora actual, y en formato de milisegundos
-		ultimoAcceso = Calendar.getInstance();
-		String ultimoAccesoMillis = String.valueOf(ultimoAcceso.getTimeInMillis());
-		properties.setProperty("lastAccess", ultimoAccesoMillis);
-
-		try {
-			// Crea el archivo de propiedades
-			properties.store(new BufferedWriter(new FileWriter("src/main/resources/" + PROPERTIES_FILE)),
-					"Configuración de sesiones");
-		} catch (IOException ex) {
-			System.out.println("Error: No se ha podido crear el archivo de propiedades");
-		}
+//		System.out.println("Intentos: " + intento);
+//		System.out.println("pBloqueo: " +pBloqueo);
+//		System.out.println("pdias: " + pDias);
+		configService.cambiarPeriodoBloqueo(pBloqueo);
+		configService.cambiarPeriodoDias(pDias);
+		configService.cambiarIntentos(intento);
 		configuracionService.procActualizarSesion(Integer.parseInt(pDias));
 
 		return "redirect:/configuracion/bloqueoSesiones";
@@ -230,7 +123,6 @@ public class ConfiguracionController {
 	@PostMapping("/cambioSesiones")
 	public String CambioSesiones(@RequestParam(name = "desbloqueo", required = true) String desbloqueo,
 			@RequestParam(name = "selectUsuario", required = true) String[] selectUsuario) {
-
 
 		Integer i = Integer.parseInt(selectUsuario[0]);
 
@@ -249,79 +141,52 @@ public class ConfiguracionController {
 	@GetMapping("/generarContrasena")
 	public String GenerarContrasena(Model model) throws IOException {
 
-		Properties properties = new Properties();
-		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
-		properties.load(inputStream);
-		model.addAttribute("longitud", properties.getProperty("longitud"));
-		model.addAttribute("mayusculas", properties.getProperty("mayusculas"));
-		model.addAttribute("minusculas", properties.getProperty("minusculas"));
-		model.addAttribute("numeros", properties.getProperty("numeros"));
-		model.addAttribute("caracteres", properties.getProperty("caracteres"));
+		
+//		model.addAttribute("longitud", properties.getProperty("longitud"));
+//		model.addAttribute("mayusculas", properties.getProperty("mayusculas"));
+//		model.addAttribute("minusculas", properties.getProperty("minusculas"));
+//		model.addAttribute("numeros", properties.getProperty("numeros"));
+//		model.addAttribute("caracteres", properties.getProperty("caracteres"));
+		model.addAttribute("longitud", configService.findAll().get(0).getVc_valor_propiedad());
+		model.addAttribute("caracteres", configService.findAll().get(1).getVc_valor_propiedad());
+		model.addAttribute("numeros", configService.findAll().get(2).getVc_valor_propiedad());
+		model.addAttribute("minusculas", configService.findAll().get(3).getVc_valor_propiedad());
+		model.addAttribute("mayusculas", configService.findAll().get(4).getVc_valor_propiedad());
 		return "configuracion/generacionContrasena";
 	}
 
 	// Se guarda la contraseña que se haya establecido
 	@PostMapping("/guardarContrasena")
-	public String GuardarContrasena(@RequestParam("contrasena") String contrasena, HistContrasena histContrasena) throws IOException {
+	public String GuardarContrasena(@RequestParam("contrasena") String contrasena, HistContrasena histContrasena)
+			throws IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		 
-        String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
-        LocalDate localDate = LocalDate.parse(fechaActual);
+
+		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
+		LocalDate localDate = LocalDate.parse(fechaActual);
 		Properties properties = new Properties();
-		//Primero consultamos la contraseña que se ha almacenado con anterioridad
+		// Primero consultamos la contraseña que se ha almacenado con anterioridad
 		InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
 		properties.load(inputStream);
-		String contrasenaAnterior = properties.getProperty("contrasena");
+		//String contrasenaAnterior = properties.getProperty("contrasena");
+		String contrasenaAnterior = configService.findAll().get(5).getVc_valor_propiedad();
 		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
 		System.out.println("contraseña con Bcryp: " + passwordEncoder.encode(contrasenaAnterior));
-		
-		//Se agregan los campos para cada campo del historico de contraseña
-		//NOTA: FALTA AGREGAR EL USUARIO QUE REALIZA CIERTA MODIFICACIÓN Y LA FECHA DE VIGENCIA
+
+		// Se agregan los campos para la tabla historico de contraseña
+		// NOTA: FALTA AGREGAR EL USUARIO QUE REALIZA 
 		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
 		histContrasena.setVc_indicador_activo(1);
 		histContrasena.setDt_vig_cont_fin(localDate);
 		System.out.println("Historico de contraseña: " + histContrasena);
 		histContrasenaService.save(histContrasena);
-		//histContrasena.setUsr_historico_contrasena_id(1L).get();
-		
-		String contrasenia = contrasena;
-		// Establecemos el nombre del archivo properties
-		final String PROPERTIES_FILE = "contrasena.properties";
-		
-		Calendar lastAccess = null;
-		
-		try {
-			//Cargamos el archivo properties
-			properties.load(new BufferedReader(new FileReader(PROPERTIES_FILE)));
-			contrasenia = properties.getProperty("contrasena", contrasenia);
-			// La fecha y hora del último acceso está guardado como tiempo en milisegundos
-			long lastAccessInMillis = Long.valueOf(properties.getProperty("lastAccess"));
-			lastAccess = Calendar.getInstance();
-			lastAccess.setTimeInMillis(lastAccessInMillis);
-		} catch (Exception ex) {
-			// Si hay algún error, por ejemplo que no exista el archivo de propiedades
+		// histContrasena.setUsr_historico_contrasena_id(1L).get();
 
-		}
-		
-		if (lastAccess != null) {
-			String strLastAccess = (DateFormat.getDateTimeInstance()).format(lastAccess.getTime());
-			System.out.println("Ultimo acceso: " + strLastAccess);
-		} else {
-			System.out.println("Es la primera vez que usa esta aplicación");
-		}
-		
-		properties.setProperty("contrasena", contrasena);
-		lastAccess = Calendar.getInstance();
-		String lastAccessInMillis = String.valueOf(lastAccess.getTimeInMillis());
-		properties.setProperty("lastAccess", lastAccessInMillis);
-		try {
-			// Crea el archivo de propiedades
-			properties.store(new BufferedWriter(new FileWriter("src/main/resources/" + PROPERTIES_FILE)), "Configuración de sesiones");
-		} catch (IOException ex) {
-			System.out.println("Error: No se ha podido crear el archivo de propiedades");
-		}
-		
+		String contrasenia = contrasena;
+		System.out.println("Contraseña nueva: " + contrasena);
+		configService.cambiarContrasenaDefault(contrasenia);
+
+
 		return "redirect:/configuracion/generarContrasena";
 
 	}
@@ -329,18 +194,14 @@ public class ConfiguracionController {
 	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña
 	@GetMapping("/mensajeContrasena")
 	public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
-		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
-
-		Properties properties = new Properties();
-		properties.load(inputStream);
+		
 
 		return ResponseEntity.ok(
-				configuracionService.mensajeParametros(contrasena, Integer.parseInt(properties.getProperty("longitud")),
-						Integer.parseInt(properties.getProperty("mayusculas")),
-						Integer.parseInt(properties.getProperty("minusculas")),
-						Integer.parseInt(properties.getProperty("numeros")),
-						Integer.parseInt(properties.getProperty("caracteres"))));
+				configuracionService.mensajeParametros(contrasena, Integer.parseInt(configService.findAll().get(0).getVc_valor_propiedad()),
+						Integer.parseInt(configService.findAll().get(4).getVc_valor_propiedad()),
+						Integer.parseInt(configService.findAll().get(3).getVc_valor_propiedad()),
+						Integer.parseInt(configService.findAll().get(2).getVc_valor_propiedad()),
+						Integer.parseInt(configService.findAll().get(1).getVc_valor_propiedad())));
 	}
-
 
 }

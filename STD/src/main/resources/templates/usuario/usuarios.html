@@ -33,36 +33,39 @@
 
 							<!-- Basic Modal -->
 
-							<!--<div class="modal fade" id="basicModal" tabindex="-1">
+							<div class="modal fade" id="basicModal" tabindex="-1">
 								<div class="modal-dialog">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h5 class="modal-title">Basic Modal</h5>
+											<h5 class="modal-title">Editar Usuario</h5>
 											<button type="button" class="btn-close" data-bs-dismiss="modal"
 												aria-label="Close"></button>
 										</div>
 										<div class="modal-body">
 
 
-											<form id="edit-form" th:method="post" th:action="@{/usuario/update}"
+											<form id="edit-form" th:method="post"
 											th:object="${usuario}">
 												<div class="col-12">
-													<label for="inputNanme4" class="form-label">Nombre de
+													<label for="idUsuario" class="form-label">Id
+														usuario</label>
+													<input type="text" class="form-control" id="idUsuario"
+														th:field="*{pk_id_usuario}" readonly>
+													<label for="nombre" class="form-label">Nombre de
 														usuario</label>
 													<input type="text" class="form-control" id="nombre"
-														th:field="*{vc_nombre_usuario}"
-														th:value="${usuario.vc_nombre_usuario}">
+														th:field="*{vc_nombre_usuario}">	
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary">Save changes</button>
+													<button type="button" onclick="editarUsuario()" class="btn btn-primary">Guardar</button>
 												</div>
 											</form>
 										</div>
 										
 									</div>
 								</div>
-							</div>-->
+							</div>
 							<!-- End Basic Modal-->
 
 							
@@ -90,9 +93,11 @@
 										<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
 										<td>
 											<div class="dt-buttons">
-												<button class="btn btn-info" tabindex="0" data-bs-toggle="tooltip"
-													data-bs-placement="top" title="Editar"
-													aria-controls="table-datatable" type="button" data-tooltip="Add">
+												<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+													title="Editar"
+													data-bs-target="#basicModal"
+													aria-controls="table-datatable" type="button"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'" data-tooltip="Add">
 													<i class="bi bi-file-person-fill"></i>
 												</button>
 												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
@@ -110,7 +115,7 @@
 												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 													data-bs-target="#basicModal"
 													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">
-													Prueba modal
+													Editar
 												</button>-->
 
 												<!--<a data-toggle="modal" data-target="#basicModal"
