@@ -34,7 +34,7 @@ public class RolController {
 			Rol rol = new Rol();
 			model.addAttribute("rol", rol);
 			//Mostramos todos los usuarios
-			model.addAttribute("rol", rolService.findAll());
+			model.addAttribute("roles", rolService.findAll());
 			return "roles/index";
 		}
 	

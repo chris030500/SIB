@@ -37,6 +37,16 @@ public class ProductoController {
 			model.addAttribute("producto", productoService.findAll());
 			return "productos/index";
 		}
+		
+		/*
+		@GetMapping("/index_rel")
+		public String InicioProductos(Model model) {
+			Producto producto = new Producto();
+			model.addAttribute("producto", producto);
+			
+			model.addAttribute("producto", productoService.findAll());
+			return "productos/index_rel";
+		}*/
 	
 	
 		@PostMapping

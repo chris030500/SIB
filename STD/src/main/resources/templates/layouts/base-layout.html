@@ -161,8 +161,19 @@
 									<i class="bi bi-card-text"></i><span>Carga de documentos </span>
 								</a>
 							</li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/documento/index}">
+									<i class="bi bi-card-text"></i><span>Documento</span>
+								</a>
+							</li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/producto/index}">
+									<i class="bi bi-card-text"></i><span>Productos</span>
+								</a>
+							</li>
 
 						</ul>
+					
 					</li>
 
 					<!--<li class="nav-header"></li>
