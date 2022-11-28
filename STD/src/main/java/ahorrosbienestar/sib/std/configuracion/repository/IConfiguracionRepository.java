@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.configuracion.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Repository
 public interface IConfiguracionRepository extends JpaRepository<Configuracion, Integer> {
@@ -65,4 +68,12 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	@Transactional
 	@Query(value = "UPDATE TBL_CONFIGURACION set VC_VALOR_PROPIEDAD = :contrasena WHERE PK_ID_CONFIGURACION = 6", nativeQuery = true)
 	public int cambiarContrasenaDefault(@Param("contrasena") String contrasena);
+	
+	//Consulta para obtener los parametros de la conexión a la base de datos del core bancario
+	@Query(value = "SELECT * FROM TBL_CONFIGURACION "
+			+ "where VC_NOM_PROPIEDAD = 'driverClassName' "
+			+ "OR VC_NOM_PROPIEDAD = 'url' "
+			+ "OR VC_NOM_PROPIEDAD = 'username' "
+			+ "OR VC_NOM_PROPIEDAD = 'password';", nativeQuery = true)
+	public List<Configuracion> obtenerInfoBDCore();
 }

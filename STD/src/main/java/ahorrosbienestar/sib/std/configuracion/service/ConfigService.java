@@ -67,5 +67,9 @@ public class ConfigService {
 	public int cambiarContrasenaDefault(String contrasena) {
 		return iConfiguracionRepository.cambiarContrasenaDefault(contrasena);
 	}
+	
+	public List<Configuracion> obtenerInfoBDCore(){
+		return iConfiguracionRepository.obtenerInfoBDCore();
+	}
 
 }

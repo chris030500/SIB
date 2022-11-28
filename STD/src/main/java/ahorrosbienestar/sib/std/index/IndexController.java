@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.dto.HistContrasenaDto;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -56,9 +59,14 @@ public class IndexController {
 	
 	@Autowired 
 	private ConfiguracionService configuracionService;
+	
+	@Autowired
+	private ConfigService configService;
 
 	protected final Log logger = LogFactory.getLog(this.getClass());
-
+	
+	
+	
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
 	public String index(Authentication authentication, Principal principal) {
 		if (authentication != null) {
@@ -86,6 +94,11 @@ public class IndexController {
 		// "+histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha);
 		// Usuario u = usuarioService.findByNombre(auth.getName());
 		// System.out.println("Usuario u : " +u.getRol_idRol().);
+//		List<Configuracion> c = configService.obtenerInfoBDCore();
+//		System.out.println(c.get(0).getVc_descripcion_propiedad());
+//		System.out.println(c.get(1).getVc_descripcion_propiedad());
+//		System.out.println(c.get(2).getVc_descripcion_propiedad());
+//		System.out.println(c.get(3).getVc_descripcion_propiedad());
 		return "index";
 	}
 
