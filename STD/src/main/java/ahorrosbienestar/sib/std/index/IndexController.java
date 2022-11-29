@@ -60,8 +60,7 @@ public class IndexController {
 	@Autowired 
 	private ConfiguracionService configuracionService;
 	
-	@Autowired
-	private ConfigService configService;
+	
 
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
@@ -90,24 +89,13 @@ public class IndexController {
 			return "redirect:/cambio_contrasena";
 		} else
 			System.out.println("Puede acceder al sistema");
-		// System.out.println("DTO:
-		// "+histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha);
-		// Usuario u = usuarioService.findByNombre(auth.getName());
-		// System.out.println("Usuario u : " +u.getRol_idRol().);
-//		List<Configuracion> c = configService.obtenerInfoBDCore();
-//		System.out.println(c.get(0).getVc_descripcion_propiedad());
-//		System.out.println(c.get(1).getVc_descripcion_propiedad());
-//		System.out.println(c.get(2).getVc_descripcion_propiedad());
-//		System.out.println(c.get(3).getVc_descripcion_propiedad());
+
 		return "index";
 	}
 
 	@RequestMapping(value = { "/cambio_contrasena" }, method = RequestMethod.GET)
 	public String cambioContrasena(HttpServletRequest request, HttpServletResponse response) {
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//	    if (auth != null){    
-//	        new SecurityContextLogoutHandler().logout(request, response, auth);
-//	    }
+
 		return "cambioContrasena";
 	}
 

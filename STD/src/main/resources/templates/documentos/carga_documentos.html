@@ -43,13 +43,13 @@
 									<div class="col-sm-6">
 										<label for="usu" class="form-label">¿Es usuario nuevo?</label>
 										<div>
-											<input type="checkbox" id="usuarioNuevo" name="usuarioPregunta"
-												value="1" onclick="desmarcar()">
+											<input type="checkbox" id="usuarioNuevo" name="usuarioPregunta" value="1"
+												onclick="desmarcar()">
 											  <label for="usuarioNuevo">Si</label><br>
 										</div>
 										<div>
-											<input type="checkbox" id="noUsuarioNuevo" name="usuarioPregunta"
-												value="2" onclick="desmarcar()">
+											<input type="checkbox" id="noUsuarioNuevo" name="usuarioPregunta" value="2"
+												onclick="desmarcar()">
 											  <label for="noUsuarioNuevo">No</label><br>
 										</div>
 									</div>
@@ -58,47 +58,47 @@
 											class="btn btn-primary">Buscar</button>
 									</div>
 								</form>
-								<form class="row g-3">
+								<div class="col-lg-12" id='datoSolicitud' style='display:none'>
+									<div class="row" >
+										<div class="col-sm-3">
+											<label for="solicitud" class="form-label">Solicitud</label>
+											<input type="text" class="form-control" id="solicitud" readonly>
+										</div>
+										<div class="col-sm-3">
+											<label for="producto" class="form-label">Producto</label>
+											<input type="text" class="form-control" id="producto" readonly>
+										</div>
+										<div class="col-sm-3">
+											<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
+											<input type="number" class="form-control" id="montoSolicitado" readonly>
+										</div>
+										<div class="col-sm-3">
+											<label for="montoAutorizado" class="form-label">Monto Autorizado</label>
+											<input type="number" class="form-control" id="montoAutorizado" readonly>
+										</div>
+										<div class="col-sm-4">
+											<label for="plazo" class="form-label">Plazo</label>
+											<input type="text" class="form-control" id="plazo" readonly>
+										</div>
+										<div class="col-sm-4">
+											<label for="tasaNormal" class="form-label">Tasa Normal</label>
+											<input type="number" class="form-control" id="tasaNormal" readonly>
+										</div>
 
-									<div class="col-sm-3">
-										<label for="solicitud" class="form-label">Solicitud</label>
-										<input type="text" class="form-control" id="solicitud" readonly>
+										<div class="col-sm-4">
+											<label for="estatus" class="form-label">Estatus</label>
+											<input type="text" class="form-control" id="estatus" readonly>
+										</div>
 									</div>
-									<div class="col-sm-3">
-										<label for="producto" class="form-label">Producto</label>
-										<input type="text" class="form-control" id="producto" readonly>
-									</div>
-									<div class="col-sm-3">
-										<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
-										<input type="text" class="form-control" id="montoSolicitado" readonly>
-									</div>
-									<div class="col-sm-3">
-										<label for="montoAutorizado" class="form-label">Monto Autorizado</label>
-										<input type="text" class="form-control" id="montoAutorizado" readonly>
-									</div>
-									<div class="col-sm-4">
-										<label for="plazo" class="form-label">Plazo</label>
-										<input type="text" class="form-control" id="plazo" readonly>
-									</div>
-									<div class="col-sm-4">
-										<label for="tasaNormal" class="form-label">Tasa Normal</label>
-										<input type="text" class="form-control" id="tasaNormal" readonly>
-									</div>
-
-									<div class="col-sm-4">
-										<label for="estatus" class="form-label">Estatus</label>
-										<input type="text" class="form-control" id="estatus" readonly>
-									</div>
-
-								</form>
+								</div>
 
 							</div>
 
-							<div class="container" style="margin-top : 15px">
-								<div class="row">
+							<div id="divParticipantes" class="container" style='display:none'>
+								<div class="row" style="margin-top : 15px ">
 									<fieldset class="border p-2">
 										<legend class="w-auto">Participantes</legend>
-										<table class="table">
+										<table id="participantes" class="table">
 											<thead>
 												<tr>
 													<th scope="col">Nombre</th>
@@ -108,12 +108,12 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr>
+												<!--<tr>
 													<td>Brandon Jacob</td>
 													<td>Titular</td>
 													<td>4444444444</td>
 													<td>test@gmail.com</td>
-												</tr>
+												</tr>-->
 											</tbody>
 										</table>
 									</fieldset>
