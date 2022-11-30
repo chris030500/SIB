@@ -7,9 +7,9 @@ public class ValidaSolicitudDto {
 	private int solicitudCreditoID;
 	private int productoCreditoID;
 	private String producto;
-	private double montoSolicitado;
-	private double montoAutorizado;
-	private double tasaFija;
+	private String montoSolicitado;
+	private String montoAutorizado;
+	private String tasaFija;
 	private String plazo;
 	private String estatus;
 	public int getResultado() {
@@ -43,25 +43,23 @@ public class ValidaSolicitudDto {
 		this.producto = producto;
 	}
 	
-	public double getMontoSolicitado() {
+	
+	public String getMontoSolicitado() {
 		return montoSolicitado;
 	}
-	public void setMontoSolicitado(double montoSolicitado) {
+	public void setMontoSolicitado(String montoSolicitado) {
 		this.montoSolicitado = montoSolicitado;
 	}
-	public double getMontoAutorizado() {
+	public String getMontoAutorizado() {
 		return montoAutorizado;
 	}
-	public void setMontoAutorizado(double montoAutorizado) {
+	public void setMontoAutorizado(String montoAutorizado) {
 		this.montoAutorizado = montoAutorizado;
 	}
-	public double getTasaFija() {
+	public String getTasaFija() {
 		return tasaFija;
 	}
-	public void setTasaFija(double tasaFija) {
-		this.tasaFija = tasaFija;
-	}
-	public void setTasaFija(float tasaFija) {
+	public void setTasaFija(String tasaFija) {
 		this.tasaFija = tasaFija;
 	}
 	public String getPlazo() {
