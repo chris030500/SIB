@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
+import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
 
@@ -66,4 +67,24 @@ public class CoreBancarioService {
 	      
 	      return ls;
 	  }
+
+
+	public List<ProductosDto> listaProductos(int solicitud) {
+		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
+		 List <ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] {solicitud},
+				 new RowMapper<ProductosDto>() {
+             public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+           	  ProductosDto ps = new ProductosDto();
+           	  ps.setP_no_producto(rs.getInt(1));
+           	  ps.setP_id_clasif(rs.getInt(2));
+           	  ps.setNombre_producto(rs.getString(3));
+           	 
+                 return ps;
+             }
+         });
+		return lsp;
+	}
+	
+
+	
 }

@@ -16,6 +16,6 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 	public Producto findByIdProducto(Integer producto);
 	
 	//@Query(value = "SELECT ")
-	public Producto findAll(int producto);
+	//public Producto findAll(int producto);
 
 }

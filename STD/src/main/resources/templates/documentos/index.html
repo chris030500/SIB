@@ -30,7 +30,10 @@
       <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Inicio</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Alta Documento</button>
+      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Configuracion Documento</button>
+    </li>
+      <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Conf. Documento P.Digital</button>
     </li>
    
   </ul>
@@ -53,7 +56,7 @@
 						<thead>
 							<tr>
 								<th>Nombre Documento</th>
-								<th>Descripcion</th>
+								
 								<th>Estatus</th>
 								<th class="text-center">Opciones</th>
 							</tr>
@@ -61,20 +64,20 @@
 
 						<tbody>
 
-							<tr th:each="perfil: ${perfiles}">
+							<tr th:each="documento: ${documento}">
 
-								<td th:text="${perfil.vc_nombre_perfil}">
-								<td th:text="${perfil.vc_descripcion_perfil}">
-								<td th:text="${perfil.vc_estatus}">
+								<td th:text="${documento.vc_nombre_doc}">
+								
+								<td th:text="${documento.i_estatus}">
 
 								<td class="text-center">
 
 								
 
 									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-danger btn-sm" id="idperfil" name="idperfil"
-										onclick="estatusPerfil(this.value)" href="#" title="Eliminar perfil"
-										data-toggle="modal" data-target="#" th:value="${perfil.pk_id_perfil}">
+									<button class="btn btn-danger btn-sm" id="idperfil" name="iddocumento"
+										onclick="estatusDocumento(this.value)" href="#" title="Eliminar documento"
+										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-trash"></i>
 									</button>
 
@@ -82,7 +85,7 @@
 
 							</tr>
 
-							<tr th:if="${#lists.isEmpty(perfiles)}">
+							<tr th:if="${#lists.isEmpty(documento)}">
 								<td colspan="6">
 									A&uacute;n no se registran documentos en el sistema
 								</td>
