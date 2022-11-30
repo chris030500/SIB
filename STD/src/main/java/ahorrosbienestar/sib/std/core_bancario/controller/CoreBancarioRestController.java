@@ -35,4 +35,9 @@ public class CoreBancarioRestController {
 	public int spBuscarCatProducto(@RequestParam("producto") Integer producto){
 		return coreBancarioService.spBuscarCatProducto(producto);
 	}
+	
+	@RequestMapping(value = {"/buscar_documento"}, method = RequestMethod.GET)
+	public ResponseEntity<?> spBuscarDocumento(@RequestParam("producto") Integer producto){
+		return ResponseEntity.ok(coreBancarioService.obtenerDoctAsociadoProd(producto));
+	}
 }

@@ -19,7 +19,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div class="card-body">
-							<h2 style="text-align:center">Documentos</h2>
+							<h2 style="text-align:center">Carga de Documentos</h2>
 						</div>
 					</div>
 				</div>
@@ -108,12 +108,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												<!--<tr>
-													<td>Brandon Jacob</td>
-													<td>Titular</td>
-													<td>4444444444</td>
-													<td>test@gmail.com</td>
-												</tr>-->
+												
 											</tbody>
 										</table>
 									</fieldset>
@@ -121,8 +116,8 @@
 
 							</div>
 
-							<div class="container" style="margin-top : 15px">
-								<div class="row">
+							<div id="divDocumentos" class="container" style='display:none' >
+								<div class="row" style="margin-top : 15px">
 									<fieldset class="border p-2">
 										<legend class="w-auto">Archivos</legend>
 										<table class="table" id="tablaDocumentos">
@@ -134,7 +129,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												<tr>
+												<!--<tr>
 													<td><input type="text" name="nombre1" id="nombre1" value="nombre1"
 															readonly></td>
 													<td><input class="form-control" type="file" id="formFile1"
@@ -143,9 +138,9 @@
 														<button type="button" class="btn btn-danger"
 															onclick="eliminarFila()">Eliminar</button>
 													</td>
-													<!--<td>Nombre</td>
-												<td><input class="form-control" type="file" id="formFile" accept=".pdf" required></td>-->
-												</tr>
+													<td>Nombre</td>
+												<td><input class="form-control" type="file" id="formFile" accept=".pdf" required></td>
+												</tr>-->
 											</tbody>
 										</table>
 									</fieldset>
@@ -157,7 +152,7 @@
 								</div>
 							</div>
 
-							<div class="container">
+							<div class="container" id="divFechas" style='display:none'>
 								<div class="row">
 									<form class="row g-3">
 										<div class="row">

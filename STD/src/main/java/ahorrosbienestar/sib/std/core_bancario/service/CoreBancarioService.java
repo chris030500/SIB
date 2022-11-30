@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.productos.model.Producto;
@@ -70,6 +71,23 @@ public class CoreBancarioService {
 	//Declaramos que SP se va a ejecutar (SP_BUSCAR_CAT_PRODUCTO)
 	public int spBuscarCatProducto(int producto) {
 		return jdbcTemplate.queryForObject("CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")", Integer.class);
+	}
+	
+	//Declaramos que SP se va a ejecutar (SP_BUSCAR_DOCT_PROD) busca los documentos relacionados con el producto
+	public List<ObtenerDoctoAsociadoProdDto> obtenerDoctAsociadoProd(int producto) {
+		String sql = "CALL SIB.SP_BUSCAR_DOCT_PROD (?);";
+		List<ObtenerDoctoAsociadoProdDto> ls = jdbcTemplate.query(sql, new Object[] { producto },
+				new RowMapper<ObtenerDoctoAsociadoProdDto>() {
+					public ObtenerDoctoAsociadoProdDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObtenerDoctoAsociadoProdDto docto = new ObtenerDoctoAsociadoProdDto();
+						docto.setIdRelProdDoct(rs.getInt(1));
+						docto.setIdDocumento(rs.getInt(2));
+						docto.setNombreDocumento(rs.getString(3));
+						return docto;
+					}
+				});
+
+		return ls;
 	}
 
 }
