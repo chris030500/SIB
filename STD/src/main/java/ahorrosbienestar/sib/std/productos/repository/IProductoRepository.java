@@ -12,7 +12,10 @@ import ahorrosbienestar.sib.std.roles.model.Rol;
 public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 	
 
-	@Query(value = "SELECT r.PK_ID_ROL, r.VC_NOMBRE_ROL FROM TBL_CAT_ROL as r WHERE r.PK_ID_ROL = ?1", nativeQuery = true)
+	@Query(value = "SELECT r.PK_ID_PRODUCTO, r.VC_NOMBRE_PRODUCTO FROM TBL_CAT_PRODUCTO as r WHERE r.PK_ID_PRODUCTO = ?1", nativeQuery = true)
 	public Producto findByIdProducto(Integer producto);
+	
+	//@Query(value = "SELECT ")
+	//public Producto findAll(int producto);
 
 }

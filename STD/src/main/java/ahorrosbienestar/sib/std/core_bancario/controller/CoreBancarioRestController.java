@@ -30,11 +30,22 @@ public class CoreBancarioRestController {
 		
 		return  ResponseEntity.ok(coreBancarioService.traeParticipantes(solicitud)); 
 	}
+
+
+	@RequestMapping(value={"/lista_productos"}, method = RequestMethod.GET)
+	public ResponseEntity<?>  listaProductos(@RequestParam("solicitud") Integer solicitud){
+		System.out.println("Lista: " + solicitud);
+		
+		return  ResponseEntity.ok(coreBancarioService.listaProductos(solicitud)); 
+	}
+	
+
 	
 	@RequestMapping(value = {"/buscar_catProducto"}, method = RequestMethod.GET)
 	public int spBuscarCatProducto(@RequestParam("producto") Integer producto){
 		return coreBancarioService.spBuscarCatProducto(producto);
 	}
+
 	
 	@RequestMapping(value = {"/buscar_documento"}, method = RequestMethod.GET)
 	public ResponseEntity<?> spBuscarDocumento(@RequestParam("producto") Integer producto){

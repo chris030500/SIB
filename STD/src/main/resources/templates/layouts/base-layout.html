@@ -171,6 +171,11 @@
 									<i class="bi bi-card-text"></i><span>Productos</span>
 								</a>
 							</li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/producto/index_val}">
+									<i class="bi bi-card-text"></i><span>Validacion</span>
+								</a>
+							</li>
 
 						</ul>
 					

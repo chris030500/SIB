@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.roles.model.Rol;
 public interface IDocumentoRepository extends JpaRepository<Documento, Integer> {
 	
 
-	@Query(value = "SELECT r.PK_ID_ROL, r.VC_NOMBRE_ROL FROM TBL_CAT_ROL as r WHERE r.PK_ID_ROL = ?1", nativeQuery = true)
+	@Query(value = "SELECT r.PK_ID_DOCUMENTO, r.VC_NOMBRE_DOC FROM TBL_CAT_DOCUMENTO as r WHERE r.PK_ID_DOCUMENTO = ?1", nativeQuery = true)
 	public Documento findByIdDocumento(Integer documento);
 
 }

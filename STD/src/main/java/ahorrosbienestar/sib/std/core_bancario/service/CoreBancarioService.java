@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
+import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.productos.model.Producto;
 
@@ -51,23 +52,42 @@ public class CoreBancarioService {
 
 	// Declaramos que SP se va a ejecutar (traer participantes)
 	public List<ParticipantesDto> traeParticipantes(int solicitud) {
-		String sql = "CALL microfin.SIB_SP_TRAE_PARTICIPANTES (?);";
-		List<ParticipantesDto> ls = jdbcTemplate.query(sql, new Object[] { solicitud },
-				new RowMapper<ParticipantesDto>() {
-					public ParticipantesDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-						ParticipantesDto p = new ParticipantesDto();
-						p.setSolicitudCreditoID(rs.getInt(1));
-						p.setNombreCompleto(rs.getString(2));
-						p.setRolId(rs.getInt(3));
-						p.setRol(rs.getString(4));
-						p.setTelefonoCelular(rs.getString(5));
-						p.setCorreoElectronico(rs.getString(6));
-						return p;
-					}
-				});
+	      String sql = "CALL microfin.SIB_SP_TRAE_PARTICIPANTES (?);";
+	      List<ParticipantesDto> ls = jdbcTemplate.query(sql, new Object[] {solicitud},
+	              new RowMapper<ParticipantesDto>() {
+	                  public ParticipantesDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+	                	  ParticipantesDto p = new ParticipantesDto();
+	                	  p.setSolicitudCreditoID(rs.getInt(1));
+	                	  p.setNombreCompleto(rs.getString(2));
+	                	  p.setRolId(rs.getInt(3));
+	                	  p.setRol(rs.getString(4));
+	                	  p.setTelefonoCelular(rs.getString(5));
+	                	  p.setCorreoElectronico(rs.getString(6));
+	                      return p;
+	                  }
+	              });
+	      
+	      return ls;
+	  }
 
-		return ls;
+
+	public List<ProductosDto> listaProductos(int solicitud) {
+		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
+		 List <ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] {solicitud},
+				 new RowMapper<ProductosDto>() {
+             public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+           	  ProductosDto ps = new ProductosDto();
+           	  ps.setP_no_producto(rs.getInt(1));
+           	  ps.setP_id_clasif(rs.getInt(2));
+           	  ps.setNombre_producto(rs.getString(3));
+           	 
+                 return ps;
+             }
+         });
+		return lsp;
 	}
+	
+	
 	//Declaramos que SP se va a ejecutar (SP_BUSCAR_CAT_PRODUCTO)
 	public int spBuscarCatProducto(int producto) {
 		return jdbcTemplate.queryForObject("CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")", Integer.class);
