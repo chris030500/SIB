@@ -20,7 +20,9 @@ public class CargaDocumentosController {
 
 	@GetMapping("/carga_documentos")
 	public String InicioUsuario() {
+		
 		return "documentos/carga_documentos";
+	
 	}
 	
 }

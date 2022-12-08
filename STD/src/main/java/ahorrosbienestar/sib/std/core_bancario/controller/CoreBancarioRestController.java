@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.carga_documentos.service.CargaDocumentosService;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 
 
@@ -15,6 +16,9 @@ public class CoreBancarioRestController {
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;
+	
+	@Autowired
+	private CargaDocumentosService cargaDocumentosService;
 	
 	
 	@RequestMapping(value={"/buscar_solicitud"}, method = RequestMethod.GET)
@@ -49,6 +53,11 @@ public class CoreBancarioRestController {
 	
 	@RequestMapping(value = {"/buscar_documento"}, method = RequestMethod.GET)
 	public ResponseEntity<?> spBuscarDocumento(@RequestParam("producto") Integer producto){
-		return ResponseEntity.ok(coreBancarioService.obtenerDoctAsociadoProd(producto));
+		return ResponseEntity.ok(cargaDocumentosService.obtenerDoctAsociadoProd(producto));
+	}
+	
+	@RequestMapping(value = {"/buscar_documento_clienteNuevo"}, method = RequestMethod.GET)
+	public ResponseEntity<?> spBuscarDocumentoClienteNuevo(@RequestParam("producto") Integer producto){
+		return ResponseEntity.ok(cargaDocumentosService.obtenerDoctAsociadoProdClienteNuevo(producto));
 	}
 }

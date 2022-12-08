@@ -35,13 +35,14 @@
 								<form class="row g-3" id="formSolicitudCredito">
 									<div class="col-md-3">
 										<label for="inputEmail5" class="form-label">Solicitud de crédito</label>
+										<code>(*)</code>
 									</div>
 									<div class="col-md-5">
 										<input type="text" placeholder="Ingresa la solicitud de crédito"
 											class="form-control" id="solicitudCredito">
 									</div>
 									<div class="col-sm-6">
-										<label for="usu" class="form-label">¿Es usuario nuevo?</label>
+										<label for="usu" class="form-label">¿Es nuevo cliente?</label> <code>(*)</code>
 										<div>
 											<input type="checkbox" id="usuarioNuevo" name="usuarioPregunta" value="1"
 												onclick="desmarcar()">
@@ -59,7 +60,7 @@
 									</div>
 								</form>
 								<div class="col-lg-12" id='datoSolicitud' style='display:none'>
-									<div class="row" >
+									<div class="row">
 										<div class="col-sm-3">
 											<label for="solicitud" class="form-label">Solicitud</label>
 											<input type="text" class="form-control" id="solicitud" readonly>
@@ -108,7 +109,7 @@
 												</tr>
 											</thead>
 											<tbody>
-												
+
 											</tbody>
 										</table>
 									</fieldset>
@@ -116,11 +117,11 @@
 
 							</div>
 
-							<div id="divDocumentos" class="container" style='display:none' >
+							<div id="divDocumentos" class="container" style='display:none'>
 								<div class="row" style="margin-top : 15px">
 									<fieldset class="border p-2">
 										<legend class="w-auto">Archivos</legend>
-										<table class="table" id="tablaDocumentos">
+										<table class="table table-bordered table-striped" id="tablaDocumentos">
 											<thead>
 												<tr>
 													<th>Nombre de documento</th>
@@ -144,11 +145,7 @@
 											</tbody>
 										</table>
 									</fieldset>
-									<!--<div class="form-group">
 
-										<button type="button" class="btn btn-danger" onclick="eliminarFila()">Eliminar
-											último documento</button>
-									</div>-->
 								</div>
 							</div>
 
@@ -156,22 +153,28 @@
 								<div class="row">
 									<form class="row g-3">
 										<div class="row">
-											<div class="col-sm-4">
-												<label for="fEnvio" class="form-label">Fecha Envío</label>
-												<input type="date" class="form-control" id="fEnvio">
+											<div class="col-sm-6">
+												<label for="fEnvio" class="form-label">Fecha de Envío </label>
+												<input type="date" class="form-control" id="fEnvio"
+													onfocusout="activarFechaHoraCancelación()">
 											</div>
-											<div class="col-sm-4">
-												<label for="fCancelacion" class="form-label">Fecha
-													Cancelación</label>
-												<input type="date" class="form-control" id="fCancelacion">
-											</div>
-											<div class="col-sm-4">
-												<label for="hCancelacion" class="form-label">Hora
-													Cancelación</label>
-												<input type="time" value="23:59" class="form-control" id="hCancelacion"
+											<div class="col-sm-6">
+												<label for="hCancelacion" class="form-label">Hora de
+													Envío</label>
+												<input type="time" value="09:00" class="form-control" id="hEnvio"
 													readonly>
 											</div>
 											<div class="col-sm-6">
+												<label for="fCancelacion" class="form-label">Fecha de
+													Cancelación</label>
+												<input type="date" class="form-control" id="fCancelacion" readonly>
+											</div>
+											<div class="col-sm-6">
+												<label for="hCancelacion" class="form-label">Hora de
+													Cancelación</label>
+												<input type="time" class="form-control" id="hCancelacion" readonly>
+											</div>
+											<div class="col-sm-12">
 												<label for="comentarioValidacion" class="form-label">Comentarios de
 													Validación</label>
 												<input type="text" class="form-control" id="comentarioValidacion">

@@ -23,8 +23,7 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//@Configuration
-//@EnableWebSecurity
+
 @Configuration
 public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 	

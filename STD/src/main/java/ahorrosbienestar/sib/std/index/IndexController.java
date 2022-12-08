@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
@@ -56,16 +57,15 @@ public class IndexController {
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
-	@Autowired 
+
+	@Autowired
 	private ConfiguracionService configuracionService;
-	
-	
+
+	@Autowired
+	private LoginService loginService;
 
 	protected final Log logger = LogFactory.getLog(this.getClass());
-	
-	
-	
+
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
 	public String index(Authentication authentication, Principal principal) {
 		if (authentication != null) {
@@ -82,20 +82,23 @@ public class IndexController {
 		System.out.println("Nombre del usuario: " + nombreUsuario);
 		System.out.println("PrincipalgetName: " + principal.getName());
 		int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
-		System.out.println("C dto: " + estatusFecha);
+		logger.info("Estatus Fecha: " + estatusFecha);
 		if (estatusFecha == 1) {
-			System.out.println("Debe de cambiar la contraseña");
+			logger.info("Debe de cambiar la contraseña");
+			// System.out.println("Debe de cambiar la contraseña");
 
 			return "redirect:/cambio_contrasena";
-		} else
-			System.out.println("Puede acceder al sistema");
-
+		}
+			logger.info("Ingreso al sistema");
+		logger.info("Cambia el estatus de sesión a activo (1)");
+		// System.out.println("Puede acceder al sistema");
+		loginService.spActivarSesion(nombreUsuario);
 		return "index";
 	}
 
 	@RequestMapping(value = { "/cambio_contrasena" }, method = RequestMethod.GET)
 	public String cambioContrasena(HttpServletRequest request, HttpServletResponse response) {
-
+		logger.info("Cambio de contraseña");
 		return "cambioContrasena";
 	}
 
