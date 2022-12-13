@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Usuarios</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"></h5>
+
+
+							<!-- Basic Modal -->
+
+							<div class="modal fade" id="basicModal" tabindex="-1">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Editar Usuario</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+
+
+											<form id="edit-form" th:method="post"
+											th:object="${usuario}">
+												<div class="col-12">
+													<label for="idUsuario" class="form-label">Id
+														usuario</label>
+													<input type="text" class="form-control" id="idUsuario"
+														th:field="*{pk_id_usuario}" readonly>
+													<label for="nombre" class="form-label">Nombre de
+														usuario</label>
+													<input type="text" class="form-control" id="nombre"
+														th:field="*{vc_nombre_usuario}">	
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													<button type="button" onclick="editarUsuario()" class="btn btn-primary">Guardar</button>
+												</div>
+											</form>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+							<!-- End Basic Modal-->
+
+							
+							<div class="row mb-3">
+								<form method="get" th:action="@{/usuario/altaUsuario}">
+									<button type="submit" class="btn btn-primary">
+										Agregar Usuarios
+									</button>
+								</form>
+							</div>
+							<div class="row">
+
+								<table class="table table-striped">
+									<tr>
+										<th>Nombre Usuario</th>
+										<th>Estatus Usuario</th>
+										<th>Estatus Sesión</th>
+										<th>Acciones</th>
+									</tr>
+									<tr th:each="usuario : ${usuarios}">
+										<td th:text="${usuario.vc_nombre_usuario}"></td>
+										<td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
+										<td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
+										<td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
+										<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
+										<td>
+											<div class="dt-buttons">
+												<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+													title="Editar"
+													data-bs-target="#basicModal"
+													aria-controls="table-datatable" type="button"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'" data-tooltip="Add">
+													<i class="bi bi-file-person-fill"></i>
+												</button>
+												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
+													data-bs-placement="top" title="Baja Usuario"
+													aria-controls="table-datatable" type="button"
+													data-tooltip="Refresh" th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
+													<i class="bi bi-file-lock"></i>
+												</button>
+												<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip"
+													data-bs-placement="top" title="Reactivar Usuario"
+													aria-controls="table-datatable" type="button"
+													data-tooltip="Show filters" th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
+													<i class="bi bi-unlock"></i>
+												</button>
+												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+													data-bs-target="#basicModal"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">
+													Editar
+												</button>-->
+
+												<!--<a data-toggle="modal" data-target="#basicModal"
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">Edit</a>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/usuario/usuarios.js}"></script>
+	</th:block>
+</body>
+
+</html>

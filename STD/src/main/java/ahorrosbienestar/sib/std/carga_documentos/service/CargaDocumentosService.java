@@ -1,0 +1,67 @@
+package ahorrosbienestar.sib.std.carga_documentos.service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+
+import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
+
+@Service
+public class CargaDocumentosService {
+
+	private JdbcTemplate jdbcTemplate;
+
+	protected final Log logger = LogFactory.getLog(this.getClass());
+
+	@Autowired
+	public CargaDocumentosService(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	// Declaramos que SP se va a ejecutar (SP_BUSCAR_DOCT_PROD) busca los documentos
+	// relacionados con el producto
+	public List<ObtenerDoctoAsociadoProdDto> obtenerDoctAsociadoProd(int producto) {
+		String sql = "CALL SIB.SP_BUSCAR_DOCT_PROD (?);";
+
+		logger.info("Ejecutando: " + sql + "(" + producto + ")");
+		List<ObtenerDoctoAsociadoProdDto> ls = jdbcTemplate.query(sql, new Object[] { producto },
+				new RowMapper<ObtenerDoctoAsociadoProdDto>() {
+					public ObtenerDoctoAsociadoProdDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObtenerDoctoAsociadoProdDto docto = new ObtenerDoctoAsociadoProdDto();
+						docto.setIdRelProdDoct(rs.getInt(1));
+						docto.setIdDocumento(rs.getInt(2));
+						docto.setNombreDocumento(rs.getString(3));
+						return docto;
+					}
+				});
+
+		return ls;
+	}
+
+	// Declaramos que SP se va a ejecutar (SP_BUSCAR_DOCT_PROD) busca los documentos
+	// relacionados con el producto
+	public List<ObtenerDoctoAsociadoProdDto> obtenerDoctAsociadoProdClienteNuevo(int producto) {
+		String sql = "CALL SIB.SP_BUSCAR_DOCT_PROD_NUEVO_USUARIO (?);";
+
+		logger.info("Ejecutando: " + sql + "(" + producto + ")");
+		List<ObtenerDoctoAsociadoProdDto> ls = jdbcTemplate.query(sql, new Object[] { producto },
+				new RowMapper<ObtenerDoctoAsociadoProdDto>() {
+					public ObtenerDoctoAsociadoProdDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObtenerDoctoAsociadoProdDto docto = new ObtenerDoctoAsociadoProdDto();
+						docto.setIdRelProdDoct(rs.getInt(1));
+						docto.setIdDocumento(rs.getInt(2));
+						docto.setNombreDocumento(rs.getString(3));
+						return docto;
+					}
+				});
+
+		return ls;
+	}
+}
