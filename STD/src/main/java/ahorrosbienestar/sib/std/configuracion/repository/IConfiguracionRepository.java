@@ -76,4 +76,7 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 			+ "OR VC_NOM_PROPIEDAD = 'username' "
 			+ "OR VC_NOM_PROPIEDAD = 'password';", nativeQuery = true)
 	public List<Configuracion> obtenerInfoBDCore();
+	
+	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'pdf_firma';", nativeQuery = true)
+	public List<Configuracion> obtenerUrlPdfFirma();
 }

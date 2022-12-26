@@ -12,6 +12,7 @@ public class ValidaSolicitudDto {
 	private String tasaFija;
 	private String plazo;
 	private String estatus;
+	
 	public int getResultado() {
 		return resultado;
 	}
@@ -42,7 +43,6 @@ public class ValidaSolicitudDto {
 	public void setProducto(String producto) {
 		this.producto = producto;
 	}
-	
 	
 	public String getMontoSolicitado() {
 		return montoSolicitado;

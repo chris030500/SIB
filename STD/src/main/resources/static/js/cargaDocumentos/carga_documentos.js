@@ -1,4 +1,4 @@
-console.log("Entro en carga de documentos");
+//console.log("Entro en carga de documentos");
 function sumarDias(fecha, dias) {
 	fecha = new Date(fecha);
 	fecha.setDate(fecha.getDate() + dias);
@@ -7,12 +7,19 @@ function sumarDias(fecha, dias) {
 	return fecha;
 }
 //console.log("Fecha más un día: " + sumarDias(date, 10).toISOString().split("T")[0]);
-fEnvio.min = new Date().toISOString().split("T")[0];
-fEnvio.max = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
 
+/*$('#fEnvio').datepicker({
+	format: 'dd/mm/yyyy',
+});*/
+/*$("#fEnvio").datepicker({
+	uiLibrary: 'bootstrap5',
+	format: 'D dd/mm/yyyy',
+	locale: 'es-es'
+});
+*/
 //Funcion para activar Fecha y hora de cancelación
 function activarFechaHoraCancelación() {
-	document.getElementById("fCancelacion").value = ""
+	document.getElementById("fCancelacion").value = "";
 	console.log("Entro en fecha cancelación");
 	$("#fCancelacion").attr("readonly", false);
 	$("#hCancelacion").attr("readonly", false);
@@ -31,7 +38,7 @@ function agregarFila() {
                <input type="text" name="nombre${numTr}" id="nombre${numTr}" value="nombre${numTr}" readonly>
              </td>
              <td>
-             	<input class="form-control" type="file" id="formFile${numTr}" value="formFile${numTr}" accept=".pdf">
+             	<input class="form-control" type="file" name="file" id="formFile${numTr}" value="formFile${numTr}" accept=".pdf">
                
              </td>
            </tr>`);
@@ -112,7 +119,8 @@ function buscarSolicitudCredito(solicitudCredito) {
 							var plazo = document.getElementById('plazo');
 							var tasaNormal = document.getElementById('tasaNormal');
 							var estatus = document.getElementById('estatus');
-
+							var Nombreproducto = document.getElementById('Nombreproducto');
+							$("#divIdProducto").hide();
 							//Asignamos los valores a los campos
 							solicitud.value = respuesta[0].solicitudCreditoID;
 							producto.value = respuesta[0].productoCreditoID;
@@ -121,7 +129,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 							plazo.value = respuesta[0].plazo;
 							tasaNormal.value = respuesta[0].tasaFija;
 							estatus.value = respuesta[0].estatus;
-
+							Nombreproducto.value = respuesta[0].producto;
 							buscarProducto(respuesta[0].productoCreditoID);
 							/*if (usuarioPregunta == 1) {
 								console.log("Si es nuevo cliente");
@@ -192,6 +200,7 @@ function buscarProducto(producto) {
 				document.getElementById('tasaNormal').value = "";
 				document.getElementById('estatus').value = "";
 				document.getElementById("datoSolicitud").style.display = "none";
+				document.getElementById("Nombreproducto").value = "";
 				$('#participantes > tbody').empty();
 				swal({
 					title: "El producto: " + producto + " no está configurado",
@@ -240,7 +249,28 @@ function buscarDocumentos(producto) {
 	var divDocumentos = document.getElementById("divDocumentos");
 	var divFechas = document.getElementById("divFechas");
 	var usuarioNuevo = $('input:checkbox[name=usuarioPregunta]:checked').val();
+	$("#fEnvio").val("");
+	$("#fCancelacion").val("");
 	console.log("Usuario Nuevo: " + usuarioNuevo);
+
+
+	//fEnvio.max = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
+	fMax = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
+	fMin = new Date().toISOString().split("T")[0];
+	console.log("fmin: " + fMin);
+
+	document.getElementById("fEnvio").min = fMin;
+	document.getElementById("fEnvio").max = fMax;
+	n = new Date();
+	//Año
+	y = n.getFullYear();
+	//Mes
+	m = n.getMonth() + 1;
+	//Día
+	d = n.getDate();
+
+	//Lo ordenas a gusto.
+	//document.getElementById("fEnvio").value = d + "/" + m + "/" + y;
 	if (usuarioNuevo == 1) {
 		console.log("Es usuario nuevo");
 		$.ajax({
@@ -262,12 +292,22 @@ function buscarDocumentos(producto) {
 		               <input type="text" name="${opt.nombreDocumento}" id="${opt.nombreDocumento}" value="${opt.nombreDocumento}" readonly>
 		             </td>
 		             <td>
-		             	<input class="form-control" type="file" id="formFile${idx}" value="formFile${idx}" accept=".pdf">
+		             	
+						<input type="file" name="file" id="fileLoader" /> 
+						<button id="fileSubmit" class="btn btn-info" tabindex="0" 
+								title="Subir archivo"
+								aria-controls="table-datatable" type="button"
+								>
+								<i class="bi bi-file-person-fill"></i>
+							</button>
 		               
 		             </td>
 		             <td>
+		             
+		             	
 		             	<button type="button" class="btn btn-danger"
 							onclick="eliminarFila(${idx})">Eliminar</button>
+						
 		             </td>
 		           </tr>`;
 					$('#tablaDocumentos').append(rows)
@@ -303,16 +343,27 @@ function buscarDocumentos(producto) {
 		               <input type="text" name="${opt.nombreDocumento}" id="${opt.nombreDocumento}" value="${opt.nombreDocumento}" readonly>
 		             </td>
 		             <td>
-		             	<input class="form-control" type="file" id="formFile${idx}" value="formFile${idx}" accept=".pdf">
+		             	
+		             		<input type="file" name="file" id="fileLoader" /> 
+		             		<button id="fileSubmit" class="btn btn-info" tabindex="0" 
+								title="Subir archivo"
+								aria-controls="table-datatable" type="button">
+								<i class="bi bi-file-person-fill"></i>
+							</button>
 		               
 		             </td>
-		             <td>
-		             	<button type="button" class="btn btn-danger"
-							onclick="eliminarFila(${idx})">Eliminar</button>
+		             <td >
+		             	<div id="tdBotones" class="dt-buttons">
+		             	
+		             		
+		             		<button type="button" class="btn btn-danger"
+								onclick="eliminarFila(${idx})">Eliminar</button>
+								
+						</div>
 		             </td>
 		           </tr>`;
 					$('#tablaDocumentos').append(rows)
-					
+
 				});
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 				swal({
@@ -341,3 +392,79 @@ function desmarcar() {
 		}
 	}
 }
+
+
+
+function obtenerNombreDoct(nombre) {
+	console.log("Obtener el nombre del documento subido" + nombre);
+
+	var button = `<button class="btn btn-info" tabindex="0" 
+								title="Asignar coordenadas"
+								aria-controls="table-datatable" type="button">
+								<i class="bi bi-file-person-fill"></i>
+							</button>`;
+	$('#tdBotones').append(button);
+	$('#tdBotones').remove(button);
+	//console.log("ID del documento: " );
+}
+
+function obtenerCoordenadasPalabraClave() {
+
+}
+
+var files = [];
+$(document)
+        .on(
+                "change",
+                "#fileLoader",
+                function(event) {
+                 files=event.target.files;
+                });
+
+$(document)
+        .on(
+                "click",
+                "#fileSubmit",
+                function() {
+                processUpload();
+                });
+
+function processUpload(){
+              var oMyForm = new FormData();
+              oMyForm.append("file", files[0]);
+             $.ajax({
+				 	dataType : 'json',
+                    url : "http://localhost:8090/guardarPDFServidor/upload",
+                    data : oMyForm,
+                    type : "POST",
+                    enctype: 'multipart/form-data',
+                    processData: false, 
+                    contentType:false,
+                    success : function(result) {
+                        swal({
+							icon: 'success',
+							title: "Archivo subido correctamente.",
+							showConfirmButton: false
+						});
+                    },
+                    error : function(result){
+						console.log("status" + result.status);
+                        if(result.status === 200){
+							alert("success");
+							swal({
+								icon: 'success',
+								title: "Archivo subido correctamente.",
+								showConfirmButton: false
+				
+							});
+						} else{
+							swal({
+								icon: 'warnign',
+								title: "No se subio el archivo.",
+								showConfirmButton: false
+				
+							});
+						}
+                    }
+                });
+         }

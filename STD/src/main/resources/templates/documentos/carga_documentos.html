@@ -8,6 +8,8 @@
 	<title>Carga de documentos</title>
 
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link href="@{/vendor/bootstrap/css/datepicker.css}" rel="stylesheet">
+	<!--<link href="@{/vendor/css/bootstrap-datetimepicker.css}" rel="stylesheet">-->
 </head>
 
 <body>
@@ -65,10 +67,15 @@
 											<label for="solicitud" class="form-label">Solicitud</label>
 											<input type="text" class="form-control" id="solicitud" readonly>
 										</div>
-										<div class="col-sm-3">
-											<label for="producto" class="form-label">Producto</label>
+										<div id="divIdProducto" class="col-sm-3" >
+											<label for="producto" class="form-label">IDProducto</label>
 											<input type="text" class="form-control" id="producto" readonly>
 										</div>
+										
+										<div class="col-sm-3">
+											<label for="producto" class="form-label">Producto</label>
+											<input type="text" class="form-control" id="Nombreproducto" readonly>
+										</div> 
 										<div class="col-sm-3">
 											<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
 											<input type="number" class="form-control" id="montoSolicitado" readonly>
@@ -155,13 +162,13 @@
 										<div class="row">
 											<div class="col-sm-6">
 												<label for="fEnvio" class="form-label">Fecha de Envío </label>
-												<input type="date" class="form-control" id="fEnvio"
+												<input name="fEnvio" type="date" class="form-control" id="fEnvio"
 													onfocusout="activarFechaHoraCancelación()">
 											</div>
 											<div class="col-sm-6">
 												<label for="hCancelacion" class="form-label">Hora de
 													Envío</label>
-												<input type="time" value="09:00" class="form-control" id="hEnvio"
+												<input type="time" value="09:00" class="form-control" id="hEnvio" 
 													readonly>
 											</div>
 											<div class="col-sm-6">
@@ -172,7 +179,7 @@
 											<div class="col-sm-6">
 												<label for="hCancelacion" class="form-label">Hora de
 													Cancelación</label>
-												<input type="time" class="form-control" id="hCancelacion" readonly>
+												<input type="time" value="15:00" class="form-control" id="hCancelacion" readonly>
 											</div>
 											<div class="col-sm-12">
 												<label for="comentarioValidacion" class="form-label">Comentarios de
