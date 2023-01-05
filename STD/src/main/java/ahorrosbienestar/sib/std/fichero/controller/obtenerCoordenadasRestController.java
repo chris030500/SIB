@@ -11,22 +11,34 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.docto_envio.controller.DoctoEnvioRestController;
+import ahorrosbienestar.sib.std.docto_envio.model.DoctEnvio;
+import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.fichero.service.PdfBoxKeyWordPosition;
+import ahorrosbienestar.sib.std.firma_doct.model.FirmaDocto;
+import ahorrosbienestar.sib.std.firma_doct.service.FirmaDoctoService;
 
 @RestController
 @RequestMapping("obtenerCoordenadasPDF")
 public class obtenerCoordenadasRestController {
 
+	@Autowired
+	private FirmaDoctoService firmaDoctoService;
+	
+	@Autowired 
+	private DoctEnvioService doctEnvioService;
+	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	// Obtener las coordenadas del archivo Pagare
 	@GetMapping()
-	public ResponseEntity<?> obtenerCoordenadasPagare() throws IOException {
+	public ResponseEntity<?> obtenerCoordenadasPagare(String url, DoctEnvio dEnvio) throws IOException {
 
 		// PDDocument doc1 = PDDocument.load(file);
 		
@@ -34,12 +46,13 @@ public class obtenerCoordenadasRestController {
 		logger.info("Ejecutando obtenerCoordenadasPagare");
 		String keyWords = "FIRMA";
 		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
-		String pdfPath = "C:/Users/osvaldo.escamilla/Documents/Pagare.pdf";
+		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 		// float[] c = list.get(0);
 		File file = new File(pdfPath);
 		PDDocument document = PDDocument.load(file);
+		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 		float arr [][]; 
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
@@ -90,7 +103,7 @@ public class obtenerCoordenadasRestController {
 
 		}
 		// Saving the document
-		File file1 = new File("C:/Users/osvaldo.escamilla/Documents/Pagare2.pdf");
+		File file1 = new File(url);
 		document.save(file1);
 
 		// Closing the document
@@ -102,12 +115,12 @@ public class obtenerCoordenadasRestController {
 
 	// Obtener la coordenadas del archivo PlandePagos
 	@GetMapping("/planPagos")
-	public String obtenerCoordenadasPlanPagos() throws IOException {
+	public ResponseEntity<?> obtenerCoordenadasPlanPagos(String url, DoctEnvio dEnvio) throws IOException {
 
 		// PDDocument doc1 = PDDocument.load(file);
 		logger.info("Ejecutando obtenerCoordenadasPlanPagos");
 		String keyWords = "FIRMA";
-		String pdfPath = "C:/Users/osvaldo.escamilla/Documents/PlandePagos.pdf";
+		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 
@@ -120,7 +133,9 @@ public class obtenerCoordenadasRestController {
 
 			File file = new File(pdfPath);
 			PDDocument document = PDDocument.load(file);
-
+			
+			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+			
 			// Retrieving a page of the PDF Document
 			PDPage page = document.getPage((int) c[2] - 1);
 			float acomodoX = 82.00f;
@@ -130,6 +145,11 @@ public class obtenerCoordenadasRestController {
 			float widht = 140.00f;
 			float height = 30.00f;
 
+			logger.info("Coordenadas del espacio de firma: ");
+			float x1 = c[1] - acomodoX;
+			float y1 = (ph - c[0]);
+			float x2 = x1 + widht;
+			float y2 = y1 + height;
 
 			// Instantiating the PDPageContentStream class
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
@@ -151,30 +171,32 @@ public class obtenerCoordenadasRestController {
 			contentStream.close();
 
 			// Saving the document
-			File file1 = new File("C:/Users/osvaldo.escamilla/Documents/PlandePagos2.pdf");
+			File file1 = new File(url);
 			document.save(file1);
 
 			// Closing the document
 			document.close();
 		}
 
-		return "Se obtuvieron las coordenadas";
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
 
 	@GetMapping("/anexosContrato")
-	public String obtenerCoordenadasAnexosContrato() throws IOException {
+	public ResponseEntity<?> obtenerCoordenadasAnexosContrato(String url, DoctEnvio dEnvio) throws IOException {
 
 		// PDDocument doc1 = PDDocument.load(file);
 		logger.info("Ejecutando obtenerCoordenadasAnexosContrato");
 		String keyWords = "FIRMA";
 		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
-		String pdfPath = "C:/Users/osvaldo.escamilla/Documents/AnexosContrato.pdf";
+		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 		// float[] c = list.get(0);
 		File file = new File(pdfPath);
 		PDDocument document = PDDocument.load(file);
+		System.out.println("Total de hojas anexo contrato: " + document.getNumberOfPages());
+		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
 
@@ -196,10 +218,24 @@ public class obtenerCoordenadasRestController {
 
 			// Sentencia que obtiene las coordenadas de la hoja 1
 			if (c[2] == 1.0) {
+				
+				
 				acomodoX = 15.00f;
 				acomodoY = 12.00f;
 				widht = 150.00f;
 				height = 25.00f;
+				logger.info("Coordenadas del espacio de firma: ");
+				float x1 = c[1] ;
+				float y1 = (ph - c[0]) + acomodoY;
+				float x2 = x1 + widht;
+				float y2 = y1 + height;
+				FirmaDocto firmaDocto = new FirmaDocto();
+				firmaDocto.setF_coord_firma_x1(x1);
+				firmaDocto.setF_coord_firma_x2(x2);
+				firmaDocto.setF_coord_firma_y1(y1);
+				firmaDocto.setF_coord_firma_y2(y2);
+				firmaDocto.setFk_id_docto_envio(dEnvio);
+				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo coordenadas de la hoja : " + c[2]);
 				logger.info("Coordenadas del espacio de firma: ");
 				logger.info(
@@ -213,6 +249,18 @@ public class obtenerCoordenadasRestController {
 				acomodoY = 15.00f;
 				widht = 165.00f;
 				height = 50.00f;
+				logger.info("Coordenadas del espacio de firma: ");
+				float x1 = c[1] - acomodoX;
+				float y1 = (ph - c[0]) + acomodoY;
+				float x2 = x1 + widht;
+				float y2 = y1 + height;
+				FirmaDocto firmaDocto = new FirmaDocto();
+				firmaDocto.setF_coord_firma_x1(x1);
+				firmaDocto.setF_coord_firma_x2(x2);
+				firmaDocto.setF_coord_firma_y1(y1);
+				firmaDocto.setF_coord_firma_y2(y2);
+				firmaDocto.setFk_id_docto_envio(dEnvio);
+				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo coordenadas de la hoja : " + c[2]);
 				logger.info("Coordenadas del espacio de firma: ");
 				logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht
@@ -232,6 +280,18 @@ public class obtenerCoordenadasRestController {
 				acomodoY = 12.00f;
 				widht = 115.00f;
 				height = 25.00f;
+				logger.info("Coordenadas del espacio de firma: ");
+				float x1 = ultimo[1] - acomodoX;
+				float y1 = (ph - ultimo[0]) - acomodoY;
+				float x2 = x1 + widht;
+				float y2 = y1 + height;
+				FirmaDocto firmaDocto = new FirmaDocto();
+				firmaDocto.setF_coord_firma_x1(x1);
+				firmaDocto.setF_coord_firma_x2(x2);
+				firmaDocto.setF_coord_firma_y1(y1);
+				firmaDocto.setF_coord_firma_y2(y2);
+				firmaDocto.setFk_id_docto_envio(dEnvio);
+				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo último elemento de la lista : " + list.get(list.size() - 1));
 				logger.info("Coordenadas del espacio de firma: ");
 				logger.info("x: " + (ultimo[1] - acomodoX) + " y: " + ((ph - ultimo[0]) + acomodoY) + " widht: " + widht
@@ -252,24 +312,24 @@ public class obtenerCoordenadasRestController {
 
 		}
 		// Saving the document
-		File file1 = new File("C:/Users/osvaldo.escamilla/Documents/AnexosContrato2.pdf");
+		File file1 = new File(url);
 		document.save(file1);
 
 		// Closing the document
 		document.close();
 
-		return "Se obtuvieron las coordenadas";
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
 
 	// Obtener la coordenadas del archivo PlandePagos
 	@GetMapping("/anexosContratoNominal")
-	public String obtenerCoordenadasAnexosContratoNominal() throws IOException {
+	public ResponseEntity<?> obtenerCoordenadasAnexosContratoNominal(String url, DoctEnvio dEnvio) throws IOException {
 
 		// PDDocument doc1 = PDDocument.load(file);
 		logger.info("Ejecutando obtenerCoordenadasAnexosContratoNominal");
 		String keyWords = "ACEPTO";
-		String pdfPath = "C:/Users/osvaldo.escamilla/Documents/AnexosContrato2.pdf";
+		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 		// float[] c = list.get(0);
@@ -293,7 +353,17 @@ public class obtenerCoordenadasRestController {
 			PDRectangle rect = page.getMediaBox();
 
 			float ph = page.getMediaBox().getUpperRightY();
-			
+			float x1 = c[1] - acomodoX;
+			float y1 = (ph - c[0]) - acomodoY;
+			float x2 = x1 + widht;
+			float y2 = y1 + height;
+			FirmaDocto firmaDocto = new FirmaDocto();
+			firmaDocto.setF_coord_firma_x1(x1);
+			firmaDocto.setF_coord_firma_x2(x2);
+			firmaDocto.setF_coord_firma_y1(y1);
+			firmaDocto.setF_coord_firma_y2(y2);
+			firmaDocto.setFk_id_docto_envio(dEnvio);
+			firmaDocto = firmaDoctoService.save(firmaDocto);
 			// Instantiating the PDPageContentStream class
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
 			logger.info("Coordenadas del espacio de firma: ");
@@ -314,31 +384,35 @@ public class obtenerCoordenadasRestController {
 			contentStream.close();
 
 			// Saving the document
-			File file1 = new File("C:/Users/osvaldo.escamilla/Documents/AnexosContrato3.pdf");
+			File file1 = new File(url);
 			document.save(file1);
 
 			// Closing the document
 			document.close();
 		}
 
-		return "Se obtuvieron las coordenadas";
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
 	
 	// Obtener las coordenadas del archivo Contrato
 	@GetMapping("/contrato")
-	public String obtenerCoordenadasContrato() throws IOException {
+	public ResponseEntity<?> obtenerCoordenadasContrato(String url, DoctEnvio dEnvio) throws IOException {
 
 		// PDDocument doc1 = PDDocument.load(file);
+		System.out.println("Contrato");
+		System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
 		logger.info("Ejecutando obtenerCoordenadasContrato");
 		String keyWords = "FIRMA";
 		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
-		String pdfPath = "C:/Users/osvaldo.escamilla/Documents/CONTRATO.pdf";
+		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 		// float[] c = list.get(0);
 		File file = new File(pdfPath);
 		PDDocument document = PDDocument.load(file);
+		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+		System.out.println("Total de paginas Contrato: " + document.getNumberOfPages() );
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
 
@@ -365,6 +439,17 @@ public class obtenerCoordenadasRestController {
 					acomodoY = 60.00f;
 					widht = 130.00f;
 					height = 40.00f;
+					float x1 = c[1] - acomodoX;
+					float y1 = (ph - c[0]) - acomodoY;
+					float x2 = x1 + widht;
+					float y2 = y1 + height;
+					FirmaDocto firmaDocto = new FirmaDocto();
+					firmaDocto.setF_coord_firma_x1(x1);
+					firmaDocto.setF_coord_firma_x2(x2);
+					firmaDocto.setF_coord_firma_y1(y1);
+					firmaDocto.setF_coord_firma_y2(y2);
+					firmaDocto.setFk_id_docto_envio(dEnvio);
+					firmaDocto = firmaDoctoService.save(firmaDocto);
 					logger.info("Coordenadas del espacio de firma: ");
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
 							+ height);
@@ -377,6 +462,17 @@ public class obtenerCoordenadasRestController {
 					acomodoY = 5.00f;
 					widht = 130.00f;
 					height = 20.00f;
+					float x1 = c[1] - acomodoX;
+					float y1 = (ph - c[0]) + acomodoY;
+					float x2 = x1 + widht;
+					float y2 = y1 + height;
+					FirmaDocto firmaDocto = new FirmaDocto();
+					firmaDocto.setF_coord_firma_x1(x1);
+					firmaDocto.setF_coord_firma_x2(x2);
+					firmaDocto.setF_coord_firma_y1(y1);
+					firmaDocto.setF_coord_firma_y2(y2);
+					firmaDocto.setFk_id_docto_envio(dEnvio);
+					firmaDocto = firmaDoctoService.save(firmaDocto);
 					logger.info("Coordenadas del espacio de firma: ");
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
 							+ height);
@@ -402,13 +498,13 @@ public class obtenerCoordenadasRestController {
 
 		}
 		// Saving the document
-		File file1 = new File("C:/Users/osvaldo.escamilla/Documents/CONTRATO2.pdf");
+		File file1 = new File(url);
 		document.save(file1);
 
 		// Closing the document
 		document.close();
 
-		return "Se obtuvieron las coordenadas";
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
 

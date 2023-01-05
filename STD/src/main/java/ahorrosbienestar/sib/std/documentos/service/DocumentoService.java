@@ -42,5 +42,9 @@ public class DocumentoService {
 		public Documento findByIdDocumento(Integer id) {
 			return iDocumentoRepository.findByIdDocumento(id);
 		}
+		
+		public List<Documento> findByPkIdDocumento(Integer idDocumento){
+			return iDocumentoRepository.findByPkIdDocumento(idDocumento);
+		}
 
 }

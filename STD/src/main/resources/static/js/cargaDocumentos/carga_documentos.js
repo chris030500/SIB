@@ -6,17 +6,8 @@ function sumarDias(fecha, dias) {
 	//fecha = formatDate(fecha);
 	return fecha;
 }
-//console.log("Fecha más un día: " + sumarDias(date, 10).toISOString().split("T")[0]);
 
-/*$('#fEnvio').datepicker({
-	format: 'dd/mm/yyyy',
-});*/
-/*$("#fEnvio").datepicker({
-	uiLibrary: 'bootstrap5',
-	format: 'D dd/mm/yyyy',
-	locale: 'es-es'
-});
-*/
+
 //Funcion para activar Fecha y hora de cancelación
 function activarFechaHoraCancelación() {
 	document.getElementById("fCancelacion").value = "";
@@ -87,7 +78,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 		else {
 			console.log("Si se ha seleccionado una opción en usuario");
 			$.ajax({
-				url: "http://localhost:8090/buscar_solicitud?solicitud=" + solicitudCredito,
+				url: "/buscar_solicitud?solicitud=" + solicitudCredito,
 				type: "GET",
 				dataType: "JSON",
 				success: function(respuesta) {
@@ -148,7 +139,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 						}
 					}
 
-				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+				}, error: function() {
 					swal({
 						title: "Error, no es una solicitud de crédito",
 						text: "Favor de ingresar una solicitud de crédito",
@@ -235,9 +226,7 @@ function traerParticipantes(solicitud) {
 					+ "<td>" + opt.correoElectronico + "</td>"
 					+ "</tr>";
 				$('#participantes').append(rows)
-				/*$('#participantes').append('<tr><td>' + opt.nombreCompleto + '</td><td>'
-					+  + '</td><td>' + opt.telefonoCelular + '</td><td>' + opt.correoElectronico + '</td></tr>');*/
-				//console.log(opt.nickname + ' ' + opt.email + ' ' + opt.rango);
+
 			});
 		}
 	});
@@ -269,12 +258,10 @@ function buscarDocumentos(producto) {
 	//Día
 	d = n.getDate();
 
-	//Lo ordenas a gusto.
-	//document.getElementById("fEnvio").value = d + "/" + m + "/" + y;
 	if (usuarioNuevo == 1) {
 		console.log("Es usuario nuevo");
 		$.ajax({
-			url: "http://localhost:8090/buscar_documento_clienteNuevo?producto=" + producto,
+			url: "/buscar_documento_clienteNuevo?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -286,36 +273,31 @@ function buscarDocumentos(producto) {
 				$.each(respuesta, function(idx, opt) {
 					console.log("idx: " + idx);
 					console.log("Nombre documento: " + opt.nombreDocumento);
-					//alert('Estoy recorriendo el registro numero: ' + idx);
+					console.log("Id del documento: " + JSON.stringify(opt));
 					var rows = `<tr>
 		             <td>
 		               <input type="text" name="${opt.nombreDocumento}" id="${opt.nombreDocumento}" value="${opt.nombreDocumento}" readonly>
 		             </td>
 		             <td>
 		             	
-						<input type="file" name="file" id="fileLoader" /> 
-						<button id="fileSubmit" class="btn btn-info" tabindex="0" 
-								title="Subir archivo"
-								aria-controls="table-datatable" type="button"
-								>
-								<i class="bi bi-file-person-fill"></i>
-							</button>
+						<input type="file" name="file"  id="${opt.idRelProdDoct}" class="archivo"/> 
 		               
 		             </td>
 		             <td>
 		             
 		             	
-		             	<button type="button" class="btn btn-danger"
-							onclick="eliminarFila(${idx})">Eliminar</button>
+		             	<button class="btn btn-danger" tabindex="0" 
+								title="Eliminar" onclick="eliminarFila(${idx})"
+								aria-controls="table-datatable" type="button">
+								<i class="bi bi-trash"></i>
+						</button>
 						
 		             </td>
 		           </tr>`;
 					$('#tablaDocumentos').append(rows)
-					/*$('#participantes').append('<tr><td>' + opt.nombreCompleto + '</td><td>'
-						+  + '</td><td>' + opt.telefonoCelular + '</td><td>' + opt.correoElectronico + '</td></tr>');*/
-					//console.log(opt.nickname + ' ' + opt.email + ' ' + opt.rango);
+
 				});
-			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			}, error: function() {
 				swal({
 					title: "Error",
 					text: "No sé encontrarón documentos asociados",
@@ -325,18 +307,17 @@ function buscarDocumentos(producto) {
 		});
 	} else if (usuarioNuevo == 2) {
 		$.ajax({
-			url: "http://localhost:8090/buscar_documento?producto=" + producto,
+			url: "/buscar_documento?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				//console.log("Respuesta de participantes: " + JSON.stringify(respuesta));
-				//respuesta.forEach(element => console.log(element));
 				divDocumentos.style.display = "block";
 				divFechas.style.display = "block";
 				$('#tablaDocumentos > tbody').empty();
 				$.each(respuesta, function(idx, opt) {
 					console.log("idx: " + idx);
 					console.log("Nombre documento: " + opt.nombreDocumento);
+					console.log("Id del documento: " + JSON.stringify(opt));
 					//alert('Estoy recorriendo el registro numero: ' + idx);
 					var rows = `<tr>
 		             <td>
@@ -344,20 +325,19 @@ function buscarDocumentos(producto) {
 		             </td>
 		             <td>
 		             	
-		             		<input type="file" name="file" id="fileLoader" /> 
-		             		<button id="fileSubmit" class="btn btn-info" tabindex="0" 
-								title="Subir archivo"
-								aria-controls="table-datatable" type="button">
-								<i class="bi bi-file-person-fill"></i>
-							</button>
+		             		<input type="file" name="file" id="${opt.idRelProdDoct}" class="archivo"/> 
+		             		
 		               
 		             </td>
 		             <td >
 		             	<div id="tdBotones" class="dt-buttons">
 		             	
+		             		<button class="btn btn-danger" tabindex="0" 
+								title="Eliminar" onclick="eliminarFila(${idx})"
+								aria-controls="table-datatable" type="button">
+								<i class="bi bi-trash"></i>
+							</button>
 		             		
-		             		<button type="button" class="btn btn-danger"
-								onclick="eliminarFila(${idx})">Eliminar</button>
 								
 						</div>
 		             </td>
@@ -365,7 +345,7 @@ function buscarDocumentos(producto) {
 					$('#tablaDocumentos').append(rows)
 
 				});
-			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			}, error: function() {
 				swal({
 					title: "Error",
 					text: "No sé encontrarón documentos asociados",
@@ -408,63 +388,161 @@ function obtenerNombreDoct(nombre) {
 	//console.log("ID del documento: " );
 }
 
-function obtenerCoordenadasPalabraClave() {
+//Funcion para dar de alta la solicitud
+function altaSolicitud() {
+	console.log("Entro en altaSolicitud");
+	var inputs = $('input[name^=file]');
+	/*var countI = inputs.length;
+	console.log("Files" + countI);
+	console.log("files: " +  document.getElementById("fileLoader").files[0]);*/
+	if (document.getElementById("fEnvio").value != null && document.getElementById("fCancelacion").value) {
+		//console.log("No ha seleccionado un archivo");
+		console.log("Puede continuar");
+		//console.log("Ha seleccionado un archivo");
+		//Vamos a obtener los datos necesarios para llenar la solicitud de envio
 
+		var solicitud = document.getElementById('solicitud').value;
+		var producto = document.getElementById('producto').value;
+		var estatus = 1;
+		var comentarioValidacion = document.getElementById('comentarioValidacion').value;
+		var fEnvio = document.getElementById('fEnvio').value;
+		var hEnvio = document.getElementById('hEnvio').value;
+		var fCancelacion = document.getElementById('fCancelacion').value;
+		var hCancelacion = document.getElementById('hCancelacion').value;
+		console.log("noSolicitud: " + solicitud);
+		console.log("productoId: " + producto);
+		console.log("estatus: " + estatus);
+		console.log("obserReticion: " + comentarioValidacion);
+		console.log("fechaEnvio: " + fEnvio);
+		console.log("horaEnvio: " + hEnvio);
+		console.log("fechaCancelacion: " + fCancelacion);
+		console.log("horaCancelacion:" + hCancelacion);
+
+		$.ajax({
+			url: "/solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
+				"&comentarioValidacion=" + comentarioValidacion + "&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion + "&hCancelacion=" + hCancelacion,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				/*console.log("Entro en success de get");
+				console.log("Respuesta: " +respuesta);*/
+				console.log("Se guardo la contraseña en historial contraseña: ");
+				swal({
+					icon: "success",
+					title: "Registro de solicitud exitoso.",
+					showConfirmButton: false
+
+				});
+				uploadFile();
+
+			},
+			error: function(respuesta) {
+				//console.log("Entro en error");
+				swal({
+					icon: "warning",
+					title: "Error: " + respuesta.status,
+					showConfirmButton: false
+				});
+
+			}
+		});
+	} else {
+		swal({
+			title: "Error",
+			text: "Favor de llenar los campos de fecha de envio y/o fecha de cancelación",
+			icon: "warning",
+		});
+		//console.log("Favor de llenar los campos de fecha de envio y/o fecha de cancelación");
+	}
 }
 
-var files = [];
-$(document)
-        .on(
-                "change",
-                "#fileLoader",
-                function(event) {
-                 files=event.target.files;
-                });
+//handle the button click event here.
+$(document).ready(function() {
+	$(".upload-me").on("click", handleUpload); //on click, call handleUpload method
+});
 
-$(document)
-        .on(
-                "click",
-                "#fileSubmit",
-                function() {
-                processUpload();
-                });
+// Function para obtener los documentos del campo file
+function uploadFile() {
+	console.log("Lenght: " + document.getElementsByClassName("archivo").length);
+	/*var d = document.getElementsByClassName("archivo");
+	console.log("Archivo: " +  JSON.stringify(d));*/
+	var solicitud = document.getElementById("solicitudCredito").value;
+	var longitud = document.getElementsByClassName("archivo").length;
+	console.log(document.getElementsByClassName("archivo"));
+	console.log("Solicitud de credito: " + solicitud);
+	var idSolicitud = obtenerIdSolicitud(solicitud);
+	uploadFile2();
+	for (i = 0; i < longitud; i++) {
+		var documento = document.getElementsByClassName("archivo")[i].id;
+		var n = document.getElementsByClassName("archivo")[i].files[0].name;
+		console.log("documento: " + documento);
+		console.log("Files: " + JSON.stringify(n));
+		registrarDoctEnvio(solicitud, documento, n);
+	}
 
-function processUpload(){
-              var oMyForm = new FormData();
-              oMyForm.append("file", files[0]);
-             $.ajax({
-				 	dataType : 'json',
-                    url : "http://localhost:8090/guardarPDFServidor/upload",
-                    data : oMyForm,
-                    type : "POST",
-                    enctype: 'multipart/form-data',
-                    processData: false, 
-                    contentType:false,
-                    success : function(result) {
-                        swal({
-							icon: 'success',
-							title: "Archivo subido correctamente.",
-							showConfirmButton: false
-						});
-                    },
-                    error : function(result){
-						console.log("status" + result.status);
-                        if(result.status === 200){
-							alert("success");
-							swal({
-								icon: 'success',
-								title: "Archivo subido correctamente.",
-								showConfirmButton: false
-				
-							});
-						} else{
-							swal({
-								icon: 'warnign',
-								title: "No se subio el archivo.",
-								showConfirmButton: false
-				
-							});
-						}
-                    }
-                });
-         }
+}
+function registrarDoctEnvio(solicitud, documento, nombreDocumento) {
+	console.log("Entro en registrarDoctEnvio");
+	$.ajax({
+		url: "/doctEnvio?solicitud=" + solicitud + "&documento=" + documento + "&nombreDocumento=" + nombreDocumento,
+		type: "POST",
+		dataType: 'json',
+	})
+		.then(function(result) {
+			console.log("Result: " + JSON.stringify(result));
+			/*console.log(result.value);
+			console.log(result.name);
+			console.log(result.action);*/
+		});
+}
+
+function obtenerIdSolicitud(solicitud) {
+	console.log("Entro en obtenerIdSolicitud");
+	$.ajax({
+		url: "/solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
+		type: "GET",
+		success: function(data) {
+			console.log("Exitoso");
+			//console.log("Data: " + JSON.stringify(data));
+			//console.log("Id solicitud: " + data[0].pk_id_solicitud_envio);
+			return data[0].pk_id_solicitud_envio;
+		},
+		error: function(data) {
+			//console.log("Error");
+			swal({
+				icon: "warning",
+				title: "Error: " + respuesta.status,
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+function uploadFile2() {
+	//var url = "YOUR-BASE-URL-HERE"; Like http://localhost:8081
+	var form = $('#form-upload')[0]; //get the form containing the files
+	console.log("form: " + form.value);
+	var data = new FormData(form);
+	console.log("Data: " + JSON.stringify(data));
+	$.ajax({
+		url: "/guardarPDFServidor/upload2",
+		type: "POST",
+		enctype: 'multipart/form-data',
+		data: data, //pass the form data
+		processData: false,
+		contentType: false,
+		success: function(data) {
+			console.log("Successfully uploaded " + data);
+		},
+		error: function(data) {
+			//console.log("Data: " + JSON.stringify(data));
+			//console.log("upload failed");
+			swal({
+				icon: "warning",
+				title: "Error: " + data.status,
+				showConfirmButton: false
+			});
+		}
+	});
+}
+

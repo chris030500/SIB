@@ -67,15 +67,15 @@
 											<label for="solicitud" class="form-label">Solicitud</label>
 											<input type="text" class="form-control" id="solicitud" readonly>
 										</div>
-										<div id="divIdProducto" class="col-sm-3" >
+										<div id="divIdProducto" class="col-sm-3">
 											<label for="producto" class="form-label">IDProducto</label>
 											<input type="text" class="form-control" id="producto" readonly>
 										</div>
-										
+
 										<div class="col-sm-3">
 											<label for="producto" class="form-label">Producto</label>
 											<input type="text" class="form-control" id="Nombreproducto" readonly>
-										</div> 
+										</div>
 										<div class="col-sm-3">
 											<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
 											<input type="number" class="form-control" id="montoSolicitado" readonly>
@@ -128,16 +128,17 @@
 								<div class="row" style="margin-top : 15px">
 									<fieldset class="border p-2">
 										<legend class="w-auto">Archivos</legend>
-										<table class="table table-bordered table-striped" id="tablaDocumentos">
-											<thead>
-												<tr>
-													<th>Nombre de documento</th>
-													<th>Ubicación</th>
-													<th></th>
-												</tr>
-											</thead>
-											<tbody>
-												<!--<tr>
+										<form id="form-upload">
+											<table class="table table-bordered table-striped" id="tablaDocumentos">
+												<thead>
+													<tr>
+														<th>Nombre de documento</th>
+														<th>Cargar Archivo</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													<!--<tr>
 													<td><input type="text" name="nombre1" id="nombre1" value="nombre1"
 															readonly></td>
 													<td><input class="form-control" type="file" id="formFile1"
@@ -149,8 +150,14 @@
 													<td>Nombre</td>
 												<td><input class="form-control" type="file" id="formFile" accept=".pdf" required></td>
 												</tr>-->
-											</tbody>
-										</table>
+												</tbody>
+											</table>
+											<!--<button class="btn btn-info" tabindex="0" value="upload" onclick="uploadFile(this)"
+												title="Subir archivos" aria-controls="table-datatable" type="button">
+												<i class="bi bi-file-person-fill"></i>
+											</button>-->
+											
+										</form>
 									</fieldset>
 
 								</div>
@@ -166,9 +173,9 @@
 													onfocusout="activarFechaHoraCancelación()">
 											</div>
 											<div class="col-sm-6">
-												<label for="hCancelacion" class="form-label">Hora de
+												<label for="hEnvio" class="form-label">Hora de
 													Envío</label>
-												<input type="time" value="09:00" class="form-control" id="hEnvio" 
+												<input type="time" value="09:00" class="form-control" id="hEnvio"
 													readonly>
 											</div>
 											<div class="col-sm-6">
@@ -179,7 +186,8 @@
 											<div class="col-sm-6">
 												<label for="hCancelacion" class="form-label">Hora de
 													Cancelación</label>
-												<input type="time" value="15:00" class="form-control" id="hCancelacion" readonly>
+												<input type="time" value="15:00" class="form-control" id="hCancelacion"
+													readonly>
 											</div>
 											<div class="col-sm-12">
 												<label for="comentarioValidacion" class="form-label">Comentarios de
@@ -188,7 +196,7 @@
 											</div>
 										</div>
 										<div class="col-sm-2">
-											<button type="button" class="btn btn-primary">
+											<button type="button" class="btn btn-primary" onclick="altaSolicitud()">
 												Guardar
 											</button>
 										</div>
@@ -206,6 +214,7 @@
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
 		<script th:src="@{/js/cargaDocumentos/carga_documentos.js}"></script>
+		<script th:src="@{/js/cargaDocumentos/cargarArchivos.js}"></script>
 	</th:block>
 </body>
 

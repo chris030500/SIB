@@ -79,4 +79,5 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'pdf_firma';", nativeQuery = true)
 	public List<Configuracion> obtenerUrlPdfFirma();
+	
 }

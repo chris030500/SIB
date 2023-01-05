@@ -180,6 +180,25 @@
 						</ul>
 					
 					</li>
+					
+					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-validacion"
+							data-bs-toggle="collapse">
+							<i class="bi bi-check-square-fill"></i><span>Validaciones</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+
+						<ul id="config-nav-validacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/solicitudEnvio/solicitudes}">
+									<i class="bi bi-card-text"></i><span>Solicitudes de Autorización </span>
+								</a>
+							</li>
+						</ul>
+					
+					</li>
+
 
 					<!--<li class="nav-header"></li>
 

@@ -37,11 +37,11 @@ public class SolicitudEnvio {
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
 	private int i_estatus;
 
-	@Column(name = "VC_OBSER_PETICION")
-	private int vc_obser_peticion;
+	@Column(name = "VC_OBSER_PETICION", columnDefinition = "VARCHAR(200)")
+	private String vc_obser_peticion;
 
-	@Column(name = "VC_OBSER_AUTORIZA")
-	private int vc_obser_autoriza;
+	@Column(name = "VC_OBSER_AUTORIZA", columnDefinition = "VARCHAR(200)")
+	private String vc_obser_autoriza;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -113,19 +113,19 @@ public class SolicitudEnvio {
 		this.i_estatus = i_estatus;
 	}
 
-	public int getVc_obser_peticion() {
+	public String getVc_obser_peticion() {
 		return vc_obser_peticion;
 	}
 
-	public void setVc_obser_peticion(int vc_obser_peticion) {
+	public void setVc_obser_peticion(String vc_obser_peticion) {
 		this.vc_obser_peticion = vc_obser_peticion;
 	}
 
-	public int getVc_obser_autoriza() {
+	public String getVc_obser_autoriza() {
 		return vc_obser_autoriza;
 	}
 
-	public void setVc_obser_autoriza(int vc_obser_autoriza) {
+	public void setVc_obser_autoriza(String vc_obser_autoriza) {
 		this.vc_obser_autoriza = vc_obser_autoriza;
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
+import ahorrosbienestar.sib.std.docto_envio.model.DoctEnvio;
 
 @Service
 public class CargaDocumentosService {
@@ -64,4 +65,24 @@ public class CargaDocumentosService {
 
 		return ls;
 	}
+
+	// Declaramos que SP se va a ejecutar (SP_BUSCAR_DOCT_PROD) busca los documentos
+	// relacionados con el producto
+	public List<ObtenerDoctoAsociadoProdDto> obtenerIdDocumentoDoctAsociado(int documento) {
+		String sql = "CALL SIB.SP_BUSCAR_DOCUMENTO (?);";
+
+		logger.info("Ejecutando: " + sql + "(" + documento + ")");
+		List<ObtenerDoctoAsociadoProdDto> ls = jdbcTemplate.query(sql, new Object[] { documento },
+				new RowMapper<ObtenerDoctoAsociadoProdDto>() {
+					public ObtenerDoctoAsociadoProdDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObtenerDoctoAsociadoProdDto docto = new ObtenerDoctoAsociadoProdDto();
+						docto.setIdDocumento(rs.getInt(1));
+						return docto;
+					}
+				});
+
+		return ls;
+	}
+
+	
 }

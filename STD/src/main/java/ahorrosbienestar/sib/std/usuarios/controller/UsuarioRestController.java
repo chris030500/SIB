@@ -23,6 +23,7 @@ import groovyjarjarantlr4.v4.parse.ANTLRParser.sync_return;
 @RequestMapping("usuario")
 public class UsuarioRestController {
 
+	@Autowired
 	private UsuarioService usuarioService;
 
 	@Autowired

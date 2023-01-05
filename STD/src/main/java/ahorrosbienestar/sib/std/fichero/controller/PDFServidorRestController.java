@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,13 +30,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ahorrosbienestar.sib.std.fichero.service.PDFServidorService;
 
-@Controller
+@RestController
 @RequestMapping("guardarPDFServidor")
 public class PDFServidorRestController {
 
@@ -51,62 +55,46 @@ public class PDFServidorRestController {
 		return url.toString();
 	}
 
-	@GetMapping("/almacenarPdf")
-	public ResponseEntity<?> almacenarPDFServidor(HttpServletRequest request) throws IOException, ServletException {
-		String description = request.getParameter("description");
-		// String nombre = "AnexosContrato.pdf";
-		System.out.println("LocalName: " + request.getLocalName());
-
-		InputStream is = request.getInputStream();
-		System.out.println("Is: " + is);
-		File f = new File(UrlPDFServidor() + request.getLocalName());
-		FileOutputStream ous = new FileOutputStream(f);
-		int datoPdf = is.read();
-		while (datoPdf != -1) {
-			ous.write(datoPdf);
-			datoPdf = is.read();
-		}
-		ous.close();
-		is.close();
-		return ResponseEntity.ok("Exito");
-	}
-
-	@RequestMapping(value = "/almacenarPdf2", headers=("content-type=multipart/*"), 
-			produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> almacenarPDFServidor2(@RequestPart("file") MultipartFile file ) throws IOException, ServletException {
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		Path path = Paths.get(UrlPDFServidor() + fileName);
-		try {
-			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-				.path("/files/download/")
-				.path(fileName)
-				.toUriString();
-		return ResponseEntity.ok(fileDownloadUri);
-	}
-	
-	@PostMapping("/cargar")
-	public String carga(@RequestParam("file") MultipartFile file) {
-		pdfServidorService.guardarArchivo(UrlPDFServidor(), file);
-		return "exito";
-	}
 	
 	@PostMapping("/upload")
 	public ResponseEntity<?> fileUpload(@RequestParam(value = "file") MultipartFile file){
+		
 		String fileName = file.getOriginalFilename();
+		logger.info("Nombre del archivo guardado: " + fileName);
+		//System.out.println("FileName: " + fileName);
 		
 		try {
 			file.transferTo(new File(UrlPDFServidor() + fileName));
-			
+			logger.info("Ubicación del archivo" + UrlPDFServidor() + fileName);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("Error: "+e);
 		}
-		
+		//logger.info("Archivo subido correctamente");
 		return ResponseEntity.ok("Archivo subido correctamente");
 	}
+	
+	@PostMapping("/upload2")
+    public String uploadFilez(@RequestParam("file") MultipartFile[] files) throws IllegalStateException, IOException {
+
+		System.out.println("Entro en uploadFilez");
+        if (files.length == 0) {
+            return "Parece que no hay archivos subidos";
+        }
+
+        //Obtenemos los archivos seleccionados
+            for (MultipartFile file : files) {
+            	//System.out.println("Files: " + files.length);
+            	//System.out.println("Ubicación: " + (UrlPDFServidor() + file.getOriginalFilename()));
+            	file.transferTo(new File(UrlPDFServidor() + file.getOriginalFilename()));
+//                byte[] bytes = file.getBytes();
+//                Path path = Paths.get(UrlPDFServidor() + file.getOriginalFilename());
+//                System.out.println("Url del servidor: " + path);
+//                Files.write(path, bytes);
+            }
+
+
+        return "Subido de archivos correctamente";
+    }
 	
 	
 
