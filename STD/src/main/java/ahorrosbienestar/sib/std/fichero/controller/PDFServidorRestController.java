@@ -85,11 +85,11 @@ public class PDFServidorRestController {
             for (MultipartFile file : files) {
             	//System.out.println("Files: " + files.length);
             	//System.out.println("Ubicación: " + (UrlPDFServidor() + file.getOriginalFilename()));
-            	file.transferTo(new File(UrlPDFServidor() + file.getOriginalFilename()));
-//                byte[] bytes = file.getBytes();
-//                Path path = Paths.get(UrlPDFServidor() + file.getOriginalFilename());
-//                System.out.println("Url del servidor: " + path);
-//                Files.write(path, bytes);
+            	//file.transferTo(new File(UrlPDFServidor() + file.getOriginalFilename()));
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(UrlPDFServidor() + file.getOriginalFilename());
+                System.out.println("Url del servidor: " + path);
+                Files.write(path, bytes);
             }
 
 

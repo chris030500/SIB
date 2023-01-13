@@ -80,7 +80,7 @@ function obtenerArchivosSolicitud(solicitud) {
 			$.each(respuesta, function(idx, opt) {
 				console.log("idx: " + idx);
 				console.log("Id del documento: " + JSON.stringify(opt));
-				var rows = `<tr>
+				var rows = `<tr class="contarTr" id="${opt.idDoctoEnvio}">
 		             <td>
 		               <input type="text" name="${opt.nombreArchivo}" id="${opt.nombreArchivo}" value="${opt.nombreArchivo}" readonly>
 		             </td>
@@ -98,23 +98,27 @@ function obtenerArchivosSolicitud(solicitud) {
 		             	
 		             	<div>
 		             	
-					      <input type="radio" id="aprobacion1" name="aprobacion" value="1" />
+					      <input type="radio" id="aprobacion1" name="${opt.idDoctoEnvio}" onclick="sinObservacion(${opt.idDoctoEnvio})" value="1" />
 					      <label for="contactChoice1">Aprobar</label>
 					
-					      <input type="radio" id="aprobacion2" name="aprobacion" value="0" />
+					      <input type="radio" id="aprobacion2" name="${opt.idDoctoEnvio}" onclick="agregarObservacion(${opt.idDoctoEnvio})"value="0" />
 					      <label for="contactChoice2">Desaprobar</label>
-					
+						
+						  <textarea name="textarea" rows="3" id="comentario${opt.idDoctoEnvio}" cols="50" style="display:none" ></textarea>
+						  
 					    </div>
 						
 		             </td>
 		           </tr>`;
-				$('#tablaDocumentos').append(rows)
+				$('#tablaDocumentos').append(rows);
 
 			});
 		}
 	});
 
 }
+
+
 
 function buscarDoctoEnvio(idDoctEnvio) {
 	console.log("Entro en buscarDoctoEnvio");
@@ -148,23 +152,184 @@ function visualizarArchivo(idDoctoEnvio) {
 	console.log("Solicitud envio: " + solicitudEnvio);
 	console.log("idDoctoEnvio: " + idDoctoEnvio);
 	var urlDocto = buscarDoctoEnvio(idDoctoEnvio);
-	//console.log("Datos de doctoEnvio: " + urlDocto);
-	//console.log("Datos de doctoEnvio: "+ buscarDoctoEnvio(idDoctoEnvio));
 	window.open("/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto, '_blank');
 	//window.location.href = "/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto;
-	/*$.ajax({
-		url: "/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto,
+
+}
+
+function agregarObservacion(id) {
+	console.log("Entro en agregarObservacion");
+	var idComentario = "comentario" + id;
+	var comentario = document.getElementById(idComentario);
+	console.log("idComentario: " + idComentario);
+	comentario.style.display = "block";
+	//console.log("Comentario textArea: " + JSON.stringify(comentario));
+
+}
+
+function sinObservacion(id) {
+	console.log("Entro en sinObservacion");
+	var idComentario = "comentario" + id;
+	var comentario = document.getElementById(idComentario);
+	console.log("idComentario: " + idComentario);
+	comentario.style.display = "none";
+}
+
+
+function VoBoDocumentos() {
+	var banderaVoBo = false;
+
+	var idTr = document.querySelectorAll('.contarTr');
+	console.log("contarTr: " + idTr.length);
+	var miArray = new Array(idTr.length);
+	var conteo = 0;
+	console.log("Array: " + miArray.length);
+	for (var i = 0; i < idTr.length; i++) {
+		var tr = idTr[i].id
+		console.log("El id del tr es: " + tr);
+		var aprobacion = $('input[name="' + tr + '"]:checked').val();
+		if (aprobacion != null) {
+			console.log("Aprobación: " + i + " " + aprobacion);
+			if (aprobacion == 1) {
+				console.log("la aprobación es valida (1)");
+			} else if (aprobacion == 0) {
+				console.log("la aprobación es invalida (0)");
+				var idComentario = "comentario" + tr;
+				var comentario = document.getElementById(idComentario).value;
+				console.log("Comentario: " + comentario);
+				$.ajax({
+					url: "/hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
+					type: "POST",
+					dataType: "JSON",
+					success: function(respuesta) {
+						console.log("La respuesta es correcta");
+					},
+					error: function(respuesta) {
+						console.log("Error: " + JSON.stringify(respuesta));
+						//console.log("Error: " + respuesta.status);
+					}
+				});
+			}
+			banderaVoBo = true;
+			miArray[i] = true;
+
+			$.ajax({
+				url: "/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
+				type: "POST",
+				dataType: "JSON",
+				success: function(respuesta) {
+					console.log("Respuesta: " + JSON.stringify(respuesta));
+				},
+				error: function(respuesta) {
+					//console.log("Respuesta: " + JSON.stringify(respuesta));
+					swal({
+						icon: "info",
+						title: "Error: " + JSON.stringify(respuesta),
+						showConfirmButton: false
+
+					});
+				}
+			});
+		} else {
+			//console.log("Favor de llenar todos los campos");
+			miArray[i] = false;
+			swal({
+				icon: "info",
+				title: "Favor de llenar todos los campos de aprobación",
+				showConfirmButton: false
+
+			});
+		}
+
+	}
+	//console.log("miArray: " + miArray);
+
+	for (i = 0; i < miArray.length; i++) {
+		if (miArray[i] === true) {
+			conteo = conteo + 1;
+		}
+	}
+
+	if (conteo == miArray.length) {
+		console.log("Todos los valores son true");
+		validarArchivosSolicitud();
+	}
+	//console.log("Numero de documentos: " + numTr);
+}
+
+function validarArchivosSolicitud() {
+	console.log("Entro validarArchivosSolicitud");
+	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
+	console.log("Solicitud envio: " + solicitudEnvio);
+	//var estatus;
+	$.ajax({
+		url: "/solicitudEnvio/validacionArchivoSolicitud?solicitud=" + solicitudEnvio,
 		type: "GET",
 		dataType: "JSON",
-		success: function(response) {
-			console.log("Success");
-			//console.log("respuesta: " + respuesta);
-			
-			//window.open(respuesta);
-			//console.log("Respuesta de participantes: " + JSON.stringify(respuesta));
-			//respuesta.forEach(element => console.log(element));
-			//console.log("Repuesta: " + JSON.stringify(respuesta));
+		success: function(respuesta) {
+			console.log("Respuesta: " + respuesta);
+			validarSoliEnvio(respuesta, solicitudEnvio);
+		},
+		error: function(respuesta) {
+			//console.log("Respuesta: " + JSON.stringify(respuesta));
+			swal({
+				icon: "info",
+				title: "Error: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+
+			});
 		}
-	});*/
+	});
+
+}
+
+function validarSoliEnvio(estatus, idSolicitud) {
+	var solicitudCore = document.getElementById('i_no_solicitud_core').value;
+	$.ajax({
+		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta validarSoliEnvio: " + respuesta);
+			if(respuesta === 1){
+				swal({
+					icon: "info",
+					title: "Error: ",
+					text: "No se encontro la solicitud de envío: " + idSolicitud,
+					showConfirmButton: false
+
+				});
+			} else {
+				swal({
+					icon: "success",
+					title: "Validación correcta",
+					text: "solicitud: " +solicitudCore,
+					showConfirmButton: false
+
+				});
+			}
+
+		},
+		error: function(respuesta) {
+			//console.log("Respuesta: " + JSON.stringify(respuesta));
+			console.log("Error: " + respuesta.status);
+			if (respuesta.status === 500) {
+				console.log("Salio error 500");
+				swal({
+					icon: "info",
+					title: "Error " + respuesta.status + ":",
+					text: "No se encontro la solicitud: " + idSolicitud,
+					showConfirmButton: false
+
+				});
+			}
+			/*swal({
+				icon: "info",
+				title: "Error: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+
+			});*/
+		}
+	});
 }
 

@@ -7,7 +7,10 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,15 +67,16 @@ public class DoctoEnvioRestController {
 
 	@Autowired
 	obtenerCoordenadasRestController obtenerCoordenadasRestController;
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@PostMapping
 	public ResponseEntity<?> guardarDoctoEnvio(@RequestParam(name = "solicitud") Integer solicitud,
 			@RequestParam(name = "documento") Integer documento,
-			@RequestParam(name = "nombreDocumento") String nombreDocumento) throws IOException {
-		System.out.println("solicitud: " + solicitud);
-		System.out.println("documento: " + documento);
-		System.out.println("nombreDocumento " + nombreDocumento);
-
+			@RequestParam(name = "nombreDocumento") String nombreDocumento,
+			@RequestParam(name = "fCancelacion") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fCancelacion,
+			@RequestParam(name= "productoNomina") String productoNomina) throws IOException {
+		logger.info("Ejecutando guardarDoctoEnvio");
 		// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
 		// Obtenemos el usuario autentificado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -93,11 +97,11 @@ public class DoctoEnvioRestController {
 		SolicitudEnvio sEnvio = new SolicitudEnvio();
 		sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
 
-		System.out.println("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
+		//System.out.println("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
 
 		// Obtenemos los datos del documento
 		Documento doct = new Documento();
-		System.out.println("V Documento: " + idDocumento.getIdDocumento());
+		//System.out.println("V Documento: " + idDocumento.getIdDocumento());
 		doct = documentoService.findByPkIdDocumento(idDocumento.getIdDocumento()).get(0);
 		// System.out.println("Doct:" + doct.getPk_id_documento());
 		// System.out.println("documentos" + documentos.getPk_id_documento());
@@ -111,42 +115,58 @@ public class DoctoEnvioRestController {
 		dEnvio.setFk_solicitud_envio(sEnvio);
 		dEnvio.setFk_cat_documento(doct);
 		dEnvio.setVc_ruta_docto(ubicacionArchivo);
-		sEnvio.setDt_fecha_registro(localDateHoy);
-		sEnvio.setFk_usr_registra(usu);
+		dEnvio.setDt_fecha_registro(localDateHoy);
+		dEnvio.setPk_usr_registra(usu);
+		dEnvio.setDt_fecha_cancelacion(fCancelacion);
 		// dEnvio.setI_estatus(1);
 		dEnvio.setI_tp_docto_envio(1);
 
 		System.out.println("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
 		System.out.println("Catalogo Documento: " + dEnvio.getFk_cat_documento());
 		System.out.println("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
-		dEnvio = doctEnvioService.save(dEnvio);
+		//dEnvio = doctEnvioService.save(dEnvio);
 		if (nombreDocumento.contains("AnexosContrato")) {
-			System.out.println("Entro en anexosContrato");
-			obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivo, dEnvio);
+			logger.info("Entro en anexosContrato");
+			//System.out.println("Entro en anexosContrato");
+			if(productoNomina.equals("S")) {
+				//System.out.println("Entro en if de S");
+				logger.info("Entro en si es nomina");
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivo, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivo, dEnvio);
+			} else if (productoNomina.equals("N")){
+				//System.out.println("Entro en if de N");
+				logger.info("Entro en no es nomina");
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivo, dEnvio);
+			}
+			
 		} else if (nombreDocumento.contains("CONTRATO")) {
-			System.out.println("Entro en contraro");
+			//System.out.println("Entro en contraro");
+			logger.info("Entro en contraro");
 			obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivo, dEnvio);
 		} else if (nombreDocumento.contains("Pagare")) {
-			System.out.println("Entro en pagare");
+			//System.out.println("Entro en pagare");
+			logger.info("Entro en pagare");
 			obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivo, dEnvio);
 		} else if (nombreDocumento.contains("PlandePagos")) {
-			System.out.println("Entro en Plan de pagos");
+			//System.out.println("Entro en Plan de pagos");
+			logger.info("Entro en Plan de pagos");
 			obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivo, dEnvio);
 		}
-		return ResponseEntity.ok(dEnvio);
-		// return ResponseEntity.ok("Ok");
+		//return ResponseEntity.ok(dEnvio);
+		return ResponseEntity.ok("Ok");
 	}
 
 	@RequestMapping(value = { "/obtener_archivos" }, method = RequestMethod.GET)
 	public ResponseEntity<?> obtenerArchivosSolicitud(@RequestParam("solicitud") Integer solicitud) {
-		System.out.println("Obtener archivos de la solicitud: " + solicitud);
-
+		//System.out.println("Obtener archivos de la solicitud: " + solicitud);
+		logger.info("Obtener archivos de la solicitud: " + solicitud);
 		return ResponseEntity.ok(doctoEnvioJDBCService.obtenerArchivosSolicitud(solicitud));
 	}
 
 	@RequestMapping(value = {"/obtener_doctEnvio/{idDoctoEnvio}"}, method = RequestMethod.GET)
 	public ResponseEntity<?> obtenerDoctEnvio(@PathVariable("idDoctoEnvio") Integer idDoctoEnvio){
-		System.out.println("Entro en obtenerDoctEnvio");
+		//System.out.println("Entro en obtenerDoctEnvio");
+		logger.info("Entro en obtenerDoctEnvio");
 		DoctEnvio dEnvio = new DoctEnvio();
 		dEnvio = doctEnvioService.obtenerDoctoEnvio(idDoctoEnvio);
 		if(dEnvio != null) {
@@ -156,5 +176,13 @@ public class DoctoEnvioRestController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-
+	
+	
+	@RequestMapping(value= {"/validar_doctEnvio"}, method = RequestMethod.POST)
+	public ResponseEntity<?> validarDoctEnvio(@RequestParam("estatus") Integer estatus,
+				@RequestParam("idDoctoEnvio") Integer idDoctoEnvio
+			){
+		logger.info("Entro en validarDoctEnvio");
+		return ResponseEntity.ok(doctEnvioService.validarDoctEnvio(estatus, idDoctoEnvio));
+	}
 }

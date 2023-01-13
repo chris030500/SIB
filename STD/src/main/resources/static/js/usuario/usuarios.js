@@ -19,7 +19,7 @@ function buscarEmpleado(empleado) {
 	} else {
 		console.log("Entro en else de busquedaEmpleado");
 		$.ajax({
-			url: "http://localhost:8090/empleado/listado?nombre=" + empleado,
+			url: "/empleado/listado?nombre=" + empleado,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {

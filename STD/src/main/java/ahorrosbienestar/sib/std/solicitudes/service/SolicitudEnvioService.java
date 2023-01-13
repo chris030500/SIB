@@ -24,10 +24,12 @@ public class SolicitudEnvioService {
 		return iSolicitudEnvio.save(solicitudEnvio);
 	}
 	
+	//Metodo para mostrar la lista de las solicitudes estatus (1 y 2).
 	public List<SolicitudEnvio> estatusSolicAutorizacion(){
 		return iSolicitudEnvio.estatusSolicAutorizacion();
 	}
 	
+	//Metodo para buscar por id la solicitud.
 	public Optional<SolicitudEnvio> findById(Integer id){
 		return iSolicitudEnvio.findById(id);
 	}
@@ -35,6 +37,13 @@ public class SolicitudEnvioService {
 	//Metodo para obtener la última solicitud de envio registrada.
 	public  List<SolicitudEnvio> obtenerUltimaSolicitudFecha(Integer solicitud){
 		return iSolicitudEnvio.obtenerUltimaSolicitudFecha(solicitud);
+	}
+	
+	//Metodo para validar la solicitud de envio 
+	// 3 = Autorizacion de documentos digitales
+	// 2 = Rechazo de documentos
+	public int validarSoliEnvio(Integer estatus, Integer idSolicitud) {
+		return iSolicitudEnvio.validarSoliEnvio(estatus, idSolicitud);
 	}
 
 }

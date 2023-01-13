@@ -2,11 +2,6 @@
  * 
  */
 
-//handle the button click event here.
-$(document).ready(function() {
-	$(".upload-me").on("click", handleUpload); //on click, call handleUpload method
-});
-
 /**
  * Handle actual handling of the files.
  */

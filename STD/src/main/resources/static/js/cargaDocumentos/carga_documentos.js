@@ -1,3 +1,4 @@
+var productoNomina = document.getElementById('productoNomina').value;
 //console.log("Entro en carga de documentos");
 function sumarDias(fecha, dias) {
 	fecha = new Date(fecha);
@@ -99,6 +100,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 						console.log("Puede continuar");
 						if (respuesta[0].resultado == 1) {
 							console.log("Puede continuar para buscar si el producto está configurado");
+							console.log("Resultado: " + JSON.stringify(respuesta));
 							//Hacemos visible los campos del detalle de la solicitud
 							divDatoSolicitud.style.display = "block";
 
@@ -111,6 +113,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 							var tasaNormal = document.getElementById('tasaNormal');
 							var estatus = document.getElementById('estatus');
 							var Nombreproducto = document.getElementById('Nombreproducto');
+							var productoNomina = document.getElementById('productoNomina');
 							$("#divIdProducto").hide();
 							//Asignamos los valores a los campos
 							solicitud.value = respuesta[0].solicitudCreditoID;
@@ -121,7 +124,9 @@ function buscarSolicitudCredito(solicitudCredito) {
 							tasaNormal.value = respuesta[0].tasaFija;
 							estatus.value = respuesta[0].estatus;
 							Nombreproducto.value = respuesta[0].producto;
+							productoNomina.value = respuesta[0].productoNomina;
 							buscarProducto(respuesta[0].productoCreditoID);
+
 							/*if (usuarioPregunta == 1) {
 								console.log("Si es nuevo cliente");
 							} else if (usuarioPregunta == 2) {
@@ -165,7 +170,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 //Funcion para buscar si el producto ya se encuentra configurado
 function buscarProducto(producto) {
 	$.ajax({
-		url: "http://localhost:8090/buscar_catProducto?producto=" + producto,
+		url: "/buscar_catProducto?producto=" + producto,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -209,7 +214,7 @@ function traerParticipantes(solicitud) {
 	console.log("Solicitud: " + solicitud);
 	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
-		url: "http://localhost:8090/trae_participantes?solicitud=" + solicitud,
+		url: "/trae_participantes?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -409,6 +414,7 @@ function altaSolicitud() {
 		var hEnvio = document.getElementById('hEnvio').value;
 		var fCancelacion = document.getElementById('fCancelacion').value;
 		var hCancelacion = document.getElementById('hCancelacion').value;
+		var productoNomina = document.getElementById('productoNomina').value;
 		console.log("noSolicitud: " + solicitud);
 		console.log("productoId: " + producto);
 		console.log("estatus: " + estatus);
@@ -417,10 +423,12 @@ function altaSolicitud() {
 		console.log("horaEnvio: " + hEnvio);
 		console.log("fechaCancelacion: " + fCancelacion);
 		console.log("horaCancelacion:" + hCancelacion);
-
+		console.log("productoNomina: " + productoNomina);
 		$.ajax({
 			url: "/solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
-				"&comentarioValidacion=" + comentarioValidacion + "&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion + "&hCancelacion=" + hCancelacion,
+				"&comentarioValidacion=" + comentarioValidacion +
+				"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
+				"&hCancelacion=" + hCancelacion,
 			type: "POST",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -433,7 +441,7 @@ function altaSolicitud() {
 					showConfirmButton: false
 
 				});
-				uploadFile();
+				uploadFile(fCancelacion, productoNomina);
 
 			},
 			error: function(respuesta) {
@@ -457,12 +465,19 @@ function altaSolicitud() {
 }
 
 //handle the button click event here.
-$(document).ready(function() {
+/*$(document).ready(function() {
 	$(".upload-me").on("click", handleUpload); //on click, call handleUpload method
-});
+});*/
 
 // Function para obtener los documentos del campo file
-function uploadFile() {
+function uploadFile(fCancelacion, productoNomina) {
+	console.log("uploadFile: ");
+	var productoNomina = document.getElementById('productoNomina').value;
+	var fCancelacion = document.getElementById('fCancelacion').value;
+
+
+	console.log("fCancelacion: " + fCancelacion);
+	console.log("productoNomina" + productoNomina);
 	console.log("Lenght: " + document.getElementsByClassName("archivo").length);
 	/*var d = document.getElementsByClassName("archivo");
 	console.log("Archivo: " +  JSON.stringify(d));*/
@@ -475,16 +490,21 @@ function uploadFile() {
 	for (i = 0; i < longitud; i++) {
 		var documento = document.getElementsByClassName("archivo")[i].id;
 		var n = document.getElementsByClassName("archivo")[i].files[0].name;
-		console.log("documento: " + documento);
+		console.log("documento uploadFile: " + documento);
 		console.log("Files: " + JSON.stringify(n));
-		registrarDoctEnvio(solicitud, documento, n);
+		registrarDoctEnvio(solicitud, documento, n, fCancelacion, productoNomina);
 	}
 
 }
-function registrarDoctEnvio(solicitud, documento, nombreDocumento) {
+
+function registrarDoctEnvio(solicitud, documento, nombreDocumento, fCancelacion, productoNomina) {
 	console.log("Entro en registrarDoctEnvio");
+	console.log("fCancelacion: " + fCancelacion);
+	console.log("productoNomina: " + productoNomina);
 	$.ajax({
-		url: "/doctEnvio?solicitud=" + solicitud + "&documento=" + documento + "&nombreDocumento=" + nombreDocumento,
+		url: "/doctEnvio?solicitud=" + solicitud + "&documento=" + documento
+			+ "&nombreDocumento=" + nombreDocumento + "&fCancelacion=" + fCancelacion +
+			"&productoNomina=" + productoNomina,
 		type: "POST",
 		dataType: 'json',
 	})
@@ -496,13 +516,14 @@ function registrarDoctEnvio(solicitud, documento, nombreDocumento) {
 		});
 }
 
+
 function obtenerIdSolicitud(solicitud) {
 	console.log("Entro en obtenerIdSolicitud");
 	$.ajax({
 		url: "/solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
 		type: "GET",
 		success: function(data) {
-			console.log("Exitoso");
+			console.log("Exitoso obtenerIdSolicitud");
 			//console.log("Data: " + JSON.stringify(data));
 			//console.log("Id solicitud: " + data[0].pk_id_solicitud_envio);
 			return data[0].pk_id_solicitud_envio;
@@ -517,6 +538,8 @@ function obtenerIdSolicitud(solicitud) {
 		}
 	});
 }
+
+
 
 function uploadFile2() {
 	//var url = "YOUR-BASE-URL-HERE"; Like http://localhost:8081
@@ -535,7 +558,16 @@ function uploadFile2() {
 			console.log("Successfully uploaded " + data);
 		},
 		error: function(data) {
-			//console.log("Data: " + JSON.stringify(data));
+			console.log("Data: " + JSON.stringify(data));
+			console.log("Error: " + data.response.status);
+			if (data.response.status == 500) {
+				swal({
+					icon: "warning",
+					title: "Cannot write uploaded file to disk ",
+					text: data.status,
+					showConfirmButton: false
+				});
+			}
 			//console.log("upload failed");
 			swal({
 				icon: "warning",
@@ -545,4 +577,6 @@ function uploadFile2() {
 		}
 	});
 }
+
+
 

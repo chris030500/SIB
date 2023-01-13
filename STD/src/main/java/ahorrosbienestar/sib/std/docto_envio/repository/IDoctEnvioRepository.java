@@ -19,4 +19,9 @@ public interface IDoctEnvioRepository extends JpaRepository<DoctEnvio, Integer>{
 	
 	@Query(value = "SELECT * FROM SIB.TBL_DOCTO_ENVIO WHERE PK_ID_DOCTO_ENVIO = :idDoctoEnvio", nativeQuery = true)
 	public DoctEnvio obtenerDoctoEnvio(@Param("idDoctoEnvio") Integer idDoctoEnvio);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_DOCTO_ENVIO SET I_ESTATUS = :estatus WHERE PK_ID_DOCTO_ENVIO = :idDoctoEnvio", nativeQuery = true)
+	public int validarDoctEnvio(@Param("estatus") Integer estatus, @Param("idDoctoEnvio") Integer idDoctoEnvio);
 }
