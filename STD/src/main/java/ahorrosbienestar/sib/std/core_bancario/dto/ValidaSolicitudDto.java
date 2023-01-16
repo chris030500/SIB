@@ -13,6 +13,7 @@ public class ValidaSolicitudDto {
 	private String plazo;
 	private String estatus;
 	private String productoNomina;
+	private String clienteId;
 	
 	public int getResultado() {
 		return resultado;
@@ -37,6 +38,14 @@ public class ValidaSolicitudDto {
 	}
 	public void setProductoCreditoID(int productoCreditoID) {
 		this.productoCreditoID = productoCreditoID;
+	}
+	
+	
+	public String getClienteId() {
+		return clienteId;
+	}
+	public void setClienteId(String clienteId) {
+		this.clienteId = clienteId;
 	}
 	public String getProducto() {
 		return producto;

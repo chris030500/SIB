@@ -1,11 +1,13 @@
 package ahorrosbienestar.sib.std.docto_envio.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,8 +77,12 @@ public class DoctoEnvioRestController {
 			@RequestParam(name = "documento") Integer documento,
 			@RequestParam(name = "nombreDocumento") String nombreDocumento,
 			@RequestParam(name = "fCancelacion") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fCancelacion,
-			@RequestParam(name= "productoNomina") String productoNomina) throws IOException {
+			@RequestParam(name= "productoNomina") String productoNomina,
+			@RequestParam(name = "clienteId") String clienteId,
+			@RequestParam(name = "idEnvio") String idEnvio
+			) throws IOException {
 		logger.info("Ejecutando guardarDoctoEnvio");
+		
 		// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
 		// Obtenemos el usuario autentificado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -94,8 +100,9 @@ public class DoctoEnvioRestController {
 				.get(0);
 
 		// Obtenemos la ultima solicitud registrada
-		SolicitudEnvio sEnvio = new SolicitudEnvio();
-		sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
+		Optional<SolicitudEnvio> sEnvio;
+		sEnvio = solicitudEnvioService.findById(Integer.parseInt(idEnvio));
+		//sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
 
 		//System.out.println("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
 
@@ -106,13 +113,26 @@ public class DoctoEnvioRestController {
 		// System.out.println("Doct:" + doct.getPk_id_documento());
 		// System.out.println("documentos" + documentos.getPk_id_documento());
 		List<Configuracion> url = iConfiguracionRepository.obtenerUrlPdfFirma();
-		String ubicacionArchivo = url.get(0).getVc_valor_propiedad() + nombreDocumento;
+		//File directorio = new File(url.get(0).getVc_valor_propiedad() +clienteId + "/"+ clienteId+"-"+solicitud);
+		File directorio2 = new File(url.get(0).getVc_valor_propiedad() +clienteId);
+		System.out.println("directorio2: " + directorio2);
+        String[] filesNames = directorio2.list();
+        int seguimiento = 0;
+        if (filesNames == null) {
+        	seguimiento = 1;
+        } else {
+        	seguimiento = filesNames.length;
+        }
+        String ubicacionArchivo = (url.get(0).getVc_valor_propiedad() +clienteId+"/"+clienteId+"-"+solicitud+"-"+seguimiento+"/"+nombreDocumento).toString();
+		//String ubicacionArchivo = url.get(0).getVc_valor_propiedad() + nombreDocumento;
 		// System.out.println("Url: " + url.get(0).getVc_valor_propiedad());
+        System.out.println("Ejecutando guardarDoctoEnvio");
+        logger.info("Ubicacion archivo: "+ubicacionArchivo);
 		System.out.println("Ubicacion archivo: " + ubicacionArchivo);
 		// System.out.println("UbicacionArchivo: " + ubicacionArchivo);
 
 		DoctEnvio dEnvio = new DoctEnvio();
-		dEnvio.setFk_solicitud_envio(sEnvio);
+		dEnvio.setFk_solicitud_envio(sEnvio.get());
 		dEnvio.setFk_cat_documento(doct);
 		dEnvio.setVc_ruta_docto(ubicacionArchivo);
 		dEnvio.setDt_fecha_registro(localDateHoy);
@@ -124,7 +144,7 @@ public class DoctoEnvioRestController {
 		System.out.println("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
 		System.out.println("Catalogo Documento: " + dEnvio.getFk_cat_documento());
 		System.out.println("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
-		//dEnvio = doctEnvioService.save(dEnvio);
+		dEnvio = doctEnvioService.save(dEnvio);
 		if (nombreDocumento.contains("AnexosContrato")) {
 			logger.info("Entro en anexosContrato");
 			//System.out.println("Entro en anexosContrato");

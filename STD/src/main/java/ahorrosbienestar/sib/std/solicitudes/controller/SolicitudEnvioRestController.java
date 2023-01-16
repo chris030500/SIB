@@ -87,11 +87,11 @@ public class SolicitudEnvioRestController {
 		sEnvio.setVc_hora_cancelacion(hCancelacion);
 		sEnvio.setI_estatus(1);
 
-		//sEnvio = solicitudEnvioService.save(sEnvio);
+		sEnvio = solicitudEnvioService.save(sEnvio);
 
 		// Aqui vamos a almacenar los archivos PDF para asocialos con la solicitud de
 		// envio
-		return ResponseEntity.ok(sEnvio);
+		return ResponseEntity.ok(sEnvio.getPk_id_solicitud_envio());
 	}
 
 	@GetMapping("solicitudEnvio/verSolicitudes")
