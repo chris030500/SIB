@@ -47,6 +47,8 @@ public class SolicitudEnvio {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
+	
+	
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -65,6 +67,23 @@ public class SolicitudEnvio {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_CANCELACION")
 	private LocalDate dt_fecha_cancelacion;
+	
+	@Column(name = "I_INFO_DESCARGA", columnDefinition = "TINYINT(1)")
+	private int i_info_descarga;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "DT_FECHA_DESCARGA")
+	private LocalDate dt_fecha_descarga;
+	
+	@Column(name = "VC_RUTA")
+	private String vc_ruta;
+	
+	@Column(name = "I_IDENTIFICADOR_RUTA")
+	private int i_identificador_ruta;
+	
+	@Column(name = "VC_OBSER_CANCELACION", columnDefinition = "VARCHAR(200)")
+	private String vc_obser_cancelacion;
 
 	@Column(name = "VC_HORA_CANCELACION", columnDefinition = "VARCHAR(45)")
 	private String vc_hora_cancelacion;
@@ -80,6 +99,7 @@ public class SolicitudEnvio {
 	@OneToOne
 	@JoinColumn(name = "FK_USR_CANCELA")
 	private Usuario fk_usr_cancela;
+	
 
 	public int getPk_id_solicitud_envio() {
 		return pk_id_solicitud_envio;
@@ -201,6 +221,48 @@ public class SolicitudEnvio {
 		this.fk_usr_cancela = fk_usr_cancela;
 	}
 
+	public int getI_info_descarga() {
+		return i_info_descarga;
+	}
+
+	public void setI_info_descarga(int i_info_descarga) {
+		this.i_info_descarga = i_info_descarga;
+	}
+
+	public LocalDate getDt_fecha_descarga() {
+		return dt_fecha_descarga;
+	}
+
+	public void setDt_fecha_descarga(LocalDate dt_fecha_descarga) {
+		this.dt_fecha_descarga = dt_fecha_descarga;
+	}
+
+	public String getVc_ruta() {
+		return vc_ruta;
+	}
+
+	public void setVc_ruta(String vc_ruta) {
+		this.vc_ruta = vc_ruta;
+	}
+
+	public String getVc_obser_cancelacion() {
+		return vc_obser_cancelacion;
+	}
+
+	public void setVc_obser_cancelacion(String vc_obser_cancelacion) {
+		this.vc_obser_cancelacion = vc_obser_cancelacion;
+	}
+
+	public int getI_identificador_ruta() {
+		return i_identificador_ruta;
+	}
+
+	public void setI_identificador_ruta(int i_identificador_ruta) {
+		this.i_identificador_ruta = i_identificador_ruta;
+	}
+	
+	
+	
 	
 	
 }

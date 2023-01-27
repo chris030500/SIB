@@ -198,6 +198,7 @@ function VoBoDocumentos() {
 				var comentario = document.getElementById(idComentario).value;
 				console.log("Comentario: " + comentario);
 				$.ajax({
+					async: false,
 					url: "/hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
 					type: "POST",
 					dataType: "JSON",
@@ -214,7 +215,8 @@ function VoBoDocumentos() {
 			miArray[i] = true;
 
 			$.ajax({
-				url: "/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
+				async: false,
+				url: "/doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
 				type: "POST",
 				dataType: "JSON",
 				success: function(respuesta) {
@@ -263,11 +265,12 @@ function validarArchivosSolicitud() {
 	console.log("Solicitud envio: " + solicitudEnvio);
 	//var estatus;
 	$.ajax({
+		async: false,
 		url: "/solicitudEnvio/validacionArchivoSolicitud?solicitud=" + solicitudEnvio,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("Respuesta: " + respuesta);
+			console.log("Respuesta de solicitudEnvio/validacionArchivoSolicitud?: " + respuesta);
 			validarSoliEnvio(respuesta, solicitudEnvio);
 		},
 		error: function(respuesta) {
@@ -286,24 +289,31 @@ function validarArchivosSolicitud() {
 function validarSoliEnvio(estatus, idSolicitud) {
 	var solicitudCore = document.getElementById('i_no_solicitud_core').value;
 	$.ajax({
-		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud,
+		async: false,
+		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/"+solicitudCore,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
 			console.log("Respuesta validarSoliEnvio: " + respuesta);
-			if(respuesta === 1){
+			// Todos los documentos fueron aprobados
+			if (respuesta === 1) {
 				swal({
-					icon: "info",
-					title: "Error: ",
-					text: "No se encontro la solicitud de envío: " + idSolicitud,
+					icon: "success",
+					title: "Revisión de documentos exitosa",
 					showConfirmButton: false
+					//Generamos el archivo PDF y XML
+					
 
+				}).then((result) => {
+					window.location.replace("/solicitudEnvio/solicitudes");
 				});
+
 			} else {
+				// Si la respuesta es diferente de 1 significa que existe un documento a corregir
 				swal({
 					icon: "success",
 					title: "Validación correcta",
-					text: "solicitud: " +solicitudCore,
+					text: "solicitud: " + solicitudCore,
 					showConfirmButton: false
 
 				});
@@ -323,13 +333,18 @@ function validarSoliEnvio(estatus, idSolicitud) {
 
 				});
 			}
-			/*swal({
+			swal({
 				icon: "info",
-				title: "Error: " + JSON.stringify(respuesta),
+				title: "Error: " + respuesta.status,
 				showConfirmButton: false
 
-			});*/
+			});
 		}
 	});
+}
+
+function generarArchivoPDF(solicitud){
+	console.log("GenerarArchivoPDF");
+	
 }
 

@@ -99,7 +99,7 @@ public class DoctoEnvioRestController {
 		ObtenerDoctoAsociadoProdDto idDocumento = cargaDocumentosService.obtenerIdDocumentoDoctAsociado(documento)
 				.get(0);
 
-		// Obtenemos la ultima solicitud registrada
+		// Obtenemos la solicitud registrada
 		Optional<SolicitudEnvio> sEnvio;
 		sEnvio = solicitudEnvioService.findById(Integer.parseInt(idEnvio));
 		//sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
@@ -116,14 +116,15 @@ public class DoctoEnvioRestController {
 		//File directorio = new File(url.get(0).getVc_valor_propiedad() +clienteId + "/"+ clienteId+"-"+solicitud);
 		File directorio2 = new File(url.get(0).getVc_valor_propiedad() +clienteId);
 		System.out.println("directorio2: " + directorio2);
-        String[] filesNames = directorio2.list();
-        int seguimiento = 0;
-        if (filesNames == null) {
-        	seguimiento = 1;
-        } else {
-        	seguimiento = filesNames.length;
-        }
-        String ubicacionArchivo = (url.get(0).getVc_valor_propiedad() +clienteId+"/"+clienteId+"-"+solicitud+"-"+seguimiento+"/"+nombreDocumento).toString();
+//        String[] filesNames = directorio2.list();
+//        int seguimiento = 0;
+//        if (filesNames == null) {
+//        	seguimiento = 1;
+//        } else {
+//        	seguimiento = filesNames.length;
+//        }
+        String ubicacionArchivo = (clienteId+"/"+clienteId+"-"+solicitud+"-"+sEnvio.get().getI_identificador_ruta()+"/"+nombreDocumento).toString();
+        String ubicacionArchivoServidor = (url.get(0).getVc_valor_propiedad() +clienteId+"/"+clienteId+"-"+solicitud+"-"+sEnvio.get().getI_identificador_ruta()+"/"+nombreDocumento).toString();
 		//String ubicacionArchivo = url.get(0).getVc_valor_propiedad() + nombreDocumento;
 		// System.out.println("Url: " + url.get(0).getVc_valor_propiedad());
         System.out.println("Ejecutando guardarDoctoEnvio");
@@ -151,26 +152,26 @@ public class DoctoEnvioRestController {
 			if(productoNomina.equals("S")) {
 				//System.out.println("Entro en if de S");
 				logger.info("Entro en si es nomina");
-				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivo, dEnvio);
-				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivo, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
 			} else if (productoNomina.equals("N")){
 				//System.out.println("Entro en if de N");
 				logger.info("Entro en no es nomina");
-				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivo, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
 			}
 			
 		} else if (nombreDocumento.contains("CONTRATO")) {
 			//System.out.println("Entro en contraro");
 			logger.info("Entro en contraro");
-			obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivo, dEnvio);
+			obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio);
 		} else if (nombreDocumento.contains("Pagare")) {
 			//System.out.println("Entro en pagare");
 			logger.info("Entro en pagare");
-			obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivo, dEnvio);
+			obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio);
 		} else if (nombreDocumento.contains("PlandePagos")) {
 			//System.out.println("Entro en Plan de pagos");
 			logger.info("Entro en Plan de pagos");
-			obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivo, dEnvio);
+			obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio);
 		}
 		//return ResponseEntity.ok(dEnvio);
 		return ResponseEntity.ok("Ok");

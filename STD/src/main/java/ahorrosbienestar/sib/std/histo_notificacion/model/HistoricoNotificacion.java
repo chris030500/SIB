@@ -37,6 +37,9 @@ public class HistoricoNotificacion {
 	
 	@Column(name = "VC_HORA_REGISTRO", columnDefinition = "VARCHAR(45)")
 	private String vc_hora_registro;
+	
+	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
+	private int i_estatus;
 
 	public int getPk_id_historico_notificacion() {
 		return pk_id_historico_notificacion;
@@ -77,6 +80,16 @@ public class HistoricoNotificacion {
 	public void setVc_hora_registro(String vc_hora_registro) {
 		this.vc_hora_registro = vc_hora_registro;
 	}
+
+	public int getI_estatus() {
+		return i_estatus;
+	}
+
+	public void setI_estatus(int i_estatus) {
+		this.i_estatus = i_estatus;
+	}
+	
+	
 	
 	
 	

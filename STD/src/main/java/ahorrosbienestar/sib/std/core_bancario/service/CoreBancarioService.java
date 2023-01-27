@@ -50,6 +50,7 @@ public class CoreBancarioService {
 						cb.setPlazo(rs.getString(9));
 						cb.setEstatus(rs.getString(10));
 						cb.setProductoNomina(rs.getString(11));
+						cb.setTasaMoratoria(rs.getString(13));
 						cb.setClienteId(rs.getString(14));
 						return cb;
 					}
@@ -72,6 +73,7 @@ public class CoreBancarioService {
 						p.setRol(rs.getString(4));
 						p.setTelefonoCelular(rs.getString(5));
 						p.setCorreoElectronico(rs.getString(6));
+						p.setDireccionCompleta(rs.getString(7));
 						return p;
 					}
 				});

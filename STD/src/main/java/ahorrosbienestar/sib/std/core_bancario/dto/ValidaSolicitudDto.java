@@ -13,6 +13,7 @@ public class ValidaSolicitudDto {
 	private String plazo;
 	private String estatus;
 	private String productoNomina;
+	private String tasaMoratoria;
 	private String clienteId;
 	
 	public int getResultado() {
@@ -90,6 +91,14 @@ public class ValidaSolicitudDto {
 	public void setProductoNomina(String productoNomina) {
 		this.productoNomina = productoNomina;
 	}
+	public String getTasaMoratoria() {
+		return tasaMoratoria;
+	}
+	public void setTasaMoratoria(String tasaMoratoria) {
+		this.tasaMoratoria = tasaMoratoria;
+	}
+	
+	
 	
 		
 

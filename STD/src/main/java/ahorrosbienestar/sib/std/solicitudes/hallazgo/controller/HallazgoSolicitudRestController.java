@@ -66,9 +66,9 @@ public class HallazgoSolicitudRestController {
 		System.out.println("usr_registra: " + usu);
 		System.out.println("fecha registro:" + fechaActual);
 		
-		//hs = hallazgoSolicitudService.save(hs);
-		//return ResponseEntity.ok(hs);
-		return ResponseEntity.ok("ok");
+		hs = hallazgoSolicitudService.save(hs);
+		return ResponseEntity.ok(hs);
+		//return ResponseEntity.ok("ok");
 	}
 
 }

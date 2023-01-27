@@ -92,7 +92,7 @@ function postEdit() {
 
 function showEditModal(index) {
 	console.log("index: " + index);
-	var url = "http://localhost:8090/usuario/usuario/loadEntity/";
+	var url = "/usuario/usuario/loadEntity/";
 
 	console.log("entro en showEditModal");
 
@@ -138,7 +138,7 @@ function altaUsuario() {
 		} else {
 			console.log("Puede continuar");
 			$.ajax({
-				url: "http://localhost:8090/usuario/nombre/" + nombreUsuario,
+				url: "/usuario/nombre/" + nombreUsuario,
 				type: "GET",
 				success: function(respuesta) {
 					/*console.log("Entro en success de get");
@@ -151,7 +151,7 @@ function altaUsuario() {
 					} else {
 						console.log("Usuario para registrar");
 						$.ajax({
-							url: "http://localhost:8090/usuario/idEmpleado/" + idEmpleado,
+							url: "/usuario/idEmpleado/" + idEmpleado,
 							type: "GET",
 							success: function(respuesta) {
 								if (respuesta == true) {
@@ -160,7 +160,7 @@ function altaUsuario() {
 								} else {
 									console.log("Puede continuar en agregar el usuario");
 									$.ajax({
-										url: "http://localhost:8090/usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
+										url: "/usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
 										type: "POST",
 										success: function() {
 											console.log("Entro en success de get");
@@ -171,7 +171,7 @@ function altaUsuario() {
 											console.log("Busca el usuario registrado con anterioridad");
 											console.log("Nombre de usuario: " + nombreUsuario);
 											$.ajax({
-												url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
+												url: "/usuario/nombreUsuario/" + nombreUsuario,
 												type: "GET",
 												dataType: "JSON",
 												success: function(respuesta) {
@@ -197,7 +197,7 @@ function altaUsuario() {
 																	'Accept': 'application/json',
 																	'Content-Type': 'application/json'
 																},
-																url: "http://localhost:8090/hist_contrasena/",
+																url: "/hist_contrasena/",
 																type: "POST",
 																data: JSON.stringify(data),
 																dataType: "json",
@@ -211,7 +211,7 @@ function altaUsuario() {
 																		showConfirmButton: false
 
 																	}).then((result) => {
-																		window.location.replace("http://localhost:8090/usuario/formulario");
+																		window.location.replace("/usuario/formulario");
 																	});
 
 																},
@@ -283,7 +283,7 @@ function altaUsuario() {
 
 function validarNombreUsuario(nombreUsuario) {
 	$.ajax({
-		url: "http://localhost:8090/usuario/nombre/" + nombreUsuario,
+		url: "/usuario/nombre/" + nombreUsuario,
 		type: "GET",
 		success: function(respuesta) {
 			/*console.log("Entro en success de get");
@@ -311,7 +311,7 @@ function bajaUsuario(usuario) {
 	console.log("Entro en dar baja usuario");
 	console.log("Usuario: " + usuario);
 	$.ajax({
-		url: "http://localhost:8090/usuario/baja_usuario?usuario=" + usuario,
+		url: "/usuario/baja_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -347,7 +347,7 @@ function reactivarUsuario(usuario) {
 	console.log("Entro en reactivar usuario");
 	console.log("Usuario: " + usuario);
 	$.ajax({
-		url: "http://localhost:8090/usuario/reactivar_usuario?usuario=" + usuario,
+		url: "/usuario/reactivar_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -397,7 +397,7 @@ function editarUsuario() {
 	} else {
 		console.log("Puede continuar");
 		$.ajax({
-			url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
+			url: "/usuario/nombreUsuario/" + nombreUsuario,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -416,7 +416,7 @@ function editarUsuario() {
 				} else if (respuesta == null) {
 					console.log("El nombre de usuario no existe");
 					$.ajax({
-						url: "http://localhost:8090/usuario/editar_usuario?usuario=" + nombreUsuario + "&idUsuario="+idUsuario,
+						url: "/usuario/editar_usuario?usuario=" + nombreUsuario + "&idUsuario="+idUsuario,
 						type: "POST",
 						success: function() {
 							/*console.log("Entro en success de get");

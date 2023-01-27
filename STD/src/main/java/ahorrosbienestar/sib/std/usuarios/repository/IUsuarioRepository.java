@@ -36,6 +36,7 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS u SET I_ESTATUS_CUENTA = 1 WHERE PK_ID_USUARIO = :id", nativeQuery=true)
 	public int activarUsuarioCuenta( @Param("id") Integer id);
 	
+	
 	@Modifying
 	@Transactional
 	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS u SET I_ESTATUS_USUARIO = 1 WHERE PK_ID_USUARIO = :id", nativeQuery=true)

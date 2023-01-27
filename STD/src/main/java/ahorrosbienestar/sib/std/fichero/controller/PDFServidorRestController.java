@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -37,6 +38,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ahorrosbienestar.sib.std.fichero.service.PDFServidorService;
+import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
+import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 
 @RestController
 @RequestMapping("guardarPDFServidor")
@@ -44,6 +47,9 @@ public class PDFServidorRestController {
 
 	@Autowired
 	private PDFServidorService pdfServidorService;
+	
+	@Autowired
+	private SolicitudEnvioService solicitudEnvioService;
 
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
@@ -77,8 +83,8 @@ public class PDFServidorRestController {
 	@PostMapping("/upload2")
     public String uploadFilez(@RequestParam("file") MultipartFile[] files, 
     		@RequestParam("solicitudCredito") String solicitudCredito,
-    		@RequestParam("clienteId") String clienteId
-    		) throws IllegalStateException, IOException {
+    		@RequestParam("clienteId") String clienteId,
+    		@RequestParam(name = "idEnvio") String idEnvio) throws IllegalStateException, IOException {
 		logger.info("Ejecutando en uploadFilez");
 		logger.info("solicitudCredito: " + solicitudCredito);
 		logger.info("clienteId: " + clienteId);
@@ -86,63 +92,75 @@ public class PDFServidorRestController {
         if (files.length == 0) {
             return "Parece que no hay archivos subidos";
         }
-        boolean result = false;
+        
         //Obtenemos los archivos seleccionados
             for (MultipartFile file : files) {
             	
                 byte[] bytes = file.getBytes();
                 //Path path = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito +"/"+ file.getOriginalFilename());
                 
-                
-                File directorio = new File(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito);
-                File directorio2 = new File(UrlPDFServidor() +clienteId);
-                String[] filesNames = directorio2.list();
+                Optional<SolicitudEnvio> sEnvio;
+        		sEnvio = solicitudEnvioService.findById(Integer.parseInt(idEnvio));
+        		int iDentificadorRuta = sEnvio.get().getI_identificador_ruta();
+        		System.out.println("Identificador: " +iDentificadorRuta);
+                //File directorioInicio = new File(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta);
+                File directorio2 = new File(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta);
+//                String[] filesNames = directorio2.list();
                
-                File directorioInicio = new File(directorio+"-"+1);
-                if (!directorioInicio.exists()) {
+                //File directorioInicio = new File(directorio+"-"+iDentificadorRuta);
+                
+                //Sentencia donde el directorio no existe
+                if (!directorio2.exists()) {
                 	System.out.println("Entro en if de no existe el directorio");
-                    if ((directorioInicio).mkdirs()) {
-                    	logger.info("Directorio"+ directorio +" creado correctamente");
+                    if ((directorio2).mkdirs()) {
+                    	logger.info("Directorio"+ directorio2 +" creado correctamente");
                         //System.out.println("Directorio creado");
-                        Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+1+"/"+ file.getOriginalFilename());
+                        Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta+"/"+ file.getOriginalFilename());
                         Files.write(nuevoPath, bytes);
-                        result = true;
                     } else {
-                    	logger.error("Error al crear directorio: " + directorio);
+                    	logger.error("Error al crear directorio: " + directorio2);
                         //System.out.println("Error al crear directorio");
                     }
-                } else if(directorioInicio.exists()) {
+                } else {
                 	
-    
-                	if(result == false) {
-                		int continuidad = filesNames.length + 1;
-                    	File nuevoDirectorio = new File(directorio+"-"+continuidad);
-                		//System.out.println("nuevoDirectorio: " + nuevoDirectorio);
-                		Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+continuidad+"/"+ file.getOriginalFilename());
-                    	//System.out.println("nuevoPath: " +nuevoPath);
-                		if(nuevoDirectorio.mkdirs()) {
-                    		Files.write(nuevoPath, bytes);
-                    	} else {
-                    		logger.error("Error al crear directorio: " + nuevoDirectorio);
-                            
-                        }
-                		result = true;
-                	} else if (result == true){
-                		int continuidad = filesNames.length;
-                		Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+continuidad+"/"+ file.getOriginalFilename());
-                		//System.out.println("nuevoPath: " + nuevoPath);
-                		try {
-                			Files.write(nuevoPath, bytes);
-                		} catch (Exception e) {
-							// TODO: handle exception
-                			logger.error("No se encontro la ubicacion" + e);
-                			//System.out.println("No se encontro la ubicacion: " + e);
-						}
-                		
-                		
-                	}
+                		System.out.println("Si existe" + directorio2);
+                    	Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta+"/"+ file.getOriginalFilename());
+                        Files.write(nuevoPath, bytes);
+                	
                 	
                 }
+//                } else if(directorioInicio.exists()) {
+//                	
+//    
+//                	if(result == false) {
+//                		int continuidad = filesNames.length + 1;
+//                    	File nuevoDirectorio = new File(directorio+"-"+continuidad);
+//                		//System.out.println("nuevoDirectorio: " + nuevoDirectorio);
+//                		Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+continuidad+"/"+ file.getOriginalFilename());
+//                    	//System.out.println("nuevoPath: " +nuevoPath);
+//                		if(nuevoDirectorio.mkdirs()) {
+//                    		Files.write(nuevoPath, bytes);
+//                    	} else {
+//                    		logger.error("Error al crear directorio: " + nuevoDirectorio);
+//                            
+//                        }
+//                		result = true;
+//                	} else if (result == true){
+//                		int continuidad = filesNames.length;
+//                		Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+continuidad+"/"+ file.getOriginalFilename());
+//                		//System.out.println("nuevoPath: " + nuevoPath);
+//                		try {
+//                			Files.write(nuevoPath, bytes);
+//                		} catch (Exception e) {
+//							// TODO: handle exception
+//                			logger.error("No se encontro la ubicacion" + e);
+//                			//System.out.println("No se encontro la ubicacion: " + e);
+//						}
+//                		
+//                		
+//                	}
+//                	
+//                }
             }
 
 

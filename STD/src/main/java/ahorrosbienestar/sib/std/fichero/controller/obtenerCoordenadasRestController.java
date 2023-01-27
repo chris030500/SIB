@@ -80,6 +80,8 @@ public class obtenerCoordenadasRestController {
 			float x2 = x1 + widht;
 			float y2 = y1 + height;
 			int hoja = (int) c[2];
+			float xCentral = (x1+x2)/2;
+			float yCentral = (y1+y2)/2;
 			FirmaDocto firmaDocto = new FirmaDocto();
 			firmaDocto.setF_coord_firma_x1(x1);
 			firmaDocto.setF_coord_firma_x2(x2);
@@ -87,6 +89,8 @@ public class obtenerCoordenadasRestController {
 			firmaDocto.setF_coord_firma_y2(y2);
 			firmaDocto.setFk_id_docto_envio(dEnvio);
 			firmaDocto.setI_no_hoja(hoja);
+			firmaDocto.setF_coord_firma_xCentral(xCentral);
+			firmaDocto.setF_coord_firma_yCentral(yCentral);
 			firmaDocto = firmaDoctoService.save(firmaDocto);
 			
 			logger.info("x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2);
@@ -133,10 +137,13 @@ public class obtenerCoordenadasRestController {
 		String pdfPath = url;
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
+		
 
 
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
+			float xCentral = 0;
+			float yCentral = 0;
 
 			logger.info("Página" + c[2]);
 			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
@@ -161,6 +168,8 @@ public class obtenerCoordenadasRestController {
 			float x2 = x1 + widht;
 			float y2 = y1 + height;
 			int hoja = (int) c[2];
+			xCentral = (x1+x2)/2;
+			yCentral = (y1+y2)/2;
 			FirmaDocto firmaDocto = new FirmaDocto();
 			firmaDocto.setF_coord_firma_x1(x1);
 			firmaDocto.setF_coord_firma_x2(x2);
@@ -168,7 +177,9 @@ public class obtenerCoordenadasRestController {
 			firmaDocto.setF_coord_firma_y2(y2);
 			firmaDocto.setI_no_hoja(hoja);
 			firmaDocto.setFk_id_docto_envio(dEnvio);
-			//firmaDocto = firmaDoctoService.save(firmaDocto);
+			firmaDocto.setF_coord_firma_xCentral(xCentral);
+			firmaDocto.setF_coord_firma_yCentral(yCentral);
+			firmaDocto = firmaDoctoService.save(firmaDocto);
 
 			// Instantiating the PDPageContentStream class
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
@@ -222,6 +233,8 @@ public class obtenerCoordenadasRestController {
 		System.out.println("Total de hojas anexo contrato: " + document.getNumberOfPages());
 		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 		for (int i = 0; i < list.size(); i++) {
+			float xCentral = 0;
+			float yCentral = 0;
 			float[] c = list.get(i);
 
 			logger.info("Página" + c[2]);
@@ -254,6 +267,8 @@ public class obtenerCoordenadasRestController {
 				float x2 = x1 + widht;
 				float y2 = y1 + height;
 				int hoja = (int) c[2];
+				xCentral = (x1+x2)/2;
+				yCentral = (y1+y2)/2;
 				FirmaDocto firmaDocto = new FirmaDocto();
 				firmaDocto.setF_coord_firma_x1(x1);
 				firmaDocto.setF_coord_firma_x2(x2);
@@ -261,6 +276,8 @@ public class obtenerCoordenadasRestController {
 				firmaDocto.setF_coord_firma_y2(y2);
 				firmaDocto.setI_no_hoja(hoja);
 				firmaDocto.setFk_id_docto_envio(dEnvio);
+				firmaDocto.setF_coord_firma_xCentral(xCentral);
+				firmaDocto.setF_coord_firma_yCentral(yCentral);
 				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo coordenadas de la hoja : " + c[2]);
 				logger.info("Coordenadas del espacio de firma: ");
@@ -281,6 +298,8 @@ public class obtenerCoordenadasRestController {
 				float x2 = x1 + widht;
 				float y2 = y1 + height;
 				int hoja = (int) c[2];
+				xCentral = (x1+x2)/2;
+				yCentral = (y1+y2)/2;
 				FirmaDocto firmaDocto = new FirmaDocto();
 				firmaDocto.setF_coord_firma_x1(x1);
 				firmaDocto.setF_coord_firma_x2(x2);
@@ -288,6 +307,8 @@ public class obtenerCoordenadasRestController {
 				firmaDocto.setF_coord_firma_y2(y2);
 				firmaDocto.setI_no_hoja(hoja);
 				firmaDocto.setFk_id_docto_envio(dEnvio);
+				firmaDocto.setF_coord_firma_xCentral(xCentral);
+				firmaDocto.setF_coord_firma_yCentral(yCentral);
 				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo coordenadas de la hoja : " + c[2]);
 				logger.info("Coordenadas del espacio de firma: ");
@@ -313,6 +334,8 @@ public class obtenerCoordenadasRestController {
 				float y1 = (ph - ultimo[0]) - acomodoY;
 				float x2 = x1 + widht;
 				float y2 = y1 + height;
+				xCentral = (x1+x2)/2;
+				yCentral = (y1+y2)/2;
 				int hoja = (int) c[2];
 				FirmaDocto firmaDocto = new FirmaDocto();
 				firmaDocto.setF_coord_firma_x1(x1);
@@ -320,6 +343,8 @@ public class obtenerCoordenadasRestController {
 				firmaDocto.setF_coord_firma_y1(y1);
 				firmaDocto.setF_coord_firma_y2(y2);
 				firmaDocto.setI_no_hoja(hoja);
+				firmaDocto.setF_coord_firma_xCentral(xCentral);
+				firmaDocto.setF_coord_firma_yCentral(yCentral);
 				firmaDocto.setFk_id_docto_envio(dEnvio);
 				firmaDocto = firmaDoctoService.save(firmaDocto);
 				logger.info("Obteniendo último elemento de la lista : " + list.get(list.size() - 1));
@@ -363,7 +388,8 @@ public class obtenerCoordenadasRestController {
 		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 		List<float[]> list = kwp.getCoordinate();
 		// float[] c = list.get(0);
-
+		float xCentral = 0;
+		float yCentral = 0;
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
 			logger.info("Página: " + c[2]);
@@ -388,6 +414,8 @@ public class obtenerCoordenadasRestController {
 			float x2 = x1 + widht;
 			float y2 = y1 + height;
 			int hoja = (int) c[2];
+			xCentral = (x1+x2)/2;
+			yCentral = (y1+y2)/2;
 			FirmaDocto firmaDocto = new FirmaDocto();
 			firmaDocto.setF_coord_firma_x1(x1);
 			firmaDocto.setF_coord_firma_x2(x2);
@@ -395,6 +423,8 @@ public class obtenerCoordenadasRestController {
 			firmaDocto.setF_coord_firma_y2(y2);
 			firmaDocto.setI_no_hoja(hoja);
 			firmaDocto.setFk_id_docto_envio(dEnvio);
+			firmaDocto.setF_coord_firma_xCentral(xCentral);
+			firmaDocto.setF_coord_firma_yCentral(yCentral);
 			firmaDocto = firmaDoctoService.save(firmaDocto);
 			// Instantiating the PDPageContentStream class
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
@@ -431,6 +461,7 @@ public class obtenerCoordenadasRestController {
 	@GetMapping("/contrato")
 	public ResponseEntity<?> obtenerCoordenadasContrato(String url, DoctEnvio dEnvio) throws IOException {
 
+		
 		// PDDocument doc1 = PDDocument.load(file);
 		System.out.println("Contrato");
 		System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
@@ -449,6 +480,8 @@ public class obtenerCoordenadasRestController {
 		PDDocument document = PDDocument.load(file);
 		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 		System.out.println("Total de paginas Contrato: " + document.getNumberOfPages() );
+		float xCentral = 0;
+		float yCentral = 0;
 		for (int i = 0; i < list.size(); i++) {
 			float[] c = list.get(i);
 
@@ -480,6 +513,8 @@ public class obtenerCoordenadasRestController {
 					float x2 = x1 + widht;
 					float y2 = y1 + height;
 					int hoja = (int) c[2];
+					xCentral = (x1+x2)/2;
+					yCentral = (y1+y2)/2;
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(x1);
 					firmaDocto.setF_coord_firma_x2(x2);
@@ -487,6 +522,8 @@ public class obtenerCoordenadasRestController {
 					firmaDocto.setF_coord_firma_y2(y2);
 					firmaDocto.setI_no_hoja(hoja);
 					firmaDocto.setFk_id_docto_envio(dEnvio);
+					firmaDocto.setF_coord_firma_xCentral(xCentral);
+					firmaDocto.setF_coord_firma_yCentral(yCentral);
 					firmaDocto = firmaDoctoService.save(firmaDocto);
 					logger.info("Coordenadas del espacio de firma: ");
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
@@ -505,6 +542,8 @@ public class obtenerCoordenadasRestController {
 					float x2 = x1 + widht;
 					float y2 = y1 + height;
 					int hoja = (int) c[2];
+					xCentral = (x1+x2)/2;
+					yCentral = (y1+y2)/2;
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(x1);
 					firmaDocto.setF_coord_firma_x2(x2);
@@ -512,6 +551,8 @@ public class obtenerCoordenadasRestController {
 					firmaDocto.setF_coord_firma_y2(y2);
 					firmaDocto.setI_no_hoja(hoja);
 					firmaDocto.setFk_id_docto_envio(dEnvio);
+					firmaDocto.setF_coord_firma_xCentral(xCentral);
+					firmaDocto.setF_coord_firma_yCentral(yCentral);
 					firmaDocto = firmaDoctoService.save(firmaDocto);
 					logger.info("Coordenadas del espacio de firma: ");
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
