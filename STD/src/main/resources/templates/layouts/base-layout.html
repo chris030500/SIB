@@ -133,7 +133,7 @@
 									<i class="bi bi-file-person"></i><span>Usuarios</span>
 								</a>
 							</li>
-								<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 								<a th:href="@{/rol/index}">
 									<i class="bi bi-person-lines-fill"></i><span>Roles</span>
 								</a>
@@ -176,17 +176,34 @@
 									<i class="bi bi-card-text"></i><span>Validacion</span>
 								</a>
 							</li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/contrato/generar_contrato}">
+									<i class="bi bi-card-text"></i><span>Contratos</span>
+								</a>
+							</li>
 
 						</ul>
-					
+
 					</li>
+					
+					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 
-					<!--<li class="nav-header"></li>
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-video"
+							data-bs-toggle="collapse">
+							<i class="bi bi-camera-video"></i><span>Proceso Video Grabacion</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
 
-					<a href="#" class="nav-link">
-						<i class="nav-icon far fa-circle text-warning"></i><span>Cerrar sesión</span>
-					</a>-->
+						<ul id="config-nav-video" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/videoGrabacion/consulta_documentos}">
+									<i class="bi bi-file-earmark-person-fill"></i><span>Documentos Enviados</span>
+								</a>
+							</li>			
+						</ul>
 
+					</li>
+	
 				</ul>
 
 				<!-- /.sidebar -->

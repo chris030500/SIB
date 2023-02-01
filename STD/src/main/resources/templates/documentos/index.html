@@ -68,19 +68,26 @@
 
 								<td th:text="${documento.vc_nombre_doc}">
 								
-								<td th:text="${documento.i_estatus}">
+								<td th:text="${documento.i_estatus}?'ACTIVO':'INACTIVO'">
 
 								<td class="text-center">
 
 								
 
 									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-danger btn-sm" id="idperfil" name="iddocumento"
+									<button class="btn btn-primary btn-sm" id="idperfil" name="iddocumento"
 										onclick="estatusDocumento(this.value)" href="#" title="Eliminar documento"
 										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-trash"></i>
 									</button>
-
+									
+									<!-- Botón para editar registro del perfil -->
+									<button class="btn btn-primary btn-sm" id="idperfil" name="iddocumento"
+										onclick="estatusDocumento(this.value)" href="#" title="Editar documento"
+										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
+										<i class="fas fa-edit"></i>
+									</button>
+									
 								</td>
 
 							</tr>

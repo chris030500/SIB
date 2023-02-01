@@ -1,8 +1,6 @@
 package ahorrosbienestar.sib.std.productos.model;
 
 import java.time.LocalDate;
-import java.util.Date;
-
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

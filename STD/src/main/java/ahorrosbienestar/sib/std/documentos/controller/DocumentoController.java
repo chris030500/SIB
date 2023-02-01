@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.documentos.model.Documento;
 import ahorrosbienestar.sib.std.documentos.service.DocumentoService;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Controller
 @RequestMapping("documento")

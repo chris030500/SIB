@@ -43,8 +43,6 @@ public class CoreBancarioRestController {
 		return  ResponseEntity.ok(coreBancarioService.listaProductos(solicitud)); 
 	}
 	
-
-	
 	@RequestMapping(value = {"/buscar_catProducto"}, method = RequestMethod.GET)
 	public int spBuscarCatProducto(@RequestParam("producto") Integer producto){
 		return coreBancarioService.spBuscarCatProducto(producto);

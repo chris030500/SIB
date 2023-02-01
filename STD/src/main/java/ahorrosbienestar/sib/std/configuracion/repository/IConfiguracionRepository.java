@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Repository
 public interface IConfiguracionRepository extends JpaRepository<Configuracion, Integer> {
@@ -76,4 +75,12 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 			+ "OR VC_NOM_PROPIEDAD = 'username' "
 			+ "OR VC_NOM_PROPIEDAD = 'password';", nativeQuery = true)
 	public List<Configuracion> obtenerInfoBDCore();
+	
+	//Consulta para obtener los parametros de la conexión a la base de datos del core bancario
+	@Query(value = "SELECT * FROM TBL_CONFIGURACION "
+			+ "where VC_NOM_PROPIEDAD like '%jaspersserver_url%' "
+			+ "OR VC_NOM_PROPIEDAD like '%jaspersserver_username%' "
+			+ "OR VC_NOM_PROPIEDAD like '%jaspersserver_password%'; ", nativeQuery = true)
+	public List<Configuracion> obtenerConfReportes();
+	
 }

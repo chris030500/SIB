@@ -1,0 +1,247 @@
+var opcionSeleccionada = "";
+var altaProductos = "alta/";
+var altaDocumentos = "altaDocumentos/";
+var consultaDocumento = "consultaDocumento/"
+
+$(document).ready(function() {
+	inicioPantalla();
+	$("#opciones").change(function() {
+		opcionSeleccionada = $("#opciones").val();
+		if (opcionSeleccionada > 0) {
+
+			switch (opcionSeleccionada) {
+				case "1":
+					$("#productoColocacion").show();
+					$("#productoCaptacion").hide();
+
+
+					break;
+				case "2":
+					$("#productoColocacion").hide();
+					$("#productoCaptacion").show();
+
+					break;
+				default:
+					break;
+
+			}
+
+		} else {
+			$("#productoColocacion").hide();
+			$("#productoCaptacion").hide();
+
+			swal({
+				title: "Error",
+				text: "Debe seleccionar una opcion de Busqueda",
+				icon: "warning",
+			});
+
+
+		}
+	});
+
+	$("#idTodos").click(function() {
+
+		if (this.checked) {
+			checkTodo();
+		} else {
+			limpiarcheck();
+		}
+
+	});
+
+	$("#btnCancelar").click(function() {
+		$("#modalDocumentos").modal("hide");
+		limpiarcheck();
+	});
+
+	$("#btnRelDoc").click(function() {
+		var ids = "";
+		//var ids=Array.from(document.querySelectorAll("#documentos input[type='checkbox']:checked"));
+
+		document.querySelectorAll('#documentos input[type=checkbox]:checked').forEach(function(checkElement) {
+			if (checkElement.id != 'idTodos') {
+				ids += checkElement.id + " ";
+			}
+		});
+
+		var listaOpciones = ids.trim().split(' ');
+
+		var separador = "/";
+		var urlGuardar = getAbsolutePath() + altaDocumentos + $("#datosRelDoc").val() + separador + listaOpciones;
+		$.ajax({
+			url: urlGuardar,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+			$("#modalDocumentos").modal("hide");
+				swal({
+					title: "",
+					text: respuesta[0],
+					icon: "success",
+					confirmButtonText: 'Aceptar'
+				}).then(resp => {
+					limpiarcheck();
+				});
+
+			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+				swal({
+					title: "Error, ",
+					text: "Se presento un error, intente mas tarde.",
+					icon: "warning",
+				});
+			}
+		});
+
+	});
+
+
+});
+
+function limpiarcheck(){
+	
+	document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
+				checkElement.checked = false;
+			});
+}
+
+function checkTodo(){
+	
+	document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
+				checkElement.checked = true;
+			});
+}
+
+
+function inicioPantalla() {
+	$("#productoColocacion").hide();
+	$("#productoCaptacion").hide();
+}
+
+function validarVacio() {
+	var validacion = true;
+	opcionSeleccionada = $("#opciones").val();
+
+	if (opcionSeleccionada > 0) {
+
+		switch (opcionSeleccionada) {
+			case "1":
+				if ($("#opcionesColocacion").val() == '0') {
+					validacion = false;
+				}
+
+				break;
+			case "2":
+				if ($("#opcionesCaptacion").val() == '0') {
+					validacion = false;
+				}
+				break;
+			default:
+				validacion = false;
+				break;
+		}
+	}
+
+	return validacion;
+}
+
+function altaProducto() {
+
+	if (!validarVacio()) {
+		swal({
+			title: "Error",
+			text: "Debe seleccionar el producto a registrar.",
+			icon: "warning",
+		});
+	} else {
+		$.ajax({
+			url: urlServicio(),
+			type: "GET",
+			dataType: "JSON",
+			success: function(respuesta) {
+
+				swal({
+					title: "",
+					text: respuesta[0],
+					icon: "success",
+					confirmButtonText: 'Aceptar'
+				}).then(resp => {
+					//if (resp.isConfirmed) {
+					window.location.href = "http://localhost:8080/STD/producto/index";
+					//} else {
+					//window.location.href = "http://localhost:8080/STD/producto/index";
+					//}
+				});
+
+			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+				swal({
+					title: "Error, ",
+					text: "Se presento un error, intente mas tarde.",
+					icon: "warning",
+				});
+			}
+		});
+
+	}
+}
+
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+function urlServicio() {
+	var separador = "/";
+	var urlGuardar = getAbsolutePath();
+	switch (opcionSeleccionada) {
+		case "1":
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada;
+			break;
+		case "2":
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada;
+			break;
+		default:
+			break;
+	}
+
+	return urlGuardar;
+}
+
+function documentos(btnID) {
+
+	document.querySelector('#lblTitulo').innerText = $(btnID).parents("tr").find("td").eq(2).html();
+	$("#datosRelDoc").val($(btnID).parents("tr").find("td").eq(0).html());
+
+	var urlGuardar = getAbsolutePath() + consultaDocumento + $(btnID).parents("tr").find("td").eq(0).html();
+
+	$.ajax({
+		url: urlGuardar,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+
+			for (var i in respuesta) {
+  				document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
+
+				if (checkElement.id != 'idTodos') {
+					if (checkElement.id == respuesta[i].fk_documento) {
+						checkElement.checked = true;
+					}
+				}
+			});
+			}
+			
+			$("#modalDocumentos").modal("show");
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+
+}
+

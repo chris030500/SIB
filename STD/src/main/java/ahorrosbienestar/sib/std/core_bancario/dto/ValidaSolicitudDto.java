@@ -7,11 +7,27 @@ public class ValidaSolicitudDto {
 	private int solicitudCreditoID;
 	private int productoCreditoID;
 	private String producto;
+	private String productoNomina;
 	private String montoSolicitado;
 	private String montoAutorizado;
 	private String tasaFija;
 	private String plazo;
 	private String estatus;
+	private String tasaMoratoria;
+	private String reca;
+	private int clienteid;
+	public String getTasaMoratoria() {
+		return tasaMoratoria;
+	}
+	public void setTasaMoratoria(String tasaMoratoria) {
+		this.tasaMoratoria = tasaMoratoria;
+	}
+	public String getReca() {
+		return reca;
+	}
+	public void setReca(String reca) {
+		this.reca = reca;
+	}
 	public int getResultado() {
 		return resultado;
 	}
@@ -73,6 +89,18 @@ public class ValidaSolicitudDto {
 	}
 	public void setEstatus(String estatus) {
 		this.estatus = estatus;
+	}
+	public int getClienteid() {
+		return clienteid;
+	}
+	public void setClienteid(int clienteid) {
+		this.clienteid = clienteid;
+	}
+	public String getProductoNomina() {
+		return productoNomina;
+	}
+	public void setProductoNomina(String productoNomina) {
+		this.productoNomina = productoNomina;
 	}
 	
 		

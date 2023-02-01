@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
 import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
@@ -48,6 +49,11 @@ public class CoreBancarioService {
 						cb.setTasaFija(rs.getString(8));
 						cb.setPlazo(rs.getString(9));
 						cb.setEstatus(rs.getString(10));
+						cb.setProductoNomina(rs.getString(11));
+						cb.setReca(rs.getString(12));
+						cb.setTasaMoratoria(rs.getString(13));
+						cb.setClienteid(rs.getInt(14));
+						
 
 						return cb;
 					}
@@ -70,6 +76,7 @@ public class CoreBancarioService {
 						p.setRol(rs.getString(4));
 						p.setTelefonoCelular(rs.getString(5));
 						p.setCorreoElectronico(rs.getString(6));
+						p.setDireccionCompleta(rs.getString(7));
 						return p;
 					}
 				});
@@ -98,5 +105,35 @@ public class CoreBancarioService {
 		logger.info("Ejecutando CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")");
 		return jdbcTemplate.queryForObject("CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")", Integer.class);
 	}
-
+	
+	public List<ListaProductos> obtProductos() {
+		String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
+		String estatus = "A"; 
+		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
+			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ListaProductos ps = new ListaProductos();
+				ps.setIdproducto(rs.getInt(1));
+				ps.setNombreProducto(rs.getString(2));
+				
+				return ps;
+			}
+		});
+		return lsp;
+	}
+	
+	public List<ListaProductos> obtProductosCaptacion() {
+		String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
+		String estatus = "A"; 
+		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
+			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ListaProductos ps = new ListaProductos();
+				ps.setIdproducto(rs.getInt(1));
+				ps.setNombreProducto(rs.getString(2));
+				
+				return ps;
+			}
+		});
+		return lsp;
+	}
+	
 }
