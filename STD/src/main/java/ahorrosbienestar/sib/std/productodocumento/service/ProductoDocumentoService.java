@@ -26,4 +26,16 @@ private IProductoDocumentoRepository iProductoDocumentoRepository;
 	public List<RelacionDocumentos> buscarDocumentos(int idproducto) {
 		return iProductoDocumentoRepository.buscarDocumentos(idproducto);
 	}
+	
+	
+	public int inactivarRelacion(int idProducto, int idDocumento) {
+		return iProductoDocumentoRepository.inactivarRelacion(idProducto,idDocumento);
+		
+	}
+	
+	public int activarDocumento(int idProducto, int idDocumento) {
+		return iProductoDocumentoRepository.activarDocumento(idProducto,idDocumento);
+		
+	}
+	
 }

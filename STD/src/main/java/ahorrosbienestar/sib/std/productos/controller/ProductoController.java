@@ -50,6 +50,7 @@ public class ProductoController {
 	@Autowired
 	private IProductoDocumentoRepository iProductoDocumento;
 	
+	
 	private int grupo = 2;
 	private int estatus = 1;
 	
@@ -66,7 +67,7 @@ public class ProductoController {
 			model.addAttribute("cat_prodcuto_colocacion",coreBancarioService.obtProductosCaptacion());	
 			model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
 			model.addAttribute("listaProductos",productoService.todosProductos());
-			model.addAttribute("listDocumentos",documentoService.findAll());
+			model.addAttribute("listDocumentos",documentoService.todosDocumentos());
 			
 			return "productos/index";
 		}
@@ -100,7 +101,7 @@ public class ProductoController {
 		
 		@GetMapping("/alta/{idproducto}/{nombreProducto}/{tipoProducto}")
 		public ResponseEntity<?> alta(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="nombreProducto") String nombreProducto,@PathVariable (name ="tipoProducto") int tipoProducto) {
-			String mensaje ="Producto Registrado Correctamente.";
+			String mensaje ="";
 			ArrayList<String> respuesta = new ArrayList<String>();
 			
 			int estatus = 1; //activo
@@ -126,10 +127,10 @@ public class ProductoController {
 					productoAlta.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
 					
 					productoService.save(productoAlta);
-					
+					mensaje ="Producto Registrado Correctamente.";
 					respuesta.add(mensaje);
 				}else {
-					mensaje = "El Producto esta registrado, si esta inactivo es posible activar nuevamente el producto.";
+					mensaje = "El Producto ya esta registrado.";
 					respuesta.add(mensaje);
 					
 				}
@@ -137,6 +138,8 @@ public class ProductoController {
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
 				System.out.println(""+e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
 			}
 						
 			return null;
@@ -145,9 +148,10 @@ public class ProductoController {
 		
 		@PostMapping("/altaDocumentos/{idproducto}/{idsDocumentos}")
 		public ResponseEntity<?> altaProducto(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="idsDocumentos") ArrayList<Integer> idsDocumentos){
-			String mensaje ="Documento Registrado Correctamente.";
+			String mensaje ="";
+			ArrayList<String> respuesta = new ArrayList<String>();
 			try {
-				ArrayList<String> respuesta = new ArrayList<String>();
+				mensaje ="Registro Correcto.";
 				LocalDate fecha = LocalDate.now();
 				for(int idDocumento : idsDocumentos) {
 					
@@ -159,16 +163,17 @@ public class ProductoController {
 						registroDocumento.setI_estatus(estatus);
 						
 						iProductoDocumento.save(registroDocumento);
-						respuesta.add(mensaje);
+						
 					}else {
-						mensaje = "El Documento ya esta relacionado al producto.";
-						respuesta.add(mensaje);
+						iProductoDocumento.activarDocumento(idproducto, idDocumento);
 					}
 				}
-				
+				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
 				System.out.println(""+e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
 			}
 			return null;
 		}
@@ -186,7 +191,85 @@ public class ProductoController {
 			return null;
 		}
 		
+		@PostMapping("/actualizarDocumentos/{idproducto}/{idsDocumentos}/{idsAnteriores}")
+		public ResponseEntity<?> actualizarDocumentos(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="idsDocumentos") ArrayList<Integer> idsDocumentos,@PathVariable (name ="idsAnteriores") ArrayList<Integer> idsAnteriores){
+			String mensaje="";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				mensaje ="Documentos Actualizados Correctamente.";
+				LocalDate fecha = LocalDate.now();
+				
+				//Alta de nuevos documentos. 
+				  ArrayList<Integer> altaNewDocumentos = new ArrayList<Integer>();   
+				    for (int element : idsDocumentos) { 
+				        if (!idsAnteriores.contains(element)) { 
+				        	altaNewDocumentos.add(element); 
+				        } 
+				    } 
+				
+				//Actualizar estatus de documentos
+					  ArrayList<Integer> actualizarDocumentos = new ArrayList<Integer>();   
+					    for (int element : idsAnteriores) { 
+					        if (!idsDocumentos.contains(element)) { 
+					        	actualizarDocumentos.add(element); 
+					        } 
+					    } 
+				
+				if(altaNewDocumentos.size()>0) {
+					for(int idDocumento : altaNewDocumentos) {
+						
+						if(iProductoDocumento.existeDocumento(idproducto, idDocumento) == 0) {
+							RelacionDocumentos registroDocumento = new RelacionDocumentos();
+							registroDocumento.setFk_producto(idproducto);
+							registroDocumento.setFk_documento(idDocumento);
+							registroDocumento.setDt_fecha_operacion(fecha);
+							registroDocumento.setI_estatus(estatus);
+							
+							iProductoDocumento.save(registroDocumento);
+							
+						}else {
+							iProductoDocumento.activarDocumento(idproducto, idDocumento);
+						}
+					}
+				}
+				
+				if(actualizarDocumentos.size()>0) {
+					for(int idDocumento : actualizarDocumentos) {
+						if(iProductoDocumento.existeDocumento(idproducto, idDocumento) != 0) {
+							iProductoDocumento.inactivarRelacion(idproducto,idDocumento);
+						}
+					}
+				}
+				
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
+			}
+			return null;
+		}
 		
+		@PostMapping("/bajaDocumentos/{idproducto}/{idsAnteriores}")
+		public ResponseEntity<?> bajaDocumentos(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="idsAnteriores") ArrayList<Integer> idsAnteriores){
+			String mensaje ="";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				mensaje ="Documentos Actualizados Correctamente.";
+				for(int idDocumento : idsAnteriores) {
+					iProductoDocumento.inactivarRelacion(idproducto,idDocumento);
+				}
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
+			}
+			return null;
+		}
+
 		@GetMapping("/index_val")
 		public String InicioProductos(Model model, @RequestBody Producto producto) {
 

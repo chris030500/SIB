@@ -1,7 +1,12 @@
 var opcionSeleccionada = "";
 var altaProductos = "alta/";
 var altaDocumentos = "altaDocumentos/";
-var consultaDocumento = "consultaDocumento/"
+var consultaDocumento = "consultaDocumento/";
+var inicio = "index";
+var actualizarDocumentos = "actualizarDocumentos/";
+var bajaDocumentos = "bajaDocumentos/";
+
+var idsAnteriores = " ";
 
 $(document).ready(function() {
 	inicioPantalla();
@@ -65,11 +70,45 @@ $(document).ready(function() {
 			}
 		});
 
-		var listaOpciones = ids.trim().split(' ');
-
+		var listaOpciones = "";
+		var listaOpcionesAnteriores = "";
 		var separador = "/";
-		var urlGuardar = getAbsolutePath() + altaDocumentos + $("#datosRelDoc").val() + separador + listaOpciones;
-		$.ajax({
+		var urlGuardar = "";
+		
+		if(ids.trim().length > 0 && idsAnteriores.trim().length == 0){
+			listaOpciones = ids.trim().split(' ');
+			urlGuardar = getAbsolutePath() + altaDocumentos + $("#datosRelDoc").val() + separador + listaOpciones;
+			
+			enviarPeticion(urlGuardar);
+		}else if(ids.trim().length > 0 && idsAnteriores.trim().length > 0){
+			listaOpciones = ids.trim().split(' ');
+			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
+			
+			urlGuardar = getAbsolutePath() + actualizarDocumentos + $("#datosRelDoc").val() + separador + listaOpciones+separador + listaOpcionesAnteriores;
+			
+			enviarPeticion(urlGuardar);
+		}else if(ids.trim().length == 0 && idsAnteriores.trim().length > 0){
+			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
+			urlGuardar = getAbsolutePath() + bajaDocumentos + $("#datosRelDoc").val() + separador + listaOpcionesAnteriores;
+			//baja
+			enviarPeticion(urlGuardar);
+		}else{
+				swal({
+					title: "",
+					text: "No ha seleccionado ninguna opcion",
+					icon: "warning",
+					confirmButtonText: 'Aceptar'
+				})
+				enviarPeticion = false;
+		}
+	});
+
+
+});
+
+function enviarPeticion(urlGuardar){
+	
+			$.ajax({
 			url: urlGuardar,
 			type: "POST",
 			dataType: "JSON",
@@ -92,11 +131,7 @@ $(document).ready(function() {
 				});
 			}
 		});
-
-	});
-
-
-});
+}
 
 function limpiarcheck(){
 	
@@ -166,11 +201,8 @@ function altaProducto() {
 					icon: "success",
 					confirmButtonText: 'Aceptar'
 				}).then(resp => {
-					//if (resp.isConfirmed) {
-					window.location.href = "http://localhost:8080/STD/producto/index";
-					//} else {
-					//window.location.href = "http://localhost:8080/STD/producto/index";
-					//}
+					window.location.href = getAbsolutePath()+ inicio;
+					
 				});
 
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -220,12 +252,13 @@ function documentos(btnID) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-
+		idsAnteriores = "";
 			for (var i in respuesta) {
   				document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
-
+				
 				if (checkElement.id != 'idTodos') {
 					if (checkElement.id == respuesta[i].fk_documento) {
+						idsAnteriores += checkElement.id + " ";
 						checkElement.checked = true;
 					}
 				}

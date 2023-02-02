@@ -6,7 +6,7 @@
 <head th:replace="layouts/base-layout :: head">
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 
@@ -26,72 +26,51 @@
 			</div>
 
 			<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Inicio</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Configuracion Documento</button>
-    </li>
-      <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Conf. Documento P.Digital</button>
-    </li>
-   
-  </ul>
-  <div class="tab-content" id="pills-tabContent">
-    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-   
-   <form class="row g-3">
-							
-									<div class="col-md-5">
-										<input type="text" placeholder="Ingresa el documento a buscar"
-											class="form-control" id="solicitudCredito">
-									</div>
-									<div class="col-md-4">
-										<button type="submit" class="btn btn-primary">Buscar</button>
-									</div>
-								</form>
-   
-   <table class="table table-bordered table-striped">
+				<li class="nav-item" role="presentation">
+					<button id="btnAltaProductos" class="nav-link active" data-bs-toggle="pill"
+						data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+						aria-selected="true">Alta Documento</button>
+				</li>
+			</ul>
 
+			<div class="tab-content" id="pills-tabContent">
+				<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+					<table class="table table-bordered table-striped">
 						<thead>
 							<tr>
 								<th>Nombre Documento</th>
-								
 								<th>Estatus</th>
 								<th class="text-center">Opciones</th>
 							</tr>
 						</thead>
-
 						<tbody>
-
 							<tr th:each="documento: ${documento}">
-
-								<td th:text="${documento.vc_nombre_doc}">
-								
-								<td th:text="${documento.i_estatus}?'ACTIVO':'INACTIVO'">
-
+								<td th:text="${documento.vc_nombre_doc}"></td>
+								<td th:text="${documento.i_estatus}==1?'ACTIVO':'INACTIVO'"></td>
 								<td class="text-center">
-
-								
-
 									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="idperfil" name="iddocumento"
-										onclick="estatusDocumento(this.value)" href="#" title="Eliminar documento"
+									<button class="btn btn-primary btn-sm" id="btnEliminar" 
+										onclick="eliminarDocumento(this.value)" title="Eliminar documento"
 										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-trash"></i>
 									</button>
+
+									<!-- Botón para eliminar registro del perfil -->
+									<button class="btn btn-primary btn-sm" id="btnReactivar" 
+										onclick="reactivarDocumento(this.value)" title="Reactivar documento"
+										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
+										<i class="fas fa-check-circle"></i>
+									</button>
 									
-									<!-- Botón para editar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="idperfil" name="iddocumento"
-										onclick="estatusDocumento(this.value)" href="#" title="Editar documento"
+										<!-- Botón para editar registro del perfil -->
+									<button class="btn btn-primary btn-sm" id="btnEditar" 
+										onclick="editarDocumento(this)"  title="Editar documento"
 										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-edit"></i>
 									</button>
 									
 								</td>
-
 							</tr>
-
 							<tr th:if="${#lists.isEmpty(documento)}">
 								<td colspan="6">
 									A&uacute;n no se registran documentos en el sistema
@@ -99,51 +78,70 @@
 							</tr>
 
 						</tbody>
-
-
-
 					</table>
-    </div>
-    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-    		<div class="container">
-								<div class="row">
-									<table border="1" class="table" id="tablaDocumentos">
-										<thead class="thead-dark">
-											<tr>
-												<th>Nombre de documento</th>
-												<th>Ubicación</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td><input type="text" name="nombre1" id="nombre1" value="nombre1" readonly></td>
-												<td><input class="form-control" type="file" id="formFile1"
-														value="formFile1" accept=".pdf"></td>
-												<!--<td>Nombre</td>
-												<td><input class="form-control" type="file" id="formFile" accept=".pdf" required></td>-->
-											</tr>
-										</tbody>
-									</table>
+    	</div>
+ 	 </div>
+	
+	
+	<div class="modal" id="modalDocumentos">
+				<div class="modal-dialog">
+					<div class="modal-content">
 
-									<div class="form-group">
-										<button type="button" class="btn btn-primary mr-2"
-											onclick="agregarFila()">Agregar otro documento</button>
-										<button type="button" class="btn btn-danger" onclick="eliminarFila()">Eliminar
-											último documento</button>
-									</div>
-								</div>
+
+						<div class="modal-header">
+							<h2 class="modal-title" id="lblTitulo"></h2>
+						</div>
+						<div class="modal-body">
+							<form>
+							<div class="col-sm-8" style="margin-top: 10px">
+								<label for="busqueda" class="col-form-label">Nombre Documento:</label>
 							</div>
-    </div>
-    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
-  </div>
-			
-		
+							<div  class="col-sm-10" style="margin-top: 10px">
+								<input type="text" class="form-control col-sm-8" id="inputDocumento" placeholder="Nombre Documento">
+							</div>
+							</form>
+						</div>
+						<!-- Modal footer -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrar">Registrar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelar">Cancelar</button>
+						</div>
+					</div>
+				</div>
+	</div>
+	<div class="modal" id="editDocumentos">
+				<div class="modal-dialog">
+					<div class="modal-content">
+
+
+						<div class="modal-header">
+							<h2 class="modal-title" id="lblTitulo"></h2>
+						</div>
+						<div class="modal-body">
+							<form>
+							<div class="col-sm-8" style="margin-top: 10px">
+								<label for="busqueda" class="col-form-label">Nombre Documento:</label>
+							</div>
+							<div  class="col-sm-10" style="margin-top: 10px">
+								<input type="text" class="form-control col-sm-8" id="editDocumento" placeholder="Nombre Documento">
+							</div>
+							</form>
+						</div>
+						<!-- Modal footer -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEnviar">Actualizar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarEnvio">Cancelar</button>
+						</div>
+					</div>
+				</div>
+	</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script th:src="@{/js/cargaDocumentos/carga_documentos.js}"></script>
+		<script th:src="@{/js/altaDocumentos/registro_documentos.js}"></script>
 	
 		<!--JavaScript-->
 	</th:block>
