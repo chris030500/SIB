@@ -59,13 +59,13 @@ public class BitacoraConsumo {
 	@JoinColumn(name = "FK_USR_SOLICITA")
 	private Usuario fk_usr_solicita;
 	
-	@Column(name = "VC_JSON_ENVIO")
+	@Column(name = "VC_JSON_ENVIO", columnDefinition = "MEDIUMTEXT")
 	private String vc_json_envio;
 	
-	@Column(name = "VC_JSON_RESPUESTA")
+	@Column(name = "VC_JSON_RESPUESTA", columnDefinition = "MEDIUMTEXT")
 	private String vc_json_respuesta;
 	
-	@Column(name = "VC_RESULTADO_CONSUMO")
+	@Column(name = "VC_RESULTADO_CONSUMO", columnDefinition = "MEDIUMTEXT")
 	private String vc_resultado_consumo;
 
 	public int getPk_id_bitacora_consumo() {

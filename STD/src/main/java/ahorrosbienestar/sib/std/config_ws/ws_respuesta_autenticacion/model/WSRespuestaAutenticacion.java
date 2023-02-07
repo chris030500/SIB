@@ -11,6 +11,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutenticacionUser;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 
@@ -27,9 +29,9 @@ public class WSRespuestaAutenticacion {
 	
 	@OneToOne
 	@JoinColumn(name = "FK_ID_AUTENTICACION_USER")
-	private WSAutenticacionUser fk_id_solicitud_envio_user;
+	private WSAutenticacionUser fk_id_autenticacion_user;
 	
-	@Column(name = "VC_TOKEN", columnDefinition = "VARCHAR(255)")
+	@Column(name = "VC_TOKEN", columnDefinition = "LONGTEXT")
 	private String vc_token;
 	
 	@Column(name = "VC_JTI", columnDefinition = "VARCHAR(255)")
@@ -38,8 +40,11 @@ public class WSRespuestaAutenticacion {
 	@Column(name = "VC_SCOPE", columnDefinition = "VARCHAR(100)")
 	private String vc_scope;
 	
-	@Column(name = "VC_JSON_RESPUESTA")
-	private String vc_json_respuesta;
+	@Column(name = "VC_REQUISITION_ID", columnDefinition = "MEDIUMTEXT")
+	private String vc_requisition_id;
+	
+	@Column(name = "VC_JSON_RESPUESTA", columnDefinition = "LONGTEXT")
+	private String  vc_json_respuesta;
 
 	public int getPk_id_respuesta_autenticacion_seq() {
 		return pk_id_respuesta_autenticacion_seq;
@@ -49,12 +54,12 @@ public class WSRespuestaAutenticacion {
 		this.pk_id_respuesta_autenticacion_seq = pk_id_respuesta_autenticacion_seq;
 	}
 
-	public WSAutenticacionUser getFk_id_solicitud_envio_user() {
-		return fk_id_solicitud_envio_user;
+	public WSAutenticacionUser getFk_id_autenticacion_user() {
+		return fk_id_autenticacion_user;
 	}
 
-	public void setFk_id_solicitud_envio_user(WSAutenticacionUser fk_id_solicitud_envio_user) {
-		this.fk_id_solicitud_envio_user = fk_id_solicitud_envio_user;
+	public void setFk_id_autenticacion_user(WSAutenticacionUser fk_id_autenticacion_user) {
+		this.fk_id_autenticacion_user = fk_id_autenticacion_user;
 	}
 
 	public String getVc_token() {
@@ -87,6 +92,14 @@ public class WSRespuestaAutenticacion {
 
 	public void setVc_json_respuesta(String vc_json_respuesta) {
 		this.vc_json_respuesta = vc_json_respuesta;
+	}
+
+	public String getVc_requisition_id() {
+		return vc_requisition_id;
+	}
+
+	public void setVc_requisition_id(String vc_requisition_id) {
+		this.vc_requisition_id = vc_requisition_id;
 	}
 	
 	

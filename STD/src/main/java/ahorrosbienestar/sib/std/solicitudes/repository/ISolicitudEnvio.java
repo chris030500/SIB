@@ -23,11 +23,17 @@ public interface ISolicitudEnvio extends JpaRepository<SolicitudEnvio, Integer>{
 	@Query(value = "SELECT * FROM SIB.TBL_SOLICITUD_DE_ENVIO WHERE I_NO_SOLICITUD_CORE = :solicitud AND I_ESTATUS = 1 ORDER BY DT_FECHA_REGISTRO DESC LIMIT 1", nativeQuery = true)
 	public List<SolicitudEnvio> obtenerUltimaSolicitudFecha(@Param("solicitud") Integer solicitud);
 	
-	//Consulta para validar la solicitud de envio despues de realizar la validacion de documentos
+	//Validar la solicitud de envio despues de realizar la validacion de documentos
 	@Modifying
 	@Transactional
 	@Query(value = "UPDATE SIB.TBL_SOLICITUD_DE_ENVIO SET I_ESTATUS = :estatus WHERE PK_ID_SOLICITUD_ENVIO = :idSolicitud", nativeQuery = true)
 	public int validarSoliEnvio(@Param("estatus") Integer estatus, @Param("idSolicitud") Integer idSolicitud);
+	
+	//Agregar el requisitionID
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_SOLICITUD_DE_ENVIO SET VC_REQUISITION_ID = :requisitionId WHERE PK_ID_SOLICITUD_ENVIO = :soliEnvio", nativeQuery = true)
+	public int agregarRequisitionId(@Param("requisitionId") String requisitionId, @Param("soliEnvio") Integer soliEnvio);
 	
 	
 	

@@ -49,14 +49,13 @@
 					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
 
 						<li>
-							<form id="logoutForm" th:action="@{/logout}" method="post">
-								<a type="submit" onclick="document.getElementById('logoutForm').submit();"
-									class="dropdown-item d-flex align-items-center" href="#">
+							
+								<a href="#" th:href="@{/logout1}" class="dropdown-item d-flex align-items-center">
 									<i class="bi bi-box-arrow-right"></i>
 									<span>Cerrar sesión</span>
 								</a>
 								<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
-							</form>
+							
 						</li>
 
 					</ul><!-- End Profile Dropdown Items -->

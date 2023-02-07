@@ -68,7 +68,7 @@ public class UnirArchivosService {
 		return s;
 	}
 
-	public String guardarArchivo(int solicitudEnvio) throws Exception {
+	public String guardarArchivoPDF(int solicitudEnvio) throws Exception {
 		DoctoUnificado doctoUnificado = new DoctoUnificado();
 		System.out.println("SolicitudEnvio: " + solicitudEnvio);
 		int operación = 0;
@@ -81,6 +81,7 @@ public class UnirArchivosService {
 		String rutaArchivoFinal = eliminarUltimaPalabra(ruta);
 		System.out.println("Ruta para Archivo final:" + rutaArchivoFinal);
 		String nombreArchivoFinal = configService.findAll().get(34).getVc_valor_propiedad().toString();
+		String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 		String rutaConfig = configService.findAll().get(13).getVc_valor_propiedad().toString();
 		System.out.println("RutaConfig: " + rutaConfig);
 		PDFMergerUtility pdfMerger = new PDFMergerUtility();
@@ -146,7 +147,8 @@ public class UnirArchivosService {
 			doctoUnificado.setFk_id_solicitud_envio(sEnvio);
 			doctoUnificado.setI_total_hojas(totalHojas);
 			doctoUnificado.setI_estatus(1);
-			doctoUnificado.setVc_ruta_archivo_pdf(("/" + rutaArchivo + "/" + nombreArchivoFinal));
+			doctoUnificado.setVc_ruta_archivo_pdf((rutaArchivo + "/" + nombreArchivoFinal));
+			doctoUnificado.setVc_ruta_archivo_xml((rutaArchivo + "/" + nombreArchivoXML));
 			doctoUnificado.setPk_usr_registra(usu);
 			doctoUnificado.setDt_fecha_envio(localDateHoy);
 
@@ -154,7 +156,8 @@ public class UnirArchivosService {
 
 			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
 			System.out.println("TotalHojas: " + totalHojas);
-			System.out.println("Ruta archivo PDF: " + ("/" + rutaArchivo + "/" + nombreArchivoFinal));
+			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoFinal));
+			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoXML));
 			System.out.println("Estatus: " + 1);
 			System.out.println("Usuario: " + usu.getPk_id_usuario());
 			System.out.println("Fecha de envio: " + localDateHoy);
@@ -226,7 +229,7 @@ public class UnirArchivosService {
 			fDoctoUnificado.setF_coord_firma_x1(Float.parseFloat(x1HF)); // Lo consulta en BD
 			fDoctoUnificado.setF_coord_firma_x2(Float.parseFloat(x2HF)); // Lo consulta en BD
 			fDoctoUnificado.setF_coord_firma_y1(Float.parseFloat(y1HF)); // Lo consulta en BD
-			fDoctoUnificado.setF_coord_firma_y2(Float.parseFloat(y1HF)); // Lo consulta en BD
+			fDoctoUnificado.setF_coord_firma_y2(Float.parseFloat(y2HF)); // Lo consulta en BD
 			firmaDoctoUnificadoService.save(fDoctoUnificado);
 			System.out.println("xCentral: " + Float.parseFloat(xCentralHF));
 			System.out.println("yCentral: " + Float.parseFloat(yCentralHF));

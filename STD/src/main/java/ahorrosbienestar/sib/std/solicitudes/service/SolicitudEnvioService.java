@@ -45,5 +45,9 @@ public class SolicitudEnvioService {
 	public int validarSoliEnvio(Integer estatus, Integer idSolicitud) {
 		return iSolicitudEnvio.validarSoliEnvio(estatus, idSolicitud);
 	}
+	
+	public int agregarRequisitionID(String requisitionId, Integer soliEnvio) {
+		return iSolicitudEnvio.agregarRequisitionId(requisitionId, soliEnvio);
+	}
 
 }

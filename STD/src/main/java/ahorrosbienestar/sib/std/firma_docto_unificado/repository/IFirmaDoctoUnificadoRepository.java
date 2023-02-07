@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.firma_docto_unificado.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,9 @@ import ahorrosbienestar.sib.std.firma_docto_unificado.model.FirmaDoctoUnificado;
 public interface IFirmaDoctoUnificadoRepository extends JpaRepository<FirmaDoctoUnificado, Integer> {
 
 	// Consulta para obtener todas las firmas que se tienen contemplados en el archivo unificado
-	@Query(value = "SELECT * FROM SIB.TBL_FIRMA_DOCTO_UNIFICADO where FK_ID_DOCTO_UNIFICADO = :idDoctUnificado ORDER BY I_NO_HOJA ASC;", nativeQuery = true)
+	@Query(value = "SELECT * FROM SIB.TBL_FIRMA_DOCTO_UNIFICADO WHERE FK_ID_DOCTO_UNIFICADO = :idDoctUnificado ORDER BY I_NO_HOJA ASC;", nativeQuery = true)
 	public List<FirmaDoctoUnificado> obtenerCoordenadasFirma(@Param("idDoctUnificado") Integer idDoctUnificado);
+	
+	
 
 }

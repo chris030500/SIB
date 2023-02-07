@@ -36,6 +36,9 @@ public class CatConfWS {
 	@Column(name = "VC_VALOR_PARAMETRO2", columnDefinition = "VARCHAR(200)")
 	private String vc_valor_parametro2;
 	
+	@Column(name = "VC_VALOR_PARAMETRO3", columnDefinition = "VARCHAR(200)")
+	private String vc_valor_parametro3;
+	
 	@Column(name = "VC_RUTA", columnDefinition = "VARCHAR(150)")
 	private String vc_ruta;
 	
@@ -146,9 +149,14 @@ public class CatConfWS {
 	public void setVc_tipo_contenido(String vc_tipo_contenido) {
 		this.vc_tipo_contenido = vc_tipo_contenido;
 	}
-	
-	
-	
+
+	public String getVc_valor_parametro3() {
+		return vc_valor_parametro3;
+	}
+
+	public void setVc_valor_parametro3(String vc_valor_parametro3) {
+		this.vc_valor_parametro3 = vc_valor_parametro3;
+	}
 	
 
 }

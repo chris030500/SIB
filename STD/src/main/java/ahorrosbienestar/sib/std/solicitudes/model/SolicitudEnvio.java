@@ -87,6 +87,9 @@ public class SolicitudEnvio {
 
 	@Column(name = "VC_HORA_CANCELACION", columnDefinition = "VARCHAR(45)")
 	private String vc_hora_cancelacion;
+	
+	@Column(name = "VC_REQUISITION_ID", columnDefinition = "MEDIUMTEXT")
+	private String vc_requisition_id;
 
 	@OneToOne
 	@JoinColumn(name = "FK_USR_REGISTRA")
@@ -260,9 +263,14 @@ public class SolicitudEnvio {
 	public void setI_identificador_ruta(int i_identificador_ruta) {
 		this.i_identificador_ruta = i_identificador_ruta;
 	}
-	
-	
-	
+
+	public String getVc_requisition_id() {
+		return vc_requisition_id;
+	}
+
+	public void setVc_requisition_id(String vc_requisition_id) {
+		this.vc_requisition_id = vc_requisition_id;
+	}
 	
 	
 }

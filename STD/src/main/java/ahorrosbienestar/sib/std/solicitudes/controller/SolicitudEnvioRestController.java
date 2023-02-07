@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +32,7 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.docto_envio.model.DoctEnvio;
 import ahorrosbienestar.sib.std.fichero.controller.UnirArchivosRestController;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
+import ahorrosbienestar.sib.std.histo_notificacion.service.HistoNotificacionMensajeService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioJDBCService;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
@@ -63,6 +65,9 @@ public class SolicitudEnvioRestController {
 	
 	@Autowired
 	private ConfigService configService;
+	
+	@Autowired
+	private HistoNotificacionMensajeService histoNotificacionMensajeService;
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
@@ -113,7 +118,11 @@ public class SolicitudEnvioRestController {
 		
 
 		sEnvio = solicitudEnvioService.save(sEnvio);
-
+		String mensaje = "Nueva solicitud de envio. " + " Solicitud: " + solicitud;
+		DateFormat dateFormat2 = new SimpleDateFormat("HH:mm");
+		String hora = dateFormat2.format(new Date());
+		//String hora = "15:00";
+		histoNotificacionMensajeService.enviarNotificacionMensaje(mensaje, localDateHoy, hora, sEnvio);
 		// Aqui vamos a almacenar los archivos PDF para asocialos con la solicitud de
 		// envio
 		return ResponseEntity.ok(sEnvio.getPk_id_solicitud_envio());
@@ -179,12 +188,12 @@ public class SolicitudEnvioRestController {
 				//logger.info("El estatus es 3");
 				logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
 				solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
-				String estatusUnir = unirArchivosService.guardarArchivo(idSolicitud);
+				String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
 				System.out.println("EstatusUnir: " + estatusUnir);
 				if(estatusUnir != "1") {
 					return ResponseEntity.ok(estatusUnir);
 				} else if(estatusUnir == "1") {
-					crearXmlService.crearArchivo(idSolicitud, idSolicitudCore);
+					crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
 				}
 				
 				return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(3, idSolicitud));
@@ -198,5 +207,15 @@ public class SolicitudEnvioRestController {
 		logger.info("Ejecutando validarSolicitudCredito");
 		return ResponseEntity.ok(solicitudEnvioJDBCService.spValidarSolicitudCore(idSolicitudCore));
 	}
+	
+	@GetMapping("solicitudEnvio/agregarRequisitionId")
+	public ResponseEntity<?> agregarRequisitionId(
+			@RequestParam(name = "requisitionId") String requisitionId,
+			@RequestParam(name = "soliEnvio") Integer soliEnvio){
+		logger.info("Ejecutando agregarRequisitionId");
+		return ResponseEntity.ok(solicitudEnvioService.agregarRequisitionID(requisitionId, soliEnvio));
+	}
+	
+	
 
 }

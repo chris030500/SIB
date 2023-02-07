@@ -29,7 +29,7 @@ public class WSAutenticacionUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ws_autenticacion_user_seq")
 	@SequenceGenerator(name = "ws_autenticacion_user_seq", sequenceName = "ws_autenticacion_user_seq", initialValue = 1, allocationSize = 1)
-	private int pk_id_cat_conf_ws_seq;
+	private int pk_id_ws_autenticacion;
 	
 	@ManyToOne
 	@JoinColumn(name = "FK_ID_CONF_WS")
@@ -57,15 +57,17 @@ public class WSAutenticacionUser {
 	@Column(name = "B_RESULTADO_LOGIN")
 	private boolean b_resultado_login;
 	
-	@Column(name = "VC_JSON_ENVIO")
+	@Column(name = "VC_JSON_ENVIO", columnDefinition = "LONGTEXT")
 	private String vc_json_envio;
 
-	public int getPk_id_cat_conf_ws_seq() {
-		return pk_id_cat_conf_ws_seq;
+	
+
+	public int getPk_id_ws_autenticacion() {
+		return pk_id_ws_autenticacion;
 	}
 
-	public void setPk_id_cat_conf_ws_seq(int pk_id_cat_conf_ws_seq) {
-		this.pk_id_cat_conf_ws_seq = pk_id_cat_conf_ws_seq;
+	public void setPk_id_ws_autenticacion(int pk_id_ws_autenticacion) {
+		this.pk_id_ws_autenticacion = pk_id_ws_autenticacion;
 	}
 
 	public CatConfWS getFk_id_conf_ws() {

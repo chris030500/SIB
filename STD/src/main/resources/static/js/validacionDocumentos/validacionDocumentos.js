@@ -65,6 +65,7 @@ function traerParticipantes(solicitud) {
 	});
 }
 
+//Funcion para obtener los archivos de la solicitud
 function obtenerArchivosSolicitud(solicitud) {
 	console.log("Entro en obtenerArchivosSolicitud");
 	var divDocumentos = document.getElementById("divDocumentos");
@@ -119,7 +120,7 @@ function obtenerArchivosSolicitud(solicitud) {
 }
 
 
-
+//Funcion para realizar la busqueda del documento
 function buscarDoctoEnvio(idDoctEnvio) {
 	console.log("Entro en buscarDoctoEnvio");
 	console.log("idDoctEnvio: " + idDoctEnvio);
@@ -146,6 +147,7 @@ function buscarDoctoEnvio(idDoctEnvio) {
 	return urlDocto;
 }
 
+//Funcion para visualizar el archivo que se seleccione
 function visualizarArchivo(idDoctoEnvio) {
 	console.log("Entro en visualizarArchivo");
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
@@ -157,6 +159,7 @@ function visualizarArchivo(idDoctoEnvio) {
 
 }
 
+//Funcion para activar el campo de observaciones
 function agregarObservacion(id) {
 	console.log("Entro en agregarObservacion");
 	var idComentario = "comentario" + id;
@@ -167,6 +170,7 @@ function agregarObservacion(id) {
 
 }
 
+//Funcion que desactiva el campo de observaciones
 function sinObservacion(id) {
 	console.log("Entro en sinObservacion");
 	var idComentario = "comentario" + id;
@@ -175,8 +179,8 @@ function sinObservacion(id) {
 	comentario.style.display = "none";
 }
 
-
-function VoBoDocumentos() {
+//Funcion para realizar el VoBo de los documentos
+function VoBoDocumentos1() {
 	var banderaVoBo = false;
 
 	var idTr = document.querySelectorAll('.contarTr');
@@ -259,6 +263,7 @@ function VoBoDocumentos() {
 	//console.log("Numero de documentos: " + numTr);
 }
 
+//Funcion para validar los archivos de la solicitud
 function validarArchivosSolicitud() {
 	console.log("Entro validarArchivosSolicitud");
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
@@ -286,11 +291,12 @@ function validarArchivosSolicitud() {
 
 }
 
+//Funcion para validar la solicitud de envio
 function validarSoliEnvio(estatus, idSolicitud) {
 	var solicitudCore = document.getElementById('i_no_solicitud_core').value;
 	$.ajax({
 		async: false,
-		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/"+solicitudCore,
+		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/" + solicitudCore,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -301,15 +307,13 @@ function validarSoliEnvio(estatus, idSolicitud) {
 					icon: "success",
 					title: "Revisión de documentos exitosa",
 					showConfirmButton: false
-					//Generamos el archivo PDF y XML
-					
 
-				}).then((result) => {
+				})/*.then((result) => {
 					window.location.replace("/solicitudEnvio/solicitudes");
-				});
+				});*/
 
 			} else {
-				// Si la respuesta es diferente de 1 significa que existe un documento a corregir
+				// Si la respuesta es diferente de 1 significa que existen documentos a corregir
 				swal({
 					icon: "success",
 					title: "Validación correcta",
@@ -343,8 +347,386 @@ function validarSoliEnvio(estatus, idSolicitud) {
 	});
 }
 
-function generarArchivoPDF(solicitud){
-	console.log("GenerarArchivoPDF");
-	
+//Funcion para obtener las credenciales para Autenticarse con el proveedor
+function VoBoDocumentos() {
+	$.ajax({
+		async: false,
+		url: "/catConfWs/obtenerParamWSAuten",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var usuario = respuesta[0];
+			var password = respuesta[1];
+			var userType = respuesta[2];
+			conexionApi(usuario, password, userType);
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
 }
+
+//Establecemos la base de la conexion del API (WS_IAD)
+var ws = "http://localhost:8091";
+
+//Funcion para realizar la autenticacion del user con el proveedor
+function conexionApi(usuario, password, userType) {
+
+	console.log("conexionApi");
+	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
+	var resultadoLogin = false;
+	var idConfWS = 1;
+	/*var jsonEnvio = new Object();
+	jsonEnvio.grant_type = userType;
+	jsonEnvio.username = usuario;
+	jsonEnvio.password = password;*/
+	var username = "username:" + usuario;
+	var password2 = "password:" + password;
+	var grandType = "grandType:" + userType;
+
+	var jsonEnvio = [username, password2, grandType];
+	var banderaRespuesta = 0;
+	$.ajax({
+		async: false,
+		url: ws + "/autenticacion/autenticacion?usernameBody=" + usuario + "&passwordBody=" + password +
+			"&grant_typeBody=" + userType,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta de conexionApi: " + JSON.stringify(respuesta));
+			resultadoLogin = true;
+
+			if (JSON.stringify(respuesta).includes("error")) {
+				banderaRespuesta = 0;
+				console.log("Tiene error");
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+				swal({
+					icon: "info",
+					title: "Error Conexión: " + respuesta.error_description,
+					showConfirmButton: false
+
+				});
+			} else {
+				banderaRespuesta = 1;
+				var token = respuesta.access_token;
+				console.log("No tiene error");
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+				obtenerArchivo(solicitudEnvio, token);
+			}
+
+			//console.log("Respuesta accesstoken: " + accessToken);
+			//console.log("resultadoLogin: " + resultadoLogin);
+
+			//guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+			//obtenerArchivo(solicitudEnvio, token);
+			/*console.log("json: " +json);
+			console.log("Respuesta data: "+ json[8] );*/
+		},
+		error: function(respuesta) {
+			resultadoLogin = false;
+			banderaRespuesta = 0;
+			console.log("Error de conexionApi");
+			console.log("Respuesta: " + JSON.stringify(respuesta));
+			guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+			swal({
+				icon: "info",
+				title: "Error conexionApi: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+
+			});
+		}
+	});
+}
+
+//Funcion para guardar la Autenticacion del User LOGIN
+function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta) {
+	var datosConexionApi = JSON.stringify(respuesta);
+	//var datosConexionApi = respuesta;
+	//var datosConexionApi = JSON.parse(respuesta);
+	var token = respuesta.access_token;
+	var scope = respuesta.scope;
+	var jti = respuesta.jti;
+	var tpProceso = "ENVIO DE DOCUMENTOS"
+	console.log("guardarWSAuteUsu");
+	//console.log("datosConexionApi en guardarWSAuteUsu: "+ datosConexionApi);
+	$.ajax({
+		async: false,
+		url: "/wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			//console.log("Respuesta de guardarWSAuteUsu: " + JSON.stringify(respuesta));
+			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			console.log("idWSAutenticacion: " + idWSAutenticacion);
+			if (banderaRespuesta == 0) {
+				console.log("Es falso");
+				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
+			} else if (banderaRespuesta == 1) {
+				console.log("Es true");
+				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
+				//obtenerArchivo(solicitudEnvio, token);
+			}
+			//guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio);
+			//obtenerArchivo(solicitudEnvio, token);
+
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error guardarWSAuteUsu: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+//Funcion para gardar la Respuesta de la autenticacion LOGIN
+function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta) {
+	/*console.log("idWSAutenticacion: " +idWSAutenticacion);
+	console.log("solicitudEnvio: " + solicitudEnvio);*/
+	console.log("guardarRespAutenticacion");
+	var jsonRespuesta = respuesta.trim();
+	//var json = jsonRespuesta.replace(/["']/g, "");
+	var jsonFinal = jsonRespuesta.replace(/[{{}}]/g, "");
+	var tpProceso = "ENVIO DE DOCUMENTOS";
+	//console.log("jsonRespuesta" + jsonFinal);
+	console.log("Bandera: " + banderaRespuesta);
+	if (banderaRespuesta == 0) {
+		console.log("Solo registra jsonFinal, idWSAutenticacion");
+		$.ajax({
+			async: false,
+			url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+				"&idWSAutenticacion=" + idWSAutenticacion,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				//console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
+				var autenUser = idWSAutenticacion;
+				var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+				guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
+			},
+			error: function(respuesta) {
+				swal({
+					icon: "info",
+					title: "Error guardarRespAutenticacion: " + JSON.stringify(respuesta),
+					showConfirmButton: false
+				});
+			}
+		});
+	} else if (banderaRespuesta == 1) {
+		$.ajax({
+			async: false,
+			url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal + "&jti=" + jti +
+				"&scope=" + scope + "&token=" + token + "&idWSAutenticacion=" + idWSAutenticacion,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				//console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
+				var autenUser = idWSAutenticacion;
+				var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+				guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
+			},
+			error: function(respuesta) {
+				swal({
+					icon: "info",
+					title: "Error guardarRespAutenticacion: " + JSON.stringify(respuesta),
+					showConfirmButton: false
+				});
+			}
+		});
+	}
+
+
+}
+/*function envioDoctFirma(sEnvio,accessToken){
+	console.log("Ejecutando envioDoctFirma");
+	$.ajax({
+		async: false,
+		url: ws + "/envio/DocumentoFirma?sEnvio="+sEnvio+"&accessToken="+accessToken,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta){
+			//console.log("Respuesta envioDoctFirma: " + JSON.stringify(respuesta));
+			obtenerArchivo(soliEnvio, token);
+		},
+		erro: function(respuesta){
+			swal({
+				icon: "info",
+				title: "Error envioDoctFirma: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}*/
+
+//Funcion para guardar en Bitacora Consumo
+function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
+	console.log("Ejecutando guardarBitacoraWS");
+	$.ajax({
+		async: false,
+		url: "/bitacoraConsumo?autenUser=" + autenUser + "&resAuten=" + resAuten +
+			"&tpProceso=" + tpProceso + "&soliEnvio=" + soliEnvio,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta guardarBitacoraWS: " + JSON.stringify(respuesta));
+		},
+		erro: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error guardarBitacoraWS: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+//Funcion para recuperar los documentos xml, pdf y generacion de hash del pdf
+function obtenerArchivo(soliEnvio, token) {
+	console.log("Ejecutando obtenerArchivo");
+	$.ajax({
+		async: false,
+		url: "/archivos/obtenerArchivos?soliEnvio=" + soliEnvio,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta obtenerArchivo: " + JSON.stringify(respuesta))
+			var xml = respuesta[0];
+			var pdf = respuesta[1];
+			var hash = respuesta[2];
+			envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio);
+		},
+		erro: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error obtenerArchivo: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
+function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
+
+	console.log("Ejecutando envioDocFirmaAPI");
+	var idConfWS = 2;
+	var archivoXML = "xml:" + xml;
+	var archivoPDF = "pdf:" + pdf;
+	var hashPDF = "hash:" + hash;
+	var accessToken = "token:" + token
+	var jsonEnvio = [archivoXML, archivoPDF, hashPDF, accessToken];
+	$.ajax({
+		async: false,
+		url: ws + "/envio/DocumentoFirma?xml=" + xml + "&pdf=" + pdf + "&hash=" + hash + "&accessToken=" + token,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var resultadoLogin = true;
+			console.log("Respuesta envioDocFirmaAPI: " + JSON.stringify(respuesta));
+			guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error envioDocFirmaAPI: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+function agregarRequisitionId(requisitionId, soliEnvio) {
+	console.log("Ejecutando agregarRequisitionId");
+	$.ajax({
+		async: false,
+		url: "/solicitudEnvio/agregarRequisitionId?requisitionId=" + requisitionId + "&soliEnvio=" + soliEnvio,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta agregarRequisitionId: " + JSON.stringify(respuesta));
+		},
+		erro: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error agregarRequisitionId: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+//Funcion para guardar la autenticacion user de envio de documentos a firmar
+function guardarWSAuteUsuEnvDoctFirma(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, resJson) {
+
+	console.log("Ejecutando guardarWSAuteUsuEnvDoctFirma: " + JSON.stringify(resJson));
+	var tpProceso = "ENVIO DE DOCUMENTOS";
+	var respuestaEnvioSoli = JSON.stringify(resJson);
+	var requisitionId = resJson.data.requisitionId;
+	$.ajax({
+		async: false,
+		url: "/wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			//console.log("Respuesta agregarRequisitionId: " + JSON.stringify(respuesta));
+			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId);
+			agregarRequisitionId(requisitionId, solicitudEnvio);
+		},
+		erro: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error agregarRequisitionId: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+//Funcion para guardar la Respuesta de la autenticacion envio de documentos a firmar
+function guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId) {
+	console.log("Ejecutando guardarRespAutenticacionEnvDoctFirma");
+	console.log("RESPUESTA guardarRespAutenticacionEnvDoctFirma: " + respuestaEnvioSoli);
+	console.log("idWSAutenticacion: " + idWSAutenticacion);
+	console.log("solicitudEnvio: " + solicitudEnvio);
+	var jsonRespuesta = respuestaEnvioSoli.trim();
+	//var requisitionId = respuestaEnvioSoli.data;
+	//var json = jsonRespuesta.replace(/["']/g, "");
+	var jsonFinal = jsonRespuesta.replace(/[{{}}]/g, "");
+	//console.log("success: " +respuestaEnvioSoli[0]);
+	console.log("requisitionId: " + requisitionId);
+	var tpProceso = "ENVIO DE DOCUMENTOS";
+	//console.log("jsonRespuesta:" + jsonFinal);
+	$.ajax({
+		async: false,
+		url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+			"&idWSAutenticacion=" + idWSAutenticacion + "&requisitionId=" + requisitionId,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
+			var autenUser = idWSAutenticacion;
+			var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+			agregarRequisitionId(requisitionId, solicitudEnvio);
+			guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
+
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Error guardarRespAutenticacion: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
 

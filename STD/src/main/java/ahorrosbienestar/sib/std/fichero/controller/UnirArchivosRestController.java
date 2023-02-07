@@ -67,8 +67,8 @@ public class UnirArchivosRestController {
 	
 
 	@GetMapping("/guardarArchivo")
-	public ResponseEntity<?> guardarArchivo(@RequestParam("solicitudEnvio") int solicitudEnvio, DoctoUnificado doctoUnificado) throws Exception {
-
+	public ResponseEntity<?> guardarArchivo(@RequestParam("solicitudEnvio") int solicitudEnvio) throws Exception {
+		DoctoUnificado doctoUnificado = new DoctoUnificado();
 		System.out.println("SolicitudEnvio: " + solicitudEnvio);
 		int operación = 0;
 		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio,
@@ -80,6 +80,7 @@ public class UnirArchivosRestController {
 		String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
 		System.out.println("Ruta para Archivo final:" + rutaArchivoFinal);
 		String nombreArchivoFinal = configService.findAll().get(34).getVc_valor_propiedad().toString();
+		String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 		String rutaConfig = configService.findAll().get(13).getVc_valor_propiedad().toString();
 		System.out.println("RutaConfig: " + rutaConfig);
 		PDFMergerUtility pdfMerger = new PDFMergerUtility();
@@ -138,13 +139,13 @@ public class UnirArchivosRestController {
 
 			// Guardamos los documentos unificados
 
-			doctoUnificado = new DoctoUnificado();
 			
 			SolicitudEnvio sEnvio = solicitudEnvioService.findById(solicitudEnvio).get();
 			doctoUnificado.setFk_id_solicitud_envio(sEnvio);
 			doctoUnificado.setI_total_hojas(totalHojas);
 			doctoUnificado.setI_estatus(1);
 			doctoUnificado.setVc_ruta_archivo_pdf(("/"+rutaArchivo+"/" + nombreArchivoFinal));
+			doctoUnificado.setVc_ruta_archivo_xml(("/"+rutaArchivo+"/" + nombreArchivoXML));
 			doctoUnificado.setPk_usr_registra(usu);
 			doctoUnificado.setDt_fecha_envio(localDateHoy);
 			
@@ -153,6 +154,7 @@ public class UnirArchivosRestController {
 			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
 			System.out.println("TotalHojas: " + totalHojas);
 			System.out.println("Ruta archivo PDF: " + ("/"+rutaArchivo+"/" + nombreArchivoFinal));
+			System.out.println("Ruta archivo XML: " + ("/"+rutaArchivo+"/" + nombreArchivoXML));
 			System.out.println("Estatus: " + 1);
 			System.out.println("Usuario: " + usu.getPk_id_usuario());
 			System.out.println("Fecha de envio: " + localDateHoy);
