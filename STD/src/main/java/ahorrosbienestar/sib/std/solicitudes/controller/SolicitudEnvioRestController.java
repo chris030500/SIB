@@ -119,10 +119,8 @@ public class SolicitudEnvioRestController {
 
 		sEnvio = solicitudEnvioService.save(sEnvio);
 		String mensaje = "Nueva solicitud de envio. " + " Solicitud: " + solicitud;
-		DateFormat dateFormat2 = new SimpleDateFormat("HH:mm");
-		String hora = dateFormat2.format(new Date());
-		//String hora = "15:00";
-		histoNotificacionMensajeService.enviarNotificacionMensaje(mensaje, localDateHoy, hora, sEnvio);
+		
+		histoNotificacionMensajeService.enviarNotificacionMensaje(mensaje, sEnvio, 0);
 		// Aqui vamos a almacenar los archivos PDF para asocialos con la solicitud de
 		// envio
 		return ResponseEntity.ok(sEnvio.getPk_id_solicitud_envio());

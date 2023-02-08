@@ -59,15 +59,23 @@ $(document).ready(function() {
 	})
 });
 
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
 function mostrarSolicitud(button) {
+	var urlBase = getAbsolutePath();
 	console.log("Entro en mostrarSolicitud");
 	console.log("Datos: " + button.value);
+	console.log("urlBase: " +urlBase);
 	var data = button.value;
 	$.ajax({
-		url: "/solicitudEnvio/verSolicitud/"+data,
+		url: urlBase+"verSolicitud/"+data,
 		type: "GET",
 		success: function(respuesta) {
-			window.location.assign("/solicitudEnvio/verSolicitud/"+data);
+			window.location.assign(urlBase+"verSolicitud/"+data);
 			//buscarProducto(data);
 		},
 		error: function(respuesta) {

@@ -54,7 +54,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
         .sessionManagement()
         .maximumSessions(1)
         .expiredUrl("/")
-        .maxSessionsPreventsLogin(true)
+        .maxSessionsPreventsLogin(false)
         .and()
         .invalidSessionUrl("/");
 		

@@ -1,10 +1,7 @@
 package ahorrosbienestar.sib.std.configuracion.controller;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -25,8 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ahorrosbienestar.sib.std.configuracion.login.SeguridadAppInicializador;
-import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -203,5 +199,7 @@ public class ConfiguracionController {
 						Integer.parseInt(configService.findAll().get(2).getVc_valor_propiedad()),
 						Integer.parseInt(configService.findAll().get(1).getVc_valor_propiedad())));
 	}
+	
+	
 
 }

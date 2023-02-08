@@ -20,6 +20,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
@@ -95,6 +96,8 @@ public class CrearXmlService {
 		// Obtenemos la leyenda del firmante.
 		String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
 
+		List<Configuracion> configuracion = configService.findAll();
+		
 		// System.out.println("entro en if variable1");
 		// String[] words = mensaje.split("variable");
 
@@ -112,18 +115,20 @@ public class CrearXmlService {
 			doc.appendChild(rootElement);
 			// Primer elemento
 
+//			Element localizationNotRequired = doc
+//					.createElement(configService.findAll().get(45).getVc_nom_propiedad().toString());
 			Element localizationNotRequired = doc
-					.createElement(configService.findAll().get(45).getVc_nom_propiedad().toString());
-			localizationNotRequired.setTextContent(configService.findAll().get(45).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(45).getVc_nom_propiedad().toString());
+			localizationNotRequired.setTextContent(configuracion.get(45).getVc_valor_propiedad().toString());
 			rootElement.appendChild(localizationNotRequired);
 
-			Element contractName = doc.createElement(configService.findAll().get(34).getVc_nom_propiedad().toString());
+			Element contractName = doc.createElement(configuracion.get(34).getVc_nom_propiedad().toString());
 			// Nombre del documento a firmar
-			contractName.setTextContent(configService.findAll().get(34).getVc_valor_propiedad().toString());
+			contractName.setTextContent(configuracion.get(34).getVc_valor_propiedad().toString());
 			rootElement.appendChild(contractName);
 
 			Element acceptanceLegend = doc
-					.createElement(configService.findAll().get(21).getVc_nom_propiedad().toString());
+					.createElement(configuracion.get(21).getVc_nom_propiedad().toString());
 			acceptanceLegend.setTextContent(nuevoMensaje); // Leyenda que se obtiene de base de datos.
 			rootElement.appendChild(acceptanceLegend);
 
@@ -133,14 +138,14 @@ public class CrearXmlService {
 			rootElement.appendChild(validity);
 
 			// Tipo de contrat, se obtine de bd
-			Element contractType = doc.createElement(configService.findAll().get(19).getVc_nom_propiedad().toString());
-			contractType.setTextContent(configService.findAll().get(19).getVc_valor_propiedad().toString());
+			Element contractType = doc.createElement(configuracion.get(19).getVc_nom_propiedad().toString());
+			contractType.setTextContent(configuracion.get(19).getVc_valor_propiedad().toString());
 			rootElement.appendChild(contractType);
 
 			// useWhatsAppTemplate
 			Element useWhatsAppTemplate = doc
-					.createElement(configService.findAll().get(46).getVc_nom_propiedad().toString());
-			useWhatsAppTemplate.setTextContent(configService.findAll().get(46).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(46).getVc_nom_propiedad().toString());
+			useWhatsAppTemplate.setTextContent(configuracion.get(46).getVc_valor_propiedad().toString());
 			rootElement.appendChild(useWhatsAppTemplate);
 
 			// Obtenemos el id del documento unificado para buscar las coordenadas
@@ -226,7 +231,7 @@ public class CrearXmlService {
 			signers.appendChild(authenticationData);
 
 			Element orderSigner = doc.createElement("order");
-			orderSigner.setTextContent(String.valueOf(totalPersonasFirma + 1));
+			orderSigner.setTextContent(String.valueOf(1));
 			signers.appendChild(orderSigner);
 
 			for (int i = 0; i < tamanoList; i++) {
@@ -272,36 +277,36 @@ public class CrearXmlService {
 					signaturesSigner.appendChild(positionY2);
 
 					// Obtenemos el valor desde BD
-					Element signerType = doc.createElement(configService.findAll().get(20).getVc_nom_propiedad().toString());
-					signerType.setTextContent(configService.findAll().get(20).getVc_valor_propiedad().toString());
+					Element signerType = doc.createElement(configuracion.get(20).getVc_nom_propiedad().toString());
+					signerType.setTextContent(configuracion.get(20).getVc_valor_propiedad().toString());
 					signaturesSigner.appendChild(signerType);
 
 				}
 			}
 
 			Element inePictureFront = doc
-					.createElement(configService.findAll().get(23).getVc_nom_propiedad().toString());
-			inePictureFront.setTextContent(configService.findAll().get(23).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(23).getVc_nom_propiedad().toString());
+			inePictureFront.setTextContent(configuracion.get(23).getVc_valor_propiedad().toString());
 			signers.appendChild(inePictureFront);
 
 			Element inePictureBack = doc
-					.createElement(configService.findAll().get(24).getVc_nom_propiedad().toString());
-			inePictureBack.setTextContent(configService.findAll().get(24).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(24).getVc_nom_propiedad().toString());
+			inePictureBack.setTextContent(configuracion.get(24).getVc_valor_propiedad().toString());
 			signers.appendChild(inePictureBack);
 
 			Element compareIneSelfie = doc
-					.createElement(configService.findAll().get(25).getVc_nom_propiedad().toString());
-			compareIneSelfie.setTextContent(configService.findAll().get(25).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(25).getVc_nom_propiedad().toString());
+			compareIneSelfie.setTextContent(configuracion.get(25).getVc_valor_propiedad().toString());
 			signers.appendChild(compareIneSelfie);
 			
 			//minCompareDocSelfie
-			Element minCompareDocSelfie = doc.createElement(configService.findAll().get(47).getVc_nom_propiedad().toString());
-			minCompareDocSelfie.setTextContent(configService.findAll().get(47).getVc_valor_propiedad().toString());
+			Element minCompareDocSelfie = doc.createElement(configuracion.get(47).getVc_nom_propiedad().toString());
+			minCompareDocSelfie.setTextContent(configuracion.get(47).getVc_valor_propiedad().toString());
 			signers.appendChild(minCompareDocSelfie);
 
 			Element compareSelfieProof = doc
-					.createElement(configService.findAll().get(26).getVc_nom_propiedad().toString());
-			compareSelfieProof.setTextContent(configService.findAll().get(26).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(26).getVc_nom_propiedad().toString());
+			compareSelfieProof.setTextContent(configuracion.get(26).getVc_valor_propiedad().toString());
 			signers.appendChild(compareSelfieProof);
 			
 //			Element urlSignerRedirect = doc
@@ -309,14 +314,14 @@ public class CrearXmlService {
 //			urlSignerRedirect.setTextContent(configService.findAll().get(27).getVc_valor_propiedad().toString());
 //			signers.appendChild(urlSignerRedirect);
 
-			Element idType = doc.createElement(configService.findAll().get(28).getVc_nom_propiedad().toString());
-			idType.setTextContent(configService.findAll().get(28).getVc_valor_propiedad().toString());
+			Element idType = doc.createElement(configuracion.get(28).getVc_nom_propiedad().toString());
+			idType.setTextContent(configuracion.get(28).getVc_valor_propiedad().toString());
 			signers.appendChild(idType);
 
 			// acceptanceVideoNotRequired
 			Element acceptanceVideoNotRequired = doc
-					.createElement(configService.findAll().get(22).getVc_nom_propiedad().toString());
-			acceptanceVideoNotRequired.setTextContent(configService.findAll().get(22).getVc_valor_propiedad());
+					.createElement(configuracion.get(22).getVc_nom_propiedad().toString());
+			acceptanceVideoNotRequired.setTextContent(configuracion.get(22).getVc_valor_propiedad());
 			rootElement.appendChild(acceptanceVideoNotRequired);
 
 			// signOnWeb
@@ -325,23 +330,23 @@ public class CrearXmlService {
 //			rootElement.appendChild(signOnWeb);
 
 			// isShortPath
-			Element isShortPath = doc.createElement(configService.findAll().get(30).getVc_nom_propiedad().toString());
-			isShortPath.setTextContent(configService.findAll().get(30).getVc_valor_propiedad().toString());
+			Element isShortPath = doc.createElement(configuracion.get(30).getVc_nom_propiedad().toString());
+			isShortPath.setTextContent(configuracion.get(30).getVc_valor_propiedad().toString());
 			rootElement.appendChild(isShortPath);
 
 			// shortPad
-			Element shortPad = doc.createElement(configService.findAll().get(31).getVc_nom_propiedad().toString());
-			shortPad.setTextContent(configService.findAll().get(31).getVc_valor_propiedad().toString());
+			Element shortPad = doc.createElement(configuracion.get(31).getVc_nom_propiedad().toString());
+			shortPad.setTextContent(configuracion.get(31).getVc_valor_propiedad().toString());
 			rootElement.appendChild(shortPad);
 
 			// processId
 			Element processId = doc.createElement("processId");
-			processId.setTextContent("1234"); // Obtenemos el valor de la solicitud
+			processId.setTextContent(solicitudEnvio.toString()); // Obtenemos el valor de la solicitud
 			rootElement.appendChild(processId);
 
 			// processType
-			Element processType = doc.createElement(configService.findAll().get(32).getVc_nom_propiedad().toString());
-			processType.setTextContent(configService.findAll().get(32).getVc_valor_propiedad().toString());
+			Element processType = doc.createElement(configuracion.get(32).getVc_nom_propiedad().toString());
+			processType.setTextContent(configuracion.get(32).getVc_valor_propiedad().toString());
 			rootElement.appendChild(processType);
 
 			Element mailResend = doc.createElement("mailResend");
@@ -356,13 +361,31 @@ public class CrearXmlService {
 			rootElement.appendChild(extraInfo);
 
 			Element extraInfoProperty = doc
-					.createElement(configService.findAll().get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty.setTextContent(configService.findAll().get(33).getVc_valor_propiedad().toString());
+					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
 			extraInfo.appendChild(extraInfoProperty);
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("surveysProductId");
 			extraInfoProperty.setAttributeNode(attr);
+			
+			Element extraInfoProperty2 = doc
+					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			extraInfoProperty2.setTextContent("Pensionados digital");
+			extraInfo.appendChild(extraInfoProperty2);
+			
+			Attr attr2 = doc.createAttribute("name");
+			attr2.setValue("productName");
+			extraInfoProperty2.setAttributeNode(attr2);
+			
+			Element extraInfoProperty3 = doc
+					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			extraInfoProperty3.setTextContent("Descripcion corta del producto");
+			extraInfo.appendChild(extraInfoProperty3);
+			
+			Attr attr3 = doc.createAttribute("name");
+			attr3.setValue("productDescription");
+			extraInfoProperty3.setAttributeNode(attr3);
 
 			doc.setXmlStandalone(true);
 			// Se escribe el contenido del XML en un archivo

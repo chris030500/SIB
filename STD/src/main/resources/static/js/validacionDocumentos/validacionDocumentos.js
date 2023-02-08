@@ -1,13 +1,97 @@
 /**
  * 
  */
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+var urlBase = getAbsolutePath();
+var newUrlBase = urlBase.replace("solicitudEnvio/verSolicitud/", "");
+
+
+
+function WS_IAD() {
+	//var urlBase = getAbsolutePath();
+	var ws1 = "";
+	console.log("URL WS: " + newUrlBase + "conexionWS_IAD");
+	$.ajax({
+		url: newUrlBase + "conexionWS_IAD",
+		async: false,
+		type: "GET",
+		dataType: "text",
+		success: function(respuesta) {
+			
+			console.log("Respuesta :" + respuesta);
+			ws1 = respuesta;
+			return ws1;
+		},
+		error: function(respuesta) {
+			console.log("Error");
+			//console.log("Respuesta: " + respuesta.responseText);
+			ws1 = respuesta;
+
+			swal({
+				icon: 'warning',
+				title: "No se encontro la conexión con WS IAD."
+			});
+			return ws1;
+		}
+	});
+
+	return ws1;
+}
+
+function conexionWS_IAD() {
+	//var urlBase = getAbsolutePath();
+	var ws = WS_IAD();
+	var respuestaWs = "";
+	console.log("URL WSCONEXION: " + ws + "conexionWS");
+	$.ajax({
+		url: ws + "/conexionWS",
+		async: false,
+		type: "GET",
+		dataType: "text",
+		success: function(respuesta) {
+			/*console.log("respuesta: " + JSON.stringify(respuesta));
+			console.log("url:" + respuesta.vc_ruta_docto);*/
+			//console.log("url: " + respuesta.vc_ruta_docto);
+			//urlWS = JSON.stringify(respuesta);
+			console.log("Respuesta :" + JSON.stringify(respuesta));
+			respuestaWs = respuesta;
+			return respuestaWs;
+		},
+		error: function(respuesta) {
+			console.log("Error EN  WSCONEXION");
+			//console.log("Respuesta: " + respuesta.responseText);
+			console.log(JSON.stringify(respuesta));
+			respuestaWs = JSON.stringify(respuesta);
+			if (respuesta.status == 0) {
+				respuestaWs = 0;
+			}
+			return respuestaWs;
+		}
+
+
+	});
+
+	return respuestaWs;
+}
+
+
+
+
 //Funcion para buscar la solicitud de credito
 function buscarSolicitudCredito() {
+
 	var solicitud = document.getElementById('i_no_solicitud_core').value;
+	console.log("urlBase: " + urlBase);
+	console.log("newURL: " + newUrlBase);
 	console.log("Entro en buscar producto");
 	console.log("Solicitud: " + solicitud);
 	$.ajax({
-		url: "/buscar_solicitud?solicitud=" + solicitud,
+		url: newUrlBase + "buscar_solicitud?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -38,11 +122,12 @@ function buscarSolicitudCredito() {
 
 //Funcion para obtener los participantes de la solicitud de credito
 function traerParticipantes(solicitud) {
+	//var urlBase = getAbsolutePath();
 	console.log("Entro en traer participantes");
 	console.log("Solicitud: " + solicitud);
 	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
-		url: "/trae_participantes?solicitud=" + solicitud,
+		url: newUrlBase + "trae_participantes?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -67,10 +152,11 @@ function traerParticipantes(solicitud) {
 
 //Funcion para obtener los archivos de la solicitud
 function obtenerArchivosSolicitud(solicitud) {
+	//var urlBase = getAbsolutePath();
 	console.log("Entro en obtenerArchivosSolicitud");
 	var divDocumentos = document.getElementById("divDocumentos");
 	$.ajax({
-		url: "/doctEnvio/obtener_archivos?solicitud=" + solicitud,
+		url: newUrlBase + "doctEnvio/obtener_archivos?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -122,10 +208,11 @@ function obtenerArchivosSolicitud(solicitud) {
 
 //Funcion para realizar la busqueda del documento
 function buscarDoctoEnvio(idDoctEnvio) {
+	//var urlBase = getAbsolutePath();
 	console.log("Entro en buscarDoctoEnvio");
 	console.log("idDoctEnvio: " + idDoctEnvio);
 	$.ajax({
-		url: "/doctEnvio/obtener_doctEnvio/" + idDoctEnvio,
+		url: newUrlBase + "doctEnvio/obtener_doctEnvio/" + idDoctEnvio,
 		async: false,
 		type: "GET",
 		dataType: "JSON",
@@ -149,12 +236,13 @@ function buscarDoctoEnvio(idDoctEnvio) {
 
 //Funcion para visualizar el archivo que se seleccione
 function visualizarArchivo(idDoctoEnvio) {
+	//var urlBase = getAbsolutePath();
 	console.log("Entro en visualizarArchivo");
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
 	console.log("Solicitud envio: " + solicitudEnvio);
 	console.log("idDoctoEnvio: " + idDoctoEnvio);
 	var urlDocto = buscarDoctoEnvio(idDoctoEnvio);
-	window.open("/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto, '_blank');
+	window.open(newUrlBase + "solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto, '_blank');
 	//window.location.href = "/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto;
 
 }
@@ -180,85 +268,96 @@ function sinObservacion(id) {
 }
 
 //Funcion para realizar el VoBo de los documentos
-function VoBoDocumentos1() {
+function VoBoDocumentos() {
 	var banderaVoBo = false;
+	//console.log("e: " + e);
+	var conexion = conexionWS_IAD();
+	console.log("Conexion: " + conexion);
+	//var urlBase = getAbsolutePath();
+	if (conexion == 1) {
+		console.log("Si hay conexión con API");
+		var idTr = document.querySelectorAll('.contarTr');
+		console.log("contarTr: " + idTr.length);
+		var miArray = new Array(idTr.length);
+		var conteo = 0;
+		console.log("Array: " + miArray.length);
+		for (var i = 0; i < idTr.length; i++) {
+			var tr = idTr[i].id
+			console.log("El id del tr es: " + tr);
+			var aprobacion = $('input[name="' + tr + '"]:checked').val();
+			if (aprobacion != null) {
+				console.log("Aprobación: " + i + " " + aprobacion);
+				if (aprobacion == 1) {
+					console.log("la aprobación es valida (1)");
+				} else if (aprobacion == 0) {
+					console.log("la aprobación es invalida (0)");
+					var idComentario = "comentario" + tr;
+					var comentario = document.getElementById(idComentario).value;
+					console.log("Comentario: " + comentario);
+					$.ajax({
+						async: false,
+						url: newUrlBase + "hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
+						type: "POST",
+						dataType: "JSON",
+						success: function(respuesta) {
+							console.log("La respuesta es correcta");
+						},
+						error: function(respuesta) {
+							console.log("Error: " + JSON.stringify(respuesta));
+							//console.log("Error: " + respuesta.status);
+						}
+					});
+				}
+				banderaVoBo = true;
+				miArray[i] = true;
 
-	var idTr = document.querySelectorAll('.contarTr');
-	console.log("contarTr: " + idTr.length);
-	var miArray = new Array(idTr.length);
-	var conteo = 0;
-	console.log("Array: " + miArray.length);
-	for (var i = 0; i < idTr.length; i++) {
-		var tr = idTr[i].id
-		console.log("El id del tr es: " + tr);
-		var aprobacion = $('input[name="' + tr + '"]:checked').val();
-		if (aprobacion != null) {
-			console.log("Aprobación: " + i + " " + aprobacion);
-			if (aprobacion == 1) {
-				console.log("la aprobación es valida (1)");
-			} else if (aprobacion == 0) {
-				console.log("la aprobación es invalida (0)");
-				var idComentario = "comentario" + tr;
-				var comentario = document.getElementById(idComentario).value;
-				console.log("Comentario: " + comentario);
 				$.ajax({
 					async: false,
-					url: "/hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
+					url: newUrlBase + "doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
 					type: "POST",
 					dataType: "JSON",
 					success: function(respuesta) {
-						console.log("La respuesta es correcta");
+						console.log("Respuesta: " + JSON.stringify(respuesta));
 					},
 					error: function(respuesta) {
-						console.log("Error: " + JSON.stringify(respuesta));
-						//console.log("Error: " + respuesta.status);
+						//console.log("Respuesta: " + JSON.stringify(respuesta));
+						swal({
+							icon: "info",
+							title: "Error: " + JSON.stringify(respuesta),
+							showConfirmButton: false
+
+						});
 					}
 				});
+			} else {
+				//console.log("Favor de llenar todos los campos");
+				miArray[i] = false;
+				swal({
+					icon: "info",
+					title: "Favor de llenar todos los campos de aprobación",
+					showConfirmButton: false
+
+				});
 			}
-			banderaVoBo = true;
-			miArray[i] = true;
 
-			$.ajax({
-				async: false,
-				url: "/doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
-				type: "POST",
-				dataType: "JSON",
-				success: function(respuesta) {
-					console.log("Respuesta: " + JSON.stringify(respuesta));
-				},
-				error: function(respuesta) {
-					//console.log("Respuesta: " + JSON.stringify(respuesta));
-					swal({
-						icon: "info",
-						title: "Error: " + JSON.stringify(respuesta),
-						showConfirmButton: false
+		}
+		//console.log("miArray: " + miArray);
 
-					});
-				}
-			});
-		} else {
-			//console.log("Favor de llenar todos los campos");
-			miArray[i] = false;
-			swal({
-				icon: "info",
-				title: "Favor de llenar todos los campos de aprobación",
-				showConfirmButton: false
-
-			});
+		for (i = 0; i < miArray.length; i++) {
+			if (miArray[i] === true) {
+				conteo = conteo + 1;
+			}
 		}
 
-	}
-	//console.log("miArray: " + miArray);
-
-	for (i = 0; i < miArray.length; i++) {
-		if (miArray[i] === true) {
-			conteo = conteo + 1;
+		if (conteo == miArray.length) {
+			console.log("Todos los valores son true");
+			validarArchivosSolicitud();
 		}
-	}
-
-	if (conteo == miArray.length) {
-		console.log("Todos los valores son true");
-		validarArchivosSolicitud();
+	} else if (conexion == 0) {
+		swal({
+			icon: 'warning',
+			title: "No se encontro conexion con WS."
+		});
 	}
 	//console.log("Numero de documentos: " + numTr);
 }
@@ -266,12 +365,13 @@ function VoBoDocumentos1() {
 //Funcion para validar los archivos de la solicitud
 function validarArchivosSolicitud() {
 	console.log("Entro validarArchivosSolicitud");
+	//var urlBase = getAbsolutePath();
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
 	console.log("Solicitud envio: " + solicitudEnvio);
 	//var estatus;
 	$.ajax({
 		async: false,
-		url: "/solicitudEnvio/validacionArchivoSolicitud?solicitud=" + solicitudEnvio,
+		url: newUrlBase + "solicitudEnvio/validacionArchivoSolicitud?solicitud=" + solicitudEnvio,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -294,26 +394,35 @@ function validarArchivosSolicitud() {
 //Funcion para validar la solicitud de envio
 function validarSoliEnvio(estatus, idSolicitud) {
 	var solicitudCore = document.getElementById('i_no_solicitud_core').value;
+	var indEnvio = 0;
+	var mensaje = "";
+	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
-		url: "/solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/" + solicitudCore,
+		url: newUrlBase + "solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/" + solicitudCore,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
 			console.log("Respuesta validarSoliEnvio: " + respuesta);
 			// Todos los documentos fueron aprobados
 			if (respuesta === 1) {
+				obtenerParamWSAuten();
+				//Ejecutamos la notificación.
+				mensaje = "Se han validado los documentos de la solicitud de crédito: " + solicitudCore;
+				envioMensaje(mensaje, indEnvio, idSolicitud);
 				swal({
 					icon: "success",
 					title: "Revisión de documentos exitosa",
 					showConfirmButton: false
 
-				})/*.then((result) => {
-					window.location.replace("/solicitudEnvio/solicitudes");
-				});*/
+				}).then((result) => {
+					window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
+				});
 
 			} else {
 				// Si la respuesta es diferente de 1 significa que existen documentos a corregir
+				mensaje = "Se revisaron los documentos de la solicitud de crédito: " + idSolicitud + " Favor de corregirlos y cargarlos en un nuevo proceso.";
+				envioMensaje(mensaje, indEnvio, idSolicitud);
 				swal({
 					icon: "success",
 					title: "Validación correcta",
@@ -347,11 +456,28 @@ function validarSoliEnvio(estatus, idSolicitud) {
 	});
 }
 
-//Funcion para obtener las credenciales para Autenticarse con el proveedor
-function VoBoDocumentos() {
+function envioMensaje(mensaje, indEnvio, sEnvio) {
+	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
-		url: "/catConfWs/obtenerParamWSAuten",
+		url: newUrlBase + "notificacion?mensaje=" + mensaje +
+			"&indEnvio=" + indEnvio + "&sEnvio=" + sEnvio,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+		},
+		error: function(respuesta) {
+
+		}
+	});
+}
+
+//Funcion para obtener las credenciales para Autenticarse con el proveedor
+function obtenerParamWSAuten() {
+	//var urlBase = getAbsolutePath();
+	$.ajax({
+		async: false,
+		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -371,11 +497,11 @@ function VoBoDocumentos() {
 }
 
 //Establecemos la base de la conexion del API (WS_IAD)
-var ws = "http://localhost:8091";
+//var ws = "http://localhost:8091";
 
 //Funcion para realizar la autenticacion del user con el proveedor
 function conexionApi(usuario, password, userType) {
-
+	var ws = WS_IAD();
 	console.log("conexionApi");
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
 	var resultadoLogin = false;
@@ -444,6 +570,7 @@ function conexionApi(usuario, password, userType) {
 
 //Funcion para guardar la Autenticacion del User LOGIN
 function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta) {
+	//var urlBase = getAbsolutePath();
 	var datosConexionApi = JSON.stringify(respuesta);
 	//var datosConexionApi = respuesta;
 	//var datosConexionApi = JSON.parse(respuesta);
@@ -455,7 +582,7 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 	//console.log("datosConexionApi en guardarWSAuteUsu: "+ datosConexionApi);
 	$.ajax({
 		async: false,
-		url: "/wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+		url: newUrlBase + "wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
 			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
 		type: "POST",
 		dataType: "JSON",
@@ -490,6 +617,7 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 	/*console.log("idWSAutenticacion: " +idWSAutenticacion);
 	console.log("solicitudEnvio: " + solicitudEnvio);*/
 	console.log("guardarRespAutenticacion");
+	//var urlBase = getAbsolutePath();
 	var jsonRespuesta = respuesta.trim();
 	//var json = jsonRespuesta.replace(/["']/g, "");
 	var jsonFinal = jsonRespuesta.replace(/[{{}}]/g, "");
@@ -500,7 +628,7 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 		console.log("Solo registra jsonFinal, idWSAutenticacion");
 		$.ajax({
 			async: false,
-			url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+			url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
 				"&idWSAutenticacion=" + idWSAutenticacion,
 			type: "POST",
 			dataType: "JSON",
@@ -521,8 +649,8 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 	} else if (banderaRespuesta == 1) {
 		$.ajax({
 			async: false,
-			url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal + "&jti=" + jti +
-				"&scope=" + scope + "&token=" + token + "&idWSAutenticacion=" + idWSAutenticacion,
+			url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+				"&jti=" + jti + "&scope=" + scope + "&token=" + token + "&idWSAutenticacion=" + idWSAutenticacion,
 			type: "POST",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -567,9 +695,10 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 //Funcion para guardar en Bitacora Consumo
 function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
 	console.log("Ejecutando guardarBitacoraWS");
+	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
-		url: "/bitacoraConsumo?autenUser=" + autenUser + "&resAuten=" + resAuten +
+		url: newUrlBase + "bitacoraConsumo?autenUser=" + autenUser + "&resAuten=" + resAuten +
 			"&tpProceso=" + tpProceso + "&soliEnvio=" + soliEnvio,
 		type: "POST",
 		dataType: "JSON",
@@ -588,10 +717,11 @@ function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
 
 //Funcion para recuperar los documentos xml, pdf y generacion de hash del pdf
 function obtenerArchivo(soliEnvio, token) {
+	//var urlBase = getAbsolutePath();
 	console.log("Ejecutando obtenerArchivo");
 	$.ajax({
 		async: false,
-		url: "/archivos/obtenerArchivos?soliEnvio=" + soliEnvio,
+		url: newUrlBase + "archivos/obtenerArchivos?soliEnvio=" + soliEnvio,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -615,26 +745,45 @@ function obtenerArchivo(soliEnvio, token) {
 function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 
 	console.log("Ejecutando envioDocFirmaAPI");
+	var ws = WS_IAD();
 	var idConfWS = 2;
 	var archivoXML = "xml:" + xml;
 	var archivoPDF = "pdf:" + pdf;
 	var hashPDF = "hash:" + hash;
 	var accessToken = "token:" + token
 	var jsonEnvio = [archivoXML, archivoPDF, hashPDF, accessToken];
+	var resultadoLogin = false;
 	$.ajax({
 		async: false,
 		url: ws + "/envio/DocumentoFirma?xml=" + xml + "&pdf=" + pdf + "&hash=" + hash + "&accessToken=" + token,
 		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
-			var resultadoLogin = true;
+			//var resultadoLogin = true;
 			console.log("Respuesta envioDocFirmaAPI: " + JSON.stringify(respuesta));
-			guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
+			if (JSON.stringify(respuesta).includes("error")) {
+				resultadoLogin = false;
+				console.log("Tiene error");
+				guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
+				swal({
+					icon: "info",
+					title: "Error Conexión: " + respuesta.error,
+					showConfirmButton: false
+
+				});
+			} else {
+				resultadoLogin = true;
+				console.log("Respuesta envioDocFirmaAPI: " + JSON.stringify(respuesta));
+				guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
+			}
+
 		},
 		error: function(respuesta) {
+			resultadoLogin = false;
+			guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
 			swal({
 				icon: "info",
-				title: "Error envioDocFirmaAPI: " + JSON.stringify(respuesta),
+				title: "Error al enviar los documentos a firmar en el API: " + JSON.stringify(respuesta),
 				showConfirmButton: false
 			});
 		}
@@ -643,9 +792,10 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 
 function agregarRequisitionId(requisitionId, soliEnvio) {
 	console.log("Ejecutando agregarRequisitionId");
+	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
-		url: "/solicitudEnvio/agregarRequisitionId?requisitionId=" + requisitionId + "&soliEnvio=" + soliEnvio,
+		url: newUrlBase + "solicitudEnvio/agregarRequisitionId?requisitionId=" + requisitionId + "&soliEnvio=" + soliEnvio,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -667,18 +817,31 @@ function guardarWSAuteUsuEnvDoctFirma(resultadoLogin, solicitudEnvio, idConfWS, 
 	console.log("Ejecutando guardarWSAuteUsuEnvDoctFirma: " + JSON.stringify(resJson));
 	var tpProceso = "ENVIO DE DOCUMENTOS";
 	var respuestaEnvioSoli = JSON.stringify(resJson);
-	var requisitionId = resJson.data.requisitionId;
+	if (respuestaEnvioSoli.includes("requisitionId")) {
+		console.log("Si tiene requisition ID");
+		var requisitionId = resJson.data.requisitionId;
+	} else {
+		console.log("No tiene requisition id")
+		var requisitionId = null;
+	}
+
+	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
-		url: "/wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+		url: newUrlBase + "wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
 			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
 		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
 			//console.log("Respuesta agregarRequisitionId: " + JSON.stringify(respuesta));
 			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
-			guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId);
-			agregarRequisitionId(requisitionId, solicitudEnvio);
+			if (requisitionId != null) {
+				guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId);
+				agregarRequisitionId(requisitionId, solicitudEnvio);
+			} else {
+				guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId);
+			}
+
 		},
 		erro: function(respuesta) {
 			swal({
@@ -696,6 +859,7 @@ function guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticac
 	console.log("RESPUESTA guardarRespAutenticacionEnvDoctFirma: " + respuestaEnvioSoli);
 	console.log("idWSAutenticacion: " + idWSAutenticacion);
 	console.log("solicitudEnvio: " + solicitudEnvio);
+	//var urlBase = getAbsolutePath();
 	var jsonRespuesta = respuestaEnvioSoli.trim();
 	//var requisitionId = respuestaEnvioSoli.data;
 	//var json = jsonRespuesta.replace(/["']/g, "");
@@ -706,7 +870,7 @@ function guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticac
 	//console.log("jsonRespuesta:" + jsonFinal);
 	$.ajax({
 		async: false,
-		url: "/wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+		url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
 			"&idWSAutenticacion=" + idWSAutenticacion + "&requisitionId=" + requisitionId,
 		type: "POST",
 		dataType: "JSON",
