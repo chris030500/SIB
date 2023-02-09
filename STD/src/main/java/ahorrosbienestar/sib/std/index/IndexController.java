@@ -67,32 +67,28 @@ public class IndexController {
 	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
-	public String index(Authentication authentication, Principal principal) {
-		if (authentication != null) {
-			logger.info("Hola usuario autenticado, tu username es: ".concat(authentication.getName()));
-
-		}
+	public String index() {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+		String nombreUsuario = auth.getName();
 		if (auth != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(auth.getName()));
-		}
-		String nombreUsuario = auth.getName();
-		System.out.println("Nombre del usuario: " + nombreUsuario);
-		System.out.println("PrincipalgetName: " + principal.getName());
-		int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
-		logger.info("Estatus Fecha: " + estatusFecha);
-		if (estatusFecha == 1) {
-			logger.info("Debe de cambiar la contraseña");
-			// System.out.println("Debe de cambiar la contraseña");
+			loginService.spActivarSesion(nombreUsuario);
+			System.out.println("Nombre del usuario: " + nombreUsuario);
+			int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
+			logger.info("Estatus Fecha: " + estatusFecha);
+			if (estatusFecha == 1) {
+				logger.info("Debe de cambiar la contraseña");
+				// System.out.println("Debe de cambiar la contraseña");
 
-			return "redirect:/cambio_contrasena";
-		}
+				return "redirect:/cambio_contrasena";
+			}
 			logger.info("Ingreso al sistema");
-		logger.info("Cambia el estatus de sesión a activo (1)");
+		}
+
+//		logger.info("Cambia el estatus de sesión a activo (1)");
 		// System.out.println("Puede acceder al sistema");
-		loginService.spActivarSesion(nombreUsuario);
+		// loginService.spActivarSesion(nombreUsuario);
 		return "index";
 	}
 

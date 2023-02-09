@@ -1,5 +1,11 @@
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
 
 function buscarEmpleado(empleado) {
+	var urlBase = getAbsolutePath();
 	//var selectUsuario = $('#selectUsuario');
 
 	var busquedaEmpleado = document.getElementById("busquedaEmpleado").value;
@@ -19,7 +25,7 @@ function buscarEmpleado(empleado) {
 	} else {
 		console.log("Entro en else de busquedaEmpleado");
 		$.ajax({
-			url: "http://localhost:8090/empleado/listado?nombre=" + empleado,
+			url: urlBase + "empleado/listado?nombre=" + empleado,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -91,8 +97,9 @@ function postEdit() {
 }
 
 function showEditModal(index) {
+	var urlBase = getAbsolutePath();
 	console.log("index: " + index);
-	var url = "http://localhost:8090/usuario/usuario/loadEntity/";
+	var url = urlBase + "usuario/usuario/loadEntity/";
 
 	console.log("entro en showEditModal");
 
@@ -118,6 +125,7 @@ function populateModal(data) {
 }
 
 function altaUsuario() {
+	var urlBase = getAbsolutePath();
 	var nombreUsuario = document.getElementById('nombreUsuario').value;
 	var idEmpleado = document.getElementById('EmpleadoId').value;
 	var contrasena = document.getElementById('contrasena').value;
@@ -138,7 +146,7 @@ function altaUsuario() {
 		} else {
 			console.log("Puede continuar");
 			$.ajax({
-				url: "http://localhost:8090/usuario/nombre/" + nombreUsuario,
+				url: urlBase + "usuario/nombre/" + nombreUsuario,
 				type: "GET",
 				success: function(respuesta) {
 					/*console.log("Entro en success de get");
@@ -151,7 +159,7 @@ function altaUsuario() {
 					} else {
 						console.log("Usuario para registrar");
 						$.ajax({
-							url: "http://localhost:8090/usuario/idEmpleado/" + idEmpleado,
+							url: urlBase + "usuario/idEmpleado/" + idEmpleado,
 							type: "GET",
 							success: function(respuesta) {
 								if (respuesta == true) {
@@ -160,7 +168,7 @@ function altaUsuario() {
 								} else {
 									console.log("Puede continuar en agregar el usuario");
 									$.ajax({
-										url: "http://localhost:8090/usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
+										url: urlBase + "usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
 										type: "POST",
 										success: function() {
 											console.log("Entro en success de get");
@@ -171,7 +179,7 @@ function altaUsuario() {
 											console.log("Busca el usuario registrado con anterioridad");
 											console.log("Nombre de usuario: " + nombreUsuario);
 											$.ajax({
-												url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
+												url: urlBase + "usuario/nombreUsuario/" + nombreUsuario,
 												type: "GET",
 												dataType: "JSON",
 												success: function(respuesta) {
@@ -197,7 +205,7 @@ function altaUsuario() {
 																	'Accept': 'application/json',
 																	'Content-Type': 'application/json'
 																},
-																url: "http://localhost:8090/hist_contrasena/",
+																url: urlBase + "hist_contrasena/",
 																type: "POST",
 																data: JSON.stringify(data),
 																dataType: "json",
@@ -211,7 +219,7 @@ function altaUsuario() {
 																		showConfirmButton: false
 
 																	}).then((result) => {
-																		window.location.replace("http://localhost:8090/usuario/formulario");
+																		window.location.replace(urlBase + "usuario/formulario");
 																	});
 
 																},
@@ -282,8 +290,9 @@ function altaUsuario() {
 }
 
 function validarNombreUsuario(nombreUsuario) {
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "http://localhost:8090/usuario/nombre/" + nombreUsuario,
+		url: urlBase + "usuario/nombre/" + nombreUsuario,
 		type: "GET",
 		success: function(respuesta) {
 			/*console.log("Entro en success de get");
@@ -310,8 +319,9 @@ function validarNombreUsuario(nombreUsuario) {
 function bajaUsuario(usuario) {
 	console.log("Entro en dar baja usuario");
 	console.log("Usuario: " + usuario);
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "http://localhost:8090/usuario/baja_usuario?usuario=" + usuario,
+		url: urlBase + "usuario/baja_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -344,10 +354,11 @@ function bajaUsuario(usuario) {
 
 //funcion para reacitvar el usuario (Estatus Usuario = true)
 function reactivarUsuario(usuario) {
+	var urlBase = getAbsolutePath();
 	console.log("Entro en reactivar usuario");
 	console.log("Usuario: " + usuario);
 	$.ajax({
-		url: "http://localhost:8090/usuario/reactivar_usuario?usuario=" + usuario,
+		url: urlBase + "usuario/reactivar_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -384,7 +395,7 @@ function editarUsuario() {
 
 	var idUsuario = document.getElementById('idUsuario').value;
 	var nombreUsuario = document.getElementById('nombre').value;
-
+	var urlBase = getAbsolutePath();
 	//Primero validamos que el nombre de usuario no exista.
 	if (nombreUsuario == "") {
 		console.log("Ingresa un nombre de usuario");
@@ -397,7 +408,7 @@ function editarUsuario() {
 	} else {
 		console.log("Puede continuar");
 		$.ajax({
-			url: "http://localhost:8090/usuario/nombreUsuario/" + nombreUsuario,
+			url: urlBase + "usuario/nombreUsuario/" + nombreUsuario,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -416,12 +427,13 @@ function editarUsuario() {
 				} else if (respuesta == null) {
 					console.log("El nombre de usuario no existe");
 					$.ajax({
-						url: "http://localhost:8090/usuario/editar_usuario?usuario=" + nombreUsuario + "&idUsuario="+idUsuario,
+						url: urlBase + "usuario/editar_usuario?usuario=" + nombreUsuario + 
+							"&idUsuario=" + idUsuario,
 						type: "POST",
 						success: function() {
 							/*console.log("Entro en success de get");
 							console.log("Respuesta: " +respuesta);*/
-							
+
 
 							swal({
 								icon: 'success',

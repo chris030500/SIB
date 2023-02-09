@@ -44,6 +44,10 @@ public class DoctEnvioService {
 	public DoctEnvio obtenerDoctoEnvio(Integer idDoctoEnvio) {
 		return iDoctEnvioRepository.obtenerDoctoEnvio(idDoctoEnvio);
 	}
+	
+	public int validarDoctEnvio(Integer estatus, Integer idDoctoEnvio) {
+		return iDoctEnvioRepository.validarDoctEnvio(estatus, idDoctoEnvio);
+	}
 
 	public List<DoctEnvio> listadoDoctEnvioActivos(Integer envioId) {
 		return iDoctEnvioRepository.listadoDoctEnvioActivos(envioId);

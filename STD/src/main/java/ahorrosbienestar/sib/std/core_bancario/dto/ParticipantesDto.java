@@ -8,6 +8,7 @@ public class ParticipantesDto {
 	private String rol;
 	private String telefonoCelular;
 	private String correoElectronico;
+	private String direccionCompleta;
 	
 	public int getSolicitudCreditoID() {
 		return solicitudCreditoID;
@@ -45,6 +46,14 @@ public class ParticipantesDto {
 	public void setCorreoElectronico(String correoElectronico) {
 		this.correoElectronico = correoElectronico;
 	}
+	public String getDireccionCompleta() {
+		return direccionCompleta;
+	}
+	public void setDireccionCompleta(String direccionCompleta) {
+		this.direccionCompleta = direccionCompleta;
+	}
+	
+	
 	
 	
 

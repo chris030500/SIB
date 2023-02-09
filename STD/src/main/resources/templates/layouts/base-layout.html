@@ -49,14 +49,13 @@
 					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
 
 						<li>
-							<form id="logoutForm" th:action="@{/logout}" method="post">
-								<a type="submit" onclick="document.getElementById('logoutForm').submit();"
-									class="dropdown-item d-flex align-items-center" href="#">
-									<i class="bi bi-box-arrow-right"></i>
-									<span>Cerrar sesión</span>
-								</a>
-								<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
-							</form>
+
+							<a href="#" th:href="@{/logout1}" class="dropdown-item d-flex align-items-center">
+								<i class="bi bi-box-arrow-right"></i>
+								<span>Cerrar sesión</span>
+							</a>
+							<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+
 						</li>
 
 					</ul><!-- End Profile Dropdown Items -->
@@ -260,8 +259,9 @@
 
 
 		<!-- jQuery -->
-		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<!--<script src="http://code.jquery.com/jquery-1.10.2.js"></script>-->
+		<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 		<script src="https://kit.fontawesome.com/e98bc5a543.js" crossorigin="anonymous"></script>
 		<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -276,5 +276,6 @@
 
 		</th:block>
 	</body>
+
 
 	</html>

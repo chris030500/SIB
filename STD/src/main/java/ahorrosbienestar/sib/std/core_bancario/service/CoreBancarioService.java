@@ -28,6 +28,7 @@ public class CoreBancarioService {
 	public CoreBancarioService(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
+	
 
 	// Declaramos que SP se va a ejecutar (validar la solicitud)
 	public List<ValidaSolicitudDto> validaSolicitud(int solicitud) {
@@ -48,7 +49,9 @@ public class CoreBancarioService {
 						cb.setTasaFija(rs.getString(8));
 						cb.setPlazo(rs.getString(9));
 						cb.setEstatus(rs.getString(10));
-
+						cb.setProductoNomina(rs.getString(11));
+						cb.setTasaMoratoria(rs.getString(13));
+						cb.setClienteId(rs.getString(14));
 						return cb;
 					}
 				});
@@ -70,6 +73,7 @@ public class CoreBancarioService {
 						p.setRol(rs.getString(4));
 						p.setTelefonoCelular(rs.getString(5));
 						p.setCorreoElectronico(rs.getString(6));
+						p.setDireccionCompleta(rs.getString(7));
 						return p;
 					}
 				});

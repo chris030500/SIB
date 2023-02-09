@@ -1,3 +1,4 @@
+var productoNomina = document.getElementById('productoNomina').value;
 //console.log("Entro en carga de documentos");
 function sumarDias(fecha, dias) {
 	fecha = new Date(fecha);
@@ -54,8 +55,16 @@ function eliminarFila() {
 
 }
 
+function getAbsolutePath() {
+    var loc = window.location;
+    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
 //Funcion para la busqueda de solicitud de credito
 function buscarSolicitudCredito(solicitudCredito) {
+	var urlBase = getAbsolutePath();
+	console.log("urlGuardar: " + urlBase);
 	console.log("solicitudCredito: " + solicitudCredito);
 	var usuarioPregunta = $('input:checkbox[name=usuarioPregunta]:checked').val();
 	var divDatoSolicitud = document.getElementById("datoSolicitud");
@@ -78,7 +87,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 		else {
 			console.log("Si se ha seleccionado una opción en usuario");
 			$.ajax({
-				url: "/buscar_solicitud?solicitud=" + solicitudCredito,
+				url: urlBase+"buscar_solicitud?solicitud=" + solicitudCredito,
 				type: "GET",
 				dataType: "JSON",
 				success: function(respuesta) {
@@ -99,6 +108,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 						console.log("Puede continuar");
 						if (respuesta[0].resultado == 1) {
 							console.log("Puede continuar para buscar si el producto está configurado");
+							console.log("Resultado: " + JSON.stringify(respuesta));
 							//Hacemos visible los campos del detalle de la solicitud
 							divDatoSolicitud.style.display = "block";
 
@@ -111,6 +121,8 @@ function buscarSolicitudCredito(solicitudCredito) {
 							var tasaNormal = document.getElementById('tasaNormal');
 							var estatus = document.getElementById('estatus');
 							var Nombreproducto = document.getElementById('Nombreproducto');
+							var productoNomina = document.getElementById('productoNomina');
+							var clienteId = document.getElementById('clienteId');
 							$("#divIdProducto").hide();
 							//Asignamos los valores a los campos
 							solicitud.value = respuesta[0].solicitudCreditoID;
@@ -121,7 +133,10 @@ function buscarSolicitudCredito(solicitudCredito) {
 							tasaNormal.value = respuesta[0].tasaFija;
 							estatus.value = respuesta[0].estatus;
 							Nombreproducto.value = respuesta[0].producto;
+							productoNomina.value = respuesta[0].productoNomina;
+							clienteId.value = respuesta[0].clienteId;
 							buscarProducto(respuesta[0].productoCreditoID);
+
 							/*if (usuarioPregunta == 1) {
 								console.log("Si es nuevo cliente");
 							} else if (usuarioPregunta == 2) {
@@ -164,8 +179,9 @@ function buscarSolicitudCredito(solicitudCredito) {
 
 //Funcion para buscar si el producto ya se encuentra configurado
 function buscarProducto(producto) {
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "http://localhost:8090/buscar_catProducto?producto=" + producto,
+		url: urlBase+"buscar_catProducto?producto=" + producto,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -205,11 +221,12 @@ function buscarProducto(producto) {
 
 //Funcion para obtener los participantes de la solicitud de credito
 function traerParticipantes(solicitud) {
+	var urlBase = getAbsolutePath();
 	console.log("Entro en traer participantes");
 	console.log("Solicitud: " + solicitud);
 	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
-		url: "http://localhost:8090/trae_participantes?solicitud=" + solicitud,
+		url: urlBase+"trae_participantes?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -257,11 +274,11 @@ function buscarDocumentos(producto) {
 	m = n.getMonth() + 1;
 	//Día
 	d = n.getDate();
-
+	var urlBase = getAbsolutePath();
 	if (usuarioNuevo == 1) {
 		console.log("Es usuario nuevo");
 		$.ajax({
-			url: "/buscar_documento_clienteNuevo?producto=" + producto,
+			url: urlBase+"buscar_documento_clienteNuevo?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -307,7 +324,7 @@ function buscarDocumentos(producto) {
 		});
 	} else if (usuarioNuevo == 2) {
 		$.ajax({
-			url: "/buscar_documento?producto=" + producto,
+			url: urlBase+"buscar_documento?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -391,119 +408,206 @@ function obtenerNombreDoct(nombre) {
 //Funcion para dar de alta la solicitud
 function altaSolicitud() {
 	console.log("Entro en altaSolicitud");
+	var urlBase = getAbsolutePath();
 	var inputs = $('input[name^=file]');
-	/*var countI = inputs.length;
-	console.log("Files" + countI);
-	console.log("files: " +  document.getElementById("fileLoader").files[0]);*/
+	var solicitud = document.getElementById('solicitud').value;
 	if (document.getElementById("fEnvio").value != null && document.getElementById("fCancelacion").value) {
-		//console.log("No ha seleccionado un archivo");
-		console.log("Puede continuar");
-		//console.log("Ha seleccionado un archivo");
-		//Vamos a obtener los datos necesarios para llenar la solicitud de envio
-
-		var solicitud = document.getElementById('solicitud').value;
-		var producto = document.getElementById('producto').value;
-		var estatus = 1;
-		var comentarioValidacion = document.getElementById('comentarioValidacion').value;
-		var fEnvio = document.getElementById('fEnvio').value;
-		var hEnvio = document.getElementById('hEnvio').value;
-		var fCancelacion = document.getElementById('fCancelacion').value;
-		var hCancelacion = document.getElementById('hCancelacion').value;
-		console.log("noSolicitud: " + solicitud);
-		console.log("productoId: " + producto);
-		console.log("estatus: " + estatus);
-		console.log("obserReticion: " + comentarioValidacion);
-		console.log("fechaEnvio: " + fEnvio);
-		console.log("horaEnvio: " + hEnvio);
-		console.log("fechaCancelacion: " + fCancelacion);
-		console.log("horaCancelacion:" + hCancelacion);
 
 		$.ajax({
-			url: "/solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
-				"&comentarioValidacion=" + comentarioValidacion + "&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion + "&hCancelacion=" + hCancelacion,
-			type: "POST",
+			async: false,
+			url: urlBase+"solicitudEnvio/validarSolicitudCredito/" + solicitud,
+			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				/*console.log("Entro en success de get");
-				console.log("Respuesta: " +respuesta);*/
-				console.log("Se guardo la contraseña en historial contraseña: ");
-				swal({
-					icon: "success",
-					title: "Registro de solicitud exitoso.",
-					showConfirmButton: false
+				/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+				console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
+				//console.log("RESPUESTA: " + JSON.stringify(respuesta));
 
-				});
-				uploadFile();
+				var r;
+				if (JSON.stringify(respuesta) == "[]") {
+					r = null;
+				} else {
+					r = JSON.stringify(respuesta[0].estatus);
+				}
+				//var r = JSON.stringify(respuesta[0].estatus);
+				console.log("r: " + r);
+				if (r == 1) {
+					swal({
+						title: "Solicitud en proceso de: ",
+						text: "Autorizacion de documentos",
+						icon: "info",
+					});
+					//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
+				} else if (r == 3) {
+					swal({
+						title: "Solicitud en proceso de: ",
+						text: "Autorización de documentos para firma digital",
+						icon: "info",
+					});
+					//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
+				} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
+					console.log("Puede realizar el registro");
+					var producto = document.getElementById('producto').value;
+					var estatus = 1;
+					var comentarioValidacion = document.getElementById('comentarioValidacion').value;
+					var fEnvio = document.getElementById('fEnvio').value;
+					var hEnvio = document.getElementById('hEnvio').value;
+					var fCancelacion = document.getElementById('fCancelacion').value;
+					var hCancelacion = document.getElementById('hCancelacion').value;
+					var productoNomina = document.getElementById('productoNomina').value;
+					console.log("noSolicitud: " + solicitud);
+					console.log("productoId: " + producto);
+					console.log("estatus: " + estatus);
+					console.log("obserReticion: " + comentarioValidacion);
+					console.log("fechaEnvio: " + fEnvio);
+					console.log("horaEnvio: " + hEnvio);
+					console.log("fechaCancelacion: " + fCancelacion);
+					console.log("horaCancelacion:" + hCancelacion);
+					console.log("productoNomina: " + productoNomina);
+					var solicitudCredito = document.getElementById("solicitudCredito").value;
+					var clienteId = document.getElementById("clienteId").value;
+					$.ajax({
+						async: false,
+						url: urlBase+"solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
+							"&comentarioValidacion=" + comentarioValidacion +
+							"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
+							"&hCancelacion=" + hCancelacion,
+						type: "POST",
+						dataType: "JSON",
+						success: function(respuesta) {
+							//console.log("Respuesta: " + JSON.stringify(respuesta));
+							var idEnvio = JSON.stringify(respuesta);
+							/*console.log("Entro en success de get");
+							console.log("Respuesta: " +respuesta);*/
+							console.log("Se guardo la solicitud de envio: ");
+							/*swal({
+								icon: "success",
+								title: "Registro de solicitud exitoso.",
+								showConfirmButton: false
+			
+							});*/
+							uploadFile2(solicitudCredito, clienteId, idEnvio);
+							uploadFile(fCancelacion, productoNomina, idEnvio);
+							swal({
+								icon: "success",
+								title: "Registro de solicitud exitoso.",
+								showConfirmButton: false
 
-			},
-			error: function(respuesta) {
-				//console.log("Entro en error");
-				swal({
-					icon: "warning",
-					title: "Error: " + respuesta.status,
-					showConfirmButton: false
-				});
+							}).then((result) => {
+								window.location.replace("/carga_documentos");
+							});
 
+						},
+						error: function(respuesta) {
+							//console.log("Entro en error");
+							swal({
+								icon: "warning",
+								title: "Error: " + respuesta.status,
+								showConfirmButton: false
+							});
+
+						}
+					});
+				}
+			}, error: function(respuesta) {
+				console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
 			}
 		});
+
 	} else {
 		swal({
 			title: "Error",
 			text: "Favor de llenar los campos de fecha de envio y/o fecha de cancelación",
 			icon: "warning",
 		});
-		//console.log("Favor de llenar los campos de fecha de envio y/o fecha de cancelación");
 	}
 }
 
-//handle the button click event here.
-$(document).ready(function() {
-	$(".upload-me").on("click", handleUpload); //on click, call handleUpload method
-});
+function validarSolicitudCore(solicitud) {
+	var urlBase = getAbsolutePath();
+	console.log("Entro en validarCoreSolicitudEnvio");
+	//var solicitudCore = document.getElementById('solicitud').value;
+	$.ajax({
+		async: false,
+		url: urlBase+"solicitudEnvio/validarSolicitudCredito/" + solicitud,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+			console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
+			return JSON.stringify(respuesta[0]);
+		}, error: function(respuesta) {
+			console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+		}
+	});
+}
+
 
 // Function para obtener los documentos del campo file
-function uploadFile() {
+function uploadFile(fCancelacion, productoNomina, idEnvio) {
+	console.log("uploadFile: ");
+	
+	var productoNomina = document.getElementById('productoNomina').value;
+	var fCancelacion = document.getElementById('fCancelacion').value;
+	//var productoNomina = "N";
+	//var fCancelacion = "2023-01-20";
+
+	console.log("fCancelacion: " + fCancelacion);
+	console.log("productoNomina" + productoNomina);
 	console.log("Lenght: " + document.getElementsByClassName("archivo").length);
 	/*var d = document.getElementsByClassName("archivo");
 	console.log("Archivo: " +  JSON.stringify(d));*/
 	var solicitud = document.getElementById("solicitudCredito").value;
+	var clienteId = document.getElementById("clienteId").value;
 	var longitud = document.getElementsByClassName("archivo").length;
 	console.log(document.getElementsByClassName("archivo"));
 	console.log("Solicitud de credito: " + solicitud);
-	var idSolicitud = obtenerIdSolicitud(solicitud);
-	uploadFile2();
+	console
+	//var idSolicitud = obtenerIdSolicitud(solicitud);
+	//uploadFile2(solicitud, clienteId);
 	for (i = 0; i < longitud; i++) {
 		var documento = document.getElementsByClassName("archivo")[i].id;
 		var n = document.getElementsByClassName("archivo")[i].files[0].name;
-		console.log("documento: " + documento);
+		console.log("documento uploadFile: " + documento);
 		console.log("Files: " + JSON.stringify(n));
-		registrarDoctEnvio(solicitud, documento, n);
+		registrarDoctEnvio(solicitud, documento, n, fCancelacion, productoNomina, clienteId, idEnvio);
 	}
 
 }
-function registrarDoctEnvio(solicitud, documento, nombreDocumento) {
+
+function registrarDoctEnvio(solicitud, documento, nombreDocumento, fCancelacion, productoNomina, clienteId, idEnvio) {
 	console.log("Entro en registrarDoctEnvio");
+	console.log("fCancelacion: " + fCancelacion);
+	console.log("productoNomina: " + productoNomina);
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "/doctEnvio?solicitud=" + solicitud + "&documento=" + documento + "&nombreDocumento=" + nombreDocumento,
+		url: urlBase+"doctEnvio?solicitud=" + solicitud + "&documento=" + documento +
+			"&nombreDocumento=" + nombreDocumento + "&fCancelacion=" + fCancelacion +
+			"&productoNomina=" + productoNomina + "&clienteId=" + clienteId +
+			"&idEnvio=" + idEnvio,
 		type: "POST",
 		dataType: 'json',
 	})
 		.then(function(result) {
 			console.log("Result: " + JSON.stringify(result));
+			console.log("Registro realizado con exito");
 			/*console.log(result.value);
 			console.log(result.name);
 			console.log(result.action);*/
 		});
 }
 
+
 function obtenerIdSolicitud(solicitud) {
 	console.log("Entro en obtenerIdSolicitud");
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "/solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
+		url: urlBase+"solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
 		type: "GET",
 		success: function(data) {
-			console.log("Exitoso");
-			//console.log("Data: " + JSON.stringify(data));
+			console.log("Exitoso obtenerIdSolicitud");
+
+			console.log("Data: " + JSON.stringify(data));
 			//console.log("Id solicitud: " + data[0].pk_id_solicitud_envio);
 			return data[0].pk_id_solicitud_envio;
 		},
@@ -518,24 +622,40 @@ function obtenerIdSolicitud(solicitud) {
 	});
 }
 
-function uploadFile2() {
+
+
+function uploadFile2(solicitudCredito, clienteId,idEnvio) {
 	//var url = "YOUR-BASE-URL-HERE"; Like http://localhost:8081
+	var urlBase = getAbsolutePath();
 	var form = $('#form-upload')[0]; //get the form containing the files
+	console.log("SolicitudCore: " + solicitudCredito);
+	console.log("clienteId: " + clienteId);
 	console.log("form: " + form.value);
 	var data = new FormData(form);
 	console.log("Data: " + JSON.stringify(data));
 	$.ajax({
-		url: "/guardarPDFServidor/upload2",
+		async: false,
+		url: urlBase+"guardarPDFServidor/upload2?solicitudCredito=" + solicitudCredito + "&clienteId=" + clienteId 
+				+"&idEnvio=" +idEnvio,
 		type: "POST",
 		enctype: 'multipart/form-data',
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
 		success: function(data) {
-			console.log("Successfully uploaded " + data);
+			console.log("Carga de archivos exitosa " + data);
 		},
 		error: function(data) {
-			//console.log("Data: " + JSON.stringify(data));
+			console.log("Data: " + JSON.stringify(data));
+			console.log("Error: " + data.response.status);
+			if (data.response.status == 500) {
+				swal({
+					icon: "warning",
+					title: "No se pudo guardar el archivo en el disco seleccionado.",
+					text: data.status,
+					showConfirmButton: false
+				});
+			}
 			//console.log("upload failed");
 			swal({
 				icon: "warning",
@@ -545,4 +665,6 @@ function uploadFile2() {
 		}
 	});
 }
+
+
 

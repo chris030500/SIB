@@ -2,10 +2,11 @@
  * 
  */
 
-//handle the button click event here.
-$(document).ready(function() {
-	$(".upload-me").on("click", handleUpload); //on click, call handleUpload method
-});
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
 
 /**
  * Handle actual handling of the files.
@@ -29,33 +30,35 @@ function uploadFile() {
 	}
 
 }
-function registrarDoctEnvio(solicitud, documento, nombreDocumento) { 
-	console.log("Entro en registrarDoctEnvio"); 
-    $.ajax({
-      url: "/doctEnvio?solicitud="+solicitud+"&documento="+documento+"&nombreDocumento="+nombreDocumento,
-      type: "POST",
-      dataType: 'json',
-    })
-    .then(function(result) {
-		console.log("Result: " + JSON.stringify(result));
-      /*console.log(result.value);
-      console.log(result.name);
-      console.log(result.action);*/
-    });
+function registrarDoctEnvio(solicitud, documento, nombreDocumento) {
+	var urlBase = getAbsolutePath();
+	console.log("Entro en registrarDoctEnvio");
+	$.ajax({
+		url: urlBase + "doctEnvio?solicitud=" + solicitud + "&documento=" + documento + "&nombreDocumento=" + nombreDocumento,
+		type: "POST",
+		dataType: 'json',
+	})
+		.then(function(result) {
+			console.log("Result: " + JSON.stringify(result));
+			/*console.log(result.value);
+			console.log(result.name);
+			console.log(result.action);*/
+		});
 }
 
-function obtenerIdSolicitud(solicitud){
+function obtenerIdSolicitud(solicitud) {
 	console.log("Entro en obtenerIdSolicitud");
+	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: "/solicitudEnvio/obtenerSolicitudFecha/"+solicitud,
+		url: urlBase + "solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
 		type: "GET",
-		success: function(data){
+		success: function(data) {
 			console.log("Exitoso");
-			console.log("Data: "+ JSON.stringify(data));
+			console.log("Data: " + JSON.stringify(data));
 			//console.log("Id solicitud: " + data[0].pk_id_solicitud_envio);
 			return data[0].pk_id_solicitud_envio;
 		},
-		error: function(){
+		error: function() {
 			console.log("Error");
 		}
 	});
@@ -63,12 +66,13 @@ function obtenerIdSolicitud(solicitud){
 
 function uploadFile2() {
 	//var url = "YOUR-BASE-URL-HERE"; Like http://localhost:8081
+	var urlBase = getAbsolutePath();
 	var form = $('#form-upload')[0]; //get the form containing the files
 	console.log("form: " + form.value);
 	var data = new FormData(form);
 	console.log("Data: " + JSON.stringify(data));
 	$.ajax({
-		url: "/guardarPDFServidor/upload2",
+		url: urlBase + "guardarPDFServidor/upload2",
 		type: "POST",
 		enctype: 'multipart/form-data',
 		data: data, //pass the form data
@@ -86,6 +90,7 @@ function uploadFile2() {
 
 //Funcion para cargar los archivos a la carpeta del servidor
 function processUpload(e) {
+	var urlBase = getAbsolutePath();
 	console.log("Entro en processUpload");
 	console.log("e" + e);
 	//console.log( "Nombre del archivo: " + document.getElementById('fileLoader').files[0].name);
@@ -102,7 +107,7 @@ function processUpload(e) {
 	} else {
 		$.ajax({
 			dataType: 'json',
-			url: "/guardarPDFServidor/upload",
+			url: urlBase + "guardarPDFServidor/upload",
 			data: oMyForm,
 			type: "POST",
 			enctype: 'multipart/form-data',

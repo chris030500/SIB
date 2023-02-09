@@ -50,6 +50,14 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 			.and()
 			.exceptionHandling().accessDeniedPage("/error_403");
 		
+		http
+        .sessionManagement()
+        .maximumSessions(1)
+        .expiredUrl("/")
+        .maxSessionsPreventsLogin(false)
+        .and()
+        .invalidSessionUrl("/");
+		
 		
 	}
 	//Metodo para encriptar la contraseña

@@ -29,4 +29,9 @@ public interface IDoctEnvioRepository extends JpaRepository<DoctEnvio, Integer> 
 			+ " JOIN TBL_SOLICITUD_DE_ENVIO SDE ON SDE.PK_ID_SOLICITUD_ENVIO = DE.FK_SOLICITUD_ENVIO "
 			+ " WHERE SDE.PK_ID_SOLICITUD_ENVIO = :envioID", nativeQuery = true)
 	public List<DoctEnvio> listaDocumentosPorSolicitudEnvio(@Param("envioID") Integer envioID);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_DOCTO_ENVIO SET I_ESTATUS = :estatus WHERE PK_ID_DOCTO_ENVIO = :idDoctoEnvio", nativeQuery = true)
+	public int validarDoctEnvio(@Param("estatus") Integer estatus, @Param("idDoctoEnvio") Integer idDoctoEnvio);
 }

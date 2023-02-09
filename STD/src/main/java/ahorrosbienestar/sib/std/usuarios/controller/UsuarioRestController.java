@@ -166,11 +166,4 @@ public class UsuarioRestController {
 	
 	
 
-
-	// Metodo para obtener un Usuario por Id
-//	@GetMapping("/{id}")
-//	public ResponseEntity<?> findById(@PathVariable(name = "id") Integer id) {
-//		return ResponseEntity.ok(usuarioService.findById(id));
-//	}
-
 }

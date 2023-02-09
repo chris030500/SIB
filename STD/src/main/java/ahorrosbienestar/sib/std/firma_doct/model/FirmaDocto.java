@@ -40,6 +40,12 @@ public class FirmaDocto {
 	
 	@Column(name = "F_COORD_FIRMA_Y2")
 	private float f_coord_firma_y2;
+	
+	@Column(name = "F_COORD_FIRMA_XCENTRAL")
+	private float f_coord_firma_xCentral;
+	
+	@Column(name = "F_COORD_FIRMA_YCENTRAL")
+	private float f_coord_firma_yCentral;
 
 	public int getPk_id_firma_docto() {
 		return pk_id_firma_docto;
@@ -96,6 +102,24 @@ public class FirmaDocto {
 	public void setF_coord_firma_y2(float f_coord_firma_y2) {
 		this.f_coord_firma_y2 = f_coord_firma_y2;
 	}
+
+	public float getF_coord_firma_xCentral() {
+		return f_coord_firma_xCentral;
+	}
+
+	public void setF_coord_firma_xCentral(float f_coord_firma_xCentral) {
+		this.f_coord_firma_xCentral = f_coord_firma_xCentral;
+	}
+
+	public float getF_coord_firma_yCentral() {
+		return f_coord_firma_yCentral;
+	}
+
+	public void setF_coord_firma_yCentral(float f_coord_firma_yCentral) {
+		this.f_coord_firma_yCentral = f_coord_firma_yCentral;
+	}
+	
+	
 	
 	
 	

@@ -12,6 +12,9 @@ public class ValidaSolicitudDto {
 	private String tasaFija;
 	private String plazo;
 	private String estatus;
+	private String productoNomina;
+	private String tasaMoratoria;
+	private String clienteId;
 	
 	public int getResultado() {
 		return resultado;
@@ -36,6 +39,14 @@ public class ValidaSolicitudDto {
 	}
 	public void setProductoCreditoID(int productoCreditoID) {
 		this.productoCreditoID = productoCreditoID;
+	}
+	
+	
+	public String getClienteId() {
+		return clienteId;
+	}
+	public void setClienteId(String clienteId) {
+		this.clienteId = clienteId;
 	}
 	public String getProducto() {
 		return producto;
@@ -74,6 +85,20 @@ public class ValidaSolicitudDto {
 	public void setEstatus(String estatus) {
 		this.estatus = estatus;
 	}
+	public String getProductoNomina() {
+		return productoNomina;
+	}
+	public void setProductoNomina(String productoNomina) {
+		this.productoNomina = productoNomina;
+	}
+	public String getTasaMoratoria() {
+		return tasaMoratoria;
+	}
+	public void setTasaMoratoria(String tasaMoratoria) {
+		this.tasaMoratoria = tasaMoratoria;
+	}
+	
+	
 	
 		
 

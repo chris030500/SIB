@@ -27,11 +27,14 @@ public class SolicitudEnvioService {
 		return iSolicitudEnvio.save(solicitudEnvio);
 	}
 
-	public List<SolicitudEnvio> estatusSolicAutorizacion() {
+	//Metodo para mostrar la lista de las solicitudes estatus (1 y 2).
+	public List<SolicitudEnvio> estatusSolicAutorizacion(){
 		return iSolicitudEnvio.estatusSolicAutorizacion();
 	}
 
-	public Optional<SolicitudEnvio> findById(Integer id) {
+
+	//Metodo para buscar por id la solicitud.
+	public Optional<SolicitudEnvio> findById(Integer id){
 		return iSolicitudEnvio.findById(id);
 	}
 
@@ -44,7 +47,10 @@ public class SolicitudEnvioService {
 
 	// Metodo para obtener la última solicitud de envio registrada.
 	public SolicitudEnvio obtenerUltimaSolicitudFecha(Integer solicitud, Integer estatus) {
-		return iSolicitudEnvio.obtenerUltimaSolicitudFecha(solicitud, estatus);
+		if (estatus == null)
+			return iSolicitudEnvio.obtenerUltimaSolicitudFecha(solicitud);
+		else 
+			return iSolicitudEnvio.obtenerUltimaSolicitudFecha(solicitud, estatus);
 	}
 
 	// Servicio que regresa el modelo de la solicitud de envio.
@@ -55,6 +61,17 @@ public class SolicitudEnvioService {
 	// Servicio que obtiene todas las solicitudes de un credito
 	public List<SolicitudEnvio> obtenerTodasLasSolicitudes(Integer solicitudID) {
 		return iSolicitudEnvio.obtenerTodasLasSolicitudes(solicitudID);
+	}
+	
+	//Metodo para validar la solicitud de envio 
+	// 3 = Autorizacion de documentos digitales
+	// 2 = Rechazo de documentos
+	public int validarSoliEnvio(Integer estatus, Integer idSolicitud) {
+		return iSolicitudEnvio.validarSoliEnvio(estatus, idSolicitud);
+	}
+	
+	public int agregarRequisitionID(String requisitionId, Integer soliEnvio) {
+		return iSolicitudEnvio.agregarRequisitionId(requisitionId, soliEnvio);
 	}
 
 }
