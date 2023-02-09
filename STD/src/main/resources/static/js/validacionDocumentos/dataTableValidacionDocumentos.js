@@ -1,12 +1,35 @@
 /**
  * 
  */
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
 
 $(document).ready(function() {
-	var table = $('#solicitudesTable').DataTable({
-
+	var urlBase = getAbsolutePath();
+	console.log("URLBASE: " +urlBase);
+	$('#solicitudesTable').DataTable({
+		language: {
+			"processing": "Procesando...",
+			"lengthMenu": "Mostrar _MENU_ registros",
+			"zeroRecords": "No se encontraron resultados",
+			"emptyTable": "Ningún dato disponible en esta tabla",
+			"infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+			"infoFiltered": "(filtrado de un total de _MAX_ registros)",
+			"search": "Buscar:",
+			"infoThousands": ",",
+			"loadingRecords": "Cargando...",
+			"paginate": {
+				"first": "Primero",
+				"last": "Último",
+				"next": "Siguiente",
+				"previous": "Anterior"
+			}
+		},
 		"responsive": true,
-		"sAjaxSource": "/solicitudEnvio/verSolicitudes",
+		"sAjaxSource": urlBase+"verSolicitudes",
 		"sAjaxDataProp": "",
 		"order": [[0, "desc"]],
 		"aoColumns": [
@@ -16,23 +39,24 @@ $(document).ready(function() {
 			{ "mData": "dt_fecha_cancelacion" },
 			{ "mData": "vc_hora_cancelacion" },
 			{ "mData": "vc_obser_peticion" },
-			{ "mData": "i_estatus",
-				"render": function(data, type, row, meta){
-					if(data == 1){
+			{
+				"mData": "i_estatus",
+				"render": function(data, type, row, meta) {
+					if (data == 1) {
 						return "SOLICITUD DE AUTORIZACION DE DOCUMENTOS";
-					} else if (data == 2){
+					} else if (data == 2) {
 						return "RECHAZO DE DOCUMENTOS PARA FIRMA DIGITAL";
-					} else if (data == 3){
+					} else if (data == 3) {
 						return "AUTORIZACION DE DOCUMENTOS PARA FIRMA DIGITAL";
-					} else if (data == 4){
+					} else if (data == 4) {
 						return "CANCELACION INDIVIDUAL DE DOCUMENTOS PARA FIRMA DIGITAL";
-					} else if (data == 5){
+					} else if (data == 5) {
 						return "CANCELACION MASIVA DE DOCUMENTOS PARA FIRMA DIGITAL";
-					} else if (data == 6){
+					} else if (data == 6) {
 						return "DESCARGA DE DOCUMENTOS FIRMADOS DIGITALMENTE";
-					} else if (data == 7){
+					} else if (data == 7) {
 						return "AUTORIZACION DE FIRMA DIGITAL ";
-					} else if (data == 8){
+					} else if (data == 8) {
 						return "RECHAZO DE FIRMA DIGITAL";
 					}
 					//console.log("data render: " + data);
@@ -59,23 +83,19 @@ $(document).ready(function() {
 	})
 });
 
-function getAbsolutePath() {
-	var loc = window.location;
-	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
-}
+
 
 function mostrarSolicitud(button) {
 	var urlBase = getAbsolutePath();
 	console.log("Entro en mostrarSolicitud");
 	console.log("Datos: " + button.value);
-	console.log("urlBase: " +urlBase);
+	console.log("urlBase: " + urlBase);
 	var data = button.value;
 	$.ajax({
-		url: urlBase+"verSolicitud/"+data,
+		url: urlBase + "verSolicitud/" + data,
 		type: "GET",
 		success: function(respuesta) {
-			window.location.assign(urlBase+"verSolicitud/"+data);
+			window.location.assign(urlBase + "verSolicitud/" + data);
 			//buscarProducto(data);
 		},
 		error: function(respuesta) {
@@ -88,8 +108,8 @@ function mostrarSolicitud(button) {
 			});
 
 		}
-		
-		
+
+
 	});
 
 }
