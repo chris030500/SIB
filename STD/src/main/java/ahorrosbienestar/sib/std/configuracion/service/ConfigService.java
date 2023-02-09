@@ -71,5 +71,9 @@ public class ConfigService {
 	public List<Configuracion> obtenerInfoBDCore(){
 		return iConfiguracionRepository.obtenerInfoBDCore();
 	}
+	
+	public Configuracion obtenerConfiguracion(Integer configuracionID) {
+		return iConfiguracionRepository.findById(configuracionID).orElse(null);
+	}
 
 }

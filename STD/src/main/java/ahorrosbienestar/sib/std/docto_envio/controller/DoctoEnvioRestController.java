@@ -1,13 +1,27 @@
 package ahorrosbienestar.sib.std.docto_envio.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.operator.graphics.MoveTo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -91,7 +105,7 @@ public class DoctoEnvioRestController {
 
 		// Obtenemos la ultima solicitud registrada
 		SolicitudEnvio sEnvio = new SolicitudEnvio();
-		sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
+		sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud, 0);
 
 		System.out.println("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
 
@@ -144,12 +158,12 @@ public class DoctoEnvioRestController {
 		return ResponseEntity.ok(doctoEnvioJDBCService.obtenerArchivosSolicitud(solicitud));
 	}
 
-	@RequestMapping(value = {"/obtener_doctEnvio/{idDoctoEnvio}"}, method = RequestMethod.GET)
-	public ResponseEntity<?> obtenerDoctEnvio(@PathVariable("idDoctoEnvio") Integer idDoctoEnvio){
+	@RequestMapping(value = { "/obtener_doctEnvio/{idDoctoEnvio}" }, method = RequestMethod.GET)
+	public ResponseEntity<?> obtenerDoctEnvio(@PathVariable("idDoctoEnvio") Integer idDoctoEnvio) {
 		System.out.println("Entro en obtenerDoctEnvio");
 		DoctEnvio dEnvio = new DoctEnvio();
 		dEnvio = doctEnvioService.obtenerDoctoEnvio(idDoctoEnvio);
-		if(dEnvio != null) {
+		if (dEnvio != null) {
 			return ResponseEntity.ok(dEnvio);
 		} else if (dEnvio == null) {
 			return ResponseEntity.notFound().build();

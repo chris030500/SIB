@@ -82,8 +82,8 @@ function buscarSolicitudCredito(solicitudCredito) {
 				type: "GET",
 				dataType: "JSON",
 				success: function(respuesta) {
-					/*console.log(respuesta);
-					console.log(respuesta.length);*/
+					console.log(respuesta);
+					/*console.log(respuesta.length);*/
 					//console.log("Respuesta: " + JSON.stringify(respuesta));
 					console.log("")
 					console.log("Respuesta estatus: " + respuesta.status)

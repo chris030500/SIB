@@ -133,7 +133,7 @@
 									<i class="bi bi-file-person"></i><span>Usuarios</span>
 								</a>
 							</li>
-								<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 								<a th:href="@{/rol/index}">
 									<i class="bi bi-person-lines-fill"></i><span>Roles</span>
 								</a>
@@ -178,9 +178,9 @@
 							</li>
 
 						</ul>
-					
+
 					</li>
-					
+
 					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 
 						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-validacion"
@@ -196,7 +196,35 @@
 								</a>
 							</li>
 						</ul>
-					
+
+						<!-- Autorizacion de videograbacion -->
+						<ul id="config-nav-validacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/autorizar/index}">
+									<i class="bi bi-card-text"></i><span>Autorizar videograbación</span>
+								</a>
+							</li>
+						</ul>
+
+					</li>
+
+					<!-- Módulo Cancelaciones -->
+					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-cancelacion"
+							data-bs-toggle="collapse">
+							<i class="bi bi-x-octagon"></i><span>Cancelaciones</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+
+						<ul id="config-nav-cancelacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/cancelacion/index}">
+									<i class="bi bi-card-text"></i><span>Cancelar videograbación</span>
+								</a>
+							</li>
+						</ul>
+
 					</li>
 
 
@@ -245,7 +273,7 @@
 		<!--<script th:src="@{/vendor/js/bootstrap.bundle.min.js}"></script>-->
 
 		<th:block layout:fragment="page-scripts">
-			
+
 		</th:block>
 	</body>
 

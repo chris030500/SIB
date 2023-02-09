@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,21 @@ public class DoctEnvioService {
 	public int totalHojas(int totalHojas, int idDoctoEnvio) {
 		return iDoctEnvioRepository.totalHojas(totalHojas, idDoctoEnvio);
 	}
-	
-	public Optional<DoctEnvio> findById(Integer idDoctoEnvio){
+
+	public Optional<DoctEnvio> findById(Integer idDoctoEnvio) {
 		return iDoctEnvioRepository.findById(idDoctoEnvio);
 	}
-	
+
 	public DoctEnvio obtenerDoctoEnvio(Integer idDoctoEnvio) {
 		return iDoctEnvioRepository.obtenerDoctoEnvio(idDoctoEnvio);
+	}
+
+	public List<DoctEnvio> listadoDoctEnvioActivos(Integer envioId) {
+		return iDoctEnvioRepository.listadoDoctEnvioActivos(envioId);
+	}
+	
+	public List<DoctEnvio> listaDocumentosPorSolicitudEnvio(@Param("envioID") Integer envioID) {
+		return iDoctEnvioRepository.listaDocumentosPorSolicitudEnvio(envioID);
 	}
 
 }
