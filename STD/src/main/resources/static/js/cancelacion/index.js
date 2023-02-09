@@ -476,7 +476,8 @@ function conexionApi(usuario, password, userType) {
 				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
 				swal({
 					icon: "info",
-					title: "Error Conexión: " + respuesta.error_description,
+					//title: "Error Conexión: " + respuesta.error_description,
+					title: "Hubo un error",
 					showConfirmButton: false
 
 				});
@@ -502,7 +503,8 @@ function conexionApi(usuario, password, userType) {
 			guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
 			swal({
 				icon: "info",
-				title: "Error conexionApi: " + JSON.stringify(respuesta),
+				title: "Hubo un error",
+				//title: "Error conexionApi: " + JSON.stringify(respuesta),
 				showConfirmButton: false
 
 			});
@@ -669,7 +671,7 @@ function wsCancelarFirma(token) {
 				spinner.style.display = 'none';
 				principal.style.display = 'block';
 
-				swal(respuesta.error, {
+				swal("Hubo un error", {
 					icon: "error",
 					closeOnClickOutside: false,
 				});
