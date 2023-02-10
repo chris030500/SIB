@@ -26,7 +26,20 @@ public class SolicitudEnvioService {
 	public SolicitudEnvio save(SolicitudEnvio solicitudEnvio) {
 		return iSolicitudEnvio.save(solicitudEnvio);
 	}
-
+	
+	//Metodo para guardar la solicitud de envio
+	public List<SolicitudEnvio> findAll() {
+		return iSolicitudEnvio.findAll();
+	}
+	
+	public List<SolicitudEnvio> findBySolicitud(Integer solicitud) {
+		// TODO Auto-generated method stub
+		return iSolicitudEnvio.findBySolicitud(solicitud);
+	}
+	public List<SolicitudEnvio> findByRangoFechas(String fechaInicio, String fechaFin) {
+		// TODO Auto-generated method stub
+		return iSolicitudEnvio.findByRangoFechas(fechaInicio,fechaFin);
+	}
 	//Metodo para mostrar la lista de las solicitudes estatus (1 y 2).
 	public List<SolicitudEnvio> estatusSolicAutorizacion(){
 		return iSolicitudEnvio.estatusSolicAutorizacion();

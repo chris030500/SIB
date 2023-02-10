@@ -71,7 +71,10 @@ public class ConfigService {
 	public List<Configuracion> obtenerInfoBDCore(){
 		return iConfiguracionRepository.obtenerInfoBDCore();
 	}
-	
+	//Obtener informacion del servidor de reportes jasper
+	public List<Configuracion> obtenerConfReportes(){
+		return iConfiguracionRepository.obtenerConfReportes();
+	}
 	public Configuracion obtenerConfiguracion(Integer configuracionID) {
 		return iConfiguracionRepository.findById(configuracionID).orElse(null);
 	}

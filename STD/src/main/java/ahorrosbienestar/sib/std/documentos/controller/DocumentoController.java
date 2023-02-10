@@ -1,9 +1,15 @@
 package ahorrosbienestar.sib.std.documentos.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ahorrosbienestar.sib.std.documentos.model.Documento;
 import ahorrosbienestar.sib.std.documentos.service.DocumentoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("documento")
 public class DocumentoController {
 
 	private DocumentoService documentoService;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
+	
+	private int estatus = 1;
 	
 	@Autowired
 	public DocumentoController (DocumentoService documentoService) {
@@ -33,12 +45,104 @@ public class DocumentoController {
 		public String InicioUsuario(Model model) {
 			Documento documento = new Documento();
 			model.addAttribute("documento", documento);
-			
 			model.addAttribute("documento", documentoService.findAll());
 			return "documentos/index";
 		}
+		
+		@PostMapping("/altaDocumento/{nombreDocumento}")
+		public ResponseEntity<?> altaDocumento(Model model,@PathVariable (name ="nombreDocumento") String nombreDocumento){
+			String mensaje ="Documento Registrado Correctamente.";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+				  userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+				if(documentoService.existeDocumento(nombreDocumento) == 0) {
+					LocalDate fecha = LocalDate.now();
+					Documento altaDocumento = new Documento();
+					
+					altaDocumento.setDt_fecha_alta(fecha);
+					altaDocumento.setI_estatus(estatus);
+					altaDocumento.setUsr_registra(usuario.get(0).getPk_id_usuario());
+					altaDocumento.setInd_doc_cliente(estatus); //revisar valor a insertar
+					altaDocumento.setVc_nombre_doc(nombreDocumento);
+					
+					documentoService.save(altaDocumento);
+					respuesta.add(mensaje);
+				}else {
+					mensaje = "El Documento esta registrado.";
+					respuesta.add(mensaje);
+				}
+				
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+			}
 	
-	
+			return null;
+		}
+		
+		@PostMapping("/eliminar/{id_documento}")
+		public ResponseEntity<?> eliminarDocumento(@PathVariable (name ="id_documento") Integer id_documento) {
+			String mensaje ="Documento Actualizado";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				documentoService.bajaDocumento(id_documento);
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.print("--"+e.getMessage());
+				mensaje = "Ocurrio un Error, intente mas tarde";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+		
+		@PostMapping("/reactivar/{id_documento}")
+		public ResponseEntity<?> reactivarDocumento(@PathVariable (name ="id_documento") Integer id_documento) {
+			String mensaje ="Documento Actualizado";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				documentoService.reactivarDocumento(id_documento);
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.print("--"+e.getMessage());
+				mensaje = "Ocurrio un Error, intente mas tarde";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+		
+		@PostMapping("/editar/{id_documento}/{nombreDocumento}")
+		public ResponseEntity<?> editarDocumento(@PathVariable (name ="id_documento") Integer id_documento,@PathVariable (name ="nombreDocumento") String nombreDocumento) {
+			String mensaje ="Documento Actualizado";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				
+				if(documentoService.existeDocumento(nombreDocumento) == 0) {
+					documentoService.editarDocumento(id_documento,nombreDocumento);
+					respuesta.add(mensaje);
+					
+				}else {
+					mensaje = "El Documento esta registrado.";
+					respuesta.add(mensaje);
+				}
+				return ResponseEntity.ok(respuesta);
+			
+			} catch (Exception e) {
+				System.out.print("--"+e.getMessage());
+				mensaje = "Ocurrio un Error, intente mas tarde";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+		
+		
 		@PostMapping
 		public ResponseEntity<?> save(@RequestBody Documento documento){
 			Documento d = new Documento();

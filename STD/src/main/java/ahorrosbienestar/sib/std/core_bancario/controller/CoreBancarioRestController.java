@@ -11,7 +11,8 @@ import ahorrosbienestar.sib.std.carga_documentos.service.CargaDocumentosService;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 
-@RestController()
+
+@RestController
 public class CoreBancarioRestController {
 
 	@Autowired

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/vendor/css/dataTables.bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/css/ejemplo.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Documentos Enviados</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<form>
+				<div class="form-group row">
+					<label for="busqueda" class="col-sm-4 col-form-label">Busqueda de informacion por:</label>
+					<div class="col-sm-6">
+						<select class="form-control" id="opciones">
+							<option value="0">Seleccione</option>
+							<option th:each="opcion : ${opcionesBusqueda}" th:value="${opcion.i_opcion}"
+								th:text="${opcion.v_valor}" id="opcion"></option>
+						</select>
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+							title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+							th:onclick="buscarDatos()" id="btnBuscar">
+							
+							<i class="bi bi-search"></i>
+							
+						</button>
+
+					</div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;display:none;" id="divSolicitud">
+					<label for="solicitudBusqueda" class="col-sm-4 col-form-label">Solicitud de Crédito</label>
+					<div class="col-sm-6">
+						<input type="text" class="solo-numero form-control" id="solicitudBusqueda"
+							placeholder="Solicitud de crédito" maxlength="12">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;display:none;" id="divFechas">
+					<div class="col-sm-2">
+						<label for="busqueda" class="col-form-label">Fecha Inicio</label></div>
+					<div class="col-sm-4">
+						<input type="date" class="form-control" id="fechaInicio" value="date"></div>
+					<div class="col-sm-2">
+						<label for="busqueda" class="col-form-label">Fecha Fin</label></div>
+					<div class="col-sm-4">
+						<input type="date" class="form-control" id="fechaFin" value="date"></div>
+
+				</div>
+
+			</form>
+				<div class="table-responsive" style="margin-top: 10px;display:none;" id="divResultados">
+						<table class="table table-striped table-bordered table-sm"  cellspacing="0" width="100%" id="resultados">
+							<thead>
+								<tr>
+									<th scope="col" style="visibility:collapse; display:none;">ID</th>
+									<th scope="col" class="text-center">Sol.Credito</th>
+									<th scope="col" class="text-center">Estatus</th>
+									<th scope="col" class="text-center">Producto</th>
+									<th scope="col" class="text-center">FechaRegistro</th>
+									<th scope="col" class="text-center">FechaAutorizacion</th>
+									<th scope="col" class="text-center">FechaCancelacion</th>
+									<th scope="col" class="text-center">FechaEnvio</th>
+									<th scope="col" class="text-center">Pdf</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script th:src="@{/js/videoGrabacion/videoGrabacion.js}"></script>
+		<!--JavaScript-->
+	</th:block>
+</body>
+
+</html>

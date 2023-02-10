@@ -13,7 +13,13 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 
 @Repository
 public interface ISolicitudEnvio extends JpaRepository<SolicitudEnvio, Integer>{
-	
+		
+	@Query(value = "SELECT * FROM TBL_SOLICITUD_DE_ENVIO AS u WHERE u.I_NO_SOLICITUD_CORE = :solicitud", nativeQuery = true)
+	public List<SolicitudEnvio> findBySolicitud(@Param("solicitud") Integer solicitud);
+
+	@Query(value = "SELECT * FROM TBL_SOLICITUD_DE_ENVIO AS u WHERE u.DT_FECHA_REGISTRO BETWEEN :fechaInicio AND :fechaFin", nativeQuery = true)
+	public List<SolicitudEnvio> findByRangoFechas(@Param("fechaInicio") String fechaInicio, @Param("fechaFin") String fechaFin);
+
 	@Query(value = "SELECT * FROM SIB.TBL_SOLICITUD_DE_ENVIO WHERE I_ESTATUS = 1 \r\n"
 			+ "OR I_ESTATUS = 2 ORDER BY I_ESTATUS DESC, DT_FECHA_REGISTRO DESC", nativeQuery = true)
 	public List<SolicitudEnvio> estatusSolicAutorizacion();

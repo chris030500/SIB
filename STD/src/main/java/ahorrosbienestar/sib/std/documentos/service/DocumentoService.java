@@ -47,4 +47,32 @@ public class DocumentoService {
 			return iDocumentoRepository.findByPkIdDocumento(idDocumento);
 		}
 
+
+		public int existeDocumento(String nombreDocumento) {
+			return iDocumentoRepository.existeDocumento(nombreDocumento);
+		}
+
+
+		public int bajaDocumento(Integer id_documento) {
+			return iDocumentoRepository.bajaDocumento(id_documento);
+			
+		}
+
+
+		public int reactivarDocumento(Integer id_documento) {
+			return iDocumentoRepository.reactivarDocumento(id_documento);
+			
+		}
+
+
+		public int editarDocumento(Integer id_documento, String nombreDocumento) {
+			return iDocumentoRepository.editarDocumento(id_documento,nombreDocumento);
+			
+		}
+
+
+		public List<Documento> todosDocumentos() {
+			return iDocumentoRepository.todosDocumentos();
+		}
+
 }
