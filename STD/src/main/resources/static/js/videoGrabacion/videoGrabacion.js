@@ -4,6 +4,8 @@ var opcionSeleccionada = "";
 var mensajeVal="";
 
 $(document).ready(function() {
+	
+  	
 	inicioPantalla();
 
 
@@ -13,18 +15,12 @@ $(document).ready(function() {
 
 			switch (opcionSeleccionada) {
 				case "1":
-					$("#divCliente").show();
-					$("#divSolicitud").hide();
-					$("#divFechas").hide();
 					
-					break;
-				case "2":
-					$("#divCliente").hide();
 					$("#divSolicitud").show();
 					$("#divFechas").hide();
 					break;
-				case "3":
-					$("#divCliente").hide();
+				case "2":
+					
 					$("#divSolicitud").hide();
 					$("#divFechas").show();
 					break;
@@ -42,12 +38,16 @@ $(document).ready(function() {
 			});
 		}
 	});
+	
+	
+	$('.solo-numero').on('input', function () { 
+    	this.value = this.value.replace(/[^0-9]/g,'');
+	});
 
 });
 
 
 function inicioPantalla() {
-	$("#divCliente").hide();
 	$("#divSolicitud").hide();
 	$("#divFechas").hide();
 	$("#divResultados").hide();
@@ -65,19 +65,12 @@ function validarVacio(){
 	var validacion = true;
 	switch(opcionSeleccionada){
 		case "1":
-			if(document.getElementById("clienteBusqueda").value.length ==0){
-				document.getElementById("clienteBusqueda").style.borderColor = "#F70707";
-				validacion = false;	
-			}
-				
-			break;
-		case "2":
 			if(document.getElementById("solicitudBusqueda").value.length ==0){
 				document.getElementById("solicitudBusqueda").style.borderColor = "#F70707";
 				validacion = false;	
 			}
 			break;
-		case "3":
+		case "2":
 			if(document.getElementById("fechaInicio").value.length ==0 || document.getElementById("fechaFin").value.length ==0){
 				document.getElementById("fechaInicio").style.borderColor = "#F70707";
 				document.getElementById("fechaFin").style.borderColor = "#F70707";
@@ -97,12 +90,9 @@ function urlServicio(){
 	//urlGuardar=urlGuardar.replace("videoGrabacion/", "");
 	switch(opcionSeleccionada){
 		case "1":
-			urlGuardar = urlGuardar+buscarCliente+document.getElementById("clienteBusqueda").value;
-			break;
-		case "2":
 			urlGuardar = urlGuardar+document.getElementById("solicitudBusqueda").value;
 			break;	
-		case "3":
+		case "2":
 			urlGuardar = urlGuardar+document.getElementById("fechaInicio").value+separador+document.getElementById("fechaFin").value;
 			break;
 		default:
@@ -144,16 +134,15 @@ function buscarDatos() {
 				$.each(respuesta, function(idx, opt) {
 					//alert('Estoy recorriendo el registro numero: ' + idx);
 					var rows = "<tr>"
-						+ "<td>" + opt.pk_id_solicitud_envio + "</td>"
-						+"<td>"+opt.clienteID+"</td>"
-						+"<td>"+opt.solicitudID+"</td>"
-						+ "<td>" + opt.estatus + "</td>"
-						+ "<td>" + opt.producto + "</td>"
-						+ "<td>" + opt.fechaRegistro + "</td>"
-						+ "<td>" + opt.fechaAutorizacion + "</td>"
-						+ "<td>" + opt.fechaCancelacion + "</td>"
-						+ "<td>" + opt.fechaEnvio + "</td>"
-						+ "<td>"
+						+ "<td style='visibility:collapse; display:none;'>" + opt.pk_id_solicitud_envio + "</td>"
+						+ "<td class='text-center'>"+opt.solicitudID+"</td>"
+						+ "<td class='text-center'>" + opt.estatus + "</td>"
+						+ "<td class='text-center'>" + opt.producto + "</td>"
+						+ "<td class='text-center'>" + opt.fechaRegistro+ "</td>"
+						+ "<td class='text-center'>" + opt.fechaAutorizacion + "</td>"
+						+ "<td class='text-center'>" + opt.fechaCancelacion + "</td>"
+						+ "<td class='text-center'>" + opt.fechaEnvio + "</td>"
+						+ "<td class='text-center'>"
 						+ "<button class='btn btn-warning' tabindex='0' data-bs-toggle='tooltip' data-bs-placement='top'"
 						+ "title='Ver Documentos' aria-controls='table-datatable' type='button'"
 						+ "data-tooltip='Show filters' th:onclick='verDocumentos()' id="

@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
+import ahorrosbienestar.sib.std.proceso_validacion.model.ProcesoValidacion;
+import ahorrosbienestar.sib.std.proceso_validacion.repository.IProcesoValidacionRepository;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.repository.ISolicitudEnvio;
 import ahorrosbienestar.sib.std.videoGrabacion.model.VideoGrabacionDatos;
@@ -35,6 +38,9 @@ public class VideoGrabacionController {
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private IProcesoValidacionRepository iProcesoValidacionRepository;
 	
 	
 	@Autowired
@@ -59,27 +65,9 @@ public class VideoGrabacionController {
 	@GetMapping("/{solicitud}")
 	public  ResponseEntity<?> ObtenerDatos(@PathVariable (name ="solicitud") Integer solicitud) {
 		try {
-			
-			List<ValidaSolicitudDto> solicitudDatos = coreBancarioService.validaSolicitud(solicitud);
 			List<SolicitudEnvio> busquedaSolicitud = iSolicitudEnvio.findBySolicitud(solicitud);
-			
-			ArrayList<VideoGrabacionDatos> listaDatos = new ArrayList<>();
-			for(SolicitudEnvio dato :busquedaSolicitud) {
-				VideoGrabacionDatos datos =new  VideoGrabacionDatos();
-				
-				datos.setPk_id_solicitud_envio(dato.getPk_id_solicitud_envio());
-				datos.setClienteID(solicitudDatos.get(0).getClienteid());
-				datos.setSolicitudID(dato.getI_no_solicitud_core());
-				datos.setEstatus(""+dato.getI_estatus());
-				datos.setProducto(solicitudDatos.get(0).getProductoCreditoID()+"--"+solicitudDatos.get(0).getProducto());
-				datos.setFechaRegistro(""+dato.getDt_fecha_registro());
-				datos.setFechaAutorizacion(""+dato.getDt_fecha_autorizacion());
-				datos.setFechaCancelacion(""+dato.getDt_fecha_cancelacion());
-				datos.setFechaEnvio(""+dato.getDt_fecha_envio());
-				
-				listaDatos.add(datos);
-			}
-			return  ResponseEntity.ok(listaDatos);
+						
+			return  ResponseEntity.ok(obtLista(busquedaSolicitud));
 						
 		} catch (Exception e) {
 			System.out.print("--"+e.getMessage());
@@ -92,33 +80,64 @@ public class VideoGrabacionController {
 		try {
 			
 			List<SolicitudEnvio> busquedaSolicitud = iSolicitudEnvio.findByRangoFechas(fechaInicio, fechaFin);	
-			
-			ArrayList<VideoGrabacionDatos> listaDatos = new ArrayList<>();
-			for(SolicitudEnvio dato :busquedaSolicitud) {
-				List<ValidaSolicitudDto> solicitudDatos = coreBancarioService.validaSolicitud(dato.getI_no_solicitud_core());
-				VideoGrabacionDatos datos =new  VideoGrabacionDatos();
-				
-				for(ValidaSolicitudDto datosSolicitud :solicitudDatos) {
-					datos.setClienteID(datosSolicitud.getClienteid());
-					datos.setProducto(datosSolicitud.getProductoCreditoID()+" "+datosSolicitud.getProducto());
-				}
-				
-				datos.setPk_id_solicitud_envio(dato.getPk_id_solicitud_envio());
-				datos.setSolicitudID(dato.getI_no_solicitud_core());
-				datos.setEstatus(""+dato.getI_estatus());
-				datos.setFechaRegistro(""+dato.getDt_fecha_registro());
-				datos.setFechaAutorizacion(""+dato.getDt_fecha_autorizacion());
-				datos.setFechaCancelacion(""+dato.getDt_fecha_cancelacion());
-				datos.setFechaEnvio(""+dato.getDt_fecha_envio());
-				
-				
-				listaDatos.add(datos);
-			}	
-			return  ResponseEntity.ok(listaDatos);
+			return  ResponseEntity.ok(obtLista(busquedaSolicitud));
 						
 		} catch (Exception e) {
 			System.out.print("--"+e.getMessage());
 		}
 		return null;
-	}	
+	}
+	
+	public String buscarEstatus(int idEstatus) {
+		String descripcionEstatus="";
+		
+		List<ProcesoValidacion> listaEstatus =  iProcesoValidacionRepository.findAll();
+	    for (ProcesoValidacion ProcesoValidacion : listaEstatus) { 
+	         if(ProcesoValidacion.getPk_id_proc_validacion() == idEstatus) {
+	        	 descripcionEstatus = ProcesoValidacion.getVc_descripcion();
+	        	 break;
+	         } 
+	    }
+		return descripcionEstatus; 
+		
+	}
+	
+	public ArrayList<VideoGrabacionDatos> obtLista(List<SolicitudEnvio> busquedaSolicitud){
+		int colocacion = 1;
+		int captacion = 2;
+		List<ProductosDto> solicitudDatos = new ArrayList<ProductosDto>();
+		ArrayList<VideoGrabacionDatos> listaDatos = new ArrayList<>();
+		for(SolicitudEnvio dato :busquedaSolicitud) {
+			VideoGrabacionDatos datos =new  VideoGrabacionDatos();
+			
+			
+			 solicitudDatos = coreBancarioService.listaProductos(dato.getI_producto_id(),colocacion);
+			 if(solicitudDatos.get(0).getP_no_producto() == 0) {
+				 solicitudDatos = coreBancarioService.listaProductos(dato.getI_producto_id(),captacion);
+				 datos.setProducto(solicitudDatos.get(0).getNombre_producto());
+			 }else {
+				 datos.setProducto(solicitudDatos.get(0).getNombre_producto());
+			 }
+			 
+			
+			//for(ValidaSolicitudDto datosSolicitud :solicitudDatos) {
+				//datos.setClienteID(datosSolicitud.getClienteid());
+				//datos.setProducto(datosSolicitud.getProductoCreditoID()+" "+datosSolicitud.getProducto());
+			//}
+		
+			datos.setPk_id_solicitud_envio(dato.getPk_id_solicitud_envio());
+			datos.setSolicitudID(dato.getI_no_solicitud_core());
+			datos.setEstatus(buscarEstatus(dato.getI_estatus()));
+			datos.setProductoid(dato.getI_producto_id());
+			datos.setFechaRegistro(dato.getDt_fecha_registro()==null?"":dato.getDt_fecha_registro().toString());
+			datos.setFechaAutorizacion(dato.getDt_fecha_autorizacion()==null?"":dato.getDt_fecha_autorizacion().toString());
+			datos.setFechaCancelacion(dato.getDt_fecha_cancelacion()==null?"":dato.getDt_fecha_cancelacion().toString());
+			datos.setFechaEnvio(dato.getDt_fecha_envio()==null?"":dato.getDt_fecha_envio().toString());
+			
+			
+			listaDatos.add(datos);
+		}
+		
+		return listaDatos;	
+	}
 }

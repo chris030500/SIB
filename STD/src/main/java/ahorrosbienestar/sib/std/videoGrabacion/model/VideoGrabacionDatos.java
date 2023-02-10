@@ -1,10 +1,13 @@
 package ahorrosbienestar.sib.std.videoGrabacion.model;
 
+import java.time.LocalDate;
+
 public class VideoGrabacionDatos {
 
 	private int pk_id_solicitud_envio;
 	private int clienteID;
 	private int solicitudID;
+	private int productoid;
 	private String Estatus;
 	private String Producto;
 	private String fechaRegistro;
@@ -12,6 +15,30 @@ public class VideoGrabacionDatos {
 	private String fechaCancelacion;
 	private String fechaEnvio;
 	
+	public String getFechaRegistro() {
+		return fechaRegistro;
+	}
+	public void setFechaRegistro(String fechaRegistro) {
+		this.fechaRegistro = fechaRegistro;
+	}
+	public String getFechaAutorizacion() {
+		return fechaAutorizacion;
+	}
+	public void setFechaAutorizacion(String fechaAutorizacion) {
+		this.fechaAutorizacion = fechaAutorizacion;
+	}
+	public String getFechaCancelacion() {
+		return fechaCancelacion;
+	}
+	public void setFechaCancelacion(String fechaCancelacion) {
+		this.fechaCancelacion = fechaCancelacion;
+	}
+	public String getFechaEnvio() {
+		return fechaEnvio;
+	}
+	public void setFechaEnvio(String fechaEnvio) {
+		this.fechaEnvio = fechaEnvio;
+	}
 	public int getPk_id_solicitud_envio() {
 		return pk_id_solicitud_envio;
 	}
@@ -42,29 +69,12 @@ public class VideoGrabacionDatos {
 	public void setProducto(String producto) {
 		Producto = producto;
 	}
-	public String getFechaRegistro() {
-		return fechaRegistro;
+	public int getProductoid() {
+		return productoid;
 	}
-	public void setFechaRegistro(String fechaRegistro) {
-		this.fechaRegistro = fechaRegistro;
+	public void setProductoid(int productoid) {
+		this.productoid = productoid;
 	}
-	public String getFechaAutorizacion() {
-		return fechaAutorizacion;
-	}
-	public void setFechaAutorizacion(String fechaAutorizacion) {
-		this.fechaAutorizacion = fechaAutorizacion;
-	}
-	public String getFechaCancelacion() {
-		return fechaCancelacion;
-	}
-	public void setFechaCancelacion(String fechaCancelacion) {
-		this.fechaCancelacion = fechaCancelacion;
-	}
-	public String getFechaEnvio() {
-		return fechaEnvio;
-	}
-	public void setFechaEnvio(String fechaEnvio) {
-		this.fechaEnvio = fechaEnvio;
-	}
+	
 
 }

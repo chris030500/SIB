@@ -4,10 +4,13 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -16,6 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import ahorrosbienestar.sib.std.productos.model.Producto;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
@@ -80,6 +84,7 @@ public class SolicitudEnvio {
 	@OneToOne
 	@JoinColumn(name = "FK_USR_CANCELA")
 	private Usuario fk_usr_cancela;
+		
 
 	public int getPk_id_solicitud_envio() {
 		return pk_id_solicitud_envio;

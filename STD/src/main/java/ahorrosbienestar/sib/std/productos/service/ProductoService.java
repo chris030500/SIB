@@ -62,5 +62,7 @@ public class ProductoService {
 		public int existeProducto(int idproducto) {
 			return iProductoRepository.existeProducto(idproducto);
 		}
+		
+		
 
 }

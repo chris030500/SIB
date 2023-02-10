@@ -84,10 +84,10 @@ public class CoreBancarioService {
 		return ls;
 	}
 
-	public List<ProductosDto> listaProductos(int solicitud) {
-		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
-		logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + solicitud + ")");
-		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { solicitud }, new RowMapper<ProductosDto>() {
+	public List<ProductosDto> listaProductos(int idProducto, int clasificacion) {
+		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?,?);";
+		logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + idProducto + ")");
+		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { idProducto ,clasificacion}, new RowMapper<ProductosDto>() {
 			public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
 				ProductosDto ps = new ProductosDto();
 				ps.setP_no_producto(rs.getInt(1));

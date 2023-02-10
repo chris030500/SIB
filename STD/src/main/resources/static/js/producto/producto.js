@@ -99,7 +99,6 @@ $(document).ready(function() {
 					icon: "warning",
 					confirmButtonText: 'Aceptar'
 				})
-				enviarPeticion = false;
 		}
 	});
 
