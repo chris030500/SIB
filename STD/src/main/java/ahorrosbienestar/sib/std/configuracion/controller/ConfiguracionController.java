@@ -159,10 +159,10 @@ public class ConfiguracionController {
 
 		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
 		LocalDate localDate = LocalDate.parse(fechaActual);
-		Properties properties = new Properties();
+		//Properties properties = new Properties();
 		// Primero consultamos la contraseña que se ha almacenado con anterioridad
-		InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
-		properties.load(inputStream);
+		//InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
+		//properties.load(inputStream);
 		//String contrasenaAnterior = properties.getProperty("contrasena");
 		String contrasenaAnterior = configService.findAll().get(5).getVc_valor_propiedad();
 		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
