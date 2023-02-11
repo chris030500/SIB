@@ -9,8 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 public class StdApplication implements CommandLineRunner {
 	
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+//	@Autowired
+//	private BCryptPasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(StdApplication.class, args);
@@ -19,12 +19,12 @@ public class StdApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
-		String contrasena = "12345";
-		
-		for(int i= 0; i<3; i++) {
-			String bcryptPassword = passwordEncoder.encode(contrasena);
-			System.out.println(bcryptPassword);
-		}
+//		String contrasena = "12345";
+//		
+//		for(int i= 0; i<3; i++) {
+//			String bcryptPassword = passwordEncoder.encode(contrasena);
+//			System.out.println(bcryptPassword);
+//		}
 		
 	}
 	
