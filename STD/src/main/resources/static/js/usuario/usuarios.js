@@ -4,6 +4,9 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+var urlBase = getAbsolutePath();
+var newUrlBase = urlBase.replace("usuario/a", "");
+
 function buscarEmpleado(empleado) {
 	var urlBase = getAbsolutePath();
 	//var selectUsuario = $('#selectUsuario');
@@ -24,8 +27,9 @@ function buscarEmpleado(empleado) {
 
 	} else {
 		console.log("Entro en else de busquedaEmpleado");
+		console.log("url base:" + urlBase);
 		$.ajax({
-			url: urlBase + "empleado/listado?nombre=" + empleado,
+			url: newUrlBase + "empleado/listado?nombre=" + empleado,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {

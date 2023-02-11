@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.empleados.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +18,11 @@ public class EmpleadoController {
 	@Autowired
 	private EmpleadoService empleadoService;
 	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 	
 	@GetMapping("listado")
 	public ResponseEntity<?> buscarNombreEmpleado(@RequestParam(name = "nombre") String nombre){
+		logger.info("Ejecutando listado de empleados");
 		return ResponseEntity.ok(empleadoService.obtenerEmpleado(nombre));
 	}
 }
