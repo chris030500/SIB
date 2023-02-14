@@ -35,7 +35,7 @@ public class HistContrasena {
 	@Column(name = "PK_ID_PARAMETROS")
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="hist_contrasenia_seq")
-	@SequenceGenerator(name = "hist_contrasenia_seq", sequenceName = "hist_contrasenia_seq", initialValue = 1, allocationSize=1)
+	@SequenceGenerator(name = "hist_contrasenia_seq", sequenceName = "hist_contrasenia_seq", initialValue = 2, allocationSize=1)
 	private int pk_id_parametros;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")

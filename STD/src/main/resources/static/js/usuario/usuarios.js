@@ -134,36 +134,36 @@ function altaUsuario() {
 	var idEmpleado = document.getElementById('EmpleadoId').value;
 	var contrasena = document.getElementById('contrasena').value;
 	var rol = document.getElementById('roles').value;
-	console.log("Nombre Usuario: " + nombreUsuario);
+	/*console.log("Nombre Usuario: " + nombreUsuario);
 	console.log("idEmpleado: " + idEmpleado);
 	console.log("contrasena: " + contrasena);
-	console.log("Rol: " + rol);
+	console.log("Rol: " + rol);*/
 	if (idEmpleado == '') {
-		console.log("Ingrese un colaborador");
+		//console.log("Ingrese un colaborador");
 		swal("Precaución", "Ingrese un colaborador.",
 			"info");
 	} else if (idEmpleado != '') {
 		if (nombreUsuario == '') {
-			console.log("Ingrese un usuario");
+			//console.log("Ingrese un usuario");
 			swal("Precaución", "Ingrese un nombre de usuario.",
 				"info");
 		} else {
-			console.log("Puede continuar");
+			//console.log("Puede continuar");
 			$.ajax({
-				url: urlBase + "usuario/nombre/" + nombreUsuario,
+				url: newUrlBase + "usuario/nombre/" + nombreUsuario,
 				type: "GET",
 				success: function(respuesta) {
 					/*console.log("Entro en success de get");
 					console.log("Respuesta: " +respuesta);*/
-					console.log("Validar NombreUsuario: ");
-					console.log("Respuesta: " + respuesta);
+					/*console.log("Validar NombreUsuario: ");
+					console.log("Respuesta: " + respuesta);*/
 					if (respuesta == true) {
 						swal("Precaución", "Usuario ya registrado, intente con otro nombre.",
 							"info");
 					} else {
-						console.log("Usuario para registrar");
+						//console.log("Usuario para registrar");
 						$.ajax({
-							url: urlBase + "usuario/idEmpleado/" + idEmpleado,
+							url: newUrlBase + "usuario/idEmpleado/" + idEmpleado,
 							type: "GET",
 							success: function(respuesta) {
 								if (respuesta == true) {
@@ -172,7 +172,7 @@ function altaUsuario() {
 								} else {
 									console.log("Puede continuar en agregar el usuario");
 									$.ajax({
-										url: urlBase + "usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
+										url: newUrlBase + "usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
 										type: "POST",
 										success: function() {
 											console.log("Entro en success de get");
@@ -183,7 +183,7 @@ function altaUsuario() {
 											console.log("Busca el usuario registrado con anterioridad");
 											console.log("Nombre de usuario: " + nombreUsuario);
 											$.ajax({
-												url: urlBase + "usuario/nombreUsuario/" + nombreUsuario,
+												url: newUrlBase + "usuario/nombreUsuario/" + nombreUsuario,
 												type: "GET",
 												dataType: "JSON",
 												success: function(respuesta) {
@@ -209,7 +209,7 @@ function altaUsuario() {
 																	'Accept': 'application/json',
 																	'Content-Type': 'application/json'
 																},
-																url: urlBase + "hist_contrasena/",
+																url: newUrlBase + "hist_contrasena/",
 																type: "POST",
 																data: JSON.stringify(data),
 																dataType: "json",
@@ -229,6 +229,7 @@ function altaUsuario() {
 																},
 																error: function(respuesta) {
 																	console.log("Entro en error");
+																	console.log("Respuesta usuario: " + JSON.stringify(respuesta));
 																	swal({
 																		icon: "warning",
 																		title: respuesta,
@@ -278,6 +279,7 @@ function altaUsuario() {
 				},
 				error: function(respuesta) {
 					console.log("Entro en error");
+					console.log("Usu: " + JSON.stringify(respuesta));
 					swal({
 						icon: 'warning',
 						title: respuesta,
@@ -294,9 +296,9 @@ function altaUsuario() {
 }
 
 function validarNombreUsuario(nombreUsuario) {
-	var urlBase = getAbsolutePath();
+	//var urlBase = getAbsolutePath();
 	$.ajax({
-		url: urlBase + "usuario/nombre/" + nombreUsuario,
+		url: newUrlBase + "usuario/nombre/" + nombreUsuario,
 		type: "GET",
 		success: function(respuesta) {
 			/*console.log("Entro en success de get");
@@ -325,7 +327,7 @@ function bajaUsuario(usuario) {
 	console.log("Usuario: " + usuario);
 	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: urlBase + "usuario/baja_usuario?usuario=" + usuario,
+		url: newUrlBase + "usuario/baja_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -362,7 +364,7 @@ function reactivarUsuario(usuario) {
 	console.log("Entro en reactivar usuario");
 	console.log("Usuario: " + usuario);
 	$.ajax({
-		url: urlBase + "usuario/reactivar_usuario?usuario=" + usuario,
+		url: newUrlBase + "usuario/reactivar_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
 			/*console.log("Entro en success de get");
@@ -412,7 +414,7 @@ function editarUsuario() {
 	} else {
 		console.log("Puede continuar");
 		$.ajax({
-			url: urlBase + "usuario/nombreUsuario/" + nombreUsuario,
+			url: newUrlBase + "usuario/nombreUsuario/" + nombreUsuario,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -431,7 +433,7 @@ function editarUsuario() {
 				} else if (respuesta == null) {
 					console.log("El nombre de usuario no existe");
 					$.ajax({
-						url: urlBase + "usuario/editar_usuario?usuario=" + nombreUsuario + 
+						url: newUrlBase + "usuario/editar_usuario?usuario=" + nombreUsuario + 
 							"&idUsuario=" + idUsuario,
 						type: "POST",
 						success: function() {
