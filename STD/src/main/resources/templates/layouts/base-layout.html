@@ -50,7 +50,7 @@
 
 						<li>
 
-							<a href="#" th:href="@{/logout1}" class="dropdown-item d-flex align-items-center">
+							<a href="#" th:href="@{/logout}" class="dropdown-item d-flex align-items-center">
 								<i class="bi bi-box-arrow-right"></i>
 								<span>Cerrar sesión</span>
 							</a>
@@ -146,7 +146,7 @@
 						</ul>
 					</li>
 
-					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+					<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO')" class="nav-item">
 
 						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-cdoc"
 							data-bs-toggle="collapse">
@@ -155,7 +155,7 @@
 						</a>
 
 						<ul id="config-nav-cdoc" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+							<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO')" class="nav-item">
 								<a th:href="@{/carga_documentos}">
 									<i class="bi bi-card-text"></i><span>Carga de documentos </span>
 								</a>
@@ -170,17 +170,17 @@
 									<i class="bi bi-card-text"></i><span>Productos</span>
 								</a>
 							</li>
-							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+							<!--<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 								<a th:href="@{/producto/index_val}">
 									<i class="bi bi-card-text"></i><span>Validacion</span>
 								</a>
-							</li>
+							</li>-->
 
 						</ul>
 
 					</li>
 
-					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+					<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_VALIDADOR')" class="nav-item">
 
 						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-validacion"
 							data-bs-toggle="collapse">
@@ -189,7 +189,7 @@
 						</a>
 
 						<ul id="config-nav-validacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+							<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_VALIDADOR')" class="nav-item">
 								<a th:href="@{/solicitudEnvio/solicitudes}">
 									<i class="bi bi-card-text"></i><span>Solicitudes de Autorización </span>
 								</a>

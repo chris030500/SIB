@@ -55,7 +55,7 @@ public class CoreBancarioService {
 						return cb;
 					}
 				});
-
+		logger.info("ls  microfin.SIB_SP_VALIDA_SOLICITUD: " + ls);			
 		return ls;
 	}
 
@@ -77,7 +77,7 @@ public class CoreBancarioService {
 						return p;
 					}
 				});
-
+		logger.info("ls microfin.SIB_SP_TRAE_PARTICIPANTES: " + ls);		
 		return ls;
 	}
 
@@ -94,6 +94,7 @@ public class CoreBancarioService {
 				return ps;
 			}
 		});
+		logger.info("lsp microfin.SIB_SP_VALIDA_PRODUCTO: " + lsp);	
 		return lsp;
 	}
 
