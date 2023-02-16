@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
 import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
@@ -51,13 +50,12 @@ public class CoreBancarioService {
 						cb.setPlazo(rs.getString(9));
 						cb.setEstatus(rs.getString(10));
 						cb.setProductoNomina(rs.getString(11));
-						cb.setReca(rs.getString(12));
 						cb.setTasaMoratoria(rs.getString(13));
 						cb.setClienteId(rs.getString(14));
 						return cb;
 					}
 				});
-
+		logger.info("ls  microfin.SIB_SP_VALIDA_SOLICITUD: " + ls);			
 		return ls;
 	}
 
@@ -79,26 +77,10 @@ public class CoreBancarioService {
 						return p;
 					}
 				});
-
+		logger.info("ls microfin.SIB_SP_TRAE_PARTICIPANTES: " + ls);		
 		return ls;
 	}
 
-	public List<ProductosDto> listaProductos(int idProducto, int clasificacion) {
-		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?,?);";
-		logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + idProducto + ")");
-		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { idProducto ,clasificacion}, new RowMapper<ProductosDto>() {
-			public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-				ProductosDto ps = new ProductosDto();
-				ps.setP_no_producto(rs.getInt(1));
-				ps.setP_id_clasif(rs.getInt(2));
-				ps.setNombre_producto(rs.getString(3));
-
-				return ps;
-			}
-		});
-		return lsp;
-	}
-	
 	public List<ProductosDto> listaProductos(int solicitud) {
 		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
 		logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + solicitud + ")");
@@ -112,6 +94,7 @@ public class CoreBancarioService {
 				return ps;
 			}
 		});
+		logger.info("lsp microfin.SIB_SP_VALIDA_PRODUCTO: " + lsp);	
 		return lsp;
 	}
 
@@ -120,35 +103,6 @@ public class CoreBancarioService {
 		logger.info("Ejecutando CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")");
 		return jdbcTemplate.queryForObject("CALL SIB.SP_BUSCAR_CAT_PRODUCTO(" + producto + ")", Integer.class);
 	}
-	
-	public List<ListaProductos> obtProductos() {
-		String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
-		String estatus = "A"; 
-		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
-			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
-				ListaProductos ps = new ListaProductos();
-				ps.setIdproducto(rs.getInt(1));
-				ps.setNombreProducto(rs.getString(2));
-				
-				return ps;
-			}
-		});
-		return lsp;
-	}
-	
-	public List<ListaProductos> obtProductosCaptacion() {
-		String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
-		String estatus = "A"; 
-		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
-			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
-				ListaProductos ps = new ListaProductos();
-				ps.setIdproducto(rs.getInt(1));
-				ps.setNombreProducto(rs.getString(2));
-				
-				return ps;
-			}
-		});
-		return lsp;
-	}
-	
+
 }
+

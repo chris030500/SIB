@@ -59,9 +59,9 @@ public class LoginController {
 		return "login";
 	}
 	
-	@GetMapping("/logout1")
+	@GetMapping("/logout")
 	public String logout1(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("Controller logout1");
+		System.out.println("Controller logout");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		loginService.spDesactivarSesion(auth.getName());
 		
