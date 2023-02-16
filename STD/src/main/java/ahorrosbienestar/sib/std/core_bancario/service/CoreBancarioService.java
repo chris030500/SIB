@@ -120,34 +120,36 @@ public class CoreBancarioService {
 	}
 	
 	public List<ListaProductos> obtProductos() {
-        String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
-        String estatus = "A"; 
-        List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
-            public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
-                ListaProductos ps = new ListaProductos();
-                ps.setIdproducto(rs.getInt(1));
-                ps.setNombreProducto(rs.getString(2));
-                
-                return ps;
-            }
-        });
-        return lsp;
-    }
-    
-    public List<ListaProductos> obtProductosCaptacion() {
-        String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
-        String estatus = "A"; 
-        List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
-            public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
-                ListaProductos ps = new ListaProductos();
-                ps.setIdproducto(rs.getInt(1));
-                ps.setNombreProducto(rs.getString(2));
-                
-                return ps;
-            }
-        });
-        return lsp;
-    }
-
+		String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
+		String estatus = "A"; 
+		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
+			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ListaProductos ps = new ListaProductos();
+				ps.setIdproducto(rs.getInt(1));
+				ps.setNombreProducto(rs.getString(2));
+				
+				return ps;
+			}
+		});
+		logger.info("consulta productos colocacion: " + lsp);
+		return lsp;
+	}
+	
+	public List<ListaProductos> obtProductosCaptacion() {
+		String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
+		String estatus = "A"; 
+		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
+			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ListaProductos ps = new ListaProductos();
+				ps.setIdproducto(rs.getInt(1));
+				ps.setNombreProducto(rs.getString(2));
+				
+				return ps;
+			}
+		});
+		logger.info("consulta productos captacion: " + lsp);
+		return lsp;
+	}
+	
 }
 
