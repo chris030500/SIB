@@ -26,13 +26,13 @@ public class Configuracion {
 	@SequenceGenerator(name = "configuracion_proc_seq", sequenceName = "configuracion_proc_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_configuracion;
 	
-	@Column(name = "VC_NOM_PROPIEDAD", columnDefinition = "VARCHAR(45)")
+	@Column(name = "VC_NOM_PROPIEDAD", columnDefinition = "VARCHAR(100)")
 	private String vc_nom_propiedad;
 	
-	@Column(name = "VC_VALOR_PROPIEDAD", columnDefinition = "VARCHAR(60)")
+	@Column(name = "VC_VALOR_PROPIEDAD", columnDefinition = "LONGTEXT")
 	private String vc_valor_propiedad;
 	
-	@Column(name = "VC_DESCRIPCION_PROPIEDAD", columnDefinition = "VARCHAR(100)")
+	@Column(name = "VC_DESCRIPCION_PROPIEDAD", columnDefinition = "MEDIUMTEXT")
 	private String vc_descripcion_propiedad;
 	
 	@Column(name = "I_ESTATUS_PROPIEDAD", columnDefinition = "TINYINT(1)")

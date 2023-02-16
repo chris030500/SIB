@@ -1,9 +1,14 @@
 package ahorrosbienestar.sib.std.core_bancario.config;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +24,8 @@ public class CoreBancarioConfig {
 	@Autowired
 	private ConfigService configService;
 	
-	
-	
+	protected final Log logger = LogFactory.getLog(this.getClass());
+		
 	public DataSource getDataSource() {
 		
 		//Traemos listado de los parametros de la configuracion de la base de datos.
@@ -36,6 +41,7 @@ public class CoreBancarioConfig {
 		dataSourceBuilder.url(c.get(1).getVc_valor_propiedad());
 		dataSourceBuilder.username(c.get(2).getVc_valor_propiedad());
 		dataSourceBuilder.password(c.get(3).getVc_valor_propiedad());
+		logger.info(dataSourceBuilder.build());
 		return dataSourceBuilder.build();
 	}
 	
@@ -44,6 +50,7 @@ public class CoreBancarioConfig {
 	public JdbcTemplate getJdbcTemplate(DataSource coreBancarioDataSource) {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate();
 		jdbcTemplate.setDataSource(coreBancarioDataSource);
+		logger.info("jdbcTemplate: " + jdbcTemplate);
 		return jdbcTemplate;
 	}
 }

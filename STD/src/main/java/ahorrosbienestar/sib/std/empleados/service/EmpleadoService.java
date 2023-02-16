@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +18,7 @@ import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
 public class EmpleadoService {
 
 	private JdbcTemplate jdbcTemplate;
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@Autowired
 	public EmpleadoService(JdbcTemplate jdbcTemplate) {
@@ -24,6 +27,7 @@ public class EmpleadoService {
 
 	// Obtenemos el empleado por nombre
 	public List<EmpleadoDto> obtenerEmpleado(String nombre) {
+		logger.info("Ejecutando obtenerEmpleado: " + nombre);
 		String sql = "SELECT me.empleadoID, me.nombreCompleto, me.fechaAlta, mp.descripcion, me.estatus FROM  CE.TBL_MICROFIN_EMPLEADOS as me inner join CE.TBL_MICROFIN_PUESTOS as mp on me.ClavePuestoID = mp.ClavePuestoID WHERE me.Estatus = 'A' and me.NombreCompleto LIKE CONCAT(? , '%');";
 		List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { nombre }, new RowMapper<EmpleadoDto>() {
 			public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -37,12 +41,13 @@ public class EmpleadoService {
 				return e;
 			}
 		});
-
+		logger.info(ls);
 		return ls;
 	}
 
 	// Buscar empleado por EmpleadoID
 	public List<EmpleadoDto> buscarEmpleadoPorID(Integer id) {
+		logger.info("Ejecutando buscarEmpleadoPorID: " + id);
 		String sql = "SELECT EmpleadoID, NombreCompleto FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?;";
 		List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<EmpleadoDto>() {
 			public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -52,7 +57,7 @@ public class EmpleadoService {
 				return e;
 			}
 		});
-
+		logger.info(ls);
 		return ls;
 	}
 

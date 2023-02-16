@@ -1,3 +1,11 @@
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+var urlBase = getAbsolutePath();
+
 //Obtener el campo numPersonas
 function numMaximoParametrosContrasena(longitud) {
 	var longitud = $("#longitud").val();
@@ -60,8 +68,9 @@ function guardarConfSesion() {
 
 		});
 	} else {
+		console.log(urlBase);
 		$.ajax({
-			url: "/configuracion/guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
+			url: urlBase+"guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
 			type: "POST",
 			success: function() {
 				swal({
@@ -105,7 +114,7 @@ function desbloquearUsuario() {
 	};
 
 	$.ajax({
-		url: "/configuracion/cambioSesiones?desbloqueo=" + tipoDesbloqueo + "&selectUsuario=" + usuario,
+		url: urlBase + "cambioSesiones?desbloqueo=" + tipoDesbloqueo + "&selectUsuario=" + usuario,
 		type: "POST",
 		data: JSON.stringify(data),
 		success: function() {
@@ -174,13 +183,13 @@ function desmarcar() {
 	}
 }
 
-function generarContrasenaOLD() {
+function generarContrasenaold() {
 	console.log("Entro en generarContrasena");
 	var contrasenia = $('#contrasena').val();
 	if (contrasenia != '') {
 		console.log("La contraseña contine info");
 		$.ajax({
-			url: "/configuracion/guardarContrasena?contrasena=" + contrasenia,
+			url: urlBase + "guardarContrasena?contrasena=" + contrasenia,
 			type: "POST",
 			success: function() {
 				swal({
@@ -193,7 +202,8 @@ function generarContrasenaOLD() {
 				});
 
 			},
-			error: function() {
+			error: function(respuesta) {
+				console.log("Respuesta: " + JSON.stringify(respuesta));
 				swal({
 					type: 'warning',
 					title: 'No se guardo la nueva contraseña por default',
@@ -223,7 +233,7 @@ function generarContrasena() {
 	//let mensaje = data.value;
 	console.log("Contraeña: " + contrasenia);
 	$.ajax({
-		url: "/configuracion/mensajeContrasena?contrasena=" + contrasenia,
+		url: urlBase + "mensajeContrasena?contrasena=" + contrasenia,
 		type: "GET",
 		data: contrasenia,
 		success: function(respuesta) {
@@ -237,7 +247,7 @@ function generarContrasena() {
 				});
 			} else if (respuesta == "Si cumple con los parametros requeridos") {
 				$.ajax({
-					url: "/configuracion/guardarContrasena?contrasena=" + contrasenia,
+					url: urlBase+"guardarContrasena?contrasena=" + contrasenia,
 					type: "POST",
 					data: contrasenia,
 					success: function() {
@@ -258,6 +268,7 @@ function generarContrasena() {
 		},
 		error: function(respuesta) {
 			console.log("Entro en error");
+			console.log("Error: " + JSON.stringify(respuesta));
 			swal({
 				type: 'warning',
 				title: respuesta,
