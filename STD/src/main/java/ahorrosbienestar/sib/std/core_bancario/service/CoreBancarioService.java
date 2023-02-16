@@ -133,6 +133,7 @@ public class CoreBancarioService {
 				return ps;
 			}
 		});
+		logger.info("consulta productos colocacion: " + lsp);
 		return lsp;
 	}
 	
@@ -148,6 +149,7 @@ public class CoreBancarioService {
 				return ps;
 			}
 		});
+		logger.info("consulta productos captacion: " + lsp);
 		return lsp;
 	}
 	
