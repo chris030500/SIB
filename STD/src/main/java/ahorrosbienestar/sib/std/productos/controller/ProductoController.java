@@ -73,7 +73,7 @@ public class ProductoController {
 				
 				return "productos/index";
 			} catch (Exception e) {
-				Log.error(e.getMessage());
+				Log.error("Vista Productos:"+e.getMessage());
 				System.out.println("Error:"+e.getMessage());
 			}
 			return null;
