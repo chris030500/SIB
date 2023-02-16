@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ import ahorrosbienestar.sib.std.productos.model.Producto;
 import ahorrosbienestar.sib.std.productos.service.ProductoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ch.qos.logback.classic.Logger;
 
 @Controller
 @RequestMapping("producto")
@@ -62,14 +64,19 @@ public class ProductoController {
 	
 		@GetMapping("/index")
 		public String InicioUsuario(Model model) {
-									
-			model.addAttribute("cat_tipo_producto",iCatalogoRepository.generarOpciones(grupo));
-			model.addAttribute("cat_prodcuto_colocacion",coreBancarioService.obtProductosCaptacion());	
-			model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
-			model.addAttribute("listaProductos",productoService.todosProductos());
-			model.addAttribute("listDocumentos",documentoService.todosDocumentos());
-			
-			return "productos/index";
+			try {
+				model.addAttribute("cat_tipo_producto",iCatalogoRepository.generarOpciones(grupo));
+				model.addAttribute("cat_prodcuto_colocacion",coreBancarioService.obtProductosCaptacion());	
+				model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
+				model.addAttribute("listaProductos",productoService.todosProductos());
+				model.addAttribute("listDocumentos",documentoService.todosDocumentos());
+				
+				return "productos/index";
+			} catch (Exception e) {
+				Log.error(e.getMessage());
+				System.out.println("Error:"+e.getMessage());
+			}
+			return null;
 		}
 		
 		@GetMapping("/eliminar/{id_producto}")
@@ -272,32 +279,51 @@ public class ProductoController {
 
 		@GetMapping("/index_val")
 		public String InicioProductos(Model model, @RequestBody Producto producto) {
-
-			model.addAttribute("producto", producto);
+			try {
+				model.addAttribute("producto", producto);
+				model.addAttribute("producto", productoService.findAll());
+				return "productos/index_val";
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+			}
+			return null;	
 			
-			model.addAttribute("producto", productoService.findAll());
-			return "productos/index_val";
 		}
 	
 		@PostMapping
 		public ResponseEntity<?> save(@RequestBody Producto producto){
-			Producto p = new Producto();
-			p = productoService.save(producto);
-			return ResponseEntity.ok(p);
+			try {
+				Producto p = new Producto();
+				p = productoService.save(producto);
+				return ResponseEntity.ok(p);
+			} catch (Exception e) {
+			
+				System.out.println(""+e.getMessage());
+			}
+			return null;
+			
+			
 		}
 		
 		@PutMapping
 		public ResponseEntity<?> edit(@RequestBody @Valid Producto producto,
 										@PathVariable(name = "id") Integer id){
 			
-			Producto p = new Producto();
-		
-			p = productoService.findById(id).get();
-			
-			if(p != null) {
-				return ResponseEntity.ok(productoService.save(producto));
+			try {
+				Producto p = new Producto();
+				
+				p = productoService.findById(id).get();
+				
+				if(p != null) {
+					return ResponseEntity.ok(productoService.save(producto));
+				}
+				return ResponseEntity.notFound().build();
+			} catch (Exception e) {
+				
+				System.out.println(""+e.getMessage());
 			}
-			return ResponseEntity.notFound().build();
+			return null;
+		
 			
 		}
 		
