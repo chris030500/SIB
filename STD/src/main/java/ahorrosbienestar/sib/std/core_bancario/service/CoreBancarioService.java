@@ -122,7 +122,7 @@ public class CoreBancarioService {
 	}
 	
 	public List<ListaProductos> obtProductos() {
-		String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
+		String sql = "select ProducCreditoID, Descripcion from SIB.SIB_PRODUCTOSCREDITO WHERE ESTATUS = ?;";
 		String estatus = "A"; 
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -138,7 +138,7 @@ public class CoreBancarioService {
 	}
 	
 	public List<ListaProductos> obtProductosCaptacion() {
-		String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
+		String sql = "select tipoCuentaID, Descripcion from SIB.SIB_TIPOSCUENTAS WHERE ESTATUS = ?;";
 		String estatus = "A"; 
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
