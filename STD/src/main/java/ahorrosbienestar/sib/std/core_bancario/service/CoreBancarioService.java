@@ -83,35 +83,35 @@ public class CoreBancarioService {
 	}
 
 	public List<ProductosDto> listaProductos(int idProducto, int clasificacion) {
-        String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?,?);";
-        logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + idProducto + ")");
-        List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { idProducto ,clasificacion}, new RowMapper<ProductosDto>() {
-            public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-                ProductosDto ps = new ProductosDto();
-                ps.setP_no_producto(rs.getInt(1));
-                ps.setP_id_clasif(rs.getInt(2));
-                ps.setNombre_producto(rs.getString(3));
- 
-                return ps;
-            }
-        });
-        return lsp;
-    }
-    
-    public List<ProductosDto> listaProductos(int solicitud) {
-        String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
-        List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { solicitud}, new RowMapper<ProductosDto>() {
-            public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-                ProductosDto ps = new ProductosDto();
-                ps.setP_no_producto(rs.getInt(1));
-                ps.setP_id_clasif(rs.getInt(2));
-                ps.setNombre_producto(rs.getString(3));
- 
-                return ps;
-            }
-        });
-        return lsp;
-    }
+		String sql = "CALL SIB.SIB_SP_VALIDA_PRODUCTO (?,?);";
+		logger.info("Ejecutando SIB.SIB_SP_VALIDA_PRODUCTO (" + idProducto + ")");
+		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { idProducto ,clasificacion}, new RowMapper<ProductosDto>() {
+			public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ProductosDto ps = new ProductosDto();
+				ps.setP_no_producto(rs.getInt(1));
+				ps.setP_id_clasif(rs.getInt(2));
+				ps.setNombre_producto(rs.getString(3));
+
+				return ps;
+			}
+		});
+		return lsp;
+	}
+	
+	public List<ProductosDto> listaProductos(int solicitud) {
+		String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
+		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { solicitud}, new RowMapper<ProductosDto>() {
+			public ProductosDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				ProductosDto ps = new ProductosDto();
+				ps.setP_no_producto(rs.getInt(1));
+				ps.setP_id_clasif(rs.getInt(2));
+				ps.setNombre_producto(rs.getString(3));
+
+				return ps;
+			}
+		});
+		return lsp;
+	}
 
 	// Declaramos que SP se va a ejecutar (SP_BUSCAR_CAT_PRODUCTO)
 	public int spBuscarCatProducto(int producto) {
@@ -120,7 +120,7 @@ public class CoreBancarioService {
 	}
 	
 	public List<ListaProductos> obtProductos() {
-		String sql = "select ProducCreditoID, Descripcion from microfin.PRODUCTOSCREDITO WHERE ESTATUS = ?;";
+		String sql = "select ProducCreditoID, Descripcion from SIB.SIB_PRODUCTOSCREDITO WHERE ESTATUS = ?;";
 		String estatus = "A"; 
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -136,7 +136,7 @@ public class CoreBancarioService {
 	}
 	
 	public List<ListaProductos> obtProductosCaptacion() {
-		String sql = "select tipoCuentaID, Descripcion from microfin.TIPOSCUENTAS WHERE ESTATUS = ?;";
+		String sql = "select tipoCuentaID, Descripcion from SIB.SIB_TIPOSCUENTAS WHERE ESTATUS = ?;";
 		String estatus = "A"; 
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -152,4 +152,3 @@ public class CoreBancarioService {
 	}
 	
 }
-
