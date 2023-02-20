@@ -44,8 +44,7 @@
 										<div class="modal-body">
 
 
-											<form id="edit-form" th:method="post"
-											th:object="${usuario}">
+											<form id="edit-form" th:method="post" th:object="${usuario}">
 												<div class="col-12">
 													<label for="idUsuario" class="form-label">Id
 														usuario</label>
@@ -54,21 +53,23 @@
 													<label for="nombre" class="form-label">Nombre de
 														usuario</label>
 													<input type="text" class="form-control" id="nombre"
-														th:field="*{vc_nombre_usuario}">	
+														th:field="*{vc_nombre_usuario}">
 												</div>
 												<div class="modal-footer">
-													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-													<button type="button" onclick="editarUsuario()" class="btn btn-primary">Guardar</button>
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="button" onclick="editarUsuario()"
+														class="btn btn-primary">Guardar</button>
 												</div>
 											</form>
 										</div>
-										
+
 									</div>
 								</div>
 							</div>
 							<!-- End Basic Modal-->
 
-							
+
 							<div class="row mb-3">
 								<form method="get" th:action="@{/usuario/altaUsuario}">
 									<button type="submit" class="btn btn-primary">
@@ -78,51 +79,57 @@
 							</div>
 							<div class="row">
 
-								<table class="table table-striped">
-									<tr>
-										<th>Nombre Usuario</th>
-										<th>Estatus Usuario</th>
-										<th>Estatus Sesión</th>
-										<th>Acciones</th>
-									</tr>
-									<tr th:each="usuario : ${usuarios}">
-										<td th:text="${usuario.vc_nombre_usuario}"></td>
-										<td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
-										<td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
-										<td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
-										<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
-										<td>
-											<div class="dt-buttons">
-												<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-													title="Editar"
-													data-bs-target="#basicModal"
-													aria-controls="table-datatable" type="button"
-													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'" data-tooltip="Add">
-													<i class="bi bi-file-person-fill"></i>
-												</button>
-												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
-													data-bs-placement="top" title="Baja Usuario"
-													aria-controls="table-datatable" type="button"
-													data-tooltip="Refresh" th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
-													<i class="bi bi-file-lock"></i>
-												</button>
-												<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip"
-													data-bs-placement="top" title="Reactivar Usuario"
-													aria-controls="table-datatable" type="button"
-													data-tooltip="Show filters" th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
-													<i class="bi bi-unlock"></i>
-												</button>
-												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+								<table class="table table-striped" id="usuariosTable">
+									<thead>
+										<tr>
+											<th>Nombre Usuario</th>
+											<th>Estatus Usuario</th>
+											<th>Estatus Sesión</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="usuario : ${usuarios}">
+											<td th:text="${usuario.vc_nombre_usuario}"></td>
+											<td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
+											<td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
+											<td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
+											<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
+											<td>
+												<div class="dt-buttons">
+													<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+														title="Editar" data-bs-target="#basicModal"
+														aria-controls="table-datatable" type="button"
+														th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'"
+														data-tooltip="Add">
+														<i class="bi bi-file-person-fill"></i>
+													</button>
+													<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
+														data-bs-placement="top" title="Baja Usuario"
+														aria-controls="table-datatable" type="button"
+														data-tooltip="Refresh"
+														th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
+														<i class="bi bi-file-lock"></i>
+													</button>
+													<button class="btn btn-warning" tabindex="0"
+														data-bs-toggle="tooltip" data-bs-placement="top"
+														title="Reactivar Usuario" aria-controls="table-datatable"
+														type="button" data-tooltip="Show filters"
+														th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
+														<i class="bi bi-unlock"></i>
+													</button>
+													<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 													data-bs-target="#basicModal"
 													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">
 													Editar
 												</button>-->
 
-												<!--<a data-toggle="modal" data-target="#basicModal"
+													<!--<a data-toggle="modal" data-target="#basicModal"
 													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">Edit</a>-->
-											</div>
-										</td>
-									</tr>
+												</div>
+											</td>
+										</tr>
+									</tbody>
 								</table>
 							</div>
 						</div>
@@ -136,6 +143,9 @@
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
 		<script th:src="@{/js/usuario/usuarios.js}"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/js/usuario/dataTableUsuarios.js}"></script>
 	</th:block>
 </body>
 

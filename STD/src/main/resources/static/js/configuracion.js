@@ -6,6 +6,7 @@ function getAbsolutePath() {
 
 var urlBase = getAbsolutePath();
 
+
 //Obtener el campo numPersonas
 function numMaximoParametrosContrasena(longitud) {
 	var longitud = $("#longitud").val();
@@ -144,8 +145,9 @@ function buscar_ajax(cadena) {
 	//var selectUsuario = $('#selectUsuario');
 	var selectUsuario = document.getElementById("selectUsuario");
 	var option = '';
+	var newUrlBase = urlBase.replace("configuracion/", "");
 	$.ajax({
-		url: "/usuario/" + cadena,
+		url: newUrlBase + "usuario/" + cadena,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {

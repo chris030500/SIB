@@ -28,37 +28,49 @@ public class EmpleadoService {
 	// Obtenemos el empleado por nombre
 	public List<EmpleadoDto> obtenerEmpleado(String nombre) {
 		logger.info("Ejecutando obtenerEmpleado: " + nombre);
-		String sql = "SELECT me.empleadoID, me.nombreCompleto, me.fechaAlta, mp.descripcion, me.estatus FROM  CE.TBL_MICROFIN_EMPLEADOS as me inner join CE.TBL_MICROFIN_PUESTOS as mp on me.ClavePuestoID = mp.ClavePuestoID WHERE me.Estatus = 'A' and me.NombreCompleto LIKE CONCAT(? , '%');";
-		List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { nombre }, new RowMapper<EmpleadoDto>() {
-			public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-				EmpleadoDto e = new EmpleadoDto();
-				e.setEmpleadoID(rs.getInt(1));
-				e.setNombreCompleto(rs.getString(2));
-				e.setFechaAlta(rs.getString(3));
-				e.setDescripcion(rs.getString(4));
-				e.setEstatus(rs.getString(5));
+		try {
+			String sql = "SELECT me.empleadoID, me.nombreCompleto, me.fechaAlta, mp.descripcion, me.estatus FROM  CE.TBL_MICROFIN_EMPLEADOS as me inner join CE.TBL_MICROFIN_PUESTOS as mp on me.ClavePuestoID = mp.ClavePuestoID WHERE me.Estatus = 'A' and me.NombreCompleto LIKE CONCAT(? , '%');";
+			List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { nombre }, new RowMapper<EmpleadoDto>() {
+				public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+					EmpleadoDto e = new EmpleadoDto();
+					e.setEmpleadoID(rs.getInt(1));
+					e.setNombreCompleto(rs.getString(2));
+					e.setFechaAlta(rs.getString(3));
+					e.setDescripcion(rs.getString(4));
+					e.setEstatus(rs.getString(5));
 
-				return e;
-			}
-		});
-		logger.info(ls);
-		return ls;
+					return e;
+				}
+			});
+			logger.info(ls);
+			return ls;
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	// Buscar empleado por EmpleadoID
 	public List<EmpleadoDto> buscarEmpleadoPorID(Integer id) {
 		logger.info("Ejecutando buscarEmpleadoPorID: " + id);
-		String sql = "SELECT EmpleadoID, NombreCompleto FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?;";
-		List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<EmpleadoDto>() {
-			public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
-				EmpleadoDto e = new EmpleadoDto();
-				e.setEmpleadoID(rs.getInt(1));
-				e.setNombreCompleto(rs.getString(2));
-				return e;
-			}
-		});
-		logger.info(ls);
-		return ls;
+		try {
+			String sql = "SELECT EmpleadoID, NombreCompleto FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?;";
+			List<EmpleadoDto> ls = jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<EmpleadoDto>() {
+				public EmpleadoDto mapRow(ResultSet rs, final int rowNum) throws SQLException {
+					EmpleadoDto e = new EmpleadoDto();
+					e.setEmpleadoID(rs.getInt(1));
+					e.setNombreCompleto(rs.getString(2));
+					return e;
+				}
+			});
+			logger.info(ls);
+			return ls;
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

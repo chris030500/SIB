@@ -2,8 +2,8 @@ package ahorrosbienestar.sib.std.core_bancario.dto;
 
 public class ValidaSolicitudDto {
 	
-	private int resultado;
-	private String mensajeError;
+	//private int resultado;
+	//private String mensajeError;
 	private int solicitudCreditoID;
 	private int productoCreditoID;
 	private String producto;
@@ -13,21 +13,22 @@ public class ValidaSolicitudDto {
 	private String plazo;
 	private String estatus;
 	private String productoNomina;
+	private String registroReca;
 	private String tasaMoratoria;
 	private String clienteId;
 	
-	public int getResultado() {
-		return resultado;
-	}
-	public void setResultado(int resultado) {
-		this.resultado = resultado;
-	}
-	public String getMensajeError() {
-		return mensajeError;
-	}
-	public void setMensajeError(String mensajeError) {
-		this.mensajeError = mensajeError;
-	}
+//	public int getResultado() {
+//		return resultado;
+//	}
+//	public void setResultado(int resultado) {
+//		this.resultado = resultado;
+//	}
+//	public String getMensajeError() {
+//		return mensajeError;
+//	}
+//	public void setMensajeError(String mensajeError) {
+//		this.mensajeError = mensajeError;
+//	}
 	public int getSolicitudCreditoID() {
 		return solicitudCreditoID;
 	}
@@ -42,6 +43,13 @@ public class ValidaSolicitudDto {
 	}
 	
 	
+	
+	public String getRegistroReca() {
+		return registroReca;
+	}
+	public void setRegistroReca(String registroReca) {
+		this.registroReca = registroReca;
+	}
 	public String getClienteId() {
 		return clienteId;
 	}

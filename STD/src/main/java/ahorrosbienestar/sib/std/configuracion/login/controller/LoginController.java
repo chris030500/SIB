@@ -42,13 +42,15 @@ public class LoginController {
 			
 			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
 			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-			System.out.println("Principal != null");
+//			System.out.println("Principal != null");
+			logger.info("Principal != null");
 			return "redirect:/";
 		}
 		
 		if(error != null) {
 			model.addAttribute("error", "Error en el inicio de sesión: "
 					+ "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+			logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
 		}
 		
 //		if(logout != null) {
@@ -61,12 +63,14 @@ public class LoginController {
 	
 	@GetMapping("/logout")
 	public String logout1(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("Controller logout");
+		//System.out.println("Controller logout");
+		logger.info("Ejecutando logout");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		loginService.spDesactivarSesion(auth.getName());
 		
 		if(auth != null) {
-			System.out.println("auth != null");
+			//System.out.println("auth != null");
+			logger.info("auth != null");
 			new SecurityContextLogoutHandler().logout(request, response, auth);
 		}
 		return "redirect:/";

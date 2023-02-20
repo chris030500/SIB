@@ -56,9 +56,9 @@ function eliminarFila() {
 }
 
 function getAbsolutePath() {
-    var loc = window.location;
-    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
 //Funcion para la busqueda de solicitud de credito
@@ -87,15 +87,15 @@ function buscarSolicitudCredito(solicitudCredito) {
 		else {
 			console.log("Si se ha seleccionado una opción en usuario");
 			$.ajax({
-				url: urlBase+"buscar_solicitud?solicitud=" + solicitudCredito,
+				url: urlBase + "buscar_solicitud?solicitud=" + solicitudCredito,
 				type: "GET",
 				dataType: "JSON",
 				success: function(respuesta) {
 					console.log(respuesta);
 					/*console.log(respuesta.length);*/
-					//console.log("Respuesta: " + JSON.stringify(respuesta));
+					console.log("Respuesta: " + JSON.stringify(respuesta));
 					console.log("")
-					console.log("Respuesta estatus: " + respuesta.status)
+					//console.log("Respuesta estatus: " + respuesta.status)
 					//console.log("Resultado: " + respuesta[0].resultado);
 					if (respuesta == null || respuesta == '') {
 						console.log("Error");
@@ -106,58 +106,58 @@ function buscarSolicitudCredito(solicitudCredito) {
 						});
 					} else {
 						console.log("Puede continuar");
-						if (respuesta[0].resultado == 1) {
-							console.log("Puede continuar para buscar si el producto está configurado");
-							console.log("Resultado: " + JSON.stringify(respuesta));
-							//Hacemos visible los campos del detalle de la solicitud
-							divDatoSolicitud.style.display = "block";
+						//if (respuesta[0].resultado == 1) {
+						console.log("Puede continuar para buscar si el producto está configurado");
+						console.log("Resultado: " + JSON.stringify(respuesta));
+						//Hacemos visible los campos del detalle de la solicitud
+						divDatoSolicitud.style.display = "block";
 
-							//Hacemos referencia a los input para llenar los campos:
-							var solicitud = document.getElementById('solicitud');
-							var producto = document.getElementById('producto');
-							var montoSolicitado = document.getElementById('montoSolicitado');
-							var montoAutorizado = document.getElementById('montoAutorizado');
-							var plazo = document.getElementById('plazo');
-							var tasaNormal = document.getElementById('tasaNormal');
-							var estatus = document.getElementById('estatus');
-							var Nombreproducto = document.getElementById('Nombreproducto');
-							var productoNomina = document.getElementById('productoNomina');
-							var clienteId = document.getElementById('clienteId');
-							$("#divIdProducto").hide();
-							//Asignamos los valores a los campos
-							solicitud.value = respuesta[0].solicitudCreditoID;
-							producto.value = respuesta[0].productoCreditoID;
-							montoSolicitado.value = respuesta[0].montoSolicitado;
-							montoAutorizado.value = respuesta[0].montoAutorizado;
-							plazo.value = respuesta[0].plazo;
-							tasaNormal.value = respuesta[0].tasaFija;
-							estatus.value = respuesta[0].estatus;
-							Nombreproducto.value = respuesta[0].producto;
-							productoNomina.value = respuesta[0].productoNomina;
-							clienteId.value = respuesta[0].clienteId;
-							buscarProducto(respuesta[0].productoCreditoID);
+						//Hacemos referencia a los input para llenar los campos:
+						var solicitud = document.getElementById('solicitud');
+						var producto = document.getElementById('producto');
+						var montoSolicitado = document.getElementById('montoSolicitado');
+						var montoAutorizado = document.getElementById('montoAutorizado');
+						var plazo = document.getElementById('plazo');
+						var tasaNormal = document.getElementById('tasaNormal');
+						var estatus = document.getElementById('estatus');
+						var Nombreproducto = document.getElementById('Nombreproducto');
+						var productoNomina = document.getElementById('productoNomina');
+						var clienteId = document.getElementById('clienteId');
+						$("#divIdProducto").hide();
+						//Asignamos los valores a los campos
+						solicitud.value = respuesta[0].solicitudCreditoID;
+						producto.value = respuesta[0].productoCreditoID;
+						montoSolicitado.value = respuesta[0].montoSolicitado;
+						montoAutorizado.value = respuesta[0].montoAutorizado;
+						plazo.value = respuesta[0].plazo;
+						tasaNormal.value = respuesta[0].tasaFija;
+						estatus.value = respuesta[0].estatus;
+						Nombreproducto.value = respuesta[0].producto;
+						productoNomina.value = respuesta[0].productoNomina;
+						clienteId.value = respuesta[0].clienteId;
+						buscarProducto(respuesta[0].productoCreditoID);
 
-							/*if (usuarioPregunta == 1) {
-								console.log("Si es nuevo cliente");
-							} else if (usuarioPregunta == 2) {
-								console.log("No es nuevo c");
-								//const respuesta = undefined;
+						/*if (usuarioPregunta == 1) {
+							console.log("Si es nuevo cliente");
+						} else if (usuarioPregunta == 2) {
+							console.log("No es nuevo c");
+							//const respuesta = undefined;
 
-							}*/
+						}*/
 
-						} else if (respuesta[0].resultado == 0) {
+						/*} else if (respuesta[0].resultado == 0) {
 							swal({
 								title: "Error",
 								text: respuesta[0].mensajeError,
 								icon: "warning",
 							});
-						}
+						}*/
 					}
 
 				}, error: function() {
 					swal({
 						title: "Error, no es una solicitud de crédito",
-						text: "Favor de ingresar una solicitud de crédito",
+						text: "Favor de ingresar una solicitud de crédito valida",
 						icon: "warning",
 					});
 				}
@@ -181,7 +181,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 function buscarProducto(producto) {
 	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: urlBase+"buscar_catProducto?producto=" + producto,
+		url: urlBase + "buscar_catProducto?producto=" + producto,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -226,7 +226,7 @@ function traerParticipantes(solicitud) {
 	console.log("Solicitud: " + solicitud);
 	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
-		url: urlBase+"trae_participantes?solicitud=" + solicitud,
+		url: urlBase + "trae_participantes?solicitud=" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -277,12 +277,13 @@ function buscarDocumentos(producto) {
 	var urlBase = getAbsolutePath();
 	if (usuarioNuevo == 1) {
 		console.log("Es usuario nuevo");
+		console.log("producto : " + producto);
 		$.ajax({
-			url: urlBase+"buscar_documento_clienteNuevo?producto=" + producto,
+			url: urlBase + "buscar_documento_clienteNuevo?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				//console.log("Respuesta de participantes: " + JSON.stringify(respuesta));
+				console.log("Respuesta de participantes: " + JSON.stringify(respuesta));
 				//respuesta.forEach(element => console.log(element));
 				divDocumentos.style.display = "block";
 				divFechas.style.display = "block";
@@ -323,20 +324,34 @@ function buscarDocumentos(producto) {
 			}
 		});
 	} else if (usuarioNuevo == 2) {
+		console.log("Entro en usuario nuevo = 2");
 		$.ajax({
-			url: urlBase+"buscar_documento?producto=" + producto,
+			url: urlBase + "buscar_documento?producto=" + producto,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				divDocumentos.style.display = "block";
-				divFechas.style.display = "block";
-				$('#tablaDocumentos > tbody').empty();
-				$.each(respuesta, function(idx, opt) {
-					console.log("idx: " + idx);
-					console.log("Nombre documento: " + opt.nombreDocumento);
-					console.log("Id del documento: " + JSON.stringify(opt));
-					//alert('Estoy recorriendo el registro numero: ' + idx);
-					var rows = `<tr>
+				console.log("Respuesta usuario nuevo = 2: " + JSON.stringify(respuesta));
+				if (respuesta == null || respuesta == '') {
+					console.log("Viene vacío la lista");
+					var solicitud = document.getElementById('solicitud').value;
+					swal({
+						title: "Error",
+						text: "No sé encontrarón documentos asociados al producto: " + producto + " en la solicitud: " + solicitud,
+						icon: "warning",
+					}).then((result) => {
+						window.location.replace("/carga_documentos");
+					});
+				} else {
+					console.log("Viene con datos la lista de documentos");
+					divDocumentos.style.display = "block";
+					divFechas.style.display = "block";
+					$('#tablaDocumentos > tbody').empty();
+					$.each(respuesta, function(idx, opt) {
+						console.log("idx: " + idx);
+						console.log("Nombre documento: " + opt.nombreDocumento);
+						console.log("Id del documento: " + JSON.stringify(opt));
+						//alert('Estoy recorriendo el registro numero: ' + idx);
+						var rows = `<tr>
 		             <td>
 		               <input type="text" name="${opt.nombreDocumento}" id="${opt.nombreDocumento}" value="${opt.nombreDocumento}" readonly>
 		             </td>
@@ -359,9 +374,11 @@ function buscarDocumentos(producto) {
 						</div>
 		             </td>
 		           </tr>`;
-					$('#tablaDocumentos').append(rows)
+						$('#tablaDocumentos').append(rows)
 
-				});
+					});
+				}
+
 			}, error: function() {
 				swal({
 					title: "Error",
@@ -415,7 +432,7 @@ function altaSolicitud() {
 
 		$.ajax({
 			async: false,
-			url: urlBase+"solicitudEnvio/validarSolicitudCredito/" + solicitud,
+			url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
@@ -468,7 +485,7 @@ function altaSolicitud() {
 					var clienteId = document.getElementById("clienteId").value;
 					$.ajax({
 						async: false,
-						url: urlBase+"solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
+						url: urlBase + "solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
 							"&comentarioValidacion=" + comentarioValidacion +
 							"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
 							"&hCancelacion=" + hCancelacion,
@@ -529,7 +546,7 @@ function validarSolicitudCore(solicitud) {
 	//var solicitudCore = document.getElementById('solicitud').value;
 	$.ajax({
 		async: false,
-		url: urlBase+"solicitudEnvio/validarSolicitudCredito/" + solicitud,
+		url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -546,7 +563,7 @@ function validarSolicitudCore(solicitud) {
 // Function para obtener los documentos del campo file
 function uploadFile(fCancelacion, productoNomina, idEnvio) {
 	console.log("uploadFile: ");
-	
+
 	var productoNomina = document.getElementById('productoNomina').value;
 	var fCancelacion = document.getElementById('fCancelacion').value;
 	//var productoNomina = "N";
@@ -581,7 +598,7 @@ function registrarDoctEnvio(solicitud, documento, nombreDocumento, fCancelacion,
 	console.log("productoNomina: " + productoNomina);
 	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: urlBase+"doctEnvio?solicitud=" + solicitud + "&documento=" + documento +
+		url: urlBase + "doctEnvio?solicitud=" + solicitud + "&documento=" + documento +
 			"&nombreDocumento=" + nombreDocumento + "&fCancelacion=" + fCancelacion +
 			"&productoNomina=" + productoNomina + "&clienteId=" + clienteId +
 			"&idEnvio=" + idEnvio,
@@ -602,7 +619,7 @@ function obtenerIdSolicitud(solicitud) {
 	console.log("Entro en obtenerIdSolicitud");
 	var urlBase = getAbsolutePath();
 	$.ajax({
-		url: urlBase+"solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
+		url: urlBase + "solicitudEnvio/obtenerSolicitudFecha/" + solicitud,
 		type: "GET",
 		success: function(data) {
 			console.log("Exitoso obtenerIdSolicitud");
@@ -624,7 +641,7 @@ function obtenerIdSolicitud(solicitud) {
 
 
 
-function uploadFile2(solicitudCredito, clienteId,idEnvio) {
+function uploadFile2(solicitudCredito, clienteId, idEnvio) {
 	//var url = "YOUR-BASE-URL-HERE"; Like http://localhost:8081
 	var urlBase = getAbsolutePath();
 	var form = $('#form-upload')[0]; //get the form containing the files
@@ -635,8 +652,8 @@ function uploadFile2(solicitudCredito, clienteId,idEnvio) {
 	console.log("Data: " + JSON.stringify(data));
 	$.ajax({
 		async: false,
-		url: urlBase+"guardarPDFServidor/upload2?solicitudCredito=" + solicitudCredito + "&clienteId=" + clienteId 
-				+"&idEnvio=" +idEnvio,
+		url: urlBase + "guardarPDFServidor/upload2?solicitudCredito=" + solicitudCredito + "&clienteId=" + clienteId
+			+ "&idEnvio=" + idEnvio,
 		type: "POST",
 		enctype: 'multipart/form-data',
 		data: data, //pass the form data

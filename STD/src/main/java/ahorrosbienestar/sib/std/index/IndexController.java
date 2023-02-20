@@ -60,6 +60,9 @@ public class IndexController {
 
 	@Autowired
 	private ConfiguracionService configuracionService;
+	
+	@Autowired
+	private ConfigService configService;
 
 	@Autowired
 	private LoginService loginService;
@@ -101,8 +104,10 @@ public class IndexController {
 	// Metodo que guarda la contraseña nueva al momento de almacenarla
 	@RequestMapping(value = { "/guardar_contrasena" }, method = RequestMethod.POST)
 	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
+		logger.info("Ejecutando guardarCambioContrasena");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println("Password: " + password);
+		//System.out.println("Password: " + password);
+		
 		// Buscamos la información del usuario
 		Usuario usu = usuarioService.findByNombre(auth.getName());
 		System.out.println("Pk_Usu: " + usu.getPk_id_usuario());
@@ -110,12 +115,14 @@ public class IndexController {
 		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
 
 		// Vamos a obtener el parametro de los días de vigencia de la contraseña
-		Properties properties = new Properties();
-		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
-		properties.load(inputStream);
-
-		properties.getProperty("pDias");
-
+//		Properties properties = new Properties();
+//		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
+//		properties.load(inputStream);
+//
+//		properties.getProperty("pDias");
+		
+		String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
+		logger.info("Días que va a estar activa la contraseña: " + pDias);
 		// Establecemos el formato de la fecha
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		// Obtenemos la fecha en String
@@ -125,7 +132,7 @@ public class IndexController {
 		LocalDate localDateHoy = LocalDate.parse(fechaActual);
 		// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
 
-		localDate = localDate.plusDays(Long.parseLong(properties.getProperty("pDias")));
+		localDate = localDate.plusDays(Long.parseLong(pDias));
 
 		HistContrasena hc = new HistContrasena();
 		hc.setDt_vig_cont_fin(localDate);
@@ -142,17 +149,24 @@ public class IndexController {
 	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña
 	@GetMapping("/mensajeContrasena")
 	public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
-		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
-
-		Properties properties = new Properties();
-		properties.load(inputStream);
+//		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
+//
+//		Properties properties = new Properties();
+//		properties.load(inputStream);
+		logger.info("Ejecutando mensajeContrasena");
+		String longitud = configService.findAll().get(0).getVc_valor_propiedad();
+		String mayusculas = configService.findAll().get(4).getVc_valor_propiedad();
+		String minusculas = configService.findAll().get(3).getVc_valor_propiedad();
+		String numeros = configService.findAll().get(2).getVc_valor_propiedad();
+		String caracteres = configService.findAll().get(1).getVc_valor_propiedad();
 
 		return ResponseEntity.ok(
-				configuracionService.mensajeParametros(contrasena, Integer.parseInt(properties.getProperty("longitud")),
-						Integer.parseInt(properties.getProperty("mayusculas")),
-						Integer.parseInt(properties.getProperty("minusculas")),
-						Integer.parseInt(properties.getProperty("numeros")),
-						Integer.parseInt(properties.getProperty("caracteres"))));
+				configuracionService.mensajeParametros(contrasena, 
+						Integer.parseInt(longitud),
+						Integer.parseInt(mayusculas),
+						Integer.parseInt(minusculas),
+						Integer.parseInt(numeros),
+						Integer.parseInt(caracteres)));
 	}
 
 }
