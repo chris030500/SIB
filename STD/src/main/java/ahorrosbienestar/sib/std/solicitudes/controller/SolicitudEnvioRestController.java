@@ -162,6 +162,12 @@ public class SolicitudEnvioRestController {
 		logger.info("Ejecutando estatusSolicAutorizacion");
 		return solicitudEnvioService.estatusSolicAutorizacion();
 	}
+	
+	@GetMapping("solicitudEnvio/solicitud")
+	public SolicitudEnvio obtenerSolicitud(@RequestParam(name = "solicitud", required = false) Integer solicitud){
+		logger.info("Ejecutando obtenerSolicitud");
+		return solicitudEnvioService.findById(solicitud).get();
+	}
 
 
 	@GetMapping("solicitudEnvio/obtenerSolicitudFecha/{solicitud}")

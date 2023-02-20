@@ -22,7 +22,7 @@ function WS_IAD() {
 		type: "GET",
 		dataType: "text",
 		success: function(respuesta) {
-			
+
 			console.log("Respuesta :" + respuesta);
 			ws1 = respuesta;
 			return ws1;
@@ -86,6 +86,7 @@ function conexionWS_IAD() {
 function buscarSolicitudCredito() {
 
 	var solicitud = document.getElementById('i_no_solicitud_core').value;
+	
 	console.log("urlBase: " + urlBase);
 	console.log("newURL: " + newUrlBase);
 	console.log("Entro en buscar producto");
@@ -97,25 +98,69 @@ function buscarSolicitudCredito() {
 		success: function(respuesta) {
 			/*console.log(respuesta);
 			console.log(respuesta.length);*/
+			console.log("respuesta buscarSolicitudCredito" + JSON.stringify(respuesta));
+			if (respuesta == null || respuesta == '') {
+				console.log("Error");
+				swal({
+					title: "Error",
+					text: "La solicitud que ingresaste no existe",
+					icon: "warning",
+				});
+			} else {
+				var solicitudEnvio = document.getElementById('solicitudEnvio').value;
+				var producto = document.getElementById('producto');
+				var montoSolicitado = document.getElementById('montoSolicitado');
+				var montoAutorizado = document.getElementById('montoAutorizado');
+				var plazo = document.getElementById('plazo');
+				var tasaNormal = document.getElementById('tasaNormal');
+				var estatus = document.getElementById('estatus');
+				var Nombreproducto = document.getElementById('Nombreproducto');
+				var solicitudEnvio = document.getElementById('solicitudEnvio').value;
+				//$("#divSolicitudEnvio").hide();
+				producto.value = respuesta[0].productoCreditoID;
+				montoSolicitado.value = respuesta[0].montoSolicitado;
+				montoAutorizado.value = respuesta[0].montoAutorizado;
+				plazo.value = respuesta[0].plazo;
+				tasaNormal.value = respuesta[0].tasaFija;
+				estatus.value = respuesta[0].estatus;
+				Nombreproducto.value = respuesta[0].producto;
+				traerParticipantes(solicitud);
+				obtenerArchivosSolicitud(solicitudEnvio);
+				datosSoliEnvio(solicitudEnvio);
+				
+			}
+			
+		}
+	});
+}
 
-			var producto = document.getElementById('producto');
-			var montoSolicitado = document.getElementById('montoSolicitado');
-			var montoAutorizado = document.getElementById('montoAutorizado');
-			var plazo = document.getElementById('plazo');
-			var tasaNormal = document.getElementById('tasaNormal');
-			var estatus = document.getElementById('estatus');
-			var Nombreproducto = document.getElementById('Nombreproducto');
-			var solicitudEnvio = document.getElementById('solicitudEnvio').value;
-			//$("#divSolicitudEnvio").hide();
-			producto.value = respuesta[0].productoCreditoID;
-			montoSolicitado.value = respuesta[0].montoSolicitado;
-			montoAutorizado.value = respuesta[0].montoAutorizado;
-			plazo.value = respuesta[0].plazo;
-			tasaNormal.value = respuesta[0].tasaFija;
-			estatus.value = respuesta[0].estatus;
-			Nombreproducto.value = respuesta[0].producto;
-			traerParticipantes(solicitud);
-			obtenerArchivosSolicitud(solicitudEnvio);
+//Funcion para realizar la busqueda del documento
+function datosSoliEnvio(solicitudEnvio) {
+	//var urlBase = getAbsolutePath();
+	console.log("Entro en datosSoliEnvio");
+	console.log("solicitudEnvio: " + solicitudEnvio);
+	$.ajax({
+		url: newUrlBase + "solicitudEnvio/solicitud?solicitud=" + solicitudEnvio,
+		async: false,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("respuesta: " + JSON.stringify(respuesta));
+			console.log("i_estatus: " + respuesta.i_estatus);
+			var estatus = respuesta.i_estatus;
+			if(estatus != 1){
+				
+			} else {
+				var btnVoBo = document.getElementById("btnVoBo");
+				btnVoBo.style.display = "block";
+			}
+		},
+		error: function() {
+			console.log("Error");
+			swal({
+				icon: 'warning',
+				title: "No se encontro el archivo."
+			});
 		}
 	});
 }
