@@ -28,6 +28,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 			dataType: "JSON",
 			success: function(respuesta) {
 				//console.log(respuesta);
+				console.log("buscar_solicitud");
 				if (respuesta == null || respuesta == '') {
 					//console.log("Error");
 					swal({
@@ -75,14 +76,14 @@ function buscarSolicitudCredito(solicitudCredito) {
 			}, error: function() {
 				swal({
 					title: "Error, no es una solicitud de crédito",
-					text: "Favor de ingresar una solicitud de crédito",
+					text: "Favor de ingresar una solicitud de crédito valida",
 					icon: "warning",
 				});
 			}
 		});
 	} else {
 		swal({
-			title: "No contiene una solicitud de crédito!",
+			title: "No contiene una solicitud de crédito",
 			text: "Favor de ingresar un número de solicitud de crédito.",
 			icon: "info",
 		});

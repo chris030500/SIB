@@ -62,7 +62,7 @@ public class CargaDocumentosService {
 						return docto;
 					}
 				});
-
+		System.out.println("ls" + ls.get(0).getIdDocumento());
 		return ls;
 	}
 
