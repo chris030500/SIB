@@ -58,7 +58,7 @@ public class CoreBancarioService {
 						return cb;
 					}
 				});
-		logger.info("ls  SIB.SIB_VALIDA_SOLICITUD: " + ls.get(0).getSolicitudCreditoID());			
+		//logger.info("ls  SIB.SIB_VALIDA_SOLICITUD: " + ls.get(0).getSolicitudCreditoID());			
 		return ls;
 	}
 
