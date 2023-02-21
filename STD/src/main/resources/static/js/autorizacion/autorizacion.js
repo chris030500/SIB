@@ -12,12 +12,20 @@ function getAbsolutePath() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/autorizar", "");
 
+// Variables | vista de datos
+var divDatoSolicitud = document.getElementById("datoSolicitud");
+var solicitudId = document.getElementById("solicitudCredito");
+var divParticipantes = document.getElementById("divParticipantes");
+var mostrarSolicitud = document.getElementById("mostrarSolicitudId");
+var mostrarBotonAutorizar = document.getElementById("mostrarBotonAutorizarId");
+var mostrarBotonRechazar = document.getElementById("mostrarBotonRechazarId");
+var disponible = document.getElementById("disponibleID");
+var listaID = document.getElementById("listaID");
+
 // Funcion para la busqueda de solicitud de credito
 function buscarSolicitudCredito(solicitudCredito) {
 	console.log(newUrlBase);
 	//console.log("solicitudCredito: " + solicitudCredito);
-	var divDatoSolicitud = document.getElementById("datoSolicitud");
-	var solicitudId = document.getElementById("solicitudCredito");
 	$("#datoSolicitud").val('');
 	$("#participantes").val('');
 	if (solicitudCredito != '') {
@@ -38,42 +46,43 @@ function buscarSolicitudCredito(solicitudCredito) {
 					});
 				} else {
 					//console.log("Puede continuar");
-					if (respuesta[0].resultado == 1) {
-						//Hacemos visible los campos del detalle de la solicitud
-						divDatoSolicitud.style.display = "block";
-						//Hacemos referencia a los input para llenar los campos:
-						var solicitud = document.getElementById('solicitud');
-						var buscarCredito = document.getElementById('buscarCredito');
-						var producto = document.getElementById('producto');
-						var montoSolicitado = document.getElementById('montoSolicitado');
-						var montoAutorizado = document.getElementById('montoAutorizado');
-						var plazo = document.getElementById('plazo');
-						var tasaNormal = document.getElementById('tasaNormal');
-						var estatus = document.getElementById('estatus');
-						var Nombreproducto = document.getElementById('Nombreproducto');
-						$("#divIdProducto").hide();
-						//Asignamos los valores a los campos
-						buscarCredito.value = '';
-						solicitud.value = respuesta[0].solicitudCreditoID;
-						producto.value = respuesta[0].productoCreditoID;
-						montoSolicitado.value = regresarMoneda(montoSolicitado, respuesta[0].montoSolicitado);
-						montoAutorizado.value = regresarMoneda(montoAutorizado, respuesta[0].montoAutorizado);
-						plazo.value = respuesta[0].plazo;
-						tasaNormal.value = regresarMoneda(tasaNormal, respuesta[0].tasaFija);
-						estatus.value = respuesta[0].estatus;
-						Nombreproducto.value = respuesta[0].producto;
-						buscarProducto(respuesta[0].productoCreditoID);
-						// Consultar la solicitud de envio
-						mostrarSolicitudEnvio(solicitud.value);
-					} else if (respuesta[0].resultado == 0) {
-						swal({
-							title: "Error",
-							text: respuesta[0].mensajeError,
-							icon: "warning",
-						});
-					}
+					//Hacemos visible los campos del detalle de la solicitud
+					divDatoSolicitud.style.display = "block";
+					//Hacemos referencia a los input para llenar los campos:
+					var solicitud = document.getElementById('solicitud');
+					var buscarCredito = document.getElementById('buscarCredito');
+					var producto = document.getElementById('producto');
+					var montoSolicitado = document.getElementById('montoSolicitado');
+					var montoAutorizado = document.getElementById('montoAutorizado');
+					var plazo = document.getElementById('plazo');
+					var tasaNormal = document.getElementById('tasaNormal');
+					var estatus = document.getElementById('estatus');
+					var Nombreproducto = document.getElementById('Nombreproducto');
+					$("#divIdProducto").hide();
+					//Asignamos los valores a los campos
+					envioID = solicitudCredito;
+					buscarCredito.value = '';
+					solicitud.value = respuesta[0].solicitudCreditoID;
+					producto.value = respuesta[0].productoCreditoID;
+					montoSolicitado.value = regresarMoneda(montoSolicitado, respuesta[0].montoSolicitado);
+					montoAutorizado.value = regresarMoneda(montoAutorizado, respuesta[0].montoAutorizado);
+					plazo.value = respuesta[0].plazo;
+					tasaNormal.value = regresarMoneda(tasaNormal, respuesta[0].tasaFija);
+					estatus.value = respuesta[0].estatus;
+					Nombreproducto.value = respuesta[0].producto;
+					buscarProducto(respuesta[0].productoCreditoID);
 				}
 			}, error: function() {
+				// Vistas
+				buscarCredito.value = '';
+				divParticipantes.style.display = "none";
+				disponible.style.display = "none";
+				datoSolicitud.style.display = "none";
+				mostrarSolicitud.style.display = "none";
+				mostrarBotonAutorizar.style.display = "none";
+				mostrarBotonRechazar.style.display = "none";
+				listaID.style.display = "none";
+
 				swal({
 					title: "Error, no es una solicitud de crédito",
 					text: "Favor de ingresar una solicitud de crédito valida",
@@ -103,6 +112,8 @@ function buscarProducto(producto) {
 			console.log(respuesta.length);*/
 			//console.log("Respuesta buscarProducto: " + respuesta);
 			if (respuesta == 1) {
+				// Consultar la solicitud de envio
+				mostrarSolicitudEnvio(envioID);
 				//console.log("Producto ya configurado");
 				//Asignamos el valor de la solicitud para poder traer los participantes
 				var solicitud = document.getElementById('solicitud').value;
@@ -112,6 +123,15 @@ function buscarProducto(producto) {
 				//buscarDocumentos(producto)
 				//Agregamos la petición para obtener los participantes
 			} else if (respuesta == 0) {
+				// Vistas
+				divParticipantes.style.display = "none";
+				disponible.style.display = "none";
+				datoSolicitud.style.display = "none";
+				mostrarSolicitud.style.display = "none";
+				mostrarBotonAutorizar.style.display = "none";
+				mostrarBotonRechazar.style.display = "none";
+				listaID.style.display = "none";
+
 				document.getElementById('solicitud').value = "";
 				document.getElementById('producto').value = "";
 				document.getElementById('montoSolicitado').value = "";
@@ -138,7 +158,6 @@ function buscarProducto(producto) {
 function traerParticipantes(solicitud) {
 	//console.log("Entro en traer participantes");
 	//console.log("Solicitud: " + solicitud);
-	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
 		url: newUrlBase + "trae_participantes?solicitud=" + solicitud,
 		type: "GET",
@@ -167,11 +186,6 @@ function traerParticipantes(solicitud) {
 
 // Función que muestra la solicitud de envio
 function mostrarSolicitudEnvio(solicitudId) {
-	var mostrarSolicitud = document.getElementById("mostrarSolicitudId");
-	var mostrarBotonAutorizar = document.getElementById("mostrarBotonAutorizarId");
-	var mostrarBotonRechazar = document.getElementById("mostrarBotonRechazarId");
-	var disponible = document.getElementById("diponibleID");
-
 	$.ajax({
 		url: newUrlBase + "datos_solicitud?solicitudId=" + solicitudId + "&accion=autorizar",
 		type: "GET",
@@ -197,7 +211,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 				mostrarBotonRechazar.style.display = "block";
 			}
 
-			envioID = respuesta.pk_id_solicitud_envio;
+			//envioID = respuesta.pk_id_solicitud_envio;
 
 			//Hacemos referencia a los input para llenar los campos:
 			var envio = document.getElementById("envioID");
@@ -235,6 +249,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 
 // Función que muestra la alerta para poder actualizar la solicitud
 function alertaActualizarSolicitud(tipo) {
+	//console.log(envioID);
 	swal({
 		title: '¿Deseas ' + tipo + ' la solicitud?',
 		text: "Se actualizará la solicitud actual",
@@ -297,9 +312,6 @@ function actualizarSolicitud(observacion, tipo) {
 
 // Función que muestra las solicitudes autorizadas
 function listaSolicitudes(solicitudID) {
-
-	var listaID = document.getElementById("listaID");
-
 	$.ajax({
 		url: newUrlBase + "solicitudes_autorizadas?solicitudID=" + solicitudID + "&accion=autorizar",
 		type: "GET",

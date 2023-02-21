@@ -7,7 +7,9 @@ function getAbsolutePath() {
 
 // Variables | validacion de la liga absoluta
 var urlPrincipal = getAbsolutePath();
+//console.log(urlPrincipal);
 var newUrlBase = urlPrincipal.replace("/cancelacion", "");
+//console.log(newUrlBase);
 
 // Variable ID solicitud de envio
 var envioID;
@@ -22,21 +24,31 @@ var observacionesCancelacion;
 var spinner = document.getElementById('spinnerID');
 var principal = document.getElementById('principalID');
 
+
+// Variables | vista de datos
+var mostrarSolicitud = document.getElementById("mostrarSolicitudId");
+var botonCancelarId = document.getElementById("botonCancelarId");
+var disponible = document.getElementById("diponibleID");
+var divParticipantes = document.getElementById("divParticipantes");
+var canceladasID = document.getElementById("canceladasID");
+var divDatoSolicitud = document.getElementById("datoSolicitud");
+var solicitudId = document.getElementById("solicitudCredito");
+
 // Funcion para la busqueda de solicitud de credito
 function buscarSolicitudCredito(solicitudCredito) {
 	//console.log("solicitudCredito: " + solicitudCredito);
-	var divDatoSolicitud = document.getElementById("datoSolicitud");
-	var solicitudId = document.getElementById("solicitudCredito");
 	$("#datoSolicitud").val('');
 	$("#participantes").val('');
+	//console.log(solicitudCredito);
 	if (solicitudCredito != '') {
+		//console.log('solicitud credito:' + newUrlBase);
 		//console.log("Si se ha seleccionado una opción en usuario");
 		$.ajax({
 			url: newUrlBase + "buscar_solicitud?solicitud=" + solicitudCredito,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				//console.log(respuesta);
+				//console.log(JSON.stringify(respuesta));
 				if (respuesta == null || respuesta == '') {
 					//console.log("Error");
 					swal({
@@ -46,42 +58,43 @@ function buscarSolicitudCredito(solicitudCredito) {
 					});
 				} else {
 					//console.log("Puede continuar");
-					if (respuesta[0].resultado == 1) {
-						//Hacemos visible los campos del detalle de la solicitud
-						divDatoSolicitud.style.display = "block";
-						//Hacemos referencia a los input para llenar los campos:
-						var solicitud = document.getElementById('solicitud');
-						var buscarCredito = document.getElementById('buscarCredito');
-						var producto = document.getElementById('producto');
-						var montoSolicitado = document.getElementById('montoSolicitado');
-						var montoAutorizado = document.getElementById('montoAutorizado');
-						var plazo = document.getElementById('plazo');
-						var tasaNormal = document.getElementById('tasaNormal');
-						var estatus = document.getElementById('estatus');
-						var Nombreproducto = document.getElementById('Nombreproducto');
-						$("#divIdProducto").hide();
-						//Asignamos los valores a los campos
-						buscarCredito.value = '';
-						solicitud.value = respuesta[0].solicitudCreditoID;
-						producto.value = respuesta[0].productoCreditoID;
-						montoSolicitado.value = regresarMoneda(montoSolicitado, respuesta[0].montoSolicitado);
-						montoAutorizado.value = regresarMoneda(montoAutorizado, respuesta[0].montoAutorizado);
-						plazo.value = respuesta[0].plazo;
-						tasaNormal.value = regresarMoneda(tasaNormal, respuesta[0].tasaFija);
-						estatus.value = respuesta[0].estatus;
-						Nombreproducto.value = respuesta[0].producto;
-						buscarProducto(respuesta[0].productoCreditoID);
-						// Consultar la solicitud de envio
-						mostrarSolicitudEnvio(solicitud.value);
-					} else if (respuesta[0].resultado == 0) {
-						swal({
-							title: "Error",
-							text: respuesta[0].mensajeError,
-							icon: "warning",
-						});
-					}
+					//console.log(respuesta[0].resultado);
+					//console.log('entro');
+					//Hacemos visible los campos del detalle de la solicitud
+					divDatoSolicitud.style.display = "block";
+					//Hacemos referencia a los input para llenar los campos:
+					var solicitud = document.getElementById('solicitud');
+					var buscarCredito = document.getElementById('buscarCredito');
+					var producto = document.getElementById('producto');
+					var montoSolicitado = document.getElementById('montoSolicitado');
+					var montoAutorizado = document.getElementById('montoAutorizado');
+					var plazo = document.getElementById('plazo');
+					var tasaNormal = document.getElementById('tasaNormal');
+					var estatus = document.getElementById('estatus');
+					var Nombreproducto = document.getElementById('Nombreproducto');
+					$("#divIdProducto").hide();
+					//Asignamos los valores a los campos
+					envioID = solicitudCredito;
+					buscarCredito.value = '';
+					solicitud.value = respuesta[0].solicitudCreditoID;
+					producto.value = respuesta[0].productoCreditoID;
+					montoSolicitado.value = regresarMoneda(montoSolicitado, respuesta[0].montoSolicitado);
+					montoAutorizado.value = regresarMoneda(montoAutorizado, respuesta[0].montoAutorizado);
+					plazo.value = respuesta[0].plazo;
+					tasaNormal.value = regresarMoneda(tasaNormal, respuesta[0].tasaFija);
+					estatus.value = respuesta[0].estatus;
+					Nombreproducto.value = respuesta[0].producto;
+					buscarProducto(respuesta[0].productoCreditoID, envioID);
 				}
 			}, error: function() {
+				buscarCredito.value = '';
+				disponible.style.display = "none";
+				divParticipantes.style.display = "none";
+				canceladasID.style.display = "none";
+				mostrarSolicitud.style.display = "none";
+				botonCancelarId.style.display = "none";
+				divDatoSolicitud.style.display = "none";
+
 				swal({
 					title: "Error, no es una solicitud de crédito",
 					text: "Favor de ingresar una solicitud de crédito",
@@ -100,7 +113,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 
 
 //Funcion para buscar si el producto ya se encuentra configurado
-function buscarProducto(producto) {
+function buscarProducto(producto, envioID) {
 	$.ajax({
 		url: newUrlBase + "buscar_catProducto?producto=" + producto,
 		type: "GET",
@@ -110,6 +123,9 @@ function buscarProducto(producto) {
 			console.log(respuesta.length);*/
 			//console.log("Respuesta buscarProducto: " + respuesta);
 			if (respuesta == 1) {
+				// Consultar la solicitud de envio
+				console.log(envioID);
+				mostrarSolicitudEnvio(envioID);
 				//console.log("Producto ya configurado");
 				//Asignamos el valor de la solicitud para poder traer los participantes
 				var solicitud = document.getElementById('solicitud').value;
@@ -119,6 +135,14 @@ function buscarProducto(producto) {
 				//buscarDocumentos(producto)
 				//Agregamos la petición para obtener los participantes
 			} else if (respuesta == 0) {
+				// vistas
+				disponible.style.display = "none";
+				divParticipantes.style.display = "none";
+				canceladasID.style.display = "none";
+				mostrarSolicitud.style.display = "none";
+				botonCancelarId.style.display = "none";
+				buscarCredito.value = '';
+
 				document.getElementById('solicitud').value = "";
 				document.getElementById('producto').value = "";
 				document.getElementById('montoSolicitado').value = "";
@@ -144,7 +168,6 @@ function buscarProducto(producto) {
 function traerParticipantes(solicitud) {
 	//console.log("Entro en traer participantes");
 	//console.log("Solicitud: " + solicitud);
-	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
 		url: newUrlBase + "trae_participantes?solicitud=" + solicitud,
 		type: "GET",
@@ -199,7 +222,7 @@ function autenticacion() {
 
 // Función que manda la alerta para proceder con la eliminación de la solicitud
 function alertaEliminarSolicitud() {
-	//console.log("solicitud: " + solicitud);
+	//console.log(envioID);
 	swal({
 		title: '¿Deseas cancelar la solicitud?',
 		text: "Se cancelará la solicitud actual",
@@ -286,16 +309,13 @@ function regresarMoneda(nombre, valor) {
 
 // Función que muestra la solicitud de envio
 function mostrarSolicitudEnvio(solicitudId) {
-	var mostrarSolicitud = document.getElementById("mostrarSolicitudId");
-	var botonCancelarId = document.getElementById("botonCancelarId");
-	var disponible = document.getElementById("diponibleID");
-
+	//console.log(solicitudId);
 	$.ajax({
 		url: newUrlBase + "datos_solicitud?solicitudId=" + solicitudId + "&accion=cancelar",
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-
+			console.log(respuesta);
 			if (respuesta.pk_id_solicitud_envio == 0) {
 				// Mostramos la alerta
 				disponible.style.display = "block"
@@ -315,7 +335,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 			// Mostrar solicitudes canceladas
 			solicitudesCanceladas(solicitudId);
 
-			envioID = respuesta.pk_id_solicitud_envio;
+			//envioID = respuesta.pk_id_solicitud_envio;
 
 			//Hacemos referencia a los input para llenar los campos:
 			var envio = document.getElementById("envioID");
@@ -361,9 +381,6 @@ function mostrarSolicitudEnvio(solicitudId) {
 
 // Función que muestra las solicitudes canceladas
 function solicitudesCanceladas(solicitudID) {
-
-	var canceladasID = document.getElementById("canceladasID");
-
 	$.ajax({
 		url: newUrlBase + "solicitudes_autorizadas?solicitudID=" + solicitudID + "&accion=cancelar",
 		type: "GET",
@@ -424,12 +441,12 @@ function WS_IAD() {
 		type: "GET",
 		dataType: "text",
 		success: function(respuesta) {
-			console.log("Respuesta :" + respuesta);
+			//console.log("Respuesta :" + respuesta);
 			ws1 = respuesta;
 			return ws1;
 		},
 		error: function(respuesta) {
-			console.log("Error");
+			//console.log("Error");
 			//console.log("Respuesta: " + respuesta.responseText);
 			ws1 = respuesta;
 
