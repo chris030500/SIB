@@ -14,16 +14,17 @@
 	<section class="content" layout:fragment="page-content">
 		<div class="container">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div class="card-body">
-							<h2 style="text-align:center">Usuarios</h2>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Usuarios</h2>
 						</div>
 					</div>
 				</div>
 			</div>
+
+
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="card">
@@ -44,8 +45,7 @@
 										<div class="modal-body">
 
 
-											<form id="edit-form" th:method="post"
-											th:object="${usuario}">
+											<form id="edit-form" th:method="post" th:object="${usuario}">
 												<div class="col-12">
 													<label for="idUsuario" class="form-label">Id
 														usuario</label>
@@ -54,21 +54,23 @@
 													<label for="nombre" class="form-label">Nombre de
 														usuario</label>
 													<input type="text" class="form-control" id="nombre"
-														th:field="*{vc_nombre_usuario}">	
+														th:field="*{vc_nombre_usuario}">
 												</div>
 												<div class="modal-footer">
-													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-													<button type="button" onclick="editarUsuario()" class="btn btn-primary">Guardar</button>
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="button" onclick="editarUsuario()"
+														class="btn btn-primary">Guardar</button>
 												</div>
 											</form>
 										</div>
-										
+
 									</div>
 								</div>
 							</div>
 							<!-- End Basic Modal-->
 
-							
+
 							<div class="row mb-3">
 								<form method="get" th:action="@{/usuario/altaUsuario}">
 									<button type="submit" class="btn btn-primary">
@@ -94,22 +96,23 @@
 										<td>
 											<div class="dt-buttons">
 												<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-													title="Editar"
-													data-bs-target="#basicModal"
+													title="Editar" data-bs-target="#basicModal"
 													aria-controls="table-datatable" type="button"
-													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'" data-tooltip="Add">
+													th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'"
+													data-tooltip="Add">
 													<i class="bi bi-file-person-fill"></i>
 												</button>
 												<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
 													data-bs-placement="top" title="Baja Usuario"
-													aria-controls="table-datatable" type="button"
-													data-tooltip="Refresh" th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
+													aria-controls="table-datatable" type="button" data-tooltip="Refresh"
+													th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
 													<i class="bi bi-file-lock"></i>
 												</button>
 												<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip"
 													data-bs-placement="top" title="Reactivar Usuario"
 													aria-controls="table-datatable" type="button"
-													data-tooltip="Show filters" th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
+													data-tooltip="Show filters"
+													th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
 													<i class="bi bi-unlock"></i>
 												</button>
 												<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
