@@ -182,6 +182,24 @@
 
 					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 
+						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-video"
+							data-bs-toggle="collapse">
+							<i class="bi bi-camera-video"></i><span>Proceso Video Grabacion</span>
+							<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+
+						<ul id="config-nav-video" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+								<a th:href="@{/videoGrabacion/consulta_documentos}">
+									<i class="bi bi-file-earmark-person-fill"></i><span>Documentos Enviados</span>
+								</a>
+							</li>
+						</ul>
+
+					</li>
+
+					<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+
 						<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-validacion"
 							data-bs-toggle="collapse">
 							<i class="bi bi-check-square-fill"></i><span>Validaciones</span>
