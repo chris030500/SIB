@@ -141,11 +141,11 @@ function buscarDatosSolicitud() {
 						inputCapital.value = respuesta[0].montoAutorizado;
 						inputTasaOrdinaria.value = respuesta[0].tasaFija;
 						inputTasaMoratoria.value = respuesta[0].tasaMoratoria;
-						reca.value = respuesta[0].reca.replace("/","|");
+						reca.value = respuesta[0].reca;
 						buscaCliente(respuesta[0].solicitudCreditoID);
 
 
-					} else if (respuesta[0].resultado == 0) {
+					} else{
 						swal({
 							title: "Error",
 							text: respuesta[0].mensajeError,
