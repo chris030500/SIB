@@ -25,7 +25,7 @@ function verReporte() {
 		  var reca = document.getElementById("reca").value;
    		  var solicitud = document.getElementById("inputSolicitud").value;
 
-		  var servicioReporte = servicioReporte + nombreCliente + separador + direccion + separador + capital + separador+ tasaOrdinaria + separador + tasaMoratoria + separador + cat+ separador + reca + separador+solicitud ;
+		  var servicioReporte = servicioReporte + nombreCliente + separador + direccion + separador + capital + separador+ tasaOrdinaria + separador + tasaMoratoria + separador + cat+ separador + reca.replace("/","|") + separador+solicitud ;
 		  var urlGuardar = getAbsolutePath() + servicioReporte;
 		
 		
@@ -141,7 +141,7 @@ function buscarDatosSolicitud() {
 						inputCapital.value = respuesta[0].montoAutorizado;
 						inputTasaOrdinaria.value = respuesta[0].tasaFija;
 						inputTasaMoratoria.value = respuesta[0].tasaMoratoria;
-						reca.value = respuesta[0].reca;
+						reca.value = respuesta[0].registroReca;
 						buscaCliente(respuesta[0].solicitudCreditoID);
 
 
