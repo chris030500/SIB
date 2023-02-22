@@ -134,7 +134,7 @@ function buscarDatosSolicitud() {
 					});
 				} else {
 					console.log("Puede continuar");
-					if (respuesta[0].resultado == 1) {
+					if (respuesta.length>0) {
 
 						//Asignamos los valores a los campos
 						inputSolicitud.value = respuesta[0].solicitudCreditoID;
