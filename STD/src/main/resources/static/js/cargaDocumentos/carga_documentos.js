@@ -511,7 +511,7 @@ function altaSolicitud() {
 								showConfirmButton: false
 
 							}).then((result) => {
-								window.location.replace("/carga_documentos");
+								window.location.replace(urlBase+"carga_documentos");
 							});
 
 						},
