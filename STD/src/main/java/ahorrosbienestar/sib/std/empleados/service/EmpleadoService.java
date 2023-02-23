@@ -42,7 +42,7 @@ public class EmpleadoService {
 					return e;
 				}
 			});
-			logger.info(ls);
+			logger.info(ls.get(0).getNombreCompleto());
 			return ls;
 		} catch (Exception e) {
 			logger.error(e.getMessage());

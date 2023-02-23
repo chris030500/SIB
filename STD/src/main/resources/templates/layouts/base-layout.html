@@ -115,7 +115,7 @@
 				</li>
 
 
-				<li sec:authorize="hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_ADMIN')" class="nav-item">
+				<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-administracion"
 						data-bs-toggle="collapse">
@@ -134,7 +134,7 @@
 								<i class="bi bi-person-lines-fill"></i><span>Roles</span>
 							</a>
 						</li>
-						<li sec:authorize="hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 							<a th:href="@{/configuracion/sesionesInactiva}">
 								<i class="fa fa-unlock"></i><span>Desbloqueo de usuarios</span>
 							</a>
@@ -143,7 +143,8 @@
 					</ul>
 				</li>
 
-				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO')" class="nav-item">
+				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_VALIDADOR') or hasRole('ROLE_AUTORIZADOR')"
+					class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-cdoc" data-bs-toggle="collapse">
 						<i class="bi bi-card-text"></i><span>Documentos</span>
@@ -151,22 +152,20 @@
 					</a>
 
 					<ul id="config-nav-cdoc" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO')" class="nav-item">
-							<a th:href="@{/carga_documentos}">
-								<i class="bi bi-card-text"></i><span>Carga de documentos </span>
-							</a>
-						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO') or hasRole('ROLE_VALIDADOR')"
+							class="nav-item">
 							<a th:href="@{/documento/index}">
 								<i class="bi bi-card-text"></i><span>Documento</span>
 							</a>
 						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO')" class="nav-item">
 							<a th:href="@{/producto/index}">
 								<i class="bi bi-card-text"></i><span>Productos</span>
 							</a>
 						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+							class="nav-item">
 							<a th:href="@{/contrato/generar_contrato}">
 								<i class="bi bi-card-text"></i><span>Contratos</span>
 							</a>
@@ -182,15 +181,48 @@
 				</li>
 
 
-				<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+				<li sec:authorize="hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_ADMIN') or hasRole('ROLE_VALIDADOR') or hasRole('ROLE_AUTORIZADOR') or hasRole('ROLE_ARCHIVO')"
+					class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-video" data-bs-toggle="collapse">
 						<i class="bi bi-camera-video"></i><span>Proceso Video Grabacion</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
-
 					<ul id="config-nav-video" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_VALIDADOR') or hasRole('ROLE_AUTORIZADOR') "
+							class="nav-item">
+							<a th:href="@{/carga_documentos}">
+								<i class="bi bi-card-text"></i><span>Carga de documentos </span>
+							</a>
+						</li>
+
+
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO')  or hasRole('ROLE_VALIDADOR') or hasRole('ROLE_AUTORIZADOR')"
+							class="nav-item">
+							<a th:href="@{/solicitudEnvio/solicitudes}">
+								<i class="bi bi-card-text"></i><span>Solicitudes de Autorización </span>
+							</a>
+						</li>
+
+
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO') or hasRole('ROLE_EJECUTIVO')"
+							class="nav-item">
+							<a th:href="@{/autorizar/index}">
+								<i class="bi bi-card-text"></i><span>Autorizar videograbación</span>
+							</a>
+						</li>
+
+
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+							class="nav-item">
+							<a th:href="@{/cancelacion/index}">
+								<i class="bi bi-card-text"></i><span>Cancelar videograbación</span>
+							</a>
+						</li>
+
+
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_VALIDADOR')"
+							class="nav-item">
 							<a th:href="@{/videoGrabacion/consulta_documentos}">
 								<i class="bi bi-file-earmark-person-fill"></i><span>Documentos Enviados</span>
 							</a>
@@ -200,7 +232,7 @@
 				</li>
 
 
-				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_VALIDADOR')" class="nav-item">
+				<!--<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_VALIDADOR')" class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-validacion"
 						data-bs-toggle="collapse">
@@ -217,18 +249,18 @@
 					</ul>
 
 					<!-- Autorizacion de videograbacion -->
-					<ul id="config-nav-validacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+				<!--<ul id="config-nav-validacion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 							<a th:href="@{/autorizar/index}">
 								<i class="bi bi-card-text"></i><span>Autorizar videograbación</span>
 							</a>
 						</li>
-					</ul>
+					</ul>-->
 
-				</li>
+				<!--</li>-->
 
 				<!-- Módulo Cancelaciones -->
-				<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+				<!--<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-cancelacion"
 						data-bs-toggle="collapse">
@@ -244,7 +276,7 @@
 						</li>
 					</ul>
 
-				</li>
+				</li>-->
 
 
 				<!--<li class="nav-header"></li>
