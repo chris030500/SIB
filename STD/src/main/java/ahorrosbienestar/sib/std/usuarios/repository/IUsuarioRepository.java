@@ -47,7 +47,9 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS u SET I_ESTATUS_USUARIO = 0 WHERE PK_ID_USUARIO = :id", nativeQuery=true)
 	public int bajaUsuarioEstatus( @Param("id") Integer id);
 	
-	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS AS u WHERE u.PK_ID_USUARIO = :id", nativeQuery = true)
+	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS AS u \r\n"
+			+ "INNER JOIN SIB.TBL_HIST_CONTRASENIA AS contra ON u.PK_ID_USUARIO = contra.Usr_historico_contrasena_id\r\n"
+			+ "WHERE u.PK_ID_USUARIO = :id and contra.VC_INDICADOR_ACTIVO = 1", nativeQuery = true)
 	public Optional<Usuario> findById(@Param ( "id" ) Integer id);
 	
 	@Modifying
