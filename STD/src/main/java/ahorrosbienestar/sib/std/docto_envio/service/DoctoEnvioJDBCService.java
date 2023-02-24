@@ -29,7 +29,7 @@ public class DoctoEnvioJDBCService {
 	
 	public List<ArchivoSolicitud> obtenerArchivosSolicitud(int solicitud) {
 		String sql = "CALL SIB.SP_ARCHIVOS_SOLICITUD (?);";
-		logger.info("Ejecutando CALL SIB.SP_ARCHIVOS_SOLICITUD (" + solicitud + ")");
+		logger.info("Ejecutando CALL SP_ARCHIVOS_SOLICITUD (" + solicitud + ")");
 		List<ArchivoSolicitud> ls = jdbcTemplate.query(sql, new Object[] { solicitud },
 				new RowMapper<ArchivoSolicitud>() {
 					public ArchivoSolicitud mapRow(ResultSet rs, final int rowNum) throws SQLException {

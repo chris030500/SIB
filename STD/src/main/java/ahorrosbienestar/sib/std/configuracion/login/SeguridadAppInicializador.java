@@ -43,7 +43,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").hasAnyRole("ADMIN")
 		.antMatchers("/documento/**").hasAnyRole("ADMIN", "ARCHIVO", "VALIDADOR")
 		.antMatchers("/producto/**").hasAnyRole("ADMIN", "ARCHIVO")
-		.antMatchers("/autorizar/**").hasAnyAuthority("ADMIN", "ARCHIVO", "EJECUTIVO")
+		.antMatchers("/autorizar/**").hasAnyRole("ADMIN", "ARCHIVO", "EJECUTIVO")
 		.antMatchers("/cancelacion/**").hasAnyRole("ADMIN", "VALIDADOR", "EJECUTIVO", "AUTORIZADOR")
 		.antMatchers("/contrato/**").hasAnyRole("ADMIN", "EJECUTIVO", "AUTORIZADOR")
 		.antMatchers("/carga_documentos/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR")

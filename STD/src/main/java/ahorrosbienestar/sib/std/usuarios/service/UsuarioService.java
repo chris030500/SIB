@@ -31,6 +31,7 @@ public class UsuarioService {
 		return iUsuarioRepository.findById(id);
 	}
 	
+	
 	//Metodo para buscar todos los usuarios
 	public List<Usuario> findAll(){
 		return iUsuarioRepository.findAll();

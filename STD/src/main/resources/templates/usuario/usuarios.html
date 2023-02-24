@@ -1,152 +1,202 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
- 
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
 <head th:replace="layouts/base-layout :: head">
-    <meta charset="UTF-8">
-    <title>Insert title here</title>
- 
-    <link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
- 
+
 <body>
-    <section class="content" layout:fragment="page-content">
-        <div class="container">
- 
-            <div class="card mb-3">
-                <div class="row no-gutters">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h2 style="text-align:center">Usuarios</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"></h5>
- 
- 
-                            <!-- Basic Modal -->
- 
-                            <div class="modal fade" id="basicModal" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Editar Usuario</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
- 
- 
-                                            <form id="edit-form" th:method="post" th:object="${usuario}">
-                                                <div class="col-12">
-                                                    <label for="idUsuario" class="form-label">Id
-                                                        usuario</label>
-                                                    <input type="text" class="form-control" id="idUsuario"
-                                                        th:field="*{pk_id_usuario}" readonly>
-                                                    <label for="nombre" class="form-label">Nombre de
-                                                        usuario</label>
-                                                    <input type="text" class="form-control" id="nombre"
-                                                        th:field="*{vc_nombre_usuario}">
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                    <button type="button" onclick="editarUsuario()"
-                                                        class="btn btn-primary">Guardar</button>
-                                                </div>
-                                            </form>
-                                        </div>
- 
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Basic Modal-->
- 
- 
-                            <div class="row mb-3">
-                                <form method="get" th:action="@{/usuario/altaUsuario}">
-                                    <button type="submit" class="btn btn-primary">
-                                        Agregar Usuarios
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="row">
- 
-                                <table class="table table-striped" id="usuariosTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre Usuario</th>
-                                            <th>Estatus Usuario</th>
-                                            <th>Estatus Sesión</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="usuario : ${usuarios}">
-                                            <td th:text="${usuario.vc_nombre_usuario}"></td>
-                                            <td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
-                                            <td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
-                                            <td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
-                                            <td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
-                                            <td>
-                                                <div class="dt-buttons">
-                                                    <button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-                                                        title="Editar" data-bs-target="#basicModal"
-                                                        aria-controls="table-datatable" type="button"
-                                                        th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'"
-                                                        data-tooltip="Add">
-                                                        <i class="bi bi-file-person-fill"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top" title="Baja Usuario"
-                                                        aria-controls="table-datatable" type="button"
-                                                        data-tooltip="Refresh"
-                                                        th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
-                                                        <i class="bi bi-file-lock"></i>
-                                                    </button>
-                                                    <button class="btn btn-warning" tabindex="0"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Reactivar Usuario" aria-controls="table-datatable"
-                                                        type="button" data-tooltip="Show filters"
-                                                        th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
-                                                        <i class="bi bi-unlock"></i>
-                                                    </button>
-                                                    <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Usuarios</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"></h5>
+
+
+							<!-- Basic Modal -->
+
+							<div class="modal fade" id="basicModal" tabindex="-1">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Editar Usuario</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+
+
+											<form id="edit-form" th:method="post" th:object="${usuario}">
+												<div class="col-12">
+													<label for="idUsuario" class="form-label">Id
+														usuario</label>
+													<input type="text" class="form-control" id="idUsuario"
+														th:field="*{pk_id_usuario}" readonly>
+													<label for="nombre" class="form-label">Nombre de
+														usuario</label>
+													<input type="text" class="form-control" id="nombre"
+														th:field="*{vc_nombre_usuario}">
+													<!--<input type="password" class="form-control" id="password"
+                                                        th:field="*{vc_nombre_usuario}">-->
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="button" onclick="editarUsuario()"
+														class="btn btn-primary">Guardar</button>
+												</div>
+											</form>
+										</div>
+
+									</div>
+								</div>
+							</div>
+							<!-- End Basic Modal-->
+
+
+							<!-- Modal cambio de contraseña -->
+
+							<div class="modal fade" id="basicModalContrasenia" tabindex="-1">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title">Cambiar contraseña</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+
+
+											<form id="editPass-form" th:method="post" th:object="${historico}">
+												<div class="col-12">
+													<label for="idUsuario" class="form-label">Id
+														usuario</label>
+													<input type="text" class="form-control" id="idUsuario1"
+														 th:field="*{usr_historico_contrasena_id.pk_id_usuario}" readonly>
+													<label for="nombre" class="form-label">Nombre de
+														usuario</label>
+													<input type="text" class="form-control" id="nombre1"
+														th:field="*{usr_historico_contrasena_id.vc_nombre_usuario}" readonly>
+													<label for="password" class="form-label">Contraseña nueva</label>
+													<input type="password" class="form-control" id="password">
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<button type="button" onclick="cambiarContrasenia()"
+														class="btn btn-primary">Guardar</button>
+												</div>
+											</form>
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+							<div class="row mb-3">
+								<form method="get" th:action="@{/usuario/altaUsuario}">
+									<button type="submit" class="btn btn-primary">
+										Agregar Usuarios
+									</button>
+								</form>
+							</div>
+							<div class="row">
+
+								<table class="table table-striped" id="usuariosTable">
+									<thead>
+										<tr>
+											<th>Nombre Usuario</th>
+											<th>Estatus Usuario</th>
+											<th>Estatus Sesión</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="usuario : ${usuarios}">
+											<td th:text="${usuario.vc_nombre_usuario}"></td>
+											<td th:if="${usuario.i_estatus_usuario == 1}">Activo</td>
+											<td th:if="${usuario.i_estatus_usuario == 0}">Inactivo</td>
+											<td th:if="${usuario.i_estatus_sesion == 1}">Activo</td>
+											<td th:if="${usuario.i_estatus_sesion == 0}">Inactivo</td>
+											<td>
+												<div class="dt-buttons">
+													<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+														title="Editar" data-bs-target="#basicModal"
+														aria-controls="table-datatable" type="button"
+														th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'"
+														data-tooltip="Add">
+														<i class="bi bi-file-person-fill"></i>
+													</button>
+													<button class="btn btn-success" tabindex="0" data-bs-toggle="modal"
+														title="Cambiar contraseña"
+														data-bs-target="#basicModalContrasenia"
+														aria-controls="table-datatable" type="button"
+														th:onclick="'modalCambioContra(' + ${usuario.pk_id_usuario} + ')'"
+														data-tooltip="Add">
+														<i class="bi bi-key-fill"></i>
+													</button>
+													<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
+														data-bs-placement="top" title="Baja Usuario"
+														aria-controls="table-datatable" type="button"
+														data-tooltip="Refresh"
+														th:onclick="'bajaUsuario(' + ${usuario.pk_id_usuario} + ')'">
+														<i class="bi bi-file-lock"></i>
+													</button>
+													<button class="btn btn-warning" tabindex="0"
+														data-bs-toggle="tooltip" data-bs-placement="top"
+														title="Reactivar Usuario" aria-controls="table-datatable"
+														type="button" data-tooltip="Show filters"
+														th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
+														<i class="bi bi-unlock"></i>
+													</button>
+													<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                     data-bs-target="#basicModal"
                                                     th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">
                                                     Editar
                                                 </button>-->
- 
-                                                    <!--<a data-toggle="modal" data-target="#basicModal"
+
+													<!--<a data-toggle="modal" data-target="#basicModal"
                                                     th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">Edit</a>-->
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
- 
- 
-            </div>
-        </div>
-    </section>
-    <th:block layout:fragment="page-scripts">
-        <!--JavaScript-->
-        <script th:src="@{/js/usuario/usuarios.js}"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-        <script th:src="@{/js/usuario/dataTableUsuarios.js}"></script>
-    </th:block>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/usuario/usuarios.js}"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/js/usuario/dataTableUsuarios.js}"></script>
+	</th:block>
 </body>
- 
+
 </html>
