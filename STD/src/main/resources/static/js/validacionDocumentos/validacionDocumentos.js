@@ -86,7 +86,7 @@ function conexionWS_IAD() {
 function buscarSolicitudCredito() {
 
 	var solicitud = document.getElementById('i_no_solicitud_core').value;
-	
+
 	console.log("urlBase: " + urlBase);
 	console.log("newURL: " + newUrlBase);
 	console.log("Entro en buscar producto");
@@ -127,9 +127,9 @@ function buscarSolicitudCredito() {
 				traerParticipantes(solicitud);
 				obtenerArchivosSolicitud(solicitudEnvio);
 				datosSoliEnvio(solicitudEnvio);
-				
+
 			}
-			
+
 		}
 	});
 }
@@ -148,8 +148,8 @@ function datosSoliEnvio(solicitudEnvio) {
 			console.log("respuesta: " + JSON.stringify(respuesta));
 			console.log("i_estatus: " + respuesta.i_estatus);
 			var estatus = respuesta.i_estatus;
-			if(estatus != 1){
-				
+			if (estatus != 1) {
+
 			} else {
 				var btnVoBo = document.getElementById("btnVoBo");
 				btnVoBo.style.display = "block";
@@ -450,7 +450,7 @@ function validarSoliEnvio(estatus, idSolicitud) {
 		success: function(respuesta) {
 			console.log("Respuesta validarSoliEnvio: " + respuesta);
 			// Todos los documentos fueron aprobados
-			if (respuesta === 1) {
+			if (estatus === 1) {
 				obtenerParamWSAuten();
 				//Ejecutamos la notificación.
 				mensaje = "Se han validado los documentos de la solicitud de crédito: " + solicitudCore;
@@ -474,6 +474,8 @@ function validarSoliEnvio(estatus, idSolicitud) {
 					text: "solicitud: " + solicitudCore,
 					showConfirmButton: false
 
+				}).then((result) => {
+					window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
 				});
 			}
 
@@ -489,6 +491,8 @@ function validarSoliEnvio(estatus, idSolicitud) {
 					text: "No se encontro la solicitud: " + idSolicitud,
 					showConfirmButton: false
 
+				}).then((result) => {
+					window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
 				});
 			}
 			swal({
@@ -496,6 +500,8 @@ function validarSoliEnvio(estatus, idSolicitud) {
 				title: "Error: " + respuesta.status,
 				showConfirmButton: false
 
+			}).then((result) => {
+				window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
 			});
 		}
 	});

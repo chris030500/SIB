@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -41,13 +42,15 @@ private HistContrasenaService histContrasenaService;
 	
 	//Dar de alta usuario utilizando metodo POST
 	@PostMapping
-	public ResponseEntity<?> save(@RequestBody HistContrasena histContrasena) throws IOException{
+	public ResponseEntity<?> save(@RequestBody HistContrasena histContrasena,@RequestParam("contra")  String contra) throws IOException{
 		HistContrasena contrasena = new HistContrasena();
-		Properties properties = new Properties();
-		InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
-		properties.load(inputStream);
-		String contrasenaAnterior = properties.getProperty("contrasena");
-		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
+		System.out.println("Ejecutando guardar historico");
+//		Properties properties = new Properties();
+//		InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
+//		properties.load(inputStream);
+//		String contrasenaAnterior = properties.getProperty("contrasena");
+		
+		histContrasena.setVc_contrasenia(passwordEncoder.encode(contra));
 		
 		contrasena = histContrasenaService.save(histContrasena);
 		return ResponseEntity.ok(contrasena);

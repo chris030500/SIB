@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,10 @@ public class HistContrasenaService {
 	
 	public int bajaContrasena(Integer usuario) {
 		return iHistContrasenaRepository.bajaContrasena(usuario);
+	}
+	
+	public Optional<HistContrasena> findByIdHisto(Integer id){
+		return iHistContrasenaRepository.findByIdHisto(id);
 	}
 
 }

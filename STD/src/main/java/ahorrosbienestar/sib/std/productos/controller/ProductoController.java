@@ -66,7 +66,8 @@ public class ProductoController {
 		public String InicioUsuario(Model model) {
 			try {
 				model.addAttribute("cat_tipo_producto",iCatalogoRepository.generarOpciones(grupo));
-				model.addAttribute("cat_prodcuto_colocacion",coreBancarioService.obtProductosCaptacion());	
+				//cat_prodcuto_colocacion
+				model.addAttribute("cat_prodcuto_captacion",coreBancarioService.obtProductosCaptacion());	
 				model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
 				model.addAttribute("listaProductos",productoService.todosProductos());
 				model.addAttribute("listDocumentos",documentoService.todosDocumentos());
