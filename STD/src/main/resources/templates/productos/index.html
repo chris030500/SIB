@@ -27,7 +27,7 @@
 
 			<form>
 
-				<div class="form-group row" style="margin-top: 10px">
+				<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="form-group row" style="margin-top: 10px">
 					<label for="busqueda" class="col-sm-4 col-form-label">Tipo Producto:</label>
 					<div class="col-sm-6">
 						<select class="form-control" id="opciones">
@@ -64,7 +64,7 @@
 
 
 			</form>
-			<div class="form-group row" style="margin-top: 10px;" id="btnAgregar">
+			<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="form-group row" style="margin-top: 10px;" id="btnAgregar">
 				<div class="col-sm-9"></div>
 				<div class="col-sm-3">
 
@@ -82,9 +82,9 @@
 						<th>Tipo</th>
 						<th>Fecha Registro </th>
 						<th>Fecha Cancelacion</th>
-						<th></th>
-						<th></th>
-						<th></th>
+						<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
+						<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
+						<th sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -96,7 +96,7 @@
 						<td th:text="${listaProductos.i_tipo_producto}==1?'COLOCACIÓN':'CAPTACIÓN'"></td>
 						<td th:text="${listaProductos.dt_fecha_operacion}"></td>
 						<td th:text="${listaProductos.dt_fecha_cancelacion}"></td>
-						<td class="text-center">
+						<td sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="text-center">
 							<div class="dt-buttons">
 								<button class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Reactivar"
 									data-bs-target="#basicModal" aria-controls="table-datatable" type="button"
@@ -107,7 +107,7 @@
 								</button>
 							</div>
 						</td>
-						<td class="text-center">
+						<td sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="text-center">
 							<div class="dt-buttons">
 								<button class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
 									title="Baja Producto" aria-controls="table-datatable" type="button"
@@ -118,7 +118,7 @@
 								</button>
 							</div>
 						</td>
-						<td class="text-center">
+						<td sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')" class="text-center">
 							<div class="dt-buttons">
 								<button class="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
 									title="Relacionar Documentos" aria-controls="table-datatable" type="button"
