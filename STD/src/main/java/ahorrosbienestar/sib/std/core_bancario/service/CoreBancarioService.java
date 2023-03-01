@@ -59,7 +59,7 @@ public class CoreBancarioService {
 		logger.info("ls  SIB.SIB_VALIDA_SOLICITUD: " + ls.get(0).getSolicitudCreditoID());
 		return ls;
 	}
-
+	//Prueba
 	// Declaramos que SP se va a ejecutar (traer participantes)
 	public List<ParticipantesDto> traeParticipantes(int solicitud) {
 
