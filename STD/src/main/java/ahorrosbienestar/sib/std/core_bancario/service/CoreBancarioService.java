@@ -32,7 +32,7 @@ public class CoreBancarioService {
 	public List<ValidaSolicitudDto> validaSolicitud(int solicitud) {
 
 		// String sql = "call microfin.SIB_SP_VALIDA_SOLICITUD (?);";
-		String sql = "SELECT * FROM SIB.SIB_VALIDA_SOLICITUD WHERE SolicitudCreditoID = ?;";
+		String sql = "SELECT * FROM SIB.TBL_SIB_VALIDA_SOLICITUD WHERE SolicitudCreditoID = ?;";
 		logger.info("Ejecutando call SIB_VALIDA_SOLICITUD (" + solicitud + ")");
 		// System.out.println("Querry: " + sql + ", 1) " + solicitud );
 		List<ValidaSolicitudDto> ls = jdbcTemplate.query(sql, new Object[] { solicitud },
@@ -64,7 +64,7 @@ public class CoreBancarioService {
 	public List<ParticipantesDto> traeParticipantes(int solicitud) {
 
 		// String sql = "CALL microfin.SIB_SP_TRAE_PARTICIPANTES (?);";
-		String sql = "SELECT * FROM SIB.SIB_TRAE_PARTICIPANTES WHERE SolicitudCreditoID = ?;";
+		String sql = "SELECT * FROM SIB.TBL_SIB_TRAE_PARTICIPANTES WHERE SolicitudCreditoID = ?;";
 		logger.info("Ejecutando SIB_TRAE_PARTICIPANTES (" + solicitud + ")");
 		List<ParticipantesDto> ls = jdbcTemplate.query(sql, new Object[] { solicitud },
 				new RowMapper<ParticipantesDto>() {
@@ -86,7 +86,7 @@ public class CoreBancarioService {
 
 	public List<ProductosDto> listaProductos(int solicitud) {
 		// String sql = "CALL SIB.SIB_SP_VALIDA_PRODUCTO (?);";
-		String sql = "SELECT * FROM SIB.SIB_PRODUCTOSCREDITO WHERE ProducCreditoID = ?;";
+		String sql = "SELECT * FROM SIB.TBL_SIB_PRODUCTOSCREDITO WHERE ProducCreditoID = ?;";
 		// String sql = "CALL microfin.SIB_SP_VALIDA_PRODUCTO (?);";
 		logger.info("Ejecutando microfin.SIB_SP_VALIDA_PRODUCTO (" + solicitud + ")");
 		List<ProductosDto> lsp = jdbcTemplate.query(sql, new Object[] { solicitud }, new RowMapper<ProductosDto>() {
@@ -127,7 +127,7 @@ public class CoreBancarioService {
 	}
 
 	public List<ListaProductos> obtProductos() {
-		String sql = "select ProducCreditoID, Descripcion from SIB.SIB_PRODUCTOSCREDITO WHERE ESTATUS = ?;";
+		String sql = "select ProducCreditoID, Descripcion from SIB.TBL_SIB_PRODUCTOSCREDITO WHERE ESTATUS = ?;";
 		String estatus = "A";
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] { estatus }, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -142,7 +142,7 @@ public class CoreBancarioService {
 	}
 
 	public List<ListaProductos> obtProductosCaptacion() {
-		String sql = "select tipoCuentaID, Descripcion from SIB.SIB_TIPOSCUENTAS WHERE ESTATUS = ?;";
+		String sql = "select tipoCuentaID, Descripcion from SIB.TBL_SIB_TIPOSCUENTAS WHERE ESTATUS = ?;";
 		String estatus = "A";
 		List<ListaProductos> lsp = jdbcTemplate.query(sql, new Object[] { estatus }, new RowMapper<ListaProductos>() {
 			public ListaProductos mapRow(ResultSet rs, final int rowNum) throws SQLException {
