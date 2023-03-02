@@ -53,8 +53,8 @@ $(document).ready(function() {
 });
 
 function altaDocumentos(){
-	var urlGuardar = getAbsolutePath() + consultaDocumento + $("#inputDocumento").val().trim();
-		
+	var urlGuardar = getAbsolutePath() + consultaDocumento + $("#inputDocumento").val().trim().replaceAll("/","|");
+		//.replace("/","|")
 			$.ajax({
 			url: urlGuardar,
 			type: "POST",
@@ -151,7 +151,7 @@ function editarDocumento(id){
 }
 
 function registrarEdicion(){
-			var urlGuardar = getAbsolutePath() + editar +idEditar+separador+$("#editDocumento").val().trim();
+			var urlGuardar = getAbsolutePath() + editar +idEditar+separador+$("#editDocumento").val().trim().replaceAll("/","|");
 		
 			$.ajax({
 			url: urlGuardar,

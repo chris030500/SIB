@@ -31,7 +31,7 @@ public class Documento {
 	@SequenceGenerator(name = "documento_seq", sequenceName = "documento_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_documento;
 	
-	@Column(name = "VC_NOMBRE_DOC", columnDefinition = "VARCHAR(45)")
+	@Column(name = "VC_NOMBRE_DOC", columnDefinition = "VARCHAR(300)")
 	private String vc_nombre_doc;
 	
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
