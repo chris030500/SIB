@@ -7,12 +7,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import ahorrosbienestar.sib.std.catalogo_contratos.model.CatCrontato;
 
 
 @Entity
@@ -56,6 +60,18 @@ public class Producto {
 
 	@Column(name = "I_USUARIOID_REGISTRA", columnDefinition = "INT")
 	private int i_usuarioid_registra;
+	
+	@OneToOne
+	@JoinColumn(name = "FK_ID_CONTRATO")
+	private CatCrontato fk_id_contrato;
+
+	public CatCrontato getFk_id_contrato() {
+		return fk_id_contrato;
+	}
+
+	public void setFk_id_contrato(CatCrontato fk_id_contrato) {
+		this.fk_id_contrato = fk_id_contrato;
+	}
 
 	public int getPk_id_producto() {
 		return pk_id_producto;
