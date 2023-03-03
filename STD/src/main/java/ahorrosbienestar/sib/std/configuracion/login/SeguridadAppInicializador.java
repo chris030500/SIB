@@ -67,6 +67,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
         .invalidSessionUrl("/");
 		
 		
+		
 	}
 	//Metodo para encriptar la contraseña
 	public static BCryptPasswordEncoder passwordEncoder() {
@@ -82,7 +83,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		.usersByUsernameQuery("SELECT u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO FROM TBL_CAT_USUARIOS as u \r\n"
 				+ "inner join TBL_HIST_CONTRASENIA as hc\r\n"
 				+ "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)\r\n"
-				+ "WHERE u.I_ESTATUS_USUARIO = 1 and hc.VC_INDICADOR_ACTIVO = 1 \r\n"
+				+ "WHERE u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_SESION = 0 and hc.VC_INDICADOR_ACTIVO = 1 \r\n"
 				+ "and u.VC_NOMBRE_USUARIO = ?")
 		.authoritiesByUsernameQuery("SELECT u.VC_NOMBRE_USUARIO, r.VC_NOMBRE_ROL, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO \r\n"
 				+ "FROM TBL_CAT_USUARIOS as u \r\n"

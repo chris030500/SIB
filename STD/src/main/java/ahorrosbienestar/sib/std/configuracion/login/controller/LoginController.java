@@ -61,8 +61,8 @@ public class LoginController {
 		return "login";
 	}
 	
-	@GetMapping("/logout")
-	public String logout1(HttpServletRequest request, HttpServletResponse response) {
+	@GetMapping("/cerrar")
+	public String cerrar(HttpServletRequest request, HttpServletResponse response) {
 		//System.out.println("Controller logout");
 		logger.info("Ejecutando logout");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
