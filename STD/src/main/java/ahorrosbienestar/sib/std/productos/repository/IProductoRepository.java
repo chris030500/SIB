@@ -33,8 +33,8 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 
 	@Query(value = "SELECT * FROM TBL_CAT_PRODUCTO order by PK_ID_PRODUCTO desc ", nativeQuery = true)
 	public List<Producto> todosProductos();
+
 	
-	@Query(value = "SELECT * FROM SIB.TBL_CAT_PRODUCTO WHERE I_NO_PRODUCTO = :numero", nativeQuery = true)
-	public Producto productoPorNumero(@Param("numero") Integer numero);
-	
+	@Query(value ="SELECT * FROM SIB.TBL_CAT_PRODUCTO WHERE I_NO_PRODUCTO = :producto", nativeQuery = true)
+	public Producto findByNoProducto(Integer producto);
 }
