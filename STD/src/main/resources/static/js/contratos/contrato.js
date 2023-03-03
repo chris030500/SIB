@@ -3,18 +3,15 @@ $(document).ready(function() {
 	$('.solo-numero').on('input', function () { 
     	this.value = this.value.replace(/[^0-9]/g,'');
 	});
-	
-	$('.solo-decimal').on('input', function () { 
-    	this.value = this.value.replace(/[^0-9]/g,'');
-	});
-	
+		
 });
 
 
 function verReporte() {
 	if (datoVacio() == false) {
+		if(valRangos() == false){
 		
-		  var servicioReporte = "report/registrarDatosCliente/";
+		  var servicioReporte = "report/registrarDatosCliente?nombre=";
 		  var separador = "/";
 		  var nombreCliente = document.getElementById("inputNombre").value;
 		  var direccion = document.getElementById("inputDireccion").value;
@@ -25,7 +22,7 @@ function verReporte() {
 		  var reca = document.getElementById("reca").value;
    		  var solicitud = document.getElementById("inputSolicitud").value;
 
-		  var servicioReporte = servicioReporte + nombreCliente + separador + direccion + separador + capital + separador+ tasaOrdinaria + separador + tasaMoratoria + separador + cat+ separador + reca.replace("/","|") + separador+solicitud ;
+		  var servicioReporte = servicioReporte + nombreCliente + "&direccion=" + direccion + "&capital=" + capital + "&tasaOrdinaria="+ tasaOrdinaria + "&tasaMoratoria=" + tasaMoratoria + "&cat=" + cat+ "&reca=" + reca + "&solicitud="+solicitud ;
 		  var urlGuardar = getAbsolutePath() + servicioReporte;
 		
 		
@@ -66,6 +63,15 @@ function verReporte() {
 				});
 			}
 		});
+		
+		}else{
+			swal({
+						title: "Error",
+						text: "Datos incorrectos en CAT",
+						icon: "warning",
+					});
+		}	
+		
 	}else{
 			swal({
 						title: "Error",
@@ -77,7 +83,7 @@ function verReporte() {
 }
 
 function datoVacio() {
-	var val = false
+	var val = false;
 	
 	if(document.getElementById("inputNombre").value.length ==0){
 		document.getElementById("inputNombre").style.borderColor = "#F70707";
@@ -101,6 +107,16 @@ function datoVacio() {
 
 	return val
 }
+
+function valRangos() {
+	var val = false;
+	if(document.getElementById("cat").value <= 0){
+		val = true;
+	}
+	return val;
+}
+
+
 
 
 function getAbsolutePath() {
@@ -156,8 +172,8 @@ function buscarDatosSolicitud() {
 
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 				swal({
-					title: "Error, no es una solicitud de crédito",
-					text: "Favor de ingresar una solicitud de crédito",
+					title: "Error;No hay registro.",
+					text: "No se encontro informacion para los parametro ingresados.",
 					icon: "warning",
 				});
 			}
@@ -193,8 +209,8 @@ function buscaCliente(solicitudCreditoID) {
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
-				title: "Error, no es una solicitud de crédito",
-				text: "Favor de ingresar una solicitud de crédito",
+				title: "Error;No hay registro.",
+				text: "No se encontro informacion para los parametro ingresados.",
 				icon: "warning",
 			});
 		}
