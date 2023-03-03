@@ -157,44 +157,63 @@ function inicioPantalla() {
 }
 
 function validarVacio() {
-	var validacion = true;
 	opcionSeleccionada = $("#opciones").val();
-
 	if (opcionSeleccionada > 0) {
+		validaciónNueva(opcionSeleccionada, true);
+	} else {
+		validaciónNueva(opcionSeleccionada, false);
+	}
+}
 
+
+function validaciónNueva(opcionSeleccionada, valor) {
+	if (valor) {
 		switch (opcionSeleccionada) {
 			case "1":
 				if ($("#opcionesColocacion").val() == '0') {
-					validacion = false;
+					swal({
+						title: "Error",
+						text: "Debe seleccionar el producto a registrar.",
+						icon: "warning",
+					});
+				} else {
+					altaProducto();
 				}
-
 				break;
 			case "2":
 				if ($("#opcionesCaptacion").val() == '0') {
-					validacion = false;
-				}
-				break;
-
-			case "3":
-				if ($("#opcionesContrato").val() == '0') {
-					validacion = false;
+					swal({
+						title: "Error",
+						text: "Debe seleccionar el producto a registrar.",
+						icon: "warning",
+					});
+				} else {
+					altaProducto();
 				}
 				break;
 			default:
-				validacion = false;
+				swal({
+					title: "Error",
+					text: "Debe seleccionar el producto a registrar.",
+					icon: "warning",
+				});
 				break;
 		}
+	} else {
+		swal({
+			title: "Error",
+			text: "Debe seleccionar el tipo de producto a registrar.",
+			icon: "warning",
+		});
 	}
 
-	return validacion;
 }
 
 function altaProducto() {
-
-	if (!validarVacio()) {
+	if ($("#opcionesContrato").val() == '0') {
 		swal({
 			title: "Error",
-			text: "Debe seleccionar el producto a registrar.",
+			text: "Debe seleccionar el contrato a registrar.",
 			icon: "warning",
 		});
 	} else {
@@ -203,7 +222,6 @@ function altaProducto() {
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-
 				swal({
 					title: "",
 					text: respuesta[0],
@@ -211,9 +229,7 @@ function altaProducto() {
 					confirmButtonText: 'Aceptar'
 				}).then(resp => {
 					window.location.href = getAbsolutePath() + inicio;
-
 				});
-
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 				swal({
 					title: "Error, ",
@@ -222,8 +238,8 @@ function altaProducto() {
 				});
 			}
 		});
-
 	}
+
 }
 
 function getAbsolutePath() {
@@ -237,10 +253,10 @@ function urlServicio() {
 	var urlGuardar = getAbsolutePath();
 	switch (opcionSeleccionada) {
 		case "1":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada + separador+$("#opcionesContrato").val();
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada + separador + $("#opcionesContrato").val();
 			break;
 		case "2":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada + separador+$("#opcionesContrato").val();
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada + separador + $("#opcionesContrato").val();
 			break;
 		default:
 			break;
