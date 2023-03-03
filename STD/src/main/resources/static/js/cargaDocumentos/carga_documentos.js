@@ -339,7 +339,7 @@ function buscarDocumentos(producto) {
 						text: "No sé encontrarón documentos asociados al producto: " + producto + " en la solicitud: " + solicitud,
 						icon: "warning",
 					}).then((result) => {
-						window.location.replace("/carga_documentos");
+						window.location.replace(urlBase + "carga_documentos");
 					});
 				} else {
 					console.log("Viene con datos la lista de documentos");
@@ -511,7 +511,7 @@ function altaSolicitud() {
 								showConfirmButton: false
 
 							}).then((result) => {
-								window.location.replace(urlBase+"carga_documentos");
+								window.location.replace(urlBase + "carga_documentos");
 							});
 
 						},
