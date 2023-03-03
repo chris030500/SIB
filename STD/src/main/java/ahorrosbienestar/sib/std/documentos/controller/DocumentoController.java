@@ -69,7 +69,8 @@ public class DocumentoController {
 					altaDocumento.setI_estatus(estatus);
 					altaDocumento.setUsr_registra(usuario.get(0).getPk_id_usuario());
 					altaDocumento.setInd_doc_cliente(estatus); //revisar valor a insertar
-					altaDocumento.setVc_nombre_doc(nombreDocumento);
+					altaDocumento.setVc_nombre_doc(nombreDocumento.replace("|", "/"));
+					
 					
 					documentoService.save(altaDocumento);
 					respuesta.add(mensaje);
@@ -125,7 +126,7 @@ public class DocumentoController {
 			try {
 				
 				if(documentoService.existeDocumento(nombreDocumento) == 0) {
-					documentoService.editarDocumento(id_documento,nombreDocumento);
+					documentoService.editarDocumento(id_documento,nombreDocumento.replace("|", "/"));
 					respuesta.add(mensaje);
 					
 				}else {
