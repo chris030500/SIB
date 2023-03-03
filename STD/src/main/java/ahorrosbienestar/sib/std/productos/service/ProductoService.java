@@ -46,6 +46,10 @@ public class ProductoService {
 		public Producto findByIdDocumento(Integer id) {
 			return iProductoRepository.findByIdProducto(id);
 		}
+		
+		public Producto findByNoProducto(Integer producto) {
+			return iProductoRepository.findByNoProducto(producto);
+		}
 
 
 		public int bajaProducto(Integer id_producto) {
