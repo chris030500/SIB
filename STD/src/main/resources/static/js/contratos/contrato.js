@@ -1,34 +1,34 @@
 $(document).ready(function() {
-	
-	$('.solo-numero').on('input', function () { 
-    	this.value = this.value.replace(/[^0-9]/g,'');
+
+	$('.solo-numero').on('input', function() {
+		this.value = this.value.replace(/[^0-9]/g, '');
 	});
-	
-	$('.solo-decimal').on('input', function () { 
-    	this.value = this.value.replace(/[^0-9]/g,'');
+
+	$('.solo-decimal').on('input', function() {
+		this.value = this.value.replace(/[^0-9]/g, '');
 	});
-	
+
 });
 
 
 function verReporte() {
 	if (datoVacio() == false) {
-		
-		  var servicioReporte = "report/registrarDatosCliente/";
-		  var separador = "/";
-		  var nombreCliente = document.getElementById("inputNombre").value;
-		  var direccion = document.getElementById("inputDireccion").value;
-		  var capital = document.getElementById("inputCapital").value;
-		  var tasaOrdinaria = document.getElementById("inputTasaOrdinaria").value;
-		  var tasaMoratoria = document.getElementById("inputTasaMoratoria").value;
-		  var cat = document.getElementById("cat").value;
-		  var reca = document.getElementById("reca").value;
-   		  var solicitud = document.getElementById("inputSolicitud").value;
 
-		  var servicioReporte = servicioReporte + nombreCliente + separador + direccion + separador + capital + separador+ tasaOrdinaria + separador + tasaMoratoria + separador + cat+ separador + reca.replace("/","|") + separador+solicitud ;
-		  var urlGuardar = getAbsolutePath() + servicioReporte;
-		
-		
+		var servicioReporte = "report/registrarDatosCliente/";
+		var separador = "/";
+		var nombreCliente = document.getElementById("inputNombre").value;
+		var direccion = document.getElementById("inputDireccion").value;
+		var capital = document.getElementById("inputCapital").value;
+		var tasaOrdinaria = document.getElementById("inputTasaOrdinaria").value;
+		var tasaMoratoria = document.getElementById("inputTasaMoratoria").value;
+		var cat = document.getElementById("cat").value;
+		var reca = document.getElementById("reca").value;
+		var solicitud = document.getElementById("inputSolicitud").value;
+
+		var servicioReporte = servicioReporte + nombreCliente + separador + direccion + separador + capital + separador + tasaOrdinaria + separador + tasaMoratoria + separador + cat + separador + reca.replace("/", "|") + separador + solicitud;
+		var urlGuardar = getAbsolutePath() + servicioReporte;
+
+
 		$.ajax({
 			url: urlGuardar,
 			type: "POST",
@@ -36,26 +36,26 @@ function verReporte() {
 			success: function(respuesta) {
 
 				if (respuesta == null || respuesta == '') {
-					console.log("Error");
+					// console.log("Error");
 					swal({
 						title: "Error",
 						text: "La solicitud que ingresaste no existe",
 						icon: "warning",
 					});
 				} else {
-					
-					   var servicioReporte = "report/contratoSTD/";
-						var separador = "/";
-						/*var nombreCliente = document.getElementById("inputNombre").value;
-						var direccion = document.getElementById("inputDireccion").value;
-						var capital = document.getElementById("inputCapital").value;
-						var tasaOrdinaria = document.getElementById("inputTasaOrdinaria").value;
-						var tasaMoratoria = document.getElementById("inputTasaMoratoria").value;*/
-						
-						
-						var urlReporte = getAbsolutePath() + servicioReporte+respuesta.pk_id_contrato+separador+respuesta.i_no_solicitud;
-						window.open(urlReporte,'_blank');
-						window.focus();
+
+					var servicioReporte = "report/contratoSTD/";
+					var separador = "/";
+					/*var nombreCliente = document.getElementById("inputNombre").value;
+					var direccion = document.getElementById("inputDireccion").value;
+					var capital = document.getElementById("inputCapital").value;
+					var tasaOrdinaria = document.getElementById("inputTasaOrdinaria").value;
+					var tasaMoratoria = document.getElementById("inputTasaMoratoria").value;*/
+
+
+					var urlReporte = getAbsolutePath() + servicioReporte + respuesta.pk_id_contrato + separador + respuesta.i_no_solicitud;
+					window.open(urlReporte, '_blank');
+					window.focus();
 				}
 
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -66,35 +66,35 @@ function verReporte() {
 				});
 			}
 		});
-	}else{
-			swal({
-						title: "Error",
-						text: "Todos los datos son obligatorios",
-						icon: "warning",
-					});
+	} else {
+		swal({
+			title: "Error",
+			text: "Todos los datos son obligatorios",
+			icon: "warning",
+		});
 	}
 
 }
 
 function datoVacio() {
 	var val = false
-	
-	if(document.getElementById("inputNombre").value.length ==0){
+
+	if (document.getElementById("inputNombre").value.length == 0) {
 		document.getElementById("inputNombre").style.borderColor = "#F70707";
 		val = true;
-	}else if(document.getElementById("inputDireccion").value.length ==0){
+	} else if (document.getElementById("inputDireccion").value.length == 0) {
 		document.getElementById("inputDireccion").style.borderColor = "#F70707";
 		val = true;
-	}else if(document.getElementById("inputCapital").value.length ==0){
+	} else if (document.getElementById("inputCapital").value.length == 0) {
 		document.getElementById("inputCapital").style.borderColor = "#F70707";
 		val = true;
-	}else if(document.getElementById("inputTasaOrdinaria").value.length ==0){
+	} else if (document.getElementById("inputTasaOrdinaria").value.length == 0) {
 		document.getElementById("inputTasaOrdinaria").style.borderColor = "#F70707";
 		val = true;
-	}else if(document.getElementById("inputTasaMoratoria").value.length ==0){
+	} else if (document.getElementById("inputTasaMoratoria").value.length == 0) {
 		document.getElementById("inputTasaMoratoria").style.borderColor = "#F70707";
 		val = true;
-	}else if(document.getElementById("cat").value.length ==0){
+	} else if (document.getElementById("cat").value.length == 0) {
 		document.getElementById("cat").style.borderColor = "#F70707";
 		val = true;
 	}
@@ -115,37 +115,47 @@ function buscarDatosSolicitud() {
 
 
 	if (solicitudCredito.length = 0) {
-		console.log("ingresar solicud");
+		// console.log("ingresar solicud");
 		swal("Precaucion", "Ingrese una solicitud.", "info");
 	} else {
-		console.log("Si se ha seleccionado una opción en usuario");
+		// console.log("Si se ha seleccionado una opción en usuario");
 		$.ajax({
 			url: getAbsolutePath() + "report/buscaDatos/" + solicitudCredito,
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
+				// console.log(respuesta);
 
 				if (respuesta == null || respuesta == '') {
-					console.log("Error");
+					// console.log("Error");
 					swal({
 						title: "Error",
 						text: "La solicitud que ingresaste no existe",
 						icon: "warning",
 					});
 				} else {
-					console.log("Puede continuar");
-					if (respuesta.length>0) {
+					// console.log("Puede continuar");
+					if (respuesta.length > 0) {
 
-						//Asignamos los valores a los campos
-						inputSolicitud.value = respuesta[0].solicitudCreditoID;
-						inputCapital.value = respuesta[0].montoAutorizado;
-						inputTasaOrdinaria.value = respuesta[0].tasaFija;
-						inputTasaMoratoria.value = respuesta[0].tasaMoratoria;
-						reca.value = respuesta[0].registroReca;
-						buscaCliente(respuesta[0].solicitudCreditoID);
+						if (mostrarProducto(respuesta[0].productoCreditoID)) {
 
+							//Asignamos los valores a los campos
+							inputSolicitud.value = respuesta[0].solicitudCreditoID;
+							inputCapital.value = respuesta[0].montoAutorizado;
+							inputTasaOrdinaria.value = respuesta[0].tasaFija;
+							inputTasaMoratoria.value = respuesta[0].tasaMoratoria;
+							reca.value = respuesta[0].registroReca;
+							buscaCliente(respuesta[0].solicitudCreditoID);
 
-					} else{
+						} else {
+							swal({
+								title: "Error",
+								text: "El producto de la solicitud no cuenta con un contrato valido",
+								icon: "warning",
+							});
+						}
+
+					} else {
 						swal({
 							title: "Error",
 							text: respuesta[0].mensajeError,
@@ -174,7 +184,7 @@ function buscaCliente(solicitudCreditoID) {
 		success: function(respuesta) {
 
 			if (respuesta == null || respuesta == '') {
-				console.log("Error");
+				// console.log("Error");
 				swal({
 					title: "Error",
 					text: "Datos del cliente no encontrados",
@@ -187,7 +197,7 @@ function buscaCliente(solicitudCreditoID) {
 				inputNombre.value = respuesta[0].nombreCompleto;
 				inputDireccion.value = respuesta[0].direccionCompleta;
 
-				valAnterior.value = ""+inputSolicitud.value+"|"+inputNombre.value+"|"+inputDireccion.value+"|"+inputCapital.value+"|"+inputTasaOrdinaria.value+"|"+inputTasaMoratoria.value;
+				valAnterior.value = "" + inputSolicitud.value + "|" + inputNombre.value + "|" + inputDireccion.value + "|" + inputCapital.value + "|" + inputTasaOrdinaria.value + "|" + inputTasaMoratoria.value;
 
 			}
 
@@ -200,4 +210,28 @@ function buscaCliente(solicitudCreditoID) {
 		}
 	});
 
+}
+
+
+/**
+		Función para validar si el producto cuenta con un contrato valido
+ */
+
+// Validacion de la liga absoluta
+var urlPrincipal = getAbsolutePath();
+// console.log(urlPrincipal, "urlPrincipal");
+var newUrlBase = urlPrincipal.replace("/contrato", "");
+// console.log("newUrlBASE: " + newUrlBase)
+function mostrarProducto(numero) {
+	$.ajax({
+		url: newUrlBase + "unico_producto?numero=" + numero,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			// console.log(respuesta);
+			return respuesta;
+		}, error: function(error) {
+			// console.log(error);
+		}
+	})
 }

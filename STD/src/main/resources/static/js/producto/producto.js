@@ -17,6 +17,7 @@ $(document).ready(function() {
 			switch (opcionSeleccionada) {
 				case "1":
 					$("#productoColocacion").show();
+					$("#contrato").show();
 					$("#productoCaptacion").hide();
 
 
@@ -24,6 +25,7 @@ $(document).ready(function() {
 				case "2":
 					$("#productoColocacion").hide();
 					$("#productoCaptacion").show();
+					$("#contrato").show();
 
 					break;
 				default:
@@ -34,6 +36,7 @@ $(document).ready(function() {
 		} else {
 			$("#productoColocacion").hide();
 			$("#productoCaptacion").hide();
+			$("#contrato").hide();
 
 			swal({
 				title: "Error",
@@ -74,82 +77,83 @@ $(document).ready(function() {
 		var listaOpcionesAnteriores = "";
 		var separador = "/";
 		var urlGuardar = "";
-		
-		if(ids.trim().length > 0 && idsAnteriores.trim().length == 0){
+
+		if (ids.trim().length > 0 && idsAnteriores.trim().length == 0) {
 			listaOpciones = ids.trim().split(' ');
 			urlGuardar = getAbsolutePath() + altaDocumentos + $("#datosRelDoc").val() + separador + listaOpciones;
-			
+
 			enviarPeticion(urlGuardar);
-		}else if(ids.trim().length > 0 && idsAnteriores.trim().length > 0){
+		} else if (ids.trim().length > 0 && idsAnteriores.trim().length > 0) {
 			listaOpciones = ids.trim().split(' ');
 			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
-			
-			urlGuardar = getAbsolutePath() + actualizarDocumentos + $("#datosRelDoc").val() + separador + listaOpciones+separador + listaOpcionesAnteriores;
-			
+
+			urlGuardar = getAbsolutePath() + actualizarDocumentos + $("#datosRelDoc").val() + separador + listaOpciones + separador + listaOpcionesAnteriores;
+
 			enviarPeticion(urlGuardar);
-		}else if(ids.trim().length == 0 && idsAnteriores.trim().length > 0){
+		} else if (ids.trim().length == 0 && idsAnteriores.trim().length > 0) {
 			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
 			urlGuardar = getAbsolutePath() + bajaDocumentos + $("#datosRelDoc").val() + separador + listaOpcionesAnteriores;
 			//baja
 			enviarPeticion(urlGuardar);
-		}else{
-				swal({
-					title: "",
-					text: "No ha seleccionado ninguna opcion",
-					icon: "warning",
-					confirmButtonText: 'Aceptar'
-				})
+		} else {
+			swal({
+				title: "",
+				text: "No ha seleccionado ninguna opcion",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			})
 		}
 	});
 
 
 });
 
-function enviarPeticion(urlGuardar){
-	
-			$.ajax({
-			url: urlGuardar,
-			type: "POST",
-			dataType: "JSON",
-			success: function(respuesta) {
+function enviarPeticion(urlGuardar) {
+
+	$.ajax({
+		url: urlGuardar,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
 			$("#modalDocumentos").modal("hide");
-				swal({
-					title: "",
-					text: respuesta[0],
-					icon: "success",
-					confirmButtonText: 'Aceptar'
-				}).then(resp => {
-					limpiarcheck();
-				});
+			swal({
+				title: "",
+				text: respuesta[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				limpiarcheck();
+			});
 
-			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-				swal({
-					title: "Error, ",
-					text: "Se presento un error, intente mas tarde.",
-					icon: "warning",
-				});
-			}
-		});
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
 }
 
-function limpiarcheck(){
-	
+function limpiarcheck() {
+
 	document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
-				checkElement.checked = false;
-			});
+		checkElement.checked = false;
+	});
 }
 
-function checkTodo(){
-	
+function checkTodo() {
+
 	document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
-				checkElement.checked = true;
-			});
+		checkElement.checked = true;
+	});
 }
 
 
 function inicioPantalla() {
 	$("#productoColocacion").hide();
 	$("#productoCaptacion").hide();
+	$("#contrato").hide();
 }
 
 function validarVacio() {
@@ -167,6 +171,12 @@ function validarVacio() {
 				break;
 			case "2":
 				if ($("#opcionesCaptacion").val() == '0') {
+					validacion = false;
+				}
+				break;
+
+			case "3":
+				if ($("#opcionesContrato").val() == '0') {
 					validacion = false;
 				}
 				break;
@@ -200,8 +210,8 @@ function altaProducto() {
 					icon: "success",
 					confirmButtonText: 'Aceptar'
 				}).then(resp => {
-					window.location.href = getAbsolutePath()+ inicio;
-					
+					window.location.href = getAbsolutePath() + inicio;
+
 				});
 
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -227,10 +237,10 @@ function urlServicio() {
 	var urlGuardar = getAbsolutePath();
 	switch (opcionSeleccionada) {
 		case "1":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada;
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada + separador+$("#opcionesContrato").val();
 			break;
 		case "2":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada;
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada + separador+$("#opcionesContrato").val();
 			break;
 		default:
 			break;
@@ -251,19 +261,19 @@ function documentos(btnID) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-		idsAnteriores = "";
+			idsAnteriores = "";
 			for (var i in respuesta) {
-  				document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
-				
-				if (checkElement.id != 'idTodos') {
-					if (checkElement.id == respuesta[i].fk_documento) {
-						idsAnteriores += checkElement.id + " ";
-						checkElement.checked = true;
+				document.querySelectorAll('#documentos input[type=checkbox]').forEach(function(checkElement) {
+
+					if (checkElement.id != 'idTodos') {
+						if (checkElement.id == respuesta[i].fk_documento) {
+							idsAnteriores += checkElement.id + " ";
+							checkElement.checked = true;
+						}
 					}
-				}
-			});
+				});
 			}
-			
+
 			$("#modalDocumentos").modal("show");
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -276,4 +286,3 @@ function documentos(btnID) {
 	});
 
 }
-

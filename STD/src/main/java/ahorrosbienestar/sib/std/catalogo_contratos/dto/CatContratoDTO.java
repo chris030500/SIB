@@ -2,7 +2,7 @@ package ahorrosbienestar.sib.std.catalogo_contratos.dto;
 
 import java.sql.Date;
 
-public class CatCrontatoDTO {
+public class CatContratoDTO {
 	
 	private int pk_id_contrato;
 	private String vc_contrato;

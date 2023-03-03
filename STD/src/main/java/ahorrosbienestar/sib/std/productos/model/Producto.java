@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import ahorrosbienestar.sib.std.catalogo_contratos.model.CatCrontato;
+import ahorrosbienestar.sib.std.catalogo_contratos.model.CatContrato;
 
 
 @Entity
@@ -63,13 +63,13 @@ public class Producto {
 	
 	@OneToOne
 	@JoinColumn(name = "FK_ID_CONTRATO")
-	private CatCrontato fk_id_contrato;
+	private CatContrato fk_id_contrato;
 
-	public CatCrontato getFk_id_contrato() {
+	public CatContrato getFk_id_contrato() {
 		return fk_id_contrato;
 	}
 
-	public void setFk_id_contrato(CatCrontato fk_id_contrato) {
+	public void setFk_id_contrato(CatContrato fk_id_contrato) {
 		this.fk_id_contrato = fk_id_contrato;
 	}
 

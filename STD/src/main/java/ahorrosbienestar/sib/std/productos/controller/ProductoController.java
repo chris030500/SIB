@@ -20,16 +20,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ahorrosbienestar.sib.std.catalogo_contratos.service.CatContratoService;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.documentos.service.DocumentoService;
 import ahorrosbienestar.sib.std.productodocumento.model.RelacionDocumentos;
 import ahorrosbienestar.sib.std.productodocumento.repository.IProductoDocumentoRepository;
 import ahorrosbienestar.sib.std.productos.model.Producto;
+import ahorrosbienestar.sib.std.productos.producto_contrato.service.ProductoContratoService;
 import ahorrosbienestar.sib.std.productos.service.ProductoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import ch.qos.logback.classic.Logger;
 
 @Controller
 @RequestMapping("producto")
@@ -42,6 +43,12 @@ public class ProductoController {
 	
 	@Autowired
 	private DocumentoService documentoService;
+	
+	@Autowired
+	private CatContratoService catContratoService;
+	
+	@Autowired
+	private ProductoContratoService productoContratoService;
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
@@ -69,8 +76,9 @@ public class ProductoController {
 				//cat_prodcuto_colocacion
 				model.addAttribute("cat_prodcuto_captacion",coreBancarioService.obtProductosCaptacion());	
 				model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
-				model.addAttribute("listaProductos",productoService.todosProductos());
+				model.addAttribute("listaProductos", productoContratoService.listaDeProductosConContrato());
 				model.addAttribute("listDocumentos",documentoService.todosDocumentos());
+				model.addAttribute("listadoContratos", catContratoService.listaCatalogo());
 				
 				return "productos/index";
 			} catch (Exception e) {
@@ -107,8 +115,11 @@ public class ProductoController {
 			return null;
 		}
 		
-		@GetMapping("/alta/{idproducto}/{nombreProducto}/{tipoProducto}")
-		public ResponseEntity<?> alta(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="nombreProducto") String nombreProducto,@PathVariable (name ="tipoProducto") int tipoProducto) {
+		@GetMapping("/alta/{idproducto}/{nombreProducto}/{tipoProducto}/{idContrato}")
+		public ResponseEntity<?> alta(Model model, @PathVariable (name ="idproducto") int idproducto,
+												   @PathVariable (name ="nombreProducto") String nombreProducto,
+												   @PathVariable (name ="tipoProducto") int tipoProducto,
+												   @PathVariable (name ="idContrato") int idContrato) {
 			String mensaje ="";
 			ArrayList<String> respuesta = new ArrayList<String>();
 			
@@ -133,6 +144,7 @@ public class ProductoController {
 					productoAlta.setI_tipo_producto(tipoProducto);
 					productoAlta.setI_clasificacion(tipoProducto);
 					productoAlta.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+					productoAlta.setFk_id_contrato(catContratoService.findById(idContrato));
 					
 					productoService.save(productoAlta);
 					mensaje ="Producto Registrado Correctamente.";

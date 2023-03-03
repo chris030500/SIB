@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.productos.model.Producto;
@@ -61,6 +62,11 @@ public class ProductoService {
 
 		public int existeProducto(int idproducto) {
 			return iProductoRepository.existeProducto(idproducto);
+		}
+		
+		
+		public Producto productoPorNumero(Integer numero) {
+			return iProductoRepository.productoPorNumero(numero);
 		}
 		
 		
