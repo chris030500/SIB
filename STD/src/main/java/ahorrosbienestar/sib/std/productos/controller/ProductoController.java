@@ -115,11 +115,13 @@ public class ProductoController {
 			return null;
 		}
 		
-		@GetMapping("/alta/{idproducto}/{nombreProducto}/{tipoProducto}/{idContrato}")
+		@GetMapping("/alta/{idproducto}/{nombreProducto}/{tipoProducto}/{idContrato}/{identificador}/{descripcion}")
 		public ResponseEntity<?> alta(Model model, @PathVariable (name ="idproducto") int idproducto,
 												   @PathVariable (name ="nombreProducto") String nombreProducto,
 												   @PathVariable (name ="tipoProducto") int tipoProducto,
-												   @PathVariable (name ="idContrato") int idContrato) {
+												   @PathVariable (name ="idContrato") int idContrato,
+												   @PathVariable (name ="identificador") String identificador,
+												   @PathVariable (name ="descripcion") String descripcion) {
 			String mensaje ="";
 			ArrayList<String> respuesta = new ArrayList<String>();
 			
@@ -143,6 +145,8 @@ public class ProductoController {
 					productoAlta.setI_estatus(estatus);
 					productoAlta.setI_tipo_producto(tipoProducto);
 					productoAlta.setI_clasificacion(tipoProducto);
+					productoAlta.setVc_identificador_kyc(identificador);
+					productoAlta.setVc_descripcion_producto(descripcion);
 					productoAlta.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
 					productoAlta.setFk_id_contrato(catContratoService.findById(idContrato));
 					
