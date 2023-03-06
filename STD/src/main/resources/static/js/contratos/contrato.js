@@ -78,7 +78,7 @@ function verReporte() {
 function datoVacio() {
 	var val = false;
 
-	if(document.getElementById("inputNombre").value.length ==0){
+	if (document.getElementById("inputNombre").value.length == 0) {
 
 		document.getElementById("inputNombre").style.borderColor = "#F70707";
 		val = true;
@@ -144,27 +144,8 @@ function buscarDatosSolicitud() {
 						icon: "warning",
 					});
 				} else {
-					// console.log("Puede continuar");
 					if (respuesta.length > 0) {
-
-						if (mostrarProducto(respuesta[0].productoCreditoID)) {
-
-							//Asignamos los valores a los campos
-							inputSolicitud.value = respuesta[0].solicitudCreditoID;
-							inputCapital.value = respuesta[0].montoAutorizado;
-							inputTasaOrdinaria.value = respuesta[0].tasaFija;
-							inputTasaMoratoria.value = respuesta[0].tasaMoratoria;
-							reca.value = respuesta[0].registroReca;
-							buscaCliente(respuesta[0].solicitudCreditoID);
-
-						} else {
-							swal({
-								title: "Error",
-								text: "El producto de la solicitud no cuenta con un contrato valido",
-								icon: "warning",
-							});
-						}
-
+						mostrarProducto(respuesta);
 					} else {
 						swal({
 							title: "Error",
@@ -176,7 +157,7 @@ function buscarDatosSolicitud() {
 
 			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 				swal({
-					title: "Error;No hay registro.",
+					title: "Error, No hay registro.",
 					text: "No se encontro informacion para los parametro ingresados.",
 					icon: "warning",
 				});
@@ -213,7 +194,7 @@ function buscaCliente(solicitudCreditoID) {
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
-				title: "Error;No hay registro.",
+				title: "Error, No hay registro.",
 				text: "No se encontro informacion para los parametro ingresados.",
 				icon: "warning",
 			});
@@ -232,14 +213,30 @@ var urlPrincipal = getAbsolutePath();
 // console.log(urlPrincipal, "urlPrincipal");
 var newUrlBase = urlPrincipal.replace("/contrato", "");
 // console.log("newUrlBASE: " + newUrlBase)
-function mostrarProducto(numero) {
+var contrato;
+function mostrarProducto(datos) {
 	$.ajax({
-		url: newUrlBase + "unico_producto?numero=" + numero,
+		url: newUrlBase + "unico_producto?numero=" + datos[0].productoCreditoID,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			// console.log(respuesta);
-			return respuesta;
+			contrato = respuesta;
+			if (contrato) {
+				// console.log('entró');
+				//Asignamos los valores a los campos
+				inputSolicitud.value = datos[0].solicitudCreditoID;
+				inputCapital.value = datos[0].montoAutorizado;
+				inputTasaOrdinaria.value = datos[0].tasaFija;
+				inputTasaMoratoria.value = datos[0].tasaMoratoria;
+				reca.value = datos[0].registroReca;
+				buscaCliente(datos[0].solicitudCreditoID);
+			} else {
+				swal({
+					title: "Error",
+					text: "El producto de la solicitud no cuenta con un contrato valido",
+					icon: "warning",
+				});
+			}
 		}, error: function(error) {
 			// console.log(error);
 		}
