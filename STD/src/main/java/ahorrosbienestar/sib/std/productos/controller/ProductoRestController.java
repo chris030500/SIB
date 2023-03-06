@@ -24,9 +24,12 @@ public class ProductoRestController {
 		
 		Producto model = productoService.productoPorNumero(numero);
 		
-		if (model.getFk_id_contrato() != null)
-			return Boolean.TRUE;
-		else
+		if (model != null) {
+			if (model.getFk_id_contrato() != null)
+				return Boolean.TRUE;
+			else
+				return Boolean.FALSE;
+		} else
 			return Boolean.FALSE;
 	}
 
