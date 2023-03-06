@@ -403,8 +403,8 @@ public class CrearXmlController {
 			//Nombre del producto
 			Element extraInfoProperty2 = doc
 					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty2.setTextContent("Pensionados digital");
-			//extraInfoProperty2.setTextContent(nombreProducto);
+			//extraInfoProperty2.setTextContent("Pensionados digital");
+			extraInfoProperty2.setTextContent(nombreProducto);
 			extraInfo.appendChild(extraInfoProperty2);
 			
 			Attr attr2 = doc.createAttribute("name");
@@ -414,8 +414,8 @@ public class CrearXmlController {
 			//Descripción del producto
 			Element extraInfoProperty3 = doc
 					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty3.setTextContent("Descripcion corta del producto");
-			//extraInfoProperty3.setTextContent(descripcionProducto);
+			//extraInfoProperty3.setTextContent("Descripcion corta del producto");
+			extraInfoProperty3.setTextContent(descripcionProducto);
 			extraInfo.appendChild(extraInfoProperty3);
 			
 			Attr attr3 = doc.createAttribute("name");

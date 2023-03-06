@@ -32,10 +32,9 @@ import ahorrosbienestar.sib.std.docto_unificado.service.DoctoUnificadoService;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
 import ahorrosbienestar.sib.std.firma_docto_unificado.model.FirmaDoctoUnificado;
 import ahorrosbienestar.sib.std.firma_docto_unificado.service.FirmaDoctoUnificadoService;
-
-
-
-
+import ahorrosbienestar.sib.std.productos.model.Producto;
+import ahorrosbienestar.sib.std.productos.service.ProductoService;
+import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 
 @Service
 public class CrearXmlService {
@@ -61,6 +60,12 @@ public class CrearXmlService {
 	@Autowired
 	private CoreBancarioService coreBancarioService;
 
+	@Autowired
+	private ProductoService productoService;
+
+	@Autowired
+	private SolicitudEnvioService solicitudEnvioService;
+
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
 		System.out.println("CORE: " + solicitudCore);
 		// Obtenemos los datos de los participantes:
@@ -75,6 +80,14 @@ public class CrearXmlService {
 		String plazo = datosSolicitud.get(0).getPlazo();
 		String tasa = datosSolicitud.get(0).getTasaFija();
 		String tasaMoratoria = datosSolicitud.get(0).getTasaMoratoria();
+
+		// Obtenemos el I_PRODUCTO_ID
+		int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
+
+		Producto infoProducto = productoService.findByNoProducto(idProducto);
+		String nombreProducto = infoProducto.getVc_nombre_producto().toString();
+		String kyc = infoProducto.getVc_identificador_kyc().toString();
+		String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
 		// Le asignamos los parametros que se requieren
 		// int solicitudEnvio = 91;
 		// String nombre = "JOSE ARTURO DE LA ROSA FUENTES";
@@ -97,7 +110,7 @@ public class CrearXmlService {
 		String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
 
 		List<Configuracion> configuracion = configService.findAll();
-		
+
 		// System.out.println("entro en if variable1");
 		// String[] words = mensaje.split("variable");
 
@@ -117,8 +130,7 @@ public class CrearXmlService {
 
 //			Element localizationNotRequired = doc
 //					.createElement(configService.findAll().get(45).getVc_nom_propiedad().toString());
-			Element localizationNotRequired = doc
-					.createElement(configuracion.get(45).getVc_nom_propiedad().toString());
+			Element localizationNotRequired = doc.createElement(configuracion.get(45).getVc_nom_propiedad().toString());
 			localizationNotRequired.setTextContent(configuracion.get(45).getVc_valor_propiedad().toString());
 			rootElement.appendChild(localizationNotRequired);
 
@@ -127,8 +139,7 @@ public class CrearXmlService {
 			contractName.setTextContent(configuracion.get(34).getVc_valor_propiedad().toString());
 			rootElement.appendChild(contractName);
 
-			Element acceptanceLegend = doc
-					.createElement(configuracion.get(21).getVc_nom_propiedad().toString());
+			Element acceptanceLegend = doc.createElement(configuracion.get(21).getVc_nom_propiedad().toString());
 			acceptanceLegend.setTextContent(nuevoMensaje); // Leyenda que se obtiene de base de datos.
 			rootElement.appendChild(acceptanceLegend);
 
@@ -143,8 +154,7 @@ public class CrearXmlService {
 			rootElement.appendChild(contractType);
 
 			// useWhatsAppTemplate
-			Element useWhatsAppTemplate = doc
-					.createElement(configuracion.get(46).getVc_nom_propiedad().toString());
+			Element useWhatsAppTemplate = doc.createElement(configuracion.get(46).getVc_nom_propiedad().toString());
 			useWhatsAppTemplate.setTextContent(configuracion.get(46).getVc_valor_propiedad().toString());
 			rootElement.appendChild(useWhatsAppTemplate);
 
@@ -212,12 +222,12 @@ public class CrearXmlService {
 			signers.appendChild(mailSigner);
 
 			Element phoneSigner = doc.createElement("phone");
-			//phoneSigner.setTextContent("+52" + telefonoCelular);
+			// phoneSigner.setTextContent("+52" + telefonoCelular);
 			phoneSigner.setTextContent("+524428971930");
 			signers.appendChild(phoneSigner);
 
 			Element signDevicePhoneSigner = doc.createElement("signDevicePhone");
-			//signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
+			// signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
 			signDevicePhoneSigner.setTextContent("+524428971930");
 			signers.appendChild(signDevicePhoneSigner);
 
@@ -226,7 +236,7 @@ public class CrearXmlService {
 			signers.appendChild(authenticationType);
 
 			Element authenticationData = doc.createElement("authenticationData");
-			//authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
+			// authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
 			authenticationData.setTextContent("1930");
 			signers.appendChild(authenticationData);
 
@@ -284,31 +294,27 @@ public class CrearXmlService {
 				}
 			}
 
-			Element inePictureFront = doc
-					.createElement(configuracion.get(23).getVc_nom_propiedad().toString());
+			Element inePictureFront = doc.createElement(configuracion.get(23).getVc_nom_propiedad().toString());
 			inePictureFront.setTextContent(configuracion.get(23).getVc_valor_propiedad().toString());
 			signers.appendChild(inePictureFront);
 
-			Element inePictureBack = doc
-					.createElement(configuracion.get(24).getVc_nom_propiedad().toString());
+			Element inePictureBack = doc.createElement(configuracion.get(24).getVc_nom_propiedad().toString());
 			inePictureBack.setTextContent(configuracion.get(24).getVc_valor_propiedad().toString());
 			signers.appendChild(inePictureBack);
 
-			Element compareIneSelfie = doc
-					.createElement(configuracion.get(25).getVc_nom_propiedad().toString());
+			Element compareIneSelfie = doc.createElement(configuracion.get(25).getVc_nom_propiedad().toString());
 			compareIneSelfie.setTextContent(configuracion.get(25).getVc_valor_propiedad().toString());
 			signers.appendChild(compareIneSelfie);
-			
-			//minCompareDocSelfie
+
+			// minCompareDocSelfie
 			Element minCompareDocSelfie = doc.createElement(configuracion.get(47).getVc_nom_propiedad().toString());
 			minCompareDocSelfie.setTextContent(configuracion.get(47).getVc_valor_propiedad().toString());
 			signers.appendChild(minCompareDocSelfie);
 
-			Element compareSelfieProof = doc
-					.createElement(configuracion.get(26).getVc_nom_propiedad().toString());
+			Element compareSelfieProof = doc.createElement(configuracion.get(26).getVc_nom_propiedad().toString());
 			compareSelfieProof.setTextContent(configuracion.get(26).getVc_valor_propiedad().toString());
 			signers.appendChild(compareSelfieProof);
-			
+
 //			Element urlSignerRedirect = doc
 //					.createElement(configService.findAll().get(27).getVc_nom_propiedad().toString());
 //			urlSignerRedirect.setTextContent(configService.findAll().get(27).getVc_valor_propiedad().toString());
@@ -354,35 +360,38 @@ public class CrearXmlService {
 
 			Element emailResend = doc.createElement("email");
 			// Correo del deudor
-			emailResend.setTextContent("oescamilla@ahorrosbienestar.com"); 
+			emailResend.setTextContent("oescamilla@ahorrosbienestar.com");
 			mailResend.appendChild(emailResend);
 
 			Element extraInfo = doc.createElement("extraInfo");
 			rootElement.appendChild(extraInfo);
 
-			Element extraInfoProperty = doc
-					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
+			// KYC
+			Element extraInfoProperty = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			// extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
+			extraInfoProperty.setTextContent(kyc);
 			extraInfo.appendChild(extraInfoProperty);
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("surveysProductId");
 			extraInfoProperty.setAttributeNode(attr);
-			
-			Element extraInfoProperty2 = doc
-					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty2.setTextContent("Pensionados digital");
+
+			// Nombre del producto
+			Element extraInfoProperty2 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			// extraInfoProperty2.setTextContent("Pensionados digital");
+			extraInfoProperty2.setTextContent(nombreProducto);
 			extraInfo.appendChild(extraInfoProperty2);
-			
+
 			Attr attr2 = doc.createAttribute("name");
 			attr2.setValue("productName");
 			extraInfoProperty2.setAttributeNode(attr2);
-			
-			Element extraInfoProperty3 = doc
-					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty3.setTextContent("Descripcion corta del producto");
+
+			// Descripción del producto
+			Element extraInfoProperty3 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+			// extraInfoProperty3.setTextContent("Descripcion corta del producto");
+			extraInfoProperty3.setTextContent(descripcionProducto);
 			extraInfo.appendChild(extraInfoProperty3);
-			
+
 			Attr attr3 = doc.createAttribute("name");
 			attr3.setValue("productDescription");
 			extraInfoProperty3.setAttributeNode(attr3);
