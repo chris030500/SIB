@@ -253,10 +253,19 @@ function urlServicio() {
 	var urlGuardar = getAbsolutePath();
 	switch (opcionSeleccionada) {
 		case "1":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val() + separador + $('#opcionesColocacion option:selected').html() + separador + opcionSeleccionada + separador + $("#opcionesContrato").val();
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val()
+				+ separador + $('#opcionesColocacion option:selected').html()
+				+ separador + opcionSeleccionada
+				+ separador + $("#opcionesContrato").val();
 			break;
 		case "2":
-			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val() + separador + $('#opcionesCaptacion option:selected').html() + separador + opcionSeleccionada + separador + $("#opcionesContrato").val();
+			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val()
+				+ separador + $('#opcionesCaptacion option:selected').html()
+				+ separador + opcionSeleccionada
+				+ separador + $("#opcionesContrato").val();
+				
+				console.log(urlGuardar);
+				
 			break;
 		default:
 			break;

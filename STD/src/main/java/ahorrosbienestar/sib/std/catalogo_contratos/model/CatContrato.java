@@ -13,39 +13,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TBL_CAT_CONTRATO")
 public class CatContrato {
-	
+
 	@Column(name = "PK_ID_CONTRATO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="cat_contrato_seq")
-	@SequenceGenerator(name = "cat_contrato_seq", sequenceName = "cat_contrato_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cat_contrato_seq")
+	@SequenceGenerator(name = "cat_contrato_seq", sequenceName = "cat_contrato_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_contrato;
-	
+
 	@Column(name = "VC_CONTRATO")
 	private String vc_contrato;
-	
+
 	@Column(name = "VC_DESCRIPCION")
 	private String vc_descripcion;
-	
+
+	@Column(name = "ESTATUS")
+	private int estatus;
+
 	@Column(name = "DT_FECHA_PUBLICACION")
 	private Date dt_fecha_publicacion;
-	
-	@Column(name = "DT_FECHA_MODIFICAION")
-	private Date dt_fecha_modificaion;
-	
-	@Column(name = "VC_TIPO_FORMATO")
-	private String vc_tipo_formato;
-	
-	@Column(name = "VC_RUTA")
-	private String vc_ruta;
-	
-	@Column(name = "VC_VERSION")
-	private String vc_version;
-	
-	@Column(name = "VC_NOMBRE_ARCHIVO")
-	private String vc_nombre_archivo;
-	
-	@Column(name = "I_ID_ESTATUS")
-	private int i_id_estatus;
+
+	@Column(name = "USR_REGISTRA")
+	private int usr_registra;
 
 	public int getPk_id_contrato() {
 		return pk_id_contrato;
@@ -71,6 +59,14 @@ public class CatContrato {
 		this.vc_descripcion = vc_descripcion;
 	}
 
+	public int getEstatus() {
+		return estatus;
+	}
+
+	public void setEstatus(int estatus) {
+		this.estatus = estatus;
+	}
+
 	public Date getDt_fecha_publicacion() {
 		return dt_fecha_publicacion;
 	}
@@ -79,54 +75,12 @@ public class CatContrato {
 		this.dt_fecha_publicacion = dt_fecha_publicacion;
 	}
 
-	public Date getDt_fecha_modificaion() {
-		return dt_fecha_modificaion;
+	public int getUsr_registra() {
+		return usr_registra;
 	}
 
-	public void setDt_fecha_modificaion(Date dt_fecha_modificaion) {
-		this.dt_fecha_modificaion = dt_fecha_modificaion;
+	public void setUsr_registra(int usr_registra) {
+		this.usr_registra = usr_registra;
 	}
-
-	public String getVc_tipo_formato() {
-		return vc_tipo_formato;
-	}
-
-	public void setVc_tipo_formato(String vc_tipo_formato) {
-		this.vc_tipo_formato = vc_tipo_formato;
-	}
-
-	public String getVc_ruta() {
-		return vc_ruta;
-	}
-
-	public void setVc_ruta(String vc_ruta) {
-		this.vc_ruta = vc_ruta;
-	}
-
-	public String getVc_version() {
-		return vc_version;
-	}
-
-	public void setVc_version(String vc_version) {
-		this.vc_version = vc_version;
-	}
-
-	public String getVc_nombre_archivo() {
-		return vc_nombre_archivo;
-	}
-
-	public void setVc_nombre_archivo(String vc_nombre_archivo) {
-		this.vc_nombre_archivo = vc_nombre_archivo;
-	}
-
-	public int getI_id_estatus() {
-		return i_id_estatus;
-	}
-
-	public void setI_id_estatus(int i_id_estatus) {
-		this.i_id_estatus = i_id_estatus;
-	}
-	
-	
 
 }
