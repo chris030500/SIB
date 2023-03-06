@@ -12,16 +12,20 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CatContratoService {
-	
+
 	@Autowired
 	private CatContratoRepository catalogoRepository;
-	
+
 	public List<CatContrato> listaCatalogo() {
 		return catalogoRepository.findAll();
 	}
-	
+
 	public CatContrato findById(Integer idContrato) {
 		return catalogoRepository.findById(idContrato).orElse(null);
 	}
-	
+
+	public CatContrato guardarContrato(CatContrato catContrato) {
+		return catalogoRepository.save(catContrato);
+	}
+
 }

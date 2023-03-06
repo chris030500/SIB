@@ -3,11 +3,15 @@ package ahorrosbienestar.sib.std.catalogo_contratos.conf_contratos.model;
 import java.sql.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "TBL_CONF_CONTRATO")
 public class ConfContrato {
 
 	@Column(name = "PK_ID_CONF_CONTRATO")
@@ -37,7 +41,7 @@ public class ConfContrato {
 	@Column(name = "VC_NOMBRE_ARCHIVO")
 	private String vc_nombre_archivo;
 
-	@Column(name = "_ESTATUS")
+	@Column(name = "I_ESTATUS")
 	private int i_id_estatus;
 
 	public int getPk_id_contrato() {

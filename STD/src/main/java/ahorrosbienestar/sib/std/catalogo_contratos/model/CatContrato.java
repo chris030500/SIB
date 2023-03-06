@@ -26,7 +26,7 @@ public class CatContrato {
 	@Column(name = "VC_DESCRIPCION")
 	private String vc_descripcion;
 
-	@Column(name = "ESTATUS")
+	@Column(name = "I_ESTATUS")
 	private int estatus;
 
 	@Column(name = "DT_FECHA_PUBLICACION")
