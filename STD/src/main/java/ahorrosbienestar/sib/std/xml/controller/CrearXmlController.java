@@ -14,6 +14,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,9 @@ import ahorrosbienestar.sib.std.docto_unificado.service.DoctoUnificadoService;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
 import ahorrosbienestar.sib.std.firma_docto_unificado.model.FirmaDoctoUnificado;
 import ahorrosbienestar.sib.std.firma_docto_unificado.service.FirmaDoctoUnificadoService;
+import ahorrosbienestar.sib.std.productos.model.Producto;
+import ahorrosbienestar.sib.std.productos.service.ProductoService;
+import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.xml.service.ValidityXmlService;
 
 @RestController
@@ -60,12 +65,23 @@ public class CrearXmlController {
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;
+	
+	@Autowired
+	private ProductoService productoService;
+	
+	@Autowired
+	private SolicitudEnvioService solicitudEnvioService;
+	
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@GetMapping("crearArchivo/xml")
 	public ResponseEntity<?> crearArchivo(@RequestParam("solicitudEnvio") Integer solicitudEnvio,
 			@RequestParam("solicitudCore") Integer solicitudCore) {
 
 		System.out.println("CORE: " + solicitudCore);
+		logger.info("Crear archivo XML");
+		logger.info("Solicitud Envio: " + solicitudEnvio);
+		logger.info("Solicitud Core bancario: " + solicitudCore);
 		// Obtenemos los datos de los participantes:
 		List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
 		String nombre = titular.get(0).getNombreCompleto();
@@ -78,6 +94,14 @@ public class CrearXmlController {
 		String plazo = datosSolicitud.get(0).getPlazo();
 		String tasa = datosSolicitud.get(0).getTasaFija();
 		String tasaMoratoria = datosSolicitud.get(0).getTasaMoratoria();
+		
+		//Obtenemos el I_PRODUCTO_ID
+		int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
+		
+		Producto infoProducto = productoService.findByNoProducto(idProducto);
+		String nombreProducto = infoProducto.getVc_nombre_producto().toString();
+		String kyc = infoProducto.getVc_identificador_kyc().toString();
+		String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
 		// Le asignamos los parametros que se requieren
 		// int solicitudEnvio = 91;
 		// String nombre = "JOSE ARTURO DE LA ROSA FUENTES";
@@ -110,6 +134,7 @@ public class CrearXmlController {
 				.replace("$variable6", tasaMoratoria + "%").replace("$variable7", plazo);
 
 		try {
+			logger.info("Creando archivo XML");
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			// Elemento raíz
@@ -364,27 +389,33 @@ public class CrearXmlController {
 			Element extraInfo = doc.createElement("extraInfo");
 			rootElement.appendChild(extraInfo);
 
+			//KYC
 			Element extraInfoProperty = doc
 					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
+			//extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
+			extraInfoProperty.setTextContent(kyc);
 			extraInfo.appendChild(extraInfoProperty);
 
 			Attr attr = doc.createAttribute("name");
 			attr.setValue("surveysProductId");
 			extraInfoProperty.setAttributeNode(attr);
 			
+			//Nombre del producto
 			Element extraInfoProperty2 = doc
 					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty2.setTextContent("Pensionados digital");
+			//extraInfoProperty2.setTextContent("Pensionados digital");
+			extraInfoProperty2.setTextContent(nombreProducto);
 			extraInfo.appendChild(extraInfoProperty2);
 			
 			Attr attr2 = doc.createAttribute("name");
 			attr2.setValue("productName");
 			extraInfoProperty2.setAttributeNode(attr2);
 			
+			//Descripción del producto
 			Element extraInfoProperty3 = doc
 					.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			extraInfoProperty3.setTextContent("Descripcion corta del producto");
+			//extraInfoProperty3.setTextContent("Descripcion corta del producto");
+			extraInfoProperty3.setTextContent(descripcionProducto);
 			extraInfo.appendChild(extraInfoProperty3);
 			
 			Attr attr3 = doc.createAttribute("name");
@@ -407,9 +438,11 @@ public class CrearXmlController {
 			return ResponseEntity.ok("1");
 		} catch (ParserConfigurationException pce) {
 			// pce.printStackTrace();
+			logger.info(pce.getMessage());
 			return ResponseEntity.ok(pce.getMessage());
 		} catch (TransformerException tfe) {
 			// tfe.printStackTrace();
+			logger.info(tfe.getMessage());
 			return ResponseEntity.ok(tfe.getMessage());
 		}
 

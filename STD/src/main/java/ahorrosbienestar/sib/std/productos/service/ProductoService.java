@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.productos.model.Producto;
@@ -46,6 +47,10 @@ public class ProductoService {
 		public Producto findByIdDocumento(Integer id) {
 			return iProductoRepository.findByIdProducto(id);
 		}
+		
+		public Producto findByNoProducto(Integer producto) {
+			return iProductoRepository.findByNoProducto(producto);
+		}
 
 
 		public int bajaProducto(Integer id_producto) {
@@ -61,6 +66,11 @@ public class ProductoService {
 
 		public int existeProducto(int idproducto) {
 			return iProductoRepository.existeProducto(idproducto);
+		}
+		
+		
+		public Producto productoPorNumero(Integer numero) {
+			return iProductoRepository.productoPorNumero(numero);
 		}
 		
 		
