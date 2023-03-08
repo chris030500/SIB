@@ -49,8 +49,8 @@ public class CargaDocumentosService {
 	// Declaramos que SP se va a ejecutar (SP_BUSCAR_DOCT_PROD) busca los documentos
 	// relacionados con el producto
 	public List<ObtenerDoctoAsociadoProdDto> obtenerDoctAsociadoProdClienteNuevo(int producto) {
+		
 		String sql = "CALL SIB.SP_BUSCAR_DOCT_PROD_NUEVO_USUARIO (?);";
-
 		logger.info("Ejecutando: " + sql + "(" + producto + ")");
 		List<ObtenerDoctoAsociadoProdDto> ls = jdbcTemplate.query(sql, new Object[] { producto },
 				new RowMapper<ObtenerDoctoAsociadoProdDto>() {
@@ -62,7 +62,8 @@ public class CargaDocumentosService {
 						return docto;
 					}
 				});
-		System.out.println("ls" + ls.get(0).getIdDocumento());
+		logger.info("ls SIB.SP_BUSCAR_DOCT_PROD_NUEVO_USUARIO:" + + ls.get(0).getIdDocumento());
+		//System.out.println("ls SIB.SP_BUSCAR_DOCT_PROD_NUEVO_USUARIO: " + ls.get(0).getIdDocumento());
 		return ls;
 	}
 
