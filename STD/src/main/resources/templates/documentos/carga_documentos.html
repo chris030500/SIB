@@ -14,7 +14,7 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container">
+		<div class="container" style="display: block;" id="principalID">
 
 			<div class="card mb-3">
 				<div class="row no-gutters">
@@ -70,13 +70,13 @@
 										<div id="divIdProducto" class="col-sm-3">
 											<label for="producto" class="form-label">IDProducto</label>
 											<input type="text" class="form-control" id="producto" readonly>
-											
+
 											<label for="productoNomina" class="form-label">ProductoNomina</label>
 											<input type="text" class="form-control" id="productoNomina" readonly>
-											
+
 											<label for="clienteId" class="form-label">ClienteID</label>
 											<input type="text" class="form-control" id="clienteId" readonly>
-										</div>					
+										</div>
 
 										<div class="col-sm-3">
 											<label for="producto" class="form-label">Producto</label>
@@ -162,7 +162,7 @@
 												title="Subir archivos" aria-controls="table-datatable" type="button">
 												<i class="bi bi-file-person-fill"></i>
 											</button>-->
-											
+
 										</form>
 									</fieldset>
 
@@ -181,8 +181,7 @@
 											<div class="col-sm-6">
 												<label for="hEnvio" class="form-label">Hora de
 													Envío</label>
-												<input type="time" value="09:00" class="form-control" id="hEnvio"
-													readonly>
+												<input type="time" value="09:00" class="form-control" id="hEnvio">
 											</div>
 											<div class="col-sm-6">
 												<label for="fCancelacion" class="form-label">Fecha de
@@ -192,8 +191,7 @@
 											<div class="col-sm-6">
 												<label for="hCancelacion" class="form-label">Hora de
 													Cancelación</label>
-												<input type="time" value="15:00" class="form-control" id="hCancelacion"
-													readonly>
+												<input type="time" value="15:00" class="form-control" id="hCancelacion">
 											</div>
 											<div class="col-sm-12">
 												<label for="comentarioValidacion" class="form-label">Comentarios de
@@ -214,6 +212,26 @@
 				</div>
 
 
+			</div>
+		</div>
+
+		<div class="container" style="display: none;" id="spinnerID">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Carga de documentos</h2>
+						</div>
+						<div class="card-body" style="padding-top: 20px; height: 300px;">
+							<div class="row" style="height: 90px;"></div>
+							<div class="row" style="text-align: center;">
+								<div class="col-sm-12">
+									<div class="spinner-border text-primary"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
