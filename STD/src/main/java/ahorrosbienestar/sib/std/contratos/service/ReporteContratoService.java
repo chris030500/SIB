@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import ahorrosbienestar.sib.std.contratos.repository.IReporteContratoRepository;
+import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -32,24 +33,27 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	@Autowired
 	private DataSource datasource;
 	
+	@Autowired
+	JasperReportController jasperReportController;
 	
 	@Override
 	@NotNull
 	public ResponseEntity<Resource> export(int id, int solicitud) {
 		
 		try {
-	        final File file = ResourceUtils.getFile("classpath:reports/rpt_contrato_std.jasper");
-	        final File imgLogo = ResourceUtils.getFile("classpath:reports/logoNegro.jpg");
-	        final JasperReport report = (JasperReport) JRLoader.loadObject(file);
+			
+	        //final File file = ResourceUtils.getFile("classpath:reports/rpt_contrato_std.jasper");
+	        //final File imgLogo = ResourceUtils.getFile("classpath:reports/logoNegro.jpg");
+	        //final JasperReport report = (JasperReport) JRLoader.loadObject(file);
 
-	        final HashMap<String, Object> parameters = new HashMap<>();
+	        //final HashMap<String, Object> parameters = new HashMap<>();
 	        //parameters.put("nombreCliente", pedido.getCliente().getNombreCompletoCiente());
-	        parameters.put("imgLogo", new FileInputStream(imgLogo));
-	        parameters.put("ID", id);
+	        //parameters.put("imgLogo", new FileInputStream(imgLogo));
+	        //parameters.put("ID", id);
 	        
-	        JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, datasource.getConnection());
+	       // JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, datasource.getConnection());
 	        //JasperPrint jasperPrint = JasperFillManager.fillReport(report, null, new JREmptyDataSource());
-	        byte[] reporte = JasperExportManager.exportReportToPdf(jasperPrint);
+			byte[] reporte = jasperReportController.reporteJasper();
 	        
 	        
 	        String sdf = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
@@ -58,7 +62,7 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	            .filename(stringBuilder.append(solicitud)
 	            	.append("_")
 	                .append(sdf)
-	                .append(".pdf")
+	                .append(".xls")
 	                .toString())
 	            .build();
 	        HttpHeaders headers = new HttpHeaders();

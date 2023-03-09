@@ -2,6 +2,16 @@ $(document).ready(function() {
 	$('.solo-numero').on('input', function() {
 		this.value = this.value.replace(/[^0-9]/g, '');
 	});
+	
+	$('#div_carga')
+			.hide()
+			.ajaxStart(function() {
+				$(this).show();
+			})
+			.ajaxStop(function() {
+				$(this).hide();
+			});
+	
 });
 
 
@@ -37,6 +47,8 @@ function verReporte() {
 						});
 					} else {
 
+						//"report/contratoSTD/";
+
 						var servicioReporte = "report/contratoSTD/";
 						var separador = "/";
 						/*var nombreCliente = document.getElementById("inputNombre").value;
@@ -45,8 +57,8 @@ function verReporte() {
 						var tasaOrdinaria = document.getElementById("inputTasaOrdinaria").value;
 						var tasaMoratoria = document.getElementById("inputTasaMoratoria").value;*/
 
-
-						var urlReporte = getAbsolutePath() + servicioReporte + respuesta.pk_id_contrato + separador + respuesta.i_no_solicitud;
+						//getAbsolutePath() + servicioReporte + respuesta.pk_id_contrato + separador + respuesta.i_no_solicitud;
+						var urlReporte = getAbsolutePath() + servicioReporte+ respuesta.pk_id_contrato + separador + respuesta.i_no_solicitud;
 						window.open(urlReporte, '_blank');
 						window.focus();
 					}
