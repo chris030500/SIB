@@ -5,7 +5,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
+
+
 @SpringBootApplication
+@EnableEncryptableProperties
 public class StdApplication implements CommandLineRunner {
 	
 //	@Autowired
