@@ -63,6 +63,26 @@
 					<div class="col-sm-2"></div>
 				</div>
 
+				<div class="form-group row" style="margin-top: 10px;display:none;" id="diviKYC">
+					<label for="busqueda" class="col-sm-4 col-form-label">Identificador KYC <code>(*)</code></label>
+					<div class="col-sm-6">
+
+						<input id="iKYC" class="form-control" type="text" placeholder="Agregar identificador KYC" />
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group row" style="margin-top: 10px;display:none;" id="divdescripcionProducto">
+					<label for="busqueda" class="col-sm-4 col-form-label">Descripción Producto
+						<code>(*)</code></label>
+					<div class="col-sm-6">
+
+						<input id="descripcionProducto" class="form-control" type="text"
+							placeholder="Agregar descripción del producto" />
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
 				<div class="form-group row" style="margin-top: 10px;display:none;" id="contrato">
 					<label for="busqueda" class="col-sm-4 col-form-label">Contrato:</label>
 					<div class="col-sm-6">
@@ -111,8 +131,12 @@
 							<td th:text="${listaProductos.i_estatus}== 1?'ACTIVO':'INACTIVO'"></td>
 							<td th:text="${listaProductos.i_tipo_producto}==1?'COLOCACIÓN':'CAPTACIÓN'"></td>
 							<td th:text="${listaProductos.dt_fecha_operacion}"></td>
-							<td th:text="${listaProductos.dt_fecha_cancelacion}  == null ? 'Sin registro' : ${listaProductos.dt_fecha_cancelacion}"></td>
-							<td th:text="${listaProductos.vc_contrato} == null ? 'Sin registro' : ${listaProductos.vc_contrato}"></td>
+							<td
+								th:text="${listaProductos.dt_fecha_cancelacion}  == null ? 'Sin registro' : ${listaProductos.dt_fecha_cancelacion}">
+							</td>
+							<td
+								th:text="${listaProductos.vc_contrato} == null ? 'Sin registro' : ${listaProductos.vc_contrato}">
+							</td>
 							<td sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="text-center">
 								<div class="dt-buttons">
 									<button class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Reactivar"

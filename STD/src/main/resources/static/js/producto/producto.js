@@ -17,6 +17,8 @@ $(document).ready(function() {
 			switch (opcionSeleccionada) {
 				case "1":
 					$("#productoColocacion").show();
+					$("#diviKYC").show();
+					$("#divdescripcionProducto").show();
 					$("#contrato").show();
 					$("#productoCaptacion").hide();
 
@@ -25,6 +27,8 @@ $(document).ready(function() {
 				case "2":
 					$("#productoColocacion").hide();
 					$("#productoCaptacion").show();
+					$("#diviKYC").show();
+					$("#divdescripcionProducto").show();
 					$("#contrato").show();
 
 					break;
@@ -36,6 +40,8 @@ $(document).ready(function() {
 		} else {
 			$("#productoColocacion").hide();
 			$("#productoCaptacion").hide();
+			$("#diviKYC").hide();
+			$("#divdescripcionProducto").hide();
 			$("#contrato").hide();
 
 			swal({
@@ -153,6 +159,8 @@ function checkTodo() {
 function inicioPantalla() {
 	$("#productoColocacion").hide();
 	$("#productoCaptacion").hide();
+	$("#diviKYC").hide();
+	$("#divdescripcionProducto").hide();
 	$("#contrato").hide();
 }
 
@@ -167,6 +175,8 @@ function validarVacio() {
 
 
 function validaciónNueva(opcionSeleccionada, valor) {
+	var textoKYC = document.getElementById("iKYC").value;
+	var textoDescripcion = document.getElementById("descripcionProducto").value;
 	if (valor) {
 		switch (opcionSeleccionada) {
 			case "1":
@@ -177,7 +187,42 @@ function validaciónNueva(opcionSeleccionada, valor) {
 						icon: "warning",
 					});
 				} else {
-					altaProducto();
+					if ($("#iKYC").val() == '') {
+						swal({
+							title: "Error, Debe asignar un identificador KYC.",
+							text: "Máximo 40 caracteres",
+							icon: "warning",
+						});
+					} else if (textoKYC.length > 40) {
+						swal({
+							title: "Error, valida el número de caracteres del identificador KYC.",
+							text: "Máximo 40 caracteres",
+							icon: "warning",
+						});
+					}
+					else if ($("#descripcionProducto").val() == '') {
+						swal({
+							title: "Error, Debe asignar una descripción al producto.",
+							text: "Máximo 30 caracteres",
+							icon: "warning",
+						});
+					} else if (textoDescripcion.length > 30) {
+						swal({
+							title: "Error, valida el número de caracteres de la descripción del producto.",
+							text: "Máximo 30 caracteres",
+							icon: "warning",
+						});
+					}
+					else if ($("#opcionesContrato").val() == '0') {
+						swal({
+							title: "Error",
+							text: "Debe seleccionar el contrato a registrar.",
+							icon: "warning",
+						});
+
+					} else {
+						altaProducto();
+					}
 				}
 				break;
 			case "2":
@@ -188,7 +233,41 @@ function validaciónNueva(opcionSeleccionada, valor) {
 						icon: "warning",
 					});
 				} else {
-					altaProducto();
+					if ($("#iKYC").val() == '') {
+						swal({
+							title: "Error, Debe asignar un identificador KYC.",
+							text: "Máximo 40 caracteres",
+							icon: "warning",
+						});
+					} else if (textoKYC.length > 40) {
+						swal({
+							title: "Error, valida el número de caracteres del identificador KYC.",
+							text: "Máximo 40 caracteres",
+							icon: "warning",
+						});
+					}
+					else if ($("#descripcionProducto").val() == '') {
+						swal({
+							title: "Error, Debe asignar una descripción al producto.",
+							text: "Máximo 30 caracteres",
+							icon: "warning",
+						});
+					} else if (textoDescripcion.length > 30) {
+						swal({
+							title: "Error, valida el número de caracteres de la descripción del producto.",
+							text: "Máximo 30 caracteres",
+							icon: "warning",
+						});
+					} else if ($("#opcionesContrato").val() == '0') {
+						swal({
+							title: "Error",
+							text: "Debe seleccionar el contrato a registrar.",
+							icon: "warning",
+						});
+
+					} else {
+						altaProducto();
+					}
 				}
 				break;
 			default:
@@ -210,35 +289,29 @@ function validaciónNueva(opcionSeleccionada, valor) {
 }
 
 function altaProducto() {
-	if ($("#opcionesContrato").val() == '0') {
-		swal({
-			title: "Error",
-			text: "Debe seleccionar el contrato a registrar.",
-			icon: "warning",
-		});
-	} else {
-		$.ajax({
-			url: urlServicio(),
-			type: "GET",
-			dataType: "JSON",
-			success: function(respuesta) {
-				swal({
-					title: "",
-					text: respuesta[0],
-					icon: "success",
-					confirmButtonText: 'Aceptar'
-				}).then(resp => {
-					window.location.href = getAbsolutePath() + inicio;
-				});
-			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-				swal({
-					title: "Error, ",
-					text: "Se presento un error, intente mas tarde.",
-					icon: "warning",
-				});
-			}
-		});
-	}
+
+	$.ajax({
+		url: urlServicio(),
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			swal({
+				title: "",
+				text: respuesta[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				window.location.href = getAbsolutePath() + inicio;
+			});
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+
 
 }
 
@@ -256,16 +329,19 @@ function urlServicio() {
 			urlGuardar = urlGuardar + altaProductos + $("#opcionesColocacion").val()
 				+ separador + $('#opcionesColocacion option:selected').html()
 				+ separador + opcionSeleccionada
-				+ separador + $("#opcionesContrato").val();
+				+ separador + $("#opcionesContrato").val()
+				+ separador + $("#iKYC").val()
+				+ separador + $("#descripcionProducto").val();
+			console.log("UrlGuardar:" + urlGuardar);
 			break;
 		case "2":
 			urlGuardar = urlGuardar + altaProductos + $("#opcionesCaptacion").val()
 				+ separador + $('#opcionesCaptacion option:selected').html()
 				+ separador + opcionSeleccionada
-				+ separador + $("#opcionesContrato").val();
-				
-				console.log(urlGuardar);
-				
+				+ separador + $("#opcionesContrato").val()
+				+ separador + $("#iKYC").val()
+				+ separador + $("#descripcionProducto").val();
+			console.log("UrlGuardar:" + urlGuardar);
 			break;
 		default:
 			break;
