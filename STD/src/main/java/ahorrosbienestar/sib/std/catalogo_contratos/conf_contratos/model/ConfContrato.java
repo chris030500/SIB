@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import ahorrosbienestar.sib.std.catalogo_contratos.model.CatContrato;
 
 @Entity
 @Table(name = "TBL_CONF_CONTRATO")
@@ -16,12 +20,7 @@ public class ConfContrato {
 
 	@Column(name = "PK_ID_CONF_CONTRATO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cat_conf_contrato_seq")
-	@SequenceGenerator(name = "cat_conf_contrato_seq", sequenceName = "cat_conf_contrato_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_contrato;
-
-	@Column(name = "VC_DESCRIPCION")
-	private String vc_descripcion;
 
 	@Column(name = "DT_FECHA_PUBLICACION")
 	private Date dt_fecha_publicacion;
@@ -43,6 +42,10 @@ public class ConfContrato {
 
 	@Column(name = "I_ESTATUS")
 	private int i_id_estatus;
+	
+	@OneToOne
+	@JoinColumn(name = "FK_ID_CONTRATO")
+	private CatContrato fk_id_contrato;
 
 	public int getPk_id_contrato() {
 		return pk_id_contrato;
@@ -50,14 +53,6 @@ public class ConfContrato {
 
 	public void setPk_id_contrato(int pk_id_contrato) {
 		this.pk_id_contrato = pk_id_contrato;
-	}
-
-	public String getVc_descripcion() {
-		return vc_descripcion;
-	}
-
-	public void setVc_descripcion(String vc_descripcion) {
-		this.vc_descripcion = vc_descripcion;
 	}
 
 	public Date getDt_fecha_publicacion() {
@@ -116,4 +111,12 @@ public class ConfContrato {
 		this.i_id_estatus = i_id_estatus;
 	}
 
+	public CatContrato getFk_id_contrato() {
+		return fk_id_contrato;
+	}
+
+	public void setFk_id_contrato(CatContrato fk_id_contrato) {
+		this.fk_id_contrato = fk_id_contrato;
+	}
+	
 }

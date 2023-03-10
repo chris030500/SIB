@@ -247,7 +247,7 @@ function alertaMotivoEliminacion() {
 		buttons: ["Salir", "Aceptar"],
 	})
 		.then((value) => {
-			if (value) {
+			if (value && value.length <= 200) {
 				// Llamamos a nuestro spinner
 				spinner.style.display = 'block';
 				principal.style.display = 'none';
@@ -257,7 +257,13 @@ function alertaMotivoEliminacion() {
 				autenticacion();
 			} else if (value == "") {
 				// Mandamos una alerta
-				swal("Debes de agregar las observaciones para poder cancelar", {
+				swal("Debes agregar observaciones para poder cancelar", {
+					icon: "info",
+					closeOnClickOutside: false,
+				});
+			} else if (value.length > 200) {
+				// Mandamos una alerta
+				swal("No debes de exceder más de 200 carácteres!", {
 					icon: "info",
 					closeOnClickOutside: false,
 				});

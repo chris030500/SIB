@@ -7,13 +7,17 @@ public class CatContratoDTO {
 	private int pk_id_contrato;
 	private String vc_contrato;
 	private String vc_descripcion;
+	private int i_estatus;
 	private Date dt_fecha_publicacion;
-	private Date dt_fecha_modificaion;
-	private String vc_tipo_formato;
-	private String vc_ruta;
-	private String vc_version;
-	private String vc_nombre_archivo;
-	private int i_id_estatus;
+	private int usr_registra;
+	private Date dt_fecha_modificacion;
+	
+	public Date getDt_fecha_modificacion() {
+		return dt_fecha_modificacion;
+	}
+	public void setDt_fecha_modificacion(Date dt_fecha_modificacion) {
+		this.dt_fecha_modificacion = dt_fecha_modificacion;
+	}
 	public int getPk_id_contrato() {
 		return pk_id_contrato;
 	}
@@ -32,49 +36,23 @@ public class CatContratoDTO {
 	public void setVc_descripcion(String vc_descripcion) {
 		this.vc_descripcion = vc_descripcion;
 	}
+	public int getI_estatus() {
+		return i_estatus;
+	}
+	public void setI_estatus(int i_estatus) {
+		this.i_estatus = i_estatus;
+	}
 	public Date getDt_fecha_publicacion() {
 		return dt_fecha_publicacion;
 	}
 	public void setDt_fecha_publicacion(Date dt_fecha_publicacion) {
 		this.dt_fecha_publicacion = dt_fecha_publicacion;
 	}
-	public Date getDt_fecha_modificaion() {
-		return dt_fecha_modificaion;
+	public int getUsr_registra() {
+		return usr_registra;
 	}
-	public void setDt_fecha_modificaion(Date dt_fecha_modificaion) {
-		this.dt_fecha_modificaion = dt_fecha_modificaion;
-	}
-	public String getVc_tipo_formato() {
-		return vc_tipo_formato;
-	}
-	public void setVc_tipo_formato(String vc_tipo_formato) {
-		this.vc_tipo_formato = vc_tipo_formato;
-	}
-	public String getVc_ruta() {
-		return vc_ruta;
-	}
-	public void setVc_ruta(String vc_ruta) {
-		this.vc_ruta = vc_ruta;
-	}
-	public String getVc_version() {
-		return vc_version;
-	}
-	public void setVc_version(String vc_version) {
-		this.vc_version = vc_version;
-	}
-	public String getVc_nombre_archivo() {
-		return vc_nombre_archivo;
-	}
-	public void setVc_nombre_archivo(String vc_nombre_archivo) {
-		this.vc_nombre_archivo = vc_nombre_archivo;
-	}
-	public int getI_id_estatus() {
-		return i_id_estatus;
-	}
-	public void setI_id_estatus(int i_id_estatus) {
-		this.i_id_estatus = i_id_estatus;
-	}
-	
-	
+	public void setUsr_registra(int usr_registra) {
+		this.usr_registra = usr_registra;
+	}	
 
 }

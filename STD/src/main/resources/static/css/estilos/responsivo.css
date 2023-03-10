@@ -6,9 +6,9 @@
 	margin-bottom
 	:
 	1rem;
-	}
 }
 
+}
 .formulario {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -19,16 +19,18 @@
 	:
 	block;
 }
+
 button, input, textarea {
 	width: 100%;
 	padding: 1rem;
 	border: 1px solid lighten($ color-principal, 50%);
 }
+
 textarea {
 	resize: none;
 }
-}
 
+}
 .boton-enviar {
 	background-color: lighten($ color-principal, 50%);
 	border: none;
@@ -42,3 +44,5 @@ textarea {
 	transition: background-color 2s ease-out;
 	}
 }
+
+

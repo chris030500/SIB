@@ -17,7 +17,11 @@ public class CatContratoService {
 	private CatContratoRepository catalogoRepository;
 
 	public List<CatContrato> listaCatalogo() {
-		return catalogoRepository.findAll();
+		return catalogoRepository.listaCatalogo();
+	}
+	
+	public List<CatContrato> listaContratosActivos() {
+		return catalogoRepository.listaContratosActivos();
 	}
 
 	public CatContrato findById(Integer idContrato) {

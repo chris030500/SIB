@@ -16,8 +16,6 @@ public class CatContrato {
 
 	@Column(name = "PK_ID_CONTRATO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "cat_contrato_seq")
-	@SequenceGenerator(name = "cat_contrato_seq", sequenceName = "cat_contrato_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_contrato;
 
 	@Column(name = "VC_CONTRATO")
@@ -27,13 +25,16 @@ public class CatContrato {
 	private String vc_descripcion;
 
 	@Column(name = "I_ESTATUS")
-	private int estatus;
+	private int i_estatus;
 
 	@Column(name = "DT_FECHA_PUBLICACION")
 	private Date dt_fecha_publicacion;
 
 	@Column(name = "USR_REGISTRA")
 	private int usr_registra;
+	
+	@Column(name = "DT_FECHA_MODIFICACION")
+	private Date dt_fecha_modificacion;
 
 	public int getPk_id_contrato() {
 		return pk_id_contrato;
@@ -59,12 +60,12 @@ public class CatContrato {
 		this.vc_descripcion = vc_descripcion;
 	}
 
-	public int getEstatus() {
-		return estatus;
+	public int getI_estatus() {
+		return i_estatus;
 	}
 
-	public void setEstatus(int estatus) {
-		this.estatus = estatus;
+	public void setI_estatus(int i_estatus) {
+		this.i_estatus = i_estatus;
 	}
 
 	public Date getDt_fecha_publicacion() {
@@ -81,6 +82,14 @@ public class CatContrato {
 
 	public void setUsr_registra(int usr_registra) {
 		this.usr_registra = usr_registra;
+	}
+
+	public Date getDt_fecha_modificacion() {
+		return dt_fecha_modificacion;
+	}
+
+	public void setDt_fecha_modificacion(Date dt_fecha_modificacion) {
+		this.dt_fecha_modificacion = dt_fecha_modificacion;
 	}
 
 }

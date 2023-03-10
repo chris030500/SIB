@@ -78,7 +78,7 @@ public class ProductoController {
 				model.addAttribute("cat_prodcuto",coreBancarioService.obtProductos());
 				model.addAttribute("listaProductos", productoContratoService.listaDeProductosConContrato());
 				model.addAttribute("listDocumentos",documentoService.todosDocumentos());
-				model.addAttribute("listadoContratos", catContratoService.listaCatalogo());
+				model.addAttribute("listadoContratos", catContratoService.listaContratosActivos());
 				
 				return "productos/index";
 			} catch (Exception e) {
