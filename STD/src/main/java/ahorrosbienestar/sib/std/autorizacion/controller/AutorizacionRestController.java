@@ -1,6 +1,9 @@
 package ahorrosbienestar.sib.std.autorizacion.controller;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -11,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,6 +67,8 @@ public class AutorizacionRestController {
 
 	@Autowired
 	private ConfigService configService;
+	
+	private static final int BUFFER_SIZE = 4096;
 
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)
@@ -237,5 +244,43 @@ public class AutorizacionRestController {
 			}
 		}
 	}
+	
+	// Método para obtener el archivo .zip
+	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
+		File Destination_Directory = new File(destinoPath);
+		if (!Destination_Directory.exists()) {
+			Destination_Directory.mkdir();
+		}
+		ZipInputStream Zip_Input_Stream = new ZipInputStream(new FileInputStream(archivoZipPath));
+		ZipEntry Zip_Entry = Zip_Input_Stream.getNextEntry();
+
+		while (Zip_Entry != null) {
+			String File_Path = destinoPath + File.separator + Zip_Entry.getName();
+			if (!Zip_Entry.isDirectory()) {
+
+				extractFile(Zip_Input_Stream, File_Path);
+			} else {
+
+				File directory = new File(File_Path);
+				directory.mkdirs();
+			}
+			Zip_Input_Stream.closeEntry();
+			Zip_Entry = Zip_Input_Stream.getNextEntry();
+		}
+		Zip_Input_Stream.close();
+	}
+
+	// Método para extaer los archivos del zip
+	private static void extractFile(ZipInputStream Zip_Input_Stream, String File_Path) throws IOException {
+		BufferedOutputStream Buffered_Output_Stream = new BufferedOutputStream(new FileOutputStream(File_Path));
+		byte[] Bytes = new byte[BUFFER_SIZE];
+		int Read_Byte = 0;
+		while ((Read_Byte = Zip_Input_Stream.read(Bytes)) != -1) {
+			Buffered_Output_Stream.write(Bytes, 0, Read_Byte);
+		}
+		Buffered_Output_Stream.close();
+	}
+	
+	// autorizacionRestController.unzip("C:\\Users\\jose.corona\\Documents\\JACS-Documentos\\detail.zip", "C:\\Users\\jose.corona\\Documents\\JACS-Documentos\\Bitacora 2023");
 
 }
