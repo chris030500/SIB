@@ -29,6 +29,7 @@ public interface IProductoDocumentoRepository extends JpaRepository<RelacionDocu
 	@Transactional
 	@Query(value = "UPDATE TBL_CAT_PROD_CAT_DOCT SET I_ESTATUS = 1, DT_FECHA_BAJA = null WHERE FK_PRODUCTO =:id_producto and FK_DOCUMENTO=:id_documento", nativeQuery = true)
 	public int activarDocumento(@Param("id_producto") int idproducto,@Param("id_documento") int idDocumento);
+	
 
 	/*
 	@Modifying

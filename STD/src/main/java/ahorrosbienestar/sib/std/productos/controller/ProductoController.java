@@ -3,8 +3,10 @@ package ahorrosbienestar.sib.std.productos.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
+
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.catalogo_contratos.service.CatContratoService;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
@@ -60,6 +65,7 @@ public class ProductoController {
 	private IProductoDocumentoRepository iProductoDocumento;
 	
 	
+	
 	private int grupo = 2;
 	private int estatus = 1;
 	
@@ -72,6 +78,8 @@ public class ProductoController {
 		@GetMapping("/index")
 		public String InicioUsuario(Model model) {
 			try {
+				
+				
 				model.addAttribute("cat_tipo_producto",iCatalogoRepository.generarOpciones(grupo));
 				//cat_prodcuto_colocacion
 				model.addAttribute("cat_prodcuto_captacion",coreBancarioService.obtProductosCaptacion());	
@@ -79,7 +87,6 @@ public class ProductoController {
 				model.addAttribute("listaProductos", productoContratoService.listaDeProductosConContrato());
 				model.addAttribute("listDocumentos",documentoService.todosDocumentos());
 				model.addAttribute("listadoContratos", catContratoService.listaCatalogo());
-				
 				return "productos/index";
 			} catch (Exception e) {
 				Log.error("Vista Productos:"+e.getMessage());
@@ -168,7 +175,44 @@ public class ProductoController {
 						
 			return null;
 			
-		}		
+		}	
+		
+		@ResponseBody
+		@RequestMapping(value = "/cargarProducto/{id}", method = RequestMethod.GET)
+		public Optional<Producto> loadEditarProducto(@PathVariable("id") Integer id){
+			Log.info("Ejecutando loadEditarProducto");
+			//logger.info("Ejecutando loadEditarProducto");
+			System.out.println("Entro en loadEditarProducto");
+			System.out.println("productoService.findById(id) " +  productoService.findById(id));
+			return productoService.findById(id);
+		}
+		
+		
+		@RequestMapping(value = { "/editar_producto" }, method = RequestMethod.POST)
+		public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("kyc") String kyc,
+				@RequestParam("descripcion") String descripcion,
+				@RequestParam("idProducto") Integer idProducto) {
+			String mensaje ="";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				if (idProducto != null) {
+					//Producto producto = productoService.findById(idProducto).get();
+					productoService.cambiarKycYDescripcion(kyc, descripcion, idProducto);
+					mensaje ="Producto editado correctamente.";
+					respuesta.add(mensaje);
+				}
+				
+				
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println(""+e.getMessage());
+				mensaje = "Ocurrio un error al editar el producto. Intente mas tarde.";
+				respuesta.add(mensaje);
+			}
+			return null;
+			
+		}
 		
 		@PostMapping("/altaDocumentos/{idproducto}/{idsDocumentos}")
 		public ResponseEntity<?> altaProducto(Model model,@PathVariable (name ="idproducto") int idproducto,@PathVariable (name ="idsDocumentos") ArrayList<Integer> idsDocumentos){

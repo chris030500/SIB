@@ -109,7 +109,7 @@
 			<!--<div class="table-responsive">-->
 			<div class="row">
 				<!--<table class="table table-bordered table-striped" style="margin-top: 10px;">-->
-				<table class="table table-bordered" style="width: 100%;"  id="productoTable">
+				<table class="table table-bordered" style="width: 100%;" id="productoTable">
 					<thead>
 						<tr>
 							<th style="visibility:collapse; display:none;"></th>
@@ -119,6 +119,8 @@
 							<th>Tipo</th>
 							<th>Fecha Registro </th>
 							<th>Fecha Cancelacion</th>
+							<th>Identificador KYC</th>
+							<th>Descripción Producto</th>
 							<th>Contrato</th>
 							<th>Acciones</th>
 							<!--<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
@@ -138,6 +140,8 @@
 							<td
 								th:text="${listaProductos.dt_fecha_cancelacion}  == null ? 'Sin registro' : ${listaProductos.dt_fecha_cancelacion}">
 							</td>
+							<td th:text="${listaProductos.vc_identificador_kyc}"></td>
+							<td th:text="${listaProductos.vc_descripcion_producto}"></td>
 							<td
 								th:text="${listaProductos.vc_contrato} == null ? 'Sin registro' : ${listaProductos.vc_contrato}">
 							</td>
@@ -160,12 +164,13 @@
 										</a>
 									</button>
 									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
-										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
-										data-bs-placement="top" title="Editar Producto" aria-controls="table-datatable"
-										type="button" data-tooltip="Refresh">
-										<a th:href="@{editar/}+${listaProductos.i_no_producto}">
-											<i class="bi bi-pencil-square"></i>
-										</a>
+										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="modal"
+										title="Editar Producto" data-bs-target="#basicModalProducto"
+										aria-controls="table-datatable" type="button"
+										th:onclick="'modalEditarProducto(' + ${listaProductos.pk_id_producto} + ')'"
+										data-tooltip="Add">
+										<i class="bi bi-pencil-square"></i>
+
 									</button>
 									<button sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"
 										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
@@ -225,6 +230,39 @@
 							<button type="button" class="btn btn-primary" data-dismiss="modal"
 								id="btnCancelar">Cancelar</button>
 						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="basicModalProducto" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Editar Producto</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="edit-form" th:method="post" th:object="${listaProductos}">
+								<div class="col-12">
+									<label for="idUsuario" class="form-label">Id
+										Producto</label>
+									<input type="text" class="form-control" id="idProductoEditar"
+										 readonly>
+									<label for="nombre" class="form-label">Identificardor KYC</label>
+									<input type="text" class="form-control" id="kyc" >
+									<label for="password" class="form-label">Descripción del producto</label>
+									<input type="text" class="form-control" id="descripcion"
+										>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+									<button type="button" onclick="editaProducto()"
+										class="btn btn-primary">Guardar</button>
+								</div>
+							</form>
+						</div>
+
 					</div>
 				</div>
 			</div>

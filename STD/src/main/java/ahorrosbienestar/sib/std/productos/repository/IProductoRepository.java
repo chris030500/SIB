@@ -39,4 +39,9 @@ public interface IProductoRepository extends JpaRepository<Producto, Integer> {
 	
 	@Query(value ="SELECT * FROM SIB.TBL_CAT_PRODUCTO WHERE I_NO_PRODUCTO = :producto", nativeQuery = true)
 	public Producto findByNoProducto(Integer producto);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CAT_PRODUCTO SET VC_IDENTIFICADOR_KYC = :kyc , VC_DESCRIPCION_PRODUCTO = :descripcion WHERE PK_ID_PRODUCTO = :idProducto", nativeQuery = true)
+	public int cambiarKycYDescripcion(@Param ("kyc") String kyc, @Param("descripcion") String descripcion, @Param("idProducto") Integer idProducto);
 }
