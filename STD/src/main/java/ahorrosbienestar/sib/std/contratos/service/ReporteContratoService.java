@@ -41,7 +41,7 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	public ResponseEntity<Resource> export(int id, int solicitud) {
 		
 		try {
-			
+			/*
 	        //final File file = ResourceUtils.getFile("classpath:reports/rpt_contrato_std.jasper");
 	        //final File imgLogo = ResourceUtils.getFile("classpath:reports/logoNegro.jpg");
 	        //final JasperReport report = (JasperReport) JRLoader.loadObject(file);
@@ -70,6 +70,9 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	        return ResponseEntity.ok().contentLength((long) reporte.length)
 	            .contentType(MediaType.APPLICATION_PDF)
 	            .headers(headers).body(new ByteArrayResource(reporte));
+	        */
+	        
+	        return null;
 	      } catch (Exception e) {
 	        e.printStackTrace();
 	        System.out.print(""+e.getMessage());

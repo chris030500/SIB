@@ -1,13 +1,19 @@
 package ahorrosbienestar.sib.std.reportesJasper.controller;
 
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,81 +23,46 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.service.JasperReportService;
 @CrossOrigin
 @RestController
-@Produces("application/pdf")
+//@Produces("application/pdf")
 @RequestMapping("/exportarReporte")
 
 public class JasperReportController {
 	
+	@Autowired
+	private ConfigService configService;
+	
+	@Autowired
+	private JasperReportService jasperReportService;
 	
     protected final Log logger = LogFactory.getLog(this.getClass());
 	
-   
-    public ResponseEntity<?> autenticacion() {
-	try {
-		
-		 // Request Header
-        HttpHeaders headers = new HttpHeaders();
-        headers = createHeaders("juan.trejo", "Bienestar99");
-        
-        // Request Body
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-        body.add("j_username", "juan.trejo");
-        body.add("j_password", "Bienestar99");
-        
-        // Request Entity
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
- 
-        // RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
- 
-        // POST Login
-        ResponseEntity<String> response = restTemplate.exchange("http://10.150.102.82:8080/jasperserver/rest/login?", HttpMethod.POST, requestEntity,
-                String.class);
-        
-       
-        HttpHeaders responseHeaders = response.getHeaders();
-        
-        String responseBody = response.getBody();
-        String responseStatus = String.valueOf(response.getStatusCodeValue());
-        
-        return  null;
-	}catch (HttpStatusCodeException e) {
-		logger.info("autenticacion exception: " + e.getMessage());
-//      System.out.println("Error en AutenticaciÃ³n: " + e.getMessage());
-//      System.out.println("Error e : " + e);
-//      System.out.println("Error e[0]: " + e.getLocalizedMessage().codePointAt(0));
-      System.out.println("e: " + e.getRawStatusCode());
-      if(e.getRawStatusCode() == 401) {
-          //System.out.println("Bad credenciales");
-          return ResponseEntity.ok("{\r\n"
-                  + "    \"error\": \"unauthorized_user\",\r\n"
-                  + "    \"error_description\": \"Bad credentials\"\r\n"
-                  + "}");
-      }
-      return ResponseEntity.ok("autenticacion: " + e.getRawStatusCode());
-	}
-        	
-    }
-    @SuppressWarnings("deprecation")
+    private String extPDF = ".pdf";
+    private String extXLS = ".xls";
+    
+    
 	@RequestMapping("generarReporte")
-    public byte[] reporteJasper() {
+    public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "nombreReporte") String nombreReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
    	 
     	try {
-        	/*
-            ResponseEntity<String> response = restTemplate.exchange("http://10.150.102.82:8080/jasperserver/rest/reports/reports/Desarrollo/std/rpt_contrato_std.pdf?ID_Reporte=11", HttpMethod.GET, requestEntity,
-                    String.class);*/
-    		
-    		// Request Header
-    		   			
+        
+    					ReporteJasper report = jasperReportService.findByNombre(nombreReporte);
+    				
+    					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros;
+    					
+    					System.out.print("url:"+urlGenerarReporte);
     					HttpHeaders headers = new HttpHeaders();
-    				    //headers = createHeaders("juan.trejo", "Bienestar99");
-    					headers.set("Content-Type","application/x-www-form-urlencoded");
-    					headers.set("Cookie","userLocale=es_MX; userLocale=es_MX; JSESSIONID=7d287d4a1f7278e80f280219e4e2");
+    				    headers = createHeaders(configService.findAll().get(15).getVc_valor_propiedad(), configService.findAll().get(16).getVc_valor_propiedad());
+    					headers.set("Content-Type",report.getVc_tipo_contenido());
     					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
       					
     					   					
@@ -100,31 +71,34 @@ public class JasperReportController {
 
     					// Request Entity
     					HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-    					body.add("j_username", "juan.trejo");
-    					
     					
     					// RestTemplate
     					RestTemplate restTemplate = new RestTemplate();
 
     					// DELETE cancelar
-    					//"http://10.150.102.82:8080/jasperserver/rest_v2/reports/reports/Desarrollo/std/rpt_contrato_std.pdf?ID_Reporte=12"
-    					//http://10.150.102.82:8080/jasperserver/rest_v2/reports/reports/Desarrollo/reporteador_bienestar/rpt_Nomina_Simultaneo_1.1.xls?FECHA_INICIO=2023/03/01&FECHA_FIN=2023/03/05
-    					ResponseEntity<byte[]> response = restTemplate.exchange("http://10.150.102.82:8080/jasperserver/rest_v2/reports/reports/Desarrollo/std/rpt_contrato_std.pdf?ID_Reporte=12", HttpMethod.GET, requestEntity, byte[].class);
+    					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
 
     					// ResponseBody
     					byte[] responseBody = response.getBody();
     					
     					
-    					//String content = response.getBody();
-    					//byte[] bytes = content.getBytes();
-    					//Files.write(Paths.get("C:///Users//juan.trejo//Downloads//contrato_apertura.pdf"),responseBody, StandardOpenOption.CREATE );
-    					
-    					//byte[] reporte = responseBody.getBytes();
-    					
-    			        //response.getHeaders().set("Content-Type", "text/html;charset=UTF-8");
-    			        
-    			        return responseBody;
-    		
+    					//fecha de creacion
+    					String fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+    				    StringBuilder stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
+    				    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+    				    .filename(stringBuilder.append("_")
+    				    .append(identificadorDoc).append("_")
+    				    .append(fechaCreacion)
+    				    .append(tipoDocumento)
+    				    .toString())
+    				    .build();
+    				    HttpHeaders h2 = new HttpHeaders();
+    				    h2.setContentDisposition(contentDisposition);
+    				    
+    				    return ResponseEntity.ok().contentLength((long) responseBody.length)
+    				    .contentType(MediaType.APPLICATION_PDF)
+    				    .headers(h2).body(new ByteArrayResource(responseBody));
+    					    		
     	
 		} catch (Exception e) {
 			System.out.print(""+e.getMessage());
