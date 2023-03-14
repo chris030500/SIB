@@ -73,6 +73,10 @@ public class ProductoService {
 			return iProductoRepository.productoPorNumero(numero);
 		}
 		
+		public int cambiarKycYDescripcion(String kyc, String descripcion, Integer idProducto) {
+			return iProductoRepository.cambiarKycYDescripcion(kyc, descripcion, idProducto);
+		}
+		
 		
 
 }
