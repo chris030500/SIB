@@ -107,13 +107,14 @@ public class SolicitudEnvioRestController {
 			@RequestParam(name = "solicitud", required = false) Integer solicitud,
 			@RequestParam(name = "producto", required = false) Integer producto,
 			@RequestParam(name = "comentarioValidacion", required = false) String comentarioValidacion,
-			@RequestParam(name = "fEnvio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fEnvio,
-			@RequestParam(name = "hEnvio", required = false) String hEnvio,
-			@RequestParam(name = "fCancelacion", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fCancelacion,
-			@RequestParam(name = "hCancelacion", required = false) String hCancelacion) throws IOException {
+			@RequestParam(name = "fEnvio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fEnvio,
+			@RequestParam(name = "hEnvio", required = true) String hEnvio,
+			@RequestParam(name = "fCancelacion", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fCancelacion,
+			@RequestParam(name = "hCancelacion", required = true) String hCancelacion) throws IOException {
 		logger.info("Ejecutando guardarSolicitudEnvio");
 		// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
 		// Obtenemos el usuario autentificado
+		System.out.println("Fecha cancelacion: " +fCancelacion);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		// Obtenemos el nombre del usuario autentificado
 		Usuario usu = usuarioService.findByNombre(auth.getName());
