@@ -44,8 +44,8 @@ public class JasperReportController {
 	
     protected final Log logger = LogFactory.getLog(this.getClass());
 	
-    //private String extPDF = ".pdf";
-    //private String extXLS = ".xls";
+    private String extPDF = ".pdf";
+    private String extXLS = ".xls";
     
     
 	@SuppressWarnings("deprecation")
@@ -53,9 +53,7 @@ public class JasperReportController {
     public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "idReporte") Integer idReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
    	 
     	try {
-    					
-    					
-    					
+    					System.out.println("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
 						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
     					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros;
@@ -80,7 +78,13 @@ public class JasperReportController {
     					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
 
     					// ResponseBody
-    					byte[] responseBody = response.getBody();
+    					byte[] responseBody = null;
+    					
+    					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
+    						responseBody = response.getBody();
+    					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
+    						responseBody = Base64.decodeBase64(response.getBody());
+    					}
     					
     					
     					//fecha de creacion
