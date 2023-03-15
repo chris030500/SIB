@@ -1,18 +1,11 @@
 package ahorrosbienestar.sib.std.reportesJasper.model;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name="TBL_CAT_REPORTES_JASPER")
@@ -20,8 +13,6 @@ public class ReporteJasper {
 
 	@Column(name="PK_ID_REPORTE")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="reporteJasper_seq")
-	@SequenceGenerator(name = "reporteJasper_seq", sequenceName = "reporteJasper_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_reporte;
 
 	@Column(name = "VC_URL_REPORTE", columnDefinition = "VARCHAR(100)")
@@ -37,24 +28,9 @@ public class ReporteJasper {
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
 	private int i_estatus;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_REGISTRO")
-	private LocalDate dt_fecha_registro;
+	private Date dt_fecha_registro;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@Column(name = "DT_FECHA_CANCELACION")
-	private LocalDate dt_fecha_cancelacion;
-
-	public LocalDate getDt_fecha_cancelacion() {
-		return dt_fecha_cancelacion;
-	}
-
-	public void setDt_fecha_cancelacion(LocalDate dt_fecha_cancelacion) {
-		this.dt_fecha_cancelacion = dt_fecha_cancelacion;
-	}
-
 	public int getPk_id_reporte() {
 		return pk_id_reporte;
 	}
@@ -95,11 +71,11 @@ public class ReporteJasper {
 		this.i_estatus = i_estatus;
 	}
 
-	public LocalDate getDt_fecha_registro() {
+	public Date getDt_fecha_registro() {
 		return dt_fecha_registro;
 	}
 
-	public void setDt_fecha_registro(LocalDate dt_fecha_registro) {
+	public void setDt_fecha_registro(Date dt_fecha_registro) {
 		this.dt_fecha_registro = dt_fecha_registro;
 	}
 
