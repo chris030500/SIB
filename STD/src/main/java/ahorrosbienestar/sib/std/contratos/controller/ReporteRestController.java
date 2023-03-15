@@ -35,6 +35,7 @@ public class ReporteRestController {
 	@Autowired
 	private CoreBancarioService coreBancarioService;
 	
+	
 	@GetMapping("/buscaDatos/{solicitud}")
     public List<ValidaSolicitudDto> obtSolicitud(@PathVariable int solicitud, Model model){
 		try {
@@ -60,7 +61,7 @@ public class ReporteRestController {
 	
 	@GetMapping("/contratoSTD/{id}/{solicitud}")
     public ResponseEntity<Resource> contratoSTD(@PathVariable int id,@PathVariable int solicitud, Model model){
-		try {
+		try {		
 	        return this.iReporteContratoRepository.export(id,solicitud);
 		} catch (Exception e) {
 			System.out.print(""+e.getMessage());
