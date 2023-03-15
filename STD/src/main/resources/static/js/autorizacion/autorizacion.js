@@ -275,7 +275,7 @@ function observacionesSolicitud(tipo) {
 		closeOnClickOutside: false,
 	})
 		.then((observaciones) => {
-			if (observaciones) {
+			if (observaciones && observaciones.length <= 200) {
 				swal("Solicitud actualizada", {
 					icon: "success",
 				})
@@ -285,11 +285,17 @@ function observacionesSolicitud(tipo) {
 				actualizarSolicitud(observaciones, tipo);
 			} else if (observaciones == "") {
 				// Mandamos alerta de que no hay texto
-				swal("Debes de agregar las observaciones para poder " + tipo, {
+				swal("Debes agregar observaciones para poder " + tipo, {
 					icon: "info",
 					closeOnClickOutside: false,
 				});
 
+			} else if (observaciones.length > 200) {
+				// Mandamos una alerta
+				swal("No debes de exceder más de 200 carácteres!", {
+					icon: "info",
+					closeOnClickOutside: false,
+				});
 			} else { }
 		});
 }

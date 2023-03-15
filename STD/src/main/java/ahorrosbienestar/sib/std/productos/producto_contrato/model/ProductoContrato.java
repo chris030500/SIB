@@ -52,6 +52,12 @@ public class ProductoContrato {
 
 	@Column(name = "VC_CONTRATO")
 	private String vc_contrato;
+	
+	@Column(name = "VC_IDENTIFICADOR_KYC", columnDefinition = "varchar(40)")
+	private String vc_identificador_kyc;
+	
+	@Column(name = "VC_DESCRIPCION_PRODUCTO", columnDefinition = "varchar(30)")
+	private String vc_descripcion_producto;
 
 	public int getPk_id_producto() {
 		return pk_id_producto;
@@ -132,6 +138,24 @@ public class ProductoContrato {
 	public void setVc_contrato(String vc_contrato) {
 		this.vc_contrato = vc_contrato;
 	}
+
+	public String getVc_identificador_kyc() {
+		return vc_identificador_kyc;
+	}
+
+	public void setVc_identificador_kyc(String vc_identificador_kyc) {
+		this.vc_identificador_kyc = vc_identificador_kyc;
+	}
+
+	public String getVc_descripcion_producto() {
+		return vc_descripcion_producto;
+	}
+
+	public void setVc_descripcion_producto(String vc_descripcion_producto) {
+		this.vc_descripcion_producto = vc_descripcion_producto;
+	}
+	
+	
 
 
 }

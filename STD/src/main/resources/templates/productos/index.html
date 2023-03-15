@@ -6,7 +6,7 @@
 <head th:replace="layouts/base-layout :: head">
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<!--<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">-->
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 
@@ -106,20 +106,26 @@
 
 				</div>
 			</div>
-			<div class="table-responsive">
-				<table class="table table-bordered table-striped" style="margin-top: 10px;">
+			<!--<div class="table-responsive">-->
+			<div class="row">
+				<!--<table class="table table-bordered table-striped" style="margin-top: 10px;">-->
+				<table class="table table-bordered" style="width: 100%;" id="productoTable">
 					<thead>
 						<tr>
+							<th style="visibility:collapse; display:none;"></th>
 							<th>#</th>
 							<th>Producto</th>
 							<th>Estatus</th>
 							<th>Tipo</th>
 							<th>Fecha Registro </th>
 							<th>Fecha Cancelacion</th>
+							<th>Identificador KYC</th>
+							<th>Descripción Producto</th>
 							<th>Contrato</th>
-							<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
-							<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
-							<th sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"></th>
+							<th>Acciones</th>
+							<!--<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
+								<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
+								<th sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"></th>-->
 						</tr>
 					</thead>
 					<tbody>
@@ -134,34 +140,40 @@
 							<td
 								th:text="${listaProductos.dt_fecha_cancelacion}  == null ? 'Sin registro' : ${listaProductos.dt_fecha_cancelacion}">
 							</td>
+							<td th:text="${listaProductos.vc_identificador_kyc}"></td>
+							<td th:text="${listaProductos.vc_descripcion_producto}"></td>
 							<td
 								th:text="${listaProductos.vc_contrato} == null ? 'Sin registro' : ${listaProductos.vc_contrato}">
 							</td>
-							<td sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="text-center">
+							<td>
 								<div class="dt-buttons">
-									<button class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Reactivar"
-										data-bs-target="#basicModal" aria-controls="table-datatable" type="button"
-										data-tooltip="Add">
+									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
+										title="Reactivar" data-bs-target="#basicModal" aria-controls="table-datatable"
+										type="button" data-tooltip="Add">
 										<a th:href="@{reactivar/}+${listaProductos.i_no_producto}">
 											<i class="bi bi-check-circle-fill"></i>
 										</a>
 									</button>
-								</div>
-							</td>
-							<td sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="text-center">
-								<div class="dt-buttons">
-									<button class="btn btn-light btn-sm" data-bs-toggle="tooltip"
+									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
 										data-bs-placement="top" title="Baja Producto" aria-controls="table-datatable"
 										type="button" data-tooltip="Refresh">
 										<a th:href="@{eliminar/}+${listaProductos.i_no_producto}">
 											<i class="bi bi-x-circle-fill"></i>
 										</a>
 									</button>
-								</div>
-							</td>
-							<td sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')" class="text-center">
-								<div class="dt-buttons">
-									<button class="btn btn-light btn-sm" data-bs-toggle="tooltip"
+									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="modal"
+										title="Editar Producto" data-bs-target="#basicModalProducto"
+										aria-controls="table-datatable" type="button"
+										th:onclick="'modalEditarProducto(' + ${listaProductos.pk_id_producto} + ')'"
+										data-tooltip="Add">
+										<i class="bi bi-pencil-square"></i>
+
+									</button>
+									<button sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"
+										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
 										data-bs-placement="top" title="Relacionar Documentos"
 										aria-controls="table-datatable" type="button" data-tooltip="Refresh"
 										onclick="documentos(this)" id="btnRelacion">
@@ -222,12 +234,49 @@
 				</div>
 			</div>
 
-			<th:block layout:fragment="page-scripts">
-				<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
-				<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-				<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-				<script th:src="@{/js/producto/producto.js}"></script>
-			</th:block>
+			<div class="modal fade" id="basicModalProducto" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Editar Producto</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form id="edit-form" th:method="post" th:object="${listaProductos}">
+								<div class="col-12">
+									<label for="idUsuario" class="form-label">Id
+										Producto</label>
+									<input type="text" class="form-control" id="idProductoEditar"
+										 readonly>
+									<label for="nombre" class="form-label">Identificardor KYC</label>
+									<input type="text" class="form-control" id="kyc" >
+									<label for="password" class="form-label">Descripción del producto</label>
+									<input type="text" class="form-control" id="descripcion"
+										>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+									<button type="button" onclick="editaProducto()"
+										class="btn btn-primary">Guardar</button>
+								</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>-->
+		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>-->
+		<script th:src="@{/js/producto/producto.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/js/producto/dataTableProducto.js}"></script>
+	</th:block>
 </body>
 
 </html>

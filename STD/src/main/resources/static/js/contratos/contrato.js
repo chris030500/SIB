@@ -242,7 +242,6 @@ function mostrarProducto(datos) {
 				buscaCliente(datos[0].solicitudCreditoID);
 			} else {
 				swal({
-					title: "Error",
 					text: "El producto de la solicitud no cuenta con un contrato valido",
 					icon: "warning",
 				});
