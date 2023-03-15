@@ -37,11 +37,11 @@ function verReporte() {
 					} else {
 
 						//"report/contratoSTD/";
-						var nombreReporte = "CONTRATO_APERTURA";
-						var servicioReporte = "exportarReporte/generarReporte?nombreReporte=";
+						var idReporte = 1;
+						var servicioReporte = "exportarReporte/generarReporte?idReporte=";
 						
 						
-						var urlReporte = window.location.origin+"/STD/"+servicioReporte+nombreReporte+"&parametros=?ID_Reporte="+respuesta.pk_id_contrato+"&tipoDocumento=.pdf"+"&identificadorDoc="+respuesta.i_no_solicitud;
+						var urlReporte = window.location.origin+"/STD/"+servicioReporte+idReporte+"&parametros=?ID_Reporte="+respuesta.pk_id_contrato+"&tipoDocumento=.pdf"+"&identificadorDoc="+respuesta.i_no_solicitud;
 						console.log("url:"+urlReporte);
 						window.open(urlReporte);
 						window.focus();

@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import javax.ws.rs.Produces;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -25,15 +23,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
-import ahorrosbienestar.sib.std.reportesJasper.service.JasperReportService;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 @CrossOrigin
 @RestController
-//@Produces("application/pdf")
 @RequestMapping("/exportarReporte")
 
 public class JasperReportController {
@@ -42,20 +38,25 @@ public class JasperReportController {
 	private ConfigService configService;
 	
 	@Autowired
-	private JasperReportService jasperReportService;
+	private IReporteRepository iReporteRepository;
+	
+	
 	
     protected final Log logger = LogFactory.getLog(this.getClass());
 	
-    private String extPDF = ".pdf";
-    private String extXLS = ".xls";
+    //private String extPDF = ".pdf";
+    //private String extXLS = ".xls";
     
     
+	@SuppressWarnings("deprecation")
 	@RequestMapping("generarReporte")
-    public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "nombreReporte") String nombreReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
+    public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "idReporte") Integer idReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
    	 
     	try {
-        
-    					ReporteJasper report = jasperReportService.findByNombre(nombreReporte);
+    					
+    					
+    					
+						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
     					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros;
     					
