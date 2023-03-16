@@ -53,12 +53,19 @@ public class JasperReportController {
     public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "idReporte") Integer idReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
    	 
     	try {
+    		/**
+    		 * 
+    		 * para el campo parametros si envian mas de 1 parametro usar el caracter "~" para dividir los parametros ejemplo: FECHA_INICIO=2023/03/01~FECHA_FIN=2023/03/05
+						
+    		 */
+    		
+    		
     					System.out.println("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
 						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
-    					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros;
+    					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
     					
-    					System.out.print("url:"+urlGenerarReporte);
+    					System.out.println("url:"+urlGenerarReporte);
     					HttpHeaders headers = new HttpHeaders();
     				    headers = createHeaders(configService.findAll().get(15).getVc_valor_propiedad(), configService.findAll().get(16).getVc_valor_propiedad());
     					headers.set("Content-Type",report.getVc_tipo_contenido());
@@ -78,28 +85,38 @@ public class JasperReportController {
     					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
 
     					// ResponseBody
-    					byte[] responseBody = null;
+    					byte[] responseBody = response.getBody();
     					
+    					//exportar reporte 
+    					String fechaCreacion = null;
+    					StringBuilder stringBuilder = null;
+    					ContentDisposition contentDisposition = null;
+    					HttpHeaders h2 = new HttpHeaders();
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
-    						responseBody = response.getBody();
+    						//fecha de creacion
+        					fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+        				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
+        				    contentDisposition = ContentDisposition.builder("inline")
+        				    .filename(stringBuilder.append("_")
+        				    .append(identificadorDoc).append("_")
+        				    .append(fechaCreacion)
+        				    .append(tipoDocumento)
+        				    .toString())
+        				    .build();
+        				    h2.setContentDisposition(contentDisposition);
     					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
-    						responseBody = Base64.decodeBase64(response.getBody());
+    						fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+        				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
+        				    contentDisposition = ContentDisposition.builder("attachment")
+        				    .filename(stringBuilder.append("_")
+        				    .append(identificadorDoc).append("_")
+        				    .append(fechaCreacion)
+        				    .append(tipoDocumento)
+        				    .toString())
+        				    .build();
+        				    h2.setContentDisposition(contentDisposition);
     					}
     					
-    					
-    					//fecha de creacion
-    					String fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
-    				    StringBuilder stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
-    				    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-    				    .filename(stringBuilder.append("_")
-    				    .append(identificadorDoc).append("_")
-    				    .append(fechaCreacion)
-    				    .append(tipoDocumento)
-    				    .toString())
-    				    .build();
-    				    HttpHeaders h2 = new HttpHeaders();
-    				    h2.setContentDisposition(contentDisposition);
-    				    
     				    return ResponseEntity.ok().contentLength((long) responseBody.length)
     				    .contentType(MediaType.APPLICATION_PDF)
     				    .headers(h2).body(new ByteArrayResource(responseBody));
