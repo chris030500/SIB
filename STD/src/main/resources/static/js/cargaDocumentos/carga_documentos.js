@@ -617,7 +617,7 @@ function altaSolicitud() {
 										});*/
 										uploadFile2(solicitudCredito, clienteId, idEnvio);
 										uploadFile(fCancelacion, productoNomina, idEnvio);
-										setTimeout(() => spinner.style.display = 'none', 3000);
+										//setTimeout(() => spinner.style.display = 'none', 3000);
 										swal({
 											icon: "success",
 											title: "Registro de solicitud exitoso.",
