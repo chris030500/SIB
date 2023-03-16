@@ -98,16 +98,16 @@ public class obtenerCoordenadasRestController {
 					+ height);
 
 			// Drawing a rectangle
-			contentStream.addRect(c[1] - acomodoX, (ph - c[0]) - acomodoY, widht, height);
+			//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) - acomodoY, widht, height);
 			//contentStream.addLine(x1, y1, x2, y2);
 			//contentStream.addLine(x1, y1, 500, 500);
 			//contentStream.lineTo(x2, y2);
-			contentStream.setLineWidth(2);
-			contentStream.setNonStrokingColor(Color.WHITE);
-			contentStream.setStrokingColor(Color.BLACK);
-			contentStream.stroke();
-			// Drawing a rectangle
-			contentStream.fill();
+//			contentStream.setLineWidth(2);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
+//			// Drawing a rectangle
+//			contentStream.fill();
 
 			logger.info("Se han agregado correctamente los espacios de firma");
 
@@ -187,11 +187,11 @@ public class obtenerCoordenadasRestController {
 			logger.info("Coordenadas del espacio de firma: ");
 			logger.info("x: " + (c[1] - acomodoX) + " y: " + (ph - c[0]) + " widht: " + widht + " height: " + height);
 			// Drawing a rectangle
-			contentStream.addRect(c[1] - acomodoX, (ph - c[0]), widht, height);
-			contentStream.setLineWidth(1);
-			contentStream.setNonStrokingColor(Color.WHITE);
-			contentStream.setStrokingColor(Color.BLACK);
-			contentStream.stroke();
+//			contentStream.addRect(c[1] - acomodoX, (ph - c[0]), widht, height);
+//			contentStream.setLineWidth(1);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
 			// Drawing a rectangle
 			contentStream.fill();
 
@@ -284,7 +284,7 @@ public class obtenerCoordenadasRestController {
 				logger.info(
 						"x: " + c[1] + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: " + height);
 				// Drawing a rectangle
-				contentStream.addRect(c[1], (ph - c[0]) + acomodoY, widht, height);
+				//contentStream.addRect(c[1], (ph - c[0]) + acomodoY, widht, height);
 			}
 			// Sentencia que obtine las coordenadas de la hoja 2
 			if (c[2] == 2.0) {
@@ -315,7 +315,7 @@ public class obtenerCoordenadasRestController {
 				logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht
 						+ " height: " + height);
 
-				contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+				//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
 			}
 			// Aquí obtenemos la última posición del tamaño de la lista
 			float[] ultimo = list.get(list.size() - 1);
@@ -352,15 +352,15 @@ public class obtenerCoordenadasRestController {
 				logger.info("x: " + (ultimo[1] - acomodoX) + " y: " + ((ph - ultimo[0]) + acomodoY) + " widht: " + widht
 						+ " height: " + height);
 				// Drawing a rectangle
-				contentStream.addRect(ultimo[1] - acomodoX, (ph - ultimo[0]) + acomodoY, widht, height);
+				//contentStream.addRect(ultimo[1] - acomodoX, (ph - ultimo[0]) + acomodoY, widht, height);
 			}
 
-			contentStream.setLineWidth(1);
-			contentStream.setNonStrokingColor(Color.WHITE);
-			contentStream.setStrokingColor(Color.BLACK);
-			contentStream.stroke();
-			// Drawing a rectangle
-			contentStream.fill();
+//			contentStream.setLineWidth(1);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
+//			// Drawing a rectangle
+//			contentStream.fill();
 			logger.info("Se han agregado correctamente los espacios de firma");
 
 			contentStream.close();
@@ -433,13 +433,13 @@ public class obtenerCoordenadasRestController {
 					+ height);
 
 			// Drawing a rectangle
-			contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
-			contentStream.setLineWidth(1);
-			contentStream.setNonStrokingColor(Color.WHITE);
-			contentStream.setStrokingColor(Color.BLACK);
-			contentStream.stroke();
-			// Drawing a rectangle
-			contentStream.fill();
+//			contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+//			contentStream.setLineWidth(1);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
+//			// Drawing a rectangle
+//			contentStream.fill();
 
 			logger.info("Se han agregado correctamente los espacios de firma");
 			// Closing the ContentStream object
@@ -492,10 +492,10 @@ public class obtenerCoordenadasRestController {
 			// Retrieving a page of the PDF Document
 			PDPage page = document.getPage((int) c[2] - 1);
 
-			PDRectangle rect = page.getMediaBox();
+			//PDRectangle rect = page.getMediaBox();
 
 			float ph = page.getMediaBox().getUpperRightY();
-			float acomodoX = 70.00f;
+			float acomodoX = 00.00f;
 			float acomodoY = 00.00f;
 			float widht = 0.00f;
 			float height = 0.00f;
@@ -504,8 +504,10 @@ public class obtenerCoordenadasRestController {
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
 			if(c[2] != 1.0) {
 				
-				if(c != list.get(list.size() - 1)) {
-					acomodoY = 60.00f;
+				if(c == list.get(list.size() - 3)) {
+					System.out.println("c: " + c);
+					acomodoY = 10.00f;
+					acomodoX = 45.00f;
 					widht = 130.00f;
 					height = 40.00f;
 					float x1 = c[1] - acomodoX;
@@ -526,17 +528,21 @@ public class obtenerCoordenadasRestController {
 					firmaDocto.setF_coord_firma_yCentral(yCentral);
 					firmaDocto = firmaDoctoService.save(firmaDocto);
 					logger.info("Coordenadas del espacio de firma: ");
-					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
+					System.out.println("Coordenadas del espacio de firma: ");
+					System.out.println("x: " + (c[1] ) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
+							+ height);
+					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
 							+ height);
 					// Drawing a rectangle
-					contentStream.addRect(c[1] - acomodoX, (ph - c[0]) - acomodoY, widht, height);
+					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
 				}
 				
 				if(c == list.get(list.size() - 1)) {
 					logger.info("Obtenemos la última coordenada");
 					acomodoY = 5.00f;
+					acomodoX = 70.00f;
 					widht = 130.00f;
-					height = 20.00f;
+					height = 35.00f;
 					float x1 = c[1] - acomodoX;
 					float y1 = (ph - c[0]) + acomodoY;
 					float x2 = x1 + widht;
@@ -558,18 +564,18 @@ public class obtenerCoordenadasRestController {
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
 							+ height);
 					// Drawing a rectangle
-					contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
 				}
 
 				
 			}
 			
-			contentStream.setLineWidth(1);
-			contentStream.setNonStrokingColor(Color.WHITE);
-			contentStream.setStrokingColor(Color.BLACK);
-			contentStream.stroke();
-			// Drawing a rectangle
-			contentStream.fill();
+//			contentStream.setLineWidth(1);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
+//			// Drawing a rectangle
+//			contentStream.fill();
 
 			logger.info("Se han agregado correctamente los espacios de firma");
 
@@ -580,6 +586,150 @@ public class obtenerCoordenadasRestController {
 		}
 		// Saving the document
 		File file1 = new File(url);
+		document.save(file1);
+
+		// Closing the document
+		document.close();
+
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
+
+	}
+	
+	@GetMapping("/contrato2")
+	public ResponseEntity<?> obtenerCoordenadasContrato2() throws IOException {
+
+		
+		// PDDocument doc1 = PDDocument.load(file);
+		System.out.println("Contrato");
+		//System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
+		logger.info("Ejecutando obtenerCoordenadasContrato");
+		String keyWords = "FIRMA";
+		String archivo = "C:/Users/osvaldo.escamilla/Documents/home/STD/Envio/112053/112053-253188-25/Contrato_Apertura_253188_15_03_2023.pdf";
+//		String pdfPath = url;
+//		logger.info("url: " + url);
+//		logger.info("pdfPath: " + pdfPath);
+//		System.out.println("url: " + url);
+//		System.out.println("pdfPath: " + pdfPath);
+		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, archivo);
+		List<float[]> list = kwp.getCoordinate();
+		// float[] c = list.get(0);
+		File file = new File(archivo);
+		PDDocument document = PDDocument.load(file);
+		//doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+		System.out.println("Total de paginas Contrato: " + document.getNumberOfPages() );
+		float xCentral = 0;
+		float yCentral = 0;
+		for (int i = 0; i < list.size(); i++) {
+			float[] c = list.get(i);
+
+			logger.info("Página" + c[2]);
+			System.out.println("Página" + c[2]);
+//			System.out.println("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
+//			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
+
+			// Retrieving a page of the PDF Document
+			PDPage page = document.getPage((int) c[2] - 1);
+
+			//PDRectangle rect = page.getMediaBox();
+
+			float ph = page.getMediaBox().getUpperRightY();
+			float acomodoX = 00.00f;
+			float acomodoY = 00.00f;
+			float widht = 0.00f;
+			float height = 0.00f;
+
+			// Instantiating the PDPageContentStream class
+			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
+			if(c[2] != 1.0) {
+				
+				if(c == list.get(list.size() - 3)) {
+					//System.out.println("c: " + c.toString());
+					//System.out.println("Coordenada -3");
+					//System.out.println(list.get(list.size()));
+					acomodoY = 10.00f;
+					acomodoX = 45.00f;
+					widht = 130.00f;
+					height = 40.00f;
+					float x1 = c[1] - acomodoX;
+					float y1 = (ph - c[0]) - acomodoY;
+					float x2 = x1 + widht;
+					float y2 = y1 + height;
+					int hoja = (int) c[2];
+					xCentral = (x1+x2)/2;
+					yCentral = (y1+y2)/2;
+//					FirmaDocto firmaDocto = new FirmaDocto();
+//					firmaDocto.setF_coord_firma_x1(x1);
+//					firmaDocto.setF_coord_firma_x2(x2);
+//					firmaDocto.setF_coord_firma_y1(y1);
+//					firmaDocto.setF_coord_firma_y2(y2);
+//					firmaDocto.setI_no_hoja(hoja);
+//					firmaDocto.setFk_id_docto_envio(dEnvio);
+//					firmaDocto.setF_coord_firma_xCentral(xCentral);
+//					firmaDocto.setF_coord_firma_yCentral(yCentral);
+//					firmaDocto = firmaDoctoService.save(firmaDocto);
+					logger.info("Coordenadas del espacio de firma: ");
+					System.out.println("Coordenadas del espacio de firma: ");
+					System.out.println("x: " + (c[1] ) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
+							+ height);
+					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
+							+ height);
+					// Drawing a rectangle
+					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+				}
+				
+				if(c == list.get(list.size() - 1)) {
+					System.out.println("Obtenemos la última coordenada");
+					logger.info("Obtenemos la última coordenada");
+					acomodoY = 5.00f;
+					acomodoX = 70.00f;
+					widht = 130.00f;
+					height = 35.00f;
+					float x1 = c[1] - acomodoX;
+					float y1 = (ph - c[0]) + acomodoY;
+					float x2 = x1 + widht;
+					float y2 = y1 + height;
+					int hoja = (int) c[2];
+					xCentral = (x1+x2)/2;
+					yCentral = (y1+y2)/2;
+//					FirmaDocto firmaDocto = new FirmaDocto();
+//					firmaDocto.setF_coord_firma_x1(x1);
+//					firmaDocto.setF_coord_firma_x2(x2);
+//					firmaDocto.setF_coord_firma_y1(y1);
+//					firmaDocto.setF_coord_firma_y2(y2);
+//					firmaDocto.setI_no_hoja(hoja);
+//					firmaDocto.setFk_id_docto_envio(dEnvio);
+//					firmaDocto.setF_coord_firma_xCentral(xCentral);
+//					firmaDocto.setF_coord_firma_yCentral(yCentral);
+//					firmaDocto = firmaDoctoService.save(firmaDocto);
+					System.out.println("Coordenadas del espacio de firma:");
+					System.out.println("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
+							+ height);
+					logger.info("Coordenadas del espacio de firma: ");
+					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
+							+ height);
+					// Drawing a rectangle
+					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+				}
+
+				
+			}
+			
+//			contentStream.setLineWidth(1);
+//			contentStream.setNonStrokingColor(Color.WHITE);
+//			contentStream.setStrokingColor(Color.BLACK);
+//			contentStream.stroke();
+//			// Drawing a rectangle
+//			contentStream.fill();
+
+			logger.info("Se han agregado correctamente los espacios de firma");
+
+
+			// Closing the ContentStream object
+			contentStream.close();
+
+		}
+		// Saving the document
+		File file1 = new File(archivo);
 		document.save(file1);
 
 		// Closing the document

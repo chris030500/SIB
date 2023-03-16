@@ -481,6 +481,7 @@ function altaSolicitud() {
 
 			var miArray = new Array(numTr);
 			var conteo = 0;
+			//For que nos ayuda a validar la carga de archivos
 			for (i = 0; i < numTr; i++) {
 				var numTr1 = $('#tablaDocumentos tbody tr').value;
 				console.log("numTr1: " + numTr1);
@@ -504,118 +505,165 @@ function altaSolicitud() {
 			}
 
 			if (conteo == numTr) {
+
+
+				var longitud = document.getElementsByClassName("archivo").length;
+				var miArray2 = new Array(longitud);
+				var conteo2 = 0;
+				//For para validar el nombre de los documentos
+				for (i = 0; i < longitud; i++) {
+					//var documento = document.getElementsByClassName("archivo")[i].id;
+					var n = document.getElementsByClassName("archivo")[i].files[0].name;
+					/*console.log("documento: " + documento);
+					console.log("n: " + n);*/
+					//console.log("n includes: " + n.includes("AnexosContrato") ? 'Si' : 'No' );
+					//Sentencia que evalua si el nombre del archivo es aceptado o no
+					if (n.includes("AnexosContrato") || n.includes("Contrato_Apertura")
+						|| n.includes("Pagare") || n.includes("PlandePagos")) {
+						miArray2[i] = true;
+						//console.log("Si tiene nombre correcto");
+					} else {
+						miArray2[i] = false;
+						//console.log("No tiene nombre correcto");
+					}
+					/*console.log("documento uploadFile: " + documento);
+					console.log("Files: " + JSON.stringify(n));*/
+
+				}
+
+				for (i = 0; i < longitud; i++) {
+					if (miArray2[i] === true) {
+						conteo2 = conteo2 + 1;
+					}
+				}
+				console.log("conteo2 = " + conteo2);
+				console.log("longitud: " + longitud);
+				if (conteo2 == longitud) {
+					/*console.log("Los nombres de los documentos coinciden");
+					console.log("Ejecuta el guardado de la solicitud");*/
+					//Ejecuta el guardado de la solicitud ya que todos los documentos cumplan con el nombre establecido
+					$.ajax({
+						async: false,
+						url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
+						type: "GET",
+						dataType: "JSON",
+						success: function(respuesta) {
+							/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+							console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
+							//console.log("RESPUESTA: " + JSON.stringify(respuesta));
+							var r;
+							if (JSON.stringify(respuesta) == "[]") {
+								r = null;
+							} else {
+								r = JSON.stringify(respuesta[0].estatus);
+							}
+							//var r = JSON.stringify(respuesta[0].estatus);
+							//console.log("r: " + r);
+							if (r == 1) {
+								swal({
+									title: "Solicitud en proceso de: ",
+									text: "Autorizacion de documentos",
+									icon: "info",
+								});
+								//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
+							} else if (r == 3) {
+								swal({
+									title: "Solicitud en proceso de: ",
+									text: "Autorización de documentos para firma digital",
+									icon: "info",
+								});
+								//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
+							} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
+								//console.log("Puede realizar el registro");
+								var producto = document.getElementById('producto').value;
+								//var estatus = 1;
+								var comentarioValidacion = document.getElementById('comentarioValidacion').value;
+								var fEnvio = document.getElementById('fEnvio').value;
+								var hEnvio = document.getElementById('hEnvio').value;
+								var fCancelacion = document.getElementById('fCancelacion').value;
+								var hCancelacion = document.getElementById('hCancelacion').value;
+								var productoNomina = document.getElementById('productoNomina').value;
+								console.log("Fecha cancelación: " + fCancelacion);
+								/*console.log("noSolicitud: " + solicitud);
+								console.log("productoId: " + producto);
+								console.log("estatus: " + estatus);
+								console.log("obserReticion: " + comentarioValidacion);
+								console.log("fechaEnvio: " + fEnvio);
+								console.log("horaEnvio: " + hEnvio);
+								console.log("fechaCancelacion: " + fCancelacion);
+								console.log("horaCancelacion:" + hCancelacion);
+								console.log("productoNomina: " + productoNomina);*/
+								var solicitudCredito = document.getElementById("solicitudCredito").value;
+								var clienteId = document.getElementById("clienteId").value;
+								$.ajax({
+									async: false,
+									url: urlBase + "solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
+										"&comentarioValidacion=" + comentarioValidacion +
+										"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
+										"&hCancelacion=" + hCancelacion,
+									type: "POST",
+									dataType: "JSON",
+									success: function(respuesta) {
+										//console.log("Respuesta: " + JSON.stringify(respuesta));
+										var idEnvio = JSON.stringify(respuesta);
+										/*console.log("Entro en success de get");
+										console.log("Respuesta: " +respuesta);*/
+										//console.log("Se guardo la solicitud de envio: ");
+										/*swal({
+											icon: "success",
+											title: "Registro de solicitud exitoso.",
+											showConfirmButton: false
+						
+										});*/
+										uploadFile2(solicitudCredito, clienteId, idEnvio);
+										uploadFile(fCancelacion, productoNomina, idEnvio);
+										//setTimeout(() => spinner.style.display = 'none', 3000);
+										swal({
+											icon: "success",
+											title: "Registro de solicitud exitoso.",
+											showConfirmButton: false
+
+										}).then((result) => {
+											window.location.replace(urlBase + "carga_documentos");
+										});
+
+									},
+									error: function(respuesta) {
+										//console.log("Entro en error");
+										/*spinner.style.display = 'none';
+										principal.style.display = 'block';*/
+										swal({
+											icon: "warning",
+											title: "Error: " + respuesta.status,
+											showConfirmButton: false
+										});
+
+									}
+								});
+							}
+						}, error: function(respuesta) {
+							/*spinner.style.display = 'none';
+							principal.style.display = 'block';*/
+							//console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+							swal({
+								title: "Error validarCoreSolicitudEnvio",
+								text: JSON.stringify(respuesta),
+								icon: "warning",
+							});
+						}
+					});
+				} else {
+					console.log("Favor de revisar los nombres de los archivos");
+					swal({
+						title: "Error, nombres de archivos incorrectos",
+						text: "Favor de revisar los nombres de los archivos",
+						icon: "warning",
+					});
+				}
+
 				/*console.log("Todos los valores son true");
 				console.log("Ejecuta para registrar los documentos");*/
-				$.ajax({
-					async: false,
-					url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
-					type: "GET",
-					dataType: "JSON",
-					success: function(respuesta) {
-						/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
-						console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
-						//console.log("RESPUESTA: " + JSON.stringify(respuesta));
-						var r;
-						if (JSON.stringify(respuesta) == "[]") {
-							r = null;
-						} else {
-							r = JSON.stringify(respuesta[0].estatus);
-						}
-						//var r = JSON.stringify(respuesta[0].estatus);
-						//console.log("r: " + r);
-						if (r == 1) {
-							swal({
-								title: "Solicitud en proceso de: ",
-								text: "Autorizacion de documentos",
-								icon: "info",
-							});
-							//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
-						} else if (r == 3) {
-							swal({
-								title: "Solicitud en proceso de: ",
-								text: "Autorización de documentos para firma digital",
-								icon: "info",
-							});
-							//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
-						} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
-							//console.log("Puede realizar el registro");
-							var producto = document.getElementById('producto').value;
-							//var estatus = 1;
-							var comentarioValidacion = document.getElementById('comentarioValidacion').value;
-							var fEnvio = document.getElementById('fEnvio').value;
-							var hEnvio = document.getElementById('hEnvio').value;
-							var fCancelacion = document.getElementById('fCancelacion').value;
-							var hCancelacion = document.getElementById('hCancelacion').value;
-							var productoNomina = document.getElementById('productoNomina').value;
-							console.log("Fecha cancelación: " + fCancelacion);
-							/*console.log("noSolicitud: " + solicitud);
-							console.log("productoId: " + producto);
-							console.log("estatus: " + estatus);
-							console.log("obserReticion: " + comentarioValidacion);
-							console.log("fechaEnvio: " + fEnvio);
-							console.log("horaEnvio: " + hEnvio);
-							console.log("fechaCancelacion: " + fCancelacion);
-							console.log("horaCancelacion:" + hCancelacion);
-							console.log("productoNomina: " + productoNomina);*/
-							var solicitudCredito = document.getElementById("solicitudCredito").value;
-							var clienteId = document.getElementById("clienteId").value;
-							$.ajax({
-								async: false,
-								url: urlBase + "solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
-									"&comentarioValidacion=" + comentarioValidacion +
-									"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
-									"&hCancelacion=" + hCancelacion,
-								type: "POST",
-								dataType: "JSON",
-								success: function(respuesta) {
-									//console.log("Respuesta: " + JSON.stringify(respuesta));
-									var idEnvio = JSON.stringify(respuesta);
-									/*console.log("Entro en success de get");
-									console.log("Respuesta: " +respuesta);*/
-									//console.log("Se guardo la solicitud de envio: ");
-									/*swal({
-										icon: "success",
-										title: "Registro de solicitud exitoso.",
-										showConfirmButton: false
-					
-									});*/
-									uploadFile2(solicitudCredito, clienteId, idEnvio);
-									uploadFile(fCancelacion, productoNomina, idEnvio);
-									setTimeout(() => spinner.style.display = 'none', 3000);
-									swal({
-										icon: "success",
-										title: "Registro de solicitud exitoso.",
-										showConfirmButton: false
 
-									}).then((result) => {
-										window.location.replace(urlBase + "carga_documentos");
-									});
-
-								},
-								error: function(respuesta) {
-									//console.log("Entro en error");
-									/*spinner.style.display = 'none';
-									principal.style.display = 'block';*/
-									swal({
-										icon: "warning",
-										title: "Error: " + respuesta.status,
-										showConfirmButton: false
-									});
-
-								}
-							});
-						}
-					}, error: function(respuesta) {
-						/*spinner.style.display = 'none';
-						principal.style.display = 'block';*/
-						//console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
-						swal({
-							title: "Error validarCoreSolicitudEnvio",
-							text: JSON.stringify(respuesta),
-							icon: "warning",
-						});
-					}
-				});
 			} else {
 				//console.log("No todos los valores son true");
 				swal({
