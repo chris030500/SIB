@@ -884,7 +884,7 @@ function guardarWSAuteUsuEnvDoctFirma(resultadoLogin, solicitudEnvio, idConfWS, 
 		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//console.log("Respuesta agregarRequisitionId: " + JSON.stringify(respuesta));
+			console.log("Respuesta agregarRequisitionId: " + JSON.stringify(respuesta));
 			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
 			if (requisitionId != null) {
 				guardarRespAutenticacionEnvDoctFirma(respuestaEnvioSoli, idWSAutenticacion, solicitudEnvio, requisitionId);

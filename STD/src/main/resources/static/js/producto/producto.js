@@ -5,6 +5,8 @@ var consultaDocumento = "consultaDocumento/";
 var inicio = "index";
 var actualizarDocumentos = "actualizarDocumentos/";
 var bajaDocumentos = "bajaDocumentos/";
+var editarProducto = "editar_producto/";
+var cargarProductoEditar = "cargarProducto/";
 
 var idsAnteriores = " ";
 
@@ -386,4 +388,133 @@ function documentos(btnID) {
 		}
 	});
 
+}
+
+function hola() {
+	console.log("hola");
+}
+
+function editaProducto() {
+	console.log("Entro en editarProducto");
+	var kyc = document.getElementById('kyc').value;
+	var descripcion = document.getElementById('descripcion').value;
+	var idProducto = document.getElementById('idProductoEditar').value;
+	var urlEditar = getAbsolutePath() + editarProducto;
+	console.log("urlEditar: " + urlEditar);
+	console.log("cantidad descripción: " + descripcion.length);
+	console.log("cantidad kyc: " + kyc.length);
+	if (kyc == "") {
+		swal({
+			icon: 'warning',
+			title: "El campo de identificador kyc está vacío, ingresa un identificador.",
+			showConfirmButton: false
+		});
+	} else if (kyc.length > 40) {
+		console.log("kyc : " + kyc.length);
+		swal({
+			title: "Error, excediste el número de caracteres del identificador kyc del producto.",
+			text: "Máximo 30 caracteres",
+			icon: "warning",
+		});
+	}
+	else if (descripcion == "") {
+		swal({
+			icon: 'warning',
+			title: "El campo de descripción del producto está vacío, ingresa una descripción.",
+			showConfirmButton: false
+		});
+	}
+	else if (descripcion.length > 30) {
+		swal({
+			title: "Error, excediste el número de caracteres de la descripción del producto.",
+			text: "Máximo 30 caracteres",
+			icon: "warning",
+		});
+	} else {
+		//console.log("Ejecuta ajax");
+		$.ajax({
+			url: urlEditar + "?kyc=" + kyc + "&descripcion=" + descripcion + "&idProducto=" + idProducto,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				console.log("respuesta: " + respuesta);
+				swal({
+					icon: "success",
+					title: respuesta,
+					showConfirmButton: false
+
+				}).then((result) => {
+					window.location.replace(getAbsolutePath() + inicio);
+				});
+			},
+			error: function(respuesta) {
+				swal({
+					type: 'warning',
+					title: respuesta,
+					showConfirmButton: false
+
+				}).then((result) => {
+					window.location.replace(getAbsolutePath() + inicio);
+				});
+			}
+		});
+	}
+
+}
+
+$(document).ready(function($) {
+	$("#edit-form").submit(function(event) {
+		event.preventDefault();
+		postEditarProducto();
+	});
+});
+
+function postEditarProducto() {
+	//console.log("Entro en postEditarProducto");
+	var something = $('#edit-form').serialize();
+	var editUrl = url + 'update';
+	$.post(editUrl, something, function(data) {
+		updateTable(data);
+	});
+	clearAndCloseModal('#basicModalProducto');
+}
+
+function modalEditarProducto(index) {
+	//console.log("index: " + index);
+
+	var url = getAbsolutePath() + cargarProductoEditar;
+
+	//console.log("entro en modalCambioContra");
+
+	var editUrl = url + index;
+	//console.log("editUrl: " + editUrl);
+	loadCambioProducto(editUrl);
+}
+
+function loadCambioProducto(url) {
+	/*console.log("entro en loadCambioProducto")
+	console.log("url: " + url);*/
+	$.getJSON(url, {}, function(data) {
+		populateModalProducto(data);
+	});
+}
+
+function populateModalProducto(data) {
+	//console.log("Data en populateModalProducto: " + JSON.stringify(data));
+	var idProducto = data.pk_id_producto;
+	var kyc = data.vc_identificador_kyc;
+	var descripcion = data.vc_descripcion_producto;
+	$('#idProductoEditar').val(idProducto);
+	$('#kyc').val(kyc);
+	$('#descripcion').val(descripcion);
+	/*var usuario = data.usr_historico_contrasena_id.vc_nombre_usuario;
+	var idUsu = data.usr_historico_contrasena_id.pk_id_usuario;
+	console.log("Nombre usuario: " + usuario);
+	console.log("idUsuario: " + idUsu);
+	$('#nombre1').val(usuario);
+	//var pk_id_parametros = data.pk_id_parametros;
+	//$('#idUsuario').val(idUsu);
+	$('#idUsuario1').val(idUsu);
+	$('#password').val();
+	//$('#update-name').val(data.name);*/
 }
