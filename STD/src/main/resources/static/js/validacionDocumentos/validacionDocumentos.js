@@ -590,6 +590,7 @@ function conexionApi(usuario, password, userType) {
 			} else {
 				banderaRespuesta = 1;
 				var token = respuesta.access_token;
+				console.log("TOKEN: " + token);
 				console.log("No tiene error");
 				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
 				obtenerArchivo(solicitudEnvio, token);
@@ -776,6 +777,7 @@ function obtenerArchivo(soliEnvio, token) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			console.log("Respuesta obtenerArchivo");
 			console.log("Respuesta obtenerArchivo: " + JSON.stringify(respuesta))
 			var xml = respuesta[0];
 			var pdf = respuesta[1];
@@ -801,7 +803,7 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 	var archivoXML = "xml:" + xml;
 	var archivoPDF = "pdf:" + pdf;
 	var hashPDF = "hash:" + hash;
-	var accessToken = "token:" + token
+	var accessToken = "token:" + token;
 	var jsonEnvio = [archivoXML, archivoPDF, hashPDF, accessToken];
 	var resultadoLogin = false;
 	$.ajax({
@@ -843,6 +845,7 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 
 function agregarRequisitionId(requisitionId, soliEnvio) {
 	console.log("Ejecutando agregarRequisitionId");
+	console.log("requisitionId: " + requisitionId);
 	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,
