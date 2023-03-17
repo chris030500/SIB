@@ -11,7 +11,7 @@ var urlBase = getAbsolutePath();
 var newUrlBase = urlBase.replace("solicitudEnvio/verSolicitud/", "");
 
 
-
+//Funcion para obtener la url del WS
 function WS_IAD() {
 	//var urlBase = getAbsolutePath();
 	var ws1 = "";
@@ -590,6 +590,7 @@ function conexionApi(usuario, password, userType) {
 			} else {
 				banderaRespuesta = 1;
 				var token = respuesta.access_token;
+				console.log("TOKEN: " + token);
 				console.log("No tiene error");
 				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
 				obtenerArchivo(solicitudEnvio, token);
@@ -628,8 +629,11 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 	var token = respuesta.access_token;
 	var scope = respuesta.scope;
 	var jti = respuesta.jti;
-	var tpProceso = "ENVIO DE DOCUMENTOS"
+	var tpProceso = "ENVIO DE DOCUMENTOS";
 	console.log("guardarWSAuteUsu");
+	console.log("token: " + token);
+	console.log("scope: " + scope);
+	console.log("jti: " + jti);
 	//console.log("datosConexionApi en guardarWSAuteUsu: "+ datosConexionApi);
 	$.ajax({
 		async: false,
@@ -663,11 +667,12 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 	});
 }
 
-//Funcion para gardar la Respuesta de la autenticacion LOGIN
+//Funcion para guardar la Respuesta de la autenticacion LOGIN
 function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta) {
 	/*console.log("idWSAutenticacion: " +idWSAutenticacion);
 	console.log("solicitudEnvio: " + solicitudEnvio);*/
 	console.log("guardarRespAutenticacion");
+	
 	//var urlBase = getAbsolutePath();
 	var jsonRespuesta = respuesta.trim();
 	//var json = jsonRespuesta.replace(/["']/g, "");
@@ -684,7 +689,7 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 			type: "POST",
 			dataType: "JSON",
 			success: function(respuesta) {
-				//console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
+				console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
 				var autenUser = idWSAutenticacion;
 				var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
 				guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
@@ -776,6 +781,7 @@ function obtenerArchivo(soliEnvio, token) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			console.log("Respuesta obtenerArchivo");
 			console.log("Respuesta obtenerArchivo: " + JSON.stringify(respuesta))
 			var xml = respuesta[0];
 			var pdf = respuesta[1];
@@ -801,9 +807,14 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 	var archivoXML = "xml:" + xml;
 	var archivoPDF = "pdf:" + pdf;
 	var hashPDF = "hash:" + hash;
-	var accessToken = "token:" + token
+	var accessToken = "token:" + token;
 	var jsonEnvio = [archivoXML, archivoPDF, hashPDF, accessToken];
 	var resultadoLogin = false;
+	console.log("envioDocFirmaAPI xml: " +xml);
+	console.log("envioDocFirmaAPI pdf: " +pdf);
+	console.log("envioDocFirmaAPI hash: " +hash);
+	console.log("envioDocFirmaAPI token: " +token);
+	console.log("envioDocFirmaAPI: " + ws);
 	$.ajax({
 		async: false,
 		url: ws + "/envio/DocumentoFirma?xml=" + xml + "&pdf=" + pdf + "&hash=" + hash + "&accessToken=" + token,
@@ -811,10 +822,10 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			//var resultadoLogin = true;
-			console.log("Respuesta envioDocFirmaAPI: " + JSON.stringify(respuesta));
+			console.log("Respuesta success envioDocFirmaAPI: " + JSON.stringify(respuesta));
 			if (JSON.stringify(respuesta).includes("error")) {
 				resultadoLogin = false;
-				console.log("Tiene error");
+				console.log("Tiene error envioDocFirmaAPI");
 				guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
 				swal({
 					icon: "info",
@@ -823,26 +834,30 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 
 				});
 			} else {
+				console.log("Resultado true envioDocFirmaAPI");
 				resultadoLogin = true;
-				console.log("Respuesta envioDocFirmaAPI: " + JSON.stringify(respuesta));
+				console.log("Respuesta true envioDocFirmaAPI: " + JSON.stringify(respuesta));
 				guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
 			}
 
 		},
 		error: function(respuesta) {
+			console.log("Entro en error envioDocFirmaAPI");
 			resultadoLogin = false;
-			guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
+			console.log("Respuesta error envioDocFirmaAPI: " + JSON.stringify(respuesta));
 			swal({
 				icon: "info",
 				title: "Error al enviar los documentos a firmar en el API: " + JSON.stringify(respuesta),
 				showConfirmButton: false
 			});
+			guardarWSAuteUsuEnvDoctFirma(resultadoLogin, soliEnvio, idConfWS, jsonEnvio, respuesta);
 		}
 	});
 }
 
 function agregarRequisitionId(requisitionId, soliEnvio) {
 	console.log("Ejecutando agregarRequisitionId");
+	console.log("requisitionId: " + requisitionId);
 	//var urlBase = getAbsolutePath();
 	$.ajax({
 		async: false,

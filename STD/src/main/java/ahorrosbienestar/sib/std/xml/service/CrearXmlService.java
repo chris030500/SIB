@@ -146,6 +146,7 @@ public class CrearXmlService {
 			Element validity = doc.createElement("validity");
 			// Procedimiento almacenado para obtener los días de vigencia
 			validity.setTextContent(validityXmlService.spValidityNat(solicitudEnvio));
+			//validity.setTextContent("1");
 			rootElement.appendChild(validity);
 
 			// Tipo de contrat, se obtine de bd

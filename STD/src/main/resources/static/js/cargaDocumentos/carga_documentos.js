@@ -298,6 +298,7 @@ function buscarDocumentos(producto) {
 	//var d = 10;
 	//fEnvio.max = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
 	var fe = new Date();
+	var hora = fe.getHours() + ":" + fe.getMinutes();
 	//var fMax = sumarDias(new Date().toISOString().split("T")[0], d);
 	//console.log("fe: " + fe);
 	var fMax = sumarDias(fe, d).toISOString().split("T")[0];
@@ -307,6 +308,7 @@ function buscarDocumentos(producto) {
 
 	document.getElementById("fEnvio").min = fMin;
 	document.getElementById("fEnvio").max = fMax;
+	document.getElementById("hEnvio").value = hora;
 	n = new Date();
 	//Año
 	y = n.getFullYear();
@@ -467,81 +469,60 @@ function altaSolicitud() {
 	/*spinner.style.display = 'block';
 	principal.style.display = 'none';*/
 	//console.log("Entro en altaSolicitud");
+	var fe = new Date();
+	var hora = fe.getHours() + ":" + fe.getMinutes();
+	var fechaActual = fe.toISOString().split("T")[0];
 	var urlBase = getAbsolutePath();
+	/*console.log("horaActual: " + hora);
+	console.log("fe: " + fe);
+	console.log("fechaActual: "+ fechaActual);*/
 	//var inputs = $('input[name^=file]');
 	var solicitud = document.getElementById('solicitud').value;
 	if (document.getElementById("fEnvio").value != null && document.getElementById("fCancelacion").value) {
 		if ((document.getElementById("fCancelacion").value > document.getElementById("fEnvio").value) ||
 			((document.getElementById("fCancelacion").value == document.getElementById("fEnvio").value
 				&& document.getElementById("hEnvio").value < document.getElementById("hCancelacion").value))) {
-			var fechaCancelacion = document.getElementById("fCancelacion").value;
-			console.log("Fe Cancelación:" + fechaCancelacion);
-			var numTr = $('#tablaDocumentos tbody tr').length;
-			console.log("num: " + numTr);
+			/*var fechaCancelacion = document.getElementById("fCancelacion").value;
+			console.log("Fe Cancelación:" + fechaCancelacion);*/
+			if (document.getElementById("hEnvio").value < hora && document.getElementById("fEnvio").value == fechaActual) {
+				//console.log("No puede ejecutar porque la hora es menor a la hora actual");
+				swal({
+					title: "Error, favor de revisar la hora de envio",
+					text: "La hora es menor a la hora actual",
+					icon: "warning",
+				});
+			} else {
+				//console.log("Puede ejecutar el alta");
+				var numTr = $('#tablaDocumentos tbody tr').length;
+				console.log("num: " + numTr);
 
-			var miArray = new Array(numTr);
-			var conteo = 0;
-			//For que nos ayuda a validar la carga de archivos
-			for (i = 0; i < numTr; i++) {
-				var numTr1 = $('#tablaDocumentos tbody tr').value;
-				console.log("numTr1: " + numTr1);
-				//var documento = document.getElementsByClassName("archivo")[i].id;
-				var n = document.getElementsByClassName("archivo")[i].files[0];
-				console.log("n : " + n);
-				if (n === undefined) {
-					miArray[i] = false;
-					//console.log("No tiene nombre");
-				} else {
-					miArray[i] = true;
-					//console.log("Si tiene nombre");
-				}
-
-			}
-
-			for (i = 0; i < numTr; i++) {
-				if (miArray[i] === true) {
-					conteo = conteo + 1;
-				}
-			}
-
-			if (conteo == numTr) {
-
-
-				var longitud = document.getElementsByClassName("archivo").length;
-				var miArray2 = new Array(longitud);
-				var conteo2 = 0;
-				//For para validar el nombre de los documentos
-				for (i = 0; i < longitud; i++) {
+				var miArray = new Array(numTr);
+				var conteo = 0;
+				//For que nos ayuda a validar la carga de archivos
+				for (i = 0; i < numTr; i++) {
+					var numTr1 = $('#tablaDocumentos tbody tr').value;
+					console.log("numTr1: " + numTr1);
 					//var documento = document.getElementsByClassName("archivo")[i].id;
-					var n = document.getElementsByClassName("archivo")[i].files[0].name;
-					/*console.log("documento: " + documento);
-					console.log("n: " + n);*/
-					//console.log("n includes: " + n.includes("AnexosContrato") ? 'Si' : 'No' );
-					//Sentencia que evalua si el nombre del archivo es aceptado o no
-					if (n.includes("AnexosContrato") || n.includes("Contrato_Apertura")
-						|| n.includes("Pagare") || n.includes("PlandePagos")) {
-						miArray2[i] = true;
-						//console.log("Si tiene nombre correcto");
+					var n = document.getElementsByClassName("archivo")[i].files[0];
+					console.log("n : " + n);
+					if (n === undefined) {
+						miArray[i] = false;
+						//console.log("No tiene nombre");
 					} else {
-						miArray2[i] = false;
-						//console.log("No tiene nombre correcto");
+						miArray[i] = true;
+						//console.log("Si tiene nombre");
 					}
-					/*console.log("documento uploadFile: " + documento);
-					console.log("Files: " + JSON.stringify(n));*/
 
 				}
 
-				for (i = 0; i < longitud; i++) {
-					if (miArray2[i] === true) {
-						conteo2 = conteo2 + 1;
+				for (i = 0; i < numTr; i++) {
+					if (miArray[i] === true) {
+						conteo = conteo + 1;
 					}
 				}
-				console.log("conteo2 = " + conteo2);
-				console.log("longitud: " + longitud);
-				if (conteo2 == longitud) {
-					/*console.log("Los nombres de los documentos coinciden");
-					console.log("Ejecuta el guardado de la solicitud");*/
-					//Ejecuta el guardado de la solicitud ya que todos los documentos cumplan con el nombre establecido
+
+				if (conteo == numTr) {
+
 					$.ajax({
 						async: false,
 						url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
@@ -652,25 +633,64 @@ function altaSolicitud() {
 							});
 						}
 					});
+					/*var longitud = document.getElementsByClassName("archivo").length;
+					var miArray2 = new Array(longitud);
+					var conteo2 = 0;*/
+					//For para validar el nombre de los documentos
+					//for (i = 0; i < longitud; i++) {
+					//var documento = document.getElementsByClassName("archivo")[i].id;
+					//var n = document.getElementsByClassName("archivo")[i].files[0].name;
+					//console.log("documento: " + documento);
+					//console.log("n: " + n);
+					//console.log("n includes: " + n.includes("AnexosContrato") ? 'Si' : 'No' );
+					//Sentencia que evalua si el nombre del archivo es aceptado o no
+					/*if (n.includes("AnexosContrato") || n.includes("Contrato_Apertura")
+						|| n.includes("Contrato Apertura") || n.includes("AnexoContrato")
+						|| n.includes("amortizacion")
+						|| n.includes("Pagare") || n.includes("PlandePagos")) {
+						miArray2[i] = true;
+						//console.log("Si tiene nombre correcto");
+					} else {
+						miArray2[i] = false;
+						//console.log("No tiene nombre correcto");
+					}*/
+					/*console.log("documento uploadFile: " + documento);
+					console.log("Files: " + JSON.stringify(n));*/
+
+					//}
+
+					/*for (i = 0; i < longitud; i++) {
+						if (miArray2[i] === true) {
+							conteo2 = conteo2 + 1;
+						}
+					}
+					console.log("conteo2 = " + conteo2);
+					console.log("longitud: " + longitud);*/
+					//if (conteo2 == longitud) {
+					/*console.log("Los nombres de los documentos coinciden");
+					console.log("Ejecuta el guardado de la solicitud");*/
+					//Ejecuta el guardado de la solicitud ya que todos los documentos cumplan con el nombre establecido
+
+					/*} else {
+						console.log("Favor de revisar los nombres de los archivos");
+						swal({
+							title: "Error, nombres de archivos incorrectos",
+							text: "Favor de revisar los nombres de los archivos",
+							icon: "warning",
+						});
+					}*/
+
+					/*console.log("Todos los valores son true");
+					console.log("Ejecuta para registrar los documentos");*/
+
 				} else {
-					console.log("Favor de revisar los nombres de los archivos");
+					//console.log("No todos los valores son true");
 					swal({
-						title: "Error, nombres de archivos incorrectos",
-						text: "Favor de revisar los nombres de los archivos",
+						title: "Error, sin archivos seleccionados",
+						text: "Favor de revisar la carga de archivos",
 						icon: "warning",
 					});
 				}
-
-				/*console.log("Todos los valores son true");
-				console.log("Ejecuta para registrar los documentos");*/
-
-			} else {
-				//console.log("No todos los valores son true");
-				swal({
-					title: "Error, sin archivos seleccionados",
-					text: "Favor de revisar la carga de archivos",
-					icon: "warning",
-				});
 			}
 
 
