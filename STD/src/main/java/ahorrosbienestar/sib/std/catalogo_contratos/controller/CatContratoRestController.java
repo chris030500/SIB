@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.catalogo_contratos.controller;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
 import ahorrosbienestar.sib.std.catalogo_contratos.dto.CatContratoDTO;
 import ahorrosbienestar.sib.std.catalogo_contratos.model.CatContrato;
 import ahorrosbienestar.sib.std.catalogo_contratos.service.CatContratoService;
@@ -31,6 +33,9 @@ public class CatContratoRestController {
 	
 	@Autowired
 	private UsuarioService usuarioService;
+	
+	@Autowired
+	private DescargaRestController descargaRestController;
 	
 	/**
 	 * Método para agregar un contrato
@@ -68,9 +73,11 @@ public class CatContratoRestController {
 	/**
 	 * Método para obtener la lista de contratos
 	 * @return
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = {"/lista_contratos"}, method = RequestMethod.GET)
-	public List<CatContrato> catalogoDeContratos(@RequestParam("todo") Boolean todo) {
+	public List<CatContrato> catalogoDeContratos(@RequestParam("todo") Boolean todo) throws IOException {
+		
 		if (todo) 
 			return catContratoService.listaCatalogo();
 		else 

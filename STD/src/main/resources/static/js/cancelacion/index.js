@@ -11,8 +11,11 @@ var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/cancelacion", "");
 //console.log(newUrlBase);
 
-// Variable ID solicitud de envio
+// Variable ID solicitud de credito
 var envioID;
+
+// Variable | solicitud de envio
+var seId;
 
 // Variable | requisitionID
 var guardarRequisition;
@@ -278,7 +281,7 @@ function eliminarSolicitud() {
 	spinner.style.display = 'none';
 	principal.style.display = 'block';
 	$.ajax({
-		url: newUrlBase + "cancelar_solicitud_envio?envioID=" + envioID + "&motivo=" + observacionesCancelacion,
+		url: newUrlBase + "cancelar_solicitud_envio?envioID=" + seId + "&motivo=" + observacionesCancelacion,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -344,7 +347,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 			//envioID = respuesta.pk_id_solicitud_envio;
 
 			//Hacemos referencia a los input para llenar los campos:
-			var envio = document.getElementById("envioID");
+			var envio = document.getElementById("seId");
 			var fechaAutorizacion = document.getElementById('fechaAutorizacion');
 			var quienAutorizo = document.getElementById('quienAutorizo');
 			var fechaRegistro = document.getElementById('fechaRegistro');
@@ -369,6 +372,8 @@ function mostrarSolicitudEnvio(solicitudId) {
 
 			// Asignamos los valores a los campos
 			envio.value = respuesta.pk_id_solicitud_envio;
+			seId = respuesta.pk_id_solicitud_envio;
+			console.log(seId);
 			fechaAutorizacion.value = respuesta.dt_fecha_autorizacion != null ? respuesta.dt_fecha_autorizacion : 'Sin registro';
 			quienAutorizo.value = respuesta.empleado_autorizo != null ? respuesta.empleado_autorizo : 'Sin registro';
 			fechaRegistro.value = respuesta.dt_fecha_registro != null ? respuesta.dt_fecha_registro : 'Sin registro';
@@ -473,7 +478,7 @@ function conexionApi(usuario, password, userType) {
 	// obtenemos la direccion de ws
 	var webService = WS_IAD();
 	// console.log("conexionApi");
-	var solicitudEnvio = envioID;
+	var solicitudEnvio = seId;
 	var resultadoLogin = false;
 	var idConfWS = 1;
 	var username = "username:" + usuario;
@@ -568,7 +573,7 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 			principal.style.display = 'block';
 			swal({
 				icon: "info",
-				title: "Error guardarWSAuteUsu: " + JSON.stringify(respuesta),
+				title: "Error guardarWSAuteUsu: ",
 				showConfirmButton: false
 			});
 		}
@@ -728,7 +733,7 @@ function guardarWSAuteCancelacion(resultadoLogin, idConfWS, jsonEnvio, resJson) 
 	$.ajax({
 		async: false,
 		url: newUrlBase + "wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
-			+ envioID + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
+			+ seId + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
 		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -770,7 +775,7 @@ function guardarRespAutenCancelacion(respuestaEnvioSoli, idWSAutenticacion) {
 			var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
 			// agregarRequisitionId(requisitionId, solicitudEnvio);
 			// 10mo paso, guardamos la bitacora del proceso de cancelación a nivel sistema
-			guardarBitacoraWS(autenUser, resAuten, tpProceso, envioID);
+			guardarBitacoraWS(autenUser, resAuten, tpProceso, seId);
 
 		},
 		error: function(respuesta) {
