@@ -43,7 +43,7 @@ public class obtenerCoordenadasRestController {
 		// PDDocument doc1 = PDDocument.load(file);
 		
 		//System.out.println("RutaAbsoluta: " + rutaAbsoluta);
-		logger.info("Ejecutando obtenerCoordenadasPagare");
+		logger.info("Ejecutando obtenerCoordenadasPagare Tabla amortizacion");
 		String keyWords = "FIRMA";
 		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 		String pdfPath = url;

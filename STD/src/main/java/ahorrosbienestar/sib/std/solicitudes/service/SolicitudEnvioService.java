@@ -50,6 +50,10 @@ public class SolicitudEnvioService {
 	public Optional<SolicitudEnvio> findById(Integer id){
 		return iSolicitudEnvio.findById(id);
 	}
+	
+	public SolicitudEnvio recuperarModeloPorId(Integer id) {
+		return iSolicitudEnvio.findById(id).orElse(null);
+	}
 
 	public List<SolicitudEnvio> solicitudesDisponibles(Integer solicitudID, Integer estatus) {
 		if (solicitudID != null)

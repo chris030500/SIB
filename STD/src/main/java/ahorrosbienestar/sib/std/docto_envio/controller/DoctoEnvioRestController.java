@@ -148,7 +148,7 @@ public class DoctoEnvioRestController {
 			System.out.println("nombreDocumento" + nombreDocumento);
 			
 			dEnvio = doctEnvioService.save(dEnvio);
-			if (nombreDocumento.contains("AnexosContrato")) {
+			if (nombreDocumento.contains("AnexosContrato") || nombreDocumento.contains("AnexoContrato")) {
 				logger.info("Entro en anexosContrato");
 				System.out.println("Entro en anexosContrato");
 				if(productoNomina.equals("S")) {
@@ -171,10 +171,13 @@ public class DoctoEnvioRestController {
 				System.out.println("Entro en pagare");
 				logger.info("Entro en pagare");
 				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio);
-			} else if (nombreDocumento.contains("PlandePagos")) {
-				System.out.println("Entro en Plan de pagos");
+			} else if (nombreDocumento.contains("tabla de Amortizacion")) {
+				System.out.println("Entro en Tabla de amortizacion");
 				logger.info("Entro en Plan de pagos");
 				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio);
+			} else {
+				logger.info("El documento " + nombreDocumento  + " no está configurado para obtener espacios de firma");
+				System.out.println("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");
 			}
 			//return ResponseEntity.ok(dEnvio);
 			return ResponseEntity.ok("Ok");

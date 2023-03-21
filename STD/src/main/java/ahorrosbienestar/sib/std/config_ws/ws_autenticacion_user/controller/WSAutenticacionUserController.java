@@ -73,7 +73,7 @@ public class WSAutenticacionUserController {
         CatConfWS confWS = catConfWSService.findById(idConfWS).get();
         
         //Buscamos el id de la solicitud de envio
-        SolicitudEnvio sEnvio = solicitudEnvioService.findById(solicitudEnvio).get();
+        SolicitudEnvio sEnvio = solicitudEnvioService.recuperarModeloPorId(solicitudEnvio);
         
         WSAutenticacionUser wsAuteUsu = new WSAutenticacionUser();
         wsAuteUsu.setFk_usr_solicita(usu);
