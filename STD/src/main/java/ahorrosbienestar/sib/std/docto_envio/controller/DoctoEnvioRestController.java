@@ -171,8 +171,8 @@ public class DoctoEnvioRestController {
 				System.out.println("Entro en pagare");
 				logger.info("Entro en pagare");
 				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio);
-			} else if (nombreDocumento.contains("PlandePagos")) {
-				System.out.println("Entro en Plan de pagos");
+			} else if (nombreDocumento.contains("tabla de Amortizacion")) {
+				System.out.println("Entro en Tabla de amortizacion");
 				logger.info("Entro en Plan de pagos");
 				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio);
 			} else {
