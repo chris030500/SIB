@@ -117,6 +117,13 @@ function buscarDatos() {
 		url: urlServicio(),
 		type: "GET",
 		dataType: "JSON",
+			beforeSend : function(){
+			 $.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function(){
+			setTimeout($.unblockUI, 2000); 
+            //$.unblockUI();
+		},
 		success: function(respuesta) {
 
 			if (respuesta == null || respuesta == '') {
