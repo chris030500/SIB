@@ -122,6 +122,15 @@ function enviarPeticion(urlGuardar) {
 		url: urlGuardar,
 		type: "POST",
 		dataType: "JSON",
+		beforeSend : function(){
+			 document.getElementById('btnRelDoc').disabled = true;
+			 $.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function(){
+			document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 2000); 
+            //$.unblockUI();
+		},
 		success: function(respuesta) {
 			$("#modalDocumentos").modal("hide");
 			swal({
@@ -296,6 +305,15 @@ function altaProducto() {
 		url: urlServicio(),
 		type: "GET",
 		dataType: "JSON",
+		beforeSend : function(){
+			 document.getElementById('altaProducto').disabled = true;
+			 $.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function(){
+			 document.getElementById('altaProducto').disabled = false;
+			setTimeout($.unblockUI, 2000); 
+            //$.unblockUI();
+		},
 		success: function(respuesta) {
 			swal({
 				title: "",

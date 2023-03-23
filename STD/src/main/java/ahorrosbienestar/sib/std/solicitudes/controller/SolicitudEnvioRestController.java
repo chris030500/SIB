@@ -226,12 +226,14 @@ public class SolicitudEnvioRestController {
 				//System.out.println("El estatus es 3");
 				//logger.info("El estatus es 3");
 				logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
+				System.out.println("El estatus se cambia a 3(Autorización de documentos para firma)");
 				solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
 				String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
 				System.out.println("EstatusUnir: " + estatusUnir);
 				if(estatusUnir != "1") {
 					return ResponseEntity.ok(estatusUnir);
 				} else if(estatusUnir == "1") {
+					System.out.println("Crea el archivo XML");
 					crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
 				}
 				

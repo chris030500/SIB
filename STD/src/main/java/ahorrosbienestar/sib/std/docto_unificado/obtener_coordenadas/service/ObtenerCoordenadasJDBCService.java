@@ -28,6 +28,7 @@ public class ObtenerCoordenadasJDBCService {
 	
 	public List<ObtenerCoordenadas> obtenerInfoCoordenadas(int solicitudEnvio, int operacion) {
 		String sql = "CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (?,?);";
+		System.out.println("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
 		logger.info("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
 		List<ObtenerCoordenadas> ls = jdbcTemplate.query(sql, new Object[] { solicitudEnvio, operacion },
 				new RowMapper<ObtenerCoordenadas>() {

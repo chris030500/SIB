@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	$('.solo-numero').on('input', function() {
 		this.value = this.value.replace(/[^0-9]/g, '');
-	});	
+	});
 });
 
 function verReporte() {
@@ -25,6 +25,13 @@ function verReporte() {
 				url: urlGuardar,
 				type: "POST",
 				dataType: "JSON",
+				beforeSend: function() {
+					$.blockUI({ message: 'Espere un momento...' });
+				},
+				complete: function() {
+					setTimeout($.unblockUI, 2000); 
+					//$.unblockUI();
+				},
 				success: function(respuesta) {
 
 					if (respuesta == null || respuesta == '') {
@@ -39,10 +46,10 @@ function verReporte() {
 						//"report/contratoSTD/";
 						var idReporte = 1;
 						var servicioReporte = "exportarReporte/generarReporte?idReporte=";
-						
-						
-						var urlReporte = window.location.origin+"/STD/"+servicioReporte+idReporte+"&parametros=?ID_Reporte="+respuesta.pk_id_contrato+"&tipoDocumento=.pdf"+"&identificadorDoc="+respuesta.i_no_solicitud;
-						console.log("url:"+urlReporte);
+
+
+						var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_Reporte=" + respuesta.pk_id_contrato + "&tipoDocumento=.pdf" + "&identificadorDoc=" + respuesta.i_no_solicitud;
+						console.log("url:" + urlReporte);
 						window.open(urlReporte);
 						window.focus();
 					}
@@ -126,8 +133,14 @@ function buscarDatosSolicitud() {
 			url: getAbsolutePath() + "report/buscaDatos/" + solicitudCredito,
 			type: "GET",
 			dataType: "JSON",
+			beforeSend: function() {
+				$.blockUI({ message: 'Espere un momento...' });
+			},
+			complete: function() {
+				setTimeout($.unblockUI, 2000); 
+				//$.unblockUI();
+			},
 			success: function(respuesta) {
-			
 				if (respuesta == null || respuesta == '') {
 					// console.log("Error");
 					swal({
@@ -159,31 +172,31 @@ function buscarDatosSolicitud() {
 	}
 }
 
-function limpiarDatos(){
+function limpiarDatos() {
 	document.getElementById("inputNombre").value = "";
 	document.getElementById("inputDireccion").value = "";
-	document.getElementById("inputCapital").value="";
-	document.getElementById("inputTasaOrdinaria").value="";
-	document.getElementById("inputTasaMoratoria").value="";
-	document.getElementById("cat").value="";
-	document.getElementById("reca").value="";
-	document.getElementById("inputSolicitud").value="";
-			
+	document.getElementById("inputCapital").value = "";
+	document.getElementById("inputTasaOrdinaria").value = "";
+	document.getElementById("inputTasaMoratoria").value = "";
+	document.getElementById("cat").value = "";
+	document.getElementById("reca").value = "";
+	document.getElementById("inputSolicitud").value = "";
+
 }
 
 function buscaCliente(solicitudCreditoID) {
 
 	//Añadimos la imagen de carga en el contenedor
- 
+
 	$.ajax({
 		url: getAbsolutePath() + "report/buscaCliente/" + solicitudCreditoID,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-		
+
 			if (respuesta == null || respuesta == '') {
-		    	limpiarDatos();
-				
+				limpiarDatos();
+
 				swal({
 					title: "Error",
 					text: "Datos del cliente no encontrados",
@@ -202,7 +215,7 @@ function buscaCliente(solicitudCreditoID) {
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			limpiarDatos();
-			
+
 			swal({
 				title: "Error, No hay registro.",
 				text: "No se encontro informacion para los parametro ingresados.",
