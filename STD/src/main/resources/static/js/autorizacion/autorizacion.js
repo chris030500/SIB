@@ -1,5 +1,14 @@
+// Variables | valores para la autorización
+var guardarObservaciones;
+var guardarTipo;
+var 
+
+
+// Variable | id solicitud de crédito
+var creditoID;
+
 // Variable | id solicitud de envio
-var envioID;
+var seId;
 
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
@@ -60,7 +69,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 					var Nombreproducto = document.getElementById('Nombreproducto');
 					$("#divIdProducto").hide();
 					//Asignamos los valores a los campos
-					envioID = solicitudCredito;
+					creditoID = solicitudCredito;
 					buscarCredito.value = '';
 					solicitud.value = respuesta[0].solicitudCreditoID;
 					producto.value = respuesta[0].productoCreditoID;
@@ -113,7 +122,7 @@ function buscarProducto(producto) {
 			//console.log("Respuesta buscarProducto: " + respuesta);
 			if (respuesta == 1) {
 				// Consultar la solicitud de envio
-				mostrarSolicitudEnvio(envioID);
+				mostrarSolicitudEnvio(creditoID);
 				//console.log("Producto ya configurado");
 				//Asignamos el valor de la solicitud para poder traer los participantes
 				var solicitud = document.getElementById('solicitud').value;
@@ -191,7 +200,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-
+			console.log(JSON.stringify(respuesta));
 			if (respuesta.pk_id_solicitud_envio == 0) {
 				disponible.style.display = "block"
 				// Mostrar datos de envio
@@ -231,6 +240,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 			}
 
 			// Asignamos los valores a los campos
+			seId = repuesta.pk_id_solicitud_envio;
 			envio.value = respuesta.pk_id_solicitud_envio;
 			fechaRegistro.value = respuesta.dt_fecha_registro != null ? respuesta.dt_fecha_registro : 'Sin registro';
 			fechaCancelacion.value = respuesta.dt_fecha_cancelacion != null ? respuesta.dt_fecha_cancelacion : 'Sin registro';
@@ -282,7 +292,10 @@ function observacionesSolicitud(tipo) {
 					.then((value) => {
 						window.location.reload();
 					});
-				actualizarSolicitud(observaciones, tipo);
+				guardarObservaciones = observaciones;
+				guardarTipo = tipo;
+				// 1er paso, llamar la autenticacion del provedor (NA-AT)
+				autenticacion();
 			} else if (observaciones == "") {
 				// Mandamos alerta de que no hay texto
 				swal("Debes agregar observaciones para poder " + tipo, {
@@ -305,7 +318,7 @@ function observacionesSolicitud(tipo) {
 // Función que autoriza la solicitud
 function actualizarSolicitud(observacion, tipo) {
 	$.ajax({
-		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + envioID + "&observaciones=" + observacion,
+		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + creditoID + "&observaciones=" + observacion,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -386,5 +399,320 @@ function regresarMoneda(nombre, valor) {
 
 
 
+/**
+--------- Funciones de WS ---------
+ */
+
+//Funcion para obtener las credenciales para Autenticarse con el proveedor (NA-AT)
+function autenticacion() {
+	$.ajax({
+		async: false,
+		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var usuario = respuesta[0];
+			var password = respuesta[1];
+			var userType = respuesta[2];
+			// 2do paso, hacer conexión con el api de NA-AT
+			conexionApi(usuario, password, userType);
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Hubo un error con la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+function WS_IAD() {
+	var ws1 = "";
+	$.ajax({
+		url: newUrlBase + "conexionWS_IAD",
+		async: false,
+		type: "GET",
+		dataType: "text",
+		success: function(respuesta) {
+			ws1 = respuesta;
+			return ws1;
+		},
+		error: function(respuesta) {
+			ws1 = respuesta;
+
+			swal({
+				icon: 'warning',
+				title: "No se encontro la conexión con WS IAD."
+			});
+			return ws1;
+		}
+	});
+	return ws1;
+}
 
 
+
+//Funcion para realizar la autenticacion con el proveedor (NA-AT)
+function conexionApi(usuario, password, userType) {
+	// obtenemos la direccion de ws
+	var webService = WS_IAD();
+	var solicitudEnvio = seId;
+	var resultadoLogin = false;
+	var idConfWS = 1;
+	var username = "username:" + usuario;
+	var password2 = "password:" + password;
+	var grandType = "grandType:" + userType;
+
+	var jsonEnvio = [username, password2, grandType];
+	var banderaRespuesta = 0;
+	$.ajax({
+		async: false,
+		url: webService + "/autenticacion/autenticacion?usernameBody=" + usuario + "&passwordBody=" + password +
+			"&grant_typeBody=" + userType,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			resultadoLogin = true;
+
+			if (JSON.stringify(respuesta).includes("error")) {
+				banderaRespuesta = 0;
+				// 3er paso, guardar el proceso de autenticacion a nivel sistema
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+				swal({
+					icon: "info",
+					title: "Hubo un error con la conexión en la autenticación",
+					showConfirmButton: false
+
+				});
+			} else {
+				banderaRespuesta = 1;
+				var token = respuesta.access_token;
+				// 3er paso, guardar el proceso de autenticacion a nivel sistema
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+				// 4to paso, mandar a llamar el proceso de descarga con el proveedor (NA-AT)
+				wsDescargaZip(token);
+			}
+		},
+		error: function(respuesta) {
+			resultadoLogin = false;
+			banderaRespuesta = 0;
+			// 3er paso, guardar el proceso de autenticacion a nivel sistema
+			guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+			swal({
+				icon: "info",
+				title: "Hubo un error con la conexión de la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
+
+//Funcion para guardar la Autenticacion
+function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta) {
+	var datosConexionApi = JSON.stringify(respuesta);
+	var token = respuesta.access_token;
+	var scope = respuesta.scope;
+	var jti = respuesta.jti;
+	var tpProceso = "DESCARGA"
+	$.ajax({
+		async: false,
+		url: newUrlBase + "wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			if (banderaRespuesta == 0) {
+				// 5to paso, guardar la respuesta del proceso de autenticacion a nivel sistema
+				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
+			} else if (banderaRespuesta == 1) {
+				// 5to paso, guardar la respuesta del proceso de autenticacion a nivel sistema
+				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
+			}
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Hubo un error al guardar la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
+
+//Funcion para guardar la respuesta de la autenticacion
+function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta) {
+	var jsonRespuesta = respuesta.trim();
+	var jsonFinal = jsonRespuesta.replace(/[{{}}]/g, "");
+	var tpProceso = "DESCARGA";
+	if (banderaRespuesta == 0) {
+		$.ajax({
+			async: false,
+			url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+				"&idWSAutenticacion=" + idWSAutenticacion,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				var autenUser = idWSAutenticacion;
+				var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+				// 6to paso, guardar la bitacora a nivel sistema
+				guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
+			},
+			error: function(respuesta) {
+				swal({
+					icon: "info",
+					title: "Hubo un error al guardar la respuesta de la autenticación",
+					showConfirmButton: false
+				});
+			}
+		});
+	} else if (banderaRespuesta == 1) {
+		$.ajax({
+			async: false,
+			url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal + "&jti=" + jti +
+				"&scope=" + scope + "&token=" + token + "&idWSAutenticacion=" + idWSAutenticacion,
+			type: "POST",
+			dataType: "JSON",
+			success: function(respuesta) {
+				var autenUser = idWSAutenticacion;
+				var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+				// 5to paso, guardar la bitacora a nivel sistema
+				guardarBitacoraWS(autenUser, resAuten, tpProceso, solicitudEnvio);
+			},
+			error: function(respuesta) {
+				swal({
+					icon: "info",
+					title: "Hubo un error al guardar la respuesta de la autenticación",
+					showConfirmButton: false
+				});
+			}
+		});
+	}
+}
+
+
+
+//Funcion para guardar la Bitacora
+function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
+	$.ajax({
+		async: false,
+		url: newUrlBase + "bitacoraConsumo?autenUser=" + autenUser + "&resAuten=" + resAuten +
+			"&tpProceso=" + tpProceso + "&soliEnvio=" + soliEnvio,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			// Se termina el proceso.
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Hubo un error al guardar la bitacora",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
+
+// Función principal de la descarga del zip en WS
+function wsDescargaZip(token) {
+	// obtenemos la direccion de ws
+	var webService = WS_IAD();
+	var resultadoLogin = false;
+	var idConfWS = 5;
+	var requisision = "requisisionId:" + guardarRequisition;
+	var jsonEnvio = [requisision];
+	// Mandamos a llamar el servicio de ws
+	$.ajax({
+		url: webService + "/ws_descarga_documentos?requisitionID=" + guardarRequisition + "&tokenAutorizacion=" + token,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			if (respuesta.success) {
+				// Si la respuesta es true
+				resultadoLogin = true;
+				// 7mo paso, guardamos la autenticacion de la descarga
+				guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+				// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
+				actualizarSolicitud(guardarObservaciones, guardarTipo);
+			} else {
+				// Si la respuesta es false
+				swal("No se pudo hacer la descarga del archivo", {
+					icon: "error",
+					closeOnClickOutside: false,
+				});
+				resultadoLogin = false;
+				// 7mo paso, guardamos la autenticacion de la descarga
+				guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+			}
+		}, error: function(error) {
+			// Mandamos una alerta
+			swal("No se pudo hacer la descarga del archivo", {
+				icon: "error",
+				closeOnClickOutside: false,
+			});
+		}
+	});
+}
+
+
+
+//Funcion para guardar la autenticacion de la descarga del zip
+function guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, resJson) {
+	var tpProceso = "DESCARGA";
+	var respuestaEnvioSoli = JSON.stringify(resJson);
+	$.ajax({
+		async: false,
+		url: newUrlBase + "wsAutenticacionUser/guardarAutenticacion?resultadoLogin=" + resultadoLogin + "&solicitudEnvio="
+			+ seId + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			// 9no paso, guardar la respuesta de autenticacaion del proceso de descarga a nivel sistema
+			guardarRespAutenDescarga(respuestaEnvioSoli, idWSAutenticacion);
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Hubo un error al guardar la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+
+
+//Funcion para guardar la respuesta de la autenticacion de la descarga del zip
+function guardarRespAutenDescarga(respuestaEnvioSoli, idWSAutenticacion) {
+	var jsonRespuesta = respuestaEnvioSoli.trim();
+	var jsonFinal = jsonRespuesta.replace(/[{{}}]/g, "");
+	var tpProceso = "DESCARGA";
+	$.ajax({
+		async: false,
+		url: newUrlBase + "wsResAutenticacionUser/guardarRespAutenticacion?jsonRespuesta=" + jsonFinal +
+			"&idWSAutenticacion=" + idWSAutenticacion + "&requisitionId=" + guardarRequisition,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var autenUser = idWSAutenticacion;
+			var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
+			// 10mo paso, guardamos la bitacora del proceso de descarga a nivel sistema
+			guardarBitacoraWS(autenUser, resAuten, tpProceso, seId);
+		},
+		error: function(respuesta) {
+			swal({
+				icon: "info",
+				title: "Hubo un error al guardar la respuesta de la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
