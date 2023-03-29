@@ -68,6 +68,7 @@ public class CrearXmlService {
 
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
 
+
 		try {
 			System.out.println("CORE: " + solicitudCore);
 			// Obtenemos los datos de los participantes:
@@ -85,8 +86,9 @@ public class CrearXmlService {
 
 			// Obtenemos el I_PRODUCTO_ID
 			int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
-
+			System.out.println("IdPorducto: " + idProducto);
 			Producto infoProducto = productoService.findByNoProducto(idProducto);
+			System.out.println("infoProducto: " + infoProducto);
 			String nombreProducto = infoProducto.getVc_nombre_producto().toString();
 			String kyc = infoProducto.getVc_identificador_kyc().toString();
 			String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
@@ -99,8 +101,7 @@ public class CrearXmlService {
 
 			int totalPersonasFirma = titular.size();
 
-			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio,
-					0);
+			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 0);
 			String ruta = documentos.get(0).getVc_ruta_docto();
 			System.out.println("ruta de documentos: " + ruta);
 
@@ -148,7 +149,7 @@ public class CrearXmlService {
 			Element validity = doc.createElement("validity");
 			// Procedimiento almacenado para obtener los días de vigencia
 			validity.setTextContent(validityXmlService.spValidityNat(solicitudEnvio));
-			// validity.setTextContent("1");
+			//validity.setTextContent("1");
 			rootElement.appendChild(validity);
 
 			// Tipo de contrat, se obtine de bd

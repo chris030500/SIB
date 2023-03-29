@@ -200,7 +200,7 @@
 											</div>
 										</div>
 										<div class="col-sm-2">
-											<button type="button" class="btn btn-primary" onclick="altaSolicitud()">
+											<button id="btnAltaSolicitud" type="button" class="btn btn-primary" onclick="altaSolicitud()">
 												Guardar
 											</button>
 										</div>
@@ -238,6 +238,7 @@
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
 		<script th:src="@{/js/cargaDocumentos/carga_documentos.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<!--<script th:src="@{/js/cargaDocumentos/cargarArchivos.js}"></script>-->
 	</th:block>
 </body>

@@ -55,6 +55,7 @@ public class ObtenerCoordenadasJDBCService {
 							oc.setNo_hoja(rs.getInt(10));
 							oc.setCoordenada_xCentral(rs.getFloat(11));
 							oc.setCoordenada_yCentral(rs.getFloat(12));
+							System.out.println("Pk_id_solicitud: " + oc.getPk_id_solicitud());
 							return oc;
 						}
 						return null;

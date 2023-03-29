@@ -466,12 +466,25 @@ function obtenerNombreDoct(nombre) {
 
 //Funcion para dar de alta la solicitud
 function altaSolicitud() {
-	/*spinner.style.display = 'block';
-	principal.style.display = 'none';*/
+	document.getElementById('btnAltaSolicitud').disabled = true;
+	/*console.log("Spinner: " + spinner.style.display);
+	console.log("principal: " + principal.style.display);*/
+
+
+	spinner.style.display = 'block';
+	principal.style.display = 'none';
+	/*setTimeout(() => spinner.style.display = 'block', 1000);
+	setTimeout(() => principal.style.display = 'none', 1000);*/
+
+	/*console.log("Spinner 2da: " + spinner.style.display);
+	console.log("principal 2da: " + principal.style.display);*/
+
 	//console.log("Entro en altaSolicitud");
 	var fe = new Date();
 	var hora = fe.getHours() + ":" + fe.getMinutes();
+	console.log("hora: " + hora);
 	var fechaActual = fe.toISOString().split("T")[0];
+	console.log("fecha actual: " + fechaActual);
 	var urlBase = getAbsolutePath();
 	/*console.log("horaActual: " + hora);
 	console.log("fe: " + fe);
@@ -486,11 +499,14 @@ function altaSolicitud() {
 			console.log("Fe Cancelación:" + fechaCancelacion);*/
 			if (document.getElementById("hEnvio").value < hora && document.getElementById("fEnvio").value == fechaActual) {
 				//console.log("No puede ejecutar porque la hora es menor a la hora actual");
+				/*spinner.style.display = 'none';
+				principal.style.display = 'block';*/
 				swal({
 					title: "Error, favor de revisar la hora de envio",
 					text: "La hora es menor a la hora actual",
 					icon: "warning",
 				});
+				document.getElementById('btnAltaSolicitud').disabled = false;
 			} else {
 				//console.log("Puede ejecutar el alta");
 				var numTr = $('#tablaDocumentos tbody tr').length;
@@ -529,6 +545,7 @@ function altaSolicitud() {
 						type: "GET",
 						dataType: "JSON",
 						success: function(respuesta) {
+							document.getElementById('btnAltaSolicitud').disabled = true;
 							/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
 							console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
 							//console.log("RESPUESTA: " + JSON.stringify(respuesta));
@@ -541,21 +558,30 @@ function altaSolicitud() {
 							//var r = JSON.stringify(respuesta[0].estatus);
 							//console.log("r: " + r);
 							if (r == 1) {
+
 								swal({
 									title: "Solicitud en proceso de: ",
 									text: "Autorizacion de documentos",
 									icon: "info",
 								});
+								document.getElementById('btnAltaSolicitud').disabled = false;
+								spinner.style.display = 'none';
+								principal.style.display = 'block';
 								//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
 							} else if (r == 3) {
+
 								swal({
 									title: "Solicitud en proceso de: ",
 									text: "Autorización de documentos para firma digital",
 									icon: "info",
 								});
+								document.getElementById('btnAltaSolicitud').disabled = false;
+								spinner.style.display = 'none';
+								principal.style.display = 'block';
 								//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
 							} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
 								//console.log("Puede realizar el registro");
+								document.getElementById('btnAltaSolicitud').disabled = true;
 								var producto = document.getElementById('producto').value;
 								//var estatus = 1;
 								var comentarioValidacion = document.getElementById('comentarioValidacion').value;
@@ -613,6 +639,8 @@ function altaSolicitud() {
 										//console.log("Entro en error");
 										/*spinner.style.display = 'none';
 										principal.style.display = 'block';*/
+										spinner.style.display = 'none';
+										principal.style.display = 'block';
 										swal({
 											icon: "warning",
 											title: "Error: " + respuesta.status,
@@ -623,8 +651,8 @@ function altaSolicitud() {
 								});
 							}
 						}, error: function(respuesta) {
-							/*spinner.style.display = 'none';
-							principal.style.display = 'block';*/
+							spinner.style.display = 'none';
+							principal.style.display = 'block';
 							//console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
 							swal({
 								title: "Error validarCoreSolicitudEnvio",
@@ -685,33 +713,41 @@ function altaSolicitud() {
 
 				} else {
 					//console.log("No todos los valores son true");
+					/*spinner.style.display = 'none';
+					principal.style.display = 'block';*/
 					swal({
 						title: "Error, sin archivos seleccionados",
 						text: "Favor de revisar la carga de archivos",
 						icon: "warning",
 					});
+					document.getElementById('btnAltaSolicitud').disabled = false;
+					spinner.style.display = 'none';
+					principal.style.display = 'block';
+
 				}
 			}
 
 
 		} else {
-			/*spinner.style.display = 'none';
-			principal.style.display = 'block';*/
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
 			swal({
 				title: "Error",
 				text: "Favor de revisar la fecha y hora de cancelación",
 				icon: "warning",
 			});
+			document.getElementById('btnAltaSolicitud').disabled = false;
 		}
 
 	} else {
-		/*spinner.style.display = 'none';
-		principal.style.display = 'block';*/
+		spinner.style.display = 'none';
+		principal.style.display = 'block';
 		swal({
 			title: "Error",
 			text: "Favor de llenar los campos de fecha de envio y/o fecha de cancelación",
 			icon: "warning",
 		});
+		document.getElementById('btnAltaSolicitud').disabled = false;
 	}
 }
 

@@ -13,7 +13,7 @@
 
 <body onload="buscarSolicitudCredito();">
 	<section class="content" layout:fragment="page-content">
-		<div class="container">
+		<div id="principalID" class="container" style="display: block;" >
 
 			<div class="card mb-3">
 				<div class="row no-gutters">
@@ -129,15 +129,36 @@
 							</div>
 							<br>
 							<div id="btnVoBo" class="col-sm-2" style='display:none'>
-								<button type="button" class="btn btn-primary" onclick="VoBoDocumentos()">
+								<button id="btnVoBoDocumentos" type="button" class="btn btn-primary" onclick="VoBoDocumentos()">
 									Guardar
 								</button>
 							</div>
+							
 						</div>
 					</div>
 				</div>
 
 
+			</div>
+		</div>
+		
+		<div id="spinnerID" class="container" style="display: none;" >
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Carga de solicitud</h2>
+						</div>
+						<div class="card-body" style="padding-top: 20px; height: 300px;">
+							<div class="row" style="height: 90px;"></div>
+							<div class="row" style="text-align: center;">
+								<div class="col-sm-12">
+									<div class="spinner-border text-primary"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -146,6 +167,7 @@
 		<!--<script th:src="@{/js/usuario/usuarios.js}"></script>-->
 		<!--<script th:src="@{/js/validacionDocumentos/dataTableValidacionDocumentos.js}"></script>-->
 		<script th:src="@{/js/validacionDocumentos/validacionDocumentos.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 	</th:block>
 </body>
 

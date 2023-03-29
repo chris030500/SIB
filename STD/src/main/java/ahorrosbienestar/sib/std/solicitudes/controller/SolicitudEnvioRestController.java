@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ import ahorrosbienestar.sib.std.solicitudes.dto.SolicitudEnvioDTO;
 import ahorrosbienestar.sib.std.fichero.controller.UnirArchivosRestController;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoNotificacionMensajeService;
+import ahorrosbienestar.sib.std.productos.service.ProductoService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioJDBCService;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
@@ -71,7 +73,7 @@ public class SolicitudEnvioRestController {
 
 	// variable solicitud autorizada
 	private final static int AUTORIZADA = 6;
-	
+
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
 
@@ -80,27 +82,29 @@ public class SolicitudEnvioRestController {
 
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
 	@Autowired
 	private AutorizacionRestController aController;
 
 	@Autowired
 	private SolicitudEnvioJDBCService solicitudEnvioJDBCService;
-	
+
 	@Autowired
 	private UnirArchivosService unirArchivosService;
-	
+
 	@Autowired
 	private CrearXmlService crearXmlService;
-	
+
 	@Autowired
 	private ConfigService configService;
 	
 	@Autowired
-	private HistoNotificacionMensajeService histoNotificacionMensajeService;
-	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	private ProductoService productoService;
 
+	@Autowired
+	private HistoNotificacionMensajeService histoNotificacionMensajeService;
+
+	protected final Log logger = LogFactory.getLog(this.getClass());
 
 	@PostMapping("/solicitudEnvio/guardarSolicitudEnvio")
 	public ResponseEntity<?> guardarSolicitudEnvio(
@@ -114,7 +118,7 @@ public class SolicitudEnvioRestController {
 		logger.info("Ejecutando guardarSolicitudEnvio");
 		// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
 		// Obtenemos el usuario autentificado
-		System.out.println("Fecha cancelacion: " +fCancelacion);
+		System.out.println("Fecha cancelacion: " + fCancelacion);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		// Obtenemos el nombre del usuario autentificado
 		Usuario usu = usuarioService.findByNombre(auth.getName());
@@ -139,19 +143,18 @@ public class SolicitudEnvioRestController {
 		int identificadoRuta = solicitudEnvioJDBCService.spObtenerIdentificadorRuta(solicitud);
 		System.out.println("solicitud: " + solicitud);
 		System.out.println("identificador = " + identificadoRuta);
-		if(identificadoRuta == 0) {
+		if (identificadoRuta == 0) {
 			System.out.println("IDENTIFICADOR = 0");
 			sEnvio.setI_identificador_ruta(1);
 		} else {
 			System.out.println("IDENTIFICADOR != 0");
-			System.out.println("identificador: " + (identificadoRuta+1));
-			sEnvio.setI_identificador_ruta((identificadoRuta+1));
+			System.out.println("identificador: " + (identificadoRuta + 1));
+			sEnvio.setI_identificador_ruta((identificadoRuta + 1));
 		}
-		
 
 		sEnvio = solicitudEnvioService.save(sEnvio);
 		String mensaje = "Nueva solicitud de envio. " + " Solicitud: " + solicitud;
-		
+
 		histoNotificacionMensajeService.enviarNotificacionMensaje(mensaje, sEnvio, 0);
 		// Aqui vamos a almacenar los archivos PDF para asocialos con la solicitud de
 		// envio
@@ -163,13 +166,12 @@ public class SolicitudEnvioRestController {
 		logger.info("Ejecutando estatusSolicAutorizacion");
 		return solicitudEnvioService.estatusSolicAutorizacion();
 	}
-	
+
 	@GetMapping("solicitudEnvio/solicitud")
-	public SolicitudEnvio obtenerSolicitud(@RequestParam(name = "solicitud", required = false) Integer solicitud){
+	public SolicitudEnvio obtenerSolicitud(@RequestParam(name = "solicitud", required = false) Integer solicitud) {
 		logger.info("Ejecutando obtenerSolicitud");
 		return solicitudEnvioService.findById(solicitud).get();
 	}
-
 
 	@GetMapping("solicitudEnvio/obtenerSolicitudFecha/{solicitud}")
 	public ResponseEntity<?> obtenerUltimaSolicitudFecha(@PathVariable(name = "solicitud") Integer solicitud) {
@@ -177,17 +179,16 @@ public class SolicitudEnvioRestController {
 		return ResponseEntity.ok(solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud, null));
 	}
 
-
-
 	@GetMapping("solicitudEnvio/visualizarArchivo/")
 	public ResponseEntity<InputStreamResource> visualizarArchivo(
 			@RequestParam(name = "nombreArchivo") String nombreArchivo) throws FileNotFoundException {
 		// String nombreArchivo =
 		// "C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/AnexosContrato.pdf";
 		logger.info("Ejecutando visualizarArchivo");
-		//String nombreArchivo = "C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/AnexosContrato.pdf";
+		// String nombreArchivo =
+		// "C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/AnexosContrato.pdf";
 		System.out.println("Entro en visualizarArchivo");
-		//Obtenemos la direccion base de la tabla configuracion
+		// Obtenemos la direccion base de la tabla configuracion
 		String dBase = configService.findAll().get(13).getVc_valor_propiedad();
 		System.out.println("Archivo: " + nombreArchivo);
 //		String filePath = "/path/to/file/";
@@ -195,69 +196,93 @@ public class SolicitudEnvioRestController {
 		File file = new File(dBase + nombreArchivo);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("content-disposition", "inline;filename=" + dBase + nombreArchivo);
-		logger.info("Archivo: " +file);
+		logger.info("Archivo: " + file);
 		InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
 		return ResponseEntity.ok().headers(headers).contentLength(file.length())
 				.contentType(MediaType.parseMediaType("application/pdf")).body(resource);
 	}
-	
+
 	@GetMapping("solicitudEnvio/validacionArchivoSolicitud")
-	public ResponseEntity<?> spValidaciónArchivoSolicitud(@RequestParam("solicitud") Integer solicitud){
-		//return ResponseEntity.ok("ok");
+	public ResponseEntity<?> spValidaciónArchivoSolicitud(@RequestParam("solicitud") Integer solicitud) {
+		// return ResponseEntity.ok("ok");
 		logger.info("Ejecutando spValidaciónArchivoSolicitud");
 		return ResponseEntity.ok(solicitudEnvioJDBCService.spValidacionArchivoSolicitud(solicitud));
 	}
-	
-	@GetMapping("solicitudEnvio/validarSoliEnvio/{estatus}/{idSolicitud}/{idSolicitudCore}")
-	public ResponseEntity<?> validarSoliEnvio(@PathVariable(name = "estatus") Integer estatus, 
-					@PathVariable(name = "idSolicitud") Integer idSolicitud,
-					@PathVariable(name = "idSolicitudCore") Integer idSolicitudCore) throws Exception{
+
+	@GetMapping("solicitudEnvio/validarSoliEnvio/{estatus}/{idSolicitud}/{idSolicitudCore}/{idProducto}")
+	public ResponseEntity<?> validarSoliEnvio(@PathVariable(name = "estatus") Integer estatus,
+			@PathVariable(name = "idSolicitud") Integer idSolicitud,
+			@PathVariable(name = "idSolicitudCore") Integer idSolicitudCore,
+			@PathVariable(name = "idProducto", required = false) Integer idProducto) throws Exception {
 		logger.info("Ejecutando validarSoliEnvio");
 		logger.info("estatus: " + estatus);
-		logger.info("idSolicitud: " +idSolicitud);
+		logger.info("idSolicitud: " + idSolicitud);
 		logger.info("idSolicitudCore: " + idSolicitudCore);
-			if(estatus.equals(0)) {
-				//System.out.println("El estatus es 2");
-				//logger.info("El estatus es 2");
+		
+		System.out.println("Ejecutando validarSoliEnvio");
+		System.out.println("Estatus:" + estatus);
+		System.out.println("idSolicitud: " + idSolicitud);
+		System.out.println("idSolicitudCore: " + idSolicitudCore);
+		try {
+			if (estatus.equals(0)) {
+				// System.out.println("El estatus es 2");
+				// logger.info("El estatus es 2");
 				logger.info("El estatus se cambia a 2(Rechazo de firma de documentos para firma)");
+				System.out.println("El estatus se cambia a 2(Rechazo de firma de documentos para firma)");
 				return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(2, idSolicitud));
-			} else if(estatus.equals(1)) {
-				//System.out.println("El estatus es 3");
-				//logger.info("El estatus es 3");
-				logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
-				System.out.println("El estatus se cambia a 3(Autorización de documentos para firma)");
-				solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
-				String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
-				System.out.println("EstatusUnir: " + estatusUnir);
-				if(estatusUnir != "1") {
-					return ResponseEntity.ok(estatusUnir);
-				} else if(estatusUnir == "1") {
-					System.out.println("Crea el archivo XML");
-					crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
-				}
+			} else if (estatus.equals(1)) {
+				String kyc = productoService.findByProducto(idProducto).getVc_identificador_kyc();
+				String descripcionProducto = productoService.findByProducto(idProducto).getVc_descripcion_producto();
 				
-				return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(3, idSolicitud));
+				System.out.println("kyc: " + kyc);
+				System.out.println("descripcion: " + descripcionProducto);
+				
+				if(kyc != null && descripcionProducto != null) {
+					System.out.println("Si contiene información en producto");
+					logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
+					System.out.println("El estatus se cambia a 3(Autorización de documentos para firma)");
+
+					String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
+					System.out.println("EstatusUnir: " + estatusUnir);
+					// solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
+					if (estatusUnir != "1") {
+						return ResponseEntity.ok(estatusUnir);
+					} else if (estatusUnir == "1") {
+						System.out.println("Crea el archivo XML");
+						crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
+					}
+
+					return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(3, idSolicitud));
+				} else {
+					return ResponseEntity.ok("El producto no está totalmente configurado");
+				}
+				// System.out.println("El estatus es 3");
+				// logger.info("El estatus es 3");
+				
 			}
-		return ResponseEntity.notFound().build();
-		//return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(estatus, idSolicitud));
+		} catch (Exception e) {
+			System.out.println("Error en falló de validación en solicitud" + e.getMessage());
+			return ResponseEntity.ok("Falló la validación de la solicitud");
+		}
+
+		return ResponseEntity.ok("Falló la validación de la solicitud");
+		// return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(estatus,
+		// idSolicitud));
 	}
-	
+
 	@GetMapping("solicitudEnvio/validarSolicitudCredito/{idSolicitudCore}")
-	public ResponseEntity<?> validarSolicitudCredito(@PathVariable(name = "idSolicitudCore") Integer idSolicitudCore){
+	public ResponseEntity<?> validarSolicitudCredito(@PathVariable(name = "idSolicitudCore") Integer idSolicitudCore) {
 		logger.info("Ejecutando validarSolicitudCredito");
 		return ResponseEntity.ok(solicitudEnvioJDBCService.spValidarSolicitudCore(idSolicitudCore));
 	}
-	
+
 	@GetMapping("solicitudEnvio/agregarRequisitionId")
-	public ResponseEntity<?> agregarRequisitionId(
-			@RequestParam(name = "requisitionId") String requisitionId,
-			@RequestParam(name = "soliEnvio") Integer soliEnvio){
+	public ResponseEntity<?> agregarRequisitionId(@RequestParam(name = "requisitionId") String requisitionId,
+			@RequestParam(name = "soliEnvio") Integer soliEnvio) {
 		logger.info("Ejecutando agregarRequisitionId");
 		return ResponseEntity.ok(solicitudEnvioService.agregarRequisitionID(requisitionId, soliEnvio));
 	}
-	
-	
 
 	// Método que regresa los datos de la solicitud de envio
 	@RequestMapping(value = { "/datos_solicitud" }, method = RequestMethod.GET)
