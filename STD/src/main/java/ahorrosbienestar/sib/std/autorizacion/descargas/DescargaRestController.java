@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.autorizacion.descargas;
 
-import java.io.BufferedOutputStream;
+/*import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,31 +9,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@AllArgsConstructor
+@AllArgsConstructor*/
 public class DescargaRestController {
 
-	@Autowired
+	/*@Autowired
 	private ConfigService configService;
 
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
-	
-	
 	
 	// Variable ruta de almacenamiento
 	private final static int RUTA_CONFIGURACION = 51;
@@ -167,9 +162,7 @@ public class DescargaRestController {
 
         System.out.println("Latitude: " + latitude);
         System.out.println("Longitude:  " + longitude);
-	}
-	
-	
+	}*/
 	
 	// Método para mover archivos
 	/*

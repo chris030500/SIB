@@ -31,6 +31,9 @@ public class ProductoService {
 			return iProductoRepository.findById(id);
 		}
 		
+		public Producto findByProducto(Integer id) {
+			return iProductoRepository.findByProducto(id);
+		}
 		
 		public List<Producto> findAll(){
 			return iProductoRepository.findAll();

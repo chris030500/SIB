@@ -43,7 +43,7 @@ public class obtenerCoordenadasRestController {
 		// PDDocument doc1 = PDDocument.load(file);
 		
 		//System.out.println("RutaAbsoluta: " + rutaAbsoluta);
-		logger.info("Ejecutando obtenerCoordenadasPagare");
+		logger.info("Ejecutando obtenerCoordenadasPagare Tabla amortizacion");
 		String keyWords = "FIRMA";
 		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 		String pdfPath = url;
@@ -75,13 +75,13 @@ public class obtenerCoordenadasRestController {
 			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
 
 			logger.info("Coordenadas del espacio de firma: ");
-			float x1 = c[1] - acomodoX;
-			float y1 = (ph - c[0]) - acomodoY;
-			float x2 = x1 + widht;
-			float y2 = y1 + height;
+			float x1 = 61f;
+			float y1 = 84.3f;
+			float x2 =  84f;
+			float y2 = 87.3f;
 			int hoja = (int) c[2];
-			float xCentral = (x1+x2)/2;
-			float yCentral = (y1+y2)/2;
+			float xCentral = 68.3702f;
+			float yCentral = 34.4741f;
 			FirmaDocto firmaDocto = new FirmaDocto();
 			firmaDocto.setF_coord_firma_x1(x1);
 			firmaDocto.setF_coord_firma_x2(x2);
@@ -126,6 +126,8 @@ public class obtenerCoordenadasRestController {
 		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
+	
+	
 
 	// Obtener la coordenadas del archivo PlandePagos
 	@GetMapping("/planPagos")

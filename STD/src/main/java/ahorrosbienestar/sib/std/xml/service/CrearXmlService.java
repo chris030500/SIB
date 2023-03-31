@@ -67,59 +67,62 @@ public class CrearXmlService {
 	private SolicitudEnvioService solicitudEnvioService;
 
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
-		System.out.println("CORE: " + solicitudCore);
-		// Obtenemos los datos de los participantes:
-		List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
-		String nombre = titular.get(0).getNombreCompleto();
-		String direccion = titular.get(0).getDireccionCompleta();
-		String telefonoCelular = titular.get(0).getTelefonoCelular();
-		String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
-		System.out.println("Dirección: " + direccion);
-		List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
-		String monto = datosSolicitud.get(0).getMontoAutorizado();
-		String plazo = datosSolicitud.get(0).getPlazo();
-		String tasa = datosSolicitud.get(0).getTasaFija();
-		String tasaMoratoria = datosSolicitud.get(0).getTasaMoratoria();
 
-		// Obtenemos el I_PRODUCTO_ID
-		int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
-
-		Producto infoProducto = productoService.findByNoProducto(idProducto);
-		String nombreProducto = infoProducto.getVc_nombre_producto().toString();
-		String kyc = infoProducto.getVc_identificador_kyc().toString();
-		String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
-		// Le asignamos los parametros que se requieren
-		// int solicitudEnvio = 91;
-		// String nombre = "JOSE ARTURO DE LA ROSA FUENTES";
-//		String monto = "158101.56";
-//		String plazo = "38 MESES";
-//		String tasa = "9.0000";
-
-		int totalPersonasFirma = titular.size();
-
-		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 0);
-		String ruta = documentos.get(0).getVc_ruta_docto();
-
-		String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
-
-		System.out.println("RutaFinal: " + rutaArchivoFinal);
-		String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
-		String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
-
-		// Obtenemos la leyenda del firmante.
-		String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
-
-		List<Configuracion> configuracion = configService.findAll();
-
-		// System.out.println("entro en if variable1");
-		// String[] words = mensaje.split("variable");
-
-		// Asignamos los nuevos parametros.
-		String nuevoMensaje = mensaje.replace("$variable1", direccion).replace("$variable2", nombre)
-				.replace("$variable3", "$" + monto).replace("$variable4", plazo).replace("$variable5", tasa + "%")
-				.replace("$variable6", tasaMoratoria + "%").replace("$variable7", plazo);
 
 		try {
+			System.out.println("CORE: " + solicitudCore);
+			// Obtenemos los datos de los participantes:
+			List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
+			String nombre = titular.get(0).getNombreCompleto();
+			String direccion = titular.get(0).getDireccionCompleta();
+			String telefonoCelular = titular.get(0).getTelefonoCelular();
+			String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
+			System.out.println("Dirección: " + direccion);
+			List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
+			String monto = datosSolicitud.get(0).getMontoAutorizado();
+			String plazo = datosSolicitud.get(0).getPlazo();
+			String tasa = datosSolicitud.get(0).getTasaFija();
+			String tasaMoratoria = datosSolicitud.get(0).getTasaMoratoria();
+
+			// Obtenemos el I_PRODUCTO_ID
+			int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
+			System.out.println("IdPorducto: " + idProducto);
+			Producto infoProducto = productoService.findByNoProducto(idProducto);
+			System.out.println("infoProducto: " + infoProducto);
+			String nombreProducto = infoProducto.getVc_nombre_producto().toString();
+			String kyc = infoProducto.getVc_identificador_kyc().toString();
+			String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
+			// Le asignamos los parametros que se requieren
+			// int solicitudEnvio = 91;
+			// String nombre = "JOSE ARTURO DE LA ROSA FUENTES";
+//			String monto = "158101.56";
+//			String plazo = "38 MESES";
+//			String tasa = "9.0000";
+
+			int totalPersonasFirma = titular.size();
+
+			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 0);
+			String ruta = documentos.get(0).getVc_ruta_docto();
+			System.out.println("ruta de documentos: " + ruta);
+
+			String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
+
+			System.out.println("RutaFinal: " + rutaArchivoFinal);
+			String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
+			String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
+
+			// Obtenemos la leyenda del firmante.
+			String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
+
+			List<Configuracion> configuracion = configService.findAll();
+
+			// System.out.println("entro en if variable1");
+			// String[] words = mensaje.split("variable");
+
+			// Asignamos los nuevos parametros.
+			String nuevoMensaje = mensaje.replace("$variable1", direccion).replace("$variable2", nombre)
+					.replace("$variable3", "$" + monto).replace("$variable4", plazo).replace("$variable5", tasa + "%")
+					.replace("$variable6", tasaMoratoria + "%").replace("$variable7", plazo);
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			// Elemento raíz
@@ -146,6 +149,7 @@ public class CrearXmlService {
 			Element validity = doc.createElement("validity");
 			// Procedimiento almacenado para obtener los días de vigencia
 			validity.setTextContent(validityXmlService.spValidityNat(solicitudEnvio));
+			//validity.setTextContent("1");
 			rootElement.appendChild(validity);
 
 			// Tipo de contrat, se obtine de bd

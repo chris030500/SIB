@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -68,6 +69,7 @@ public class UnirArchivosService {
 		return s;
 	}
 
+	@Transactional
 	public String guardarArchivoPDF(int solicitudEnvio) throws Exception {
 		DoctoUnificado doctoUnificado = new DoctoUnificado();
 		System.out.println("SolicitudEnvio: " + solicitudEnvio);
@@ -242,7 +244,7 @@ public class UnirArchivosService {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error al unir los archivos. Error: " + e.getMessage());
-			return e.getMessage();
+			return "Error al unir los archivos.";
 			// e.printStackTrace();
 		}
 

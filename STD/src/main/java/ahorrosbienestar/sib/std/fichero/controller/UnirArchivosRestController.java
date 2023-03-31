@@ -119,7 +119,7 @@ public class UnirArchivosRestController {
 
 			System.out.println("Número de las coordenadas de la lista");
 			System.out.println("tamanoObtenerCoordDocts: " + tamanoObtenerCoordDocts);
-			System.out.println("documentos" + documentos.size());
+			System.out.println("documentos: " + documentos.size());
 			int totalHojas = 1;
 
 			for (int i = 0; i < documentos.size(); i++) {
@@ -154,7 +154,7 @@ public class UnirArchivosRestController {
 			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
 			System.out.println("TotalHojas: " + totalHojas);
 			System.out.println("Ruta archivo PDF: " + ("/"+rutaArchivo+"/" + nombreArchivoFinal));
-			System.out.println("Ruta archivo XML: " + ("/"+rutaArchivo+"/" + nombreArchivoXML));
+			System.out.println("Ruta archivo XML 1: " + ("/"+rutaArchivo+"/" + nombreArchivoXML));
 			System.out.println("Estatus: " + 1);
 			System.out.println("Usuario: " + usu.getPk_id_usuario());
 			System.out.println("Fecha de envio: " + localDateHoy);
