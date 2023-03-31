@@ -1,7 +1,7 @@
 // Variables | valores para la autorización
 var guardarObservaciones;
 var guardarTipo;
-var 
+var guardarRequisition;
 
 
 // Variable | id solicitud de crédito
@@ -33,8 +33,8 @@ var listaID = document.getElementById("listaID");
 
 // Funcion para la busqueda de solicitud de credito
 function buscarSolicitudCredito(solicitudCredito) {
-	console.log(newUrlBase);
-	//console.log("solicitudCredito: " + solicitudCredito);
+	// console.log(newUrlBase);
+	// console.log("solicitudCredito: " + solicitudCredito);
 	$("#datoSolicitud").val('');
 	$("#participantes").val('');
 	if (solicitudCredito != '') {
@@ -45,7 +45,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 			dataType: "JSON",
 			success: function(respuesta) {
 				//console.log(respuesta);
-				console.log("buscar_solicitud");
+				// console.log("buscar_solicitud");
 				if (respuesta == null || respuesta == '') {
 					//console.log("Error");
 					swal({
@@ -200,7 +200,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log(JSON.stringify(respuesta));
+			// console.log(JSON.stringify(respuesta));
 			if (respuesta.pk_id_solicitud_envio == 0) {
 				disponible.style.display = "block"
 				// Mostrar datos de envio
@@ -240,11 +240,14 @@ function mostrarSolicitudEnvio(solicitudId) {
 			}
 
 			// Asignamos los valores a los campos
-			seId = repuesta.pk_id_solicitud_envio;
+			seId = respuesta.pk_id_solicitud_envio;
 			envio.value = respuesta.pk_id_solicitud_envio;
 			fechaRegistro.value = respuesta.dt_fecha_registro != null ? respuesta.dt_fecha_registro : 'Sin registro';
 			fechaCancelacion.value = respuesta.dt_fecha_cancelacion != null ? respuesta.dt_fecha_cancelacion : 'Sin registro';
 			horaCancelacion.value = respuesta.vc_hora_cancelacion != null ? respuesta.vc_hora_cancelacion : 'Sin registro';
+
+			// Guardamos el campo requisitionID para enviarlo al ws
+			guardarRequisition = respuesta.vc_requisition_id != null ? respuesta.vc_requisition_id : null;
 
 			// Mostrar solicitudes canceladas
 			listaSolicitudes(solicitudId);
@@ -286,16 +289,20 @@ function observacionesSolicitud(tipo) {
 	})
 		.then((observaciones) => {
 			if (observaciones && observaciones.length <= 200) {
-				swal("Solicitud actualizada", {
-					icon: "success",
-				})
-					.then((value) => {
-						window.location.reload();
-					});
+
 				guardarObservaciones = observaciones;
 				guardarTipo = tipo;
-				// 1er paso, llamar la autenticacion del provedor (NA-AT)
-				autenticacion();
+
+				actualizarSolicitud(guardarObservaciones, guardarTipo);
+
+
+				/*if (tipo == "rechazar") {
+					actualizarSolicitud(guardarObservaciones, guardarTipo);
+				} else if (tipo == "autorizar") {
+					// 1er paso, llamar la autenticacion del provedor (NA-AT)
+					autenticacion();
+				}*/
+
 			} else if (observaciones == "") {
 				// Mandamos alerta de que no hay texto
 				swal("Debes agregar observaciones para poder " + tipo, {
@@ -318,11 +325,16 @@ function observacionesSolicitud(tipo) {
 // Función que autoriza la solicitud
 function actualizarSolicitud(observacion, tipo) {
 	$.ajax({
-		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + creditoID + "&observaciones=" + observacion,
+		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&observaciones=" + observacion,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//
+			swal("Solicitud actualizada", {
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
 		}, error: function() {
 			//
 		}
@@ -490,8 +502,8 @@ function conexionApi(usuario, password, userType) {
 				var token = respuesta.access_token;
 				// 3er paso, guardar el proceso de autenticacion a nivel sistema
 				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
-				// 4to paso, mandar a llamar el proceso de descarga con el proveedor (NA-AT)
-				wsDescargaZip(token);
+				// 4to paso, recuperar la url de descarga
+				recuperarUrl(token);
 			}
 		},
 		error: function(respuesta) {
@@ -619,21 +631,49 @@ function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
 }
 
 
+function recuperarUrl(token) {
+	var webService = WS_IAD();
+	$.ajax({
+		url: webService + "/ws_url_descarga",
+		type: "GET",
+		success: function(respuesta) {
+			console.log(respuesta);
+			// 4to paso, mandar a llamar el proceso de descarga con el proveedor (NA-AT)
+			wsDescargaZip(token, respuesta);
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
+}
+
+
 
 // Función principal de la descarga del zip en WS
-function wsDescargaZip(token) {
-	// obtenemos la direccion de ws
-	var webService = WS_IAD();
+function wsDescargaZip(token, credencial) {
 	var resultadoLogin = false;
 	var idConfWS = 5;
-	var requisision = "requisisionId:" + guardarRequisition;
+	var requisision = guardarRequisition;
 	var jsonEnvio = [requisision];
+	var header = "Bearer " + token;
+
+	const dto = {
+		idValidation: requisision
+	}
+
+	var parametros = JSON.stringify(dto);
+
 	// Mandamos a llamar el servicio de ws
 	$.ajax({
-		url: webService + "/ws_descarga_documentos?requisitionID=" + guardarRequisition + "&tokenAutorizacion=" + token,
-		type: "GET",
-		dataType: "JSON",
+		url: credencial,
+		data: parametros,
+		headers: { 'Authorization': header },
+		type: "POST",
+		contentType: 'application/json',
 		success: function(respuesta) {
+
+			// console.log(respuesta);
+
 			if (respuesta.success) {
 				// Si la respuesta es true
 				resultadoLogin = true;
@@ -651,7 +691,11 @@ function wsDescargaZip(token) {
 				// 7mo paso, guardamos la autenticacion de la descarga
 				guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
 			}
+
 		}, error: function(error) {
+
+			// console.log(error);
+
 			// Mandamos una alerta
 			swal("No se pudo hacer la descarga del archivo", {
 				icon: "error",

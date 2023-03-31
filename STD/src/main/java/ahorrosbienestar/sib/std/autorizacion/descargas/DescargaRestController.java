@@ -62,8 +62,8 @@ public class DescargaRestController {
 		SolicitudEnvio solicitudEnvioModel = solicitudEnvioService.obtenerSolicitudEnvio(dEnvioID);
 
 		// Aquí hace referencia al complemento de la ruta con el cliente
-		String rutaCliente = solicitudEnvioModel.getFk_usr_registra().getPk_id_usuario() + "/"
-				+ solicitudEnvioModel.getFk_usr_registra().getPk_id_usuario() + "-"
+		String rutaCliente = solicitudEnvioModel.getFk_usr_registra().getI_id_empleado() + "/"
+				+ solicitudEnvioModel.getFk_usr_registra().getI_id_empleado() + "-"
 				+ solicitudEnvioModel.getI_no_solicitud_core() + "-" + solicitudEnvioModel.getI_identificador_ruta()
 				+ "/";
 

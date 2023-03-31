@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.autorizacion.controller;
 
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
 import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.histo_notificacion.model.HistoricoNotificacion;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoricoNotificacionService;
@@ -44,12 +47,15 @@ public class AutorizacionRestController {
 
 	@Autowired
 	private HistoricoNotificacionService historicoNotificacionService;
+	
+	@Autowired
+	private DescargaRestController descargaRestController;
 
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)
 	public HttpStatus cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("observaciones") String observaciones)
-			throws ParseException {
+			throws ParseException, IOException {
 
 		// Autentificación para obtener el nombre del usuario logueado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -116,6 +122,9 @@ public class AutorizacionRestController {
 
 		// Llamamos el método para enviar el correo
 		agregarNotificacion(tipoEstatus, fechaLocal, horaActual, envioID, observaciones);
+		
+		// Llamamos al método de crear carpeta, descomprimir zip, y guardar la info del archivo JSON.
+		//descargaRestController.crearCarpeta(envioID);
 
 		return HttpStatus.OK;
 	}
