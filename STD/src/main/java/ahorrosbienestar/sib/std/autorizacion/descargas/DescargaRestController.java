@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.autorizacion.descargas;
 
-/*import java.io.BufferedOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,10 +21,10 @@ import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@AllArgsConstructor*/
+@AllArgsConstructor
 public class DescargaRestController {
 
-	/*@Autowired
+	@Autowired
 	private ConfigService configService;
 
 	@Autowired
@@ -48,7 +48,7 @@ public class DescargaRestController {
 	
 	
 	// Método para crear una carpeta nueva
-	public void crearCarpeta(Integer dEnvioID) throws IOException {
+	/*public void crearCarpeta(Integer dEnvioID) throws IOException {
 
 		// Obtener configuración
 		Configuracion rutaConfiguracion = configService.obtenerConfiguracion(RUTA_CONFIGURACION);
