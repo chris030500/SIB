@@ -334,7 +334,7 @@ function actualizarSolicitud(observacion, tipo) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			
+
 			console.log(respuesta);
 
 			// Llamamos a nuestro spinner
@@ -342,6 +342,7 @@ function actualizarSolicitud(observacion, tipo) {
 			principal.style.display = 'block';
 
 			swal("Solicitud actualizada", {
+				closeOnClickOutside: false,
 				icon: "success",
 			})
 				.then((value) => {
@@ -697,6 +698,7 @@ function recuperarUrl(token) {
 
 // Función principal de la descarga del zip en WS
 function wsDescargaZip(token, credenciales) {
+
 	var resultadoLogin = false;
 	var idConfWS = 5;
 	var requisision = guardarRequisition;
@@ -708,6 +710,7 @@ function wsDescargaZip(token, credenciales) {
 	}
 
 	var parametros = JSON.stringify(dto);
+
 
 	// Mandamos a llamar el servicio de ws
 	axios({
@@ -730,7 +733,7 @@ function wsDescargaZip(token, credenciales) {
 		window.URL.revokeObjectURL(url); // Libera recursos de memoria
 
 		if (response.status == 200) {
-			
+
 			const respuesta = {
 				success: true,
 				error: null,
@@ -780,7 +783,7 @@ function guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, resJson) {
 			guardarRespAutenDescarga(respuestaEnvioSoli, idWSAutenticacion);
 		},
 		error: function(error) {
-			
+
 			// console.log(error);
 
 			// Llamamos a nuestro spinner
@@ -816,7 +819,7 @@ function guardarRespAutenDescarga(respuestaEnvioSoli, idWSAutenticacion) {
 			guardarBitacoraWS(autenUser, resAuten, tpProceso, seId);
 		},
 		error: function(error) {
-			
+
 			console.log(error);
 
 			// Llamamos a nuestro spinner

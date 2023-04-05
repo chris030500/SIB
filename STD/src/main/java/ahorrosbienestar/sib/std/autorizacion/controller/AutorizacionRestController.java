@@ -57,6 +57,9 @@ public class AutorizacionRestController {
 	public GeolocalizacionDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("observaciones") String observaciones)
 			throws ParseException, IOException {
+		
+		//
+		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
 
 		// Autentificación para obtener el nombre del usuario logueado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -99,6 +102,9 @@ public class AutorizacionRestController {
 				doct.setI_estatus(ESTATUS_AUTORIZAR);
 				doctEnvioService.save(doct);
 			});
+			
+			// Llamamos al método de crear carpeta, descomprimir zip, y guardar la info del archivo JSON.
+			responseDTO = descargaRestController.crearCarpeta(envioID);
 
 			// si es rechazar
 		} else if (tipoEstatus.equals("rechazar")) {
@@ -123,9 +129,6 @@ public class AutorizacionRestController {
 
 		// Llamamos el método para enviar el correo
 		agregarNotificacion(tipoEstatus, fechaLocal, horaActual, envioID, observaciones);
-		
-		// Llamamos al método de crear carpeta, descomprimir zip, y guardar la info del archivo JSON.
-		GeolocalizacionDTO responseDTO = descargaRestController.crearCarpeta(envioID);
 
 		return responseDTO;
 	}
