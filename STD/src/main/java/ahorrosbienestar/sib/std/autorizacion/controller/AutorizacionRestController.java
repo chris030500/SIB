@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
+import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
 import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.histo_notificacion.model.HistoricoNotificacion;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoricoNotificacionService;
@@ -53,7 +54,7 @@ public class AutorizacionRestController {
 
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)
-	public HttpStatus cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
+	public GeolocalizacionDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("observaciones") String observaciones)
 			throws ParseException, IOException {
 
@@ -124,9 +125,9 @@ public class AutorizacionRestController {
 		agregarNotificacion(tipoEstatus, fechaLocal, horaActual, envioID, observaciones);
 		
 		// Llamamos al método de crear carpeta, descomprimir zip, y guardar la info del archivo JSON.
-		//descargaRestController.crearCarpeta(envioID);
+		GeolocalizacionDTO responseDTO = descargaRestController.crearCarpeta(envioID);
 
-		return HttpStatus.OK;
+		return responseDTO;
 	}
 
 	// Método que manda notificacion al correo

@@ -7,6 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.json.simple.JSONObject;
@@ -14,8 +18,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+
+import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import lombok.AllArgsConstructor;
@@ -29,12 +36,9 @@ public class DescargaRestController {
 
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
-	
-	// Variable ruta de almacenamiento
-	private final static int RUTA_CONFIGURACION = 51;
 
-	// Variable ruta del archivo zip
-	private final static String RUTA_ZIP = "C:\\Users\\jose.corona\\Documents\\JACS-Documentos\\STD\\detail.zip";
+	// Variable ruta de almacenamiento
+	private final static int RUTA_CONFIGURACION = 14;
 
 	// Variable nombre de la carpeta
 	private final static String NOMBRE_CARPETA = "VIDEOGRABACION";
@@ -42,13 +46,13 @@ public class DescargaRestController {
 	// Variable que utiliza el método de extraer archivos del zip
 	private static final int BUFFER_SIZE = 4096;
 
-	// Variable para obtener el .json
-	private static final String filePath = "C:\\Users\\jose.corona\\Documents\\pruebas\\STD\\Envio\\4\\4-253188-6\\VIDEOGRABACION\\data.json";
 	
-	
-	
-	// Método para crear una carpeta nueva
-	/*public void crearCarpeta(Integer dEnvioID) throws IOException {
+	/**
+	 * Método para crear una carpeta nueva
+	 * @param dEnvioID
+	 * @throws IOException
+	 */
+	public GeolocalizacionDTO crearCarpeta(Integer dEnvioID) throws IOException {
 
 		// Obtener configuración
 		Configuracion rutaConfiguracion = configService.obtenerConfiguracion(RUTA_CONFIGURACION);
@@ -68,27 +72,91 @@ public class DescargaRestController {
 		// Aqui se define la ubicación de la carpeta nueva
 		File crearCarpeta = new File(complemento + NOMBRE_CARPETA);
 
+		// Se obtiene la ubicación del archivo zip
+		File origen = ubicacionDeArchivo();
+
+		// Le agregamos a la ruta el nombre del archivo
+		String rutaZip = origen.toString() + "\\videograbacion.zip";
+
 		// Pregunta si existe la carpeta
 		if (!crearCarpeta.exists()) {
+
 			// Pregunta si se puede realizar la acción
 			if (crearCarpeta.mkdirs()) {
+
 				// Se crea la carpeta
 				System.out.println("Carpeta creada");
+
 				// Descomprimir el archivo .zip
-				unzip(RUTA_ZIP, crearCarpeta.toString());
+				unzip(rutaZip, crearCarpeta.toString());
+
 			} else {
+
 				// Hubo un error
 				System.out.println("Error al crear carpeta");
 			}
 		} else {
+
 			// Descomprimir el archivo .zip
-			unzip(RUTA_ZIP, crearCarpeta.toString());
+			unzip(rutaZip, crearCarpeta.toString());
 		}
+		
+		String geolocalizacion = crearCarpeta.toString() + "\\data.json";
+		
+		// Recuperamos las coordenadas
+		GeolocalizacionDTO respuestaDTO = extaerJSON(geolocalizacion);
+		
+		return respuestaDTO;
 	}
 	
+
+	/**
+	 * Método para obtener la ubicación del archivo zip
+	 * 
+	 * @throws IOException
+	 */
+	public File ubicacionDeArchivo() throws IOException {
+
+		// Obtener el sistema operativo actual
+		String os = System.getProperty("os.name").toLowerCase();
+
+		// Determinar la ruta de la carpeta de descargas
+		String rutaDescargas = "";
+
+		if (os.contains("win")) {
+			rutaDescargas = System.getProperty("user.home") + "\\Downloads";
+		} else if (os.contains("mac")) {
+			rutaDescargas = System.getProperty("user.home") + "/Downloads";
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+			rutaDescargas = System.getProperty("user.home") + "/Downloads";
+		} else {
+			// Sistema operativo desconocido
+			System.err.println("Sistema operativo no soportado.");
+			System.exit(1);
+		}
+
+		// Imprimir la ruta de la carpeta de descargas
+		System.out.println("La carpeta de descargas está ubicada en: " + rutaDescargas);
+
+		// Acceder a la carpeta de descargas
+		File carpetaDescargas = new File(rutaDescargas);
+
+		if (carpetaDescargas.exists())
+			System.out.println("La carpeta de descargas existe.");
+		else
+			System.out.println("La carpeta de descargas no existe.");
+
+		return carpetaDescargas;
+
+	}
+
 	
-	
-	// Método para obtener el archivo .zip
+	/**
+	 * Método para mover los datos del archivo .zip
+	 * @param archivoZipPath
+	 * @param destinoPath
+	 * @throws IOException
+	 */
 	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
 
 		System.out.println("comienza la extracción del .zip");
@@ -119,11 +187,15 @@ public class DescargaRestController {
 
 		Zip_Input_Stream.close();
 	}
-	
-	
-	
-	// Método para extaer los archivos del zip
-	private static void extractFile(ZipInputStream Zip_Input_Stream, String File_Path) throws IOException {
+
+
+	/**
+	 * Método para extaer los archivos del zip
+	 * @param Zip_Input_Stream
+	 * @param File_Path
+	 * @throws IOException
+	 */
+	private void extractFile(ZipInputStream Zip_Input_Stream, String File_Path) throws IOException {
 		BufferedOutputStream Buffered_Output_Stream = new BufferedOutputStream(new FileOutputStream(File_Path));
 		byte[] Bytes = new byte[BUFFER_SIZE];
 		int Read_Byte = 0;
@@ -132,15 +204,19 @@ public class DescargaRestController {
 		}
 		Buffered_Output_Stream.close();
 	}
-	
-	
-	
-	// Método para obtener los valores de un archivo .json
-	public void extaerJSON() {
-		
+
+
+	/**
+	 * Método para obtener los valores de un archivo .json
+	 * @return
+	 */
+	public GeolocalizacionDTO extaerJSON(String filePath) {
+
+		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
+
 		// parsing file "JSONExample.json"
-        Object ob = null;
-        
+		Object ob = null;
+
 		try {
 			ob = new JSONParser().parse(new FileReader(filePath));
 		} catch (FileNotFoundException e) {
@@ -154,51 +230,16 @@ public class DescargaRestController {
 			e.printStackTrace();
 		}
 
-        // typecasting ob to JSONObject
-        JSONObject js = (JSONObject) ob;
+		// typecasting ob to JSONObject
+		JSONObject js = (JSONObject) ob;
 
-        String latitude = (String) js.get("latitude");
-        String longitude = (String) js.get("longitude");
+		String latitude = (String) js.get("latitude");
+		String longitude = (String) js.get("longitude");
 
-        System.out.println("Latitude: " + latitude);
-        System.out.println("Longitude:  " + longitude);
-	}*/
-	
-	// Método para mover archivos
-	/*
-	 * public void moverArchivos(Integer dEnvioID) throws IOException {
-	 * 
-	 * // Obtener configuración Configuracion configuracionModel =
-	 * configService.obtenerConfiguracion(RUTA_CONFIGURACION);
-	 * 
-	 * // Obtener solicitud de envio SolicitudEnvio solicitudEnvioModel =
-	 * solicitudEnvioService.obtenerSolicitudEnvio(dEnvioID);
-	 * 
-	 * // Aquí hace referencia al destino donde se van a mover los archivos String
-	 * destino = configuracionModel.getVc_valor_propiedad() + "/" +
-	 * solicitudEnvioModel.getFk_usr_registra().getPk_id_usuario() + "/" +
-	 * solicitudEnvioModel.getFk_usr_registra().getPk_id_usuario() + "-" +
-	 * solicitudEnvioModel.getPk_id_solicitud_envio() + "-" +
-	 * solicitudEnvioModel.getI_identificador_ruta() + "/";
-	 * 
-	 * // Se recupera los documentos que pertenecen a la solicitud de envio
-	 * doctEnvioService.listaDocumentosPorSolicitudEnvio(dEnvioID).forEach(doct -> {
-	 * 
-	 * try {
-	 * 
-	 * // Obtener el nombre del archivo URL origen = new
-	 * URL(doct.getVc_ruta_docto());
-	 * 
-	 * // Aquí realiza el cambio entre carpetas/ubicación Path cambioDeCarpeta =
-	 * Files.move(Paths.get(doct.getVc_ruta_docto()), Paths.get(destino +
-	 * origen.getFile()));
-	 * 
-	 * // Se notifica si realizo el cambio if (cambioDeCarpeta != null)
-	 * System.out.println("El archivo se movió correctamente"); else
-	 * System.out.println("Hubo un error al mover el archivo");
-	 * 
-	 * } catch (IOException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); } }); }
-	 */
+		responseDTO.setLatitud(latitude);
+		responseDTO.setLongitud(longitude);
+
+		return responseDTO;
+	}
 
 }
