@@ -187,7 +187,7 @@ public class UnirArchivosService {
 
 						FirmaDoctoUnificado fDoctoUnificado = new FirmaDoctoUnificado();
 						fDoctoUnificado.setFk_id_docto_unificado(doctoUnificado);
-						fDoctoUnificado.setI_no_hoja(noHoja);
+						fDoctoUnificado.setI_no_hoja(hojaFirmaDoctUnificado);
 						fDoctoUnificado.setF_coord_firma_xCentral(xCentral);
 						fDoctoUnificado.setF_coord_firma_yCentral(yCentral);
 						fDoctoUnificado.setF_coord_firma_x1(x1);

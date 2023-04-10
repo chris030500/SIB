@@ -615,3 +615,31 @@ function cambiarContrasenia() {
 		});
 	}
 }
+
+
+function reactivarEstatusUsuario(usuario) {
+
+	$.ajax({
+		url: urlBase + "reactivar_usuario_sesion/" + usuario,
+		type: "POST",
+		success: function() {
+			swal({
+				type: 'success',
+				title: 'Desbloqueo correctamente',
+				showConfirmButton: false,
+				timer: 24000 // es ms (mili-segundos)
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		},
+		error: function() {
+			swal({
+				type: 'warning',
+				title: 'No se realizo correctamente el desbloqueo',
+				showConfirmButton: false
+				//timer: 24000 // es ms (mili-segundos)
+			});
+		}
+	});
+}

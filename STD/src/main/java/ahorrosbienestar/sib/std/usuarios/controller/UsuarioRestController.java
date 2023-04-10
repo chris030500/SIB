@@ -246,5 +246,12 @@ public class UsuarioRestController {
 		System.out.println("Usuario: " + usuario);
 		return ResponseEntity.ok(usuarioService.activarUsuarioEstatus(usuario));
 	}
+	
+	@RequestMapping(value = { "/reactivar_usuario_sesion/{id}" }, method = RequestMethod.POST)
+	public ResponseEntity<?> reactivarUsuarioSesion(@PathVariable("id") Integer id) throws IOException {
+		logger.info("Ingreso en activarUsuarioSesion");
+		logger.info("activar sesión usuario: " + id);
+		return ResponseEntity.ok(usuarioService.activarUsuarioSesion(id));
+	}
 
 }

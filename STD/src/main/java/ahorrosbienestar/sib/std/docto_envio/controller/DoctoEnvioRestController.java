@@ -154,27 +154,34 @@ public class DoctoEnvioRestController {
 				if(productoNomina.equals("S")) {
 					System.out.println("Entro en if de S");
 					logger.info("Entro en si es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
+					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
 				} else if (productoNomina.equals("N")){
 					System.out.println("Entro en if de N");
 					logger.info("Entro en no es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
+					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
 				}
 				
 			} else if (nombreDocumento.contains("Contrato_Apertura")) {
 				System.out.println("Entro en Contrato_Apertura");
 				logger.info("Entro en contrato");
 				System.out.println("Entro en contrato");
-				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio, doct);
 			} else if (nombreDocumento.contains("Pagare")) {
 				System.out.println("Entro en pagare");
 				logger.info("Entro en pagare");
-				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio);
-			} else if (nombreDocumento.contains("tabla de Amortizacion")) {
+				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio, doct);
+			} else if (nombreDocumento.contains("tabla de Amortizacion") || nombreDocumento.contains("PlandePagos") || nombreDocumento.contains("amortizacion")) {
 				System.out.println("Entro en Tabla de amortizacion");
 				logger.info("Entro en Plan de pagos");
-				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio, doct);
+			} else if(nombreDocumento.contains("domiciliacion") || nombreDocumento.contains("formato de domiciliacion")) {
+				System.out.println("Entro en formato de domiciliacion");
+				logger.info("Entro en formato de domiciliacion");
+				obtenerCoordenadasRestController.obtenerCoordenadasDomiliciacion(ubicacionArchivoServidor, dEnvio, doct);
+			} else if (nombreDocumento.contains("autorizacion de transferencia electronica") || nombreDocumento.contains("transferencia electronica")) {
+				obtenerCoordenadasRestController.obtenerCoordenadasAutorizacionTransferencia(ubicacionArchivoServidor, dEnvio, doct);
 			} else {
 				logger.info("El documento " + nombreDocumento  + " no está configurado para obtener espacios de firma");
 				System.out.println("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");

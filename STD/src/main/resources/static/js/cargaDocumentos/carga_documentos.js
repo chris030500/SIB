@@ -1,8 +1,49 @@
 var productoNomina = document.getElementById('productoNomina').value;
 
+window.addEventListener("load", function() {
+	const loader = document.getElementById("loader");
+	loader.classList.add("hide-loader");
+});
 // Variables | para el spinner
-var spinner = document.getElementById('spinnerID');
-var principal = document.getElementById('principalID');
+/*var spinner = document.getElementById('spinnerID');
+var principal = document.getElementById('principalID');*/
+
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+window.onload = function() {
+	var urlBase = getAbsolutePath();
+	$.ajax({
+		url: urlBase + "mensajeValidaFecha",
+		async: false,
+		type: "GET",
+		success: function(respuesta) {
+			mensaje = respuesta;
+			//console.log("mensaje: " + mensaje);
+			document.getElementById('mensaje').innerHTML = mensaje;
+		}
+	});
+	//mensajeValidaFecha()
+};
+function mensajeValidaFecha() {
+	var mensaje = "";
+	console.log(urlBase);
+	$.ajax({
+		url: urlBase + "mensajeValidaFecha",
+		async: false,
+		type: "GET"
+	}).done(function(respuesta) {
+		//console.log("respuesta obtenerDiferencia : " + respuesta);
+		mensaje = respuesta;
+		document.getElementById('mensaje').value() = mensaje;
+		return mensaje;
+	});
+	return mensaje;
+}
+
 //console.log("Entro en carga de documentos");
 /*function sumarDias(fecha, dias) {
 	//console.log("sumar dias dias: " + dias);
@@ -52,11 +93,7 @@ function eliminarFila(id) {
 
 }
 
-function getAbsolutePath() {
-	var loc = window.location;
-	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
-}
+
 
 const diferenciaDias = function obtenerDiferenciaDias() {
 	var urlBase = getAbsolutePath();
@@ -298,11 +335,17 @@ function buscarDocumentos(producto) {
 	//var d = 10;
 	//fEnvio.max = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
 	var fe = new Date();
-	var hora = fe.getHours() + ":" + fe.getMinutes();
+	const date = new Date();
+
+	// ajustar la zona horaria a la de México
+	date.setUTCHours(date.getUTCHours() - 6);
+	//var fechaActual = date.toISOString().split("T")[0];
+	var hora = addCero(fe.getHours()) + ":" + addCero(fe.getMinutes());
 	//var fMax = sumarDias(new Date().toISOString().split("T")[0], d);
 	//console.log("fe: " + fe);
+
 	var fMax = sumarDias(fe, d).toISOString().split("T")[0];
-	var fMin = new Date().toISOString().split("T")[0];
+	var fMin = date.toISOString().split("T")[0];
 	//console.log("fMax: " + fMax);
 	//console.log("fmin: " + fMin);
 
@@ -464,32 +507,112 @@ function obtenerNombreDoct(nombre) {
 	//console.log("ID del documento: " );
 }
 
+function addCero(i) {
+	if (i < 10) {
+		i = "0" + i;
+	}
+	return i;
+}
+
+/*function pageLoaded() {
+	let loaderSection = document.querySelector('.loader-section');
+	loaderSection.classList.add('loaded');
+}
+
+document.onload = pageLoaded();*/
+
+/*$(document).ajaxStart(function() {
+  $("#loader").show();
+});
+
+$(document).ajaxStop(function() {
+  $("#loader").hide();
+});*/
+
+/*$('#altaSolicitud').click(function(){
+	$('#spinnerID').fadeIn();
+});*/
+/*function mostrarSpinner() {
+	console.log("Entra en primer función")
+	document.querySelector('#principalID').style.display = 'none';
+	document.querySelector('#spinnerID').style.display = 'block';
+}
+
+function ocultarSpinner() {
+	console.log("Entra en función de ocultar")
+	document.querySelector('#spinnerID').style.display = 'none';
+	document.querySelector('#principalID').style.display = 'block';
+
+}
+
+$("#btnAltaSolicitud").click(function() {
+	mostrarSpinner();
+	$.when(altaSolicitud()).then(ocultarSpinner());
+});*/
+
+const loader = document.getElementById("loader");
+function handleClick() {
+	// muestra el loader
+	//document.getElementById('loader').style.display = 'block';
+	/*document.getElementById('spanCargando').style.display = 'block';
+	document.getElementById('spanGuardar').style.display = 'none';*/
+	setTimeout(function() {
+		document.getElementById('spanCargando').style.display = 'block';
+		document.getElementById('spanGuardar').style.display = 'none';
+		/*document.getElementById('loader').style.display = 'block';
+		document.getElementById('principalID').style.display = 'none';*/
+
+	}, 0);
+	//document.getElementById('principalID').style.display = 'none';
+	/*var screen = $('#loader');
+	visualizarLoader(screen);*/
+	document.getElementById('btnAltaSolicitud').disabled = true;
+	document.body.style.pointerEvents = "none";
+
+	loader.classList.remove("hide-loader");
+	// ejecuta la función que incluye la petición AJAX
+	///altaSolicitud();
+}
+
+// agrega el evento click al botón
+//document.getElementById('btnAltaSolicitud').addEventListener('click', handleClick);
+
+//document.getElementById('btnAltaSolicitud').addEventListener('click', handleClick);
+document.getElementById('btnAltaSolicitud').addEventListener('click', function() {
+	handleClick();
+	altaSolicitud();
+});
+
 //Funcion para dar de alta la solicitud
 function altaSolicitud() {
-	document.getElementById('btnAltaSolicitud').disabled = true;
-	/*console.log("Spinner: " + spinner.style.display);
-	console.log("principal: " + principal.style.display);*/
+	/*setTimeout(function() {
+		document.getElementById('spanCargando').style.display = 'block';
+		document.getElementById('spanGuardar').style.display = 'none';
+	}, 8000);*/
+	//document.querySelector('#spinnerID').style.display = 'block';
+	//document.getElementById('btnAltaSolicitud').disabled = true;
+	//principal.style.display = 'none';
+	setTimeout(function() {
+		document.getElementById('spanCargando').style.display = 'none';
+		document.getElementById('spanGuardar').style.display = 'block';
+		/*document.getElementById('loader').style.display = 'none';
+		document.getElementById('principalID').style.display = 'block';*/
+	}, 2000);
+
+	console.log("Entro en altaSolicitud");
+	//var fe = new Date();
+	const date = new Date();
+	var hora = addCero(date.getHours()) + ":" + addCero(date.getMinutes());
+	// crear objeto de fecha
 
 
-	spinner.style.display = 'block';
-	principal.style.display = 'none';
-	/*setTimeout(() => spinner.style.display = 'block', 1000);
-	setTimeout(() => principal.style.display = 'none', 1000);*/
-
-	/*console.log("Spinner 2da: " + spinner.style.display);
-	console.log("principal 2da: " + principal.style.display);*/
-
-	//console.log("Entro en altaSolicitud");
-	var fe = new Date();
-	var hora = fe.getHours() + ":" + fe.getMinutes();
-	console.log("hora: " + hora);
-	var fechaActual = fe.toISOString().split("T")[0];
-	console.log("fecha actual: " + fechaActual);
+	// ajustar la zona horaria a la de México
+	date.setUTCHours(date.getUTCHours() - 6);
+	var fechaActual = date.toISOString().split("T")[0];
+	//console.log("fecha1: " + fechaActual);
+	//var fechaActual = (fechaM.toISOString().split("T")[0]);
+	//console.log("fecha actual: " + fechaActual);
 	var urlBase = getAbsolutePath();
-	/*console.log("horaActual: " + hora);
-	console.log("fe: " + fe);
-	console.log("fechaActual: "+ fechaActual);*/
-	//var inputs = $('input[name^=file]');
 	var solicitud = document.getElementById('solicitud').value;
 	if (document.getElementById("fEnvio").value != null && document.getElementById("fCancelacion").value) {
 		if ((document.getElementById("fCancelacion").value > document.getElementById("fEnvio").value) ||
@@ -498,24 +621,42 @@ function altaSolicitud() {
 			/*var fechaCancelacion = document.getElementById("fCancelacion").value;
 			console.log("Fe Cancelación:" + fechaCancelacion);*/
 			if (document.getElementById("hEnvio").value < hora && document.getElementById("fEnvio").value == fechaActual) {
-				//console.log("No puede ejecutar porque la hora es menor a la hora actual");
-				/*spinner.style.display = 'none';
-				principal.style.display = 'block';*/
+				console.log("fechaActual" + fechaActual);
+				console.log("Hora: " + hora);
+				console.log("henvio" + document.getElementById("hEnvio").value);
+				console.log("fenvio: " + document.getElementById("fEnvio"));
 				swal({
 					title: "Error, favor de revisar la hora de envio",
 					text: "La hora es menor a la hora actual",
 					icon: "warning",
 				});
 				document.getElementById('btnAltaSolicitud').disabled = false;
+				document.getElementById('spanCargando').style.display = 'none';
+				document.getElementById('spanGuardar').style.display = 'block';
+				loader.classList.add("hide-loader");
+				/*spinner.style.display = 'none';
+				principal.style.display = 'block';*/
+				/*document.getElementById('loader').style.display = 'none';
+				document.getElementById('principalID').style.display = 'block';*/
 			} else {
 				//console.log("Puede ejecutar el alta");
 				var numTr = $('#tablaDocumentos tbody tr').length;
-				console.log("num: " + numTr);
+				//console.log("num: " + numTr);
 
 				var miArray = new Array(numTr);
+				var arrayPDF = new Array(numTr);
 				var conteo = 0;
+				var conteoPDF = 0;
+				setTimeout(function() {
+					document.getElementById('spanCargando').style.display = 'block';
+					document.getElementById('spanGuardar').style.display = 'none';
+					/*document.getElementById('loader').style.display = 'block';
+					document.getElementById('principalID').style.display = 'none';*/
+
+				}, 0);
 				//For que nos ayuda a validar la carga de archivos
 				for (i = 0; i < numTr; i++) {
+
 					var numTr1 = $('#tablaDocumentos tbody tr').value;
 					console.log("numTr1: " + numTr1);
 					//var documento = document.getElementsByClassName("archivo")[i].id;
@@ -526,6 +667,16 @@ function altaSolicitud() {
 						//console.log("No tiene nombre");
 					} else {
 						miArray[i] = true;
+						var nombre = document.getElementsByClassName("archivo")[i].files[0].name;
+						console.log("Nombre: " + nombre);
+						let extension = nombre.split('.').pop().toLowerCase();
+						if (extension.includes("pdf")) {
+							console.log("Es PDF")
+							arrayPDF[i] = true;
+						} else {
+							console.log("No es PDF");
+							arrayPDF[i] = false;
+						}
 						//console.log("Si tiene nombre");
 					}
 
@@ -535,220 +686,271 @@ function altaSolicitud() {
 					if (miArray[i] === true) {
 						conteo = conteo + 1;
 					}
+					if (arrayPDF[i] === true) {
+						conteoPDF = conteoPDF + 1;
+					}
 				}
 
-				if (conteo == numTr) {
+				if (conteo == numTr && conteoPDF == numTr) {
+					setTimeout(function() {
+						document.getElementById('spanCargando').style.display = 'block';
+						document.getElementById('spanGuardar').style.display = 'none';
+						/*document.getElementById('loader').style.display = 'block';
+						document.getElementById('principalID').style.display = 'none';*/
 
-					$.ajax({
-						async: false,
-						url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
-						type: "GET",
-						dataType: "JSON",
-						success: function(respuesta) {
-							document.getElementById('btnAltaSolicitud').disabled = true;
-							/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
-							console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
-							//console.log("RESPUESTA: " + JSON.stringify(respuesta));
-							var r;
-							if (JSON.stringify(respuesta) == "[]") {
-								r = null;
-							} else {
-								r = JSON.stringify(respuesta[0].estatus);
-							}
-							//var r = JSON.stringify(respuesta[0].estatus);
-							//console.log("r: " + r);
-							if (r == 1) {
+					}, 0);
+					console.log("Valida solicitud de crédito");
+					validaSolicitud(solicitud);
 
-								swal({
-									title: "Solicitud en proceso de: ",
-									text: "Autorizacion de documentos",
-									icon: "info",
-								});
-								document.getElementById('btnAltaSolicitud').disabled = false;
-								spinner.style.display = 'none';
-								principal.style.display = 'block';
-								//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
-							} else if (r == 3) {
-
-								swal({
-									title: "Solicitud en proceso de: ",
-									text: "Autorización de documentos para firma digital",
-									icon: "info",
-								});
-								document.getElementById('btnAltaSolicitud').disabled = false;
-								spinner.style.display = 'none';
-								principal.style.display = 'block';
-								//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
-							} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
-								//console.log("Puede realizar el registro");
-								document.getElementById('btnAltaSolicitud').disabled = true;
-								var producto = document.getElementById('producto').value;
-								//var estatus = 1;
-								var comentarioValidacion = document.getElementById('comentarioValidacion').value;
-								var fEnvio = document.getElementById('fEnvio').value;
-								var hEnvio = document.getElementById('hEnvio').value;
-								var fCancelacion = document.getElementById('fCancelacion').value;
-								var hCancelacion = document.getElementById('hCancelacion').value;
-								var productoNomina = document.getElementById('productoNomina').value;
-								console.log("Fecha cancelación: " + fCancelacion);
-								/*console.log("noSolicitud: " + solicitud);
-								console.log("productoId: " + producto);
-								console.log("estatus: " + estatus);
-								console.log("obserReticion: " + comentarioValidacion);
-								console.log("fechaEnvio: " + fEnvio);
-								console.log("horaEnvio: " + hEnvio);
-								console.log("fechaCancelacion: " + fCancelacion);
-								console.log("horaCancelacion:" + hCancelacion);
-								console.log("productoNomina: " + productoNomina);*/
-								var solicitudCredito = document.getElementById("solicitudCredito").value;
-								var clienteId = document.getElementById("clienteId").value;
-								$.ajax({
-									async: false,
-									url: urlBase + "solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
-										"&comentarioValidacion=" + comentarioValidacion +
-										"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
-										"&hCancelacion=" + hCancelacion,
-									type: "POST",
-									dataType: "JSON",
-									success: function(respuesta) {
-										//console.log("Respuesta: " + JSON.stringify(respuesta));
-										var idEnvio = JSON.stringify(respuesta);
-										/*console.log("Entro en success de get");
-										console.log("Respuesta: " +respuesta);*/
-										//console.log("Se guardo la solicitud de envio: ");
-										/*swal({
-											icon: "success",
-											title: "Registro de solicitud exitoso.",
-											showConfirmButton: false
-						
-										});*/
-										uploadFile2(solicitudCredito, clienteId, idEnvio);
-										uploadFile(fCancelacion, productoNomina, idEnvio);
-										//setTimeout(() => spinner.style.display = 'none', 3000);
-										swal({
-											icon: "success",
-											title: "Registro de solicitud exitoso.",
-											showConfirmButton: false
-
-										}).then((result) => {
-											window.location.replace(urlBase + "carga_documentos");
-										});
-
-									},
-									error: function(respuesta) {
-										//console.log("Entro en error");
-										/*spinner.style.display = 'none';
-										principal.style.display = 'block';*/
-										spinner.style.display = 'none';
-										principal.style.display = 'block';
-										swal({
-											icon: "warning",
-											title: "Error: " + respuesta.status,
-											showConfirmButton: false
-										});
-
-									}
-								});
-							}
-						}, error: function(respuesta) {
-							spinner.style.display = 'none';
-							principal.style.display = 'block';
-							//console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
-							swal({
-								title: "Error validarCoreSolicitudEnvio",
-								text: JSON.stringify(respuesta),
-								icon: "warning",
-							});
-						}
-					});
-					/*var longitud = document.getElementsByClassName("archivo").length;
-					var miArray2 = new Array(longitud);
-					var conteo2 = 0;*/
-					//For para validar el nombre de los documentos
-					//for (i = 0; i < longitud; i++) {
-					//var documento = document.getElementsByClassName("archivo")[i].id;
-					//var n = document.getElementsByClassName("archivo")[i].files[0].name;
-					//console.log("documento: " + documento);
-					//console.log("n: " + n);
-					//console.log("n includes: " + n.includes("AnexosContrato") ? 'Si' : 'No' );
-					//Sentencia que evalua si el nombre del archivo es aceptado o no
-					/*if (n.includes("AnexosContrato") || n.includes("Contrato_Apertura")
-						|| n.includes("Contrato Apertura") || n.includes("AnexoContrato")
-						|| n.includes("amortizacion")
-						|| n.includes("Pagare") || n.includes("PlandePagos")) {
-						miArray2[i] = true;
-						//console.log("Si tiene nombre correcto");
-					} else {
-						miArray2[i] = false;
-						//console.log("No tiene nombre correcto");
-					}*/
-					/*console.log("documento uploadFile: " + documento);
-					console.log("Files: " + JSON.stringify(n));*/
-
-					//}
-
-					/*for (i = 0; i < longitud; i++) {
-						if (miArray2[i] === true) {
-							conteo2 = conteo2 + 1;
-						}
-					}
-					console.log("conteo2 = " + conteo2);
-					console.log("longitud: " + longitud);*/
-					//if (conteo2 == longitud) {
-					/*console.log("Los nombres de los documentos coinciden");
-					console.log("Ejecuta el guardado de la solicitud");*/
-					//Ejecuta el guardado de la solicitud ya que todos los documentos cumplan con el nombre establecido
-
-					/*} else {
-						console.log("Favor de revisar los nombres de los archivos");
-						swal({
-							title: "Error, nombres de archivos incorrectos",
-							text: "Favor de revisar los nombres de los archivos",
-							icon: "warning",
-						});
-					}*/
-
-					/*console.log("Todos los valores son true");
-					console.log("Ejecuta para registrar los documentos");*/
-
-				} else {
-					//console.log("No todos los valores son true");
-					/*spinner.style.display = 'none';
-					principal.style.display = 'block';*/
+				} else if (conteo != numTr) {
 					swal({
 						title: "Error, sin archivos seleccionados",
 						text: "Favor de revisar la carga de archivos",
 						icon: "warning",
 					});
+					document.body.style.pointerEvents = null;
+					document.getElementById('spanCargando').style.display = 'none';
+					document.getElementById('spanGuardar').style.display = 'block';
 					document.getElementById('btnAltaSolicitud').disabled = false;
-					spinner.style.display = 'none';
-					principal.style.display = 'block';
+					loader.classList.add("hide-loader");
+					/*document.getElementById('loader').style.display = 'none';
+					document.getElementById('principalID').style.display = 'block';*/
+				}
+				else if (conteoPDF != numTr) {
+					swal({
+						title: "Error, archivos incorrectos",
+						text: "Favor de revisar que los archivos sean PDF",
+						icon: "warning",
+					});
+					document.getElementById('spanCargando').style.display = 'none';
+					document.getElementById('spanGuardar').style.display = 'block';
+					document.body.style.pointerEvents = null;
+					document.getElementById('btnAltaSolicitud').disabled = false;
+					loader.classList.add("hide-loader");
+					/*document.getElementById('loader').style.display = 'none';
+					document.getElementById('principalID').style.display = 'block';*/
+				}
+				else {
+					//console.log("No todos los valores son true");
+					/*spinner.style.display = 'none';
+					principal.style.display = 'block';*/
+					swal({
+						title: "Error en archivos seleccionados",
+						text: "Favor de revisar los archivos",
+						icon: "warning",
+					});
+					document.body.style.pointerEvents = null;
+					document.getElementById('btnAltaSolicitud').disabled = false;
+					document.getElementById('spanCargando').style.display = 'none';
+					document.getElementById('spanGuardar').style.display = 'block';
+					loader.classList.add("hide-loader");
+					//document.getElementById('loader').style.display = 'none';
+					//document.getElementById('principalID').style.display = 'block';
 
 				}
 			}
 
 
 		} else {
-			spinner.style.display = 'none';
-			principal.style.display = 'block';
+
 			swal({
 				title: "Error",
 				text: "Favor de revisar la fecha y hora de cancelación",
 				icon: "warning",
 			});
+			document.body.style.pointerEvents = null;
+			//document.getElementById('loader').style.display = 'none';
+			document.getElementById('principalID').style.display = 'block';
 			document.getElementById('btnAltaSolicitud').disabled = false;
+			loader.classList.add("hide-loader");
 		}
 
 	} else {
-		spinner.style.display = 'none';
-		principal.style.display = 'block';
+		//ocultarSpinner();
 		swal({
 			title: "Error",
 			text: "Favor de llenar los campos de fecha de envio y/o fecha de cancelación",
 			icon: "warning",
 		});
+
+		/*document.querySelector('#spinnerID').style.display = 'none';
+		document.querySelector('#principalID').style.display = 'block';*/
+		document.body.style.pointerEvents = null;
+		document.getElementById('spanCargando').style.display = 'none';
+		document.getElementById('spanGuardar').style.display = 'block';
+		/*document.getElementById('loader').style.display = 'none';
+		document.getElementById('principalID').style.display = 'block';*/
 		document.getElementById('btnAltaSolicitud').disabled = false;
+		loader.classList.add("hide-loader");
 	}
+}
+
+function validaSolicitud(solicitud) {
+	var urlBase = getAbsolutePath();
+	$.ajax({
+		async: false,
+		url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+			//document.getElementById('loader').style.display = 'block';
+		},
+		success: function(respuesta) {
+			document.getElementById('btnAltaSolicitud').disabled = true;
+			/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+			console.log("Respuesta 1: " + JSON.stringify(respuesta[0]));*/
+			//console.log("RESPUESTA: " + JSON.stringify(respuesta));
+			var r;
+			if (JSON.stringify(respuesta) == "[]") {
+				r = null;
+			} else {
+				r = JSON.stringify(respuesta[0].estatus);
+			}
+			//var r = JSON.stringify(respuesta[0].estatus);
+			//console.log("r: " + r);
+			if (r == 1) {
+
+				swal({
+					title: "Solicitud en proceso de: ",
+					text: "Autorizacion de documentos",
+					icon: "info",
+				});
+				document.body.style.pointerEvents = null;
+				document.getElementById('btnAltaSolicitud').disabled = false;
+				document.getElementById('spanCargando').style.display = 'none';
+				document.getElementById('spanGuardar').style.display = 'block';
+				loader.classList.add("hide-loader");
+				/*spinner.style.display = 'none';
+				principal.style.display = 'block';*/
+				/*document.getElementById('loader').style.display = 'none';
+				document.getElementById('principalID').style.display = 'block';*/
+				//console.log("No puede continuar debido a que se encuentra en solicitud de autorizacion de documentos");
+			} else if (r == 3) {
+
+				swal({
+					title: "Solicitud en proceso de: ",
+					text: "Autorización de documentos para firma digital",
+					icon: "info",
+				});
+				document.body.style.pointerEvents = null;
+				document.getElementById('btnAltaSolicitud').disabled = false;
+				document.getElementById('spanCargando').style.display = 'none';
+				document.getElementById('spanGuardar').style.display = 'block';
+				loader.classList.add("hide-loader");
+				/*spinner.style.display = 'none';
+				principal.style.display = 'block';*/
+				/*document.getElementById('loader').style.display = 'none';
+				document.getElementById('principalID').style.display = 'block';*/
+				//console.log("No puede continuar debido a que se encuentra en autorización de documentos para firma digital");
+			} else if (r == 2 || r == 4 || r == 5 || r == 7 || r == null || r == 6) {
+				//console.log("Puede realizar el registro");
+				document.getElementById('btnAltaSolicitud').disabled = true;
+				var producto = document.getElementById('producto').value;
+				//var estatus = 1;
+				var comentarioValidacion = document.getElementById('comentarioValidacion').value;
+				var fEnvio = document.getElementById('fEnvio').value;
+				var hEnvio = document.getElementById('hEnvio').value;
+				var fCancelacion = document.getElementById('fCancelacion').value;
+				var hCancelacion = document.getElementById('hCancelacion').value;
+				var productoNomina = document.getElementById('productoNomina').value;
+				console.log("Fecha cancelación: " + fCancelacion);
+				/*console.log("noSolicitud: " + solicitud);
+				console.log("productoId: " + producto);
+				console.log("estatus: " + estatus);
+				console.log("obserReticion: " + comentarioValidacion);
+				console.log("fechaEnvio: " + fEnvio);
+				console.log("horaEnvio: " + hEnvio);
+				console.log("fechaCancelacion: " + fCancelacion);
+				console.log("horaCancelacion:" + hCancelacion);
+				console.log("productoNomina: " + productoNomina);*/
+				var solicitudCredito = document.getElementById("solicitudCredito").value;
+				var clienteId = document.getElementById("clienteId").value;
+				$.ajax({
+					async: false,
+					url: urlBase + "solicitudEnvio/guardarSolicitudEnvio?solicitud=" + solicitud + "&producto=" + producto +
+						"&comentarioValidacion=" + comentarioValidacion +
+						"&fEnvio=" + fEnvio + "&hEnvio=" + hEnvio + "&fCancelacion=" + fCancelacion +
+						"&hCancelacion=" + hCancelacion,
+					type: "POST",
+					dataType: "JSON",
+					beforeSend: function() {
+						//document.getElementById('loader').style.display = 'block';
+						//document.getElementById('btnRelDoc').disabled = true;
+						$.blockUI({ message: 'Espere un momento...' });
+						setTimeout($.unblockUI, 5000);
+					},
+					success: function(respuesta) {
+						//console.log("Respuesta: " + JSON.stringify(respuesta));
+						var idEnvio = JSON.stringify(respuesta);
+						/*console.log("Entro en success de get");
+						console.log("Respuesta: " +respuesta);*/
+						//console.log("Se guardo la solicitud de envio: ");
+						/*swal({
+							icon: "success",
+							title: "Registro de solicitud exitoso.",
+							showConfirmButton: false
+		
+						});*/
+						uploadFile2(solicitudCredito, clienteId, idEnvio);
+						uploadFile(fCancelacion, productoNomina, idEnvio);
+						//setTimeout(() => spinner.style.display = 'none', 3000);
+						swal({
+							icon: "success",
+							title: "Registro de solicitud exitoso.",
+							showConfirmButton: false
+
+						}).then((result) => {
+							window.location.replace(urlBase + "carga_documentos");
+						});
+
+					},
+					error: function(respuesta) {
+						//console.log("Entro en error");
+						/*spinner.style.display = 'none';
+						principal.style.display = 'block';*/
+						document.body.style.pointerEvents = null;
+						document.getElementById('spanCargando').style.display = 'none';
+						document.getElementById('spanGuardar').style.display = 'block';
+						loader.classList.add("hide-loader");
+						/*document.getElementById('loader').style.display = 'none';
+						document.getElementById('principalID').style.display = 'block';*/
+						swal({
+							icon: "warning",
+							title: "Error: " + respuesta.status,
+							showConfirmButton: false
+						});
+
+					}, complete: function() {
+						//document.getElementById('btnRelDoc').disabled = false;
+						setTimeout($.unblockUI, 5000);
+						//$.unblockUI();
+					},
+				});
+			}
+		}, error: function(respuesta) {
+			/*spinner.style.display = 'none';
+			principal.style.display = 'block';*/
+			document.body.style.pointerEvents = null;
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
+			/*document.getElementById('loader').style.display = 'none';
+			document.getElementById('principalID').style.display = 'block';*/
+			//console.log("Respuesta error validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
+			swal({
+				title: "Error validarCoreSolicitudEnvio",
+				text: JSON.stringify(respuesta),
+				icon: "warning",
+			});
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 6000);
+			//$.unblockUI();
+		}
+	});
 }
 
 function validarSolicitudCore(solicitud) {
@@ -779,7 +981,8 @@ function validarSolicitudCore(solicitud) {
 // Function para obtener los documentos del campo file
 function uploadFile(fCancelacion, productoNomina, idEnvio) {
 	//console.log("uploadFile: ");
-
+	//document.getElementById('loader').style.display = 'block';
+	document.getElementById('spanCargando').style.display = 'block';
 	var productoNomina = document.getElementById('productoNomina').value;
 	//var fCancelacion = document.getElementById('fCancelacion').value;
 	//var productoNomina = "N";
@@ -823,6 +1026,7 @@ function registrarDoctEnvio(solicitud, documento, nombreDocumento, fCancelacion,
 			"&idEnvio=" + idEnvio,
 		type: "POST",
 		dataType: 'json',
+
 	})
 		.then(function(result) {
 			/*console.log("Result: " + JSON.stringify(result));
@@ -878,6 +1082,12 @@ function uploadFile2(solicitudCredito, clienteId, idEnvio) {
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			//document.getElementById('loader').style.display = 'block';
+			document.getElementById('spanCargando').style.display = 'block';
+			$.blockUI({ message: 'Espere un momento...' });
+		},
 		success: function(data) {
 			console.log("Carga de archivos exitosa " + data);
 		},
@@ -891,6 +1101,9 @@ function uploadFile2(solicitudCredito, clienteId, idEnvio) {
 					text: data.status,
 					showConfirmButton: false
 				});
+				document.getElementById('spanCargando').style.display = 'none';
+				document.getElementById('spanGuardar').style.display = 'block';
+				loader.classList.add("hide-loader");
 			}
 			//console.log("upload failed");
 			swal({
@@ -898,6 +1111,14 @@ function uploadFile2(solicitudCredito, clienteId, idEnvio) {
 				title: "Error: " + data.status,
 				showConfirmButton: false
 			});
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 6000);
+			//$.unblockUI();
 		}
 	});
 }

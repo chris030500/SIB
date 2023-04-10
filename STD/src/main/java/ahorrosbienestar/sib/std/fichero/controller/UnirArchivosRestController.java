@@ -123,6 +123,7 @@ public class UnirArchivosRestController {
 			int totalHojas = 1;
 
 			for (int i = 0; i < documentos.size(); i++) {
+				System.out.println("totalHojas: " + totalHojas);
 				totalHojas += documentos.get(i).getNo_hoja();
 			}
 			
@@ -184,7 +185,7 @@ public class UnirArchivosRestController {
 						
 						FirmaDoctoUnificado fDoctoUnificado = new FirmaDoctoUnificado();
 						fDoctoUnificado.setFk_id_docto_unificado(doctoUnificado);
-						fDoctoUnificado.setI_no_hoja(noHoja);
+						fDoctoUnificado.setI_no_hoja(hojaFirmaDoctUnificado);
 						fDoctoUnificado.setF_coord_firma_xCentral(xCentral);
 						fDoctoUnificado.setF_coord_firma_yCentral(yCentral);
 						fDoctoUnificado.setF_coord_firma_x1(x1);

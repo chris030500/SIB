@@ -262,7 +262,7 @@ public class SolicitudEnvioRestController {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Error en falló de validación en solicitud" + e.getMessage());
+			System.out.println("Error en falló de validación en solicitud: " + e.getMessage());
 			return ResponseEntity.ok("Falló la validación de la solicitud");
 		}
 
@@ -423,6 +423,17 @@ public class SolicitudEnvioRestController {
 
 		return responseDTO;
 
+	}
+	
+	//Mostramos el mensaje que valida las fechas
+	@GetMapping("solicitudEnvio/verSolicitud/mensajeValidaFecha")
+	public ResponseEntity<?> mensajeValidaFecha() throws IOException {
+		logger.info("Ejecutando mensajeValidaFecha");
+
+		//Obtenemos el mensaje
+		String mensaje = configService.obtenerConfiguracion(53).getVc_valor_propiedad();
+
+		return ResponseEntity.ok(mensaje);
 	}
 
 }
