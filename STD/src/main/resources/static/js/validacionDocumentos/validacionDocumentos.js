@@ -59,6 +59,15 @@ function conexionWS_IAD() {
 		async: false,
 		type: "GET",
 		dataType: "text",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
 			/*console.log("respuesta: " + JSON.stringify(respuesta));
 			console.log("url:" + respuesta.vc_ruta_docto);*/
@@ -96,10 +105,10 @@ function buscarSolicitudCredito() {
 
 	var solicitud = document.getElementById('i_no_solicitud_core').value;
 
-	console.log("urlBase: " + urlBase);
+	/*console.log("urlBase: " + urlBase);
 	console.log("newURL: " + newUrlBase);
 	console.log("Entro en buscar producto");
-	console.log("Solicitud: " + solicitud);
+	console.log("Solicitud: " + solicitud);*/
 	$.ajax({
 		url: newUrlBase + "buscar_solicitud?solicitud=" + solicitud,
 		type: "GET",
@@ -107,9 +116,9 @@ function buscarSolicitudCredito() {
 		success: function(respuesta) {
 			/*console.log(respuesta);
 			console.log(respuesta.length);*/
-			console.log("respuesta buscarSolicitudCredito" + JSON.stringify(respuesta));
+			//console.log("respuesta buscarSolicitudCredito" + JSON.stringify(respuesta));
 			if (respuesta == null || respuesta == '') {
-				console.log("Error");
+				//console.log("Error");
 				swal({
 					title: "Error",
 					text: "La solicitud que ingresaste no existe",
@@ -146,16 +155,16 @@ function buscarSolicitudCredito() {
 //Funcion para realizar la busqueda del documento
 function datosSoliEnvio(solicitudEnvio) {
 	//var urlBase = getAbsolutePath();
-	console.log("Entro en datosSoliEnvio");
-	console.log("solicitudEnvio: " + solicitudEnvio);
+	/*console.log("Entro en datosSoliEnvio");
+	console.log("solicitudEnvio: " + solicitudEnvio);*/
 	$.ajax({
 		url: newUrlBase + "solicitudEnvio/solicitud?solicitud=" + solicitudEnvio,
 		async: false,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("respuesta: " + JSON.stringify(respuesta));
-			console.log("i_estatus: " + respuesta.i_estatus);
+			//console.log("respuesta: " + JSON.stringify(respuesta));
+			//console.log("i_estatus: " + respuesta.i_estatus);
 			var estatus = respuesta.i_estatus;
 			if (estatus != 1) {
 
@@ -177,8 +186,8 @@ function datosSoliEnvio(solicitudEnvio) {
 //Funcion para obtener los participantes de la solicitud de credito
 function traerParticipantes(solicitud) {
 	//var urlBase = getAbsolutePath();
-	console.log("Entro en traer participantes");
-	console.log("Solicitud: " + solicitud);
+	/*console.log("Entro en traer participantes");
+	console.log("Solicitud: " + solicitud);*/
 	var divParticipantes = document.getElementById("divParticipantes");
 	$.ajax({
 		url: newUrlBase + "trae_participantes?solicitud=" + solicitud,
@@ -207,7 +216,7 @@ function traerParticipantes(solicitud) {
 //Funcion para obtener los archivos de la solicitud
 function obtenerArchivosSolicitud(solicitud) {
 	//var urlBase = getAbsolutePath();
-	console.log("Entro en obtenerArchivosSolicitud");
+	//console.log("Entro en obtenerArchivosSolicitud");
 	var divDocumentos = document.getElementById("divDocumentos");
 	$.ajax({
 		url: newUrlBase + "doctEnvio/obtener_archivos?solicitud=" + solicitud,
@@ -263,8 +272,8 @@ function obtenerArchivosSolicitud(solicitud) {
 //Funcion para realizar la busqueda del documento
 function buscarDoctoEnvio(idDoctEnvio) {
 	//var urlBase = getAbsolutePath();
-	console.log("Entro en buscarDoctoEnvio");
-	console.log("idDoctEnvio: " + idDoctEnvio);
+	/*console.log("Entro en buscarDoctoEnvio");
+	console.log("idDoctEnvio: " + idDoctEnvio);*/
 	$.ajax({
 		url: newUrlBase + "doctEnvio/obtener_doctEnvio/" + idDoctEnvio,
 		async: false,
@@ -291,10 +300,10 @@ function buscarDoctoEnvio(idDoctEnvio) {
 //Funcion para visualizar el archivo que se seleccione
 function visualizarArchivo(idDoctoEnvio) {
 	//var urlBase = getAbsolutePath();
-	console.log("Entro en visualizarArchivo");
+	//console.log("Entro en visualizarArchivo");
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
-	console.log("Solicitud envio: " + solicitudEnvio);
-	console.log("idDoctoEnvio: " + idDoctoEnvio);
+	/*console.log("Solicitud envio: " + solicitudEnvio);
+	console.log("idDoctoEnvio: " + idDoctoEnvio);*/
 	var urlDocto = buscarDoctoEnvio(idDoctoEnvio);
 	window.open(newUrlBase + "solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto, '_blank');
 	//window.location.href = "/solicitudEnvio/visualizarArchivo/?nombreArchivo=" + urlDocto;
@@ -303,10 +312,10 @@ function visualizarArchivo(idDoctoEnvio) {
 
 //Funcion para activar el campo de observaciones
 function agregarObservacion(id) {
-	console.log("Entro en agregarObservacion");
+	//console.log("Entro en agregarObservacion");
 	var idComentario = "comentario" + id;
 	var comentario = document.getElementById(idComentario);
-	console.log("idComentario: " + idComentario);
+	//console.log("idComentario: " + idComentario);
 	comentario.style.display = "block";
 	//console.log("Comentario textArea: " + JSON.stringify(comentario));
 
@@ -314,12 +323,19 @@ function agregarObservacion(id) {
 
 //Funcion que desactiva el campo de observaciones
 function sinObservacion(id) {
-	console.log("Entro en sinObservacion");
+	//console.log("Entro en sinObservacion");
 	var idComentario = "comentario" + id;
 	var comentario = document.getElementById(idComentario);
-	console.log("idComentario: " + idComentario);
+	//console.log("idComentario: " + idComentario);
 	comentario.style.display = "none";
 }
+
+function pageLoaded() {
+  let loaderSection = document.querySelector('.loader-section');
+  loaderSection.classList.add('loaded');
+}
+
+document.onload = pageLoaded();
 
 function VoBoDocumentos() {
 	principal.style.display = 'none';
@@ -337,129 +353,252 @@ function VoBoDocumentos1() {
 	console.log("principal: " + principal.style.display);
 	var banderaVoBo = false;
 	//console.log("e: " + e);
-	var conexion = conexionWS_IAD();
-	console.log("Conexion: " + conexion);
+
 	//var urlBase = getAbsolutePath();
-	if (conexion == 1) {
-		console.log("Si hay conexión con API");
-		var idTr = document.querySelectorAll('.contarTr');
-		console.log("contarTr: " + idTr.length);
-		var miArray = new Array(idTr.length);
-		var conteo = 0;
-		console.log("Array: " + miArray.length);
-		for (var i = 0; i < idTr.length; i++) {
-			var tr = idTr[i].id
-			console.log("El id del tr es: " + tr);
-			var aprobacion = $('input[name="' + tr + '"]:checked').val();
-			if (aprobacion != null) {
-				console.log("Aprobación: " + i + " " + aprobacion);
-				if (aprobacion == 1) {
-					console.log("la aprobación es valida (1)");
-				} else if (aprobacion == 0) {
-					console.log("la aprobación es invalida (0)");
-					var idComentario = "comentario" + tr;
-					var comentario = document.getElementById(idComentario).value;
-					console.log("Comentario: " + comentario);
-					$.ajax({
-						async: false,
-						url: newUrlBase + "hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
-						type: "POST",
-						dataType: "JSON",
-						success: function(respuesta) {
-							console.log("La respuesta es correcta");
-						},
-						error: function(respuesta) {
-							console.log("Error: " + JSON.stringify(respuesta));
-							spinner.style.display = 'none';
-							principal.style.display = 'block';
-							//console.log("Error: " + respuesta.status);
-						}
-					});
-				}
-				banderaVoBo = true;
+	/*console.log("Si hay conexión con API");*/
+	var idTr = document.querySelectorAll('.contarTr');
+	console.log("contarTr: " + idTr.length);
+	var miArray = new Array(idTr.length);
+	var conteo = 0;
+	console.log("Array: " + miArray.length);
+	var estatusVoBo = 0;
+	for (var i = 0; i < idTr.length; i++) {
+		var tr = idTr[i].id
+		console.log("El id del tr es: " + tr);
+		var aprobacion = $('input[name="' + tr + '"]:checked').val();
+		console.log("Aprobacion = " + aprobacion);
+		if (aprobacion != null) {
+			console.log("Aprobación: " + i + " " + aprobacion);
+			if (aprobacion == 1) {
+				console.log("la aprobación es valida (1)");
 				miArray[i] = true;
-				/*spinner.style.display = 'block';
-				principal.style.display = 'none';*/
+			} else if (aprobacion == 0) {
+				miArray[i] = false;
+				console.log("la aprobación es invalida (0)");
+				/*var idComentario = "comentario" + tr;
+				var comentario = document.getElementById(idComentario).value;
+				console.log("Comentario: " + comentario);
 				$.ajax({
 					async: false,
-					url: newUrlBase + "doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
+					url: newUrlBase + "hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
 					type: "POST",
 					dataType: "JSON",
+					beforeSend: function() {
+						//document.getElementById('btnRelDoc').disabled = true;
+						$.blockUI({ message: 'Espere un momento...' });
+					},
+					complete: function() {
+						//document.getElementById('btnRelDoc').disabled = false;
+						setTimeout($.unblockUI, 3000);
+						//$.unblockUI();
+					},
 					success: function(respuesta) {
-						console.log("validar_doctEnvio: ");
-						console.log("Respuesta: " + JSON.stringify(respuesta));
+						console.log("La respuesta es correcta");
 					},
 					error: function(respuesta) {
-						//console.log("Respuesta: " + JSON.stringify(respuesta));
-						/*spinner.style.display = 'none';
-						principal.style.display = 'block';*/
-						document.getElementById('btnVoBoDocumentos').disabled = false;
-						swal({
-							icon: "info",
-							title: "Error: " + JSON.stringify(respuesta),
-							showConfirmButton: false
-
-						});
+						console.log("Error: " + JSON.stringify(respuesta));
 						spinner.style.display = 'none';
 						principal.style.display = 'block';
+						//console.log("Error: " + respuesta.status);
+					}
+				});*/
+			}
+			banderaVoBo = true;
+
+			/*spinner.style.display = 'block';
+			principal.style.display = 'none';*/
+			/*$.ajax({
+				async: false,
+				url: newUrlBase + "doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
+				type: "POST",
+				dataType: "JSON",
+				beforeSend: function() {
+					//document.getElementById('btnRelDoc').disabled = true;
+					$.blockUI({ message: 'Espere un momento...' });
+				},
+				complete: function() {
+					//document.getElementById('btnRelDoc').disabled = false;
+					setTimeout($.unblockUI, 3000);
+					//$.unblockUI();
+				},
+				success: function(respuesta) {
+					console.log("validar_doctEnvio: ");
+					console.log("Respuesta: " + JSON.stringify(respuesta));
+				},
+				error: function(respuesta) {
+					//console.log("Respuesta: " + JSON.stringify(respuesta));
+					document.getElementById('btnVoBoDocumentos').disabled = false;
+					swal({
+						icon: "info",
+						title: "Error: " + JSON.stringify(respuesta),
+						showConfirmButton: false
+
+					});
+					spinner.style.display = 'none';
+					principal.style.display = 'block';
+				}
+			});*/
+		} else if (aprobacion === 'undefined' || aprobacion === undefined || aprobacion === null) {
+			//console.log("Favor de llenar todos los campos");
+			//miArray[i] = false;
+			swal({
+				icon: "info",
+				title: "Favor de llenar todos los campos de aprobación",
+				showConfirmButton: false
+
+			});
+			document.getElementById('btnVoBoDocumentos').disabled = false;
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
+		}
+
+	}
+	//console.log("miArray: " + miArray);
+	var indefinidos = 0;
+	for (i = 0; i < miArray.length; i++) {
+		console.log("miArray" + i + " = " + miArray[i]);
+		if (miArray[i] === true) {
+			conteo = conteo + 1;
+		} else if (miArray[i] === undefined || miArray[i] === 'undefined') {
+			indefinidos = indefinidos + 1;
+		}
+	}
+	console.log("conteo: " + conteo);
+	if (conteo == miArray.length) {
+		//console.log("Todos los valores son true");
+		var conexion = conexionWS_IAD();
+		console.log("Conexion: " + conexion);
+		if (conexion == 1) {
+			console.log("Si hay conexión con API");
+			estatusVoBo = 1;
+			for (var i = 0; i < idTr.length; i++) {
+				var tr = idTr[i].id
+				var aprobacion = $('input[name="' + tr + '"]:checked').val();
+				validar_doctEnvio(aprobacion, tr);
+			}
+			validarArchivosSolicitud(estatusVoBo);
+		} else if (conexion == 0) {
+			swal({
+				icon: 'warning',
+				title: "No se encontro conexion con WS."
+			});
+			document.getElementById('btnVoBoDocumentos').disabled = false;
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
+		}
+
+	} else if (indefinidos > 0) {
+		console.log("No ha seleccionado todos los campos de VoBo");
+	} else {
+		for (var i = 0; i < idTr.length; i++) {
+			var tr = idTr[i].id
+			var aprobacion = $('input[name="' + tr + '"]:checked').val();
+			validar_doctEnvio(aprobacion, tr);
+			if (aprobacion == 0) {
+				//miArray[i] = false;
+				console.log("la aprobación es invalida (0)");
+				var idComentario = "comentario" + tr;
+				var comentario = document.getElementById(idComentario).value;
+				console.log("Comentario: " + comentario);
+				$.ajax({
+					async: false,
+					url: newUrlBase + "hallazgoSolicitud/guardarHallazgo?idDoctoEnvio=" + tr + "&comentario=" + comentario,
+					type: "POST",
+					dataType: "JSON",
+					beforeSend: function() {
+						//document.getElementById('btnRelDoc').disabled = true;
+						$.blockUI({ message: 'Espere un momento...' });
+					},
+					complete: function() {
+						//document.getElementById('btnRelDoc').disabled = false;
+						setTimeout($.unblockUI, 3000);
+						//$.unblockUI();
+					},
+					success: function(respuesta) {
+						console.log("La respuesta es correcta");
+					},
+					error: function(respuesta) {
+						console.log("Error: " + JSON.stringify(respuesta));
+						spinner.style.display = 'none';
+						principal.style.display = 'block';
+						//console.log("Error: " + respuesta.status);
 					}
 				});
-			} else {
-				//console.log("Favor de llenar todos los campos");
-				miArray[i] = false;
-				swal({
-					icon: "info",
-					title: "Favor de llenar todos los campos de aprobación",
-					showConfirmButton: false
 
-				});
-				document.getElementById('btnVoBoDocumentos').disabled = false;
-				spinner.style.display = 'none';
-				principal.style.display = 'block';
-			}
 
-		}
-		//console.log("miArray: " + miArray);
-
-		for (i = 0; i < miArray.length; i++) {
-			if (miArray[i] === true) {
-				conteo = conteo + 1;
 			}
 		}
-
-		if (conteo == miArray.length) {
-			console.log("Todos los valores son true");
-			validarArchivosSolicitud();
-		}
-	} else if (conexion == 0) {
-		swal({
-			icon: 'warning',
-			title: "No se encontro conexion con WS."
-		});
-		document.getElementById('btnVoBoDocumentos').disabled = false;
-		spinner.style.display = 'none';
-		principal.style.display = 'block';
+		var solicitudCore = document.getElementById('i_no_solicitud_core').value;
+		estatusVoBo = 2;
+		mensaje = "Se revisaron los documentos de la solicitud de crédito: " + solicitudCore + " Favor de corregirlos y cargarlos en un nuevo proceso.";
+		validarArchivosSolicitud(estatusVoBo);
+		//envioMensaje(mensaje, indEnvio, solicitudEnvio);
 	}
-	//console.log("Numero de documentos: " + numTr);
+
+}
+
+function validar_doctEnvio(aprobacion, tr) {
+	$.ajax({
+		async: false,
+		url: newUrlBase + "doctEnvio/validar_doctEnvio?estatus=" + aprobacion + "&idDoctoEnvio=" + tr,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("validar_doctEnvio: ");
+			console.log("Respuesta: " + JSON.stringify(respuesta));
+		},
+		error: function(respuesta) {
+			//console.log("Respuesta: " + JSON.stringify(respuesta));
+			document.getElementById('btnVoBoDocumentos').disabled = false;
+			swal({
+				icon: "info",
+				title: "Error: " + JSON.stringify(respuesta),
+				showConfirmButton: false
+
+			});
+			/*spinner.style.display = 'none';
+			principal.style.display = 'block';*/
+		}
+	});
 }
 
 //Funcion para validar los archivos de la solicitud
-function validarArchivosSolicitud() {
+function validarArchivosSolicitud(estatusVoBo) {
 	/*spinner.style.display = 'block';
 	principal.style.display = 'none';*/
 	console.log("Entro validarArchivosSolicitud");
 	//var urlBase = getAbsolutePath();
-	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
+	var idSolicitud = document.getElementById('solicitudEnvio').value;
 	console.log("Solicitud envio: " + solicitudEnvio);
 	//var estatus;
 	$.ajax({
 		async: false,
-		url: newUrlBase + "solicitudEnvio/validacionArchivoSolicitud?solicitud=" + solicitudEnvio,
+		url: newUrlBase + "solicitudEnvio/validacionArchivoSolicitud?solicitud=" + idSolicitud,
 		type: "GET",
 		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
-			console.log("Respuesta de solicitudEnvio/validacionArchivoSolicitud?: " + respuesta);
-			obtenerParamWSAuten(respuesta, solicitudEnvio);
+			if (estatusVoBo == 1) {
+				console.log("Todos los archivos son correctos");
+				console.log("Respuesta de solicitudEnvio/validacionArchivoSolicitud?: " + respuesta);
+				obtenerParamWSAuten(respuesta, idSolicitud);
+			} else if (estatusVoBo == 2) {
+				console.log("Existen archivos erroneos");
+				//var idSolicitud = solicitudEnvio;
+				console.log("Respuesta de solicitudEnvio/validacionArchivoSolicitud?: " + respuesta);
+				var estatus = respuesta;
+				console.log("Estatus: " + estatus);
+				validarSoliEnvio(estatus, idSolicitud);
+			}
+
 			//validarSoliEnvio(respuesta, solicitudEnvio);
 		},
 		error: function(respuesta) {
@@ -480,10 +619,12 @@ function validarArchivosSolicitud() {
 }
 
 //Funcion para validar la solicitud de envio
-function validarSoliEnvio(estatus, idSolicitud, idConfWS, jsonEnvio, respuestaAuth, banderaRespuesta, token) {
+function validarSoliEnvio(estatus, idSolicitud, idConfWS, jsonEnvio, respuestaAuth, banderaRespuesta, token, estatusVoBo) {
 	/*spinner.style.display = 'none';
 	principal.style.display = 'block';*/
 	//console.log("validarSoliEnvio url: " + newUrlBase + "solicitudEnvio/validarSoliEnvio/" + estatus + "/" + idSolicitud + "/" + solicitudCore);
+	console.log("idSolicitud: " + idSolicitud);
+	console.log("estatus: " + estatus);
 	var solicitudCore = document.getElementById('i_no_solicitud_core').value;
 	var solicitudEnvio = document.getElementById('solicitudEnvio').value;
 	var idProducto = document.getElementById('producto').value;
@@ -546,6 +687,16 @@ function validarSoliEnvio(estatus, idSolicitud, idConfWS, jsonEnvio, respuestaAu
 				}).then((result) => {
 					window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
 				});
+			} else if (respuesta.status === 400) {
+				swal({
+					icon: "info",
+					title: "Error, falló la solicitud",
+					text: "Error en parametros enviados ",
+					showConfirmButton: false
+
+				}).then((result) => {
+					window.location.replace(newUrlBase + "solicitudEnvio/solicitudes");
+				});
 			} else {
 				swal({
 					icon: "info",
@@ -586,6 +737,15 @@ function obtenerParamWSAuten(validacion, solicitudEnvio) {
 		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
 		type: "GET",
 		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
 			var usuario = respuesta[0];
 			var password = respuesta[1];
@@ -629,6 +789,15 @@ function conexionApi(usuario, password, userType, validacion, solicitudEnvio) {
 			"&grant_typeBody=" + userType,
 		type: "GET",
 		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
 			console.log("Respuesta de conexionApi: " + JSON.stringify(respuesta));
 			resultadoLogin = true;
@@ -699,6 +868,15 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 			+ solicitudEnvio + "&idConfWS=" + idConfWS + "&jsonEnvio=" + jsonEnvio + "&tpProceso=" + tpProceso,
 		type: "POST",
 		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
 			//console.log("Respuesta de guardarWSAuteUsu: " + JSON.stringify(respuesta));
 			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
@@ -746,6 +924,15 @@ function guardarRespAutenticacion(respuesta, token, scope, jti, idWSAutenticacio
 				"&idWSAutenticacion=" + idWSAutenticacion,
 			type: "POST",
 			dataType: "JSON",
+			beforeSend: function() {
+				//document.getElementById('btnRelDoc').disabled = true;
+				$.blockUI({ message: 'Espere un momento...' });
+			},
+			complete: function() {
+				//document.getElementById('btnRelDoc').disabled = false;
+				setTimeout($.unblockUI, 5000);
+				//$.unblockUI();
+			},
 			success: function(respuesta) {
 				console.log("Respuesta de guardarRespAutenticacion: " + JSON.stringify(respuesta));
 				var autenUser = idWSAutenticacion;
@@ -816,6 +1003,15 @@ function guardarBitacoraWS(autenUser, resAuten, tpProceso, soliEnvio) {
 			"&tpProceso=" + tpProceso + "&soliEnvio=" + soliEnvio,
 		type: "POST",
 		dataType: "JSON",
+		beforeSend: function() {
+			//document.getElementById('btnRelDoc').disabled = true;
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			//document.getElementById('btnRelDoc').disabled = false;
+			setTimeout($.unblockUI, 5000);
+			//$.unblockUI();
+		},
 		success: function(respuesta) {
 			console.log("Respuesta guardarBitacoraWS: " + JSON.stringify(respuesta));
 		},

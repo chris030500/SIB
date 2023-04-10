@@ -264,10 +264,14 @@ public class obtenerCoordenadasRestController {
 				widht = 150.00f;
 				height = 25.00f;
 				logger.info("Coordenadas del espacio de firma: ");
-				float x1 = c[1] ;
-				float y1 = (ph - c[0]) + acomodoY;
-				float x2 = x1 + widht;
-				float y2 = y1 + height;
+//				float x1 = c[1] ;
+//				float y1 = (ph - c[0]) + acomodoY;
+//				float x2 = x1 + widht;
+//				float y2 = y1 + height;
+				float x1 = 84.10f;
+				float y1 = 18.52f;
+				float x2 = 80.88f;
+				float y2 = 18.52f;
 				int hoja = (int) c[2];
 				xCentral = (x1+x2)/2;
 				yCentral = (y1+y2)/2;
@@ -295,10 +299,14 @@ public class obtenerCoordenadasRestController {
 				widht = 165.00f;
 				height = 50.00f;
 				logger.info("Coordenadas del espacio de firma: ");
-				float x1 = c[1] - acomodoX;
-				float y1 = (ph - c[0]) + acomodoY;
-				float x2 = x1 + widht;
-				float y2 = y1 + height;
+//				float x1 = c[1] - acomodoX;
+//				float y1 = (ph - c[0]) + acomodoY;
+//				float x2 = x1 + widht;
+//				float y2 = y1 + height;
+				float x1 = 84.10f;
+				float y1 = 18.52f;
+				float x2 = 80.88f;
+				float y2 = 18.52f;
 				int hoja = (int) c[2];
 				xCentral = (x1+x2)/2;
 				yCentral = (y1+y2)/2;
@@ -332,10 +340,14 @@ public class obtenerCoordenadasRestController {
 				widht = 115.00f;
 				height = 25.00f;
 				logger.info("Coordenadas del espacio de firma: ");
-				float x1 = ultimo[1] - acomodoX;
-				float y1 = (ph - ultimo[0]) - acomodoY;
-				float x2 = x1 + widht;
-				float y2 = y1 + height;
+//				float x1 = ultimo[1] - acomodoX;
+//				float y1 = (ph - ultimo[0]) - acomodoY;
+//				float x2 = x1 + widht;
+//				float y2 = y1 + height;
+				float x1 = 84.10f;
+				float y1 = 18.52f;
+				float x2 = 80.88f;
+				float y2 = 18.52f;
 				xCentral = (x1+x2)/2;
 				yCentral = (y1+y2)/2;
 				int hoja = (int) c[2];
@@ -606,7 +618,7 @@ public class obtenerCoordenadasRestController {
 		//System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
 		logger.info("Ejecutando obtenerCoordenadasContrato");
 		String keyWords = "FIRMA";
-		String archivo = "C:/Users/osvaldo.escamilla/Documents/home/STD/Envio/112053/112053-253188-25/Contrato_Apertura_253188_15_03_2023.pdf";
+		String archivo = "C:/Users/osvaldo.escamilla/Documents/Contrato_Apertura.pdf";
 //		String pdfPath = url;
 //		logger.info("url: " + url);
 //		logger.info("pdfPath: " + pdfPath);
@@ -676,7 +688,7 @@ public class obtenerCoordenadasRestController {
 					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
 							+ height);
 					// Drawing a rectangle
-					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+					contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
 				}
 				
 				if(c == list.get(list.size() - 1)) {
@@ -710,18 +722,18 @@ public class obtenerCoordenadasRestController {
 					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
 							+ height);
 					// Drawing a rectangle
-					//contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+					contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
 				}
 
 				
 			}
 			
-//			contentStream.setLineWidth(1);
-//			contentStream.setNonStrokingColor(Color.WHITE);
-//			contentStream.setStrokingColor(Color.BLACK);
-//			contentStream.stroke();
-//			// Drawing a rectangle
-//			contentStream.fill();
+			contentStream.setLineWidth(1);
+			contentStream.setNonStrokingColor(Color.WHITE);
+			contentStream.setStrokingColor(Color.BLACK);
+			contentStream.stroke();
+			// Drawing a rectangle
+			contentStream.fill();
 
 			logger.info("Se han agregado correctamente los espacios de firma");
 
@@ -740,5 +752,187 @@ public class obtenerCoordenadasRestController {
 		return ResponseEntity.ok("Se obtuvieron las coordenadas");
 
 	}
+	
+	// Obtener las coordenadas del archivo formato de domiliciacion
+	@GetMapping("/domiciliacion")
+	public ResponseEntity<?> obtenerCoordenadasDomiliciacion() throws IOException {
+
+		// PDDocument doc1 = PDDocument.load(file);
+		
+		//System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+		logger.info("Ejecutando obtenerCoordenadasDomiciliacion");
+		String keyWords = "RAZON";
+		String archivo = "C:/Users/osvaldo.escamilla/Documents/formato de domiciliacion.pdf";
+		//String pdfPath = url;
+		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, archivo);
+		List<float[]> list = kwp.getCoordinate();
+		// float[] c = list.get(0);
+		File file = new File(archivo);
+		PDDocument document = PDDocument.load(file);
+		//doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+		//float arr [][]; 
+		for (int i = 0; i < list.size(); i++) {
+			float[] c = list.get(i);
+
+			logger.info("Página" + c[2]);
+
+			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
+
+			// Retrieving a page of the PDF Document
+			PDPage page = document.getPage((int) c[2] - 1);
+
+			
+			float ph = page.getMediaBox().getUpperRightY();
+			float acomodoX = 25.00f;
+			float acomodoY = 5.00f;
+			float widht = 110.00f;
+			float height = 20.00f;
+
+			// Instantiating the PDPageContentStream class
+			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
+
+			logger.info("Coordenadas del espacio de firma: ");
+			float x1 = 61f;
+			float y1 = 84.3f;
+			float x2 =  84f;
+			float y2 = 87.3f;
+			int hoja = (int) c[2];
+			float xCentral = 68.3702f;
+			float yCentral = 34.4741f;
+//			FirmaDocto firmaDocto = new FirmaDocto();
+//			firmaDocto.setF_coord_firma_x1(x1);
+//			firmaDocto.setF_coord_firma_x2(x2);
+//			firmaDocto.setF_coord_firma_y1(y1);
+//			firmaDocto.setF_coord_firma_y2(y2);
+//			firmaDocto.setFk_id_docto_envio(dEnvio);
+//			firmaDocto.setI_no_hoja(hoja);
+//			firmaDocto.setF_coord_firma_xCentral(xCentral);
+//			firmaDocto.setF_coord_firma_yCentral(yCentral);
+//			firmaDocto = firmaDoctoService.save(firmaDocto);
+			
+			logger.info("x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2);
+			logger.info("Coordenadas para pintar el rectangulo -   x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
+					+ height);
+
+			// Drawing a rectangle
+			contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+			//contentStream.addLine(x1, y1, x2, y2);
+			//contentStream.addLine(x1, y1, 500, 500);
+			//contentStream.lineTo(x2, y2);
+			contentStream.setLineWidth(2);
+			contentStream.setNonStrokingColor(Color.WHITE);
+			contentStream.setStrokingColor(Color.BLACK);
+			contentStream.stroke();
+			// Drawing a rectangle
+			contentStream.fill();
+
+			logger.info("Se han agregado correctamente los espacios de firma");
+
+
+			// Closing the ContentStream object
+			contentStream.close();
+
+		}
+		// Saving the document
+		File file1 = new File(archivo);
+		document.save(file1);
+
+		// Closing the document
+		document.close();
+
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
+
+	}
+	
+	@GetMapping("/autoTransferencia")
+	public ResponseEntity<?> obtenerCoordenadasAutorizacionTransferencia() throws IOException {
+
+		// PDDocument doc1 = PDDocument.load(file);
+		
+		//System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+		logger.info("Ejecutando obtenerCoordenadasDomiliciacion");
+		String keyWords = "Firma";
+		String archivo = "C:/Users/osvaldo.escamilla/Documents/autorizacion de transferencia electronica.pdf";
+		//String pdfPath = url;
+		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, archivo);
+		List<float[]> list = kwp.getCoordinate();
+		// float[] c = list.get(0);
+		File file = new File(archivo);
+		PDDocument document = PDDocument.load(file);
+		//doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+		//float arr [][]; 
+		for (int i = 0; i < list.size(); i++) {
+			float[] c = list.get(i);
+
+			logger.info("Página" + c[2]);
+
+			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
+
+			// Retrieving a page of the PDF Document
+			PDPage page = document.getPage((int) c[2] - 1);
+
+			
+			float ph = page.getMediaBox().getUpperRightY();
+			float acomodoX = 60.00f;
+			float acomodoY = 10.00f;
+			float widht = 150.00f;
+			float height = 35.00f;
+
+			// Instantiating the PDPageContentStream class
+			PDPageContentStream contentStream = new PDPageContentStream(document, page, true, true);
+
+			logger.info("Coordenadas del espacio de firma: ");
+			float x1 = 61f;
+			float y1 = 84.3f;
+			float x2 =  84f;
+			float y2 = 87.3f;
+			int hoja = (int) c[2];
+			float xCentral = 68.3702f;
+			float yCentral = 34.4741f;
+//			FirmaDocto firmaDocto = new FirmaDocto();
+//			firmaDocto.setF_coord_firma_x1(x1);
+//			firmaDocto.setF_coord_firma_x2(x2);
+//			firmaDocto.setF_coord_firma_y1(y1);
+//			firmaDocto.setF_coord_firma_y2(y2);
+//			firmaDocto.setFk_id_docto_envio(dEnvio);
+//			firmaDocto.setI_no_hoja(hoja);
+//			firmaDocto.setF_coord_firma_xCentral(xCentral);
+//			firmaDocto.setF_coord_firma_yCentral(yCentral);
+//			firmaDocto = firmaDoctoService.save(firmaDocto);
+			
+			logger.info("x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2);
+			logger.info("Coordenadas para pintar el rectangulo -   x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
+					+ height);
+
+			// Drawing a rectangle
+			contentStream.addRect(c[1] - acomodoX, (ph - c[0]) + acomodoY, widht, height);
+			//contentStream.addLine(x1, y1, x2, y2);
+			//contentStream.addLine(x1, y1, 500, 500);
+			//contentStream.lineTo(x2, y2);
+			contentStream.setLineWidth(2);
+			contentStream.setNonStrokingColor(Color.WHITE);
+			contentStream.setStrokingColor(Color.BLACK);
+			contentStream.stroke();
+			// Drawing a rectangle
+			contentStream.fill();
+
+			logger.info("Se han agregado correctamente los espacios de firma");
+
+
+			// Closing the ContentStream object
+			contentStream.close();
+
+		}
+		// Saving the document
+		File file1 = new File(archivo);
+		document.save(file1);
+
+		// Closing the document
+		document.close();
+
+		return ResponseEntity.ok("Se obtuvieron las coordenadas");
+
+	}
+	
 
 }
