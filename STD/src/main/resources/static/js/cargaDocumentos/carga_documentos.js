@@ -298,7 +298,7 @@ function buscarDocumentos(producto) {
 	//var d = 10;
 	//fEnvio.max = sumarDias(new Date().toISOString().split("T")[0], 10).toISOString().split("T")[0];
 	var fe = new Date();
-	var hora = fe.getHours() + ":" + fe.getMinutes();
+	var hora = addCero(fe.getHours()) + ":" + addCero(fe.getMinutes());
 	//var fMax = sumarDias(new Date().toISOString().split("T")[0], d);
 	//console.log("fe: " + fe);
 	var fMax = sumarDias(fe, d).toISOString().split("T")[0];
@@ -464,6 +464,32 @@ function obtenerNombreDoct(nombre) {
 	//console.log("ID del documento: " );
 }
 
+function addCero(i) {
+	if (i < 10) {
+		i = "0" + i;
+	}
+	return i;
+}
+
+/*function pageLoaded() {
+	let loaderSection = document.querySelector('.loader-section');
+	loaderSection.classList.add('loaded');
+}
+
+document.onload = pageLoaded();*/
+
+/*$(document).ajaxStart(function() {
+  $("#loader").show();
+});
+
+$(document).ajaxStop(function() {
+  $("#loader").hide();
+});*/
+
+$('#altaSolicitud').click(function(){
+	$('#spinnerID').fadeIn();
+});
+
 //Funcion para dar de alta la solicitud
 function altaSolicitud() {
 	document.getElementById('btnAltaSolicitud').disabled = true;
@@ -481,15 +507,20 @@ function altaSolicitud() {
 
 	//console.log("Entro en altaSolicitud");
 	var fe = new Date();
-	var hora = fe.getHours() + ":" + fe.getMinutes();
-	console.log("hora: " + hora);
+	var hora = addCero(fe.getHours()) + ":" + addCero(fe.getMinutes());
 	var fechaActual = fe.toISOString().split("T")[0];
-	console.log("fecha actual: " + fechaActual);
+	//console.log("fecha actual: " + fechaActual);
 	var urlBase = getAbsolutePath();
 	/*console.log("horaActual: " + hora);
 	console.log("fe: " + fe);
 	console.log("fechaActual: "+ fechaActual);*/
 	//var inputs = $('input[name^=file]');
+	/*console.log("Hora: " + hora);
+	console.log("hEnvio: " + document.getElementById("hEnvio").value);
+	console.log("Fecha Actual: " + fechaActual);
+	console.log("fEnvio: " + document.getElementById("fEnvio").value);
+	console.log("fCancelacion: " + document.getElementById("fCancelacion").value);
+	console.log("hCancelacion: " + document.getElementById("hCancelacion").value);*/
 	var solicitud = document.getElementById('solicitud').value;
 	if (document.getElementById("fEnvio").value != null && document.getElementById("fCancelacion").value) {
 		if ((document.getElementById("fCancelacion").value > document.getElementById("fEnvio").value) ||
@@ -498,6 +529,10 @@ function altaSolicitud() {
 			/*var fechaCancelacion = document.getElementById("fCancelacion").value;
 			console.log("Fe Cancelación:" + fechaCancelacion);*/
 			if (document.getElementById("hEnvio").value < hora && document.getElementById("fEnvio").value == fechaActual) {
+				/*console.log("Hora: " + hora);
+				console.log("hEnvio: " + document.getElementById("hEnvio").value);
+				console.log("Fecha Actual: " + fechaActual);
+				console.log("fEnvio: " + document.getElementById("fEnvio").value);*/
 				//console.log("No puede ejecutar porque la hora es menor a la hora actual");
 				/*spinner.style.display = 'none';
 				principal.style.display = 'block';*/
@@ -507,13 +542,17 @@ function altaSolicitud() {
 					icon: "warning",
 				});
 				document.getElementById('btnAltaSolicitud').disabled = false;
+				spinner.style.display = 'none';
+				principal.style.display = 'block';
 			} else {
 				//console.log("Puede ejecutar el alta");
 				var numTr = $('#tablaDocumentos tbody tr').length;
 				console.log("num: " + numTr);
 
 				var miArray = new Array(numTr);
+				var arrayPDF = new Array(numTr);
 				var conteo = 0;
+				var conteoPDF = 0;
 				//For que nos ayuda a validar la carga de archivos
 				for (i = 0; i < numTr; i++) {
 					var numTr1 = $('#tablaDocumentos tbody tr').value;
@@ -526,6 +565,16 @@ function altaSolicitud() {
 						//console.log("No tiene nombre");
 					} else {
 						miArray[i] = true;
+						var nombre = document.getElementsByClassName("archivo")[i].files[0].name;
+						console.log("Nombre: " + nombre);
+						let extension = nombre.split('.').pop().toLowerCase();
+						if (extension.includes("pdf")) {
+							console.log("Es PDF")
+							arrayPDF[i] = true;
+						} else {
+							console.log("No es PDF");
+							arrayPDF[i] = false;
+						}
 						//console.log("Si tiene nombre");
 					}
 
@@ -535,15 +584,22 @@ function altaSolicitud() {
 					if (miArray[i] === true) {
 						conteo = conteo + 1;
 					}
+					if (arrayPDF[i] === true) {
+						conteoPDF = conteoPDF + 1;
+					}
 				}
 
-				if (conteo == numTr) {
-
+				if (conteo == numTr && conteoPDF == numTr) {
+					console.log("Valida solicitud de crédito");
 					$.ajax({
 						async: false,
 						url: urlBase + "solicitudEnvio/validarSolicitudCredito/" + solicitud,
 						type: "GET",
 						dataType: "JSON",
+						beforeSend: function() {
+							//document.getElementById('btnRelDoc').disabled = true;
+							$.blockUI({ message: 'Espere un momento...' });
+						},
 						success: function(respuesta) {
 							document.getElementById('btnAltaSolicitud').disabled = true;
 							/*console.log("Respuesta validarCoreSolicitudEnvio: " + JSON.stringify(respuesta));
@@ -610,6 +666,10 @@ function altaSolicitud() {
 										"&hCancelacion=" + hCancelacion,
 									type: "POST",
 									dataType: "JSON",
+									beforeSend: function() {
+										//document.getElementById('btnRelDoc').disabled = true;
+										$.blockUI({ message: 'Espere un momento...' });
+									},
 									success: function(respuesta) {
 										//console.log("Respuesta: " + JSON.stringify(respuesta));
 										var idEnvio = JSON.stringify(respuesta);
@@ -647,7 +707,11 @@ function altaSolicitud() {
 											showConfirmButton: false
 										});
 
-									}
+									}, complete: function() {
+										//document.getElementById('btnRelDoc').disabled = false;
+										setTimeout($.unblockUI, 5000);
+										//$.unblockUI();
+									},
 								});
 							}
 						}, error: function(respuesta) {
@@ -659,6 +723,11 @@ function altaSolicitud() {
 								text: JSON.stringify(respuesta),
 								icon: "warning",
 							});
+						},
+						complete: function() {
+							//document.getElementById('btnRelDoc').disabled = false;
+							setTimeout($.unblockUI, 6000);
+							//$.unblockUI();
 						}
 					});
 					/*var longitud = document.getElementsByClassName("archivo").length;
@@ -711,13 +780,33 @@ function altaSolicitud() {
 					/*console.log("Todos los valores son true");
 					console.log("Ejecuta para registrar los documentos");*/
 
-				} else {
+				} else if (conteo != numTr) {
+					swal({
+						title: "Error, sin archivos seleccionados",
+						text: "Favor de revisar la carga de archivos",
+						icon: "warning",
+					});
+					document.getElementById('btnAltaSolicitud').disabled = false;
+					spinner.style.display = 'none';
+					principal.style.display = 'block';
+				}
+				else if (conteoPDF != numTr) {
+					swal({
+						title: "Error, archivos incorrectos",
+						text: "Favor de revisar que los archivos sean PDF",
+						icon: "warning",
+					});
+					document.getElementById('btnAltaSolicitud').disabled = false;
+					spinner.style.display = 'none';
+					principal.style.display = 'block';
+				}
+				else {
 					//console.log("No todos los valores son true");
 					/*spinner.style.display = 'none';
 					principal.style.display = 'block';*/
 					swal({
-						title: "Error, sin archivos seleccionados",
-						text: "Favor de revisar la carga de archivos",
+						title: "Error en archivos seleccionados",
+						text: "Favor de revisar los archivos",
 						icon: "warning",
 					});
 					document.getElementById('btnAltaSolicitud').disabled = false;
@@ -729,27 +818,30 @@ function altaSolicitud() {
 
 
 		} else {
-			spinner.style.display = 'none';
-			principal.style.display = 'block';
+
 			swal({
 				title: "Error",
 				text: "Favor de revisar la fecha y hora de cancelación",
 				icon: "warning",
 			});
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
 			document.getElementById('btnAltaSolicitud').disabled = false;
 		}
 
 	} else {
-		spinner.style.display = 'none';
-		principal.style.display = 'block';
 		swal({
 			title: "Error",
 			text: "Favor de llenar los campos de fecha de envio y/o fecha de cancelación",
 			icon: "warning",
 		});
+		spinner.style.display = 'none';
+		principal.style.display = 'block';
 		document.getElementById('btnAltaSolicitud').disabled = false;
 	}
 }
+
+
 
 function validarSolicitudCore(solicitud) {
 	var urlBase = getAbsolutePath();
