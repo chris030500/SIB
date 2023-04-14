@@ -262,7 +262,7 @@ public class SolicitudEnvioRestController {
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Error en falló de validación en solicitud" + e.getMessage());
+			System.out.println("Error en falló de validación en solicitud: " + e.getMessage());
 			return ResponseEntity.ok("Falló la validación de la solicitud");
 		}
 
