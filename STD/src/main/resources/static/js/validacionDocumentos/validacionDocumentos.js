@@ -1,25 +1,46 @@
 /**
  * 
  */
+//Ejecución de evento para mostrar loader y terminar de mostrarlo cuando la pantalla se haya cargado por completo.
+window.addEventListener("load", function() {
+	const loader = document.getElementById("loader");
+	loader.classList.add("hide-loader");
+});
+
+//Funcion que obtiene la url absoluta
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+
 var urlBase = getAbsolutePath();
 var newUrlBase = urlBase.replace("solicitudEnvio/verSolicitud/", "");
 
 // Variables | para el spinner
-var spinner = document.getElementById('spinnerID');
-var principal = document.getElementById('principalID');
+/*var spinner = document.getElementById('spinnerID');
+var principal = document.getElementById('principalID');*/
 
+//Funcion que muestra mensaje de advertencia sobre las fechas de los documentos
+function mensaje() {
+	$.ajax({
+		url: urlBase + "mensajeValidaFecha",
+		async: false,
+		type: "GET",
+		success: function(respuesta) {
+			mensaje = respuesta;
+			//console.log("mensaje: " + mensaje);
+			document.getElementById('mensaje').innerHTML = mensaje;
+		}
+	});
+}
 
 //Funcion para obtener la url del WS
 function WS_IAD() {
 	//var urlBase = getAbsolutePath();
 	var ws1 = "";
-	console.log("URL WS: " + newUrlBase + "conexionWS_IAD");
+	//console.log("URL WS: " + newUrlBase + "conexionWS_IAD");
 	$.ajax({
 		url: newUrlBase + "conexionWS_IAD",
 		async: false,
@@ -47,6 +68,7 @@ function WS_IAD() {
 	return ws1;
 }
 
+//Funcion para validar si exite conexión con el WS del API FAD
 function conexionWS_IAD() {
 	//var urlBase = getAbsolutePath();
 	/*spinner.style.display = 'block';
@@ -54,6 +76,7 @@ function conexionWS_IAD() {
 	var ws = WS_IAD();
 	var respuestaWs = "";
 	console.log("URL WSCONEXION: " + ws + "conexionWS");
+	loader.classList.remove("hide-loader");
 	$.ajax({
 		url: ws + "/conexionWS",
 		async: false,
@@ -104,7 +127,7 @@ function conexionWS_IAD() {
 function buscarSolicitudCredito() {
 
 	var solicitud = document.getElementById('i_no_solicitud_core').value;
-
+	mensaje();
 	/*console.log("urlBase: " + urlBase);
 	console.log("newURL: " + newUrlBase);
 	console.log("Entro en buscar producto");
@@ -174,7 +197,7 @@ function datosSoliEnvio(solicitudEnvio) {
 			}
 		},
 		error: function() {
-			console.log("Error");
+			//console.log("Error");
 			swal({
 				icon: 'warning',
 				title: "No se encontro el archivo."
@@ -228,8 +251,8 @@ function obtenerArchivosSolicitud(solicitud) {
 			divDocumentos.style.display = "block";
 			$('#tablaDocumentos > tbody').empty();
 			$.each(respuesta, function(idx, opt) {
-				console.log("idx: " + idx);
-				console.log("Id del documento: " + JSON.stringify(opt));
+				//console.log("idx: " + idx);
+				//console.log("Id del documento: " + JSON.stringify(opt));
 				var rows = `<tr class="contarTr" id="${opt.idDoctoEnvio}">
 		             <td>
 		               <input type="text" name="${opt.nombreArchivo}" id="${opt.nombreArchivo}" value="${opt.nombreArchivo}" readonly>
@@ -287,7 +310,7 @@ function buscarDoctoEnvio(idDoctEnvio) {
 			//return url;
 		},
 		error: function() {
-			console.log("Error");
+			//console.log("Error");
 			swal({
 				icon: 'warning',
 				title: "No se encontro el archivo."
@@ -345,25 +368,44 @@ document.onload = pageLoaded();*/
 	VoBoDocumentos1();
 }*/
 
+const loader = document.getElementById("loader");
+
 function handleClick() {
 	// muestra el loader
-	document.getElementById('loader').style.display = 'block';
-	document.getElementById('principalID').style.display = 'none';
+	/*document.getElementById('loader').style.display = 'block';
+	document.getElementById('principalID').style.display = 'none';*/
+	setTimeout(function() {
+		document.getElementById('spanCargando').style.display = 'block';
+		document.getElementById('spanGuardar').style.display = 'none';
+	}, 0);
 	document.getElementById('btnVoBoDocumentos').disabled = true;
+	loader.classList.remove("hide-loader");
 	// ejecuta la función que incluye la petición AJAX
-	VoBoDocumentos();
+	//VoBoDocumentos();
 }
 
 // agrega el evento click al botón
-document.getElementById('btnVoBoDocumentos').addEventListener('click', handleClick);
+document.getElementById('btnVoBoDocumentos').addEventListener('click', function() {
+	handleClick();
+	VoBoDocumentos();
+});
+//document.getElementById('btnVoBoDocumentos').addEventListener('click', handleClick);
 
 //Funcion para realizar el VoBo de los documentos
 function VoBoDocumentos() {
+
 	/*document.getElementById('btnVoBoDocumentos').disabled = true;
 	principal.style.display = 'none';
 	spinner.style.display = 'block';*/
 	/*console.log("Spinner: " + spinner.style.display);
 	console.log("principal: " + principal.style.display);*/
+	setTimeout(function() {
+		document.getElementById('spanCargando').style.display = 'none';
+		document.getElementById('spanGuardar').style.display = 'block';
+		/*document.getElementById('loader').style.display = 'none';
+		document.getElementById('principalID').style.display = 'block';*/
+	}, 3000);
+	
 	var banderaVoBo = false;
 	//console.log("e: " + e);
 
@@ -401,8 +443,12 @@ function VoBoDocumentos() {
 
 			});
 			document.getElementById('btnVoBoDocumentos').disabled = false;
-			document.getElementById('loader').style.display = 'none';
-			document.getElementById('principalID').style.display = 'block';
+			/*document.getElementById('loader').style.display = 'none';
+			document.getElementById('principalID').style.display = 'block';*/
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
+
 			/*spinner.style.display = 'none';
 			principal.style.display = 'block';*/
 		}
@@ -438,8 +484,11 @@ function VoBoDocumentos() {
 				title: "No se encontro conexion con WS."
 			});
 			document.getElementById('btnVoBoDocumentos').disabled = false;
-			spinner.style.display = 'none';
-			principal.style.display = 'block';
+			/*spinner.style.display = 'none';
+			principal.style.display = 'block';*/
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
 		}
 
 	} else if (indefinidos > 0) {
@@ -474,8 +523,8 @@ function VoBoDocumentos() {
 					},
 					error: function(respuesta) {
 						console.log("Error: " + JSON.stringify(respuesta));
-						spinner.style.display = 'none';
-						principal.style.display = 'block';
+						/*spinner.style.display = 'none';
+						principal.style.display = 'block';*/
 						//console.log("Error: " + respuesta.status);
 					}
 				});
@@ -505,12 +554,16 @@ function validar_doctEnvio(aprobacion, tr) {
 		error: function(respuesta) {
 			//console.log("Respuesta: " + JSON.stringify(respuesta));
 			document.getElementById('btnVoBoDocumentos').disabled = false;
+
 			swal({
 				icon: "info",
 				title: "Error: " + JSON.stringify(respuesta),
 				showConfirmButton: false
 
 			});
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
 			/*spinner.style.display = 'none';
 			principal.style.display = 'block';*/
 		}
@@ -565,8 +618,11 @@ function validarArchivosSolicitud(estatusVoBo) {
 
 			});
 			document.getElementById('btnVoBoDocumentos').disabled = false;
-			spinner.style.display = 'none';
-			principal.style.display = 'block';
+			/*spinner.style.display = 'none';
+			principal.style.display = 'block';*/
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
 
 		}
 	});
@@ -714,6 +770,9 @@ function obtenerParamWSAuten(validacion, solicitudEnvio) {
 				showConfirmButton: false
 			});
 			document.getElementById('btnVoBoDocumentos').disabled = false;
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
+			loader.classList.add("hide-loader");
 		}
 	});
 }
@@ -798,6 +857,7 @@ function conexionApi(usuario, password, userType, validacion, solicitudEnvio) {
 				showConfirmButton: false
 
 			});
+			loader.classList.add("hide-loader");
 		}
 	});
 }

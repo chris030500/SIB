@@ -1290,3 +1290,41 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+#loader {
+			position: fixed;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #ffffff;
+			z-index: 9999;
+			opacity: 0.8;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#loader:before {
+			content: "";
+			border: 4px solid #2c3e50;
+			border-top: 4px solid #3498db;
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			animation: spin 2s linear infinite;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		#loader.hide-loader {
+			display: none;
+		}

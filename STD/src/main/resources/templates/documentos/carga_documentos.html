@@ -22,6 +22,9 @@
 					<div class="col-md-8">
 						<div class="card-body">
 							<h2 style="text-align:center">Carga de Documentos</h2>
+							<hr>
+							<h6 style="text-align: center; font-size: 12px; font-weight: bold; color: red;"
+								id="mensaje"></h6>
 						</div>
 					</div>
 				</div>
@@ -200,9 +203,10 @@
 											</div>
 										</div>
 										<div class="col-sm-2">
-											<button id="btnAltaSolicitud" type="button" class="btn btn-primary"
-												>
-												Guardar
+											<button id="btnAltaSolicitud" type="button" class="btn btn-primary">
+												<span id="spanGuardar" style="display: block;"> Guardar </span>
+												<span id="spanCargando" style="display: none;"
+													class="spinner-border spinner-border-sm mr-2"></span>
 											</button>
 										</div>
 									</form>
@@ -219,15 +223,17 @@
 		<!--<div class="loader-section">
 			<span class="loader"></span>
 		</div>-->
-		<div id="loader"
-			style="display: none; position: fixed; top: 50%; left: 50%; 
+
+		<div id="loader"></div>
+
+		<!--<div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; 
 			transform: translate(-50%, -50%); z-index: 9999; 
 			background-color: rgba(0, 0, 0, 0.5); color: #fff; padding: 16px;">
 			Cargando...
-		</div>
+		</div>-->
 
 
-		<div class="container" style="display: none;" id="spinnerID">
+		<!--<div class="container" style="display: none;" id="spinnerID">
 			<div class="row">
 				<div class="col-md-12">
 					<div class="card card-primary">
@@ -245,7 +251,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>-->
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
