@@ -222,7 +222,7 @@ public class obtenerCoordenadasRestController {
 
 			// List<CoordenadaDocumento> coordenadas =
 			// coordenadaDocumentoService.obtenerCoordenadaDocto(docto.getPk_id_documento());
-			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService.obtenerCoordenadaDocto(96);
+			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService.obtenerCoordenadaDocto(29);
 
 			System.out.println("Coordenadas: " + coordenadas);
 			boolean isEmpty = coordenadas != null && !coordenadas.isEmpty();

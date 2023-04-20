@@ -178,8 +178,8 @@ function buscarSolicitudCredito() {
 //Funcion para realizar la busqueda del documento
 function datosSoliEnvio(solicitudEnvio) {
 	//var urlBase = getAbsolutePath();
-	/*console.log("Entro en datosSoliEnvio");
-	console.log("solicitudEnvio: " + solicitudEnvio);*/
+	console.log("Entro en datosSoliEnvio");
+	console.log("solicitudEnvio: " + solicitudEnvio);
 	$.ajax({
 		url: newUrlBase + "solicitudEnvio/solicitud?solicitud=" + solicitudEnvio,
 		async: false,
@@ -247,13 +247,27 @@ function obtenerArchivosSolicitud(solicitud) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			//console.log("Respuesta de participantes: " + JSON.stringify(respuesta));
-			//respuesta.forEach(element => console.log(element));
-			divDocumentos.style.display = "block";
-			$('#tablaDocumentos > tbody').empty();
-			$.each(respuesta, function(idx, opt) {
-				//console.log("idx: " + idx);
-				//console.log("Id del documento: " + JSON.stringify(opt));
-				var rows = `<tr class="contarTr" id="${opt.idDoctoEnvio}">
+			if (respuesta == '' || respuesta == null) {
+				console.log("solicitud: " + solicitud);
+				//console.log("La respuesta es vacía");
+				const miDiv = document.querySelector("#divParticipantes");
+
+				// Crear un nuevo elemento <p>
+				const nuevoElemento = document.createElement("h5");
+				nuevoElemento.style.cssText = 'text-align: center; font-weight: bold; color: red;';
+				// Establecer el contenido del nuevo elemento
+				nuevoElemento.textContent = "Ya se realizó la validación de documentos";
+
+				// Agregar el nuevo elemento debajo del elemento existente
+				miDiv.appendChild(nuevoElemento);
+			} else {
+				divDocumentos.style.display = "block";
+				$('#tablaDocumentos > tbody').empty();
+				$.each(respuesta, function(idx, opt) {
+					console.log("respuesta: " + JSON.stringify(respuesta));
+					console.log("idx: " + idx);
+					console.log("Id del documento: " + JSON.stringify(opt));
+					var rows = `<tr class="contarTr" id="${opt.idDoctoEnvio}">
 		             <td>
 		               <input type="text" name="${opt.nombreArchivo}" id="${opt.nombreArchivo}" value="${opt.nombreArchivo}" readonly>
 		             </td>
@@ -283,9 +297,13 @@ function obtenerArchivosSolicitud(solicitud) {
 						
 		             </td>
 		           </tr>`;
-				$('#tablaDocumentos').append(rows);
+					$('#tablaDocumentos').append(rows);
 
-			});
+				});
+			}
+			//respuesta.forEach(element => console.log(element));
+
+
 		}
 	});
 
@@ -405,7 +423,7 @@ function VoBoDocumentos() {
 		/*document.getElementById('loader').style.display = 'none';
 		document.getElementById('principalID').style.display = 'block';*/
 	}, 3000);
-	
+
 	var banderaVoBo = false;
 	//console.log("e: " + e);
 

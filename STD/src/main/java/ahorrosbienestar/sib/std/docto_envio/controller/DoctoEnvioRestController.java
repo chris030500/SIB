@@ -172,7 +172,7 @@ public class DoctoEnvioRestController {
 				System.out.println("Entro en pagare");
 				logger.info("Entro en pagare");
 				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio, doct);
-			} else if (nombreDocumento.contains("tabla de Amortizacion")) {
+			} else if (nombreDocumento.contains("tabla de Amortizacion") || nombreDocumento.contains("PlandePagos") || nombreDocumento.contains("amortizacion")) {
 				System.out.println("Entro en Tabla de amortizacion");
 				logger.info("Entro en Plan de pagos");
 				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio, doct);
