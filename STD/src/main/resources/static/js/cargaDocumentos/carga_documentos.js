@@ -621,19 +621,24 @@ function altaSolicitud() {
 			/*var fechaCancelacion = document.getElementById("fCancelacion").value;
 			console.log("Fe Cancelación:" + fechaCancelacion);*/
 			if (document.getElementById("hEnvio").value < hora && document.getElementById("fEnvio").value == fechaActual) {
-				console.log("fechaActual" + fechaActual);
+				/*console.log("fechaActual" + fechaActual);
 				console.log("Hora: " + hora);
 				console.log("henvio" + document.getElementById("hEnvio").value);
-				console.log("fenvio: " + document.getElementById("fEnvio"));
+				console.log("fenvio: " + document.getElementById("fEnvio"));*/
 				swal({
 					title: "Error, favor de revisar la hora de envio",
 					text: "La hora es menor a la hora actual",
 					icon: "warning",
 				});
-				document.getElementById('btnAltaSolicitud').disabled = false;
+				document.body.style.pointerEvents = null;
 				document.getElementById('spanCargando').style.display = 'none';
 				document.getElementById('spanGuardar').style.display = 'block';
+				document.getElementById('btnAltaSolicitud').disabled = false;
 				loader.classList.add("hide-loader");
+				/*document.getElementById('btnAltaSolicitud').disabled = false;
+				document.getElementById('spanCargando').style.display = 'none';
+				document.getElementById('spanGuardar').style.display = 'block';
+				loader.classList.add("hide-loader");*/
 				/*spinner.style.display = 'none';
 				principal.style.display = 'block';*/
 				/*document.getElementById('loader').style.display = 'none';
