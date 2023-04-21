@@ -2,21 +2,112 @@ package ahorrosbienestar.sib.std.autorizacion.descargas.dto;
 
 public class GeolocalizacionDTO {
 	
-	private String latitud;
-	private String longitud;
+	private String customerNumber;
+	private String numberProvisions;
+	private String operationAmount;
+	private String typeDevice;
+	private String registrationDataTime;
+	private String latitude;
+	private String longitude;
+	private String addressGeolocation;
+	private String operation;
+	private String typeOperation;
+	private String ip;
+	private String typeProduct;
+	private String idProduct;
+	private String idState;
+	private String accessSystem;
 	
 	
-	public String getLatitud() {
-		return latitud;
+	public String getCustomerNumber() {
+		return customerNumber;
 	}
-	public void setLatitud(String latitud) {
-		this.latitud = latitud;
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
 	}
-	public String getLongitud() {
-		return longitud;
+	public String getNumberProvisions() {
+		return numberProvisions;
 	}
-	public void setLongitud(String longitud) {
-		this.longitud = longitud;
+	public void setNumberProvisions(String numberProvisions) {
+		this.numberProvisions = numberProvisions;
+	}
+	public String getOperationAmount() {
+		return operationAmount;
+	}
+	public void setOperationAmount(String operationAmount) {
+		this.operationAmount = operationAmount;
+	}
+	public String getTypeDevice() {
+		return typeDevice;
+	}
+	public void setTypeDevice(String typeDevice) {
+		this.typeDevice = typeDevice;
+	}
+	public String getRegistrationDataTime() {
+		return registrationDataTime;
+	}
+	public void setRegistrationDataTime(String registrationDataTime) {
+		this.registrationDataTime = registrationDataTime;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public String getAddressGeolocation() {
+		return addressGeolocation;
+	}
+	public void setAddressGeolocation(String addressGeolocation) {
+		this.addressGeolocation = addressGeolocation;
+	}
+	public String getOperation() {
+		return operation;
+	}
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+	public String getTypeOperation() {
+		return typeOperation;
+	}
+	public void setTypeOperation(String typeOperation) {
+		this.typeOperation = typeOperation;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+	public String getTypeProduct() {
+		return typeProduct;
+	}
+	public void setTypeProduct(String typeProduct) {
+		this.typeProduct = typeProduct;
+	}
+	public String getIdProduct() {
+		return idProduct;
+	}
+	public void setIdProduct(String idProduct) {
+		this.idProduct = idProduct;
+	}
+	public String getIdState() {
+		return idState;
+	}
+	public void setIdState(String idState) {
+		this.idState = idState;
+	}
+	public String getAccessSystem() {
+		return accessSystem;
+	}
+	public void setAccessSystem(String accessSystem) {
+		this.accessSystem = accessSystem;
 	}
 
 }

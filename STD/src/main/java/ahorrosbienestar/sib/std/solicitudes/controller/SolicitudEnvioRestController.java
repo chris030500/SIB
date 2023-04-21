@@ -9,9 +9,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,24 +21,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ahorrosbienestar.sib.std.autorizacion.controller.AutorizacionRestController;
-import ahorrosbienestar.sib.std.docto_envio.controller.DoctoEnvioRestController;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.docto_envio.model.DoctEnvio;
-import ahorrosbienestar.sib.std.empleados.controller.EmpleadoController;
-import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
 import ahorrosbienestar.sib.std.empleados.service.EmpleadoService;
 import ahorrosbienestar.sib.std.solicitudes.dto.SolicitudEnvioDTO;
-import ahorrosbienestar.sib.std.fichero.controller.UnirArchivosRestController;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoNotificacionMensajeService;
 import ahorrosbienestar.sib.std.productos.service.ProductoService;
@@ -82,9 +72,6 @@ public class SolicitudEnvioRestController {
 
 	@Autowired
 	private UsuarioService usuarioService;
-
-	@Autowired
-	private AutorizacionRestController aController;
 
 	@Autowired
 	private SolicitudEnvioJDBCService solicitudEnvioJDBCService;
