@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+			<div id="divAceptarAsignacion" class="container">
+				<fieldset class="border p-2">
+					<legend>Aceptar Asignacion</legend>
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-md-2">
+								<label class="col-form-label"> No. de Oficio</label>
+								<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label"> Asunto:</label>
+								<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
+							</div>
+							<div class="col-md-3">
+								<label class="col-form-label"> Fecha de Recibo:</label>
+								<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo">
+							</div>
+							<div class="col-md-3">
+								<label class="col-form-label"> Fecha de Vencimiento:</label>
+								<input class="form-control" type="date" id="dtVencimiento"
+									placeholder="Fecha de Vencimiento">
+							</div>
+						</div>
+						<div class="row" style="margin-top : 15px ">
+							<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
+
+								<thead>
+									<tr>
+										<th style="visibility:collapse; display:none;"></th>
+										<th>Area de Atencion</th>
+										<th>Responsable</th>
+										<th>Fecha de Asignación</th>
+										<th>Fecha de Vencimiento</th>
+										<th>Observaciones a Atender</th>
+										<th>Estatus</th>
+										<th>¿Acepta la Observación?</th>
+									</tr>
+								</thead>
+
+								<tbody>
+
+									<!-- <tr th:each="rol: ${roles}">
+									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
+									<td th:text="${rol.vc_nombre_rol}"></td>
+									<td th:text="${rol.vc_descripcion_rol}"></td>
+									<td th:text="${rol.vc_estatus}"></td>
+									<td>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Editar Rol" data-bs-target="#editarRol"
+											aria-controls="table-datatable" type="button"
+											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
+											<i class="bi bi-pencil-square"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
+											aria-controls="table-datatable" type="button"
+											th:onclick="inactivarRol(this)" data-tooltip="Add">
+											<i class="bi bi-arrow-repeat"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Relacionar componentes" data-bs-target="#basicModalProducto"
+											aria-controls="table-datatable" type="button" th:onclick=""
+											data-tooltip="Add">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</td>
+								</tr>-->
+
+									<!--<tr th:if="${#lists.isEmpty(roles)}">
+											<td colspan="6">
+												A&uacute;n no se registran Observaciones en el sistema
+											</td>
+										</tr>-->
+
+								</tbody>
+
+							</table>
+						</div>
+				</fieldset>
+			</div>
+
+
+			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
+				<fieldset class="border p-2">
+					<legend>Registro de plan de accion de la Observacion:</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Identificador del plan de accion</label>
+							<input class="form-control" type="text" id="idPlanAccion" placeholder="No. de Oficio">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Nombre de la Actividad</label>
+							<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Encargado de la Actividad</label>
+							<select class="form-control" id="idEncargadoActividad">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Inicio</label>
+							<input class="form-control" type="date" id="dtFechaInicio" placeholder="No. de Oficio">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha Vencimiento</label>
+							<input class="form-control" type="date" id="dtFechaVencimiento" placeholder="Asunto">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus</label>
+							<select class="form-control" id="idEstatus">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-5"></div>
+							<div class="col-md-2">
+								<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
+							</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
+
+								<thead>
+									<tr>
+										<th style="visibility:collapse; display:none;"></th>
+										<th>Identificador PA</th>
+										<th>Nombre de la Actividad</th>
+										<th>Encargado de la Actividad</th>
+										<th>Fecha de Inicio</th>
+										<th>Fecha de Vencimiento</th>
+										<th>Estatus</th>
+										<th>Actividad Abierta</th>
+									</tr>
+								</thead>
+
+								<tbody>
+
+									<!-- <tr th:each="rol: ${roles}">
+									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
+									<td th:text="${rol.vc_nombre_rol}"></td>
+									<td th:text="${rol.vc_descripcion_rol}"></td>
+									<td th:text="${rol.vc_estatus}"></td>
+									<td>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Editar Rol" data-bs-target="#editarRol"
+											aria-controls="table-datatable" type="button"
+											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
+											<i class="bi bi-pencil-square"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
+											aria-controls="table-datatable" type="button"
+											th:onclick="inactivarRol(this)" data-tooltip="Add">
+											<i class="bi bi-arrow-repeat"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Relacionar componentes" data-bs-target="#basicModalProducto"
+											aria-controls="table-datatable" type="button" th:onclick=""
+											data-tooltip="Add">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</td>
+								</tr>-->
+
+									<!--<tr th:if="${#lists.isEmpty(roles)}">
+											<td colspan="6">
+												A&uacute;n no se registran Observaciones en el sistema
+											</td>
+										</tr>-->
+
+								</tbody>
+
+						</table>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/roles/rol.js}"></script>
+	</th:block>
+</body>
+
+</html>

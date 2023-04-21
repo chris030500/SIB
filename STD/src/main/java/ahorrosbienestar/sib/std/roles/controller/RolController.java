@@ -1,5 +1,9 @@
 package ahorrosbienestar.sib.std.roles.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +16,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Controller
 @RequestMapping("rol")
 public class RolController {
 
+	
 	private RolService rolService;
+	
+	private String estatusA = "ACTIVO";
+	private String estatusI = "INACTIVO";
 	
 	@Autowired
 	public RolController (RolService rolService) {
@@ -39,12 +49,78 @@ public class RolController {
 		}
 	
 	//Dar de alta un rol utilizando metodo POST
-		@PostMapping
-		public ResponseEntity<?> save(@RequestBody Rol rol){
-			Rol r = new Rol();
-			r = rolService.save(rol);
-			return ResponseEntity.ok(r);
+		@PostMapping("/altaRoles")
+		public ResponseEntity<?> altaRoles(@RequestParam(name = "nombreRol") String nombreRol, @RequestParam(name = "descripcionRol") String descripcionRol){
+			String mensaje ="Registro Correctamente.";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				
+				if(rolService.existeRol(nombreRol) == 0) {
+					LocalDate fecha = LocalDate.now();
+					Rol altaRol = new Rol();
+					
+					altaRol.setDt_fecha_registro(fecha);
+					altaRol.setVc_descripcion_rol(descripcionRol);
+					altaRol.setVc_nombre_rol(descripcionRol);
+					altaRol.setVc_estatus(estatusA);
+					
+					rolService.save(altaRol);
+					respuesta.add(mensaje);
+					
+				}else {
+					mensaje = "El Rol ya existe";
+					respuesta.add(mensaje);
+				}
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+			}
+			return null;
 		}
+		//Modificar Rol de usuario. 
+		@PostMapping("/modificarRoles")
+		public ResponseEntity<?> modificarRoles(@RequestParam(name = "idRol") Integer idRol, @RequestParam(name = "nombreRol") String nombreRol, @RequestParam(name = "descripcionRol") String descripcionRol){
+			String mensaje ="Registro Correctamente.";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				
+				if(rolService.modificarRoles(idRol, nombreRol, descripcionRol)>0) {
+					respuesta.add(mensaje);
+				}
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+				mensaje = e.getMessage();
+				respuesta.add(mensaje);
+			}
+			return ResponseEntity.ok(respuesta);
+		}
+		
+		
+		@PostMapping("/updateRoles")
+		public ResponseEntity<?> updateRoles(@RequestParam(name = "idRol") Integer idRol, @RequestParam(name = "estatus") String estatus){
+			String mensaje ="Actualizo estatus correctamente.";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				
+				if(rolService.updateEstatus(idRol, estatus.equalsIgnoreCase(estatusA)?estatusI:estatusA) > 0) {
+					respuesta.add(mensaje);
+				}			
+				
+			} catch (Exception e) {
+				System.out.println(""+e.getMessage());
+				mensaje = e.getMessage();
+				respuesta.add(mensaje);
+			}
+			return ResponseEntity.ok(respuesta);
+		}
+		
+		@ResponseBody
+		@RequestMapping(value = "/cargarRol/{id}", method = RequestMethod.GET)
+		public Optional<Rol> loadEditarProducto(@PathVariable("id") Integer id) {
+	
+			return rolService.findById(id);
+		}
+		
 		
 		@PutMapping
 		public ResponseEntity<?> edit(@RequestBody @Valid Rol rol,

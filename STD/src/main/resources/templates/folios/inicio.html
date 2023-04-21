@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Alta de Oficio</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="divOficio" class="container">
+				<fieldset class="border p-2">
+					<legend>Registro de Oficio</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Identificador Unico:</label>
+							<input class="form-control" type="text" id="idUnico" placeholder="Identificador Unico">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> No. de Oficio:</label>
+							<input class="form-control" type="text" id="idOficio" placeholder="No. de Oficio">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Recepción:</label>
+							<input class="form-control" type="date" id="idRecepcion" placeholder="Fecha de Recepción">
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Asunto:</label>
+							<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Dirigido Para:</label>
+							<select class="form-control" id="idDirigido">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Puesto:</label>
+							<input class="form-control" type="text" id="idPuesto" placeholder="Puesto">
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Tipo Oficio: </label>
+							<select class="form-control" id="idTipoOficio">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Organo que la Emite:</label>
+							<select class="form-control" id="idOrganoEmite">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Registro:</label>
+							<input class="form-control" type="date" id="idFechaRegistro"
+								placeholder="Fecha de Registro">
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Plazo de Atención (dias habiles): </label>
+							<input class="form-control" type="text" id="idPlazo" placeholder="Plazo de Atención">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Vencimiento:</label>
+							<input class="form-control" type="date" id="idVencimiento"
+								placeholder="Fecha de Vencimiento">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus del Oficio:</label>
+							<select class="form-control" id="idEstatusOficio">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Ruta Oficio: </label>
+							<input class="form-control" type="text" id="idRutaOficio" placeholder="Ruta Oficio">
+						</div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" id="btnExaminar">Examinar</button>
+						</div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" id="btnAdjuntar">Adjuntar</button>
+						</div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" id="btnVerOficio">Ver Oficio</button>
+						</div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" id="btnGuardar">Guardar</button>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div id="divObservacion" class="container" style="margin-top : 15px ">
+				<fieldset class="border p-2">
+					<legend>Registro de la Observación</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Área de atención:</label>
+							<select class="form-control" id="idAreaAtencion">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Responsable de Atención:</label>
+							<select class="form-control" id="idResponsableAtencion">
+								<option value="0">Seleccione</option>
+								<option value="1">Seleccione</option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Vencimiento:</label>
+							<input class="form-control" type="date" id="idFechaVencimiento"
+								placeholder="Fecha de Vencimiento">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-10">
+							<label class="col-form-label"> Observación a Atender:</label>
+							<textarea type="text-Area" class="form-control" id="idObservacion"
+								placeholder="Observación a Atender" maxlength="600"></textarea>
+						</div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" data-dismiss="modal"
+								id="btnAgregar">Agregar</button>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
+
+							<thead>
+								<tr>
+									<th style="visibility:collapse; display:none;"></th>
+									<th>Area de Atencion</th>
+									<th>Responsable</th>
+									<th>Fecha de Asignación</th>
+									<th>Fecha de Vencimiento</th>
+									<th>Observaciones a Atender</th>
+									<th>Estatus</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+
+							<tbody>
+
+								<!-- <tr th:each="rol: ${roles}">
+									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
+									<td th:text="${rol.vc_nombre_rol}"></td>
+									<td th:text="${rol.vc_descripcion_rol}"></td>
+									<td th:text="${rol.vc_estatus}"></td>
+									<td>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Editar Rol" data-bs-target="#editarRol"
+											aria-controls="table-datatable" type="button"
+											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
+											<i class="bi bi-pencil-square"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
+											aria-controls="table-datatable" type="button"
+											th:onclick="inactivarRol(this)" data-tooltip="Add">
+											<i class="bi bi-arrow-repeat"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Relacionar componentes" data-bs-target="#basicModalProducto"
+											aria-controls="table-datatable" type="button" th:onclick=""
+											data-tooltip="Add">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</td>
+								</tr>-->
+
+								<!--<tr th:if="${#lists.isEmpty(roles)}">
+											<td colspan="6">
+												A&uacute;n no se registran Observaciones en el sistema
+											</td>
+										</tr>-->
+
+							</tbody>
+
+						</table>
+					</div>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-md-5"></div>
+						<div class="col-md-2">
+							<br><br>
+							<button type="button" class="btn btn-primary form-control" data-dismiss="modal"
+								id="btnGuardar">Guardar</button>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/roles/rol.js}"></script>
+	</th:block>
+</body>
+
+</html>
