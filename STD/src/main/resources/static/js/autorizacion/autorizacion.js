@@ -1,3 +1,10 @@
+// Variables | para geolocalización
+var clienteID;
+var montoAuto;
+var nameProducto;
+var urlGeolocalizacion;
+var headerGeolocalizacion;
+
 // Variables | para el spinner
 var spinner = document.getElementById('spinnerID');
 var principal = document.getElementById('principalID');
@@ -34,6 +41,24 @@ var mostrarBotonAutorizar = document.getElementById("mostrarBotonAutorizarId");
 var mostrarBotonRechazar = document.getElementById("mostrarBotonRechazarId");
 var disponible = document.getElementById("disponibleID");
 var listaID = document.getElementById("listaID");
+
+
+// Se manda a llamar el api del SAT
+/*window.onload = function() {
+	$.ajax({
+		url: newUrlBase + "api_geo",
+		type: "GET",
+		success: function(respuesta) {
+			//console.log(respuesta);
+			urlGeolocalizacion = respuesta.url;
+			headerGeolocalizacion = respuesta.autentificacion;
+			console.log(urlGeolocalizacion);
+			console.log(headerGeolocalizacion);
+		}, error: function(error) {
+			// console.log(error);
+		}
+	});
+}*/
 
 // Funcion para la busqueda de solicitud de credito
 function buscarSolicitudCredito(solicitudCredito) {
@@ -84,6 +109,10 @@ function buscarSolicitudCredito(solicitudCredito) {
 					estatus.value = respuesta[0].estatus;
 					Nombreproducto.value = respuesta[0].producto;
 					buscarProducto(respuesta[0].productoCreditoID);
+					//
+					clienteID = respuesta[0].clienteId;
+					montoAuto = respuesta[0].montoAutorizado;
+					nameProducto = respuesta[0].producto;
 				}
 			}, error: function() {
 				// Vistas
@@ -330,7 +359,7 @@ function observacionesSolicitud(tipo) {
 // Función que autoriza la solicitud
 function actualizarSolicitud(observacion, tipo) {
 	$.ajax({
-		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&observaciones=" + observacion,
+		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&clienteID=" + clienteID + "&montoAutorizado=" + montoAuto + "&producto=" + nameProducto + "&observaciones=" + observacion,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -340,6 +369,8 @@ function actualizarSolicitud(observacion, tipo) {
 			// Llamamos a nuestro spinner
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
+			
+			enviarGeolocalizacion(respuesta);
 
 			swal("Solicitud actualizada", {
 				closeOnClickOutside: false,
@@ -353,6 +384,26 @@ function actualizarSolicitud(observacion, tipo) {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 		}
+	});
+}
+
+// Función a conexión con Api SAT
+function enviarGeolocalizacion(dto) {
+
+	var data = JSON.stringify(prueba);
+
+	$.ajax({
+		url: newUrlBase + "api_geo",
+		data: data,
+		type: "POST",
+		dataType: "JSON",
+		contentType: 'application/json; charset=utf-8',
+		success: function(response) {
+			// Manejar la respuesta
+		},
+		error: function(xhr, status, error) {
+			// Manejar el error
+		},
 	});
 }
 
@@ -726,7 +777,7 @@ function wsDescargaZip(token, credenciales) {
 		const url = window.URL.createObjectURL(new Blob([response.data])); // Crea una URL de objeto a partir de la respuesta
 		const link = document.createElement('a');
 		link.href = url;
-		link.setAttribute('download', 'videograbacion.zip'); // Establece el nombre de archivo de descarga
+		link.setAttribute('download', seId + "-" + clienteID + '.zip'); // Establece el nombre de archivo de descarga
 		document.body.appendChild(link);
 		link.click(); // Hace clic en el enlace
 		document.body.removeChild(link); // Elimina el enlace del DOM
