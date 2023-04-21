@@ -209,15 +209,12 @@ public class obtenerCoordenadasRestController {
 			// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
-			// String pdfPath = url;
-			String pdfPath = "C:/Users/osvaldo.escamilla/Documents/PlandePagos.pdf";
+			String pdfPath = url;
+			//String pdfPath = "C:/Users/osvaldo.escamilla/Documents/PlandePagos.pdf";
 			File file = new File(pdfPath);
 			PDDocument document = PDDocument.load(file);
 			// Obtenemos el numero total de hojas del documento
-			// doctEnvioService.totalHojas(document.getNumberOfPages(),
-			// dEnvio.getPk_id_docto_envio());
-			// System.out.println("Numero de paginas del documento: " +
-			// doctEnvioService.totalHojas(document.getNumberOfPages(),dEnvio.getPk_id_docto_envio()));
+			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 			System.out.println("Total de hojas: " + document.getNumberOfPages());
 
 			// List<CoordenadaDocumento> coordenadas =
