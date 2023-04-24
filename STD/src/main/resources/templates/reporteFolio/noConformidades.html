@@ -12,13 +12,28 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container">
+
+		<div class="container border p-2">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Generar Reporte</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
 			<div id="divGenerarReporte" class="container">
 				<fieldset class="border p-2">
-					<legend>Generar Reporte</legend>
+					<legend class="float-none w-auto p-2">Generar Reporte</legend>
 					<div class="row" style="margin-top : 15px ">
 						<fieldset class="border p-2">
-							<legend>Parametros de busqueda</legend>
+							<legend class="float-none w-auto p-2">Parametros de busqueda</legend>
 							<div class="row" style="margin-top : 15px ">
 								<div class="col-md-4">
 									<label class="col-form-label"> Tipo Oficio</label>
@@ -53,30 +68,33 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<fieldset class="border p-2">
-							<legend>Busqueda todos los registros</legend>
+							<legend class="float-none w-auto p-2">Busqueda todos los registros</legend>
 							<div class="row" style="margin-top : 15px ">
-							<div class="col-md-4">
-								<label><input type="checkbox" id="ckTodos" value="first_checkbox"> Todos los registros</label>
+								<div class="col-md-4">
+									<label><input type="checkbox" id="ckTodos" value="first_checkbox"> Todos los
+										registros</label>
+								</div>
+								<div class="col-md-4">
+									<label class="col-form-label"> Fecha de inicio</label>
+									<input class="form-control" type="date" id="dtFechaInicio"
+										placeholder="Fecha desde">
+								</div>
+								<div class="col-md-4">
+									<label class="col-form-label"> Fecha de fin</label>
+									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
+								</div>
 							</div>
-							<div class="col-md-4">
-								<label class="col-form-label"> Fecha de inicio</label>
-								<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
-							</div>	
-							<div class="col-md-4">
-								<label class="col-form-label"> Fecha de fin</label>
-								<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
-							</div>	
-							</div>		
 						</fieldset>
 					</div>
 				</fieldset>
 				<div class="row" style="margin-top : 15px ">
 					<div class="col-md-8"></div>
 					<div class="col-md-4">
-						<button type="button" class="btn btn-primary form-control" id="btnGenerarReporte">Generar Reporte</button>
+						<button type="button" class="btn btn-primary form-control" id="btnGenerarReporte">Generar
+							Reporte</button>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</section>

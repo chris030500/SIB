@@ -12,48 +12,60 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container">
+		<div class="container border p-2">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Plan de accion</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
 			<div id="divAceptarAsignacion" class="container">
 				<fieldset class="border p-2">
-					<legend>Aceptar Asignacion</legend>
-						<div class="row" style="margin-top : 15px ">
-							<div class="col-md-2">
-								<label class="col-form-label"> No. de Oficio</label>
-								<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">
-							</div>
-							<div class="col-md-4">
-								<label class="col-form-label"> Asunto:</label>
-								<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de Recibo:</label>
-								<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo">
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de Vencimiento:</label>
-								<input class="form-control" type="date" id="dtVencimiento"
-									placeholder="Fecha de Vencimiento">
-							</div>
+					<legend class="float-none w-auto p-2">Aceptar Asignacion</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-2">
+							<label class="col-form-label"> No. de Oficio</label>
+							<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">
 						</div>
-						<div class="row" style="margin-top : 15px ">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
+						<div class="col-md-4">
+							<label class="col-form-label"> Asunto:</label>
+							<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
+						</div>
+						<div class="col-md-3">
+							<label class="col-form-label"> Fecha de Recibo:</label>
+							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo">
+						</div>
+						<div class="col-md-3">
+							<label class="col-form-label"> Fecha de Vencimiento:</label>
+							<input class="form-control" type="date" id="dtVencimiento"
+								placeholder="Fecha de Vencimiento">
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
 
-								<thead>
-									<tr>
-										<th style="visibility:collapse; display:none;"></th>
-										<th>Area de Atencion</th>
-										<th>Responsable</th>
-										<th>Fecha de Asignación</th>
-										<th>Fecha de Vencimiento</th>
-										<th>Observaciones a Atender</th>
-										<th>Estatus</th>
-										<th>¿Acepta la Observación?</th>
-									</tr>
-								</thead>
+							<thead>
+								<tr>
+									<th style="visibility:collapse; display:none;"></th>
+									<th>Area de Atencion</th>
+									<th>Responsable</th>
+									<th>Fecha de Asignación</th>
+									<th>Fecha de Vencimiento</th>
+									<th>Observaciones a Atender</th>
+									<th>Estatus</th>
+									<th>¿Acepta la Observación?</th>
+								</tr>
+							</thead>
 
-								<tbody>
+							<tbody>
 
-									<!-- <tr th:each="rol: ${roles}">
+								<!-- <tr th:each="rol: ${roles}">
 									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
 									<td th:text="${rol.vc_nombre_rol}"></td>
 									<td th:text="${rol.vc_descripcion_rol}"></td>
@@ -79,23 +91,23 @@
 									</td>
 								</tr>-->
 
-									<!--<tr th:if="${#lists.isEmpty(roles)}">
+								<!--<tr th:if="${#lists.isEmpty(roles)}">
 											<td colspan="6">
 												A&uacute;n no se registran Observaciones en el sistema
 											</td>
 										</tr>-->
 
-								</tbody>
+							</tbody>
 
-							</table>
-						</div>
+						</table>
+					</div>
 				</fieldset>
 			</div>
 
 
 			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
 				<fieldset class="border p-2">
-					<legend>Registro de plan de accion de la Observacion:</legend>
+					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-4">
 							<label class="col-form-label"> Identificador del plan de accion</label>
@@ -136,29 +148,29 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-5"></div>
-							<div class="col-md-2">
-								<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
-							</div>
+						<div class="col-md-2">
+							<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
+						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
 
-								<thead>
-									<tr>
-										<th style="visibility:collapse; display:none;"></th>
-										<th>Identificador PA</th>
-										<th>Nombre de la Actividad</th>
-										<th>Encargado de la Actividad</th>
-										<th>Fecha de Inicio</th>
-										<th>Fecha de Vencimiento</th>
-										<th>Estatus</th>
-										<th>Actividad Abierta</th>
-									</tr>
-								</thead>
+							<thead>
+								<tr>
+									<th style="visibility:collapse; display:none;"></th>
+									<th>Identificador PA</th>
+									<th>Nombre de la Actividad</th>
+									<th>Encargado de la Actividad</th>
+									<th>Fecha de Inicio</th>
+									<th>Fecha de Vencimiento</th>
+									<th>Estatus</th>
+									<th>Actividad Abierta</th>
+								</tr>
+							</thead>
 
-								<tbody>
+							<tbody>
 
-									<!-- <tr th:each="rol: ${roles}">
+								<!-- <tr th:each="rol: ${roles}">
 									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
 									<td th:text="${rol.vc_nombre_rol}"></td>
 									<td th:text="${rol.vc_descripcion_rol}"></td>
@@ -184,13 +196,13 @@
 									</td>
 								</tr>-->
 
-									<!--<tr th:if="${#lists.isEmpty(roles)}">
+								<!--<tr th:if="${#lists.isEmpty(roles)}">
 											<td colspan="6">
 												A&uacute;n no se registran Observaciones en el sistema
 											</td>
 										</tr>-->
 
-								</tbody>
+							</tbody>
 
 						</table>
 					</div>
