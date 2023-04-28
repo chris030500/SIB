@@ -373,7 +373,6 @@ function mostrarSolicitudEnvio(solicitudId) {
 			// Asignamos los valores a los campos
 			envio.value = respuesta.pk_id_solicitud_envio;
 			seId = respuesta.pk_id_solicitud_envio;
-			console.log(seId);
 			fechaAutorizacion.value = respuesta.dt_fecha_autorizacion != null ? respuesta.dt_fecha_autorizacion : 'Sin registro';
 			quienAutorizo.value = respuesta.empleado_autorizo != null ? respuesta.empleado_autorizo : 'Sin registro';
 			fechaRegistro.value = respuesta.dt_fecha_registro != null ? respuesta.dt_fecha_registro : 'Sin registro';
