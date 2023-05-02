@@ -80,6 +80,7 @@ public class IndexController {
 			System.out.println("Nombre del usuario: " + nombreUsuario);
 			int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
 			logger.info("Estatus Fecha: " + estatusFecha);
+			System.out.println("Estatus Fecha: " + estatusFecha);
 			if (estatusFecha == 1) {
 				logger.info("Debe de cambiar la contraseña");
 				// System.out.println("Debe de cambiar la contraseña");

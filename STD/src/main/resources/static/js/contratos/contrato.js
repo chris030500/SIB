@@ -14,8 +14,8 @@ window.onload = function() {
 }
 
 
-const fechaActual = new Date().toISOString().split("T")[0];
-document.getElementById("fecha").setAttribute("max", fechaActual);
+/*const fechaActual = new Date().toISOString().split("T")[0];
+document.getElementById("fecha").setAttribute("max", fechaActual);*/
 
 $(document).ready(function() {
 	$('.solo-numero').on('input', function() {
