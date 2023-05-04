@@ -15,6 +15,9 @@ public interface IObservacionRepository  extends JpaRepository<Observaciones, In
 	@Query(value = "SELECT * FROM TBL_OBSERVACIONESXFOLIO WHERE I_FOLIO=:idFolio order by PK_ID_OBSERVACION desc ", nativeQuery = true)
 	List<Observaciones> findAllFolio(Integer idFolio);
 
+	@Query(value = "SELECT * FROM TBL_OBSERVACIONESXFOLIO WHERE I_RESPONSABLE=:i_id_empleado order by 1 ", nativeQuery = true)
+	List<Observaciones> findAllxEmpleado(Integer i_id_empleado);
+
 
 	
 }

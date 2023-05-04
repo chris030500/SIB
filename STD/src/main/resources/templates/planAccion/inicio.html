@@ -65,31 +65,33 @@
 
 							<tbody>
 
-								<!-- <tr th:each="rol: ${roles}">
-									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
-									<td th:text="${rol.vc_nombre_rol}"></td>
-									<td th:text="${rol.vc_descripcion_rol}"></td>
-									<td th:text="${rol.vc_estatus}"></td>
+								<tr th:each="obs: ${lista_observaciones}">
+									<td style="visibility:collapse; display:none;" th:text="${obs.pk_id_observacion}"></td>
+									<td th:text="${obs.i_area}"></td>
+									<td th:text="${obs.i_responsable}"></td>
+									<td th:text="${obs.dt_fecha_asignacion}"></td>
+									<td th:text="${obs.dt_fecha_vencimiento}"></td>
+									<td th:text="${obs.vc_descripcion}"></td>
+									<td th:text="${obs.i_estatus}"></td>
 									<td>
 										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Editar Rol" data-bs-target="#editarRol"
+											title="Acepto" data-bs-target="#editarRol"
 											aria-controls="table-datatable" type="button"
-											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
-											<i class="bi bi-pencil-square"></i>
+											th:onclick="'modalEditarRol(' + ${obs.pk_id_observacion} + ')'" data-tooltip="Add">
+											<i class="bi bi-check-circle-fill"></i>
 										</button>
-										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
+										<button class="btn btn-info" tabindex="0" title="No Acepto"
 											aria-controls="table-datatable" type="button"
 											th:onclick="inactivarRol(this)" data-tooltip="Add">
-											<i class="bi bi-arrow-repeat"></i>
+											<i class="bi bi-x-circle-fill"></i>
 										</button>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Relacionar componentes" data-bs-target="#basicModalProducto"
-											aria-controls="table-datatable" type="button" th:onclick=""
-											data-tooltip="Add">
+										<!--<button class="btn btn-info" tabindex="0" title="Registrar plan de accion"
+											aria-controls="table-datatable" type="button"
+											th:onclick="inactivarRol(this)" data-tooltip="Add">
 											<i class="bi bi-ui-checks"></i>
-										</button>
+										</button>-->
 									</td>
-								</tr>-->
+								</tr>
 
 								<!--<tr th:if="${#lists.isEmpty(roles)}">
 											<td colspan="6">
