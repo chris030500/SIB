@@ -39,11 +39,7 @@ $(document).ready(function() {
 					icon: "warning",
 				});
 		}
-	});
-	
-	
-	
-	
+	});	
 	$("#btnCerrar").click(function() {
 		$("#editarRol").modal("hide");
 		document.getElementById("inombreRol").style.borderColor = '';

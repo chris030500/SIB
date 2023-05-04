@@ -13,7 +13,7 @@ import ahorrosbienestar.sib.std.roles.model.Rol;
 public interface IRolRepository extends JpaRepository<Rol, Integer> {
 	
 	//Consulta para trae el id_rol y nombre del rol
-	@Query(value = "SELECT r.PK_ID_ROL, r.VC_NOMBRE_ROL FROM TBL_CAT_ROL as r WHERE r.PK_ID_ROL = ?1", nativeQuery = true)
+	@Query(value = "SELECT r.PK_ID_ROL, r.VC_NOMBRE_ROL FROM TBL_CAT_ROL as r WHERE r.PK_ID_ROL = ?", nativeQuery = true)
 	public Rol findByIdRol(Integer rol);
 
 	@Query(value = "SELECT COUNT(*) AS NUMERO FROM TBL_CAT_ROL  WHERE TRIM(VC_NOMBRE_ROL) = :nombreRol ", nativeQuery = true)

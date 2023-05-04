@@ -23,102 +23,69 @@
 					</div>
 				</div>
 			</div>
-			<div id="divOficio" class="container">
+			<div id="divOficio" class="container" style="margin-top : 15px ">
 				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Registro de Oficio</legend>
-					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Identificador Unico:</label>
-							<input class="form-control" type="text" id="idUnico" placeholder="Identificador Unico">
+					<legend class="float-none w-auto p-2">Registro</legend>
+
+					<div class="row" style="margin-top : 5px ">
+								
+						<div class="col-lg-4">
+							<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal" title="Agregar Requerimiento"
+								data-bs-target="#modalFolio" aria-controls="table-datatable" type="button"
+								data-tooltip="Add" th:onclick="'limpiarDatosFolio()'">
+								<i class="bi bi-folder-plus"></i>
+							</button>
 						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> No. de Oficio:</label>
-							<input class="form-control" type="text" id="idOficio" placeholder="No. de Oficio">
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Fecha de Recepción:</label>
-							<input class="form-control" type="date" id="idRecepcion" placeholder="Fecha de Recepción">
-						</div>
+						<div class="col-lg-4"></div>
+						<div class="col-lg-4"></div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Asunto:</label>
-							<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Dirigido Para:</label>
-							<select class="form-control" id="idDirigido">
-								<option value="0">Seleccione</option>
-								<option value="1">Seleccione</option>
-								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
-									th:text="${opcion.v_valor}"></option>-->
-							</select>
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Puesto:</label>
-							<input class="form-control" type="text" id="idPuesto" placeholder="Puesto">
-						</div>
-					</div>
-					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Tipo Oficio: </label>
-							<select class="form-control" id="idTipoOficio">
-								<option value="0">Seleccione</option>
-								<option th:each="opcionTipo : ${cat_tipo_oficio}" th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"></option>
-							</select>
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Organo que la Emite:</label>
-							<select class="form-control" id="idOrganoEmite">
-								<option value="0">Seleccione</option>
-								<option th:each="opcionTipo : ${cat_lista_reguladores}" th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"></option>
-							</select>
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Fecha de Registro:</label>
-							<input class="form-control" type="date" id="idFechaRegistro"
-								placeholder="Fecha de Registro">
-						</div>
-					</div>
-					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Plazo de Atención (dias habiles): </label>
-							<input class="form-control" type="text" id="idPlazo" placeholder="Plazo de Atención">
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Fecha de Vencimiento:</label>
-							<input class="form-control" type="date" id="idVencimiento"
-								placeholder="Fecha de Vencimiento">
-						</div>
-						<div class="col-md-4">
-							<label class="col-form-label"> Estatus del Oficio:</label>
-							<select class="form-control" id="idEstatusOficio">
-								<option value="0">Seleccione</option>
-								<option th:each="opcionTipo : ${cat_lista_estatus}" th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"></option>
-							</select>
-						</div>
-					</div>
-					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Ruta Oficio: </label>
-							<input class="form-control" type="text" id="idRutaOficio" placeholder="Ruta Oficio">
-						</div>
-						<div class="col-md-2">
-							<br><br>
-							<button type="button" class="btn btn-primary form-control" id="btnExaminar">Examinar</button>
-						</div>
-						<div class="col-md-2">
-							<br><br>
-							<button type="button" class="btn btn-primary form-control" id="btnAdjuntar">Adjuntar</button>
-						</div>
-						<div class="col-md-2">
-							<br><br>
-							<button type="button" class="btn btn-primary form-control" id="btnVerOficio">Ver Oficio</button>
-						</div>
-						<div class="col-md-2">
-							<br><br>
-							<button type="button" class="btn btn-primary form-control" id="btnGuardar">Guardar</button>
-						</div>
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblOficio">
+
+							<thead>
+								<tr>
+									<th style="visibility:collapse; display:none;"></th>
+									<th>Oficio</th>
+									<th>Asunto</th>
+									<th>F. Recepcion</th>
+									<th>F. Registro</th>
+									<th>F. Vencimiento</th>
+									<th>Estatus</th>
+									<th>Tipo</th>
+									<th>Emite</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+
+							<tbody>
+
+								<tr th:each="folio: ${lista_folios}">
+									<td style="visibility:collapse; display:none;" th:text="${folio.pk_id_folio}"></td>
+									<td th:text="${folio.i_folio}"></td>
+									<td th:text="${folio.vc_asunto}"></td>
+									<td th:text="${folio.dt_fecha_recepcion}"></td>
+									<td th:text="${folio.dt_fecha_registro}"></td>
+									<td th:text="${folio.dt_fecha_vencimiento}"></td>
+									<td th:text="${folio.i_estatus}"></td>
+									<td th:text="${folio.i_tipo_oficio}"></td>
+									<td th:text="${folio.i_organo_emite}"></td>
+									<td>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Editar Registro" data-bs-target="#modalFolio"
+											aria-controls="table-datatable" type="button"
+											th:onclick="'editarFolio(' + ${folio.pk_id_folio} + ')'" data-tooltip="Add">
+											<i class="bi bi-pencil-square"></i>
+										</button>
+										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+											title="Mostrar Observaciones" data-bs-target="#"
+											aria-controls="table-datatable" type="button" th:onclick="observaciones(this)"
+											data-tooltip="Add">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</fieldset>
 			</div>
@@ -128,16 +95,15 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-4">
 							<label class="col-form-label"> Área de atención:</label>
-							<select class="form-control" id="idAreaAtencion">
+							<select class="form-control" id="idAreaAtencion" onchange="obtEmpleadoArea(this)">
 								<option value="0">Seleccione</option>
-								<option value="1">Seleccione</option>
+								<option th:each="listaAreas : ${cat_lista_areas}" th:value="${listaAreas.areaID}"
+									th:text="${listaAreas.descripcionArea}"></option>
 							</select>
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Responsable de Atención:</label>
 							<select class="form-control" id="idResponsableAtencion">
-								<option value="0">Seleccione</option>
-								<option value="1">Seleccione</option>
 							</select>
 						</div>
 						<div class="col-md-4">
@@ -159,11 +125,11 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservacion">
 
 							<thead>
 								<tr>
-									<th style="visibility:collapse; display:none;"></th>
+									<th></th>
 									<th>Area de Atencion</th>
 									<th>Responsable</th>
 									<th>Fecha de Asignación</th>
@@ -173,56 +139,123 @@
 									<th>Acciones</th>
 								</tr>
 							</thead>
-
 							<tbody>
-
-								<!-- <tr th:each="rol: ${roles}">
-									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
-									<td th:text="${rol.vc_nombre_rol}"></td>
-									<td th:text="${rol.vc_descripcion_rol}"></td>
-									<td th:text="${rol.vc_estatus}"></td>
-									<td>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Editar Rol" data-bs-target="#editarRol"
-											aria-controls="table-datatable" type="button"
-											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
-											<i class="bi bi-pencil-square"></i>
-										</button>
-										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
-											aria-controls="table-datatable" type="button"
-											th:onclick="inactivarRol(this)" data-tooltip="Add">
-											<i class="bi bi-arrow-repeat"></i>
-										</button>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Relacionar componentes" data-bs-target="#basicModalProducto"
-											aria-controls="table-datatable" type="button" th:onclick=""
-											data-tooltip="Add">
-											<i class="bi bi-ui-checks"></i>
-										</button>
-									</td>
-								</tr>-->
-
-								<!--<tr th:if="${#lists.isEmpty(roles)}">
-											<td colspan="6">
-												A&uacute;n no se registran Observaciones en el sistema
-											</td>
-										</tr>-->
-
 							</tbody>
-
 						</table>
-					</div>
-					<div class="row" style="margin-top : 5px ">
-						<div class="col-md-5"></div>
-						<div class="col-md-2">
-							<br><br>
-							<button type="button" class="btn btn-primary form-control" data-dismiss="modal"
-								id="btnGuardar">Guardar</button>
-						</div>
 					</div>
 				</fieldset>
 			</div>
-
+			<div class="modal" id="modalFolio">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Alta de Oficio</legend>
+							<div class="modal-body">
+							<form id="edit-form" th:method="post" th:object="${folios}">
+								<div class="row" style="margin-top : 15px ">
+									<!--<div class="col-md-4">
+										<label class="col-form-label"> Identificador Unico:</label>
+										<input class="form-control" type="text" id="idUnico"
+											placeholder="Identificador Unico">
+									</div>-->
+									<div class="col-md-4">
+										<label class="col-form-label"> No. de Oficio:</label>
+										<input class="form-control" type="text" id="noficio"
+											placeholder="No. de Oficio">
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Fecha de Recepción:</label>
+										<input class="form-control" type="date" id="idRecepcion"
+											placeholder="Fecha de Recepción">
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Asunto:</label>
+										<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-4">
+										<label class="col-form-label"> Dirigido Para:</label>
+										<select class="form-control" id="idDirigido" onchange="obtenerPuesto(this)">
+											<option value="0">Seleccione</option>
+											<option th:each="listaEmpleados : ${cat_lista_empleado}"
+												th:value="${listaEmpleados.empleadoID}"
+												th:text="${listaEmpleados.nombreCompleto}">
+											</option>
+										</select>
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Puesto:</label>
+										<input class="form-control" type="text" id="iPuesto" placeholder="Puesto"
+											readonly="readonly">
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Tipo Oficio: </label>
+										<select class="form-control" id="idTipoOficio">
+											<option value="0">Seleccione</option>
+											<option th:each="opcionTipo : ${cat_tipo_oficio}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-4">
+										<label class="col-form-label"> Organo que la Emite:</label>
+										<select class="form-control" id="idOrganoEmite">
+											<option value="0">Seleccione</option>
+											<option th:each="opcionTipo : ${cat_lista_reguladores}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+											</option>
+										</select>
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Fecha de Registro:</label>
+										<input class="form-control" type="date" id="idFechaRegistro"
+											placeholder="Fecha de Registro">
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Plazo de Atención (dias habiles): </label>
+										<input class="form-control" type="text" id="idPlazo"
+											placeholder="Plazo de Atención">
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									
+									<div class="col-md-4">
+										<label class="col-form-label"> Fecha de Vencimiento:</label>
+										<input class="form-control" type="date" id="idVencimiento"
+											placeholder="Fecha de Vencimiento">
+									</div>
+									<div class="col-md-4">
+										<label class="col-form-label"> Estatus del Oficio:</label>
+										<select class="form-control" id="idEstatusOficio">
+											<option value="0">Seleccione</option>
+											<option th:each="opcionTipo : ${cat_lista_estatus}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-12">
+										<label class="col-form-label"> Ruta Oficio: </label>
+										<input class="form-control" type="file" id="idRutaOficio"
+											placeholder="Ruta Oficio">
+									</div>
+								</div>
+							</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnRegistrar">Registrar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelar">Cancelar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
@@ -234,7 +267,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/roles/rol.js}"></script>
+		<script th:src="@{/js/folios/folio.js}"></script>
 	</th:block>
 </body>
 
