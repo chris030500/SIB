@@ -390,7 +390,7 @@ function actualizarSolicitud(observacion, tipo) {
 // Función a conexión con Api SAT
 function enviarGeolocalizacion(dto) {
 
-	var data = JSON.stringify(prueba);
+	var data = JSON.stringify(dto);
 
 	$.ajax({
 		url: newUrlBase + "api_geo",
