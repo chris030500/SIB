@@ -245,11 +245,12 @@ public class SolicitudEnvioRestController {
 					return ResponseEntity.ok("El producto no está totalmente configurado");
 				}
 				// System.out.println("El estatus es 3");
-				// logger.info("El estatus es 3");
+				//logger.info("El estatus es 3");
 				
 			}
 		} catch (Exception e) {
 			System.out.println("Error en falló de validación en solicitud: " + e.getMessage());
+			e.printStackTrace();
 			return ResponseEntity.ok("Falló la validación de la solicitud");
 		}
 
