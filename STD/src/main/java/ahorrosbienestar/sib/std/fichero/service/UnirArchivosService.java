@@ -87,7 +87,8 @@ public class UnirArchivosService {
 		String rutaConfig = configService.findAll().get(13).getVc_valor_propiedad().toString();
 		System.out.println("RutaConfig: " + rutaConfig);
 		PDFMergerUtility pdfMerger = new PDFMergerUtility();
-		String rutaArchivo = rutaArchivoFinal.replaceAll(rutaConfig.toString(), "");
+		String rutaArchivo = rutaArchivoFinal;
+		//String rutaArchivo = rutaArchivoFinal.replaceAll(rutaConfig.toString(), "");
 		System.out.println("RutaArchivo: " + rutaArchivo);
 		// System.out.println("rutaArchivo: " + ("/"+ rutaArchivo+ "/" +
 		// nombreArchivoFinal));
@@ -244,8 +245,8 @@ public class UnirArchivosService {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error al unir los archivos. Error: " + e.getMessage());
+			e.printStackTrace();
 			return "Error al unir los archivos.";
-			// e.printStackTrace();
 		}
 
 		return "1";
