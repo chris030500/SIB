@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaAreas;
+import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaPuestos;
 
 @Service
@@ -92,7 +93,11 @@ public class CatalogosCEService {
 			}
 			return null;
 		}
-
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
 
 		public List<EmpleadosCE> busquedaxArea(Integer areaID) {
 			logger.info("Ejecutando lista empleados por area: ");
@@ -120,4 +125,32 @@ public class CatalogosCEService {
 			}
 			return null;
 		}
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
+		public List<ListaFolioXEmpleado> listaFolioXEmpleado(Integer idEmpleado) {
+			logger.info("Ejecutando lista Folio por Empleado: ");
+			try {
+				String sql = "SELECT distinct t2.I_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
+						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
+						+ " where t1.I_RESPONSABLE = ?;";
+				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
+					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
+						e.setFolio(rs.getInt(1));
+						e.setPkFolio(rs.getInt(2));
+
+						return e;
+					}
+				});
+				logger.info(ls.get(0).getFolio());
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+			}
+			return null;
+		}
+		
 }

@@ -210,8 +210,7 @@ function obtenerPuesto(idEmpleado){
 	var urlServicio = getAbsolutePath() + puesto+idEmpleado.value;
 	$.getJSON(urlServicio, {}, function(data) {
 		$('#iPuesto').val(data[0].descripcionPuesto);
-	});
-		
+	});	
 }
 
 function obtEmpleadoArea(idArea){

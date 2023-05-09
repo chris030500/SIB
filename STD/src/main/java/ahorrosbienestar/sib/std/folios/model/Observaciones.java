@@ -66,7 +66,44 @@ public class Observaciones {
 	
 	@Column(name = "I_FOLIO", columnDefinition = "INT")
 	private int i_folio;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "DT_FECHA_CONFIRMACION")
+	private LocalDate dt_fecha_confirmacion;
+	
+	@Column(name = "I_CONFIRMA", columnDefinition = "INT")
+	private int i_confirma;
+	
+	
+	@Column(name = "VC_DESCRIPCION_RECHAZO", columnDefinition = "VARCHAR(400)")
+	private String vc_descripcion_rechazo;
+	
 
+
+	public LocalDate getDt_fecha_confirmacion() {
+		return dt_fecha_confirmacion;
+	}
+
+	public void setDt_fecha_confirmacion(LocalDate dt_fecha_confirmacion) {
+		this.dt_fecha_confirmacion = dt_fecha_confirmacion;
+	}
+
+	public int getI_confirma() {
+		return i_confirma;
+	}
+
+	public void setI_confirma(int i_confirma) {
+		this.i_confirma = i_confirma;
+	}
+
+	public String getVc_descripcion_rechazo() {
+		return vc_descripcion_rechazo;
+	}
+
+	public void setVc_descripcion_rechazo(String vc_descripcion_rechazo) {
+		this.vc_descripcion_rechazo = vc_descripcion_rechazo;
+	}
 
 	public int getI_folio() {
 		return i_folio;

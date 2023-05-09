@@ -93,8 +93,8 @@ public class FoliosController {
 			return ResponseEntity.ok(catalogosCEService.obtenerPuesto(empleadoID));
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
+			return null;
 		}
-		return null;
 	}
 	/**
 	 * Buscar los empleados por area
@@ -107,8 +107,9 @@ public class FoliosController {
 			return ResponseEntity.ok(catalogosCEService.busquedaxArea(areaID));
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
+			return null;
 		}
-		return null;
+	
 	}
 	
 	//Dar de alta un rol utilizando metodo POST
@@ -231,5 +232,4 @@ public class FoliosController {
 		
 				return iObservacionRepository.findById(id);
 			}
-
 }

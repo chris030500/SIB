@@ -31,11 +31,18 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-2">
 							<label class="col-form-label"> No. de Oficio</label>
-							<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">
+							<select class="form-control" id="idOficios" onchange="verDetalle(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>
+							</select>
+							<!--<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">-->
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Asunto:</label>
-							<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">
+							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
+							<textarea type="text-Area" class="form-control" id="idAsunto"
+								placeholder="Asunto" maxlength="600"></textarea>
 						</div>
 						<div class="col-md-3">
 							<label class="col-form-label"> Fecha de Recibo:</label>
@@ -48,11 +55,11 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservaciones">
 
 							<thead>
 								<tr>
-									<th style="visibility:collapse; display:none;"></th>
+									<th></th>
 									<th>Area de Atencion</th>
 									<th>Responsable</th>
 									<th>Fecha de Asignación</th>
@@ -64,35 +71,40 @@
 							</thead>
 
 							<tbody>
-
+								<!--	
 								<tr th:each="obs: ${lista_observaciones}">
-									<td style="visibility:collapse; display:none;" th:text="${obs.pk_id_observacion}"></td>
+									<td th:text="${obs.pk_id_observacion}">
+									</td>
 									<td th:text="${obs.i_area}"></td>
 									<td th:text="${obs.i_responsable}"></td>
 									<td th:text="${obs.dt_fecha_asignacion}"></td>
 									<td th:text="${obs.dt_fecha_vencimiento}"></td>
 									<td th:text="${obs.vc_descripcion}"></td>
 									<td th:text="${obs.i_estatus}"></td>
-									<td>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Acepto" data-bs-target="#editarRol"
-											aria-controls="table-datatable" type="button"
-											th:onclick="'modalEditarRol(' + ${obs.pk_id_observacion} + ')'" data-tooltip="Add">
-											<i class="bi bi-check-circle-fill"></i>
-										</button>
-										<button class="btn btn-info" tabindex="0" title="No Acepto"
-											aria-controls="table-datatable" type="button"
-											th:onclick="inactivarRol(this)" data-tooltip="Add">
-											<i class="bi bi-x-circle-fill"></i>
-										</button>
-										<!--<button class="btn btn-info" tabindex="0" title="Registrar plan de accion"
-											aria-controls="table-datatable" type="button"
-											th:onclick="inactivarRol(this)" data-tooltip="Add">
-											<i class="bi bi-ui-checks"></i>
-										</button>-->
+									<td style="text-align: center" th:switch="${obs.i_confirma}">
+										<div th:case="'0'">
+										   <button class="btn btn-info" tabindex="0" 
+												title="Acepto" aria-controls="table-datatable" type="button"
+												th:onclick="'okObservacion(' + ${obs.pk_id_observacion} + ')'"
+												data-tooltip="Add" id="' + obs.pk_id_observacion+ '">
+												<i class="bi bi-check-circle-fill"></i>
+											</button>
+											<button class="btn btn-info" tabindex="0" title="No Acepto"
+												aria-controls="table-datatable" type="button"
+												th:onclick="inactivarRol(this)" data-tooltip="Add">
+												<i class="bi bi-x-circle-fill"></i>
+											</button>
+										</div>
+										<div th:case="'1'">
+											<button class="btn btn-info" tabindex="0" title="Registrar plan de accion"
+												aria-controls="table-datatable" type="button"
+												th:onclick="inactivarRol(this)" data-tooltip="Add">
+												<i class="bi bi-ui-checks"></i>
+											</button>
+										</div>
 									</td>
 								</tr>
-
+								-->
 								<!--<tr th:if="${#lists.isEmpty(roles)}">
 											<td colspan="6">
 												A&uacute;n no se registran Observaciones en el sistema
@@ -221,7 +233,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/roles/rol.js}"></script>
+		<script th:src="@{/js/planAccion/planAccion.js}"></script>
 	</th:block>
 </body>
 
