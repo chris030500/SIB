@@ -68,8 +68,11 @@ public class DescargaRestController {
 
 	// Variable ruta temporal windows
 	private final static int RUTA_TEMPORAL_WS = 51;
+	
+	// Variable ruta temporal linux
+	private final static int RUTA_TEMPORAL_LN = 56;
 
-	//
+	// Variable carpeta para los archivos del zip
 	private final static String CARPETA_NUEVA = "Videograbacion";
 
 	// Variable que utiliza el método de extraer archivos del zip
@@ -289,11 +292,18 @@ public class DescargaRestController {
 	 */
 	@Scheduled(cron = "0 0 22 * * ?")
 	public void extraerArchivos() throws IOException, java.text.ParseException {
+		
+		// Obtenemos la ruta temporal windows
+		Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
+		
+		// Obtenemos la ruta temporal linux
+		Configuracion rutaLinux = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
+		
 		//
-		File carpetaEnvio = new File("C:\\Users\\jose.corona\\Documents\\pruebas\\STD\\Envio");
+		File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
 		File[] archivosEnvio = carpetaEnvio.listFiles();
 		//
-		File carpetaVideo = new File("C:\\Users\\jose.corona\\Documents\\pruebas\\STD\\Videograbaciones");
+		File carpetaVideo = new File(rutaLinux.getVc_valor_propiedad());
 		File[] archivosVideo = carpetaVideo.listFiles();
 		if (archivosVideo != null) {
 			for (File video : archivosVideo) {
