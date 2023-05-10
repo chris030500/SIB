@@ -152,5 +152,39 @@ public class CatalogosCEService {
 			}
 			return null;
 		}
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
+		public List<EmpleadosCE> busquedaxAreaEmpleado(Integer empleadoID) {
+			logger.info("Ejecutando lista empleados por area: ");
+			try {
+				String sql = "select emp.EmpleadoID, CONCAT_WS(' ',emp.PrimerNombre,emp.SegundoNombre,emp.ApellidoPat, emp.ApellidoMat) as nombreEmpleado" 
+						+" from CE.TBL_AREA a "
+						+" inner join CE.TBL_PUESTO p on p.areaID = a.pk_id_area and p.i_id_estatus = 1 "
+						+" inner join CE.TBL_MICROFIN_EMPLEADOS emp on emp.ClavePuestoID = p.ClavePuestoID and emp.Estatus = 'A' "
+						+" inner join (select t2.AreaID from CE.TBL_MICROFIN_EMPLEADOS t1 "
+						+" inner join CE.TBL_PUESTO t2 on t1.ClavePuestoID = t2.ClavePuestoID "
+						+" where t1.EmpleadoID = ?) t3 on t3.areaID =  a.pk_id_area "
+						+" where a.i_id_estatus = 1 "
+						+" order by emp.JerarquiaID desc;";
+				System.out.print("sql"+sql);
+				List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {empleadoID}, new RowMapper<EmpleadosCE>() {
+					public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						EmpleadosCE e = new EmpleadosCE();
+						e.setEmpleadoID(rs.getInt(1));
+						e.setNombreCompleto(rs.getString(2));
+					
+						return e;
+					}
+				});
+				logger.info(ls.get(0).getNombreCompleto());
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+			}
+			return null;
+		}
 		
 }

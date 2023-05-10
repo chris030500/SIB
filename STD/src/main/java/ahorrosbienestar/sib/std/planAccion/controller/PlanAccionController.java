@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.planAccion.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +17,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
+import ahorrosbienestar.sib.std.folios.model.Folios;
 import ahorrosbienestar.sib.std.folios.model.Observaciones;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.folios.service.FolioService;
+import ahorrosbienestar.sib.std.planAccion.model.PlanAccion;
+import ahorrosbienestar.sib.std.planAccion.repository.IPlanAccionRepository;
 import ahorrosbienestar.sib.std.planAccion.service.PlanAccionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -43,6 +48,14 @@ public class PlanAccionController {
 	
 	@Autowired
 	private IFolioRepository iFolioRepository;
+
+	@Autowired
+	private IPlanAccionRepository iPlanAccionRepository;
+	
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	private int catEstatus = 6;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -64,13 +77,15 @@ public class PlanAccionController {
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 			model.addAttribute("lista_folios", catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado()));
-			//model.addAttribute("lista_observaciones",iObservacionRepository.findAllxEmpleado(usuario.get(0).getI_id_empleado()));
+			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
+			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
 			
 			return "planAccion/inicio";
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
+			return null;
 		}
-		return null;
+		
 	}
 	/**
 	 * 
@@ -160,6 +175,68 @@ public class PlanAccionController {
 		}
 	
 	}
+	/**
+	 * 
+	 * @param idFolio
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/buscarActividadesPlan")
+	public ResponseEntity<List<PlanAccion>> buscarActividadesPlan(@RequestParam("idObservacion") Integer idObservacion,Model model) {
+		
+		try {
+			return ResponseEntity.ok(iPlanAccionRepository.findAllActividades(idObservacion));
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
 
+	//Dar de alta un rol utilizando metodo POST
+	@PostMapping("/altaActividad")
+	public ResponseEntity<?> altaFolio(
+			@RequestParam(name = "idObservacion") Integer idObservacion, 
+			@RequestParam(name = "nombreActividad") String nombreActividad,
+			@RequestParam(name = "idEncargado") Integer idEncargado,
+			@RequestParam(name = "dtFechaInicio") String dtFechaInicio,
+			@RequestParam(name = "dtFechaVencimiento") String dtFechaVencimiento
+			){
+		int estatusActivo = 1;
+		String mensaje ="Registro Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+				PlanAccion altaActividad = new PlanAccion();
+				LocalDate fecha = LocalDate.now();
+				altaActividad.setDt_fecha_asignacion(fecha);
+				altaActividad.setDt_fecha_inicio(LocalDate.parse(dtFechaInicio));
+				altaActividad.setDt_fecha_registro(fecha);
+				altaActividad.setDt_fecha_vencimiento(LocalDate.parse(dtFechaVencimiento));
+				altaActividad.setI_observacion(idObservacion);
+				altaActividad.setVc_desc_actividad(nombreActividad);
+				altaActividad.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+				altaActividad.setI_estatus(estatusActivo);
+				altaActividad.setI_usuario_mod(0);
+				altaActividad.setI_usuario_elimino(0);
+				altaActividad.setI_responsable(idEncargado);
+				
+				iPlanAccionRepository.save(altaActividad);
+				
+				respuesta.add(mensaje);
+			
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			System.out.println(""+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	
+	}
 	
 }

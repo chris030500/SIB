@@ -176,8 +176,8 @@ public class FoliosController {
 					return ResponseEntity.ok(iObservacionRepository.findAllFolio(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
+					return null;
 				}
-				return null;
 			}
 			
 			//Dar de alta una observacion metodo POST

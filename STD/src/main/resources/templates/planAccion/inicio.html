@@ -71,46 +71,6 @@
 							</thead>
 
 							<tbody>
-								<!--	
-								<tr th:each="obs: ${lista_observaciones}">
-									<td th:text="${obs.pk_id_observacion}">
-									</td>
-									<td th:text="${obs.i_area}"></td>
-									<td th:text="${obs.i_responsable}"></td>
-									<td th:text="${obs.dt_fecha_asignacion}"></td>
-									<td th:text="${obs.dt_fecha_vencimiento}"></td>
-									<td th:text="${obs.vc_descripcion}"></td>
-									<td th:text="${obs.i_estatus}"></td>
-									<td style="text-align: center" th:switch="${obs.i_confirma}">
-										<div th:case="'0'">
-										   <button class="btn btn-info" tabindex="0" 
-												title="Acepto" aria-controls="table-datatable" type="button"
-												th:onclick="'okObservacion(' + ${obs.pk_id_observacion} + ')'"
-												data-tooltip="Add" id="' + obs.pk_id_observacion+ '">
-												<i class="bi bi-check-circle-fill"></i>
-											</button>
-											<button class="btn btn-info" tabindex="0" title="No Acepto"
-												aria-controls="table-datatable" type="button"
-												th:onclick="inactivarRol(this)" data-tooltip="Add">
-												<i class="bi bi-x-circle-fill"></i>
-											</button>
-										</div>
-										<div th:case="'1'">
-											<button class="btn btn-info" tabindex="0" title="Registrar plan de accion"
-												aria-controls="table-datatable" type="button"
-												th:onclick="inactivarRol(this)" data-tooltip="Add">
-												<i class="bi bi-ui-checks"></i>
-											</button>
-										</div>
-									</td>
-								</tr>
-								-->
-								<!--<tr th:if="${#lists.isEmpty(roles)}">
-											<td colspan="6">
-												A&uacute;n no se registran Observaciones en el sistema
-											</td>
-										</tr>-->
-
 							</tbody>
 
 						</table>
@@ -123,21 +83,18 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-4">
-							<label class="col-form-label"> Identificador del plan de accion</label>
-							<input class="form-control" type="text" id="idPlanAccion" placeholder="No. de Oficio">
-						</div>
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<label class="col-form-label"> Nombre de la Actividad</label>
-							<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">
+							<!--<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">-->
+							<textarea type="text-Area" class="form-control" id="idNombreActividad"
+								placeholder="Actividad" maxlength="600"></textarea>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<label class="col-form-label"> Encargado de la Actividad</label>
 							<select class="form-control" id="idEncargadoActividad">
 								<option value="0">Seleccione</option>
-								<option value="1">Seleccione</option>
-								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
-									th:text="${opcion.v_valor}"></option>-->
+								<option th:each="listaEncargados : ${lista_encargados}" th:value="${listaEncargados.empleadoID}"
+									th:text="${listaEncargados.nombreCompleto}"></option>
 							</select>
 						</div>
 					</div>
@@ -154,14 +111,13 @@
 							<label class="col-form-label"> Estatus</label>
 							<select class="form-control" id="idEstatus">
 								<option value="0">Seleccione</option>
-								<option value="1">Seleccione</option>
-								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
-									th:text="${opcion.v_valor}"></option>-->
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
 							</select>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-5"></div>
+						<div class="col-md-10"></div>
 						<div class="col-md-2">
 							<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
 						</div>
@@ -171,50 +127,18 @@
 
 							<thead>
 								<tr>
-									<th style="visibility:collapse; display:none;"></th>
-									<th>Identificador PA</th>
-									<th>Nombre de la Actividad</th>
-									<th>Encargado de la Actividad</th>
-									<th>Fecha de Inicio</th>
-									<th>Fecha de Vencimiento</th>
+									<th>ID</th>
+									<th>Actividad</th>
+									<th>Encargado</th>
+									<th>Fecha Inicio</th>
+									<th>Fecga Vencimiento</th>
 									<th>Estatus</th>
 									<th>Actividad Abierta</th>
+									<th>Acciones</th>
 								</tr>
 							</thead>
 
 							<tbody>
-
-								<!-- <tr th:each="rol: ${roles}">
-									<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
-									<td th:text="${rol.vc_nombre_rol}"></td>
-									<td th:text="${rol.vc_descripcion_rol}"></td>
-									<td th:text="${rol.vc_estatus}"></td>
-									<td>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Editar Rol" data-bs-target="#editarRol"
-											aria-controls="table-datatable" type="button"
-											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
-											<i class="bi bi-pencil-square"></i>
-										</button>
-										<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
-											aria-controls="table-datatable" type="button"
-											th:onclick="inactivarRol(this)" data-tooltip="Add">
-											<i class="bi bi-arrow-repeat"></i>
-										</button>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Relacionar componentes" data-bs-target="#basicModalProducto"
-											aria-controls="table-datatable" type="button" th:onclick=""
-											data-tooltip="Add">
-											<i class="bi bi-ui-checks"></i>
-										</button>
-									</td>
-								</tr>-->
-
-								<!--<tr th:if="${#lists.isEmpty(roles)}">
-											<td colspan="6">
-												A&uacute;n no se registran Observaciones en el sistema
-											</td>
-										</tr>-->
 
 							</tbody>
 
