@@ -550,6 +550,7 @@ $("#btnAltaSolicitud").click(function() {
 	$.when(altaSolicitud()).then(ocultarSpinner());
 });*/
 
+
 const loader = document.getElementById("loader");
 function handleClick() {
 	// muestra el loader
@@ -660,6 +661,7 @@ function altaSolicitud() {
 
 				}, 0);
 				//For que nos ayuda a validar la carga de archivos
+
 				for (i = 0; i < numTr; i++) {
 
 					var numTr1 = $('#tablaDocumentos tbody tr').value;
@@ -684,7 +686,6 @@ function altaSolicitud() {
 						}
 						//console.log("Si tiene nombre");
 					}
-
 				}
 
 				for (i = 0; i < numTr; i++) {

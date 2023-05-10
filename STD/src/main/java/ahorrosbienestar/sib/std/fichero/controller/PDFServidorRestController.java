@@ -113,6 +113,9 @@ public class PDFServidorRestController {
                 if (!directorio2.exists()) {
                 	System.out.println("Entro en if de no existe el directorio");
                     if ((directorio2).mkdirs()) {
+                    	directorio2.setReadable(true, false);
+                    	directorio2.setWritable(true, false);
+                    	directorio2.setExecutable(true, false);
                     	logger.info("Directorio"+ directorio2 +" creado correctamente");
                         //System.out.println("Directorio creado");
                         Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta+"/"+ file.getOriginalFilename());
