@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -115,9 +118,14 @@ public class PDFServidorRestController {
                     if ((directorio2).mkdirs()) {
                     	String usuarioCarpeta = System.getProperty("user.name");
                         System.out.println("Usuario creación de carpeta: " + usuarioCarpeta);
-                    	directorio2.setReadable(true, false);
-                    	directorio2.setWritable(true, false);
-                    	directorio2.setExecutable(true, false);
+                        
+//                        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
+//                        Files.setPosixFilePermissions(directorio2, permissions);
+//                    	directorio2.setReadable(true, false);
+//                    	directorio2.setWritable(true, false);
+//                    	directorio2.setExecutable(true, false);
+                        FileAttribute<?> permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
+                        Files.setPosixFilePermissions(directorio2.toPath(), PosixFilePermissions.fromString("rwxrwxrwx"));
                     	logger.info("Directorio"+ directorio2 +" creado correctamente");
                         //System.out.println("Directorio creado");
                         Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta+"/"+ file.getOriginalFilename());
