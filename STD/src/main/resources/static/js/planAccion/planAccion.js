@@ -3,9 +3,9 @@ var rechazarObservacion = "rechazarObservacion?idObservacion=";
 var inicioPantalla = "aceptarAsignacion";
 var listaObservacion = "listaObservaciones?idFolio=";
 var buscarFolio = "buscarFolio?idFolio=";
-
 var buscarActividades = "buscarActividadesPlan?idObservacion=";
 var altaActividadPA = "altaActividad?idObservacion=";
+var actualizarPA = "modificarPA?idActividad=";
 
 var obsId;
 
@@ -17,7 +17,11 @@ $(document).ready(function() {
 
 			if (guardarVacio() == false) {
 				iniciarCampos();
-				guardarActividad();
+				if(document.getElementById("idAct").value == 0){
+					guardarActividad();	
+				}else{
+					actualizarActividad();
+				}
 			} else {
 				swal({
 					title: "Alerta",
@@ -49,6 +53,25 @@ function guardarActividad() {
 	peticionPost(urlServicio);
 }
 
+function actualizarActividad() {
+	var urlServicio = getAbsolutePath() + actualizarPA + document.getElementById("idAct").value;
+	urlServicio= urlServicio+ "&nombreActividad=" + document.getElementById("idNombreActividad").value;
+	urlServicio = urlServicio+"&idEncargado=" + document.getElementById("idEncargadoActividad").value;
+	urlServicio= urlServicio+"&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
+	urlServicio = urlServicio+"&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
+
+	peticionPost(urlServicio);
+}
+
+function iniciarDtosActividad(){
+	document.getElementById("idAct").value = 0;
+	document.getElementById("idNombreActividad").value = "";
+	document.getElementById("idEncargadoActividad").value = 0;
+	document.getElementById("dtFechaInicio").value = "";
+	document.getElementById("dtFechaVencimiento").value = "";
+	document.getElementById("idEstatus").value = 0;
+}
+
 function peticionPost(urlServicio) {
 	$.ajax({
 		url: urlServicio,
@@ -67,6 +90,7 @@ function peticionPost(urlServicio) {
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
+				iniciarDtosActividad();
 				obtActividades(obsId);
 			});
 
@@ -336,4 +360,24 @@ function obtenerActPlanAccion(url) {
 				+ " data-tooltip='Add' >"
 				+ " <i class='bi bi-bookmark-x-fill'></i>"*/
 }
+
+var editarActividadPA = "editarActividad?idActividad=";
+function editarActividad(idPA){
+	var url = getAbsolutePath() + editarActividadPA+idPA;
+	datosActividad(url);
+}
+
+function datosActividad(url){
+	$.blockUI({ message: 'Espere un momento...' });
+	$.getJSON(url, {}, function(data) {
+		setTimeout($.unblockUI, 100); 
+		document.getElementById("idNombreActividad").value = data.vc_desc_actividad;
+		document.getElementById("idEncargadoActividad").value = data.i_responsable;
+		document.getElementById("dtFechaInicio").value = data.dt_fecha_inicio;
+		document.getElementById("dtFechaVencimiento").value = data.dt_fecha_vencimiento;
+		document.getElementById("idEstatus").value = data.i_estatus;
+		document.getElementById("idAct").value = data.pk_id_planaccion;
+	});
+}
+
 

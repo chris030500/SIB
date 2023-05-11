@@ -31,7 +31,7 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-2">
 							<label class="col-form-label"> No. de Oficio</label>
-							<select class="form-control" id="idOficios" onchange="verDetalle(this)">
+							<select class="form-control" id="idOficios" onchange="verDetalle(this)" readonly>
 								<option value="0">Seleccione</option>
 								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
 									th:text="${listaFolios.folio}"></option>
@@ -42,16 +42,16 @@
 							<label class="col-form-label"> Asunto:</label>
 							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idAsunto"
-								placeholder="Asunto" maxlength="600"></textarea>
+								placeholder="Asunto" maxlength="600" readonly></textarea>
 						</div>
 						<div class="col-md-3">
 							<label class="col-form-label"> Fecha de Recibo:</label>
-							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo">
+							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo" readonly>
 						</div>
 						<div class="col-md-3">
 							<label class="col-form-label"> Fecha de Vencimiento:</label>
 							<input class="form-control" type="date" id="dtVencimiento"
-								placeholder="Fecha de Vencimiento">
+								placeholder="Fecha de Vencimiento" readonly>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
@@ -62,8 +62,8 @@
 									<th></th>
 									<th>Area de Atencion</th>
 									<th>Responsable</th>
-									<th>Fecha de Asignación</th>
-									<th>Fecha de Vencimiento</th>
+									<th>F. Asignación</th>
+									<th>F. Vencimiento</th>
 									<th>Observaciones a Atender</th>
 									<th>Estatus</th>
 									<th>¿Acepta la Observación?</th>
@@ -83,6 +83,7 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
 					<div class="row" style="margin-top : 15px ">
+						<input id="idAct" name="idAct" type="hidden" value="0">
 						<div class="col-md-6">
 							<label class="col-form-label"> Nombre de la Actividad</label>
 							<!--<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">-->
@@ -130,8 +131,8 @@
 									<th>ID</th>
 									<th>Actividad</th>
 									<th>Encargado</th>
-									<th>Fecha Inicio</th>
-									<th>Fecga Vencimiento</th>
+									<th>F. Inicio</th>
+									<th>F. Vencimiento</th>
 									<th>Estatus</th>
 									<th>Actividad Abierta</th>
 									<th>Acciones</th>

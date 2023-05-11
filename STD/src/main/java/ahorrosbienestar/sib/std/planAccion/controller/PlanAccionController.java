@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.planAccion.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
-import ahorrosbienestar.sib.std.folios.model.Folios;
 import ahorrosbienestar.sib.std.folios.model.Observaciones;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
-import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.planAccion.model.PlanAccion;
 import ahorrosbienestar.sib.std.planAccion.repository.IPlanAccionRepository;
 import ahorrosbienestar.sib.std.planAccion.service.PlanAccionService;
@@ -237,6 +236,49 @@ public class PlanAccionController {
 			return ResponseEntity.ok(respuesta);
 		}
 	
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/editarActividad", method = RequestMethod.GET)
+	public Optional<PlanAccion> cargarObservacion(@RequestParam(name = "idActividad") Integer idActividad ) {
+		try {
+			return iPlanAccionRepository.findById(idActividad);
+		} catch (Exception e) {
+			System.out.print(""+e.getMessage());
+			return null;
+		}
+		
+		
+	}
+	
+	//Modifcar una actividad del plan de accion.
+	@PostMapping("/modificarPA")
+	public ResponseEntity<?> modificarPA(
+			@RequestParam(name = "idActividad") Integer idActividad
+			,@RequestParam(name = "nombreActividad") String nombreActividad
+			,@RequestParam(name = "idEncargado") Integer idEncargado
+			,@RequestParam(name = "dtFechaInicio") String dtFechaInicio
+			,@RequestParam(name = "dtFechaVencimiento") String dtFechaVencimiento
+			){
+		
+		String mensaje ="Se actualizo registro correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario());
+			
+			respuesta.add(mensaje);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(""+e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
 	}
 	
 }
