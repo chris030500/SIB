@@ -113,6 +113,8 @@ public class PDFServidorRestController {
                 if (!directorio2.exists()) {
                 	System.out.println("Entro en if de no existe el directorio");
                     if ((directorio2).mkdirs()) {
+                    	String usuarioCarpeta = System.getProperty("user.name");
+                        System.out.println("Usuario creación de carpeta: " + usuarioCarpeta);
                     	directorio2.setReadable(true, false);
                     	directorio2.setWritable(true, false);
                     	directorio2.setExecutable(true, false);
