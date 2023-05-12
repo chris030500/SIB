@@ -119,11 +119,7 @@ public class PDFServidorRestController {
                     	String usuarioCarpeta = System.getProperty("user.name");
                         System.out.println("Usuario creación de carpeta: " + usuarioCarpeta);
                         
-//                        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
-//                        Files.setPosixFilePermissions(directorio2, permissions);
-//                    	directorio2.setReadable(true, false);
-//                    	directorio2.setWritable(true, false);
-//                    	directorio2.setExecutable(true, false);
+
                         FileAttribute<?> permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
                         Files.setPosixFilePermissions(directorio2.toPath(), PosixFilePermissions.fromString("rwxrwxrwx"));
                     	logger.info("Directorio"+ directorio2 +" creado correctamente");
