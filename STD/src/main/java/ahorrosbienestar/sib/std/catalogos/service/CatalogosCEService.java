@@ -16,6 +16,7 @@ import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaAreas;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaPuestos;
+import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
 
 @Service
 public class CatalogosCEService {
@@ -232,4 +233,43 @@ public class CatalogosCEService {
 		
 		}
 		
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
+		public List<SeguimientoActividadPA> obtSeguimientoxActividad(Integer i_actividad) {
+			logger.info("Ejecutando Busqueda de seguimiento: ");
+			try {
+				String sql = "SELECT t2.PK_ID_SEGUIMIENTO "
+						+ ",t1.VC_DESC_ACTIVIDAD "
+						+ ",t2.VC_DESC_SEGUIMIENTO "
+						+ ",t2.DT_FECHA_REGISTRO "
+						+ ",case t2.I_CONFIRMACION_RESPONSABLE "
+						+ "when 1 then 'SI' "
+						+ "when 2 then 'NO' END ESTATUS "
+						+ "FROM SIB.TBL_PLAN_ACCION t1 "
+						+ "inner join SIB.TBL_SEGUIMIENTO t2 on t1.PK_ID_PLANACCION = t2.I_PLANACCION "
+						+ "WHERE t1.PK_ID_PLANACCION = ?;";
+				System.out.print("sql"+sql);
+				List<SeguimientoActividadPA> ls = jdbcTemplate.query(sql, new Object[] {i_actividad}, new RowMapper<SeguimientoActividadPA>() {
+					public SeguimientoActividadPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						SeguimientoActividadPA e = new SeguimientoActividadPA();
+						
+						e.setId_seguimiento(rs.getInt(1));
+						e.setNombreActividad(rs.getString(2));
+						e.setDesc_actividad(rs.getString(3));
+						e.setDtFechaRegistro(rs.getString(4));
+						e.setEstatus(rs.getString(5));
+	
+						return e;
+					}
+				});
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+				return null;
+			}
+		
+		}
 }
