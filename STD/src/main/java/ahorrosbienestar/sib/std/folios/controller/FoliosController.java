@@ -254,6 +254,31 @@ public class FoliosController {
 				}
 			}
 			
+			//modificar una observacion metodo POST
+			@PostMapping("/modificarObservacion")
+			public ResponseEntity<?> modificarObservacion(
+					@RequestParam(name = "idObs") Integer idObservacion, 
+					@RequestParam(name = "idAreaAtencion") Integer idAreaAtencion, 
+					@RequestParam(name = "idResponsableAtencion") Integer idResponsableAtencion,
+					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
+					@RequestParam(name = "desObservacion") String desObservacion){
+				
+				String mensaje ="Actualizo Correctamente.";
+				ArrayList<String> respuesta = new ArrayList<String>();
+				try {
+					if(observacionService.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion) == 1) {
+						respuesta.add(mensaje);
+					}else {
+						respuesta.add("No se actualizo correctamente");
+					}
+					return ResponseEntity.ok(respuesta);
+				} catch (Exception e) {
+					respuesta.add(e.getMessage());
+					return ResponseEntity.ok(respuesta);
+				}
+			}
+			
+			
 			@ResponseBody
 			@RequestMapping(value = "/cargarFolio/{id}", method = RequestMethod.GET)
 			public Optional<Folios> caegarFolio(@PathVariable("id") Integer id) {

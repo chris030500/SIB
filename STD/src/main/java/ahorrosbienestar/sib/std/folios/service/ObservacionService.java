@@ -19,5 +19,11 @@ public class ObservacionService {
 	public Observaciones save(Observaciones altaObservacion) {
 		return iObservacionRepository.save(altaObservacion);
 	}
+
+	public int modObservacion(Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
+			String idFechaVencimiento, String desObservacion) {
+		
+		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion);
+	}
 	
 }

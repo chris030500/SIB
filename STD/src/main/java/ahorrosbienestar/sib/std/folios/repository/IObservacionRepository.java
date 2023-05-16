@@ -29,5 +29,11 @@ public interface IObservacionRepository  extends JpaRepository<Observaciones, In
 	@Transactional
 	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_CONFIRMA = 2, VC_DESCRIPCION_RECHAZO =:vc_motivo, DT_FECHA_CONFIRMACION =now() WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
 	public int rechazarObservacion(Integer idObservacion, String vc_motivo);
+
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_AREA=:idAreaAtencion,I_RESPONSABLE=:idResponsableAtencion,DT_FECHA_VENCIMIENTO=:idFechaVencimiento,VC_DESCRIPCION=:desObservacion WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
+	public int modObservacion(Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
+			String idFechaVencimiento, String desObservacion);
 	
 }

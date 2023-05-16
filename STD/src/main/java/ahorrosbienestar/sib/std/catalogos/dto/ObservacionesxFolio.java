@@ -10,6 +10,7 @@ public class ObservacionesxFolio {
 	private String vc_estatus;
 	private String vc_confirma;
 	private int i_confirma;
+	private String vc_desc_rechazo;
 	public int getPk_id_observacion() {
 		return pk_id_observacion;
 	}
@@ -63,6 +64,12 @@ public class ObservacionesxFolio {
 	}
 	public void setI_confirma(int i_confirma) {
 		this.i_confirma = i_confirma;
+	}
+	public String getVc_desc_rechazo() {
+		return vc_desc_rechazo;
+	}
+	public void setVc_desc_rechazo(String vc_desc_rechazo) {
+		this.vc_desc_rechazo = vc_desc_rechazo;
 	}
 	
 }

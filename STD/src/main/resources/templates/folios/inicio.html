@@ -74,8 +74,8 @@
 											th:onclick="'editarFolio(' + ${folio.pk_id_folio} + ')'" data-tooltip="Add">
 											<i class="bi bi-pencil-square"></i>
 										</button>
-										<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-											title="Mostrar Observaciones" data-bs-target="#"
+										<button class="btn btn-info" tabindex="0"
+											title="Mostrar Observaciones"
 											aria-controls="table-datatable" type="button" th:onclick="observaciones(this)"
 											data-tooltip="Add">
 											<i class="bi bi-ui-checks"></i>
@@ -102,6 +102,7 @@
 						<div class="col-md-4">
 							<label class="col-form-label"> Responsable de Atención:</label>
 							<select class="form-control" id="idResponsableAtencion">
+								<option value="0">Seleccione</option>
 							</select>
 						</div>
 						<div class="col-md-4">
@@ -118,11 +119,11 @@
 						</div>
 						<div class="col-md-2">
 							<br><br>
-							<button type="button" class="btn btn-primary form-control" data-dismiss="modal"
-								id="btnAgregar">Agregar</button>
+							<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
+						<input id="idObservacionSelect" name="idObservacionSelect" type="hidden" value="0">
 						<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservacion">
 							<thead>
 								<tr>
@@ -133,7 +134,8 @@
 									<th>Fecha de Vencimiento</th>
 									<th>Observaciones a Atender</th>
 									<th>Estatus</th>
-									<th>Confirmo</th>
+									<th>¿Confirmo Asignacion?</th>
+									<th>Descripcion Rechazo</th>
 									<th>Acciones</th>
 								</tr>
 							</thead>
