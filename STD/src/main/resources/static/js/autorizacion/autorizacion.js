@@ -73,7 +73,7 @@ function buscarSolicitudCredito(solicitudCredito) {
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				//console.log(respuesta);
+			console.log("Respuesta buscar solicitud: " + JSON.stringify(respuesta));
 				// console.log("buscar_solicitud");
 				if (respuesta == null || respuesta == '') {
 					//console.log("Error");

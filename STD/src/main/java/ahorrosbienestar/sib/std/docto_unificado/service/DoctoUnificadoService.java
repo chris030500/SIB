@@ -1,10 +1,12 @@
 package ahorrosbienestar.sib.std.docto_unificado.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.docto_unificado.model.DoctoUnificado;
@@ -36,6 +38,10 @@ public class DoctoUnificadoService {
 	//Metodo para buscar por solicitud de envio en TBL_DOCTO_UNIFICADO
 	public Optional<DoctoUnificado> findByFkIdSolicituEnvio(Integer idSolicitudEnvio){
 		return iDoctoUnificadoRepository.findByFkIdSolicituEnvio(idSolicitudEnvio);
+	}
+	
+	public List<DoctoUnificado> findPdfXml(Integer solicitudEnvio){
+		return iDoctoUnificadoRepository.findPdfXml(solicitudEnvio);
 	}
 	
 	
