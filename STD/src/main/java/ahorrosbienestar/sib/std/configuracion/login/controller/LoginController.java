@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,34 +33,34 @@ public class LoginController {
 	
 	protected final Log logger = LogFactory.getLog(this.getClass());
 	
-	@GetMapping("/login")
-	public String login(@RequestParam(value="error", required = false) String error,
-			Model model, Principal principal, RedirectAttributes flash) {
-		logger.info("Principal: " + principal);
-		//System.out.println("Principal: " + principal);
-		
-		if(principal != null) {
-			
-			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-//			System.out.println("Principal != null");
-			logger.info("Principal != null");
-			return "redirect:/";
-		}
-		
-		if(error != null) {
-			model.addAttribute("error", "Error en el inicio de sesión: "
-					+ "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-			logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-		}
-		
-//		if(logout != null) {
-//			model.addAttribute("success", "Has cerrado sesión con éxito");
-//		}
-		
-		//loginService.spActivarSesion(principal.getName());
-		return "login";
-	}
+    @GetMapping("/login")
+    public String login(@RequestParam(value="error", required = false) String error,
+            Model model, Principal principal, RedirectAttributes flash) {
+        logger.info("Principal: " + principal);
+        //System.out.println("Principal: " + principal);
+        
+        if(principal != null) {
+            
+            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
+            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
+//            System.out.println("Principal != null");
+            logger.info("Principal != null");
+            return "redirect:/";
+        }
+        
+        if(error != null) {
+            model.addAttribute("error", "Error en el inicio de sesión: "
+                    + "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+            logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+        }
+        
+//        if(logout != null) {
+//            model.addAttribute("success", "Has cerrado sesión con éxito");
+//        }
+        
+        //loginService.spActivarSesion(principal.getName());
+        return "login";
+    }
 	
 	@GetMapping("/cerrar")
 	public String cerrar(HttpServletRequest request, HttpServletResponse response) {
@@ -75,5 +76,7 @@ public class LoginController {
 		}
 		return "redirect:/";
 	}
+	
+	
 
 }

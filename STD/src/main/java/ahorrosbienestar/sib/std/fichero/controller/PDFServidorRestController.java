@@ -124,8 +124,8 @@ public class PDFServidorRestController {
 //                    	directorio2.setReadable(true, false);
 //                    	directorio2.setWritable(true, false);
 //                    	directorio2.setExecutable(true, false);
-                        FileAttribute<?> permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
-                        Files.setPosixFilePermissions(directorio2.toPath(), PosixFilePermissions.fromString("rwxrwxrwx"));
+//                        FileAttribute<?> permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
+//                        Files.setPosixFilePermissions(directorio2.toPath(), PosixFilePermissions.fromString("rwxrwxrwx"));
                     	logger.info("Directorio"+ directorio2 +" creado correctamente");
                         //System.out.println("Directorio creado");
                         Path nuevoPath = Paths.get(UrlPDFServidor() +clienteId + "/"+ clienteId+"-"+solicitudCredito+"-"+iDentificadorRuta+"/"+ file.getOriginalFilename());

@@ -157,13 +157,13 @@ public class UnirArchivosService {
 
 			doctoUnificadoService.save(doctoUnificado);
 
-			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
-			System.out.println("TotalHojas: " + totalHojas);
-			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoFinal));
-			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoXML));
-			System.out.println("Estatus: " + 1);
-			System.out.println("Usuario: " + usu.getPk_id_usuario());
-			System.out.println("Fecha de envio: " + localDateHoy);
+//			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
+//			System.out.println("TotalHojas: " + totalHojas);
+//			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoFinal));
+//			System.out.println("Ruta archivo PDF: " + (rutaArchivo + "/" + nombreArchivoXML));
+//			System.out.println("Estatus: " + 1);
+//			System.out.println("Usuario: " + usu.getPk_id_usuario());
+//			System.out.println("Fecha de envio: " + localDateHoy);
 
 			int totalHojas2 = 0;
 			for (int i = 0; i < documentos.size(); i++) {
@@ -198,13 +198,13 @@ public class UnirArchivosService {
 
 						firmaDoctoUnificadoService.save(fDoctoUnificado);
 
-						System.out.println("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
-						System.out.println("x1: " + x1);
-						System.out.println("x2: " + x2);
-						System.out.println("y1: " + y1);
-						System.out.println("y2: " + y2);
-						System.out.println("xCentral: " + xCentral);
-						System.out.println("yCentral: " + yCentral);
+//						System.out.println("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
+//						System.out.println("x1: " + x1);
+//						System.out.println("x2: " + x2);
+//						System.out.println("y1: " + y1);
+//						System.out.println("y2: " + y2);
+//						System.out.println("xCentral: " + xCentral);
+//						System.out.println("yCentral: " + yCentral);
 						// System.out.println("No Hoja: " + obtenerCoordDocts.get(j).getNo_hoja());
 						// System.out.println("Total hojas en segundo: " +
 						// obtenerCoordDocts.get(j).getTotal_hojas());
@@ -234,13 +234,13 @@ public class UnirArchivosService {
 			fDoctoUnificado.setF_coord_firma_y1(Float.parseFloat(y1HF)); // Lo consulta en BD
 			fDoctoUnificado.setF_coord_firma_y2(Float.parseFloat(y2HF)); // Lo consulta en BD
 			firmaDoctoUnificadoService.save(fDoctoUnificado);
-			System.out.println("xCentral: " + Float.parseFloat(xCentralHF));
-			System.out.println("yCentral: " + Float.parseFloat(yCentralHF));
-			System.out.println("x1: " + Float.parseFloat(x1HF));
-			System.out.println("x2: " + Float.parseFloat(x2HF));
-			System.out.println("y1: " + Float.parseFloat(y1HF));
-			System.out.println("y2: " + Float.parseFloat(y2HF));
-			System.out.println("TotalHojas:" + totalHojas);
+//			System.out.println("xCentral: " + Float.parseFloat(xCentralHF));
+//			System.out.println("yCentral: " + Float.parseFloat(yCentralHF));
+//			System.out.println("x1: " + Float.parseFloat(x1HF));
+//			System.out.println("x2: " + Float.parseFloat(x2HF));
+//			System.out.println("y1: " + Float.parseFloat(y1HF));
+//			System.out.println("y2: " + Float.parseFloat(y2HF));
+//			System.out.println("TotalHojas:" + totalHojas);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

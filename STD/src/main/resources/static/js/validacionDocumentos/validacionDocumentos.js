@@ -7,6 +7,8 @@ window.addEventListener("load", function() {
 	loader.classList.add("hide-loader");
 });
 
+const tiempoEspera = 60000;
+
 //Funcion que obtiene la url absoluta
 function getAbsolutePath() {
 	var loc = window.location;
@@ -156,6 +158,7 @@ function buscarSolicitudCredito() {
 				var tasaNormal = document.getElementById('tasaNormal');
 				var estatus = document.getElementById('estatus');
 				var Nombreproducto = document.getElementById('Nombreproducto');
+				var clienteId = document.getElementById('clienteId');
 				//var solicitudEnvio = document.getElementById('solicitudEnvio').value;
 				//$("#divSolicitudEnvio").hide();
 				producto.value = respuesta[0].productoCreditoID;
@@ -168,6 +171,7 @@ function buscarSolicitudCredito() {
 				traerParticipantes(solicitud);
 				obtenerArchivosSolicitud(solicitudEnvio);
 				datosSoliEnvio(solicitudEnvio);
+				clienteId.value = respuesta[0].clienteId;
 
 			}
 
@@ -186,7 +190,7 @@ function datosSoliEnvio(solicitudEnvio) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//console.log("respuesta: " + JSON.stringify(respuesta));
+			console.log("respuesta: " + JSON.stringify(respuesta));
 			//console.log("i_estatus: " + respuesta.i_estatus);
 			var estatus = respuesta.i_estatus;
 			if (estatus != 1) {
@@ -615,6 +619,7 @@ function validarArchivosSolicitud(estatusVoBo) {
 			if (estatusVoBo == 1) {
 				//console.log("Todos los archivos son correctos");
 				//console.log("Respuesta de solicitudEnvio/validacionArchivoSolicitud?: " + respuesta);
+				//validarArchivoPDFyXML(idSolicitud, respuesta);
 				obtenerParamWSAuten(respuesta, idSolicitud);
 			} else if (estatusVoBo == 2) {
 				//console.log("Existen archivos erroneos");
@@ -646,6 +651,69 @@ function validarArchivosSolicitud(estatusVoBo) {
 	});
 
 }
+
+function validarArchivoPDFyXML(idSolicitud, respuesta) {
+	var resValidacionArchivo = respuesta;
+	var soliEnvio = document.getElementById('solicitudEnvio').value;
+	console.log("soliEnvio:" + soliEnvio);
+	var solicitudCredito = document.getElementById('i_no_solicitud_core').value;
+	var clienteId = document.getElementById('clienteId').value;
+	console.log("solicitudCredito:" + solicitudCredito);
+	console.log("clienteId:" + clienteId);
+	$.ajax({
+		async: false,
+		url: newUrlBase + "archivos/validarArchivoPDFyXML?soliEnvio=" + soliEnvio + "&solicitudCredito=" + solicitudCredito + "&clienteId=" + clienteId,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var archivos = respuesta;
+			console.log("respuesta: " + JSON.stringify(archivos));
+			var archivosRequeridos = JSON.stringify(archivos);
+			const tiempoEspera = 60000;
+			function validarArchivos() {
+				const promesas = archivosRequeridos.map(archivo => {
+					return fetch(archivo)
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Archivo no encontrado');
+							}
+						})
+						.catch(error => {
+							throw error;
+						});
+				});
+
+				return Promise.all(promesas)
+					.then(() => true)
+					.catch(() => false);
+			}
+
+			function esperarYValidarArchivos() {
+				validarArchivos()
+					.then(archivosValidos => {
+						if (!archivosValidos) {
+							console.log('Algunos archivos no existen. Esperando ' + tiempoEspera + ' milisegundos...');
+							setTimeout(esperarYValidarArchivos, tiempoEspera);
+						} else {
+							console.log('Todos los archivos existen.');
+							obtenerParamWSAuten(resValidacionArchivo, idSolicitud);
+							
+						}
+					})
+					.catch(error => {
+						console.error('Error al validar archivos:', error);
+					});
+			}
+
+			esperarYValidarArchivos();
+		},
+		error: function(respuesta) {
+
+		}
+	});
+}
+
+
 
 //Funcion para validar la solicitud de envio
 function validarSoliEnvio(estatus, idSolicitud, idConfWS, jsonEnvio, respuestaAuth, banderaRespuesta, token, estatusVoBo) {

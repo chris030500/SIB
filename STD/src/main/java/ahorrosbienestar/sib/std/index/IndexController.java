@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,6 +75,9 @@ public class IndexController {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String nombreUsuario = auth.getName();
+		Usuario usuario = usuarioService.findByNombre(nombreUsuario);
+		int estatus = usuario.getI_estatus_sesion();
+		System.out.println("Estatus: " + estatus);
 		if (auth != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(auth.getName()));
 			loginService.spActivarSesion(nombreUsuario);
@@ -88,7 +92,7 @@ public class IndexController {
 				return "redirect:/cambio_contrasena";
 			}
 			logger.info("Ingreso al sistema");
-		}
+		} 
 
 //		logger.info("Cambia el estatus de sesión a activo (1)");
 		// System.out.println("Puede acceder al sistema");
