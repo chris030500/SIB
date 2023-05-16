@@ -15,7 +15,9 @@ import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaAreas;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
+import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaPuestos;
+import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
 
 @Service
@@ -238,6 +240,53 @@ public class CatalogosCEService {
 		 * @param areaID
 		 * @return
 		 */
+		public List<ActividadesPA> buscarActividadesxObservacion(Integer i_observacion) {
+			logger.info("buscar actividades observacion: ");
+			try {
+				String sql = "select t1.PK_ID_PLANACCION,t1.VC_DESC_ACTIVIDAD "
+						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
+						+ ",t1.DT_FECHA_INICIO,t1.DT_FECHA_VENCIMIENTO,t3.V_VALOR "
+						+ ",t1.I_CONFIRMACION_ENCARGADO,t4.V_VALOR as encargado "
+						+ ",t1.I_CONFIRMACION_RESPONSABLE,t5.V_VALOR as responsable "
+						+ "FROM SIB.TBL_PLAN_ACCION t1 "
+						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.EmpleadoID = t1.I_RESPONSABLE "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t3 on t3.I_OPCION = t1.I_ESTATUS and t3.I_ID_GRUPO = 6 "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_CONFIRMACION_ENCARGADO and t4.I_ID_GRUPO = 8 "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMACION_RESPONSABLE and t5.I_ID_GRUPO = 8 "
+						+ "where t1.I_OBSERVACION = ?;";
+						
+				System.out.print("sql"+sql);
+				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_observacion}, new RowMapper<ActividadesPA>() {
+					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ActividadesPA e = new ActividadesPA();
+						
+						e.setId_planaccion(rs.getInt(1));
+						e.setNombreActividad(rs.getString(2));
+						e.setNombreResponsable(rs.getString(3));
+						e.setDtFechaInicio(rs.getString(4));
+						e.setDtFechaVencimiento(rs.getString(5));
+						e.setEstatus(rs.getString(6));
+						e.setI_confirmacion_encargado(rs.getInt(7));
+						e.setVc_estatus_encargado(rs.getString(8));
+						e.setI_confirmacion_responsable(rs.getInt(9));
+						e.setVc_estatus_responsable(rs.getString(10));
+						
+						return e;
+					}
+				});
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+				return null;
+			}
+		
+		}
+		
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
 		public List<SeguimientoActividadPA> obtSeguimientoxActividad(Integer i_actividad) {
 			logger.info("Ejecutando Busqueda de seguimiento: ");
 			try {
@@ -272,4 +321,130 @@ public class CatalogosCEService {
 			}
 		
 		}
+		
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
+		public List<ListaFolios> obtFolios() {
+			logger.info("Ejecutando busqueda de folio: ");
+			try {
+				String sql = "SELECT t1.PK_ID_FOLIO "
+						+ ",t1.I_FOLIO,t1.VC_ASUNTO,t1.DT_FECHA_RECEPCION,t1.DT_FECHA_REGISTRO "
+						+ ",t1.DT_FECHA_VENCIMIENTO,t2.V_VALOR,t3.V_VALOR,t4.V_VALOR "
+						+ "FROM SIB.TBL_FOLIOS t1 "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t2 on t2.I_OPCION = t1.I_ESTATUS and t2.I_ID_GRUPO = 6 "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t3 on t3.I_OPCION = t1.I_TIPO_OFICIO and t3.I_ID_GRUPO = 4 "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ORGANO_EMITE and t4.I_ID_GRUPO = 5";
+				System.out.print("sql"+sql);
+				List<ListaFolios> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ListaFolios>() {
+					public ListaFolios mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ListaFolios e = new ListaFolios();
+						
+						e.setPk_id_folio(rs.getInt(1));
+						e.setI_folio(rs.getInt(2));
+						e.setVc_asunto(rs.getString(3));
+						e.setDt_fecha_recepcion(rs.getString(4));
+						e.setDt_fecha_registro(rs.getString(5));
+						e.setDt_fecha_vencimiento(rs.getString(6));
+						e.setVc_estatus(rs.getString(7));
+						e.setVc_tipo_oficio(rs.getString(8));
+						e.setVc_organo_emite(rs.getString(9));
+							
+						return e;
+					}
+				});
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+				return null;
+			}
+		
+		}
+
+		/**
+		 * 
+		 * @param idFolio
+		 * @return
+		 */
+		public List<ObservacionesxFolio> obtObservaciones(Integer idFolio) {
+			logger.info("Ejecutando busqueda de folio: ");
+			try {
+				String sql = "SELECT t1.PK_ID_OBSERVACION,t3.VC_DESCRIPCION as area "
+						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
+						+ ",t1.DT_FECHA_ASGINACION,t1.DT_FECHA_VENCIMIENTO,t1.VC_DESCRIPCION,t4.V_VALOR,t5.V_VALOR,t1.I_CONFIRMA "
+						+ "FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
+						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.empleadoID = t1.I_RESPONSABLE "
+						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ESTATUS and t4.I_ID_GRUPO = 6 "
+						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
+						+ "where t1.I_FOLIO = ? "
+						+ "order by 1;";
+				System.out.println("sql--"+sql);
+				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio}, new RowMapper<ObservacionesxFolio>() {
+					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObservacionesxFolio e = new ObservacionesxFolio();
+						
+						e.setPk_id_observacion(rs.getInt(1));
+						e.setVc_area(rs.getString(2));
+						e.setVc_responsable(rs.getString(3));
+						e.setDt_fecha_asignacion(rs.getString(4));
+						e.setDt_fecha_vencimiento(rs.getString(5));
+						e.setVc_descripcion(rs.getString(6));
+						e.setVc_estatus(rs.getString(7));
+						e.setVc_confirma(rs.getString(8));
+						e.setI_confirma(rs.getInt(9));
+						return e;
+					}
+				});
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+				return null;
+			}
+		}
+		
+		/**
+		 * 
+		 * @param idFolio
+		 * @return
+		 */
+		public List<ObservacionesxFolio> obtObservacionesxEmpleado(Integer idempleado,Integer idFolio) {
+			logger.info("Ejecutando busqueda de folio: ");
+			try {
+				String sql = "SELECT t1.PK_ID_OBSERVACION,t3.VC_DESCRIPCION as area "
+						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
+						+ ",t1.DT_FECHA_ASGINACION,t1.DT_FECHA_VENCIMIENTO,t1.VC_DESCRIPCION,t4.V_VALOR,t5.V_VALOR,t1.I_CONFIRMA "
+						+ "FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
+						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.empleadoID = t1.I_RESPONSABLE "
+						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
+						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ESTATUS and t4.I_ID_GRUPO = 6 "
+						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
+						+ "where t1.I_FOLIO = ? and I_RESPONSABLE = ? AND t1.I_CONFIRMA in (0,1) "
+						+ "order by 1;";
+				System.out.println("sql--"+sql);
+				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio,idempleado}, new RowMapper<ObservacionesxFolio>() {
+					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ObservacionesxFolio e = new ObservacionesxFolio();
+						
+						e.setPk_id_observacion(rs.getInt(1));
+						e.setVc_area(rs.getString(2));
+						e.setVc_responsable(rs.getString(3));
+						e.setDt_fecha_asignacion(rs.getString(4));
+						e.setDt_fecha_vencimiento(rs.getString(5));
+						e.setVc_descripcion(rs.getString(6));
+						e.setVc_estatus(rs.getString(7));
+						e.setVc_confirma(rs.getString(8));
+						e.setI_confirma(rs.getInt(9));
+						return e;
+					}
+				});
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+				return null;
+			}
+		}
+		
 }

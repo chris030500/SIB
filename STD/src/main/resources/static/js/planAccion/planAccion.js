@@ -295,10 +295,9 @@ function pintartblObservaciones() {
 				+ " </button>";
 			console.log("" + botonesAceptado);
 			console.log("" + botonesAsignacion);
-			tblObservaciones.row.add([opt.pk_id_observacion, opt.i_area, opt.i_responsable,
-			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.i_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
-
-
+			tblObservaciones.row.add([opt.pk_id_observacion, opt.vc_area, opt.vc_responsable,
+			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
+			tblObservaciones.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
 	});
@@ -342,14 +341,14 @@ function obtenerActPlanAccion(url) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Editar Observacion' type='button'"
 				+ " onclick='editarActividad("
-				+ opt.pk_id_planaccion
+				+ opt.id_planaccion
 				+ ")' id="
-				+ opt.pk_id_planaccion
+				+ opt.id_planaccion
 				+ " >"
 				+ " <i class='bi bi-pencil-square'></i>";
-			tblPlanAccion.row.add([opt.pk_id_planaccion, opt.vc_desc_actividad, opt.i_responsable,
-			opt.dt_fecha_inicio, opt.dt_fecha_vencimiento, opt.i_estatus,opt.i_confirmacion_encargado, botones]).draw(false);
-			
+			tblPlanAccion.row.add([opt.id_planaccion, opt.nombreActividad, opt.nombreResponsable,
+			opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus,opt.vc_estatus_encargado, botones]).draw(false);
+			tblPlanAccion.column(0).visible(false);
 		});
 	});
 	/*

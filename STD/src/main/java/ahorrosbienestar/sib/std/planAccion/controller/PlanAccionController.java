@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
+import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.folios.model.Observaciones;
@@ -141,7 +143,7 @@ public class PlanAccionController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
-	public List<Observaciones> listaObservaciones(@RequestParam("idFolio") Integer idFolio, Model model) {
+	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, Model model) {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -149,8 +151,8 @@ public class PlanAccionController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-
-			return iObservacionRepository.findAllxEmpleado(usuario.get(0).getI_id_empleado(),idFolio);
+			
+			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio);
 			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -181,10 +183,12 @@ public class PlanAccionController {
 	 * @return
 	 */
 	@GetMapping("/buscarActividadesPlan")
-	public ResponseEntity<List<PlanAccion>> buscarActividadesPlan(@RequestParam("idObservacion") Integer idObservacion,Model model) {
+	public ResponseEntity<List<ActividadesPA>> buscarActividadesPlan(@RequestParam("idObservacion") Integer idObservacion,Model model) {
 		
 		try {
-			return ResponseEntity.ok(iPlanAccionRepository.findAllActividades(idObservacion));
+			return ResponseEntity.ok(catalogosCEService.buscarActividadesxObservacion(idObservacion));
+					
+					
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;

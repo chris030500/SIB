@@ -1,15 +1,11 @@
-/*var altaRoles = "altaRoles?nombreRol=";
-var updateRoles = "updateRoles?idRol=";
-var cargarRolEditar = "cargarRol/";
-var modificarRoles = "modificarRoles?idRol=";
-var inicio = "index";
-*/
 var folioID; 
 var puesto = "buscarPuesto?empleadoID=";
 var buscarxArea = "busquedaxArea?areaID=";
 var altaFolio = "altaFolio?noficio=";
 var buscarObservaciones = "buscarObservaciones?idFolio=";
 var datosFolio = "cargarFolio/";
+var modFolio = "modificarFolio?noficio="
+var inicio = "folio";
 
 
 
@@ -22,8 +18,12 @@ function eventosModal(){
 	$("#btnRegistrar").click(function() {
 		
 		if(guardarVacio() == false){
-			iniciarCampos();
-			guardarFolio();
+			//iniciarCampos();
+			if(document.getElementById("idFolioSelec").value == 0){
+				guardarFolio(1);
+			}else{
+				guardarFolio(2);
+			}
 		}else{
 			swal({
 					title:"Error",
@@ -33,7 +33,7 @@ function eventosModal(){
 		}
 	});
 	$("#btnCancelar").click(function() {
-		 iniciarCampos();
+		 //iniciarCampos();
 		 limpiarDatosFolio();
 		$("#modalFolio").modal("hide");
 	});
@@ -50,7 +50,7 @@ var areaID;
 var responsableID;
 var fechaVencimiento;
 var desObservacion;
-var altaObservaciones = "altaObservacion?idAreaAtencion="
+var altaObservaciones = "altaObservacion?idAreaAtencion=";
 function tblObservacionesLoad(){
 	var areaID = document.getElementById("idAreaAtencion").value;
 	var responsableID ="&idResponsableAtencion="+ document.getElementById("idResponsableAtencion").value;
@@ -64,27 +64,39 @@ function tblObservacionesLoad(){
 
 
 
-function guardarFolio(){
-
-	var noFicio = document.getElementById("noficio").value;
-	var idRecepcion = "&dt_recepcion="+document.getElementById("idRecepcion").value;
-	var idAsunto = "&vc_asunto="+document.getElementById("idAsunto").value;
-	var idDirigido = "&i_dirigido="+document.getElementById("idDirigido").value;
-	var iPuesto = "&vc_puesto="+document.getElementById("iPuesto").value;
-	var idTipoOficio = "&i_tipo_oficio="+document.getElementById("idTipoOficio").value;
-	var idOrganoEmite = "&i_organo_emite="+document.getElementById("idOrganoEmite").value;
-	var idFechaRegistro = "&dt_registro="+document.getElementById("idFechaRegistro").value;
-	var idPlazo = "&i_Plazo="+document.getElementById("idPlazo").value;
-	var idVencimiento = "&dt_Vencimiento="+document.getElementById("idVencimiento").value;
-	var idEstatusOficio = "&i_estatus="+document.getElementById("idEstatusOficio").value;
-	var idRutaOficio = "&vc_ruta="+"C:";
+function guardarFolio(proceso){
+	var urlServicio ="";
+	switch(proceso){
+		case 1:
+			urlServicio = getAbsolutePath() + altaFolio;
+		break;
+		case 2:
+			urlServicio = getAbsolutePath() + modFolio;
+		break;
+		default:
+			urlServicio = getAbsolutePath() + inicio;
+		break; 
+	}
+	urlServicio = urlServicio + document.getElementById("noficio").value;
+	urlServicio = urlServicio + "&dt_recepcion="+document.getElementById("idRecepcion").value;
+	urlServicio = urlServicio + "&vc_asunto="+document.getElementById("idAsunto").value;
+	urlServicio = urlServicio + "&i_dirigido="+document.getElementById("idDirigido").value;
+	urlServicio = urlServicio + "&vc_puesto="+document.getElementById("iPuesto").value;
+	urlServicio = urlServicio + "&i_tipo_oficio="+document.getElementById("idTipoOficio").value;
+	urlServicio = urlServicio + "&i_organo_emite="+document.getElementById("idOrganoEmite").value;
+	urlServicio = urlServicio + "&dt_registro="+document.getElementById("idFechaRegistro").value;
+	urlServicio = urlServicio + "&i_Plazo="+document.getElementById("idPlazo").value;
+	urlServicio = urlServicio + "&dt_Vencimiento="+document.getElementById("idVencimiento").value;
+	urlServicio = urlServicio + "&i_estatus="+document.getElementById("idEstatusOficio").value;
+	urlServicio = urlServicio + "&vc_ruta="+"C:";
 	//document.getElementById("idRutaOficio").value;
 	
-	var urlServicio = getAbsolutePath() + altaFolio+noFicio+idRecepcion+idAsunto+idDirigido
-	    +iPuesto+idTipoOficio+idOrganoEmite+idFechaRegistro+idPlazo+idVencimiento+idEstatusOficio+idRutaOficio;
+	//var urlServicio = getAbsolutePath() + altaFolio+noFicio+idRecepcion+idAsunto+idDirigido
+	   // +iPuesto+idTipoOficio+idOrganoEmite+idFechaRegistro+idPlazo+idVencimiento+idEstatusOficio+idRutaOficio;
 	
-	$("#modalFolio").hide();
+
 	peticionPost(urlServicio,1,0);
+	$("#modalFolio").hide();
 }
 
 function peticionPost(urlServicio,num,numFolio){
@@ -105,12 +117,16 @@ function peticionPost(urlServicio,num,numFolio){
 						icon: "success",
 						confirmButtonText: 'Aceptar'
 					}).then(resp => {
+						
 						if(num == 2){
-								//obtener registros y cargar datos en tabla observaciones
-								var url = getAbsolutePath()+buscarObservaciones+numFolio;
-								obtenerDatostblObservaciones(url);
+							//obtener registros y cargar datos en tabla observaciones
+							var url = getAbsolutePath()+buscarObservaciones+numFolio;
+							obtenerDatostblObservaciones(url);
+						}else if(num == 1){
+							//cargar datos de la tabla de folios
+							document.getElementById("idFolioSelec").value == 0;
+							window.location.href = getAbsolutePath()+inicio;
 						}
-						//window.location.href = getAbsolutePath()+inicio;
 					});
 					
 
@@ -124,82 +140,93 @@ function peticionPost(urlServicio,num,numFolio){
 			});
 }
 
-function iniciarCampos(){
-	document.getElementById("noficio").style.borderColor = '';
-	document.getElementById("idRecepcion").style.borderColor = '';
-	document.getElementById("idAsunto").style.borderColor = '';
-	document.getElementById("idDirigido").style.borderColor = '';
-	document.getElementById("iPuesto").style.borderColor = '';
-	document.getElementById("idTipoOficio").style.borderColor = '';
-	document.getElementById("idOrganoEmite").style.borderColor = '';
-	document.getElementById("idFechaRegistro").style.borderColor = '';
-	document.getElementById("idPlazo").style.borderColor = '';
-	document.getElementById("idVencimiento").style.borderColor = '';
-	document.getElementById("idEstatusOficio").style.borderColor = '';
-	document.getElementById("idRutaOficio").style.borderColor = '';
-}
-
-
 function guardarVacio(){
 	var validacion = false;
-	
-	iniciarCampos();
-	/*if(document.getElementById("idUnico").value.length == 0){
-		document.getElementById("idUnico").style.borderColor = "#F70707";
-		validacion = true;
-	}*/
-	
+		
 	if(document.getElementById("noficio").value.length == 0){
 		document.getElementById("noficio").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("noficio").style.borderColor = '';
+		validacion = false;
 	}
 	
 	if(document.getElementById("idRecepcion").value.length == 0){
 		document.getElementById("idRecepcion").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idRecepcion").style.borderColor = '';
+		validacion = false;
 	}
-	
 	if(document.getElementById("idAsunto").value.length == 0){
 		document.getElementById("idAsunto").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idAsunto").style.borderColor = '';
+		validacion = false;
 	}
+		
 	if(document.getElementById("idDirigido").value.length == 0){
 		document.getElementById("idDirigido").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idDirigido").style.borderColor = '';
+		validacion = false;
 	}
+	
 	if(document.getElementById("iPuesto").value.length == 0){
 		document.getElementById("iPuesto").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("iPuesto").style.borderColor = '';
+		validacion = false;
 	}
 	if(document.getElementById("idTipoOficio").value.length == 0){
 		document.getElementById("idTipoOficio").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idTipoOficio").style.borderColor = '';
+		validacion = false;
 	}
+	
 	if(document.getElementById("idOrganoEmite").value.length == 0){
 		document.getElementById("idOrganoEmite").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idOrganoEmite").style.borderColor = '';
+		validacion = false;
 	}
+	
 	if(document.getElementById("idFechaRegistro").value.length == 0){
 		document.getElementById("idFechaRegistro").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idFechaRegistro").style.borderColor = '';
+		validacion = false;
 	}
+	
 	if(document.getElementById("idPlazo").value.length == 0){
 		document.getElementById("idPlazo").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idPlazo").style.borderColor = '';
+		validacion = false;
 	}
+	
 	if(document.getElementById("idVencimiento").value.length == 0){
 		document.getElementById("idVencimiento").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idVencimiento").style.borderColor = '';
+		validacion = false;
 	}
 	if(document.getElementById("idEstatusOficio").value.length == 0){
 		document.getElementById("idEstatusOficio").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idEstatusOficio").style.borderColor = '';
+		validacion = false;
 	}
-	/*if(document.getElementById("idRutaOficio").value.length == 0){
-		document.getElementById("idRutaOficio").style.borderColor = "#F70707";
-		validacion = true;
-	}*/
-	
 	
 	return validacion;
 }
@@ -216,18 +243,7 @@ function obtenerPuesto(idEmpleado){
 function obtEmpleadoArea(idArea){
 	console.log(idArea.value);
 	var buscarEmpleados = getAbsolutePath()+ buscarxArea+idArea.value;
-	listaResponsable(buscarEmpleados);
-	/*$.getJSON(buscarEmpleados, {}, function(data) {
-		$("#idResponsableAtencion").empty();
-			$.each(data, function(idx, opt) {
-				var opciones = "<option value="+opt.empleadoID+" text="+opt.nombreCompleto+" >"+opt.nombreCompleto+"</opcion>";
-				$('#idResponsableAtencion').append(opciones);
-
-			});
-		
-		$('#iPuesto').val(data[0].descripcionPuesto);
-	});*/
-	
+	listaResponsable(buscarEmpleados);	
 }
 function listaResponsable(url){
 		$.getJSON(url, {}, function(data) {
@@ -254,13 +270,7 @@ function obtenerDatostblObservaciones(url){
 		setTimeout($.unblockUI, 500); 
 		tblObservacion.clear().draw();
 		$.each(data, function(idx, opt) {
-				var botones ="<button class='btn btn-info' tabindex='0'"
-						+ " title='Actualizar Estatus'type='button'"
-						+ " onclick='estatusObservacion(this)' id="
-						+ opt.pk_id_observacion 
-						+" data-tooltip='Add' >"
-						+ " <i class='bi bi-bookmark-x-fill'></i>"
-						+ " <button class='btn btn-info' tabindex='0'"
+				var botones =" <button class='btn btn-info' tabindex='0'"
 						+ " title='Editar Observacion' type='button'"
 						+ " onclick='editarObservacion("
 						+ opt.pk_id_observacion
@@ -268,9 +278,12 @@ function obtenerDatostblObservaciones(url){
 						+ opt.pk_id_observacion 
 						+" >"
 						+ " <i class='bi bi-pencil-square'></i>";
-						tblObservacion.row.add([opt.pk_id_observacion,opt.i_area,opt.i_responsable,
-						opt.dt_fecha_asignacion,opt.dt_fecha_vencimiento,opt.vc_descripcion,opt.i_estatus,botones]).draw(false);
+						tblObservacion.row.add([opt.pk_id_observacion,opt.vc_area,opt.vc_responsable,
+						opt.dt_fecha_asignacion,opt.dt_fecha_vencimiento,opt.vc_descripcion,opt.vc_estatus,opt.vc_confirma,botones]).draw(false);
+						tblObservacion.column(0).visible(false);
 		});
+		
+		
 	});
 }
 
@@ -280,8 +293,10 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 var tblObservacion;
+var tblOficio;
 function inicioTabla(){
-	$("#tblOficio").DataTable({
+
+tblOficio=$("#tblOficio").DataTable({
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
         },
@@ -303,6 +318,9 @@ tblObservacion = $("#tblObservacion").DataTable({
 	});
 }
 function editarFolio(id){
+	
+	document.getElementById("idFolioSelec").value = id;
+	
 	var url = getAbsolutePath() + datosFolio+id;
 	obtenerFolio(url);
 }
@@ -324,7 +342,7 @@ function cargarDatos(data) {
 	document.getElementById("idTipoOficio").value = data.i_tipo_oficio;
 	document.getElementById("idOrganoEmite").value = data.i_organo_emite;
 	document.getElementById("idFechaRegistro").value = data.dt_fecha_registro;
-	document.getElementById("idPlazo").value = data.dt_fecha_registro;
+	document.getElementById("idPlazo").value = data.i_plazo_atencion;
 	document.getElementById("idVencimiento").value = data.dt_fecha_vencimiento;
 	document.getElementById("idEstatusOficio").value = data.i_estatus;
 	//document.getElementById("idRutaOficio").value = data.vc_ruta_oficio;

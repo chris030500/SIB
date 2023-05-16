@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.folios.model.Folios;
@@ -72,7 +73,7 @@ public class FoliosController {
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
 			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
 			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
-			model.addAttribute("lista_folios",folioService.findAll());
+			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
 			return "folios/inicio";
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -163,17 +164,51 @@ public class FoliosController {
 				}
 				return null;
 			}
-				
+			
+			//Dar de alta un rol utilizando metodo POST
+			@PostMapping("/modificarFolio")
+			public ResponseEntity<?> modificarFolio(
+					@RequestParam(name = "noficio") Integer noficio, 
+					@RequestParam(name = "dt_recepcion") String dt_recepcion,
+					@RequestParam(name = "vc_asunto") String vc_asunto,
+					@RequestParam(name = "i_dirigido") Integer i_dirigido,
+					@RequestParam(name = "vc_puesto") String vc_puesto,
+					@RequestParam(name = "i_tipo_oficio") Integer i_tipo_oficio,
+					@RequestParam(name = "i_organo_emite") Integer i_organo_emite,
+					@RequestParam(name = "dt_registro") String dt_registro,
+					@RequestParam(name = "i_Plazo") Integer i_Plazo,
+					@RequestParam(name = "dt_Vencimiento") String dt_Vencimiento,
+					@RequestParam(name = "i_estatus") Integer i_estatus,
+					@RequestParam(name = "vc_ruta") String vc_ruta
+					){
+				String mensaje ="Registro Correctamente.";
+				ArrayList<String> respuesta = new ArrayList<String>();
+				try {
+					
+					if(folioService.modFolio(noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta) == 1) {
+						respuesta.add(mensaje);
+					}else {
+						respuesta.add("No se actualizo correctamente");
+					}
+					
+					return ResponseEntity.ok(respuesta);
+				} catch (Exception e) {
+					System.out.println(""+e.getMessage());
+					return null;
+				}
+			}
+			
+			
 			/**
 			 * observaciones por folio
 			 * @param model
 			 * @return
 			 */
 			@GetMapping("/buscarObservaciones")
-			public ResponseEntity<List<Observaciones>> buscarObservaciones(@RequestParam("idFolio") Integer idFolio,Model model) {
+			public ResponseEntity<List<ObservacionesxFolio>> buscarObservaciones(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
-					return ResponseEntity.ok(iObservacionRepository.findAllFolio(idFolio));
+					return ResponseEntity.ok(catalogosCEService.obtObservaciones(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
 					return null;
