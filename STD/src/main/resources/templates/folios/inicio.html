@@ -107,8 +107,7 @@
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Vencimiento:</label>
-							<input class="form-control" type="date" id="idFechaVencimiento"
-								placeholder="Fecha de Vencimiento">
+							<input class="form-control" type="date" id="idFechaVencimiento" for="fechaVObservacion" max="">
 						</div>
 					</div>
 					<div class="row">
@@ -166,7 +165,7 @@
 									<div class="col-md-4">
 										<label class="col-form-label"> Fecha de Recepción:</label>
 										<input class="form-control" type="date" id="idRecepcion"
-											placeholder="Fecha de Recepción">
+											placeholder="Fecha de Recepción" max="hoy" for="fechaActual">
 									</div>
 									<div class="col-md-4">
 										<label class="col-form-label"> Asunto:</label>
@@ -215,12 +214,12 @@
 									<div class="col-md-4">
 										<label class="col-form-label"> Fecha de Registro:</label>
 										<input class="form-control" type="date" id="idFechaRegistro"
-											placeholder="Fecha de Registro">
+											min="hoy" value="">
 									</div>
 									<div class="col-md-4">
 										<label class="col-form-label"> Plazo de Atención (dias habiles): </label>
-										<input class="form-control" type="text" id="idPlazo"
-											placeholder="Plazo de Atención">
+										<input class="form-control" type="number" id="idPlazo"
+											placeholder="Plazo de Atención" onchange="calcularVencimiento()" min="1">
 									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
@@ -228,7 +227,7 @@
 									<div class="col-md-4">
 										<label class="col-form-label"> Fecha de Vencimiento:</label>
 										<input class="form-control" type="date" id="idVencimiento"
-											placeholder="Fecha de Vencimiento">
+											placeholder="Fecha de Vencimiento" for="vencimientoFolio">
 									</div>
 									<div class="col-md-4">
 										<label class="col-form-label"> Estatus del Oficio:</label>
