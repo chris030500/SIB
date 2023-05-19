@@ -82,6 +82,7 @@
 			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
+					<hr><h4 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblSeleccion"></h4>
 					<div class="row" style="margin-top : 15px ">
 						<input id="idAct" name="idAct" type="hidden" value="0">
 						<div class="col-md-6">
@@ -102,11 +103,11 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Inicio</label>
-							<input class="form-control" type="date" id="dtFechaInicio" placeholder="No. de Oficio">
+							<input class="form-control" type="date" id="dtFechaInicio" for="fechaInicio" min="fechaInicio" max="fechaVencimiento">
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Fecha Vencimiento</label>
-							<input class="form-control" type="date" id="dtFechaVencimiento" placeholder="Asunto">
+							<input class="form-control" type="date" id="dtFechaVencimiento" for="fechaVencimiento" min="fechaInicio" max="fechaVencimiento">
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Estatus</label>

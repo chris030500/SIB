@@ -67,8 +67,8 @@ function iniciarDtosActividad(){
 	document.getElementById("idAct").value = 0;
 	document.getElementById("idNombreActividad").value = "";
 	document.getElementById("idEncargadoActividad").value = 0;
-	document.getElementById("dtFechaInicio").value = "";
-	document.getElementById("dtFechaVencimiento").value = "";
+	document.getElementById("dtFechaInicio").value = dtInicio;
+	document.getElementById("dtFechaVencimiento").value = dtVencimiento;
 	document.getElementById("idEstatus").value = 0;
 }
 
@@ -91,7 +91,7 @@ function peticionPost(urlServicio) {
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
 				iniciarDtosActividad();
-				obtActividades(obsId);
+				tblActividadesPA(obsId);
 			});
 
 
@@ -200,7 +200,6 @@ function koObservacion(btnID) {
 }
 
 function okObservacion(btnID) {
-	console.log("" + btnID);
 	var idObservacion = btnID;
 	var estatus = 1;
 	var descripcion = "";
@@ -272,9 +271,7 @@ function pintartblObservaciones() {
 			var botonesAsignacion = "";
 			botonesAceptado = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Registrar Actividad PA' type='button'"
-				+ " onclick='obtActividades("
-				+ opt.pk_id_observacion
-				+ ")' id="
+				+ " onclick='obtActividades(this)' id="
 				+ opt.pk_id_observacion
 				+ " >"
 				+ " <i class='bi bi-ui-checks'></i>";
@@ -293,8 +290,6 @@ function pintartblObservaciones() {
 				+ ")' >"
 				+ " <i class='bi bi-x-circle-fill'></i>"
 				+ " </button>";
-			console.log("" + botonesAceptado);
-			console.log("" + botonesAsignacion);
 			tblObservaciones.row.add([opt.pk_id_observacion, opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
 			tblObservaciones.column(0).visible(false);
@@ -305,7 +300,6 @@ function pintartblObservaciones() {
 
 function verDetalle(idFolio) {
 	if(idFolio.value > 0){
-		console.log(idFolio.value);
 		$.blockUI({ message: 'Espere un momento...' });
 		var urlServicio = getAbsolutePath() + buscarFolio + idFolio.value;
 		$.getJSON(urlServicio, {}, function(data) {
@@ -325,14 +319,44 @@ function verDetalle(idFolio) {
 	}
 }
 
+function tblActividadesPA(id){
+	var urlServicio = getAbsolutePath() + buscarActividades + id;
+	obtenerActPlanAccion(urlServicio);	
+}
+
 function obtActividades(idObs) {
-	obsId = idObs;
-	var urlServicio = getAbsolutePath() + buscarActividades + idObs;
+	document.querySelector('#lblSeleccion').innerText = $(idObs).parents("tr").find("td").eq(4).html();
+	obsId = $(idObs).attr("id");
+	var urlServicio = getAbsolutePath() + buscarActividades + obsId;
 	obtenerActPlanAccion(urlServicio);
+	
+	asignarFechasObservacion($(idObs).parents("tr").find("td").eq(2).html(),$(idObs).parents("tr").find("td").eq(3).html());
+}
+
+var dtInicio;
+var dtVencimiento;
+function asignarFechasObservacion(fecha1, fecha2){
+	var fechaInicio = new Date(fecha1.replaceAll("-", "/")).toISOString().substring(0, 10);
+	var fechaVencimiento = new Date(fecha2.replaceAll("-", "/")).toISOString().substring(0, 10);
+	
+	document.querySelectorAll("input[type='date'][min='fechaInicio']")
+		.forEach(elemento => {
+			/* A cada elemento encontrado le asignamos el atributo "min" */
+			elemento.min = fechaInicio;
+			document.getElementById("dtFechaInicio").value = fechaInicio;
+	});
+	dtInicio = fechaInicio;
+	
+	document.querySelectorAll("input[type='date'][max='fechaVencimiento']")
+		.forEach(elemento => {
+			/* A cada elemento encontrado le asignamos el atributo "min" */
+			elemento.max = fechaVencimiento;
+			document.getElementById("dtFechaVencimiento").value = fechaVencimiento;
+	});
+	dtVencimiento = fechaVencimiento
 }
 
 function obtenerActPlanAccion(url) {
-	console.log("");
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(url, {}, function(data) {
 		setTimeout($.unblockUI, 100);
@@ -350,14 +374,28 @@ function obtenerActPlanAccion(url) {
 			opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus,opt.vc_estatus_encargado, botones]).draw(false);
 			tblPlanAccion.column(0).visible(false);
 		});
+		setTimeout($.unblockUI, 100);
+		mnsExisteRegistros(tblPlanAccion.rows().count());
 	});
-	/*
-	"<button class='btn btn-info' tabindex='0'"
-				+ " title='Actualizar Estatus'type='button'"
-				+ " onclick='estatusObservacion(this)' id="
-				+ opt.pk_id_planaccion
-				+ " data-tooltip='Add' >"
-				+ " <i class='bi bi-bookmark-x-fill'></i>"*/
+	
+}
+
+function mnsExisteRegistros(tam){
+	if(tam > 0){
+			swal({
+				title: "Informacion.",
+				text: "Se consultaron las Actividades del Plan de Accion",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
+	}else{
+				swal({
+				title: "Informacion.",
+				text: "El Plan de Accion no cuenta con actividades registradas",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
+	}
 }
 
 var editarActividadPA = "editarActividad?idActividad=";

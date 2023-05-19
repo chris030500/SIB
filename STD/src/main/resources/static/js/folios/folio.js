@@ -428,7 +428,12 @@ function obtenerDatostblObservaciones(url) {
 			tblObservacion.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
-		if (tblObservacion.rows().count() > 0) {
+		mnsExisteRegistros(tblObservacion.rows().count());
+	});
+}
+
+function mnsExisteRegistros(num){
+	if (num > 0) {
 			swal({
 				title: "Informacion.",
 				text: "Se consultaron las observaciones del Folio",
@@ -436,7 +441,6 @@ function obtenerDatostblObservaciones(url) {
 				confirmButtonText: 'Aceptar'
 			})
 		} else {
-
 			swal({
 				title: "Informacion.",
 				text: "El folio no cuenta con observaciones registradas",
@@ -444,8 +448,6 @@ function obtenerDatostblObservaciones(url) {
 				confirmButtonText: 'Aceptar'
 			})
 		}
-
-	});
 }
 
 function getAbsolutePath() {
