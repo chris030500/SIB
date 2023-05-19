@@ -387,14 +387,14 @@ function mnsExisteRegistros(tam){
 				text: "Se consultaron las Actividades del Plan de Accion",
 				icon: "success",
 				confirmButtonText: 'Aceptar'
-			})
+			});
 	}else{
 				swal({
 				title: "Informacion.",
 				text: "El Plan de Accion no cuenta con actividades registradas",
 				icon: "success",
 				confirmButtonText: 'Aceptar'
-			})
+			});
 	}
 }
 

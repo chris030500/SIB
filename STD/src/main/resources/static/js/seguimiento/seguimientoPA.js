@@ -49,11 +49,12 @@ function verActividades(idFolio) {
 					+ opt.id_planaccion
 					+ " >"
 					+ " <i class='bi bi-ui-checks'></i>";
-				tblPlanAccion.row.add([opt.id_planaccion, opt.nombreActividad, opt.nombreResponsable,
+				tblPlanAccion.row.add([opt.nombreActividad, opt.nombreResponsable,
 				opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus, botones]).draw(false);
 
 			});
 			setTimeout($.unblockUI, 100);
+			mnsExisteRegistros(tblPlanAccion.rows().count());
 		});
 	} else {
 		tblPlanAccion.clear().draw();
@@ -62,6 +63,24 @@ function verActividades(idFolio) {
 			text: "Seleccione un Oficio Valido.",
 			icon: "warning",
 		});
+	}
+}
+
+function mnsExisteRegistros(tam){
+		if(tam > 0){
+			swal({
+				title: "Informacion.",
+				text: "Se consultaron las Actividades del Plan de Accion",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
+	}else{
+				swal({
+				title: "Informacion.",
+				text: "El Plan de Accion no cuenta con actividades registradas",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
 	}
 }
 
@@ -134,8 +153,9 @@ var id;
 var nombre;
 function verSeguimiento(idAct) {
 
-	id = $(idAct).parents("tr").find("td").eq(0).html();
-	nombre = $(idAct).parents("tr").find("td").eq(1).html();
+	id = $(idAct).attr("id");
+	//$(idAct).parents("tr").find("td").eq(0).html();
+	nombre = $(idAct).parents("tr").find("td").eq(0).html();
 	$('#idActividad').val(id);
 	$('#idNombreActividad').val(nombre);
 	buscaSeguimiento();
@@ -150,18 +170,17 @@ function buscaSeguimiento() {
 			$.each(data, function(idx, opt) {
 				var botones = " <button class='btn btn-info' tabindex='0'"
 					+ " title='Editar Seguimiento' type='button'"
-					+ " onclick='editarSeguimiento("
-					+ opt.id_seguimiento
-					+ ")'"
+					+ " onclick='editarSeguimiento(this)'"
 					+ " id="
 					+ opt.id_seguimiento
 					+ " >"
 					+ " <i class='bi bi-pencil-square'></i>";
-				tblSeguimiento.row.add([opt.id_seguimiento, opt.nombreActividad, opt.desc_actividad,
+				tblSeguimiento.row.add([opt.nombreActividad, opt.desc_actividad,
 				opt.dtFechaRegistro, opt.estatus, botones]).draw(false);
 
 			});
 			setTimeout($.unblockUI, 100);
+			msnExisteSeguimiento(tblSeguimiento.rows().count());
 		});
 	} else {
 		swal({
@@ -169,20 +188,26 @@ function buscaSeguimiento() {
 			text: "Seleccione una actividad del Plan de Accion",
 			icon: "warning",
 		});
-		
-		
-			/*+ " <button class='btn btn-info' tabindex='0'"
-					+ " title='Actualizar Estatus' type='button'"
-					+ " onclick='actEstatus("
-					+ opt.id_seguimiento
-					+ ")'"
-					+ " id="
-					+ opt.id_seguimiento
-					+ " >"
-					+ " <i class='bi bi-arrow-repeat'></i>"*/
-		
 	}
 }
+function msnExisteSeguimiento(tam){
+	if(tam > 0){
+			swal({
+				title: "Informacion.",
+				text: "Se consulta el seguimiento de la Actividad del Plan de Accion.",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			});
+	}else{
+			swal({
+				title: "Informacion.",
+				text: "No hay registro de seguimiento de Actividades del Plan de Accion.",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			});
+	}
+}
+
 function peticionPost(url) {
 	$.ajax({
 		url: url,
@@ -221,7 +246,7 @@ function iniciarAltaSeguimiento() {
 }
 
 function editarSeguimiento(idSeguimiento) {
-	obsId = idSeguimiento;
+	obsId = $(idSeguimiento).attr("id");
 	var urlServicio = getAbsolutePath() + seguimiento + obsId;
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(urlServicio, {}, function(data) {
@@ -231,303 +256,3 @@ function editarSeguimiento(idSeguimiento) {
 	});
 	setTimeout($.unblockUI, 100);
 }
-
-
-
-/*
-function guardarActividad() {
-	var urlServicio = getAbsolutePath() + altaActividadPA + obsId;
-	urlServicio = urlServicio + "&nombreActividad=" + document.getElementById("idNombreActividad").value;
-	urlServicio = urlServicio + "&idEncargado=" + document.getElementById("idEncargadoActividad").value;
-	urlServicio = urlServicio + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
-	urlServicio = urlServicio + "&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
-
-	peticionPost(urlServicio);
-}
-
-function actualizarActividad() {
-	var urlServicio = getAbsolutePath() + actualizarPA + document.getElementById("idAct").value;
-	urlServicio = urlServicio + "&nombreActividad=" + document.getElementById("idNombreActividad").value;
-	urlServicio = urlServicio + "&idEncargado=" + document.getElementById("idEncargadoActividad").value;
-	urlServicio = urlServicio + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
-	urlServicio = urlServicio + "&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
-
-	peticionPost(urlServicio);
-}
-
-function iniciarDtosActividad() {
-	document.getElementById("idAct").value = 0;
-	document.getElementById("idNombreActividad").value = "";
-	document.getElementById("idEncargadoActividad").value = 0;
-	document.getElementById("dtFechaInicio").value = "";
-	document.getElementById("dtFechaVencimiento").value = "";
-	document.getElementById("idEstatus").value = 0;
-}
-
-function peticionPost(urlServicio) {
-	$.ajax({
-		url: urlServicio,
-		type: "POST",
-		dataType: "JSON",
-		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
-		},
-		complete: function() {
-			setTimeout($.unblockUI, 500);
-		},
-		success: function(respuesta) {
-			swal({
-				title: "",
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
-				iniciarDtosActividad();
-				obtActividades(obsId);
-			});
-
-
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
-			});
-		}
-	});
-}
-
-
-
-function guardarVacio() {
-	var validacion = false;
-
-	if (document.getElementById("idNombreActividad").value.length == 0) {
-		document.getElementById("idNombreActividad").style.borderColor = "#F70707";
-		validacion = true;
-	}
-	if (document.getElementById("idEncargadoActividad").value == 0) {
-		document.getElementById("idEncargadoActividad").style.borderColor = "#F70707";
-		validacion = true;
-	}
-	if (document.getElementById("dtFechaInicio").value.length == 0) {
-		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
-		validacion = true;
-	}
-	if (document.getElementById("dtFechaVencimiento").value.length == 0) {
-		document.getElementById("dtFechaVencimiento").style.borderColor = "#F70707";
-		validacion = true;
-	}
-
-	return validacion;
-}
-
-function iniciarCampos() {
-	document.getElementById("idNombreActividad").style.borderColor = '';
-	document.getElementById("idEncargadoActividad").style.borderColor = '';
-	document.getElementById("dtFechaInicio").style.borderColor = '';
-	document.getElementById("dtFechaVencimiento").style.borderColor = '';
-}
-
-
-
-function getAbsolutePath() {
-	var loc = window.location;
-	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
-}
-
-
-
-
-function koObservacion(btnID) {
-	var idObservacion = btnID;
-	var estatus = 2;
-
-	Swal.fire({
-		title: "Motivo del rechazo para no atender la observación.",
-		input: "textarea",
-		//text: $(btnID).parents("tr").find("td").eq(1).html(),
-		showCancelButton: true,
-		confirmButtonText: "Guardar",
-		cancelButtonText: "Cancelar",
-		inputValidator: descripcion => {
-			// Si el valor es válido, debes regresar undefined. Si no, una cadena
-			if (!descripcion) {
-				return "Por favor escribe el motivo para rechazar";
-			} else {
-				return undefined;
-			}
-		}
-	})
-		.then(resultado => {
-			if (resultado.value) {
-				let descRechazo = resultado.value;
-				actualizacionAsignacion(idObservacion, descRechazo, estatus);
-
-			}
-		});
-}
-
-function okObservacion(btnID) {
-	console.log("" + btnID);
-	var idObservacion = btnID;
-	var estatus = 1;
-	var descripcion = "";
-
-	Swal.fire({
-		title: "¿Acepta Atender la Observacion?",
-		showCancelButton: true,
-		confirmButtonText: "Si",
-		cancelButtonText: "Cancelar",
-	})
-		.then(resultado => {
-			if (resultado.value) {
-				actualizacionAsignacion(idObservacion, descripcion, estatus);
-			}
-		});
-}
-function actualizacionAsignacion(id, desc, estatus) {
-	var urlServicio = "";
-	if (estatus == 1) {
-		urlServicio = getAbsolutePath() + aceptarObservacion + id;
-	} else {
-		urlServicio = getAbsolutePath() + rechazarObservacion + id + "&vc_motivo=" + desc;
-	}
-	peticion(urlServicio);
-}
-
-function peticion(url) {
-	$.ajax({
-		url: url,
-		type: "POST",
-		dataType: "JSON",
-		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
-		},
-		complete: function() {
-			setTimeout($.unblockUI, 500);
-		},
-		success: function(respuesta) {
-			swal({
-				title: "",
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
-				//window.location.href = getAbsolutePath()+inicioPantalla;
-				pintartblObservaciones();
-			});
-
-
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
-			});
-		}
-	});
-
-
-}
-function pintartblObservaciones() {
-	var urlInicio = getAbsolutePath() + listaObservacion + document.getElementById("idOficios").value;
-	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(urlInicio, {}, function(data) {
-		tblObservaciones.clear().draw();
-		$.each(data, function(idx, opt) {
-
-			var botonesAceptado = "";
-			var botonesAsignacion = "";
-			botonesAceptado = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Registrar Actividad PA' type='button'"
-				+ " onclick='obtActividades("
-				+ opt.pk_id_observacion
-				+ ")' id="
-				+ opt.pk_id_observacion
-				+ " >"
-				+ " <i class='bi bi-ui-checks'></i>";
-			botonesAsignacion = "<button class='btn btn-info' tabindex='0' "
-				+ " title='Acepto' type='button'"
-				+ " onclick='okObservacion("
-				+ opt.pk_id_observacion
-				+ ")' >"
-				+ " <i class='bi bi-check-circle-fill'></i>"
-				+ " </button>";
-
-			botonesAsignacion = botonesAsignacion + "<button class='btn btn-info' tabindex='0' "
-				+ " title='No Acepto' type='button'"
-				+ " onclick='koObservacion("
-				+ opt.pk_id_observacion
-				+ ")' >"
-				+ " <i class='bi bi-x-circle-fill'></i>"
-				+ " </button>";
-			console.log("" + botonesAceptado);
-			console.log("" + botonesAsignacion);
-			tblObservaciones.row.add([opt.pk_id_observacion, opt.i_area, opt.i_responsable,
-			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.i_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
-
-
-		});
-		setTimeout($.unblockUI, 100);
-	});
-}
-
-
-
-function obtActividades(idObs) {
-	obsId = idObs;
-	var urlServicio = getAbsolutePath() + buscarActividades + idObs;
-	obtenerActPlanAccion(urlServicio);
-}
-
-function obtenerActPlanAccion(url) {
-	console.log("");
-	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
-		setTimeout($.unblockUI, 100);
-		tblPlanAccion.clear().draw();
-		$.each(data, function(idx, opt) {
-			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Editar Observacion' type='button'"
-				+ " onclick='editarActividad("
-				+ opt.pk_id_planaccion
-				+ ")' id="
-				+ opt.pk_id_planaccion
-				+ " >"
-				+ " <i class='bi bi-pencil-square'></i>";
-			tblPlanAccion.row.add([opt.pk_id_planaccion, opt.vc_desc_actividad, opt.i_responsable,
-			opt.dt_fecha_inicio, opt.dt_fecha_vencimiento, opt.i_estatus, opt.i_confirmacion_encargado, botones]).draw(false);
-
-		});
-	});*/
-/*
-"<button class='btn btn-info' tabindex='0'"
-			+ " title='Actualizar Estatus'type='button'"
-			+ " onclick='estatusObservacion(this)' id="
-			+ opt.pk_id_planaccion
-			+ " data-tooltip='Add' >"
-			+ " <i class='bi bi-bookmark-x-fill'></i>"*/
-/*}
-
-var editarActividadPA = "editarActividad?idActividad=";
-function editarActividad(idPA) {
-	var url = getAbsolutePath() + editarActividadPA + idPA;
-	datosActividad(url);
-}
-
-function datosActividad(url) {
-	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
-		setTimeout($.unblockUI, 100);
-		document.getElementById("idNombreActividad").value = data.vc_desc_actividad;
-		document.getElementById("idEncargadoActividad").value = data.i_responsable;
-		document.getElementById("dtFechaInicio").value = data.dt_fecha_inicio;
-		document.getElementById("dtFechaVencimiento").value = data.dt_fecha_vencimiento;
-		document.getElementById("idEstatus").value = data.i_estatus;
-		document.getElementById("idAct").value = data.pk_id_planaccion;
-	});
-}*/
-
-
