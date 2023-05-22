@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
  
  
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,8 @@ import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 @RestController
 public class WSAutenticacionUserController {
  
-    protected final Log logger = LogFactory.getLog(this.getClass());
+    //protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(WSAutenticacionUserController.class);
  
     @Autowired
     private UsuarioService usuarioService;
@@ -85,13 +86,20 @@ public class WSAutenticacionUserController {
         wsAuteUsu.setFk_id_solicitud_envio(sEnvio);
         wsAuteUsu.setVc_tp_proceso_origen(tpProceso);
         
-        System.out.println("USUARIO: "+ usu.getPk_id_usuario());
-        System.out.println("RESULTADO LOGIN: " + resultadoLogin);
-        System.out.println("FECHA: " + localDateHoy);
-        System.out.println("HORA: " +hora);
-        System.out.println("JSONENVIO: " + jsonEnvio);
-        System.out.println("CONFWS: " + confWS.getPk_id_cat_conf_ws_seq());
-        System.out.println("SOLICITUD ENVIO: " +sEnvio.getPk_id_solicitud_envio());
+        //System.out.println("USUARIO: "+ usu.getPk_id_usuario());
+        logger.info("USUARIO: "+ usu.getPk_id_usuario());
+        //System.out.println("RESULTADO LOGIN: " + resultadoLogin);
+        logger.info("RESULTADO LOGIN: " + resultadoLogin);
+        //System.out.println("FECHA: " + localDateHoy);
+        logger.info("FECHA: " + localDateHoy);
+        //System.out.println("HORA: " +hora);
+        logger.info("HORA: " +hora);
+        //System.out.println("JSONENVIO: " + jsonEnvio);
+        logger.info("JSONENVIO: " + jsonEnvio);
+        //System.out.println("CONFWS: " + confWS.getPk_id_cat_conf_ws_seq());
+        logger.info("CONFWS: " + confWS.getPk_id_cat_conf_ws_seq());
+        //System.out.println("SOLICITUD ENVIO: " +sEnvio.getPk_id_solicitud_envio());
+        logger.info("SOLICITUD ENVIO: " +sEnvio.getPk_id_solicitud_envio());
         
         //return ResponseEntity.ok("ok");
         return ResponseEntity.ok(wsAutenticacionUserService.save(wsAuteUsu));
