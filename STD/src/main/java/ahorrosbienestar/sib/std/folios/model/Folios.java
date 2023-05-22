@@ -24,8 +24,8 @@ public class Folios {
 	@SequenceGenerator(name = "folio_seq", sequenceName = "folio_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_folio;
 	
-	@Column(name = "I_FOLIO", columnDefinition = "INT")
-	private int i_folio;
+	@Column(name = "VC_FOLIO", columnDefinition = "VARCHAR(100)")
+	private String vc_folio;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -74,12 +74,13 @@ public class Folios {
 		this.pk_id_folio = pk_id_folio;
 	}
 
-	public int getI_folio() {
-		return i_folio;
+
+	public String getVc_folio() {
+		return vc_folio;
 	}
 
-	public void setI_folio(int i_folio) {
-		this.i_folio = i_folio;
+	public void setVc_folio(String vc_folio) {
+		this.vc_folio = vc_folio;
 	}
 
 	public LocalDate getDt_fecha_recepcion() {

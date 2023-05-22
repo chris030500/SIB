@@ -216,9 +216,10 @@ function guardarFolio(proceso) {
 	urlServicio = urlServicio + "&dt_Vencimiento=" + document.getElementById("idVencimiento").value;
 	urlServicio = urlServicio + "&i_estatus=" + document.getElementById("idEstatusOficio").value;
 	urlServicio = urlServicio + "&vc_ruta=" + "C:";
-
-	peticionPost(urlServicio, 1, 0);
+	
 	$("#modalFolio").hide();
+	peticionPost(urlServicio, 1, 0);
+	
 }
 
 function peticionPost(urlServicio, num, numFolio) {
@@ -496,7 +497,7 @@ function obtenerFolio(url) {
 }
 function cargarDatos(data) {
 
-	document.getElementById("noficio").value = data.i_folio;
+	document.getElementById("noficio").value = data.vc_folio;
 	document.getElementById("idRecepcion").value = data.dt_fecha_recepcion;
 	document.getElementById("idAsunto").value = data.vc_asunto;
 	document.getElementById("idDirigido").value = data.i_dirigido;

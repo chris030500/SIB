@@ -116,7 +116,7 @@ public class FoliosController {
 	//Dar de alta un rol utilizando metodo POST
 			@PostMapping("/altaFolio")
 			public ResponseEntity<?> altaFolio(
-					@RequestParam(name = "noficio") Integer noficio, 
+					@RequestParam(name = "noficio") String noficio, 
 					@RequestParam(name = "dt_recepcion") String dt_recepcion,
 					@RequestParam(name = "vc_asunto") String vc_asunto,
 					@RequestParam(name = "i_dirigido") Integer i_dirigido,
@@ -141,7 +141,7 @@ public class FoliosController {
 						altaFolio.setDt_fecha_recepcion(LocalDate.parse(dt_recepcion));
 						altaFolio.setDt_fecha_registro(LocalDate.parse(dt_registro));
 						altaFolio.setDt_fecha_vencimiento(LocalDate.parse(dt_Vencimiento));
-						altaFolio.setI_folio(noficio);
+						altaFolio.setVc_folio(noficio);
 						altaFolio.setVc_asunto(vc_asunto);
 						altaFolio.setI_dirigido(i_dirigido);
 						altaFolio.setVc_puesto(vc_puesto);
@@ -168,7 +168,7 @@ public class FoliosController {
 			//Dar de alta un rol utilizando metodo POST
 			@PostMapping("/modificarFolio")
 			public ResponseEntity<?> modificarFolio(
-					@RequestParam(name = "noficio") Integer noficio, 
+					@RequestParam(name = "noficio") String noficio, 
 					@RequestParam(name = "dt_recepcion") String dt_recepcion,
 					@RequestParam(name = "vc_asunto") String vc_asunto,
 					@RequestParam(name = "i_dirigido") Integer i_dirigido,
@@ -181,7 +181,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
-				String mensaje ="Registro Correctamente.";
+				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
 					

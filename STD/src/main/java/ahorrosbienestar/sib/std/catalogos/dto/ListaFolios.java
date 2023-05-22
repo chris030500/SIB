@@ -3,7 +3,7 @@ package ahorrosbienestar.sib.std.catalogos.dto;
 public class ListaFolios {
 
 	private int pk_id_folio;
-	private int i_folio;
+	private String i_folio;
 	private String vc_asunto;
 	private String dt_fecha_recepcion;
 	private String dt_fecha_registro;
@@ -17,10 +17,11 @@ public class ListaFolios {
 	public void setPk_id_folio(int pk_id_folio) {
 		this.pk_id_folio = pk_id_folio;
 	}
-	public int getI_folio() {
+	
+	public String getI_folio() {
 		return i_folio;
 	}
-	public void setI_folio(int i_folio) {
+	public void setI_folio(String i_folio) {
 		this.i_folio = i_folio;
 	}
 	public String getVc_asunto() {

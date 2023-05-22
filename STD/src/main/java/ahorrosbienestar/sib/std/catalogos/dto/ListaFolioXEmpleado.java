@@ -3,17 +3,18 @@ package ahorrosbienestar.sib.std.catalogos.dto;
 public class ListaFolioXEmpleado {
 
 	public int pkFolio;
-	public int folio;
+	public String folio;
 	public int getPkFolio() {
 		return pkFolio;
 	}
 	public void setPkFolio(int pkFolio) {
 		this.pkFolio = pkFolio;
 	}
-	public int getFolio() {
+	public String getFolio() {
 		return folio;
 	}
-	public void setFolio(int folio) {
+	public void setFolio(String folio) {
 		this.folio = folio;
 	}
+
 }

@@ -137,13 +137,13 @@ public class CatalogosCEService {
 		public List<ListaFolioXEmpleado> listaFolioXEmpleado(Integer idEmpleado) {
 			logger.info("Ejecutando lista Folio por Empleado: ");
 			try {
-				String sql = "SELECT distinct t2.I_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
+				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " where t1.I_RESPONSABLE = ? and t1.I_CONFIRMA IN (1,0);";
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
-						e.setFolio(rs.getInt(1));
+						e.setFolio(rs.getString(1));
 						e.setPkFolio(rs.getInt(2));
 
 						return e;
@@ -331,7 +331,7 @@ public class CatalogosCEService {
 			logger.info("Ejecutando busqueda de folio: ");
 			try {
 				String sql = "SELECT t1.PK_ID_FOLIO "
-						+ ",t1.I_FOLIO,t1.VC_ASUNTO,t1.DT_FECHA_RECEPCION,t1.DT_FECHA_REGISTRO "
+						+ ",t1.VC_FOLIO,t1.VC_ASUNTO,t1.DT_FECHA_RECEPCION,t1.DT_FECHA_REGISTRO "
 						+ ",t1.DT_FECHA_VENCIMIENTO,t2.V_VALOR,t3.V_VALOR,t4.V_VALOR "
 						+ "FROM SIB.TBL_FOLIOS t1 "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t2 on t2.I_OPCION = t1.I_ESTATUS and t2.I_ID_GRUPO = 6 "
@@ -343,7 +343,7 @@ public class CatalogosCEService {
 						ListaFolios e = new ListaFolios();
 						
 						e.setPk_id_folio(rs.getInt(1));
-						e.setI_folio(rs.getInt(2));
+						e.setI_folio(rs.getString(2));
 						e.setVc_asunto(rs.getString(3));
 						e.setDt_fecha_recepcion(rs.getString(4));
 						e.setDt_fecha_registro(rs.getString(5));

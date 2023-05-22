@@ -7,26 +7,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
-import ahorrosbienestar.sib.std.rptNoConformidades.service.ReporteNoConformidadesService;
+import ahorrosbienestar.sib.std.rptNoConformidades.service.ReporteCSOService;
 
 @Controller
 @RequestMapping("reporteFolio")
-public class ReporteNoConformidadesController {
+public class ReporteCSOController {
 
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
 	@Autowired
-	private ReporteNoConformidadesService reporteNoConformidadesService;
+	private ReporteCSOService reporteCSOService;
 	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
 	
 	@Autowired
-	public ReporteNoConformidadesController(ReporteNoConformidadesService reporteNoConformidadesService) {
-		this.reporteNoConformidadesService = reporteNoConformidadesService;
+	public ReporteCSOController(ReporteCSOService reporteCSOService) {
+		this.reporteCSOService = reporteCSOService;
 	} 
 	
 	@GetMapping("/noConformidades")

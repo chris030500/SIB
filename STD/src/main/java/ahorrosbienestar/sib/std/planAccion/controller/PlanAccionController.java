@@ -205,6 +205,7 @@ public class PlanAccionController {
 			@RequestParam(name = "dtFechaVencimiento") String dtFechaVencimiento
 			){
 		int estatusActivo = 1;
+		int confirmacionNo = 2;
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
@@ -228,6 +229,8 @@ public class PlanAccionController {
 				altaActividad.setI_usuario_mod(0);
 				altaActividad.setI_usuario_elimino(0);
 				altaActividad.setI_responsable(idEncargado);
+				altaActividad.setI_confirmacion_encargado(confirmacionNo);
+				altaActividad.setI_confirmacion_responsable(confirmacionNo);
 				
 				iPlanAccionRepository.save(altaActividad);
 				

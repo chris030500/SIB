@@ -12,8 +12,8 @@ import ahorrosbienestar.sib.std.folios.model.Folios;
 @Repository
 public interface IFolioRepository extends JpaRepository<Folios, Integer>{
 
-	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_FOLIOS  WHERE I_FOLIO = :noficio ", nativeQuery = true)
-	public int existeFolio(@Param("noficio") Integer noficio);
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_FOLIOS  WHERE VC_FOLIO = :noficio ", nativeQuery = true)
+	public int existeFolio(@Param("noficio") String noficio);
 	
 	@Modifying
 	@Transactional
@@ -29,8 +29,8 @@ public interface IFolioRepository extends JpaRepository<Folios, Integer>{
 			+ ",DT_FECHA_VENCIMIENTO=:dt_Vencimiento "
 			+ ",I_ESTATUS=:i_estatus "
 			+ ",VC_RUTA_OFICIO=:vc_ruta "
-			+ " WHERE I_FOLIO =:noficio", nativeQuery = true)
-	public int modFolio(@Param("noficio") Integer noficio,@Param("dt_recepcion") String dt_recepcion, @Param("vc_asunto") String vc_asunto, @Param("i_dirigido") Integer i_dirigido, @Param("vc_puesto") String vc_puesto,
+			+ " WHERE VC_FOLIO =:noficio", nativeQuery = true)
+	public int modFolio(@Param("noficio") String noficio,@Param("dt_recepcion") String dt_recepcion, @Param("vc_asunto") String vc_asunto, @Param("i_dirigido") Integer i_dirigido, @Param("vc_puesto") String vc_puesto,
 	@Param("i_tipo_oficio") Integer i_tipo_oficio, @Param("i_organo_emite") Integer i_organo_emite,@Param("dt_registro") String dt_registro,@Param("i_Plazo") Integer i_Plazo, @Param("dt_Vencimiento") String dt_Vencimiento,
 	@Param("i_estatus") Integer i_estatus,@Param("vc_ruta") String vc_ruta);
 	
