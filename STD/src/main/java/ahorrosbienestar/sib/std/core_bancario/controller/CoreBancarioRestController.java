@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.core_bancario.controller;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ahorrosbienestar.sib.std.carga_documentos.service.CargaDocumentosService;
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 
@@ -22,7 +23,8 @@ public class CoreBancarioRestController {
 	@Autowired
 	private CargaDocumentosService cargaDocumentosService;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(CoreBancarioRestController.class);
 
 	@RequestMapping(value = { "/buscar_solicitud" }, method = RequestMethod.GET)
 	public ResponseEntity<?> buscarSolicitud(@RequestParam("solicitud") Integer solicitud) {

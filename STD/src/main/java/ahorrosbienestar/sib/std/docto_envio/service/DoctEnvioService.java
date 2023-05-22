@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +21,8 @@ public class DoctEnvioService {
 
 	private IDoctEnvioRepository iDoctEnvioRepository;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(DoctEnvioService.class);
 
 	@Autowired
 	public DoctEnvioService(IDoctEnvioRepository iDoctEnvioRepository) {
