@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.carga_documentos.controller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.fichero.service.PDFServidorService;
@@ -27,7 +27,8 @@ public class CargaDocumentosController {
 	@Autowired
 	private ConfigService configService;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(CargaDocumentosController.class);
 
 	// Consultar la url para el almacenamiento para de los archivos pdf
 	@GetMapping

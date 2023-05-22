@@ -82,6 +82,11 @@ public class UsuarioService {
 		return iUsuarioRepository.findByUsuarioNombre(nombre);
 	}
 	
+	public int destruirSesion(Integer usuario) {
+		return iUsuarioRepository.destruirSesion(usuario);
+	}
+	
+	
 	
 	
 
