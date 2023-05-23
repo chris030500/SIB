@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +22,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
+import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
 import ahorrosbienestar.sib.std.folios.model.Folios;
 import ahorrosbienestar.sib.std.folios.model.Observaciones;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 
 @Controller
 @RequestMapping("folios")
 public class FoliosController {
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
@@ -40,6 +48,9 @@ public class FoliosController {
 	
 	@Autowired
 	private IFolioRepository iFolioRepository;
+	
+	@Autowired
+	private CorreoCSOService correoCSOService;
 	
 	@Autowired
 	private FolioService folioService;
@@ -152,6 +163,7 @@ public class FoliosController {
 						altaFolio.setI_organo_emite(i_organo_emite);
 						
 						folioService.save(altaFolio);
+												
 						respuesta.add(mensaje);
 					}else {
 						mensaje = "El Folio ya existe";
@@ -222,29 +234,14 @@ public class FoliosController {
 					@RequestParam(name = "idResponsableAtencion") Integer idResponsableAtencion,
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
-					@RequestParam(name = "folioID") Integer folioID){
-				Integer estatus = 1;
+					@RequestParam(name = "folioID") Integer folioID
+					){
+				
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
-						
-						LocalDate fecha = LocalDate.now();
-						Observaciones altaObs = new Observaciones();
-						
-						altaObs.setDt_fecha_asignacion(fecha);
-						altaObs.setDt_fecha_registro(fecha);
-						altaObs.setDt_fecha_vencimiento(LocalDate.parse(idFechaVencimiento));
-						altaObs.setI_folio(folioID);
-						altaObs.setI_area(idAreaAtencion);
-						altaObs.setI_responsable(idResponsableAtencion);
-						altaObs.setI_estatus(estatus);
-						altaObs.setVc_descripcion(desObservacion);
-						altaObs.setI_usuario_registro(0);
-						altaObs.setI_usuario_elimino(0);
-						altaObs.setI_usuario_mod(0);
-						
-						
-						observacionService.save(altaObs);
+					
+						altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,folioID);
 						respuesta.add(mensaje);
 				
 					return ResponseEntity.ok(respuesta);
@@ -254,6 +251,40 @@ public class FoliosController {
 				}
 			}
 			
+			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID) {
+				Integer estatus = 1;
+				try {
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					UserDetails userDetails = null;
+					if (principal instanceof UserDetails) {
+						userDetails = (UserDetails) principal;
+					}
+					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+					
+					LocalDate fecha = LocalDate.now();
+					Observaciones altaObs = new Observaciones();
+					
+					altaObs.setDt_fecha_asignacion(fecha);
+					altaObs.setDt_fecha_registro(fecha);
+					altaObs.setDt_fecha_vencimiento(LocalDate.parse(idFechaVencimiento));
+					altaObs.setI_folio(folioID);
+					altaObs.setI_area(idAreaAtencion);
+					altaObs.setI_responsable(idResponsableAtencion);
+					altaObs.setI_estatus(estatus);
+					altaObs.setVc_descripcion(desObservacion);
+					altaObs.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+					altaObs.setI_usuario_elimino(0);
+					altaObs.setI_usuario_mod(0);
+					altaObs.setI_confirma(0);
+					
+					observacionService.save(altaObs);
+					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
+					
+				} catch (Exception e) {
+					System.out.println("--"+e.getMessage());
+				} 
+			}
+			
 			//modificar una observacion metodo POST
 			@PostMapping("/modificarObservacion")
 			public ResponseEntity<?> modificarObservacion(
@@ -261,16 +292,35 @@ public class FoliosController {
 					@RequestParam(name = "idAreaAtencion") Integer idAreaAtencion, 
 					@RequestParam(name = "idResponsableAtencion") Integer idResponsableAtencion,
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
-					@RequestParam(name = "desObservacion") String desObservacion){
+					@RequestParam(name = "desObservacion") String desObservacion,
+					@RequestParam(name = "reasignar") Integer reasignar){
 				
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
-					if(observacionService.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion) == 1) {
-						respuesta.add(mensaje);
-					}else {
-						respuesta.add("No se actualizo correctamente");
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					UserDetails userDetails = null;
+					if (principal instanceof UserDetails) {
+						userDetails = (UserDetails) principal;
 					}
+					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+					if(reasignar == 1) {
+						if(observacionService.inactivarRegistro(idObservacion,usuario.get(0).getPk_id_usuario()) == 1) {
+							Optional<Observaciones> altaObs = iObservacionRepository.findById(idObservacion);
+							altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion, altaObs.get().getI_folio());
+						}else {
+							mensaje ="Error al Reasignar Observacion.";
+							respuesta.add(mensaje);
+						}
+					}else if(reasignar == 0) {
+						if(observacionService.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
+							correoCSOService.registrarCorreo(idObservacion);
+							respuesta.add(mensaje);
+						}else {
+							respuesta.add("No se actualizo correctamente");
+						}
+					}			
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
 					respuesta.add(e.getMessage());

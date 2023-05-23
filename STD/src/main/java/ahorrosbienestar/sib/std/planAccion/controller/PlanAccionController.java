@@ -22,6 +22,7 @@ import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
+import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
 import ahorrosbienestar.sib.std.folios.model.Observaciones;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
@@ -46,6 +47,9 @@ public class PlanAccionController {
 	
 	@Autowired
 	private CatalogosCEService catalogosCEService;
+	
+	@Autowired
+	private CorreoCSOService correoCSOService;
 	
 	@Autowired
 	private IFolioRepository iFolioRepository;
@@ -122,10 +126,11 @@ public class PlanAccionController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			
-			iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo);
-			respuesta.add(mensaje);
+			if(iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo) == 1) {
+				correoCSOService.registrarCorreo(idObservacion);
+				respuesta.add(mensaje);
+			};
 				
-			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 			mensaje = e.getMessage();

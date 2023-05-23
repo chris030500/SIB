@@ -168,17 +168,17 @@ function tblObservacionesLoad() {
 	urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
 	urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
 	urlServicio = urlServicio + "&folioID=" + folioID;
-
 	peticionPost(urlServicio, 2, folioID);
 }
 
 function modificarObs() {
+	var asignacion = (document.getElementById("idReasignacion").value == 2)?"&reasignar=1":"&reasignar=0";
 	var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
 	urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
 	urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
 	urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
 	urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
-
+	urlServicio = urlServicio + asignacion;
 	peticionPost(urlServicio, 2, folioID);
 }
 
@@ -188,6 +188,8 @@ function reiniciarDatos() {
 	document.getElementById("idResponsableAtencion").value = 0;
 	document.getElementById("idFechaVencimiento").value = "";
 	document.getElementById("idObservacion").value = "";
+	document.getElementById("idObservacionSelect").value = "0";
+	document.getElementById("idReasignacion").value = "0";
 }
 
 
@@ -385,6 +387,7 @@ function listaResponsable(url, valor) {
 }
 
 function observaciones(idFolio) {
+	reiniciarDatos();
 	document.querySelector('#lblSeleccion').innerText = $(idFolio).parents("tr").find("td").eq(1).html() + "-" + $(idFolio).parents("tr").find("td").eq(2).html();
 	asignarFechaVencimiento(idFolio);
 	folioID = $(idFolio).parents("tr").find("td").eq(0).html();
@@ -539,6 +542,7 @@ function obtenerObservacion(url) {
 		document.getElementById("idAreaAtencion").value = data.i_area;
 		document.getElementById("idFechaVencimiento").value = data.dt_fecha_vencimiento;
 		document.getElementById("idObservacion").value = data.vc_descripcion;
+		document.getElementById("idReasignacion").value = data.i_confirma;
 		listaResponsable(getAbsolutePath() + buscarxArea + data.i_area, data.i_responsable);
 		setTimeout($.unblockUI, 100);
 	});

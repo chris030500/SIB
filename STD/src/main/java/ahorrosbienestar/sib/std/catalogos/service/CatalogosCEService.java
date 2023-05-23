@@ -19,6 +19,8 @@ import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaPuestos;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
+import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
+import ahorrosbienestar.sib.std.correoCSO.model.CorreoCSO;
 
 @Service
 public class CatalogosCEService {
@@ -380,7 +382,7 @@ public class CatalogosCEService {
 						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ESTATUS and t4.I_ID_GRUPO = 6 "
 						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
-						+ "where t1.I_FOLIO = ? "
+						+ "where t1.I_FOLIO = ? and t1.i_usuario_elimino = 0 "
 						+ "order by 1;";
 				System.out.println("sql--"+sql);
 				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio}, new RowMapper<ObservacionesxFolio>() {
@@ -447,6 +449,29 @@ public class CatalogosCEService {
 				System.out.println("e"+e.getMessage());
 				return null;
 			}
+		}
+
+
+		public List<CorreoCSO> datosCorreo(int pk_id_observacion) {
+			String sql = "CALL SP_DATOS_CORREO_CSO (?);";
+			
+			logger.info("Ejecutando: " + sql + "(" + pk_id_observacion + ")");
+			List<CorreoCSO> ls = jdbcTemplate.query(sql, new Object[] { pk_id_observacion },
+					new RowMapper<CorreoCSO>() {
+						public CorreoCSO mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							CorreoCSO dtosCorreo = new CorreoCSO();
+							dtosCorreo.setVc_correo_destino(rs.getString(1));
+							dtosCorreo.setVc_contenido_correo(rs.getString(2));
+							dtosCorreo.setVc_asunto_correo(rs.getString(3));
+							dtosCorreo.setDt_fecha_registro(rs.getTimestamp(4));
+							dtosCorreo.setI_envio(rs.getInt(5));
+							dtosCorreo.setI_observacion(rs.getInt(6));
+							dtosCorreo.setI_tipo_envio(rs.getInt(7));
+							return dtosCorreo;
+						}
+					});
+			
+			return ls;
 		}
 		
 }

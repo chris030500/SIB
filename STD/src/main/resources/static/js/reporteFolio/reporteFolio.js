@@ -1,15 +1,13 @@
-
-
-
+var altaCSO = "altaBusqueda?iTodos=";
 
 $(document).ready(function() {
 	$("#btnGenerarReporte").click(function() {
 		if (validarFechas(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value) == false) {
 			if (document.getElementById('ckTodos').checked == true) {
-
+					registrarBusqueda();
 			} else if (document.getElementById('ckTodos').checked == false) {
 				if (valVacio() == false) {
-
+					registrarBusqueda();
 				}else {
 					swal({
 						title: "Error",
@@ -27,6 +25,70 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function registrarBusqueda(){
+	var urlSevicio = getAbsolutePath() + altaCSO + ((document.getElementById('ckTodos').checked == true)?1:2);
+	urlSevicio = urlSevicio + "&dtFechaInicio="+document.getElementById("dtFechaInicio").value;	
+	urlSevicio = urlSevicio + "&dtFechaFin="+document.getElementById("dtFechaFin").value;
+	if(document.getElementById('ckTodos').checked == true){
+		urlSevicio = urlSevicio + "&iEstatus=0";
+		urlSevicio = urlSevicio + "&iEmite=0";
+		urlSevicio = urlSevicio + "&iTipo=0";
+	}else{
+		urlSevicio = urlSevicio + "&iEstatus="+document.getElementById("iEstatus").value;
+		urlSevicio = urlSevicio + "&iEmite="+document.getElementById("iEmite").value;
+		urlSevicio = urlSevicio + "&iTipo="+document.getElementById("iOficio").value;
+	}
+	peticionPost(urlSevicio);
+
+}
+
+function peticionPost(urlServicio) {
+	$.ajax({
+		url: urlServicio,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+			swal({
+				title: "",
+				text: respuesta[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				var idReporte = 3;
+				var servicioReporte = "exportarReporte/generarReporte?idReporte=";
+				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_Reporte=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=CSO_" + respuesta.dt_fecha_registro;
+				
+				console.log("url:" + urlReporte);
+				window.open(urlReporte);
+				window.focus();
+				console("---valor Observaciones.");
+			});
+
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+
+
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
 
 function validarFechas(fecha1, fecha2) {
 	var result = false;

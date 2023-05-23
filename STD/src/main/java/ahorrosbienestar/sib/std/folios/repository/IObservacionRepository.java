@@ -32,8 +32,13 @@ public interface IObservacionRepository  extends JpaRepository<Observaciones, In
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_AREA=:idAreaAtencion,I_RESPONSABLE=:idResponsableAtencion,DT_FECHA_VENCIMIENTO=:idFechaVencimiento,VC_DESCRIPCION=:desObservacion WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
+	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_AREA=:idAreaAtencion,I_RESPONSABLE=:idResponsableAtencion,DT_FECHA_VENCIMIENTO=:idFechaVencimiento,VC_DESCRIPCION=:desObservacion,I_USUARIO_MOD=:usuarioMod,I_USUARIO_ELIMINO=:usuarioElimino  WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
 	public int modObservacion(Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
-			String idFechaVencimiento, String desObservacion);
+			String idFechaVencimiento, String desObservacion, Integer usuarioMod, Integer usuarioElimino);
+
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_USUARIO_ELIMINO=:usuarioElimina WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
+	public int inactivarRegistro(Integer idObservacion, Integer usuarioElimina);
 	
 }

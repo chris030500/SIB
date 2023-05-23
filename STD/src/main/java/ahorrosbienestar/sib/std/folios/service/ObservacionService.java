@@ -21,9 +21,14 @@ public class ObservacionService {
 	}
 
 	public int modObservacion(Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
-			String idFechaVencimiento, String desObservacion) {
+			String idFechaVencimiento, String desObservacion, Integer usuarioMod, Integer usuarioElimino) {
 		
-		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion);
+		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioMod,usuarioElimino);
+	}
+
+	public int inactivarRegistro(Integer idObservacion, Integer usuarioElimina) {
+		
+		return iObservacionRepository.inactivarRegistro(idObservacion,usuarioElimina);
 	}
 	
 }
