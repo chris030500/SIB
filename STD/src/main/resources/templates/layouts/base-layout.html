@@ -82,7 +82,7 @@
 
 				<li class="nav-item">STD</li>
 
-				<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN_CSO')" class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-pass" data-bs-toggle="collapse">
 						<i class="bi bi-file-lock-fill"></i><span>Seguridad</span>
@@ -112,7 +112,7 @@
 				</li>
 
 
-				<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN_CSO')" class="nav-item">
 
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-administracion"
 						data-bs-toggle="collapse">
@@ -121,17 +121,17 @@
 					</a>
 
 					<ul id="config-nav-administracion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN_CSO')" class="nav-item">
 							<a th:href="@{/usuario/formulario}">
 								<i class="bi bi-file-person"></i><span>Usuarios</span>
 							</a>
 						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN_CSO')" class="nav-item">
 							<a th:href="@{/rol/index}">
 								<i class="bi bi-person-lines-fill"></i><span>Roles</span>
 							</a>
 						</li>
-						<li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ADMIN_CSO')" class="nav-item">
 							<a th:href="@{/configuracion/sesionesInactiva}">
 								<i class="fa fa-unlock"></i><span>Desbloqueo de usuarios</span>
 							</a>
@@ -249,14 +249,14 @@
 				</li>
 				<!--Fin Proceso de video grabacion-->
 				<!--Proceso de No conformidades-->
-				<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_ARCHIVO') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_VALIDADOR') or hasRole('ROLE_AUTORIZADOR') or hasRole('ROLE_PRODUCTOS')"
+				<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
 					class="nav-item">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-conformidades" data-bs-toggle="collapse">
 						<i class="bi bi-archive-fill"></i><span>Control y Seguimiento de Observaciones</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
 							class="nav-item">
 							<a th:href="@{/folios/folio}">
 								<i class="bi bi-journal-plus"></i><span>Folios</span>
@@ -264,7 +264,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
 							class="nav-item">
 							<a th:href="@{/planAccion/aceptarAsignacion}">
 								<i class="bi bi-journal-text"></i><span>Registro de Plan de Accion</span>
@@ -272,7 +272,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
 							class="nav-item">
 							<a th:href="@{/seguimientoFolio/seguimiento}">
 								<i class="bi bi-journal-richtext"></i><span>Seguimiento</span>
@@ -280,7 +280,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_EJECUTIVO') or hasRole('ROLE_AUTORIZADOR')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
 							class="nav-item">
 							<a th:href="@{/reporteFolio/reporteCSO}">
 								<i class="bi bi-filetype-xls"></i><span>Reportes</span>

@@ -39,8 +39,8 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		http.
 		csrf().disable().
 		authorizeRequests().antMatchers("/css/**", "/js/**", "/images/**").permitAll()
-		.antMatchers("/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**").hasAnyRole("ADMIN" , "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS")
-		.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS")
+		.antMatchers("/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**").hasAnyRole("ADMIN" , "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS","ADMIN_CSO")
+		.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS","ADMIN_CSO")
 		.antMatchers("/documento/**").hasAnyRole("ADMIN", "ARCHIVO", "VALIDADOR")
 		.antMatchers("/producto/**").hasAnyRole("ADMIN", "ARCHIVO", "PRODUCTOS")
 		.antMatchers("/autorizar/**").hasAnyRole("ADMIN", "ARCHIVO", "EJECUTIVO")
@@ -49,6 +49,10 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		.antMatchers("/carga_documentos/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR")
 		.antMatchers("/solicitudEnvio/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "AUTORIZADOR")
 		.antMatchers("/videoGrabacion/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA")
+		.antMatchers("/folios/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
+		.antMatchers("/planAccion/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
+		.antMatchers("/seguimientoFolio/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
+		.antMatchers("/reporteFolio/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
 		.anyRequest().authenticated()
 		.and()
 			.formLogin().loginPage("/login")
