@@ -38,5 +38,9 @@ public class FolioService {
 		// TODO Auto-generated method stub
 		return iFolioRepository.modFolio(noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta);
 	}
+
+	public int actEstatus(Integer folioID, Integer estatus) {
+		return iFolioRepository.actEstatus(folioID, estatus);
+	}
 	
 }

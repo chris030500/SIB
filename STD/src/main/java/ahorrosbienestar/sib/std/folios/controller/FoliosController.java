@@ -242,6 +242,7 @@ public class FoliosController {
 				try {
 					
 						altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,folioID);
+						catalogosCEService.actEstatus(folioID,1,2);
 						respuesta.add(mensaje);
 				
 					return ResponseEntity.ok(respuesta);

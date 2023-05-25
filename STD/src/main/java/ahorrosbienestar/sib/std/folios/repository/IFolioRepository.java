@@ -33,6 +33,12 @@ public interface IFolioRepository extends JpaRepository<Folios, Integer>{
 	public int modFolio(@Param("noficio") String noficio,@Param("dt_recepcion") String dt_recepcion, @Param("vc_asunto") String vc_asunto, @Param("i_dirigido") Integer i_dirigido, @Param("vc_puesto") String vc_puesto,
 	@Param("i_tipo_oficio") Integer i_tipo_oficio, @Param("i_organo_emite") Integer i_organo_emite,@Param("dt_registro") String dt_registro,@Param("i_Plazo") Integer i_Plazo, @Param("dt_Vencimiento") String dt_Vencimiento,
 	@Param("i_estatus") Integer i_estatus,@Param("vc_ruta") String vc_ruta);
+
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE SIB.TBL_FOLIOS SET I_ESTATUS=:estatus WHERE PK_ID_FOLIO =:folioID ",nativeQuery = true)
+	public int actEstatus(@Param("folioID") Integer folioID, @Param("estatus") Integer estatus);
+
 	
 
 }

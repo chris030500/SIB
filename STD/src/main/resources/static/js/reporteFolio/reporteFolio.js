@@ -63,12 +63,11 @@ function peticionPost(urlServicio) {
 			}).then(resp => {
 				var idReporte = 3;
 				var servicioReporte = "exportarReporte/generarReporte?idReporte=";
-				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_Reporte=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=CSO_" + respuesta.dt_fecha_registro;
+				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_BUSQUEDA=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=CSO_" + respuesta.dt_fecha_registro;
 				
 				console.log("url:" + urlReporte);
 				window.open(urlReporte);
 				window.focus();
-				console("---valor Observaciones.");
 			});
 
 

@@ -473,5 +473,13 @@ public class CatalogosCEService {
 			
 			return ls;
 		}
+
+
+		public void actEstatus(Integer folioID, Integer opcion, Integer estatus) {
+			
+			//System.out.println("Ejecutando spActivarSesion");
+			jdbcTemplate.update("CALL SIB.SP_ACTUALIZAR_ESTATUS (?,?,?)", folioID,opcion,estatus);
+			
+		}
 		
 }

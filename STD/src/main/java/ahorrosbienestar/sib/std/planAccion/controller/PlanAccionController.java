@@ -104,6 +104,7 @@ public class PlanAccionController {
 		try {
 			
 			iObservacionRepository.aceptarObservacion(idObservacion);
+			catalogosCEService.actEstatus(idObservacion,2,3);
 			respuesta.add(mensaje);
 				
 			
