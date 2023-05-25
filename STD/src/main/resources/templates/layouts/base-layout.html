@@ -249,14 +249,14 @@
 				</li>
 				<!--Fin Proceso de video grabacion-->
 				<!--Proceso de No conformidades-->
-				<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
+				<li sec:authorize="hasRole('ROLE_ADMIN_CSO') or hasRole('ROLE_CONSULTA_CSO') or hasRole('ROLE_ATENCION_CSO') or hasRole('ROLE_RESPONSABLE_CSO') or hasRole('ROLE_REGISTRO_CSO')"
 					class="nav-item">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-conformidades" data-bs-toggle="collapse">
 						<i class="bi bi-archive-fill"></i><span>Control y Seguimiento de Observaciones</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO') or hasRole('ROLE_REGISTRO_CSO')"
 							class="nav-item">
 							<a th:href="@{/folios/folio}">
 								<i class="bi bi-journal-plus"></i><span>Folios</span>
@@ -264,7 +264,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO') or hasRole('ROLE_RESPONSABLE_CSO') "
 							class="nav-item">
 							<a th:href="@{/planAccion/aceptarAsignacion}">
 								<i class="bi bi-journal-text"></i><span>Registro de Plan de Accion</span>
@@ -272,7 +272,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO') or hasRole('ROLE_ATENCION_CSO') or hasRole('ROLE_RESPONSABLE_CSO')"
 							class="nav-item">
 							<a th:href="@{/seguimientoFolio/seguimiento}">
 								<i class="bi bi-journal-richtext"></i><span>Seguimiento</span>
@@ -280,7 +280,7 @@
 						</li>
 					</ul>
 					<ul id="config-nav-conformidades" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li sec:authorize="hasRole('ROLE_ADMIN_CSO')"
+						<li sec:authorize="hasRole('ROLE_ADMIN_CSO') or hasRole('ROLE_CONSULTA_CSO') or hasRole('ROLE_ATENCION_CSO') or hasRole('ROLE_RESPONSABLE_CSO') or hasRole('ROLE_REGISTRO_CSO')"
 							class="nav-item">
 							<a th:href="@{/reporteFolio/reporteCSO}">
 								<i class="bi bi-filetype-xls"></i><span>Reportes</span>
