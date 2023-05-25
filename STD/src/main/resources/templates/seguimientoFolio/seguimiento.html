@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<div class="container border p-2">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Seguimiento Plan de Accion</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div id="divBusqueda" class="container">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Seguimiento</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-6">
+							<label class="col-form-label">Seleccionar Folio para mostrar Actividades</label>
+							<!--<input class="form-control" type="text" id="idPlanAccion" placeholder="Identificador del plan de acción">-->
+							<select class="form-control" id="idOficios" onchange="verActividades(this)" readonly>
+								<option value="0">Seleccione</option>
+								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>
+							</select>
+
+						</div>
+						<div class="col-md-2">
+							<!--<br>
+							<button type="button" class="btn btn-primary form-control" id="btnBuscar">Buscar</button>-->
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
+
+							<thead>
+								<tr>
+									<th>Nombre de la actividad</th>
+									<th>Encargado de la actividad</th>
+									<th style="text-align:center">Fecha Inicio</th>
+									<th>Fecha Vencimiento</th>
+									<th>Estatus</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+
+							<tbody>
+							</tbody>
+
+						</table>
+					</div>
+				</fieldset>
+			</div>
+
+
+			<div id="divRegistroSeguimiento" class="container" style="margin-top : 15px ">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Registro del seguimiento del plan de accion</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-6">
+							<input id="idActividad" name="idActividad" type="hidden" value="0">
+							<label class="col-form-label"> Nombre de la actividad</label>
+							<textarea type="text-Area" class="form-control" id="idNombreActividad"
+								placeholder="Nombre de la actividad" maxlength="600" readonly></textarea>	
+						</div>
+						<div class="col-md-6">
+							<label class="col-form-label"> Seguimiento Realizado</label>
+							<textarea type="text-Area" class="form-control" id="idtxtSeguimiento"
+								placeholder="Descripcion Seguimiento Realizado" maxlength="600"></textarea>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-6">
+							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
+							<select class="form-control" id="idFinActividad">
+								<option value="0">Seleccione</option>
+								<option value="1">SI</option>
+								<option value="2">NO</option>
+								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>-->
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label class="col-form-label"></label>
+							<button type="button" class="btn btn-primary form-control" id="btnGuardar">Guardar</button>
+						</div>
+						<div class="col-md-4"></div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<table class="table table-bordered table-striped" style="width: 100%;" id="tblSeguimiento">
+
+							<thead>
+								<tr>
+									<th>Nombre de la Actividad</th>
+									<th>Seguimiento Realizado</th>
+									<th>Fecha de Registro</th>
+									<th>Finaliza la actividad</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+
+							<tbody>
+							</tbody>
+
+						</table>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/seguimiento/seguimientoPA.js}"></script>
+	</th:block>
+</body>
+
+</html>
