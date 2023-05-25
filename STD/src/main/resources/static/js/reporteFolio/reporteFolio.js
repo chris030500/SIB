@@ -61,9 +61,9 @@ function peticionPost(urlServicio) {
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
-				var idReporte = 3;
+				var idReporte = 2;
 				var servicioReporte = "exportarReporte/generarReporte?idReporte=";
-				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_BUSQUEDA=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=CSO_" + respuesta.dt_fecha_registro;
+				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_BUSQUEDA=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=" + respuesta.dt_fecha_registro;
 				
 				console.log("url:" + urlReporte);
 				window.open(urlReporte);
