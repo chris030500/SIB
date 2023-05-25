@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
-import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.proceso_validacion.model.ProcesoValidacion;
 import ahorrosbienestar.sib.std.proceso_validacion.repository.IProcesoValidacionRepository;
@@ -21,6 +20,7 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.repository.ISolicitudEnvio;
 import ahorrosbienestar.sib.std.videoGrabacion.model.VideoGrabacionDatos;
 import ahorrosbienestar.sib.std.videoGrabacion.service.VideoGrabacionService;
+import org.apache.log4j.Logger;
 
 @Controller
 @RequestMapping("/videoGrabacion")
@@ -42,6 +42,8 @@ public class VideoGrabacionController {
 	@Autowired
 	private IProcesoValidacionRepository iProcesoValidacionRepository;
 	
+	private static final Logger logger = Logger.getLogger(VideoGrabacionController.class);
+	
 	
 	@Autowired
 	public VideoGrabacionController(VideoGrabacionService videoGrabacionService) {
@@ -57,7 +59,9 @@ public class VideoGrabacionController {
 			
 			return "videoGrabacion/videograbacionConsulta";
 		} catch (Exception e) {
-			System.out.print("mensaje"+e.getMessage());
+			//logger.info("mensaje"+e.getMessage());
+			logger.error(e);
+			//System.out.print("mensaje"+e.getMessage());
 		}
 		return null;
 	}
@@ -70,7 +74,8 @@ public class VideoGrabacionController {
 			return  ResponseEntity.ok(obtLista(busquedaSolicitud));
 						
 		} catch (Exception e) {
-			System.out.print("--"+e.getMessage());
+			//System.out.print("--"+e.getMessage());
+			logger.error(e);
 		}
 		return null;
 	}
@@ -83,7 +88,8 @@ public class VideoGrabacionController {
 			return  ResponseEntity.ok(obtLista(busquedaSolicitud));
 						
 		} catch (Exception e) {
-			System.out.print("--"+e.getMessage());
+			//System.out.print("--"+e.getMessage());
+			logger.error(e);
 		}
 		return null;
 	}

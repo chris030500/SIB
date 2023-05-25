@@ -5,8 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
@@ -42,7 +42,8 @@ public class JasperReportController {
 	
 	
 	
-    protected final Log logger = LogFactory.getLog(this.getClass());
+    //protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(JasperReportController.class);
 	
     private String extPDF = ".pdf";
     private String extXLS = ".xls";
@@ -60,12 +61,12 @@ public class JasperReportController {
     		 */
     		
     		
-    					System.out.println("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
+    					logger.info("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
 						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
     					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
     					
-    					System.out.println("url:"+urlGenerarReporte);
+    					logger.info("url:"+urlGenerarReporte);
     					HttpHeaders headers = new HttpHeaders();
     				    headers = createHeaders(configService.findAll().get(15).getVc_valor_propiedad(), configService.findAll().get(16).getVc_valor_propiedad());
     					headers.set("Content-Type",report.getVc_tipo_contenido());

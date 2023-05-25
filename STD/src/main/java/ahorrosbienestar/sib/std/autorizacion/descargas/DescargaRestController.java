@@ -8,12 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,6 +26,10 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.swing.JFileChooser;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -46,8 +52,9 @@ import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
-import lombok.AllArgsConstructor;
 
+import org.apache.log4j.Logger;
+import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
@@ -62,13 +69,13 @@ public class DescargaRestController {
 
 	@Autowired
 	private BitacoraZipService bitacoraZipService;
-	
+
 	@Autowired
 	private DoctoVideoService doctoVideoService;
 
 	// Variable ruta temporal windows
 	private final static int RUTA_TEMPORAL_WS = 51;
-	
+
 	// Variable ruta temporal linux
 	private final static int RUTA_TEMPORAL_LN = 56;
 
@@ -78,6 +85,8 @@ public class DescargaRestController {
 	// Variable que utiliza el método de extraer archivos del zip
 	private static final int BUFFER_SIZE = 4096;
 
+	private static final Logger logger = Logger.getLogger(DescargaRestController.class);
+
 	/**
 	 * Método para crear guardar la documentacion
 	 * 
@@ -86,39 +95,75 @@ public class DescargaRestController {
 	 * @throws ParseException
 	 * @throws java.text.ParseException
 	 */
-	public GeolocalizacionDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado, String nameProducto)
-			throws IOException, ParseException, java.text.ParseException {
+	public GeolocalizacionDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado,
+			String nameProducto, String solicitud) throws IOException, ParseException, java.text.ParseException {
 
-		GeolocalizacionDTO respuestaDTO = new GeolocalizacionDTO();
-		GeolocalizacionDTO coordenadasDTO = new GeolocalizacionDTO();
+		try {
+			GeolocalizacionDTO respuestaDTO = new GeolocalizacionDTO();
+			GeolocalizacionDTO coordenadasDTO = new GeolocalizacionDTO();
 
-		// Obtenemos la ruta temporal
-		Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
+			// Obtenemos la ruta temporal
+			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
 
-		// Se obtiene la ubicación del archivo zip
-		File ubicacionZip = ubicacionZip();
+			// Definimos los parámetros de espera
+			int intentosMaximos = 3;
+			int tiempoEspera = 30000; // 30 segundos
+			// int tiempoEspera = 120000; // 2 minutos
 
-		// Obtenemos las coordenadas
-		coordenadasDTO = extaerJSON(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+			// Realizamos los intentos para encontrar el archivo
+			for (int intento = 1; intento <= intentosMaximos; intento++) {
+				// Se obtiene la ubicación del archivo zip
+				// File ubicacionZip = ubicacionZip();
+				File ubicacionZip = new File(rutaTemporal.getVc_valor_propiedad());
 
-		// Movemos el archivo en la ruta temporal
-		Path origen = Paths.get(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
-		Path destino = Paths.get(rutaTemporal.getVc_valor_propiedad() + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+				File archivoZip = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+				logger.info(" Existe archivo descargado zip: " + archivoZip.exists() + "\t"
+						+ archivoZip.getAbsolutePath() + "\t" + archivoZip.getName());
 
-		Files.move(origen, destino);
-		System.out.println("El archivo ha sido movido exitosamente.");
+				if (archivoZip.exists()) {
+					// Se encontró el archivo, procedemos con el resto del proceso
+					// Obtenemos las coordenadas
+					coordenadasDTO = extaerJSON(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
 
-		// Guardamos la bitacora
-		guardarBitacora(solicitudEnvio, destino.toString());
-		
-		SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
-		
-		coordenadasDTO.setCustomerNumber(clienteId.toString());
-		coordenadasDTO.setOperationAmount(montoAutorizado.toString());
-		coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
-		coordenadasDTO.setAccessSystem(nameProducto);
-		respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
-		return respuestaDTO;
+					// Movemos el archivo en la ruta temporal
+//					Path origen = Paths.get(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+//					Path destino = Paths.get(
+//							rutaTemporal.getVc_valor_propiedad() + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+
+					// logger.info("origen descarga: " + origen + "\ndestino descarga: " + destino);
+
+					// Files.move(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+					// logger.info("El archivo ha sido movido exitosamente.");
+
+					// Guardamos la bitacora
+//					guardarBitacora(solicitudEnvio, destino.toString());
+					guardarBitacora(solicitudEnvio, ubicacionZip.getAbsolutePath());
+					extraerArchivos(archivoZip, solicitudEnvio, solicitud, clienteId);
+
+					SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+
+					coordenadasDTO.setCustomerNumber(clienteId.toString());
+					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
+					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
+					coordenadasDTO.setAccessSystem(nameProducto);
+					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
+					return respuestaDTO;
+				}
+
+				// El archivo no se encontró, esperamos un tiempo antes de intentar nuevamente
+				try {
+					Thread.sleep(tiempoEspera);
+				} catch (InterruptedException e) {
+					logger.error("Error al esperar el tiempo de espera.", e);
+				}
+			}
+
+			logger.error("No se pudo encontrar el archivo después de " + intentosMaximos + " intentos.");
+
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return null;
 	}
 
 	/**
@@ -128,6 +173,17 @@ public class DescargaRestController {
 	 */
 	public File ubicacionZip() throws IOException {
 
+		InetAddress ipInet = InetAddress.getLocalHost();
+		String hostname = ipInet.getHostName();
+		// System.out.println("IP de la máquina: " + ipInet.getHostAddress());
+		logger.info("IP de la máquina: " + ipInet.getHostAddress());
+		logger.info("hostname: " + hostname);
+		String ipOrigen = ipInet.getHostAddress();
+
+		// String ip = HttpUtils.getRequestIP(request);
+//		System.out.println("ip origen ubicacionZip: " + ip);
+//		logger.info("ip origen ubicacionZip: " + ip);
+
 		// Obtener el sistema operativo actual
 		String os = System.getProperty("os.name").toLowerCase();
 
@@ -135,27 +191,35 @@ public class DescargaRestController {
 		String rutaDescargas = "";
 
 		if (os.contains("win")) {
-			rutaDescargas = System.getProperty("user.home") + "\\Downloads";
+			// rutaDescargas = ipOrigen + "\\Downloads";
+			rutaDescargas = "\\\\" + hostname + "\\" + CARPETA_NUEVA;
 		} else if (os.contains("mac")) {
-			rutaDescargas = System.getProperty("user.home") + "/Downloads";
+			rutaDescargas = ipOrigen + "/Downloads";
 		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-			rutaDescargas = System.getProperty("user.home") + "/Downloads";
+			rutaDescargas = ipOrigen + "/Downloads";
 		} else {
 			// Sistema operativo desconocido
-			System.err.println("Sistema operativo no soportado.");
+			logger.error("Sistema operativo no soportado.");
+			// System.err.println("Sistema operativo no soportado.");
 			System.exit(1);
 		}
 
 		// Imprimir la ruta de la carpeta de descargas
-		System.out.println("La carpeta de descargas está ubicada en: " + rutaDescargas);
+		logger.info("La carpeta de descargas está ubicada en: " + rutaDescargas);
+		// System.out.println("La carpeta de descargas está ubicada en: " +
+		// rutaDescargas);
 
 		// Acceder a la carpeta de descargas
 		File carpetaDescargas = new File(rutaDescargas);
 
-		if (carpetaDescargas.exists())
-			System.out.println("La carpeta de descargas existe.");
-		else
-			System.out.println("La carpeta de descargas no existe.");
+		logger.info("La carpeta de descargas existe: " + carpetaDescargas.exists());
+
+//		if (carpetaDescargas.exists())
+//			logger.info("La carpeta de descargas existe.");
+//			//System.out.println("La carpeta de descargas existe.");
+//		else
+//			logger.info("La carpeta de descargas no existe.");
+//			System.out.println("La carpeta de descargas no existe.");
 
 		return carpetaDescargas;
 
@@ -175,12 +239,12 @@ public class DescargaRestController {
 		SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
 
 		// Fecha de registro
-        // Obtener la fecha actual como un objeto java.util.Date
-        Date fechaActual = new Date();
-        // Convertir el objeto java.util.Date a un objeto java.time.Instant
-        Instant instant = fechaActual.toInstant();
-        // Crear un objeto java.time.LocalDate usando el objeto java.time.Instant
-        LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+		// Obtener la fecha actual como un objeto java.util.Date
+		Date fechaActual = new Date();
+		// Convertir el objeto java.util.Date a un objeto java.time.Instant
+		Instant instant = fechaActual.toInstant();
+		// Crear un objeto java.time.LocalDate usando el objeto java.time.Instant
+		LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 
 		model.setDt_fecha_registro(localDate);
 		model.setVc_ruta_zip(ruta);
@@ -196,6 +260,7 @@ public class DescargaRestController {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
+	@SuppressWarnings("resource")
 	public GeolocalizacionDTO extaerJSON(String filePath) throws IOException, ParseException {
 
 		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
@@ -239,7 +304,8 @@ public class DescargaRestController {
 		try {
 			jsonObj = (JSONObject) parser.parse(stringBuilder.toString());
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error(e);
+			// e.printStackTrace();
 		}
 
 		String latitude = (String) jsonObj.get("latitude");
@@ -252,25 +318,26 @@ public class DescargaRestController {
 
 		return responseDTO;
 	}
-	
-	
+
 	public GeolocalizacionDTO llenarGeolocalizacionDTO(GeolocalizacionDTO llenarDTO) throws IOException {
-		
+
 		// Fecha
-	    LocalDateTime now = LocalDateTime.now();
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	    String formattedDateTime = now.format(formatter);
-	    
-	    // Dirección
-	    String url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + llenarDTO.getLatitude() + "&lon=" + llenarDTO.getLongitude();
-	    URL requestUrl = new URL(url);
-	    InputStream is = requestUrl.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    Gson gson = new Gson();
-	    JsonObject json = gson.fromJson(isr, JsonObject.class);
-	    String address = json.get("display_name").getAsString();
-	    System.out.println("Dirección: " + address);
-		
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String formattedDateTime = now.format(formatter);
+
+		// Dirección
+		String url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + llenarDTO.getLatitude() + "&lon="
+				+ llenarDTO.getLongitude();
+		URL requestUrl = new URL(url);
+		InputStream is = requestUrl.openStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		Gson gson = new Gson();
+		JsonObject json = gson.fromJson(isr, JsonObject.class);
+		String address = json.get("display_name").getAsString();
+		logger.info("Dirección: " + address);
+		// System.out.println("Dirección: " + address);
+
 		llenarDTO.setNumberProvisions("1");
 		llenarDTO.setTypeDevice("M");
 		llenarDTO.setRegistrationDataTime(formattedDateTime);
@@ -280,7 +347,7 @@ public class DescargaRestController {
 		llenarDTO.setIp("0.0.0.0");
 		llenarDTO.setTypeProduct("C");
 		llenarDTO.setIdState("22");
-		
+
 		return llenarDTO;
 	}
 
@@ -288,73 +355,184 @@ public class DescargaRestController {
 	 * Método de extracción zip automático
 	 * 
 	 * @throws IOException
-	 * @throws java.text.ParseException 
+	 * @throws java.text.ParseException
 	 */
-	@Scheduled(cron = "0 0 22 * * ?")
+	// @Scheduled(cron = "0 0 22 * * ?")
 	public void extraerArchivos() throws IOException, java.text.ParseException {
-		
+
+		logger.info("Ejecutando extraerArchivos");
+
 		// Obtenemos la ruta temporal windows
 		Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
-		
+
 		// Obtenemos la ruta temporal linux
-		Configuracion rutaLinux = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
-		
+		Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
+
 		//
 		File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
+		logger.info("carpetaEnvio : " + carpetaEnvio);
 		File[] archivosEnvio = carpetaEnvio.listFiles();
 		//
-		File carpetaVideo = new File(rutaLinux.getVc_valor_propiedad());
+		File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
 		File[] archivosVideo = carpetaVideo.listFiles();
-		if (archivosVideo != null) {
-			for (File video : archivosVideo) {
-				if (video.isFile()) {
-					if (archivosEnvio != null) {
-						for (File envio : archivosEnvio) {
-							//
-							String inicioVideo = video.getName();
-							String[] partesVideo = inicioVideo.split("-");
-							//
-							int indicePunto = partesVideo[1].indexOf(".");
-							String clienteId = partesVideo[1].substring(0, indicePunto);
-							if (clienteId.equals(envio.getName())) {
-								// Obtener solicitud de envio
-								SolicitudEnvio soEnvio = solicitudEnvioService
-										.obtenerSolicitudEnvio(Integer.parseInt(partesVideo[0]));
 
-								// Aquí hace referencia al complemento de la ruta con el cliente
-								String rutaCliente = clienteId + "\\" + clienteId + "-"
-										+ soEnvio.getI_no_solicitud_core() + "-" + soEnvio.getI_identificador_ruta()
-										+ "\\";
+		if (carpetaEnvio.isDirectory()) {
+			String[] listFile = carpetaEnvio.list();
+			logger.info("listFile.length : " + listFile.length);
+			for (int i = 0; i < listFile.length; i++) {
+				String nombre = listFile[i];
+				logger.info("nombre " + i + " : " + nombre);
 
-								// Se arma la ruta en donde ira la carpeta nueva
-								String complemento = carpetaEnvio + "\\" + rutaCliente;
+			}
 
-								//
-								Path origen = Paths.get(video.toString());
-								Path destino = Paths.get(complemento + video.getName());
+		}
 
-								Files.move(origen, destino);
+//		if (archivosVideo != null) {
+//			for (File video : archivosVideo) {
+//				if (video.isFile()) {
+//					if (archivosEnvio != null) {
+//						for (File envio : archivosEnvio) {
+//							//
+//							String inicioVideo = video.getName();
+//							String[] partesVideo = inicioVideo.split("-");
+//							//
+//							int indicePunto = partesVideo[1].indexOf(".");
+//							String clienteId = partesVideo[1].substring(0, indicePunto);
+//							if (clienteId.equals(envio.getName())) {
+//								// Obtener solicitud de envio
+//								SolicitudEnvio soEnvio = solicitudEnvioService
+//										.obtenerSolicitudEnvio(Integer.parseInt(partesVideo[0]));
+//
+//								// Aquí hace referencia al complemento de la ruta con el cliente
+//								String rutaCliente = clienteId + "\\" + clienteId + "-"
+//										+ soEnvio.getI_no_solicitud_core() + "-" + soEnvio.getI_identificador_ruta()
+//										+ "\\";
+//
+//								logger.info("rutaCliente: " + rutaCliente.toString());
+//
+//								// Se arma la ruta en donde ira la carpeta nueva
+//								String complemento = carpetaEnvio + "\\" + rutaCliente;
+//
+//								//
+//								Path origen = Paths.get(video.toString());
+//								Path destino = Paths.get(complemento + video.getName());
+//
+//								Files.move(origen, destino);
+//
+//								String zipDestino = complemento + "\\" + CARPETA_NUEVA;
+//
+//								// Descomprimir el archivo .zip
+//								unzip(destino.toString(), zipDestino);
+//
+//								//
+//								File fileArchivos = new File(zipDestino);
+//								File[] files = fileArchivos.listFiles();
+//								if (files != null) {
+//									for (File nuevo : files) {
+//										if (nuevo.isFile()) {
+//											guardarDoctoVideo(soEnvio.getPk_id_solicitud_envio(),
+//													rutaCliente + CARPETA_NUEVA + "\\" + nuevo.getName());
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+	}
 
-								String zipDestino = complemento + "\\" + CARPETA_NUEVA;
+	public void extraerArchivos(File archivoZip, Integer solicitudEnvio, String solicitud, Integer clienteId)
+			throws IOException, java.text.ParseException {
+		try {
+			logger.info("Ejecutando extraerArchivos");
 
-								// Descomprimir el archivo .zip
-								unzip(destino.toString(), zipDestino);
-								
-								//
-								File fileArchivos = new File(zipDestino);
-								File[] files = fileArchivos.listFiles();
-								if (files != null) {
-									for (File nuevo : files) {
-										if (nuevo.isFile()) {
-											guardarDoctoVideo(soEnvio.getPk_id_solicitud_envio(), rutaCliente + CARPETA_NUEVA + "\\" + nuevo.getName());
-										}
-									}
-								}
-							}
+			// Obtenemos la ruta temporal windows
+			Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
+
+			// Obtenemos la ruta temporal linux
+			Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
+
+			SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+
+			int identificador = soEnvio.getI_identificador_ruta();
+
+			//
+			File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
+			logger.info("carpetaEnvio : " + carpetaEnvio);
+			File[] archivosEnvio = carpetaEnvio.listFiles();
+			//
+			File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
+			logger.info("carpetaVideo : " + carpetaVideo);
+			File[] archivosVideo = carpetaVideo.listFiles();
+
+			String carpetaFinal = carpetaVideo + "\\" + clienteId + "\\" + clienteId + "-" + solicitud + "-"
+					+ identificador;
+			logger.info("carpetaFinal :" + carpetaFinal);
+
+			File carpetaVideograbación = new File(carpetaFinal + "\\" + CARPETA_NUEVA);
+
+			logger.info("carpetaVideograbación: " + carpetaVideograbación);
+			
+			Path origen = Paths.get(archivoZip.getAbsolutePath());
+			Path destino = Paths.get(carpetaVideograbación.getAbsolutePath());
+			logger.info("origen move: " + origen);
+			logger.info("destino move: " + destino);
+
+			if (carpetaEnvio.isDirectory()) {
+				String[] listFile = carpetaEnvio.list();
+				logger.info("listFile.length : " + listFile.length);
+				for (int i = 0; i < listFile.length; i++) {
+					String nombre = listFile[i];
+					logger.info("nombre " + i + " : " + nombre);
+
+					if (archivoZip.equals(nombre)) {
+						logger.info("Se encontro el archivo: " + archivoZip);
+						if (carpetaVideograbación.exists()) {
+							eliminarDirectorio(carpetaVideograbación);
+							//crearDirectorio(carpetaVideograbación);
+							carpetaVideograbación.mkdirs();
+
+						} else {
+							//crearDirectorio(carpetaVideograbación);
 						}
+						
+						Files.move(origen, destino);
+
 					}
+
+				}
+
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e);
+		}
+		
+
+	}
+
+	private static void eliminarDirectorio(File directorio) {
+		logger.info("Ejecutando eliminarDirectorio");
+		if (directorio.isDirectory()) {
+			File[] archivos = directorio.listFiles();
+			if (archivos != null) {
+				for (File archivo : archivos) {
+					eliminarDirectorio(archivo);
 				}
 			}
+		}
+		directorio.delete();
+	}
+
+	private static void crearDirectorio(File directorio) {
+		if (directorio.mkdirs()) {
+			logger.info("Directorio creado: " + directorio.getAbsolutePath());
+			//System.out.println("Directorio creado: " + directorio.getAbsolutePath());
+		} else {
+			logger.info("No se pudo crear el directorio: " + directorio.getAbsolutePath());
 		}
 	}
 
@@ -367,8 +545,8 @@ public class DescargaRestController {
 	 */
 	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
 
-		System.out.println("comienza la extracción del .zip");
-
+		// System.out.println("comienza la extracción del .zip");
+		logger.info("comienza la extracción del .zip");
 		File Destination_Directory = new File(destinoPath);
 
 		if (!Destination_Directory.exists()) {
@@ -412,9 +590,10 @@ public class DescargaRestController {
 		}
 		Buffered_Output_Stream.close();
 	}
-	
+
 	/**
 	 * Método para guardar los documentos
+	 * 
 	 * @param solicitudEnvio
 	 * @param ruta
 	 * @throws java.text.ParseException
@@ -426,12 +605,12 @@ public class DescargaRestController {
 		SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
 
 		// Fecha de registro
-        // Obtener la fecha actual como un objeto java.util.Date
-        Date fechaActual = new Date();
-        // Convertir el objeto java.util.Date a un objeto java.time.Instant
-        Instant instant = fechaActual.toInstant();
-        // Crear un objeto java.time.LocalDate usando el objeto java.time.Instant
-        LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+		// Obtener la fecha actual como un objeto java.util.Date
+		Date fechaActual = new Date();
+		// Convertir el objeto java.util.Date a un objeto java.time.Instant
+		Instant instant = fechaActual.toInstant();
+		// Crear un objeto java.time.LocalDate usando el objeto java.time.Instant
+		LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 
 		model.setDt_fecha_envio(localDate);
 		model.setVc_ruta_docto(ruta);

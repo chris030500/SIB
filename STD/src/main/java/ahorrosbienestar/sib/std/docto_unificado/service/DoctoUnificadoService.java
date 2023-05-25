@@ -3,8 +3,7 @@ package ahorrosbienestar.sib.std.docto_unificado.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,9 @@ public class DoctoUnificadoService {
 	@Autowired
 	private IDoctoUnificadoRepository iDoctoUnificadoRepository;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	private static final Logger logger = Logger.getLogger(DoctoUnificadoService.class);
 	
 	@Autowired
 	public DoctoUnificadoService(IDoctoUnificadoRepository iDoctoUnificadoRepository) {

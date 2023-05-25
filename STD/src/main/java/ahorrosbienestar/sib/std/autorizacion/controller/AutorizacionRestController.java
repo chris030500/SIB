@@ -2,7 +2,7 @@ package ahorrosbienestar.sib.std.autorizacion.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -12,8 +12,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
-import ahorrosbienestar.sib.std.autorizacion.descargas.dto.CredencialesGeoDTO;
+
 import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -35,6 +38,8 @@ import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import lombok.AllArgsConstructor;
+
+import org.apache.log4j.Logger;
 
 @RestController
 @AllArgsConstructor
@@ -68,12 +73,15 @@ public class AutorizacionRestController {
 	@Autowired
 	private ConfigService configService;
 
+	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
+
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)
 	public GeolocalizacionDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("clienteID") Integer clienteID,
 			@RequestParam("montoAutorizado") Float montoAutorizado, @RequestParam("producto") String producto,
-			@RequestParam("observaciones") String observaciones)
+			@RequestParam("observaciones") String observaciones,
+			@RequestParam("solicitud") String solicitud)
 			throws ParseException, IOException, org.json.simple.parser.ParseException {
 
 		//
@@ -121,8 +129,20 @@ public class AutorizacionRestController {
 				doctEnvioService.save(doct);
 			});
 
-			// Llamamos al método de guardar documentos de videograbacion
-			responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto);
+			responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto, solicitud);
+			logger.info("responseDTO: " + responseDTO);
+			
+			// Definimos los parámetros de espera
+//			int intentosMaximos = 3;
+//			int tiempoEspera = 2000; // 2 segundos
+//			// int tiempoEspera = 120000; // 2 minutos
+//			if(responseDTO == null) {
+//				// Realizamos los intentos para encontrar el archivo
+//				for (int intento = 1; intento <= intentosMaximos; intento++) {
+//					responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto);
+//				}
+//			}
+			
 
 			// si es rechazar
 		} else if (tipoEstatus.equals("rechazar")) {
@@ -204,7 +224,8 @@ public class AutorizacionRestController {
 			os.close();
 
 			int responseCode = connection.getResponseCode();
-			System.out.println("Response code: " + responseCode);
+			logger.info("Response code: " + responseCode);
+			// System.out.println("Response code: " + responseCode);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String inputLine;
@@ -214,10 +235,12 @@ public class AutorizacionRestController {
 			}
 			in.close();
 
-			System.out.println("Response body: " + response.toString());
+			logger.info("Response body: " + response.toString());
+			// System.out.println("Response body: " + response.toString());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
+			// e.printStackTrace();
 		}
 
 	}

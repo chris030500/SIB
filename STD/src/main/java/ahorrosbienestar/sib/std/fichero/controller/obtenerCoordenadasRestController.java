@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import ahorrosbienestar.sib.std.coord_doc.model.CoordenadaDocumento;
 import ahorrosbienestar.sib.std.coord_doc.service.CoordenadaDocumentoService;
@@ -34,7 +34,9 @@ public class obtenerCoordenadasRestController {
 	@Autowired
 	private CoordenadaDocumentoService coordenadaDocumentoService;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	private static final Logger logger = Logger.getLogger(obtenerCoordenadasRestController.class);
 
 	// Obtener las coordenadas del archivo Pagare
 //	@GetMapping()
@@ -42,7 +44,7 @@ public class obtenerCoordenadasRestController {
 //
 //		// PDDocument doc1 = PDDocument.load(file);
 //		
-//		//System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+//		//logger.info("RutaAbsoluta: " + rutaAbsoluta);
 //		logger.info("Ejecutando obtenerCoordenadasPagare Tabla amortizacion");
 //		String keyWords = "FIRMA";
 //		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
@@ -133,7 +135,7 @@ public class obtenerCoordenadasRestController {
 		try {
 			// PDDocument doc1 = PDDocument.load(file);
 
-			// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
 			String pdfPath = url;
@@ -142,9 +144,10 @@ public class obtenerCoordenadasRestController {
 			PDDocument document = PDDocument.load(file);
 			// Obtenemos el numero total de hojas del documento
 			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
-			// System.out.println("Numero de paginas del documento: " +
+			// logger.info("Numero de paginas del documento: " +
 			// doctEnvioService.totalHojas(document.getNumberOfPages(),dEnvio.getPk_id_docto_envio()));
-			System.out.println("Total de hojas: " + document.getNumberOfPages());
+			logger.info("Total de hojas: " + document.getNumberOfPages());
+			//logger.info("Total de hojas: " + document.getNumberOfPages());
 
 			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService
 					.obtenerCoordenadaDocto(docto.getPk_id_documento());
@@ -153,17 +156,24 @@ public class obtenerCoordenadasRestController {
 			boolean isEmpty = coordenadas != null && !coordenadas.isEmpty();
 			if (isEmpty) {
 				for (int i = 0; i < coordenadas.size(); i++) {
+					logger.info("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+//					System.out
+//							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-					System.out
-							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
-
-					System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-					System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-					System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-					System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-					System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-					System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-					System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
+//					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+//					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+//					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+//					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+//					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+//					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+//					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -186,8 +196,9 @@ public class obtenerCoordenadasRestController {
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento pagare");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento pagare");
 		}
 //		logger.info("Se obtuvieron correctamente las coordenadas del documento pagare");
@@ -206,7 +217,7 @@ public class obtenerCoordenadasRestController {
 		try {
 			// PDDocument doc1 = PDDocument.load(file);
 
-			// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
 			String pdfPath = url;
@@ -215,28 +226,38 @@ public class obtenerCoordenadasRestController {
 			PDDocument document = PDDocument.load(file);
 			// Obtenemos el numero total de hojas del documento
 			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
-			System.out.println("Total de hojas: " + document.getNumberOfPages());
+			logger.info("Total de hojas: " + document.getNumberOfPages());
+			//logger.info("Total de hojas: " + document.getNumberOfPages());
 
 			// List<CoordenadaDocumento> coordenadas =
 			// coordenadaDocumentoService.obtenerCoordenadaDocto(docto.getPk_id_documento());
 			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService.obtenerCoordenadaDocto(29);
 
-			System.out.println("Coordenadas: " + coordenadas);
+			logger.info("Coordenadas: " + coordenadas);
+			//logger.info("Coordenadas: " + coordenadas);
 			boolean isEmpty = coordenadas != null && !coordenadas.isEmpty();
 			if (isEmpty) {
-				System.out.println("Contiene información");
+				logger.info("Contiene información");
 				for (int i = 0; i < coordenadas.size(); i++) {
 
-					System.out
-							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+					logger.info("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+//					System.out
+//							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-					System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-					System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-					System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-					System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-					System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-					System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-					System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
+//					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+//					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+//					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+//					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+//					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+//					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+//					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -254,15 +275,16 @@ public class obtenerCoordenadasRestController {
 				return ResponseEntity
 						.ok("Se obtuvieron correctamente las coordenadas del documento tabla de amortización");
 			} else {
-				System.out.println("Es nulo");
+				logger.info("Es nulo");
 				logger.info("No contiene coordenadas el documento tabla de amortización");
 				return ResponseEntity.ok("No contiene coordenadas el documento tabla de amortización");
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento tabla de amortización");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento tabla de amortización");
 		}
 		// logger.info("Se obtuvieron correctamente las coordenadas del documento tabla
@@ -358,7 +380,7 @@ public class obtenerCoordenadasRestController {
 		try {
 			// PDDocument doc1 = PDDocument.load(file);
 			// String nomina = "N";
-			// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
 			String pdfPath = url;
@@ -367,9 +389,10 @@ public class obtenerCoordenadasRestController {
 			PDDocument document = PDDocument.load(file);
 			// Obtenemos el numero total de hojas del documento
 			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
-			// System.out.println("Numero de paginas del documento: " +
+			// logger.info("Numero de paginas del documento: " +
 			// doctEnvioService.totalHojas(document.getNumberOfPages(),dEnvio.getPk_id_docto_envio()));
-			System.out.println("Total de hojas: " + document.getNumberOfPages());
+			
+			logger.info("Total de hojas: " + document.getNumberOfPages());
 
 			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService
 					.obtenerCoordenadaDocto(docto.getPk_id_documento());
@@ -381,16 +404,16 @@ public class obtenerCoordenadasRestController {
 				for (int i = 0; i < coordenadas.size(); i++) {
 
 					if (productoNomina.equals("S")) {
-						System.out.println(
+						logger.info(
 								"Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-						System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-						System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-						System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-						System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-						System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-						System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-						System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+						logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+						logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+						logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+						logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+						logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+						logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+						logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 						FirmaDocto firmaDocto = new FirmaDocto();
 						firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -406,18 +429,18 @@ public class obtenerCoordenadasRestController {
 					} else if (productoNomina.equals("N")) {
 
 						if (coordenadas.get(i).getI_pagina() == 4) {
-							System.out.println("No se contempla la hoja 4");
+							logger.info("No se contempla la hoja 4");
 						} else {
-							System.out.println(
+							logger.info(
 									"Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-							System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-							System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-							System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-							System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-							System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-							System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-							System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+							logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+							logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+							logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+							logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+							logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+							logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+							logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 							FirmaDocto firmaDocto = new FirmaDocto();
 							firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -438,15 +461,16 @@ public class obtenerCoordenadasRestController {
 				logger.info("Se obtuvieron correctamente las coordenadas del documento anexo contrato");
 				return ResponseEntity.ok("Se obtuvieron correctamente las coordenadas del documento anexo contrato");
 			} else {
-				System.out.println("Es nulo");
+				logger.info("Es nulo");
 				logger.info("No contiene coordenadas el documento anexo contrato");
 				return ResponseEntity.ok("No contiene coordenadas el documento anexo contrato");
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento anexo contrato");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento anexo contrato");
 		}
 
@@ -463,14 +487,14 @@ public class obtenerCoordenadasRestController {
 //		String pdfPath = url;
 //		logger.info("pdfPath: " + pdfPath);
 //		logger.info("pdfPath: " + pdfPath);
-//		System.out.println("Url: " + url);
-//		System.out.println("pdfPath: " + pdfPath);
+//		logger.info("Url: " + url);
+//		logger.info("pdfPath: " + pdfPath);
 //		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 //		List<float[]> list = kwp.getCoordinate();
 //		// float[] c = list.get(0);
 //		File file = new File(pdfPath);
 //		PDDocument document = PDDocument.load(file);
-//		System.out.println("Total de hojas anexo contrato: " + document.getNumberOfPages());
+//		logger.info("Total de hojas anexo contrato: " + document.getNumberOfPages());
 //		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
 //		for (int i = 0; i < list.size(); i++) {
 //			float xCentral = 0;
@@ -716,7 +740,7 @@ public class obtenerCoordenadasRestController {
 		try {
 			// PDDocument doc1 = PDDocument.load(file);
 
-			// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
 			String pdfPath = url;
@@ -726,9 +750,9 @@ public class obtenerCoordenadasRestController {
 			PDDocument document = PDDocument.load(file);
 			// Obtenemos el numero total de hojas del documento
 			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
-			// System.out.println("Numero de paginas del documento: " +
+			// logger.info("Numero de paginas del documento: " +
 			// doctEnvioService.totalHojas(document.getNumberOfPages(),dEnvio.getPk_id_docto_envio()));
-			System.out.println("Total de hojas: " + document.getNumberOfPages());
+			logger.info("Total de hojas: " + document.getNumberOfPages());
 
 			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService
 					.obtenerCoordenadaDocto(docto.getPk_id_documento());
@@ -738,16 +762,15 @@ public class obtenerCoordenadasRestController {
 			if (isEmpty) {
 				for (int i = 0; i < coordenadas.size(); i++) {
 
-					System.out
-							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+					logger.info("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-					System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-					System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-					System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-					System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-					System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-					System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-					System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -765,15 +788,16 @@ public class obtenerCoordenadasRestController {
 				return ResponseEntity
 						.ok("Se obtuvieron correctamente las coordenadas del documento contrato de apertura");
 			} else {
-				System.out.println("Es nulo");
+				logger.info("Es nulo");
 				logger.info("No contiene coordenadas el documento contrato de apertura");
 				return ResponseEntity.ok("No contiene coordenadas el contrato de apertura");
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento contrato de apertura");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento contrato de apertura");
 		}
 
@@ -784,23 +808,23 @@ public class obtenerCoordenadasRestController {
 //	public ResponseEntity<?> obtenerCoordenadasContrato(String url, DoctEnvio dEnvio) throws IOException {
 //
 //		// PDDocument doc1 = PDDocument.load(file);
-//		System.out.println("Contrato");
-//		System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
+//		logger.info("Contrato");
+//		logger.info("dEnvio: " + dEnvio.getPk_id_docto_envio());
 //		logger.info("Ejecutando obtenerCoordenadasContrato");
 //		String keyWords = "FIRMA";
 //		// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 //		String pdfPath = url;
 //		logger.info("url: " + url);
 //		logger.info("pdfPath: " + pdfPath);
-//		System.out.println("url: " + url);
-//		System.out.println("pdfPath: " + pdfPath);
+//		logger.info("url: " + url);
+//		logger.info("pdfPath: " + pdfPath);
 //		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, pdfPath);
 //		List<float[]> list = kwp.getCoordinate();
 //		// float[] c = list.get(0);
 //		File file = new File(pdfPath);
 //		PDDocument document = PDDocument.load(file);
 //		doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
-//		System.out.println("Total de paginas Contrato: " + document.getNumberOfPages());
+//		logger.info("Total de paginas Contrato: " + document.getNumberOfPages());
 //		float xCentral = 0;
 //		float yCentral = 0;
 //		for (int i = 0; i < list.size(); i++) {
@@ -826,7 +850,7 @@ public class obtenerCoordenadasRestController {
 //			if (c[2] != 1.0) {
 //
 //				if (c == list.get(list.size() - 3)) {
-//					System.out.println("c: " + c);
+//					logger.info("c: " + c);
 //					acomodoY = 10.00f;
 //					acomodoX = 45.00f;
 //					widht = 130.00f;
@@ -849,8 +873,8 @@ public class obtenerCoordenadasRestController {
 //					firmaDocto.setF_coord_firma_yCentral(yCentral);
 //					firmaDocto = firmaDoctoService.save(firmaDocto);
 //					logger.info("Coordenadas del espacio de firma: ");
-//					System.out.println("Coordenadas del espacio de firma: ");
-//					System.out.println("x: " + (c[1]) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht
+//					logger.info("Coordenadas del espacio de firma: ");
+//					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht
 //							+ " height: " + height);
 //					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht + " height: "
 //							+ height);
@@ -920,16 +944,16 @@ public class obtenerCoordenadasRestController {
 //	public ResponseEntity<?> obtenerCoordenadasContrato2() throws IOException {
 //
 //		// PDDocument doc1 = PDDocument.load(file);
-//		System.out.println("Contrato");
-//		// System.out.println("dEnvio: " + dEnvio.getPk_id_docto_envio());
+//		logger.info("Contrato");
+//		// logger.info("dEnvio: " + dEnvio.getPk_id_docto_envio());
 //		logger.info("Ejecutando obtenerCoordenadasContrato");
 //		String keyWords = "FIRMA";
 //		String archivo = "C:/Users/osvaldo.escamilla/Documents/Contrato_Apertura.pdf";
 ////		String pdfPath = url;
 ////		logger.info("url: " + url);
 ////		logger.info("pdfPath: " + pdfPath);
-////		System.out.println("url: " + url);
-////		System.out.println("pdfPath: " + pdfPath);
+////		logger.info("url: " + url);
+////		logger.info("pdfPath: " + pdfPath);
 //		PdfBoxKeyWordPosition kwp = new PdfBoxKeyWordPosition(keyWords, archivo);
 //		List<float[]> list = kwp.getCoordinate();
 //		// float[] c = list.get(0);
@@ -937,15 +961,15 @@ public class obtenerCoordenadasRestController {
 //		PDDocument document = PDDocument.load(file);
 //		// doctEnvioService.totalHojas(document.getNumberOfPages(),
 //		// dEnvio.getPk_id_docto_envio());
-//		System.out.println("Total de paginas Contrato: " + document.getNumberOfPages());
+//		logger.info("Total de paginas Contrato: " + document.getNumberOfPages());
 //		float xCentral = 0;
 //		float yCentral = 0;
 //		for (int i = 0; i < list.size(); i++) {
 //			float[] c = list.get(i);
 //
 //			logger.info("Página" + c[2]);
-//			System.out.println("Página" + c[2]);
-////			System.out.println("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
+//			logger.info("Página" + c[2]);
+////			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
 ////			logger.info("Coordenadas de la palabra clave (" + keyWords + "): x:" + c[1] + " , y: " + c[0]);
 //
 //			// Retrieving a page of the PDF Document
@@ -964,9 +988,9 @@ public class obtenerCoordenadasRestController {
 //			if (c[2] != 1.0) {
 //
 //				if (c == list.get(list.size() - 3)) {
-//					// System.out.println("c: " + c.toString());
-//					// System.out.println("Coordenada -3");
-//					// System.out.println(list.get(list.size()));
+//					// logger.info("c: " + c.toString());
+//					// logger.info("Coordenada -3");
+//					// logger.info(list.get(list.size()));
 //					acomodoY = 10.00f;
 //					acomodoX = 45.00f;
 //					widht = 130.00f;
@@ -989,8 +1013,8 @@ public class obtenerCoordenadasRestController {
 ////					firmaDocto.setF_coord_firma_yCentral(yCentral);
 ////					firmaDocto = firmaDoctoService.save(firmaDocto);
 //					logger.info("Coordenadas del espacio de firma: ");
-//					System.out.println("Coordenadas del espacio de firma: ");
-//					System.out.println("x: " + (c[1]) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht
+//					logger.info("Coordenadas del espacio de firma: ");
+//					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht
 //							+ " height: " + height);
 //					logger.info("x: " + (c[1]) + " y: " + ((ph - c[0]) - acomodoY) + " widht: " + widht + " height: "
 //							+ height);
@@ -999,7 +1023,7 @@ public class obtenerCoordenadasRestController {
 //				}
 //
 //				if (c == list.get(list.size() - 1)) {
-//					System.out.println("Obtenemos la última coordenada");
+//					logger.info("Obtenemos la última coordenada");
 //					logger.info("Obtenemos la última coordenada");
 //					acomodoY = 5.00f;
 //					acomodoX = 70.00f;
@@ -1022,8 +1046,8 @@ public class obtenerCoordenadasRestController {
 ////					firmaDocto.setF_coord_firma_xCentral(xCentral);
 ////					firmaDocto.setF_coord_firma_yCentral(yCentral);
 ////					firmaDocto = firmaDoctoService.save(firmaDocto);
-//					System.out.println("Coordenadas del espacio de firma:");
-//					System.out.println("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: "
+//					logger.info("Coordenadas del espacio de firma:");
+//					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: "
 //							+ widht + " height: " + height);
 //					logger.info("Coordenadas del espacio de firma: ");
 //					logger.info("x: " + (c[1] - acomodoX) + " y: " + ((ph - c[0]) + acomodoY) + " widht: " + widht
@@ -1064,7 +1088,7 @@ public class obtenerCoordenadasRestController {
 //
 //		// PDDocument doc1 = PDDocument.load(file);
 //
-//		// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+//		// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 //		logger.info("Ejecutando obtenerCoordenadasDomiciliacion");
 //		String keyWords = "RAZON";
 //		String archivo = "C:/Users/osvaldo.escamilla/Documents/formato de domiciliacion.pdf";
@@ -1173,16 +1197,15 @@ public class obtenerCoordenadasRestController {
 			if (isEmpty) {
 				for (int i = 0; i < coordenadas.size(); i++) {
 
-					System.out
-							.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+					logger.info("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-					System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-					System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-					System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-					System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-					System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-					System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-					System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -1199,15 +1222,16 @@ public class obtenerCoordenadasRestController {
 				return ResponseEntity
 						.ok("Se obtuvieron correctamente las coordenadas del documento de formato de domiciliacion");
 			} else {
-				System.out.println("Es nulo");
+				logger.info("Es nulo");
 				logger.info("No contiene coordenadas el documento formato de domiciliacion");
 				return ResponseEntity.ok("No contiene coordenadas formato de domiciliacion");
 			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento de formato de domiciliacion");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento de formato de domiciliacion");
 		}
 
@@ -1218,7 +1242,7 @@ public class obtenerCoordenadasRestController {
 //
 //		// PDDocument doc1 = PDDocument.load(file);
 //
-//		// System.out.println("RutaAbsoluta: " + rutaAbsoluta);
+//		// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 //		logger.info("Ejecutando obtenerCoordenadasDomiliciacion");
 //		String keyWords = "Firma";
 //		String archivo = "C:/Users/osvaldo.escamilla/Documents/autorizacion de transferencia electronica.pdf";
@@ -1328,15 +1352,15 @@ public class obtenerCoordenadasRestController {
 			if (isEmpty) {
 				for (int i = 0; i < coordenadas.size(); i++) {
 
-					System.out.println("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
+					logger.info("Coordenadas en posicion: " + i + " = " + coordenadas.get(i).getPk_id_coord_doc());
 
-					System.out.println("Posicion X1: " + coordenadas.get(i).getF_x1());
-					System.out.println("Posicion X2: " + coordenadas.get(i).getF_x2());
-					System.out.println("Posicion Y1: " + coordenadas.get(i).getF_y1());
-					System.out.println("Posicion Y2: " + coordenadas.get(i).getF_y2());
-					System.out.println("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
-					System.out.println("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
-					System.out.println("Pagina: " + coordenadas.get(i).getI_pagina());
+					logger.info("Posicion X1: " + coordenadas.get(i).getF_x1());
+					logger.info("Posicion X2: " + coordenadas.get(i).getF_x2());
+					logger.info("Posicion Y1: " + coordenadas.get(i).getF_y1());
+					logger.info("Posicion Y2: " + coordenadas.get(i).getF_y2());
+					logger.info("Coordenada centro X: " + coordenadas.get(i).getF_centroX());
+					logger.info("Coordenada centro Y: " + coordenadas.get(i).getF_centroY());
+					logger.info("Pagina: " + coordenadas.get(i).getI_pagina());
 
 					FirmaDocto firmaDocto = new FirmaDocto();
 					firmaDocto.setF_coord_firma_x1(coordenadas.get(i).getF_x1());
@@ -1355,15 +1379,16 @@ public class obtenerCoordenadasRestController {
 						.ok("Se obtuvieron correctamente las coordenadas del documento de autorización de transferencia");
 				
 			} else {
-				System.out.println("Es nulo");
+				logger.info("Es nulo");
 				logger.info("No contiene coordenadas el documento de autorización de transferencia");
 				return ResponseEntity.ok("No contiene coordenadas el documento de autorización de transferencia");
 			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento de autorización de transferencia");
+			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento de autorización de transferencia");
 		}
 		
