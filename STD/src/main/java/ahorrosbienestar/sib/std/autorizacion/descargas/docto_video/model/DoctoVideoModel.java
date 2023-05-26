@@ -4,9 +4,14 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
@@ -17,6 +22,8 @@ public class DoctoVideoModel {
 	
 	@Id
 	@Column(name = "PK_ID_DOCTO_VIDEO")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_docto_video_seq")
+	@SequenceGenerator(name = "tbl_docto_video_seq", sequenceName = "tbl_docto_video_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_docto_envio;
 	
 	@Column(name = "DT_FECHA_ENVIO")
@@ -28,7 +35,11 @@ public class DoctoVideoModel {
 	@Column(name = "I_ESTATUS")
 	private int i_estatus;
 	
-	@OneToOne
+	//@OneToMany
+	//@OneToOne
+	//@ManyToOne
+	//@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "FK_SOLICITUD_ENVIO")
 	private SolicitudEnvio fk_solicitud_envio;
 
