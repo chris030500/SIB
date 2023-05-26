@@ -383,7 +383,7 @@ function actualizarSolicitud(observacion, tipo) {
 				.then((value) => {
 					window.location.reload();
 				});
-		}, error: function() {
+		}, error: function(error) {
 			// Llamamos a nuestro spinner
 			console.log("Error al seleccionar la carpeta de descarga, favor de contactar al administrador del sistema");
 			swal("Error al seleccionar la carpeta de descarga, favor de contactar al administrador del sistema", {
@@ -395,6 +395,7 @@ function actualizarSolicitud(observacion, tipo) {
 				});
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
+			console.log(error);
 		}
 	});
 }

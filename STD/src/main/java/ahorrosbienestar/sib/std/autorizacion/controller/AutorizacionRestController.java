@@ -80,8 +80,7 @@ public class AutorizacionRestController {
 	public GeolocalizacionDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("clienteID") Integer clienteID,
 			@RequestParam("montoAutorizado") Float montoAutorizado, @RequestParam("producto") String producto,
-			@RequestParam("observaciones") String observaciones,
-			@RequestParam("solicitud") String solicitud)
+			@RequestParam("observaciones") String observaciones, @RequestParam("solicitud") String solicitud)
 			throws ParseException, IOException, org.json.simple.parser.ParseException {
 
 		//
@@ -116,22 +115,24 @@ public class AutorizacionRestController {
 		// si es autorizar
 		if (tipoEstatus.equals("autorizar")) {
 
-			// Seteamos datos de la solicitud de envio
-			solicitudEnvio.setI_estatus(ESTATUS_AUTORIZAR);
-			solicitudEnvio.setVc_obser_autoriza(observaciones);
-			solicitudEnvio.setFk_usr_autoriza(usuario);
-			solicitudEnvio.setDt_fecha_autorizacion(fechaLocal);
-			solicitudEnvioService.save(solicitudEnvio);
-
-			// Seteamos datos de los documentos de envio
-			doctEnvioService.listadoDoctEnvioActivos(solicitudEnvio.getPk_id_solicitud_envio()).forEach(doct -> {
-				doct.setI_estatus(ESTATUS_AUTORIZAR);
-				doctEnvioService.save(doct);
-			});
-
 			responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto, solicitud);
 			logger.info("responseDTO: " + responseDTO);
-			
+
+			if (responseDTO != null) {
+				// Seteamos datos de la solicitud de envio
+				solicitudEnvio.setI_estatus(ESTATUS_AUTORIZAR);
+				solicitudEnvio.setVc_obser_autoriza(observaciones);
+				solicitudEnvio.setFk_usr_autoriza(usuario);
+				solicitudEnvio.setDt_fecha_autorizacion(fechaLocal);
+				solicitudEnvioService.save(solicitudEnvio);
+
+				// Seteamos datos de los documentos de envio
+				doctEnvioService.listadoDoctEnvioActivos(solicitudEnvio.getPk_id_solicitud_envio()).forEach(doct -> {
+					doct.setI_estatus(ESTATUS_AUTORIZAR);
+					doctEnvioService.save(doct);
+				});
+			}
+
 			// Definimos los parámetros de espera
 //			int intentosMaximos = 3;
 //			int tiempoEspera = 2000; // 2 segundos
@@ -142,7 +143,6 @@ public class AutorizacionRestController {
 //					responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto);
 //				}
 //			}
-			
 
 			// si es rechazar
 		} else if (tipoEstatus.equals("rechazar")) {
