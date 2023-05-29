@@ -142,6 +142,7 @@ public class CatalogosCEService {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " where t1.I_RESPONSABLE = ? and t1.I_CONFIRMA IN (1,0);";
+				System.out.print("sql"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -480,6 +481,37 @@ public class CatalogosCEService {
 			//System.out.println("Ejecutando spActivarSesion");
 			jdbcTemplate.update("CALL SIB.SP_ACTUALIZAR_ESTATUS (?,?,?)", folioID,opcion,estatus);
 			
+		}
+		
+		/**
+		 * 
+		 * @param areaID
+		 * @return
+		 */
+		public List<ListaFolioXEmpleado> listaActividadPAXEmpleado(Integer idEmpleado) {
+			logger.info("Ejecutando lista Folio por Empleado: ");
+			try {
+				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO "
+						+ " FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
+						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
+						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
+						+ " where t3.I_RESPONSABLE = ?;";
+				System.out.print("sql"+sql);
+				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
+					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
+						e.setFolio(rs.getString(1));
+						e.setPkFolio(rs.getInt(2));
+
+						return e;
+					}
+				});
+				logger.info(ls.get(0).getFolio());
+				return ls;
+			} catch (Exception e) {
+				System.out.println("e"+e.getMessage());
+			}
+			return null;
 		}
 		
 }
