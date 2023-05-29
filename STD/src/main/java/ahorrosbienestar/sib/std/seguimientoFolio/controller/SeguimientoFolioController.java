@@ -56,7 +56,7 @@ public class SeguimientoFolioController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			model.addAttribute("lista_folios", catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado()));
+			model.addAttribute("lista_folios", catalogosCEService.listaActividadPAXEmpleado(usuario.get(0).getI_id_empleado()));
 			
 			return "seguimientoFolio/seguimiento";
 		} catch (Exception e) {
