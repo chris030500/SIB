@@ -22,4 +22,9 @@ public class DoctoVideoService {
 		return doctoVideoRepository.findById(id).orElse(null);
 	}
 
+	public DoctoVideoModel findByIdentificador(Integer solicitudEnvio) {
+		// TODO Auto-generated method stub
+		return doctoVideoRepository.findByIdentificador(solicitudEnvio);
+	}
+
 }
