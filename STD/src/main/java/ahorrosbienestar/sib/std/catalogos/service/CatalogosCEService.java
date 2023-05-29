@@ -39,7 +39,8 @@ public class CatalogosCEService {
 			logger.info("Ejecutando listaEmpleados: ");
 			try {
 				String sql = "SELECT EmpleadoID, CONCAT_WS(' ',PrimerNombre,SegundoNombre,ApellidoPat, ApellidoMat) as nombreEmpleado"
-						+ " FROM CE.TBL_MICROFIN_EMPLEADOS WHERE Estatus = 'A' and EsJefe = 'S';";
+						+ " FROM CE.TBL_MICROFIN_EMPLEADOS WHERE Estatus = 'A' and EsJefe = 'S'"
+						+ " order by PrimerNombre,SegundoNombre asc;";
 				List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<EmpleadosCE>() {
 					public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						EmpleadosCE e = new EmpleadosCE();
