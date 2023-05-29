@@ -100,7 +100,7 @@ function eventosModal() {
 	$("#btnRegistrar").click(function() {
 
 		if (validarFechas(document.getElementById("idFechaRegistro").value, document.getElementById("idVencimiento").value) == false) {
-			if (guardarVacio() == false) {
+			if (guardarVacio() == 0) {
 				if (document.getElementById("idFolioSelec").value == 0) {
 					guardarFolio(1);
 				} else {
@@ -267,92 +267,92 @@ function peticionPost(urlServicio, num, numFolio) {
 }
 
 function guardarVacio() {
-	var validacion = false;
+	var validacion = 0;
 
 	if (document.getElementById("noficio").value.length == 0) {
 		document.getElementById("noficio").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("noficio").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
 	if (document.getElementById("idRecepcion").value.length == 0) {
 		document.getElementById("idRecepcion").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idRecepcion").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 	if (document.getElementById("idAsunto").value.length == 0) {
 		document.getElementById("idAsunto").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idAsunto").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
-	if (document.getElementById("idDirigido").value.length == 0) {
+	if (document.getElementById("idDirigido").value == '0') {
 		document.getElementById("idDirigido").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idDirigido").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
 	if (document.getElementById("iPuesto").value.length == 0) {
 		document.getElementById("iPuesto").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("iPuesto").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
-	if (document.getElementById("idTipoOficio").value.length == 0) {
+	if (document.getElementById("idTipoOficio").value == '0') {
 		document.getElementById("idTipoOficio").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idTipoOficio").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
-	if (document.getElementById("idOrganoEmite").value.length == 0) {
+	if (document.getElementById("idOrganoEmite").value == '0') {
 		document.getElementById("idOrganoEmite").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idOrganoEmite").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
 	if (document.getElementById("idFechaRegistro").value.length == 0) {
 		document.getElementById("idFechaRegistro").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idFechaRegistro").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
-	if (document.getElementById("idPlazo").value.length == 0) {
+	if (document.getElementById("idPlazo").value == 0) {
 		document.getElementById("idPlazo").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idPlazo").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
 
 	if (document.getElementById("idVencimiento").value.length == 0) {
 		document.getElementById("idVencimiento").style.borderColor = "#F70707";
-		validacion = true;
+		validacion = validacion+1;
 	} else {
 		document.getElementById("idVencimiento").style.borderColor = '';
-		validacion = false;
+		validacion = validacion+0;
 	}
-	if (document.getElementById("idEstatusOficio").value.length == 0) {
-		document.getElementById("idEstatusOficio").style.borderColor = "#F70707";
-		validacion = true;
-	} else {
-		document.getElementById("idEstatusOficio").style.borderColor = '';
-		validacion = false;
-	}
+	//if (document.getElementById("idEstatusOficio").value.length == 0) {
+		//document.getElementById("idEstatusOficio").style.borderColor = "#F70707";
+		//validacion = true;
+	//} else {
+		//document.getElementById("idEstatusOficio").style.borderColor = '';
+		//validacion = false;
+	//}
 
 	return validacion;
 }
@@ -526,7 +526,7 @@ function limpiarDatosFolio() {
 	document.getElementById("idFechaRegistro").value = '';
 	document.getElementById("idPlazo").value = '';
 	document.getElementById("idVencimiento").value = '';
-	document.getElementById("idEstatusOficio").value = 0;
+	document.getElementById("idEstatusOficio").value = 1;
 	iniciarfechas();
 }
 var datosObservacion = "cargarObservacion/";
