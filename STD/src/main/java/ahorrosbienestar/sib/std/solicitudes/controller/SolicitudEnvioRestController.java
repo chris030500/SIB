@@ -9,12 +9,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,24 +20,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ahorrosbienestar.sib.std.autorizacion.controller.AutorizacionRestController;
-import ahorrosbienestar.sib.std.docto_envio.controller.DoctoEnvioRestController;
+
+
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.docto_envio.model.DoctEnvio;
-import ahorrosbienestar.sib.std.empleados.controller.EmpleadoController;
-import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
 import ahorrosbienestar.sib.std.empleados.service.EmpleadoService;
 import ahorrosbienestar.sib.std.solicitudes.dto.SolicitudEnvioDTO;
-import ahorrosbienestar.sib.std.fichero.controller.UnirArchivosRestController;
 import ahorrosbienestar.sib.std.fichero.service.UnirArchivosService;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoNotificacionMensajeService;
 import ahorrosbienestar.sib.std.productos.service.ProductoService;
@@ -84,9 +75,6 @@ public class SolicitudEnvioRestController {
 	private UsuarioService usuarioService;
 
 	@Autowired
-	private AutorizacionRestController aController;
-
-	@Autowired
 	private SolicitudEnvioJDBCService solicitudEnvioJDBCService;
 
 	@Autowired
@@ -104,7 +92,8 @@ public class SolicitudEnvioRestController {
 	@Autowired
 	private HistoNotificacionMensajeService histoNotificacionMensajeService;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(SolicitudEnvioRestController.class);
 
 	@PostMapping("/solicitudEnvio/guardarSolicitudEnvio")
 	public ResponseEntity<?> guardarSolicitudEnvio(
@@ -116,9 +105,9 @@ public class SolicitudEnvioRestController {
 			@RequestParam(name = "fCancelacion", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fCancelacion,
 			@RequestParam(name = "hCancelacion", required = true) String hCancelacion) throws IOException {
 		logger.info("Ejecutando guardarSolicitudEnvio");
-		// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
+		// logger.info("Obtenemos el valor de la solicitud:" + solicitud);
 		// Obtenemos el usuario autentificado
-		System.out.println("Fecha cancelacion: " + fCancelacion);
+		logger.info("Fecha cancelacion: " + fCancelacion);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		// Obtenemos el nombre del usuario autentificado
 		Usuario usu = usuarioService.findByNombre(auth.getName());
@@ -141,14 +130,14 @@ public class SolicitudEnvioRestController {
 		sEnvio.setVc_hora_cancelacion(hCancelacion);
 		sEnvio.setI_estatus(1);
 		int identificadoRuta = solicitudEnvioJDBCService.spObtenerIdentificadorRuta(solicitud);
-		System.out.println("solicitud: " + solicitud);
-		System.out.println("identificador = " + identificadoRuta);
+		logger.info("solicitud: " + solicitud);
+		logger.info("identificador = " + identificadoRuta);
 		if (identificadoRuta == 0) {
-			System.out.println("IDENTIFICADOR = 0");
+			logger.info("IDENTIFICADOR = 0");
 			sEnvio.setI_identificador_ruta(1);
 		} else {
-			System.out.println("IDENTIFICADOR != 0");
-			System.out.println("identificador: " + (identificadoRuta + 1));
+			logger.info("IDENTIFICADOR != 0");
+			logger.info("identificador: " + (identificadoRuta + 1));
 			sEnvio.setI_identificador_ruta((identificadoRuta + 1));
 		}
 
@@ -187,10 +176,10 @@ public class SolicitudEnvioRestController {
 		logger.info("Ejecutando visualizarArchivo");
 		// String nombreArchivo =
 		// "C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/AnexosContrato.pdf";
-		System.out.println("Entro en visualizarArchivo");
+		logger.info("Entro en visualizarArchivo");
 		// Obtenemos la direccion base de la tabla configuracion
 		String dBase = configService.findAll().get(13).getVc_valor_propiedad();
-		System.out.println("Archivo: " + nombreArchivo);
+		logger.info("Archivo: " + nombreArchivo);
 //		String filePath = "/path/to/file/";
 //		String fileName = "fileName.pdf";
 		File file = new File(dBase + nombreArchivo);
@@ -220,36 +209,36 @@ public class SolicitudEnvioRestController {
 		logger.info("idSolicitud: " + idSolicitud);
 		logger.info("idSolicitudCore: " + idSolicitudCore);
 		
-		System.out.println("Ejecutando validarSoliEnvio");
-		System.out.println("Estatus:" + estatus);
-		System.out.println("idSolicitud: " + idSolicitud);
-		System.out.println("idSolicitudCore: " + idSolicitudCore);
+		logger.info("Ejecutando validarSoliEnvio");
+		logger.info("Estatus:" + estatus);
+		logger.info("idSolicitud: " + idSolicitud);
+		logger.info("idSolicitudCore: " + idSolicitudCore);
 		try {
 			if (estatus.equals(0)) {
-				// System.out.println("El estatus es 2");
+				// logger.info("El estatus es 2");
 				// logger.info("El estatus es 2");
 				logger.info("El estatus se cambia a 2(Rechazo de firma de documentos para firma)");
-				System.out.println("El estatus se cambia a 2(Rechazo de firma de documentos para firma)");
+				logger.info("El estatus se cambia a 2(Rechazo de firma de documentos para firma)");
 				return ResponseEntity.ok(solicitudEnvioService.validarSoliEnvio(2, idSolicitud));
 			} else if (estatus.equals(1)) {
 				String kyc = productoService.findByProducto(idProducto).getVc_identificador_kyc();
 				String descripcionProducto = productoService.findByProducto(idProducto).getVc_descripcion_producto();
 				
-				System.out.println("kyc: " + kyc);
-				System.out.println("descripcion: " + descripcionProducto);
+				logger.info("kyc: " + kyc);
+				logger.info("descripcion: " + descripcionProducto);
 				
 				if(kyc != null && descripcionProducto != null) {
-					System.out.println("Si contiene información en producto");
+					logger.info("Si contiene información en producto");
 					logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
-					System.out.println("El estatus se cambia a 3(Autorización de documentos para firma)");
+					logger.info("El estatus se cambia a 3(Autorización de documentos para firma)");
 
 					String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
-					System.out.println("EstatusUnir: " + estatusUnir);
+					logger.info("EstatusUnir: " + estatusUnir);
 					// solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
 					if (estatusUnir != "1") {
 						return ResponseEntity.ok(estatusUnir);
 					} else if (estatusUnir == "1") {
-						System.out.println("Crea el archivo XML");
+						logger.info("Crea el archivo XML");
 						crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
 					}
 
@@ -257,12 +246,13 @@ public class SolicitudEnvioRestController {
 				} else {
 					return ResponseEntity.ok("El producto no está totalmente configurado");
 				}
-				// System.out.println("El estatus es 3");
 				// logger.info("El estatus es 3");
+				//logger.info("El estatus es 3");
 				
 			}
 		} catch (Exception e) {
-			System.out.println("Error en falló de validación en solicitud" + e.getMessage());
+			logger.info("Error en falló de validación en solicitud: " + e.getMessage());
+			e.printStackTrace();
 			return ResponseEntity.ok("Falló la validación de la solicitud");
 		}
 
@@ -307,17 +297,17 @@ public class SolicitudEnvioRestController {
 
 			if (modelNS != null && modelWS != null) {
 				if (modelNS.getDt_fecha_registro().isAfter(modelWS.getDt_fecha_registro())) {
-					System.out.println("NS es el más reciente");
+					logger.info("NS es el más reciente");
 					model = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitudId, BUSCAR_PARA_CANCELAR);
 				} else if (modelWS.getDt_fecha_registro().isAfter(modelNS.getDt_fecha_registro())) {
-					System.out.println("WS es el más reciente");
+					logger.info("WS es el más reciente");
 					model = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitudId, BUSCAR_PARA_AUTORIZAR);
 				}
 			} else if (modelNS != null) {
-				System.out.println("NS es el único con registro");
+				logger.info("NS es el único con registro");
 				model = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitudId, BUSCAR_PARA_CANCELAR);
 			} else if (modelWS != null) {
-				System.out.println("WS es el {unico con registro");
+				logger.info("WS es el unico con registro");
 				model = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitudId, BUSCAR_PARA_AUTORIZAR);
 			}
 
@@ -423,6 +413,17 @@ public class SolicitudEnvioRestController {
 
 		return responseDTO;
 
+	}
+	
+	//Mostramos el mensaje que valida las fechas
+	@GetMapping("solicitudEnvio/verSolicitud/mensajeValidaFecha")
+	public ResponseEntity<?> mensajeValidaFecha() throws IOException {
+		logger.info("Ejecutando mensajeValidaFecha");
+
+		//Obtenemos el mensaje
+		String mensaje = configService.obtenerConfiguracion(53).getVc_valor_propiedad();
+
+		return ResponseEntity.ok(mensaje);
 	}
 
 }

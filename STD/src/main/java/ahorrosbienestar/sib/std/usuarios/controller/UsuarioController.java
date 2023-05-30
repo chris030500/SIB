@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -50,7 +50,8 @@ public class UsuarioController {
 	@Autowired
 	private ConfiguracionService configuracionService;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(UsuarioController.class);
 
 	// Inicio de usuarios
 	@GetMapping("/formulario")
@@ -58,7 +59,7 @@ public class UsuarioController {
 		logger.info("Ejecutando formulario");
 		Usuario usuario = new Usuario();
 		HistContrasena hc = new HistContrasena();
-		//System.out.println("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
+		//logger.info("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
 		model.addAttribute("historico", hc);
 		model.addAttribute("usuario", usuario);
 		
@@ -92,7 +93,7 @@ public class UsuarioController {
 	@RequestMapping(value = "/usuario/loadEntity/{id}", method = RequestMethod.GET)
 	public Optional<Usuario> loadEntity(@PathVariable("id") Integer id) {
 		logger.info("Ejecutando loadEntity en usuarioController");
-		System.out.println("Entro en loadEntity en usuarioController");
+		logger.info("Entro en loadEntity en usuarioController");
 		return usuarioService.findById(id);
 	}
 	
@@ -100,7 +101,7 @@ public class UsuarioController {
 	@RequestMapping(value = "/usuario/cambioContra/{id}", method = RequestMethod.GET)
 	public Optional<HistContrasena> loadCambioContra(@PathVariable("id") Integer id) {
 		logger.info("Ejecutando loadCambioContra en usuarioController");
-		System.out.println("Entro en loadCambioContra en usuarioController");
+		logger.info("Entro en loadCambioContra en usuarioController");
 		return histContrasenaService.findByIdHisto(id);
 	}
 	

@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.contratos.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contratos.model.Contrato;
 import ahorrosbienestar.sib.std.contratos.repository.IReporteContratoRepository;
 import ahorrosbienestar.sib.std.contratos.service.ContratoService;
@@ -34,6 +39,9 @@ public class ReporteRestController {
 	
 	@Autowired
 	private CoreBancarioService coreBancarioService;
+	
+	@Autowired
+	private ConfigService configService;
 	
 	
 	@GetMapping("/buscaDatos/{solicitud}")
@@ -81,7 +89,11 @@ public class ReporteRestController {
 			@RequestParam(name = "cat") Float cat,
 			@RequestParam(name = "reca") String reca,
 			@RequestParam(name = "solicitud") Integer solicitud,
+			@RequestParam(name = "fecha") String fecha,
     		Model model){
+		
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate fechaLocalDate = LocalDate.parse(fecha, formato);
 		  		
 		   Contrato contrato = new Contrato();
            contrato.setVc_nombre_cliente(nombre);
@@ -92,8 +104,15 @@ public class ReporteRestController {
            contrato.setD_cat(cat);
            contrato.setV_reca(reca);
            contrato.setI_no_solicitud(solicitud);
+           contrato.setDt_fecha_registro(fechaLocalDate);
 		
            return ResponseEntity.ok(contratoService.save(contrato));
+	}
+	
+	@GetMapping("/mensajeContrato")
+	public String mostrarMensaje() {
+		Configuracion model = configService.obtenerConfiguracion(53);
+		return model.getVc_valor_propiedad();
 	}
 	
 }

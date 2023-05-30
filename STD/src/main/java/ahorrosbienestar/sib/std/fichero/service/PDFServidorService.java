@@ -5,8 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -19,7 +18,8 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 public class PDFServidorService {
 	
 	private IConfiguracionRepository iConfiguracionRepository;
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(PDFServidorService.class);
 	
 	@Autowired
 	public PDFServidorService (IConfiguracionRepository iConfiguracionRepository) {
@@ -39,7 +39,8 @@ public class PDFServidorService {
 				Files.write(path, bytes);
 				logger.info("Archivo guardado");
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e);
+				//e.printStackTrace();
 			}
 			
 			

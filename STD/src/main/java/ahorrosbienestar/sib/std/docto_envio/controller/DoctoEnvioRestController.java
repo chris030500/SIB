@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -70,8 +70,9 @@ public class DoctoEnvioRestController {
 	@Autowired
 	obtenerCoordenadasRestController obtenerCoordenadasRestController;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
-
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(DoctoEnvioRestController.class);
+	
 	@PostMapping
 	public ResponseEntity<?> guardarDoctoEnvio(@RequestParam(name = "solicitud") Integer solicitud,
 			@RequestParam(name = "documento") Integer documento,
@@ -83,7 +84,7 @@ public class DoctoEnvioRestController {
 			) throws IOException {
 		logger.info("Ejecutando guardarDoctoEnvio");
 		try {
-			// System.out.println("Obtenemos el valor de la solicitud:" + solicitud);
+			// logger.info("Obtenemos el valor de la solicitud:" + solicitud);
 			// Obtenemos el usuario autentificado
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			// Obtenemos el nombre del usuario autentificado
@@ -104,18 +105,18 @@ public class DoctoEnvioRestController {
 			sEnvio = solicitudEnvioService.findById(Integer.parseInt(idEnvio));
 			//sEnvio = solicitudEnvioService.obtenerUltimaSolicitudFecha(solicitud).get(0);
 
-			//System.out.println("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
+			//logger.info("Solicitud de Envio" + sEnvio.getPk_id_solicitud_envio());
 
 			// Obtenemos los datos del documento
 			Documento doct = new Documento();
-			//System.out.println("V Documento: " + idDocumento.getIdDocumento());
+			//logger.info("V Documento: " + idDocumento.getIdDocumento());
 			doct = documentoService.findByPkIdDocumento(idDocumento.getIdDocumento()).get(0);
-			// System.out.println("Doct:" + doct.getPk_id_documento());
-			// System.out.println("documentos" + documentos.getPk_id_documento());
+			// logger.info("Doct:" + doct.getPk_id_documento());
+			// logger.info("documentos" + documentos.getPk_id_documento());
 			List<Configuracion> url = iConfiguracionRepository.obtenerUrlPdfFirma();
 			//File directorio = new File(url.get(0).getVc_valor_propiedad() +clienteId + "/"+ clienteId+"-"+solicitud);
 			File directorio2 = new File(url.get(0).getVc_valor_propiedad() +clienteId);
-			System.out.println("directorio2: " + directorio2);
+			logger.info("directorio2: " + directorio2);
 //	        String[] filesNames = directorio2.list();
 //	        int seguimiento = 0;
 //	        if (filesNames == null) {
@@ -126,11 +127,11 @@ public class DoctoEnvioRestController {
 	        String ubicacionArchivo = (clienteId+"/"+clienteId+"-"+solicitud+"-"+sEnvio.get().getI_identificador_ruta()+"/"+nombreDocumento).toString();
 	        String ubicacionArchivoServidor = (url.get(0).getVc_valor_propiedad() +clienteId+"/"+clienteId+"-"+solicitud+"-"+sEnvio.get().getI_identificador_ruta()+"/"+nombreDocumento).toString();
 			//String ubicacionArchivo = url.get(0).getVc_valor_propiedad() + nombreDocumento;
-			// System.out.println("Url: " + url.get(0).getVc_valor_propiedad());
-	        System.out.println("Ejecutando guardarDoctoEnvio");
+			// logger.info("Url: " + url.get(0).getVc_valor_propiedad());
+	        logger.info("Ejecutando guardarDoctoEnvio");
 	        logger.info("Ubicacion archivo: "+ubicacionArchivo);
-			System.out.println("Ubicacion archivo: " + ubicacionArchivo);
-			// System.out.println("UbicacionArchivo: " + ubicacionArchivo);
+			logger.info("Ubicacion archivo: " + ubicacionArchivo);
+			// logger.info("UbicacionArchivo: " + ubicacionArchivo);
 
 			DoctEnvio dEnvio = new DoctEnvio();
 			dEnvio.setFk_solicitud_envio(sEnvio.get());
@@ -142,47 +143,59 @@ public class DoctoEnvioRestController {
 			// dEnvio.setI_estatus(1);
 			dEnvio.setI_tp_docto_envio(1);
 
-			System.out.println("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
-			System.out.println("Catalogo Documento: " + dEnvio.getFk_cat_documento());
-			System.out.println("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
-			System.out.println("nombreDocumento" + nombreDocumento);
+			logger.info("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
+			logger.info("Catalogo Documento: " + dEnvio.getFk_cat_documento());
+			logger.info("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
+			logger.info("nombreDocumento" + nombreDocumento);
+//			logger.info("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
+//			logger.info("Catalogo Documento: " + dEnvio.getFk_cat_documento());
+//			logger.info("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
+//			logger.info("nombreDocumento" + nombreDocumento);
 			
 			dEnvio = doctEnvioService.save(dEnvio);
 			if (nombreDocumento.contains("AnexosContrato") || nombreDocumento.contains("AnexoContrato")) {
 				logger.info("Entro en anexosContrato");
-				System.out.println("Entro en anexosContrato");
+				logger.info("Entro en anexosContrato");
 				if(productoNomina.equals("S")) {
-					System.out.println("Entro en if de S");
+					logger.info("Entro en if de S");
 					logger.info("Entro en si es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
+					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
 				} else if (productoNomina.equals("N")){
-					System.out.println("Entro en if de N");
+					logger.info("Entro en if de N");
 					logger.info("Entro en no es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
+					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
 				}
 				
 			} else if (nombreDocumento.contains("Contrato_Apertura")) {
-				System.out.println("Entro en Contrato_Apertura");
-				logger.info("Entro en contrato");
-				System.out.println("Entro en contrato");
-				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio);
+				//logger.info("Entro en Contrato_Apertura");
+				logger.info("Entro en Contrato_Apertura");
+				//logger.info("Entro en contrato");
+				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio, doct);
 			} else if (nombreDocumento.contains("Pagare")) {
-				System.out.println("Entro en pagare");
+				//logger.info("Entro en pagare");
 				logger.info("Entro en pagare");
-				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio);
-			} else if (nombreDocumento.contains("tabla de Amortizacion")) {
-				System.out.println("Entro en Tabla de amortizacion");
+				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio, doct);
+			} else if (nombreDocumento.contains("tabla de Amortizacion") || nombreDocumento.contains("PlandePagos") || nombreDocumento.contains("amortizacion")) {
+				//logger.info("Entro en Tabla de amortizacion");
 				logger.info("Entro en Plan de pagos");
-				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio);
+				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio, doct);
+			} else if(nombreDocumento.contains("domiciliacion") || nombreDocumento.contains("formato de domiciliacion")) {
+				//logger.info("Entro en formato de domiciliacion");
+				logger.info("Entro en formato de domiciliacion");
+				obtenerCoordenadasRestController.obtenerCoordenadasDomiliciacion(ubicacionArchivoServidor, dEnvio, doct);
+			} else if (nombreDocumento.contains("autorizacion de transferencia electronica") || nombreDocumento.contains("transferencia electronica")) {
+				logger.info("Entro en autorizacion de transferencia electronica");
+				obtenerCoordenadasRestController.obtenerCoordenadasAutorizacionTransferencia(ubicacionArchivoServidor, dEnvio, doct);
 			} else {
 				logger.info("El documento " + nombreDocumento  + " no está configurado para obtener espacios de firma");
-				System.out.println("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");
+				//logger.info("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");
 			}
 			//return ResponseEntity.ok(dEnvio);
 			return ResponseEntity.ok("Ok");
 		} catch (Exception e) {
-			System.out.println("guardarDoctoEnvio" + e.getMessage());
+			//logger.info("guardarDoctoEnvio" + e.getMessage());
 			logger.info("guardarDoctoEnvio" + e.getMessage());
 		}
 		return null;
@@ -190,14 +203,14 @@ public class DoctoEnvioRestController {
 
 	@RequestMapping(value = { "/obtener_archivos" }, method = RequestMethod.GET)
 	public ResponseEntity<?> obtenerArchivosSolicitud(@RequestParam("solicitud") Integer solicitud) {
-		//System.out.println("Obtener archivos de la solicitud: " + solicitud);
+		//logger.info("Obtener archivos de la solicitud: " + solicitud);
 		logger.info("Obtener archivos de la solicitud: " + solicitud);
 		return ResponseEntity.ok(doctoEnvioJDBCService.obtenerArchivosSolicitud(solicitud));
 	}
 
 	@RequestMapping(value = {"/obtener_doctEnvio/{idDoctoEnvio}"}, method = RequestMethod.GET)
 	public ResponseEntity<?> obtenerDoctEnvio(@PathVariable("idDoctoEnvio") Integer idDoctoEnvio){
-		//System.out.println("Entro en obtenerDoctEnvio");
+		//logger.info("Entro en obtenerDoctEnvio");
 		logger.info("Entro en obtenerDoctEnvio");
 		DoctEnvio dEnvio = new DoctEnvio();
 		dEnvio = doctEnvioService.obtenerDoctoEnvio(idDoctoEnvio);

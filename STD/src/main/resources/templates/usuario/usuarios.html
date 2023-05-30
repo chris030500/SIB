@@ -168,6 +168,13 @@
 														th:onclick="'reactivarUsuario(' + ${usuario.pk_id_usuario} + ')'">
 														<i class="bi bi-unlock"></i>
 													</button>
+													<button class="btn btn-secondary" tabindex="0"
+														data-bs-toggle="tooltip" data-bs-placement="top"
+														title="Desbloquear Usuario" aria-controls="table-datatable"
+														type="button" data-tooltip="Show filters"
+														th:onclick="'reactivarEstatusUsuario(' + ${usuario.pk_id_usuario} + ')'">
+														<i class="bi bi-person-check-fill"></i>
+													</button>
 													<!--<button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                     data-bs-target="#basicModal"
                                                     th:onclick="'showEditModal(' + ${usuario.pk_id_usuario} + ')'">

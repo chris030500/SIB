@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 import ahorrosbienestar.sib.std.docto_envio.model.ArchivoSolicitud;
 import ahorrosbienestar.sib.std.docto_unificado.obtener_coordenadas.model.ObtenerCoordenadas;
 
@@ -19,7 +19,9 @@ public class ObtenerCoordenadasJDBCService {
 	
 	private JdbcTemplate jdbcTemplate;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	private static final Logger logger = Logger.getLogger(ObtenerCoordenadasJDBCService.class);
 	
 	@Autowired
 	public ObtenerCoordenadasJDBCService (JdbcTemplate jdbcTemplate) {
@@ -28,7 +30,7 @@ public class ObtenerCoordenadasJDBCService {
 	
 	public List<ObtenerCoordenadas> obtenerInfoCoordenadas(int solicitudEnvio, int operacion) {
 		String sql = "CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (?,?);";
-		System.out.println("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
+		//System.out.println("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
 		logger.info("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
 		List<ObtenerCoordenadas> ls = jdbcTemplate.query(sql, new Object[] { solicitudEnvio, operacion },
 				new RowMapper<ObtenerCoordenadas>() {

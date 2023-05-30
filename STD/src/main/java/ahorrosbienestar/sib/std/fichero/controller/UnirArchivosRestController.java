@@ -9,8 +9,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.docto_unificado.model.DoctoUnificado;
 import ahorrosbienestar.sib.std.docto_unificado.obtener_coordenadas.model.ObtenerCoordenadas;
@@ -42,7 +42,9 @@ import net.bytebuddy.agent.builder.AgentBuilder.InitializationStrategy.SelfInjec
 @RequestMapping("unionArchivosPdf")
 public class UnirArchivosRestController {
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	private static final Logger logger = Logger.getLogger(UnirArchivosRestController.class);
 
 	@Autowired
 	private ObtenerCoordenadasJDBCService obtenerCoordenadasJDBCService;
@@ -69,24 +71,24 @@ public class UnirArchivosRestController {
 	@GetMapping("/guardarArchivo")
 	public ResponseEntity<?> guardarArchivo(@RequestParam("solicitudEnvio") int solicitudEnvio) throws Exception {
 		DoctoUnificado doctoUnificado = new DoctoUnificado();
-		System.out.println("SolicitudEnvio: " + solicitudEnvio);
+		logger.info("SolicitudEnvio: " + solicitudEnvio);
 		int operación = 0;
 		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio,
 				operación);
-		System.out.println("Tamaño de la lista: " + documentos.size());
+		logger.info("Tamaño de la lista: " + documentos.size());
 
 		String ruta = documentos.get(0).getVc_ruta_docto();
 
 		String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
-		System.out.println("Ruta para Archivo final:" + rutaArchivoFinal);
+		logger.info("Ruta para Archivo final:" + rutaArchivoFinal);
 		String nombreArchivoFinal = configService.findAll().get(34).getVc_valor_propiedad().toString();
 		String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 		String rutaConfig = configService.findAll().get(13).getVc_valor_propiedad().toString();
-		System.out.println("RutaConfig: " + rutaConfig);
+		logger.info("RutaConfig: " + rutaConfig);
 		PDFMergerUtility pdfMerger = new PDFMergerUtility();
 		String rutaArchivo = rutaArchivoFinal.replaceAll(rutaConfig.toString(), "");
-		System.out.println("RutaArchivo: " + rutaArchivo);
-		//System.out.println("rutaArchivo: " + ("/"+ rutaArchivo+ "/" + nombreArchivoFinal));
+		logger.info("RutaArchivo: " + rutaArchivo);
+		//logger.info("rutaArchivo: " + ("/"+ rutaArchivo+ "/" + nombreArchivoFinal));
 		// path de destino del archivo generado
 		pdfMerger.setDestinationFileName(rutaConfig + rutaArchivoFinal + "/" + nombreArchivoFinal);
 
@@ -95,7 +97,7 @@ public class UnirArchivosRestController {
 			for (int i = 0; i < documentos.size(); i++) {
 				archivo[i] =  rutaConfig + documentos.get(i).getVc_ruta_docto();
 				pdfMerger.addSource(archivo[i]);
-				// System.out.println("Datos coordenadas: " +
+				// logger.info("Datos coordenadas: " +
 				// documentos.get(i).getVc_ruta_docto());
 			}
 
@@ -117,12 +119,13 @@ public class UnirArchivosRestController {
 
 			int tamanoObtenerCoordDocts = obtenerCoordDocts.size();
 
-			System.out.println("Número de las coordenadas de la lista");
-			System.out.println("tamanoObtenerCoordDocts: " + tamanoObtenerCoordDocts);
-			System.out.println("documentos: " + documentos.size());
+			logger.info("Número de las coordenadas de la lista");
+			logger.info("tamanoObtenerCoordDocts: " + tamanoObtenerCoordDocts);
+			logger.info("documentos: " + documentos.size());
 			int totalHojas = 1;
 
 			for (int i = 0; i < documentos.size(); i++) {
+				logger.info("totalHojas: " + totalHojas);
 				totalHojas += documentos.get(i).getNo_hoja();
 			}
 			
@@ -151,13 +154,13 @@ public class UnirArchivosRestController {
 			
 			doctoUnificadoService.save(doctoUnificado);
 			
-			System.out.println("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
-			System.out.println("TotalHojas: " + totalHojas);
-			System.out.println("Ruta archivo PDF: " + ("/"+rutaArchivo+"/" + nombreArchivoFinal));
-			System.out.println("Ruta archivo XML 1: " + ("/"+rutaArchivo+"/" + nombreArchivoXML));
-			System.out.println("Estatus: " + 1);
-			System.out.println("Usuario: " + usu.getPk_id_usuario());
-			System.out.println("Fecha de envio: " + localDateHoy);
+			logger.info("Solicitud Envio: " + sEnvio.getPk_id_solicitud_envio());
+			logger.info("TotalHojas: " + totalHojas);
+			logger.info("Ruta archivo PDF: " + ("/"+rutaArchivo+"/" + nombreArchivoFinal));
+			logger.info("Ruta archivo XML 1: " + ("/"+rutaArchivo+"/" + nombreArchivoXML));
+			logger.info("Estatus: " + 1);
+			logger.info("Usuario: " + usu.getPk_id_usuario());
+			logger.info("Fecha de envio: " + localDateHoy);
 			
 			
 
@@ -165,8 +168,8 @@ public class UnirArchivosRestController {
 			for (int i = 0; i < documentos.size(); i++) {
 				totalHojas2 += documentos.get(i).getNo_hoja();
 				int auxIdDoctoEnvio = documentos.get(i).getPk_id_docto_envio();
-				System.out.println("Docto envio:" + auxIdDoctoEnvio);
-				System.out.println("Total hojas: " + totalHojas2);
+				logger.info("Docto envio:" + auxIdDoctoEnvio);
+				logger.info("Total hojas: " + totalHojas2);
 				for (int j = 0; j < tamanoObtenerCoordDocts; j++) {
 					if (auxIdDoctoEnvio == obtenerCoordDocts.get(j).getPk_id_docto_envio()) {
 
@@ -184,7 +187,7 @@ public class UnirArchivosRestController {
 						
 						FirmaDoctoUnificado fDoctoUnificado = new FirmaDoctoUnificado();
 						fDoctoUnificado.setFk_id_docto_unificado(doctoUnificado);
-						fDoctoUnificado.setI_no_hoja(noHoja);
+						fDoctoUnificado.setI_no_hoja(hojaFirmaDoctUnificado);
 						fDoctoUnificado.setF_coord_firma_xCentral(xCentral);
 						fDoctoUnificado.setF_coord_firma_yCentral(yCentral);
 						fDoctoUnificado.setF_coord_firma_x1(x1);
@@ -194,23 +197,23 @@ public class UnirArchivosRestController {
 						
 						firmaDoctoUnificadoService.save(fDoctoUnificado);
 						
-						System.out.println("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
-						System.out.println("x1: " + x1);
-						System.out.println("x2: " + x2);
-						System.out.println("y1: " + y1);
-						System.out.println("y2: " + y2);
-						System.out.println("xCentral: " + xCentral);
-						System.out.println("yCentral: " + yCentral);
-						// System.out.println("No Hoja: " + obtenerCoordDocts.get(j).getNo_hoja());
-						// System.out.println("Total hojas en segundo: " +
+						logger.info("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
+						logger.info("x1: " + x1);
+						logger.info("x2: " + x2);
+						logger.info("y1: " + y1);
+						logger.info("y2: " + y2);
+						logger.info("xCentral: " + xCentral);
+						logger.info("yCentral: " + yCentral);
+						// logger.info("No Hoja: " + obtenerCoordDocts.get(j).getNo_hoja());
+						// logger.info("Total hojas en segundo: " +
 						// obtenerCoordDocts.get(j).getTotal_hojas());
-						System.out.println("Hoja firma doc concatenado = " + hojaFirmaDoctUnificado);
+						logger.info("Hoja firma doc concatenado = " + hojaFirmaDoctUnificado);
 //						int sumaHojas = auxIdDoctoEnvio + obtenerCoordDocts.get(j).getTotal_hojas();
-//						System.out.println("Suma Hojas: " + sumaHojas);
+//						logger.info("Suma Hojas: " + sumaHojas);
 
 					}
 				}
-				System.out.println("---------------------------------------");
+				logger.info("---------------------------------------");
 			}
 			
 			String xCentralHF = configService.findAll().get(36).getVc_valor_propiedad();
@@ -219,7 +222,7 @@ public class UnirArchivosRestController {
 			String x2HF = configService.findAll().get(39).getVc_valor_propiedad();
 			String y1HF = configService.findAll().get(40).getVc_valor_propiedad();
 			String y2HF = configService.findAll().get(41).getVc_valor_propiedad();
-			System.out.println("HojaFinal: ");
+			logger.info("HojaFinal: ");
 			FirmaDoctoUnificado fDoctoUnificado = new FirmaDoctoUnificado();
 			fDoctoUnificado.setFk_id_docto_unificado(doctoUnificado);
 			fDoctoUnificado.setI_no_hoja(totalHojas);
@@ -230,17 +233,19 @@ public class UnirArchivosRestController {
 			fDoctoUnificado.setF_coord_firma_y1(Float.parseFloat(y1HF)); //Lo consulta en BD
 			fDoctoUnificado.setF_coord_firma_y2(Float.parseFloat(y1HF)); //Lo consulta en BD
 			firmaDoctoUnificadoService.save(fDoctoUnificado);
-			System.out.println("xCentral: " + Float.parseFloat(xCentralHF));
-			System.out.println("yCentral: " + Float.parseFloat(yCentralHF));
-			System.out.println("x1: " + Float.parseFloat(x1HF));
-			System.out.println("x2: " + Float.parseFloat(x2HF));
-			System.out.println("y1: " + Float.parseFloat(y1HF));
-			System.out.println("y2: " + Float.parseFloat(y2HF));
-			System.out.println("TotalHojas:" + totalHojas);
+			logger.info("xCentral: " + Float.parseFloat(xCentralHF));
+			logger.info("yCentral: " + Float.parseFloat(yCentralHF));
+			logger.info("x1: " + Float.parseFloat(x1HF));
+			logger.info("x2: " + Float.parseFloat(x2HF));
+			logger.info("y1: " + Float.parseFloat(y1HF));
+			logger.info("y2: " + Float.parseFloat(y2HF));
+			logger.info("TotalHojas:" + totalHojas);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			logger.error("Error al unir los archivos. Error: " + e.getMessage());
+			logger.error("Error al unir los archivos");
+			logger.error(e);
+			//Error: " + e.getMessage());
 			return ResponseEntity.ok(e.getMessage());
 			// e.printStackTrace();
 		}

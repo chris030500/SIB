@@ -2,11 +2,13 @@ package ahorrosbienestar.sib.std.configuracion.login.controller;
 
 import java.security.Principal;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +24,7 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
-public class LoginController {
+public class LoginController extends HttpServlet {
 	
 	@Autowired
 	private UsuarioService usuarioService;
@@ -30,36 +32,53 @@ public class LoginController {
 	@Autowired
 	private LoginService loginService;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(LoginController.class);
 	
-	@GetMapping("/login")
-	public String login(@RequestParam(value="error", required = false) String error,
-			Model model, Principal principal, RedirectAttributes flash) {
-		logger.info("Principal: " + principal);
-		//System.out.println("Principal: " + principal);
-		
-		if(principal != null) {
-			
-			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-			//flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-//			System.out.println("Principal != null");
-			logger.info("Principal != null");
-			return "redirect:/";
-		}
-		
-		if(error != null) {
-			model.addAttribute("error", "Error en el inicio de sesión: "
-					+ "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-			logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-		}
-		
-//		if(logout != null) {
-//			model.addAttribute("success", "Has cerrado sesión con éxito");
-//		}
-		
-		//loginService.spActivarSesion(principal.getName());
-		return "login";
-	}
+//	{
+//		BasicConfigurator.configure();
+//	}
+	
+    @GetMapping("/login")
+    public String login(@RequestParam(value="error", required = false) String error, HttpServletRequest request,
+            Model model, Principal principal, RedirectAttributes flash, HttpSession session) {
+        logger.info("Principal: " + principal);
+        logger.debug("cargando index");
+        String sessionStatus = (String) session.getAttribute("sessionStatus");
+        System.out.println("sessionStatus: " + sessionStatus);
+        //HttpSession misession= request.getSession();
+        //System.out.println("missesion: " + misession.getAttribute(principal.toString()));
+        //System.out.println("Principal: " + principal);
+        if ("activo".equals(sessionStatus)) {
+            // La sesión está activa
+        	System.out.println("La sesión está activa");
+        } else {
+            // La sesión está inactiva
+        	System.out.println("La sesión está inactiva");
+        }
+        
+        if(principal != null) {
+            
+            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
+            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
+//            System.out.println("Principal != null");
+            logger.info("Principal != null");
+            return "redirect:/";
+        }
+        
+        if(error != null) {
+            model.addAttribute("error", "Error en el inicio de sesión: "
+                    + "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+            logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+        }
+        
+//        if(logout != null) {
+//            model.addAttribute("success", "Has cerrado sesión con éxito");
+//        }
+        
+        //loginService.spActivarSesion(principal.getName());
+        return "login";
+    }
 	
 	@GetMapping("/cerrar")
 	public String cerrar(HttpServletRequest request, HttpServletResponse response) {
@@ -75,5 +94,7 @@ public class LoginController {
 		}
 		return "redirect:/";
 	}
+	
+	
 
 }

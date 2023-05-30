@@ -9,38 +9,35 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
 import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
-import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
-import ahorrosbienestar.sib.std.contrasena.dto.HistContrasenaDto;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaDtoService;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -67,30 +64,35 @@ public class IndexController {
 	@Autowired
 	private LoginService loginService;
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(IndexController.class);
 
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
 	public String index() {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String nombreUsuario = auth.getName();
+		Usuario usuario = usuarioService.findByNombre(nombreUsuario);
+		int estatus = usuario.getI_estatus_sesion();
+		logger.info("Estatus: " + estatus);
 		if (auth != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(auth.getName()));
 			loginService.spActivarSesion(nombreUsuario);
-			System.out.println("Nombre del usuario: " + nombreUsuario);
+			logger.info("Nombre del usuario: " + nombreUsuario);
 			int estatusFecha = histContrasenaDtoService.obtenerUsuarioAndFecha(nombreUsuario).get(0).valorFecha;
+			logger.info("Estatus Fecha: " + estatusFecha);
 			logger.info("Estatus Fecha: " + estatusFecha);
 			if (estatusFecha == 1) {
 				logger.info("Debe de cambiar la contraseña");
-				// System.out.println("Debe de cambiar la contraseña");
+				// logger.info("Debe de cambiar la contraseña");
 
 				return "redirect:/cambio_contrasena";
 			}
 			logger.info("Ingreso al sistema");
-		}
+		} 
 
 //		logger.info("Cambia el estatus de sesión a activo (1)");
-		// System.out.println("Puede acceder al sistema");
+		// logger.info("Puede acceder al sistema");
 		// loginService.spActivarSesion(nombreUsuario);
 		return "index";
 	}
@@ -106,11 +108,11 @@ public class IndexController {
 	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
 		logger.info("Ejecutando guardarCambioContrasena");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		//System.out.println("Password: " + password);
+		//logger.info("Password: " + password);
 		
 		// Buscamos la información del usuario
 		Usuario usu = usuarioService.findByNombre(auth.getName());
-		System.out.println("Pk_Usu: " + usu.getPk_id_usuario());
+		logger.info("Pk_Usu: " + usu.getPk_id_usuario());
 		// Con el id del usuario vamos a dar de baja la contraseña que se tiene
 		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
 
@@ -141,7 +143,7 @@ public class IndexController {
 		hc.setUsr_historico_contrasena_id(usu);
 		hc.setVc_contrasenia(passwordEncoder.encode(password));
 		// histContrasenaService.save(hc);
-		System.out.println("Guardar en historico");
+		logger.info("Guardar en historico");
 		// return null;
 		return ResponseEntity.ok(histContrasenaService.save(hc));
 	}

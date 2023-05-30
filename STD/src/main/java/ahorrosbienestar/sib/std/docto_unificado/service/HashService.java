@@ -38,6 +38,7 @@ public class HashService {
 		}
 
 		// return complete hash
+		//System.out.println("hash" + sb.toString());
 		return sb.toString();
 	}
 }

@@ -13,12 +13,12 @@ import java.util.Properties;
 
 import javax.validation.Valid;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
@@ -56,7 +56,8 @@ public class UsuarioRestController {
 	
 	
 
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(UsuarioRestController.class);
 
 	// Dar de alta usuario utilizando metodo POST
 	@PostMapping
@@ -158,14 +159,14 @@ public class UsuarioRestController {
 		Rol r = rolService.findById(rol).get();
 		usuario.setRol_idRol(r);
 		usuario.setI_id_empleado(EmpleadoId);
-		System.out.println("Datos usuario: ");
-		System.out.println("Estatus cuenta: " + usuario.getI_estatus_cuenta());
-		System.out.println("Estatus sesión: " + usuario.getI_estatus_sesion());
-		System.out.println("Estatus usuario: " + usuario.getI_estatus_usuario());
-		System.out.println("Estatus intentos fallidos: " + usuario.getI_intentos_fallidos());
-		System.out.println("Usuario PK: " + usuario.getPk_id_usuario());
-		System.out.println("Nombre Usuario: " + usuario.getVc_nombre_usuario());
-		System.out.println("Rol: " + usuario.getRol_idRol().getVc_nombre_rol());
+		logger.info("Datos usuario: ");
+		logger.info("Estatus cuenta: " + usuario.getI_estatus_cuenta());
+		logger.info("Estatus sesión: " + usuario.getI_estatus_sesion());
+		logger.info("Estatus usuario: " + usuario.getI_estatus_usuario());
+		logger.info("Estatus intentos fallidos: " + usuario.getI_intentos_fallidos());
+		logger.info("Usuario PK: " + usuario.getPk_id_usuario());
+		logger.info("Nombre Usuario: " + usuario.getVc_nombre_usuario());
+		logger.info("Rol: " + usuario.getRol_idRol().getVc_nombre_rol());
 
 		return ResponseEntity.ok(usuarioService.save(usuario));
 	}
@@ -173,19 +174,19 @@ public class UsuarioRestController {
 	@RequestMapping(value = { "/editar_usuario" }, method = RequestMethod.POST)
 	public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("usuario") String usuario,
 			@RequestParam("idUsuario") Integer idUsuario) {
-		System.out.println("Usuario: " + usuario);
-		System.out.println("IdUsuario: " + idUsuario);
+		logger.info("Usuario: " + usuario);
+		logger.info("IdUsuario: " + idUsuario);
 		logger.info("Ingreso en cambiarNombreUsuario");
 		logger.info("Usuario: " + usuario);
 		logger.info("IdUsuario: " + idUsuario);
 		if (usuario != null && idUsuario != null) {
-			System.out.println("Puede realizar el cambio de usuario");
+			logger.info("Puede realizar el cambio de usuario");
 			logger.info("Puede realizar el cambio de usuario");
 			Usuario usu = usuarioService.findById(idUsuario).get();
 
 			return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario));
 		}
-		// System.out.println("No puede realizar el cambio de usuario");
+		// logger.info("No puede realizar el cambio de usuario");
 		logger.info("No puede realizar el cambio de usuario");
 		return ResponseEntity.notFound().build();
 
@@ -194,13 +195,13 @@ public class UsuarioRestController {
 	@RequestMapping(value = { "/editar_usuario/contrasenia" }, method = RequestMethod.POST)
 	public ResponseEntity<?> cambiarContraseniaUsuario(@RequestParam("usuario") String usuario,
 			@RequestParam("idUsuario") Integer idUsuario, @RequestParam("password") String password) {
-		System.out.println("Usuario: " + usuario);
-		System.out.println("IdUsuario: " + idUsuario);
+		logger.info("Usuario: " + usuario);
+		logger.info("IdUsuario: " + idUsuario);
 		logger.info("Ingreso en cambiarContraseniaUsuario");
 		logger.info("Usuario: " + usuario);
 		logger.info("IdUsuario: " + idUsuario);
 		if (usuario != null && idUsuario != null) {
-			System.out.println("Puede realizar el cambio de contraseña");
+			logger.info("Puede realizar el cambio de contraseña");
 
 			Usuario usu = usuarioService.findById(idUsuario).get();
 			histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
@@ -224,11 +225,11 @@ public class UsuarioRestController {
 			hc.setUsr_historico_contrasena_id(usu);
 			hc.setVc_contrasenia(passwordEncoder.encode(password));
 			// histContrasenaService.save(hc);
-			System.out.println("Guardar en historico");
+			logger.info("Guardar en historico");
 			// return null;
 			return ResponseEntity.ok(histContrasenaService.save(hc));
 		}
-		System.out.println("No puede realizar el cambio de usuario");
+		logger.info("No puede realizar el cambio de usuario");
 		return ResponseEntity.notFound().build();
 
 	}
@@ -237,14 +238,21 @@ public class UsuarioRestController {
 
 	@RequestMapping(value = { "/baja_usuario" }, method = RequestMethod.POST)
 	public ResponseEntity<?> bajaUsuario(@RequestParam("usuario") Integer usuario) {
-		System.out.println("Usuario: " + usuario);
+		logger.info("Usuario: " + usuario);
 		return ResponseEntity.ok(usuarioService.bajaUsuarioEstatus(usuario));
 	}
 
 	@RequestMapping(value = { "/reactivar_usuario" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reactivarUsuario(@RequestParam("usuario") Integer usuario) {
-		System.out.println("Usuario: " + usuario);
+		logger.info("Usuario: " + usuario);
 		return ResponseEntity.ok(usuarioService.activarUsuarioEstatus(usuario));
+	}
+	
+	@RequestMapping(value = { "/reactivar_usuario_sesion/{id}" }, method = RequestMethod.POST)
+	public ResponseEntity<?> reactivarUsuarioSesion(@PathVariable("id") Integer id) throws IOException {
+		logger.info("Ingreso en activarUsuarioSesion");
+		logger.info("activar sesión usuario: " + id);
+		return ResponseEntity.ok(usuarioService.activarUsuarioSesion(id));
 	}
 
 }

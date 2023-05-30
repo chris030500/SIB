@@ -13,7 +13,7 @@
 
 <body onload="buscarSolicitudCredito();">
 	<section class="content" layout:fragment="page-content">
-		<div id="principalID" class="container" style="display: block;" >
+		<div id="principalID" class="container" style="display: block;">
 
 			<div class="card mb-3">
 				<div class="row no-gutters">
@@ -21,6 +21,9 @@
 					<div class="col-md-8">
 						<div class="card-body">
 							<h2 style="text-align:center">Solicitud</h2>
+							<hr>
+							<h6 style="text-align: center; font-size: 12px; font-weight: bold; color: red;"
+								id="mensaje"></h6>
 						</div>
 					</div>
 				</div>
@@ -56,6 +59,12 @@
 										<div id="divIdProducto" class="col-sm-3" style='display:none'>
 											<label for="producto" class="form-label">IDProducto</label>
 											<input type="text" class="form-control" id="producto" readonly>
+										</div>
+										
+										<div id="divclienteId" class="col-sm-3" style='display:none'>
+
+											<label for="clienteId" class="form-label">ClienteID</label>
+											<input type="text" class="form-control" id="clienteId" readonly>
 										</div>
 
 										<div class="col-sm-4">
@@ -129,11 +138,13 @@
 							</div>
 							<br>
 							<div id="btnVoBo" class="col-sm-2" style='display:none'>
-								<button id="btnVoBoDocumentos" type="button" class="btn btn-primary" onclick="VoBoDocumentos()">
-									Guardar
+								<button id="btnVoBoDocumentos" type="button" class="btn btn-primary">
+									<span id="spanGuardar" style="display: block;"> Guardar </span>
+									<span id="spanCargando" style="display: none;"
+										class="spinner-border spinner-border-sm mr-2"></span>
 								</button>
 							</div>
-							
+
 						</div>
 					</div>
 				</div>
@@ -141,8 +152,15 @@
 
 			</div>
 		</div>
-		
-		<div id="spinnerID" class="container" style="display: none;" >
+
+		<div id="loader"></div>
+		<!--<div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; 
+			transform: translate(-50%, -50%); z-index: 9999; 
+			background-color: rgba(0, 0, 0, 0.5); color: #fff; padding: 16px;">
+			Cargando...
+		</div>-->
+
+		<div id="spinnerID" class="container" style="display: none;">
 			<div class="row">
 				<div class="col-md-12">
 					<div class="card card-primary">

@@ -1,7 +1,7 @@
 package ahorrosbienestar.sib.std.config_ws.ws_respuesta_autenticacion.controller;
 
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +15,14 @@ import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutentic
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.service.WSAutenticacionUserService;
 import ahorrosbienestar.sib.std.config_ws.ws_respuesta_autenticacion.model.WSRespuestaAutenticacion;
 import ahorrosbienestar.sib.std.config_ws.ws_respuesta_autenticacion.service.WSRespuestaAutenticacionService;
+import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
  
  
 @Controller
 public class WSRespuestaAutenticacionController {
  
-    protected final Log logger = LogFactory.getLog(this.getClass());
- 
+    //protected final Log logger = LogFactory.getLog(this.getClass());
+	private static final Logger logger = Logger.getLogger(WSRespuestaAutenticacionController.class);
     
     @Autowired
     private WSAutenticacionUserService wsAutenticacionUserService;
@@ -51,10 +52,14 @@ public class WSRespuestaAutenticacionController {
         wsRespuestaAutenticacion.setFk_id_autenticacion_user(wsAutenticacionUser);
  
         
-        System.out.println("JTI: " + jti);
-        System.out.println("SCOPE: " + scope);
-        System.out.println("token: " + token);
-        System.out.println("AUTENTICACION USER: " + wsAutenticacionUser.getPk_id_ws_autenticacion());
+        //System.out.println("JTI: " + jti);
+        logger.info("JTI: " + jti);
+        logger.info("SCOPE: " + scope);
+        logger.info("token: " + token);
+        logger.info("AUTENTICACION USER: " + wsAutenticacionUser.getPk_id_ws_autenticacion());
+//        System.out.println("SCOPE: " + scope);
+//        System.out.println("token: " + token);
+//        System.out.println("AUTENTICACION USER: " + wsAutenticacionUser.getPk_id_ws_autenticacion());
         //return ResponseEntity.ok("OK");
         return ResponseEntity.ok(wsRespuestaAutenticacionService.save(wsRespuestaAutenticacion));
     }

@@ -14,8 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -72,13 +72,15 @@ public class CrearXmlController {
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	//protected final Log logger = LogFactory.getLog(this.getClass());
+	
+	private static final Logger logger = Logger.getLogger(CrearXmlController.class);
 
 	@GetMapping("crearArchivo/xml")
 	public ResponseEntity<?> crearArchivo(@RequestParam("solicitudEnvio") Integer solicitudEnvio,
 			@RequestParam("solicitudCore") Integer solicitudCore) {
 
-		System.out.println("CORE: " + solicitudCore);
+		logger.info("CORE: " + solicitudCore);
 		logger.info("Crear archivo XML");
 		logger.info("Solicitud Envio: " + solicitudEnvio);
 		logger.info("Solicitud Core bancario: " + solicitudCore);
@@ -88,7 +90,7 @@ public class CrearXmlController {
 		String direccion = titular.get(0).getDireccionCompleta();
 		String telefonoCelular = titular.get(0).getTelefonoCelular();
 		String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
-		System.out.println("Dirección: " + direccion);
+		logger.info("Dirección: " + direccion);
 		List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
 		String monto = datosSolicitud.get(0).getMontoAutorizado();
 		String plazo = datosSolicitud.get(0).getPlazo();
@@ -118,14 +120,14 @@ public class CrearXmlController {
 		
 		List<Configuracion> configuracion = configService.findAll();
 
-		System.out.println("RutaFinal: " + rutaArchivoFinal);
+		logger.info("RutaFinal: " + rutaArchivoFinal);
 		String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
 		String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 
 		// Obtenemos la leyenda del firmante.
 		String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
 
-		// System.out.println("entro en if variable1");
+		// logger.info("entro en if variable1");
 		// String[] words = mensaje.split("variable");
 
 		// Asignamos los nuevos parametros.
@@ -178,16 +180,16 @@ public class CrearXmlController {
 			// Obtenemos el id del documento unificado para buscar las coordenadas
 			Optional<DoctoUnificado> doctoUnificado = doctoUnificadoService.findByFkIdSolicituEnvio(solicitudEnvio);
 			int idDoctUnificado = doctoUnificado.get().getPk_id_docto_unificado();
-			System.out.println("FirmaDoctUni: " + idDoctUnificado);
+			logger.info("FirmaDoctUni: " + idDoctUnificado);
 			// Obtenemos la información de la ultima pagina para el certificado.
 
 			List<FirmaDoctoUnificado> fDoctoUnificado = firmaDoctoUnificadoService
 					.obtenerCoordenadasFirma(idDoctUnificado);
 			int tamanoList = firmaDoctoUnificadoService.obtenerCoordenadasFirma(idDoctUnificado).size();
 
-			System.out.println("Tamaño list: " + tamanoList);
+			logger.info("Tamaño list: " + tamanoList);
 
-			System.out.println("Obtener los datos de la ultima pagina: "
+			logger.info("Obtener los datos de la ultima pagina: "
 					+ fDoctoUnificado.get(tamanoList - 1).getPk_id_firma_docto_unificado());
 
 			int noPage = fDoctoUnificado.get(tamanoList - 1).getI_no_hoja();
@@ -223,7 +225,7 @@ public class CrearXmlController {
 			positionY2Certificate.setTextContent(String.valueOf(y2Certificate)); 
 			certificate.appendChild(positionY2Certificate);
 
-			// System.out.println("fDoctoUnificado: " +
+			// logger.info("fDoctoUnificado: " +
 			// fDoctoUnificado.get(i).getPk_id_firma_docto_unificado());
 			// Agregar foreach para traer los participantes.
 			Element signers = doc.createElement("signers");
@@ -432,7 +434,7 @@ public class CrearXmlController {
 			DOMSource source = new DOMSource(doc);
 //			StreamResult result = new StreamResult(
 //					new File("C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/documentoFinal.xml"));
-			System.out.println("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
+			logger.info("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
 			StreamResult result = new StreamResult(new File(rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
 			transformer.transform(source, result);
 			return ResponseEntity.ok("1");
@@ -442,7 +444,7 @@ public class CrearXmlController {
 			return ResponseEntity.ok(pce.getMessage());
 		} catch (TransformerException tfe) {
 			// tfe.printStackTrace();
-			logger.info(tfe.getMessage());
+			logger.info(tfe);
 			return ResponseEntity.ok(tfe.getMessage());
 		}
 
