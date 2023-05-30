@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
@@ -116,7 +117,8 @@ public class FoliosController {
 	@GetMapping("/busquedaxArea")
 	public ResponseEntity<?> busquedaxArea(@RequestParam("areaID") Integer areaID){
 		try {
-			return ResponseEntity.ok(catalogosCEService.busquedaxArea(areaID));
+			List<EmpleadosCE> listaResponsables = catalogosCEService.busquedaxArea(areaID);
+			return ResponseEntity.ok((listaResponsables != null)?listaResponsables:0);
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;

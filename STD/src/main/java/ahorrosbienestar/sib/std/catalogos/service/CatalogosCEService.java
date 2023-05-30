@@ -62,7 +62,12 @@ public class CatalogosCEService {
 		public List<ListaAreas> obtenerAreas(){
 			logger.info("Ejecutando lista Areas: ");
 			try {
-				String sql = "select PK_ID_AREA, VC_DESCRIPCION from CE.TBL_AREA;";
+				String sql = "select a.PK_ID_AREA, a.VC_DESCRIPCION "
+						+ "from CE.TBL_AREA a "
+						+ "inner join CE.TBL_PUESTO p on p.areaID = a.pk_id_area and p.i_id_estatus = 1  "
+						+ "inner join CE.TBL_MICROFIN_EMPLEADOS emp on emp.ClavePuestoID = p.ClavePuestoID and emp.Estatus = 'A' "
+						+ "group by a.PK_ID_AREA, a.VC_DESCRIPCION "
+						+ "order by a.VC_DESCRIPCION  asc;";
 				List<ListaAreas> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ListaAreas>() {
 					public ListaAreas mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaAreas e = new ListaAreas();

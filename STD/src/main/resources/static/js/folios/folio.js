@@ -163,30 +163,116 @@ function validacionesAgregarObs(fecha1) {
 }
 
 function tblObservacionesLoad() {
-	var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
-	urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
-	urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-	urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
-	urlServicio = urlServicio + "&folioID=" + folioID;
-	peticionPost(urlServicio, 2, folioID);
+	if(seleccionoFolio() == 0){
+			if(datosObservacionValidos() == 0){
+				var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
+				urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
+				urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
+				urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+				urlServicio = urlServicio + "&folioID=" + folioID;
+				peticionPost(urlServicio, 2, folioID);	
+			}else{
+				swal({
+				title: "Alerta",
+				text: "Todos los datos son obligatorios.",
+				icon: "warning",
+				});
+			}
+			
+	}else{
+		swal({
+				title: "Alerta",
+				text: "Debe seleccionar un Oficio para relacionar la Observacion",
+				icon: "warning",
+			});
+	}
+
+}
+function seleccionoFolio(){
+	var correcto = 0;
+	
+	if(folioID != undefined){	
+		document.getElementById("lblSeleccion").style.borderColor = "";
+		correcto = 0;
+	}else{
+		document.getElementById("lblSeleccion").style.borderColor = "#F70707";
+		correcto = 1;
+	}
+	
+	return correcto;
+}
+
+function datosObservacionValidos(){
+	var correcto = 0;
+	
+	if(document.getElementById("idAreaAtencion").value > 0){
+		document.getElementById("idAreaAtencion").style.borderColor = "";
+		correcto = correcto + 0;
+	}else{
+		document.getElementById("idAreaAtencion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	
+	if(document.getElementById("idResponsableAtencion").value > 0){
+		correcto = correcto + 0;
+		document.getElementById("idResponsableAtencion").style.borderColor = "";
+	}else{
+		correcto = correcto + 1;
+		document.getElementById("idResponsableAtencion").style.borderColor = "#F70707";
+	}
+	
+	if(document.getElementById("idFechaVencimiento").value.length > 0){
+		correcto = correcto + 0;
+		document.getElementById("idFechaVencimiento").style.borderColor = "";
+	}else{
+		correcto = correcto + 1;
+		document.getElementById("idFechaVencimiento").style.borderColor = "#F70707";
+	}
+	
+	if(document.getElementById("idObservacion").value.length > 0){
+		correcto = correcto + 0;
+		document.getElementById("idObservacion").style.borderColor = "";
+	}else{
+		correcto = correcto + 1;
+		document.getElementById("idObservacion").style.borderColor = "#F70707";
+	}
+	
+	return correcto; 
 }
 
 function modificarObs() {
-	var asignacion = (document.getElementById("idReasignacion").value == 2)?"&reasignar=1":"&reasignar=0";
-	var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
-	urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
-	urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
-	urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-	urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
-	urlServicio = urlServicio + asignacion;
-	peticionPost(urlServicio, 2, folioID);
+	if(seleccionoFolio() == 0){
+		if(datosObservacionValidos() == 0){
+				var asignacion = (document.getElementById("idReasignacion").value == 2)?"&reasignar=1":"&reasignar=0";
+				var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
+				urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
+				urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
+				urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
+				urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+				urlServicio = urlServicio + asignacion;
+				peticionPost(urlServicio, 2, folioID);
+		}else{
+			swal({
+				title: "Alerta",
+				text: "Todos los datos son obligatorios.",
+				icon: "warning",
+			});
+		}
+	}else{
+			swal({
+				title: "Alerta",
+				text: "Debe seleccionar un Oficio para relacionar la Observacion",
+				icon: "warning",
+			});
+	}
+
 }
 
 function reiniciarDatos() {
 	document.getElementById("idObservacionSelect").value = 0;
 	document.getElementById("idAreaAtencion").value = 0;
 	document.getElementById("idResponsableAtencion").value = 0;
-	document.getElementById("idFechaVencimiento").value = "";
+	document.getElementById("idFechaVencimiento").value = fechaVencimientoObs;
 	document.getElementById("idObservacion").value = "";
 	document.getElementById("idObservacionSelect").value = "0";
 	document.getElementById("idReasignacion").value = "0";
@@ -368,8 +454,17 @@ function obtenerPuesto(idEmpleado) {
 
 function obtEmpleadoArea(idArea) {
 	console.log(idArea.value);
-	var buscarEmpleados = getAbsolutePath() + buscarxArea + idArea.value;
-	listaResponsable(buscarEmpleados, 0);
+	if(idArea.value > 0){
+		var buscarEmpleados = getAbsolutePath() + buscarxArea + idArea.value;
+		listaResponsable(buscarEmpleados, 0);	
+	}else{
+		swal({
+				title: "",
+				text: "Seleccione una Area de Atencion Valida.",
+				icon: "warning",
+			});
+	}
+	
 }
 function listaResponsable(url, valor) {
 	$.blockUI({ message: 'Espere un momento...' });
@@ -397,15 +492,29 @@ function observaciones(idFolio) {
 
 
 function asignarFechaVencimiento(fechaV) {
+	
+	const hoy = new Date();
 
+	var fecha1 = $(fechaV).parents("tr").find("td").eq(4).html();
 	var fecha = $(fechaV).parents("tr").find("td").eq(5).html();
 	var fechaVencimiento = new Date(fecha.replaceAll("-", "/")).toISOString().substring(0, 10);
+	var fechaRegistro;
+	if(hoy > Date.parse(fecha1)){
+		fechaRegistro = hoy.toISOString().substring(0, 10);
+	}else{
+		fechaRegistro = new Date(fecha1.replaceAll("-", "/")).toISOString().substring(0, 10);
+	}
 
 	document.querySelectorAll("input[type='date'][for='fechaVObservacion']")
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "min" */
 			elemento.max = fechaVencimiento;
 			document.getElementById("idFechaVencimiento").value = fechaVencimiento;
+		});
+	document.querySelectorAll("input[type='date'][for='fechaVObservacion']")
+		.forEach(elemento => {
+			/* A cada elemento encontrado le asignamos el atributo "min" */
+			elemento.min = fechaRegistro;
 		});
 	fechaVencimientoObs = fechaVencimiento;
 }
@@ -440,14 +549,14 @@ function mnsExisteRegistros(num){
 	if (num > 0) {
 			swal({
 				title: "Informacion.",
-				text: "Se consultaron las observaciones del Folio",
+				text: "Se consultaron las observaciones del Oficio.",
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			})
 		} else {
 			swal({
 				title: "Informacion.",
-				text: "El folio no cuenta con observaciones registradas",
+				text: "El Oficio no cuenta con observaciones registradas",
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			})
