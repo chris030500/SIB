@@ -2,7 +2,6 @@ package ahorrosbienestar.sib.std.autorizacion.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -12,21 +11,16 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
-
 import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -38,9 +32,9 @@ import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import lombok.AllArgsConstructor;
-
 import org.apache.log4j.Logger;
 
+@CrossOrigin
 @RestController
 @AllArgsConstructor
 public class AutorizacionRestController {
@@ -190,59 +184,70 @@ public class AutorizacionRestController {
 		historicoNotificacionService.save(model);
 	}
 
-	/*
-	 * @RequestMapping(value = { "/api_geo" }, method = RequestMethod.GET) public
-	 * CredencialesGeoDTO apiGeolocalizacion() { CredencialesGeoDTO respuestaDTO =
-	 * new CredencialesGeoDTO(); Configuracion url =
-	 * configService.obtenerConfiguracion(ID_GEOLOCALIZACION); Configuracion
-	 * autentificacion =
-	 * configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
-	 * respuestaDTO.setUrl(url.getVc_valor_propiedad());
-	 * respuestaDTO.setAutentificacion(autentificacion.getVc_valor_propiedad());
-	 * return respuestaDTO; }
-	 */
+//	@RequestMapping(value = { "/api_geo" }, method = RequestMethod.GET)
+//	public CredencialesGeoDTO apiGeolocalizacion() {
+//		CredencialesGeoDTO respuestaDTO = new CredencialesGeoDTO();
+//		Configuracion url = configService.obtenerConfiguracion(ID_GEOLOCALIZACION);
+//		Configuracion autentificacion = configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
+//		respuestaDTO.setUrl(url.getVc_valor_propiedad());
+//		respuestaDTO.setAutentificacion(autentificacion.getVc_valor_propiedad());
+//		return respuestaDTO;
+//	}
 
 	@RequestMapping(value = { "/api_geo" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void llamarApiGeolocalizacion(@RequestBody GeolocalizacionDTO geolocalizacionDTO) {
-
+	public void llamarApiGeolocalizacion(GeolocalizacionDTO geolocalizacionDTO) {
+		
 		Configuracion urlGeo = configService.obtenerConfiguracion(ID_GEOLOCALIZACION);
 		Configuracion autentificacionGeo = configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
+		
+        try {
+            // URL de destino
+            URL url = new URL(urlGeo.getVc_valor_propiedad());
 
-		try {
-			URL url = new URL(urlGeo.getVc_valor_propiedad());
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("autentificacion", autentificacionGeo.getVc_valor_propiedad());
-			connection.setDoOutput(true);
+            // Abrir conexión
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-			String requestBody = geolocalizacionDTO.toString();
+            // Configurar método POST
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
 
-			OutputStream os = connection.getOutputStream();
-			os.write(requestBody.getBytes());
-			os.flush();
-			os.close();
+            // Datos a enviar en el cuerpo de la solicitud (en formato JSON)
+            String jsonData = geolocalizacionDTO.toString();
 
-			int responseCode = connection.getResponseCode();
-			logger.info("Response code: " + responseCode);
-			// System.out.println("Response code: " + responseCode);
+            // Establecer el tipo de contenido del cuerpo de la solicitud como application/json
+            connection.setRequestProperty("Content-Type", "application/json");
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
+            // Agregar encabezados personalizados si es necesario
+            connection.setRequestProperty("autentificacion", autentificacionGeo.getVc_valor_propiedad());
 
-			logger.info("Response body: " + response.toString());
-			// System.out.println("Response body: " + response.toString());
+            // Escribir los datos en el cuerpo de la solicitud
+            logger.info(connection);
+            OutputStream outputStream = connection.getOutputStream();
+            logger.info(outputStream);
+            outputStream.write(jsonData.getBytes());
+            outputStream.flush();
+            outputStream.close();
 
-		} catch (Exception e) {
-			logger.error(e);
-			// e.printStackTrace();
-		}
+            // Obtener la respuesta
+            int responseCode = connection.getResponseCode();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            
+            reader.close();
 
+            // Mostrar la respuesta
+            logger.info("Response Code: " + responseCode);
+            logger.info("Response Body: " + response.toString());
+            
+        } catch (Exception e) {
+            //e.printStackTrace();
+        	logger.info(e);
+        }
+		
 	}
 
 }

@@ -374,7 +374,7 @@ function actualizarSolicitud(observacion, tipo) {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 
-			enviarGeolocalizacion(respuesta);
+			//enviarGeolocalizacion(respuesta);
 
 			swal("Solicitud actualizada", {
 				closeOnClickOutside: false,
@@ -402,6 +402,8 @@ function actualizarSolicitud(observacion, tipo) {
 
 // Función a conexión con Api SAT
 function enviarGeolocalizacion(dto) {
+	
+	console.log(dto);
 
 	var data = JSON.stringify(dto);
 
@@ -410,12 +412,12 @@ function enviarGeolocalizacion(dto) {
 		data: data,
 		type: "POST",
 		dataType: "JSON",
-		contentType: 'application/json; charset=utf-8',
+		contentType: 'application/json',
 		success: function(response) {
 			console.log("enviarGeolocalizacion: " + JSON.stringify(response));
 			// Manejar la respuesta
 		},
-		error: function(xhr, status, error) {
+		error: function(error) {
 			console.log("enviarGeolocalizacion error: " + error);
 			// Manejar el error
 		},

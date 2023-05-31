@@ -72,12 +72,22 @@ public class DescargaRestController {
 
 	@Autowired
 	private DoctoVideoService doctoVideoService;
+	
+	// Variables geolocalizacion
+	private final static String typeDevice = "M";
+	private final static String operation = "Nueva disposición";
+	private final static String typeOperation = "2";
+	private final static String ip = "0.0.0.0";
+	private final static String typeProduct = "C";
 
 	// Variable ruta temporal windows
 	private final static int RUTA_TEMPORAL_WS = 51;
 
 	// Variable ruta temporal linux
 	private final static int RUTA_TEMPORAL_LN = 56;
+	
+	// Variable ruta direccion
+	private final static int RUTA_DIRECCIONES = 60;
 
 	// Variable carpeta para los archivos del zip
 	private final static String CARPETA_NUEVA = "Videograbacion";
@@ -143,6 +153,7 @@ public class DescargaRestController {
 					SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
 
 					coordenadasDTO.setCustomerNumber(clienteId.toString());
+					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
 					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
 					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
 					coordenadasDTO.setAccessSystem(nameProducto);
@@ -320,6 +331,9 @@ public class DescargaRestController {
 	}
 
 	public GeolocalizacionDTO llenarGeolocalizacionDTO(GeolocalizacionDTO llenarDTO) throws IOException {
+		
+		// Obtenemos la ruta temporal linux
+		Configuracion rutaDirecciones = configService.obtenerConfiguracion(RUTA_DIRECCIONES);
 
 		// Fecha
 		LocalDateTime now = LocalDateTime.now();
@@ -327,8 +341,7 @@ public class DescargaRestController {
 		String formattedDateTime = now.format(formatter);
 
 		// Dirección
-		String url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + llenarDTO.getLatitude() + "&lon="
-				+ llenarDTO.getLongitude();
+		String url = rutaDirecciones.getVc_valor_propiedad() + "&lat=" + llenarDTO.getLatitude() + "&lon=" + llenarDTO.getLongitude();
 		URL requestUrl = new URL(url);
 		InputStream is = requestUrl.openStream();
 		InputStreamReader isr = new InputStreamReader(is);
@@ -338,16 +351,14 @@ public class DescargaRestController {
 		logger.info("Dirección: " + address);
 		// System.out.println("Dirección: " + address);
 
-		llenarDTO.setNumberProvisions("1");
-		llenarDTO.setTypeDevice("M");
+		llenarDTO.setTypeDevice(typeDevice);
 		llenarDTO.setRegistrationDataTime(formattedDateTime);
 		llenarDTO.setAddressGeolocation(address);
-		llenarDTO.setOperation("Nueva disposición");
-		llenarDTO.setTypeOperation("2");
-		llenarDTO.setIp("0.0.0.0");
-		llenarDTO.setTypeProduct("C");
+		llenarDTO.setOperation(operation);
+		llenarDTO.setTypeOperation(typeOperation);
+		llenarDTO.setIp(ip);
+		llenarDTO.setTypeProduct(typeProduct);
 		llenarDTO.setIdState("22");
-
 		return llenarDTO;
 	}
 
