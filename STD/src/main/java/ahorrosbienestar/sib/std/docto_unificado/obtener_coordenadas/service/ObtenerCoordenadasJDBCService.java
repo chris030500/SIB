@@ -66,5 +66,25 @@ public class ObtenerCoordenadasJDBCService {
 
 		return ls;
 	}
+	
+	public List<ObtenerCoordenadas> obtenerDocumentosSolicitud(int solicitudEnvio) {
+		String sql = "CALL SIB.SP_OBTENER_DOCUMENTOS_SOLICITUD (?);";
+		//System.out.println("Ejecutando CALL SIB.SP_OBTENER_INFO_SOLIC_COORD_DOCTO (" + solicitudEnvio + "," + operacion +")");
+		logger.info("Ejecutando CALL SIB.SP_OBTENER_DOCUMENTOS_SOLICITUD (" + solicitudEnvio + ")");
+		List<ObtenerCoordenadas> ls = jdbcTemplate.query(sql, new Object[] { solicitudEnvio},
+				new RowMapper<ObtenerCoordenadas>() {
+					public ObtenerCoordenadas mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						
+							ObtenerCoordenadas oc = new ObtenerCoordenadas();
+							oc.setPk_id_solicitud(rs.getInt(1));
+							oc.setPk_id_docto_envio(rs.getInt(2));
+							oc.setVc_ruta_docto(rs.getString(3));
+							oc.setNo_hoja(rs.getInt(4));
+							return oc;
+					}
+				});
+
+		return ls;
+	}
 
 }
