@@ -49,26 +49,26 @@
 								<td th:text="${documento.i_estatus}==1?'ACTIVO':'INACTIVO'"></td>
 								<td class="text-center">
 									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnEliminar" 
+									<button class="btn btn-primary btn-sm" id="btnEliminar"
 										onclick="eliminarDocumento(this.value)" title="Eliminar documento"
 										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-trash"></i>
 									</button>
 
 									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnReactivar" 
+									<button class="btn btn-primary btn-sm" id="btnReactivar"
 										onclick="reactivarDocumento(this.value)" title="Reactivar documento"
 										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-check-circle"></i>
 									</button>
-									
-										<!-- Botón para editar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnEditar" 
-										onclick="editarDocumento(this)"  title="Editar documento"
-										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
+
+									<!-- Botón para editar registro del perfil -->
+									<button class="btn btn-primary btn-sm" id="btnEditar"
+										onclick="editarDocumento(this)" title="Editar documento" data-toggle=""
+										data-target="#" th:value="${documento.pk_id_documento}">
 										<i class="fas fa-edit"></i>
 									</button>
-									
+
 								</td>
 							</tr>
 							<tr th:if="${#lists.isEmpty(documento)}">
@@ -79,11 +79,11 @@
 
 						</tbody>
 					</table>
-    	</div>
- 	 </div>
-	
-	
-	<div class="modal" id="modalDocumentos">
+				</div>
+			</div>
+
+
+			<div class="modal" id="modalDocumentos">
 				<div class="modal-dialog">
 					<div class="modal-content">
 
@@ -93,23 +93,34 @@
 						</div>
 						<div class="modal-body">
 							<form>
-							<div class="col-sm-8" style="margin-top: 10px">
-								<label for="busqueda" class="col-form-label">Nombre Documento:</label>
-							</div>
-							<div  class="col-sm-10" style="margin-top: 10px">
-								<input type="text" class="form-control col-sm-8" id="inputDocumento" placeholder="Nombre Documento" maxlength="300">
-							</div>
+								<div class="col-sm-8" style="margin-top: 10px">
+									<label for="busqueda" class="col-form-label">Nombre Documento:</label>
+								</div>
+								<div class="col-sm-10" style="margin-top: 10px">
+									<input type="text" class="form-control col-sm-8" id="inputDocumento"
+										placeholder="Nombre Documento" maxlength="300">
+								</div>
+
+								<div class="col-sm-8" style="margin-top: 10px">
+									<label for="busqueda2" class="col-form-label">Requiere proceso de firma:</label>
+								</div>
+								<select class="form-select" id="firma" name="firmaDoc">
+									<option value="1">Si</option>
+									<option value="0">No</option>
+								</select>
 							</form>
 						</div>
 						<!-- Modal footer -->
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrar">Registrar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelar">Cancelar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal"
+								id="btnRegistrar">Registrar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal"
+								id="btnCancelar">Cancelar</button>
 						</div>
 					</div>
 				</div>
-	</div>
-	<div class="modal" id="editDocumentos">
+			</div>
+			<div class="modal" id="editDocumentos">
 				<div class="modal-dialog">
 					<div class="modal-content">
 
@@ -119,22 +130,34 @@
 						</div>
 						<div class="modal-body">
 							<form>
-							<div class="col-sm-8" style="margin-top: 10px">
-								<label for="busqueda" class="col-form-label">Nombre Documento:</label>
-							</div>
-							<div  class="col-sm-10" style="margin-top: 10px">
-								<input type="text" class="form-control col-sm-8" id="editDocumento" placeholder="Nombre Documento" maxlength="300">
-							</div>
+								<div class="col-sm-8" style="margin-top: 10px">
+									<label for="busqueda" class="col-form-label">Nombre Documento:</label>
+								</div>
+								<div class="col-sm-10" style="margin-top: 10px">
+									<input type="text" class="form-control col-sm-8" id="editDocumento"
+										placeholder="Nombre Documento" maxlength="300">
+								</div>
+								
+								<div class="col-sm-8" style="margin-top: 10px">
+									<label for="busqueda3" class="col-form-label">Requiere proceso de firma:</label>
+								</div>
+								<select class="form-select" id="firma2" name="firmaDoc2">
+									<option value="1">Si</option>
+									<option value="0">No</option>
+								</select>
+								
 							</form>
 						</div>
 						<!-- Modal footer -->
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEnviar">Actualizar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarEnvio">Cancelar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal"
+								id="btnEnviar">Actualizar</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal"
+								id="btnCancelarEnvio">Cancelar</button>
 						</div>
 					</div>
 				</div>
-	</div>
+			</div>
 
 	</section>
 	<th:block layout:fragment="page-scripts">
@@ -142,8 +165,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/altaDocumentos/registro_documentos.js}"></script>
-	
+
 		<!--JavaScript-->
 	</th:block>
-	</body>
+</body>
+
 </html>

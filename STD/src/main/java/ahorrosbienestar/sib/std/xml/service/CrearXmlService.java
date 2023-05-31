@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Attr;
@@ -65,19 +66,21 @@ public class CrearXmlService {
 
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
+	
+	private static final Logger logger = Logger.getLogger(CrearXmlService.class);
 
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
 
 
 		try {
-			System.out.println("CORE: " + solicitudCore);
+			logger.info("CORE: " + solicitudCore);
 			// Obtenemos los datos de los participantes:
 			List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
 			String nombre = titular.get(0).getNombreCompleto();
 			String direccion = titular.get(0).getDireccionCompleta();
 			String telefonoCelular = titular.get(0).getTelefonoCelular();
 			String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
-			System.out.println("Dirección: " + direccion);
+			logger.info("Dirección: " + direccion);
 			List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
 			String monto = datosSolicitud.get(0).getMontoAutorizado();
 			String plazo = datosSolicitud.get(0).getPlazo();
@@ -86,9 +89,9 @@ public class CrearXmlService {
 
 			// Obtenemos el I_PRODUCTO_ID
 			int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
-			System.out.println("IdPorducto: " + idProducto);
+			logger.info("IdPorducto: " + idProducto);
 			Producto infoProducto = productoService.findByNoProducto(idProducto);
-			System.out.println("infoProducto: " + infoProducto);
+			logger.info("infoProducto: " + infoProducto);
 			String nombreProducto = infoProducto.getVc_nombre_producto().toString();
 			String kyc = infoProducto.getVc_identificador_kyc().toString();
 			String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
@@ -101,13 +104,13 @@ public class CrearXmlService {
 
 			int totalPersonasFirma = titular.size();
 
-			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 0);
+			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 1);
 			String ruta = documentos.get(0).getVc_ruta_docto();
-			System.out.println("ruta de documentos: " + ruta);
+			logger.info("ruta de documentos: " + ruta);
 
 			String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
 
-			System.out.println("RutaFinal: " + rutaArchivoFinal);
+			logger.info("RutaFinal: " + rutaArchivoFinal);
 			String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
 			String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 
@@ -116,7 +119,7 @@ public class CrearXmlService {
 
 			List<Configuracion> configuracion = configService.findAll();
 
-			// System.out.println("entro en if variable1");
+			// logger.info("entro en if variable1");
 			// String[] words = mensaje.split("variable");
 
 			// Asignamos los nuevos parametros.
@@ -171,16 +174,16 @@ public class CrearXmlService {
 			// Obtenemos el id del documento unificado para buscar las coordenadas
 			Optional<DoctoUnificado> doctoUnificado = doctoUnificadoService.findByFkIdSolicituEnvio(solicitudEnvio);
 			int idDoctUnificado = doctoUnificado.get().getPk_id_docto_unificado();
-			System.out.println("FirmaDoctUni: " + idDoctUnificado);
+			logger.info("FirmaDoctUni: " + idDoctUnificado);
 			// Obtenemos la información de la ultima pagina para el certificado.
 
 			List<FirmaDoctoUnificado> fDoctoUnificado = firmaDoctoUnificadoService
 					.obtenerCoordenadasFirma(idDoctUnificado);
 			int tamanoList = firmaDoctoUnificadoService.obtenerCoordenadasFirma(idDoctUnificado).size();
 
-			System.out.println("Tamaño list: " + tamanoList);
+			logger.info("Tamaño list: " + tamanoList);
 
-			System.out.println("Obtener los datos de la ultima pagina: "
+			logger.info("Obtener los datos de la ultima pagina: "
 					+ fDoctoUnificado.get(tamanoList - 1).getPk_id_firma_docto_unificado());
 
 			int noPage = fDoctoUnificado.get(tamanoList - 1).getI_no_hoja();
@@ -216,7 +219,7 @@ public class CrearXmlService {
 			positionY2Certificate.setTextContent(String.valueOf(y2Certificate));
 			certificate.appendChild(positionY2Certificate);
 
-			// System.out.println("fDoctoUnificado: " +
+			// logger.info("fDoctoUnificado: " +
 			// fDoctoUnificado.get(i).getPk_id_firma_docto_unificado());
 			// Agregar foreach para traer los participantes.
 			Element signers = doc.createElement("signers");
@@ -421,7 +424,7 @@ public class CrearXmlService {
 			DOMSource source = new DOMSource(doc);
 //			StreamResult result = new StreamResult(
 //					new File("C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/documentoFinal.xml"));
-			System.out.println("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
+			logger.info("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
 			StreamResult result = new StreamResult(new File(rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
 			transformer.transform(source, result);
 			return "1";

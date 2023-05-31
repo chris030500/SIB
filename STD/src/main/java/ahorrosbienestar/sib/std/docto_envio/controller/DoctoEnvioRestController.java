@@ -144,54 +144,81 @@ public class DoctoEnvioRestController {
 			dEnvio.setI_tp_docto_envio(1);
 
 			logger.info("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
-			logger.info("Catalogo Documento: " + dEnvio.getFk_cat_documento());
+			logger.info("Catalogo Documento: " + dEnvio.getFk_cat_documento().getPk_id_documento());
 			logger.info("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
 			logger.info("nombreDocumento" + nombreDocumento);
 //			logger.info("Solicitud envio: " + dEnvio.getFk_solicitud_envio());
 //			logger.info("Catalogo Documento: " + dEnvio.getFk_cat_documento());
 //			logger.info("Ubicación Archivo: " + dEnvio.getVc_ruta_docto());
 //			logger.info("nombreDocumento" + nombreDocumento);
+			int idDoc = dEnvio.getFk_cat_documento().getPk_id_documento();
 			
 			dEnvio = doctEnvioService.save(dEnvio);
-			if (nombreDocumento.contains("AnexosContrato") || nombreDocumento.contains("AnexoContrato")) {
+			
+			if(idDoc == 30) {
 				logger.info("Entro en anexosContrato");
-				logger.info("Entro en anexosContrato");
-				if(productoNomina.equals("S")) {
-					logger.info("Entro en if de S");
-					logger.info("Entro en si es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
-					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
-				} else if (productoNomina.equals("N")){
-					logger.info("Entro en if de N");
-					logger.info("Entro en no es nomina");
-					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
-					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
-				}
-				
-			} else if (nombreDocumento.contains("Contrato_Apertura")) {
-				//logger.info("Entro en Contrato_Apertura");
+				obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+			} else if (idDoc == 33) {
 				logger.info("Entro en Contrato_Apertura");
 				//logger.info("Entro en contrato");
 				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio, doct);
-			} else if (nombreDocumento.contains("Pagare")) {
-				//logger.info("Entro en pagare");
+			} else if(idDoc == 32) {
 				logger.info("Entro en pagare");
 				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio, doct);
-			} else if (nombreDocumento.contains("tabla de Amortizacion") || nombreDocumento.contains("PlandePagos") || nombreDocumento.contains("amortizacion")) {
-				//logger.info("Entro en Tabla de amortizacion");
-				logger.info("Entro en Plan de pagos");
+			} else if (idDoc == 31) {
+				logger.info("Entro en tabla de amortización");
+				logger.info("idDoc" + idDoc);
 				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio, doct);
-			} else if(nombreDocumento.contains("domiciliacion") || nombreDocumento.contains("formato de domiciliacion")) {
-				//logger.info("Entro en formato de domiciliacion");
+			} else if(idDoc == 36) {
 				logger.info("Entro en formato de domiciliacion");
 				obtenerCoordenadasRestController.obtenerCoordenadasDomiliciacion(ubicacionArchivoServidor, dEnvio, doct);
-			} else if (nombreDocumento.contains("autorizacion de transferencia electronica") || nombreDocumento.contains("transferencia electronica")) {
+			} else if (idDoc == 35) {
 				logger.info("Entro en autorizacion de transferencia electronica");
 				obtenerCoordenadasRestController.obtenerCoordenadasAutorizacionTransferencia(ubicacionArchivoServidor, dEnvio, doct);
 			} else {
-				logger.info("El documento " + nombreDocumento  + " no está configurado para obtener espacios de firma");
-				//logger.info("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");
+				logger.info("El documento " + dEnvio.getFk_cat_documento().getVc_nombre_doc()  + " no está configurado para obtener espacios de firma");
+				obtenerCoordenadasRestController.obtenerTotalHojasDocNoFirma(ubicacionArchivoServidor, dEnvio);
 			}
+			
+//			if (nombreDocumento.contains("AnexosContrato") || nombreDocumento.contains("AnexoContrato")) {
+//				logger.info("Entro en anexosContrato");
+//				logger.info("Entro en anexosContrato");
+//				if(productoNomina.equals("S")) {
+//					logger.info("Entro en if de S");
+//					logger.info("Entro en si es nomina");
+//					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+//					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContratoNominal(ubicacionArchivoServidor, dEnvio);
+//				} else if (productoNomina.equals("N")){
+//					logger.info("Entro en if de N");
+//					logger.info("Entro en no es nomina");
+//					obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio, doct, productoNomina);
+//					//obtenerCoordenadasRestController.obtenerCoordenadasAnexosContrato(ubicacionArchivoServidor, dEnvio);
+//				}
+//				
+//			} else if (nombreDocumento.contains("Contrato_Apertura")) {
+//				//logger.info("Entro en Contrato_Apertura");
+//				logger.info("Entro en Contrato_Apertura");
+//				//logger.info("Entro en contrato");
+//				obtenerCoordenadasRestController.obtenerCoordenadasContrato(ubicacionArchivoServidor, dEnvio, doct);
+//			} else if (nombreDocumento.contains("Pagare")) {
+//				//logger.info("Entro en pagare");
+//				logger.info("Entro en pagare");
+//				obtenerCoordenadasRestController.obtenerCoordenadasPagare(ubicacionArchivoServidor, dEnvio, doct);
+//			} else if (nombreDocumento.contains("tabla de Amortizacion") || nombreDocumento.contains("PlandePagos") || nombreDocumento.contains("amortizacion")) {
+//				//logger.info("Entro en Tabla de amortizacion");
+//				logger.info("Entro en Plan de pagos");
+//				obtenerCoordenadasRestController.obtenerCoordenadasPlanPagos(ubicacionArchivoServidor, dEnvio, doct);
+//			} else if(nombreDocumento.contains("domiciliacion") || nombreDocumento.contains("formato de domiciliacion")) {
+//				//logger.info("Entro en formato de domiciliacion");
+//				logger.info("Entro en formato de domiciliacion");
+//				obtenerCoordenadasRestController.obtenerCoordenadasDomiliciacion(ubicacionArchivoServidor, dEnvio, doct);
+//			} else if (nombreDocumento.contains("autorizacion de transferencia electronica") || nombreDocumento.contains("transferencia electronica")) {
+//				logger.info("Entro en autorizacion de transferencia electronica");
+//				obtenerCoordenadasRestController.obtenerCoordenadasAutorizacionTransferencia(ubicacionArchivoServidor, dEnvio, doct);
+//			} else {
+//				logger.info("El documento " + nombreDocumento  + " no está configurado para obtener espacios de firma");
+//				//logger.info("El documento " + nombreDocumento + " no está configurado para obtener espacios de firma");
+//			}
 			//return ResponseEntity.ok(dEnvio);
 			return ResponseEntity.ok("Ok");
 		} catch (Exception e) {

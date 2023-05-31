@@ -65,8 +65,8 @@ public class DocumentoService {
 		}
 
 
-		public int editarDocumento(Integer id_documento, String nombreDocumento) {
-			return iDocumentoRepository.editarDocumento(id_documento,nombreDocumento);
+		public int editarDocumento(Integer id_documento, String nombreDocumento, int firma) {
+			return iDocumentoRepository.editarDocumento(id_documento,nombreDocumento, firma);
 			
 		}
 
