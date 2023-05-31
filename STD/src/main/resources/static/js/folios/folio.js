@@ -4,7 +4,7 @@ var buscarxArea = "busquedaxArea?areaID=";
 var altaFolio = "altaFolio?noficio=";
 var buscarObservaciones = "buscarObservaciones?idFolio=";
 var datosFolio = "cargarFolio/";
-var modFolio = "modificarFolio?noficio=";
+var modFolio = "modificarFolio?id=";
 var modObservaciones = "modificarObservacion?idObs=";
 var altaObservaciones = "altaObservacion?idAreaAtencion=";
 
@@ -16,9 +16,42 @@ $(document).ready(function() {
 
 	iniciarfechas();
 	eventosModal();
+	eventosContadorObservacion();
+	eventosContadorOficio();
+	eventosContadorAsunto();
 	inicioTabla();
 });
 
+function eventosContadorObservacion(){
+	const mensaje = document.getElementById('idObservacion');
+	const contador = document.getElementById('contador');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+function eventosContadorOficio(){
+	const mensaje = document.getElementById('noficio');
+	const contador = document.getElementById('conNoficio');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+function eventosContadorAsunto(){
+	const mensaje = document.getElementById('idAsunto');
+	const contador = document.getElementById('contIdAsunto');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
 
 function iniciarfechas() {
 	const hoy_fecha = new Date().toISOString().substring(0, 10);
@@ -286,7 +319,7 @@ function guardarFolio(proceso) {
 			urlServicio = getAbsolutePath() + altaFolio;
 			break;
 		case 2:
-			urlServicio = getAbsolutePath() + modFolio;
+			urlServicio = getAbsolutePath() + modFolio+document.getElementById("idUnico").value+"&noficio=";
 			break;
 		default:
 			urlServicio = getAbsolutePath() + inicio;
@@ -590,6 +623,7 @@ function inicioTabla() {
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
+		
 	});
 }
 function editarFolio(id) {
@@ -602,13 +636,13 @@ function editarFolio(id) {
 function obtenerFolio(url) {
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(url, {}, function(data) {
-		setTimeout($.unblockUI, 500);
+		setTimeout($.unblockUI, 100);
 		cargarDatos(data);
-
 	});
 }
 function cargarDatos(data) {
 
+	document.getElementById("idUnico").value = data.pk_id_folio;
 	document.getElementById("noficio").value = data.vc_folio;
 	document.getElementById("idRecepcion").value = data.dt_fecha_recepcion;
 	document.getElementById("idAsunto").value = data.vc_asunto;

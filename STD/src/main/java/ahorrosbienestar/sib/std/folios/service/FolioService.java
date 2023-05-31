@@ -32,11 +32,11 @@ public class FolioService {
 		return iFolioRepository.findAll();
 	}
 
-	public int modFolio(String noficio, String dt_recepcion, String vc_asunto, Integer i_dirigido, String vc_puesto,
+	public int modFolio(Integer id,String noficio, String dt_recepcion, String vc_asunto, Integer i_dirigido, String vc_puesto,
 			Integer i_tipo_oficio, Integer i_organo_emite, String dt_registro, Integer i_Plazo, String dt_Vencimiento,
 			Integer i_estatus, String vc_ruta) {
 		// TODO Auto-generated method stub
-		return iFolioRepository.modFolio(noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta);
+		return iFolioRepository.modFolio(id,noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta);
 	}
 
 	public int actEstatus(Integer folioID, Integer estatus) {

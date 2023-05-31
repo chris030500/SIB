@@ -69,7 +69,7 @@ function iniciarDtosActividad(){
 	document.getElementById("idEncargadoActividad").value = 0;
 	document.getElementById("dtFechaInicio").value = dtInicio;
 	document.getElementById("dtFechaVencimiento").value = dtVencimiento;
-	document.getElementById("idEstatus").value = 0;
+	//document.getElementById("idEstatus").value = 0;
 }
 
 function peticionPost(urlServicio) {
@@ -412,7 +412,7 @@ function datosActividad(url){
 		document.getElementById("idEncargadoActividad").value = data.i_responsable;
 		document.getElementById("dtFechaInicio").value = data.dt_fecha_inicio;
 		document.getElementById("dtFechaVencimiento").value = data.dt_fecha_vencimiento;
-		document.getElementById("idEstatus").value = data.i_estatus;
+		//document.getElementById("idEstatus").value = data.i_estatus;
 		document.getElementById("idAct").value = data.pk_id_planaccion;
 	});
 }

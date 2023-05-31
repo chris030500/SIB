@@ -182,6 +182,7 @@ public class FoliosController {
 			//Dar de alta un rol utilizando metodo POST
 			@PostMapping("/modificarFolio")
 			public ResponseEntity<?> modificarFolio(
+					@RequestParam(name = "id") Integer id, 
 					@RequestParam(name = "noficio") String noficio, 
 					@RequestParam(name = "dt_recepcion") String dt_recepcion,
 					@RequestParam(name = "vc_asunto") String vc_asunto,
@@ -199,7 +200,7 @@ public class FoliosController {
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
 					
-					if(folioService.modFolio(noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta) == 1) {
+					if(folioService.modFolio(id,noficio,dt_recepcion,vc_asunto,i_dirigido,vc_puesto,i_tipo_oficio,i_organo_emite,dt_registro,i_Plazo,dt_Vencimiento,i_estatus,vc_ruta) == 1) {
 						respuesta.add(mensaje);
 					}else {
 						respuesta.add("No se actualizo correctamente");

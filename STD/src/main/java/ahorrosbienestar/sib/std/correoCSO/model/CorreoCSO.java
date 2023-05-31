@@ -30,7 +30,7 @@ public class CorreoCSO {
 	@Column(name = "DT_FECHA_REGISTRO")
 	private Timestamp dt_fecha_registro;
 	
-	@Column(name = "VC_CONTENIDO_CORREO", columnDefinition = "VARCHAR(600)")
+	@Column(name = "VC_CONTENIDO_CORREO", columnDefinition = "TEXT")
 	private String vc_contenido_correo;
 	
 	@Column(name = "VC_CORREO_DESTINO", columnDefinition = "VARCHAR(100)")
