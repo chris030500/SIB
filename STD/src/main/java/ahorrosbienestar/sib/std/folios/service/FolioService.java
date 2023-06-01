@@ -42,5 +42,5 @@ public class FolioService {
 	public int actEstatus(Integer folioID, Integer estatus) {
 		return iFolioRepository.actEstatus(folioID, estatus);
 	}
-	
+		
 }
