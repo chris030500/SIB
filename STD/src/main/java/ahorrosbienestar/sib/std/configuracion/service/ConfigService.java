@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.configuracion.service;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,10 @@ public class ConfigService {
 	}
 	public Configuracion obtenerConfiguracion(Integer configuracionID) {
 		return iConfiguracionRepository.findById(configuracionID).orElse(null);
+	}
+
+	public List<Configuracion>  obtenerUrlCSO() {
+		return iConfiguracionRepository.obtenerUrlCSO();
 	}
 
 }

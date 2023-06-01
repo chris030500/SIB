@@ -4,9 +4,10 @@ var buscarxArea = "busquedaxArea?areaID=";
 var altaFolio = "altaFolio?noficio=";
 var buscarObservaciones = "buscarObservaciones?idFolio=";
 var datosFolio = "cargarFolio/";
-var modFolio = "modificarFolio?noficio=";
+var modFolio = "modificarFolio?id=";
 var modObservaciones = "modificarObservacion?idObs=";
 var altaObservaciones = "altaObservacion?idAreaAtencion=";
+
 
 var inicio = "folio";
 var fechaVencimientoObs;
@@ -16,9 +17,60 @@ $(document).ready(function() {
 
 	iniciarfechas();
 	eventosModal();
+	eventosContadorObservacion();
+	eventosContadorOficio();
+	eventosContadorAsunto();
+	tamFile();
 	inicioTabla();
 });
 
+function tamFile(){
+	const tamMaxFile = 2097152;
+	var fileTam = document.getElementById("file");
+	fileTam.onchange = function() {
+    	if(this.files[0].size > tamMaxFile){
+      				swal({
+				title: "",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (2MB)",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				this.value = "";
+			});       			
+   		 };
+	};
+}
+
+function eventosContadorObservacion(){
+	const mensaje = document.getElementById('idObservacion');
+	const contador = document.getElementById('contador');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+function eventosContadorOficio(){
+	const mensaje = document.getElementById('noficio');
+	const contador = document.getElementById('conNoficio');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+function eventosContadorAsunto(){
+	const mensaje = document.getElementById('idAsunto');
+	const contador = document.getElementById('contIdAsunto');
+	mensaje.addEventListener('input', function(e) {
+   		const target = e.target;
+    	const longitudMax = target.getAttribute('maxlength');
+    	const longitudAct = target.value.length;
+    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
 
 function iniciarfechas() {
 	const hoy_fecha = new Date().toISOString().substring(0, 10);
@@ -146,8 +198,114 @@ function eventosModal() {
 		}
 	});
 
+	$("#btnCerrar").click(function() {
+		$("#modalAdjuntos").modal("hide");
+		document.getElementById("idFolioArchivo").value = 0;
+		tblAdjuntos.clear().draw();
+	});
+	
+	$("#btnGuardarFile").click(function() {
+		var form = $('#adjuntoArchivoOficio')[0];
+		var data = new FormData(form);
+		addArchivos(data)
+	});
 
 
+}
+
+var buscarArchivos = "buscarArchivos?idFolio="; 
+function adjuntarFiles(id){
+	document.getElementById("idFolioArchivo").value = id;
+	var urlServicio = getAbsolutePath() + buscarArchivos + id;
+	obtDtostblAdjuntos(urlServicio);
+	document.getElementById("file").value = "";
+	
+}
+
+function obtDtostblAdjuntos(url){
+	$.blockUI({ message: 'Espere un momento...' });
+	$.getJSON(url, {}, function(data) {
+		tblAdjuntos.clear().draw();
+		$.each(data, function(idx, opt) {
+			var botones = " <button class='btn btn-info' tabindex='0'"
+				+ " title='Ver PDF' type='button'"
+				+ " onclick='verPDF("
+				+ opt.pk_id_archivo
+				+ ")' id="
+				+ opt.pk_id_archivo
+				+ " >"
+				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
+			tblAdjuntos.row.add([opt.pk_id_archivo,opt.vc_nombre_docto, botones]).draw(false);
+			tblAdjuntos.column(0).visible(false);
+		});
+		setTimeout($.unblockUI, 100);
+		mnstblAdjuntos(tblAdjuntos.rows().count());
+	});
+}
+
+function verPDF(id){
+
+	var servicioPDF = "buscarPDF?idArchivo=";
+	var urlArchivo = getAbsolutePath() +servicioPDF+id;
+
+	window.open(urlArchivo);
+	window.focus();
+	
+}
+
+function mnstblAdjuntos(num){
+	if (num > 0) {
+			swal({
+				title: "Informacion.",
+				text: "Lista de Archivos del Oficio.",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
+		} else {
+			swal({
+				title: "Informacion.",
+				text: "El Oficio no cuenta con Archivos registrados",
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			})
+		}
+}
+
+var agregarArchivos = "subirArchivo?idFolio=";
+function addArchivos(data){	
+	$.ajax({
+		async: false,
+		url:  getAbsolutePath() + agregarArchivos+document.getElementById("idFolioArchivo").value,
+		type: "POST",
+		enctype: 'multipart/form-data',
+		data: data, //pass the form data
+		processData: false,
+		contentType: false,
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		success: function(data) {
+			swal({
+				title: "",
+				text: data[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				adjuntarFiles(document.getElementById("idFolioArchivo").value);
+			});
+		},
+		error: function(data) {
+				swal({
+					title: "Alerta",
+					text: "El tamaño del archivo es mayor al permitirdo 2MB.",
+					icon: "warning",
+				});
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 6000);
+		}
+	});
+	
 }
 
 function validacionesAgregarObs(fecha1) {
@@ -286,7 +444,7 @@ function guardarFolio(proceso) {
 			urlServicio = getAbsolutePath() + altaFolio;
 			break;
 		case 2:
-			urlServicio = getAbsolutePath() + modFolio;
+			urlServicio = getAbsolutePath() + modFolio+document.getElementById("idUnico").value+"&noficio=";
 			break;
 		default:
 			urlServicio = getAbsolutePath() + inicio;
@@ -570,6 +728,7 @@ function getAbsolutePath() {
 }
 var tblObservacion;
 var tblOficio;
+var tblAdjuntos;
 function inicioTabla() {
 
 	tblOficio = $("#tblOficio").DataTable({
@@ -590,6 +749,17 @@ function inicioTabla() {
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
+		
+	});
+	tblAdjuntos = $("#tblAdjuntos").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+		
 	});
 }
 function editarFolio(id) {
@@ -602,13 +772,13 @@ function editarFolio(id) {
 function obtenerFolio(url) {
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(url, {}, function(data) {
-		setTimeout($.unblockUI, 500);
+		setTimeout($.unblockUI, 100);
 		cargarDatos(data);
-
 	});
 }
 function cargarDatos(data) {
 
+	document.getElementById("idUnico").value = data.pk_id_folio;
 	document.getElementById("noficio").value = data.vc_folio;
 	document.getElementById("idRecepcion").value = data.dt_fecha_recepcion;
 	document.getElementById("idAsunto").value = data.vc_asunto;

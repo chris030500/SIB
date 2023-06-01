@@ -55,8 +55,8 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
+					<div class="table-responsive">
 						<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservaciones">
-
 							<thead>
 								<tr>
 									<th style="visibility:collapse; display:none;"></th>
@@ -74,6 +74,7 @@
 							</tbody>
 
 						</table>
+						</div>
 					</div>
 				</fieldset>
 			</div>
@@ -109,9 +110,9 @@
 							<label class="col-form-label"> Fecha Vencimiento</label>
 							<input class="form-control" type="date" id="dtFechaVencimiento" for="fechaVencimiento" min="fechaInicio" max="fechaVencimiento">
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-4" style="visibility:collapse; display:none;">
 							<label class="col-form-label"> Estatus</label>
-							<select class="form-control" id="idEstatus">
+							<select class="form-control" id="idEstatus" th:disabled="true">
 								<option value="0">Seleccione</option>
 								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
 									th:text="${opcion.v_valor}"></option>
@@ -125,8 +126,8 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
+					<div class="table-responsive">
 						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
-
 							<thead>
 								<tr>
 									<th style="visibility:collapse; display:none;">ID</th>
@@ -145,6 +146,7 @@
 							</tbody>
 
 						</table>
+						</div>	
 					</div>
 				</fieldset>
 			</div>

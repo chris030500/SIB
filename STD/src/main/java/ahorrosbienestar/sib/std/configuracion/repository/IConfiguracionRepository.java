@@ -87,4 +87,6 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 			+ "OR VC_NOM_PROPIEDAD like '%jaspersserver_password%'; ", nativeQuery = true)
 	public List<Configuracion> obtenerConfReportes();
 	
+	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'urlCSO';", nativeQuery = true)
+	public List<Configuracion> obtenerUrlCSO();
 }
