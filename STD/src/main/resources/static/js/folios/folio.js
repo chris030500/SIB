@@ -25,13 +25,13 @@ $(document).ready(function() {
 });
 
 function tamFile(){
-	const tamMaxFile = 2097152;
+	const tamMaxFile = 20971520;
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
     	if(this.files[0].size > tamMaxFile){
       				swal({
 				title: "",
-				text: "El archivo seleccionado excede el tamaño maximo permitido (2MB)",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (20MB)",
 				icon: "warning",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
