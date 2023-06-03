@@ -9,14 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,35 +23,36 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.swing.JFileChooser;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
-import com.fasterxml.jackson.core.JsonParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import ahorrosbienestar.sib.std.autorizacion.descargas.bitacora_zip.model.BitacoraZipModel;
 import ahorrosbienestar.sib.std.autorizacion.descargas.bitacora_zip.service.BitacoraZipService;
 import ahorrosbienestar.sib.std.autorizacion.descargas.docto_video.model.DoctoVideoModel;
 import ahorrosbienestar.sib.std.autorizacion.descargas.docto_video.service.DoctoVideoService;
-import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
+import ahorrosbienestar.sib.std.autorizacion.descargas.dto.DatosDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
-
 import org.apache.log4j.Logger;
 import lombok.AllArgsConstructor;
+
+class Estados {
+	String nombre;
+	String clave;
+
+	// Constructor de la clase Persona
+	public Estados(String nombre, String clave) {
+		this.nombre = nombre;
+		this.clave = clave;
+	}
+}
 
 @RestController
 @AllArgsConstructor
@@ -72,7 +70,7 @@ public class DescargaRestController {
 
 	@Autowired
 	private DoctoVideoService doctoVideoService;
-	
+
 	// Variables geolocalizacion
 	private final static String typeDevice = "M";
 	private final static String operation = "Nueva disposición";
@@ -85,7 +83,7 @@ public class DescargaRestController {
 
 	// Variable ruta temporal linux
 	private final static int RUTA_TEMPORAL_LN = 56;
-	
+
 	// Variable ruta direccion
 	private final static int RUTA_DIRECCIONES = 60;
 
@@ -105,12 +103,12 @@ public class DescargaRestController {
 	 * @throws ParseException
 	 * @throws java.text.ParseException
 	 */
-	public GeolocalizacionDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado,
-			String nameProducto, String solicitud) throws IOException, ParseException, java.text.ParseException {
+	public DatosDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado, String nameProducto,
+			String solicitud, Integer idWSAutenticacion) throws IOException, ParseException, java.text.ParseException {
 
 		try {
-			GeolocalizacionDTO respuestaDTO = new GeolocalizacionDTO();
-			GeolocalizacionDTO coordenadasDTO = new GeolocalizacionDTO();
+			DatosDTO respuestaDTO = new DatosDTO();
+			DatosDTO coordenadasDTO = new DatosDTO();
 
 			// Obtenemos la ruta temporal
 			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
@@ -158,6 +156,8 @@ public class DescargaRestController {
 					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
 					coordenadasDTO.setAccessSystem(nameProducto);
 					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
+					respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
+					respuestaDTO.setSolicitudEnvio(solicitudEnvio);
 					return respuestaDTO;
 				}
 
@@ -272,9 +272,9 @@ public class DescargaRestController {
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("resource")
-	public GeolocalizacionDTO extaerJSON(String filePath) throws IOException, ParseException {
+	public DatosDTO extaerJSON(String filePath) throws IOException, ParseException {
 
-		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
+		DatosDTO responseDTO = new DatosDTO();
 
 		// Ruta del archivo ZIP
 		String zipFilePath = filePath;
@@ -330,8 +330,8 @@ public class DescargaRestController {
 		return responseDTO;
 	}
 
-	public GeolocalizacionDTO llenarGeolocalizacionDTO(GeolocalizacionDTO llenarDTO) throws IOException {
-		
+	public DatosDTO llenarGeolocalizacionDTO(DatosDTO llenarDTO) throws IOException {
+
 		// Obtenemos la ruta temporal linux
 		Configuracion rutaDirecciones = configService.obtenerConfiguracion(RUTA_DIRECCIONES);
 
@@ -341,7 +341,8 @@ public class DescargaRestController {
 		String formattedDateTime = now.format(formatter);
 
 		// Dirección
-		String url = rutaDirecciones.getVc_valor_propiedad() + "&lat=" + llenarDTO.getLatitude() + "&lon=" + llenarDTO.getLongitude();
+		String url = rutaDirecciones.getVc_valor_propiedad() + "&lat=" + llenarDTO.getLatitude() + "&lon="
+				+ llenarDTO.getLongitude();
 		URL requestUrl = new URL(url);
 		InputStream is = requestUrl.openStream();
 		InputStreamReader isr = new InputStreamReader(is);
@@ -349,7 +350,11 @@ public class DescargaRestController {
 		JsonObject json = gson.fromJson(isr, JsonObject.class);
 		String address = json.get("display_name").getAsString();
 		logger.info("Dirección: " + address);
-		// System.out.println("Dirección: " + address);
+		JsonObject objetoDireccion = json.getAsJsonObject("address");
+		logger.info("Estado: " + objetoDireccion.get("state").getAsString());
+		
+		// clave del estado
+		String clave = claveDeEstado(objetoDireccion.get("state").getAsString());
 
 		llenarDTO.setTypeDevice(typeDevice);
 		llenarDTO.setRegistrationDataTime(formattedDateTime);
@@ -358,8 +363,112 @@ public class DescargaRestController {
 		llenarDTO.setTypeOperation(typeOperation);
 		llenarDTO.setIp(ip);
 		llenarDTO.setTypeProduct(typeProduct);
-		llenarDTO.setIdState("22");
+		llenarDTO.setIdState(clave);
 		return llenarDTO;
+	}
+
+	public String claveDeEstado(String estado) {
+
+		// Creación de un objeto utilizando el constructor
+		Estados e1 = new Estados("Aguascalientes", "01");
+		Estados e2 = new Estados("Baja California", "02");
+		Estados e3 = new Estados("Baja California Sur", "03");
+		Estados e4 = new Estados("Campeche", "04");
+		Estados e5 = new Estados("Coahuila de Zaragoza", "05");
+		Estados e6 = new Estados("Colima", "06");
+		Estados e7 = new Estados("Chiapas", "07");
+		Estados e8 = new Estados("Chihuahua", "08");
+		Estados e9 = new Estados("Ciudad de México", "09");
+		Estados e10 = new Estados("Durango", "10");
+		Estados e11 = new Estados("Guanajuato", "11");
+		Estados e12 = new Estados("Guerrero", "12");
+		Estados e13 = new Estados("Hidalgo", "13");
+		Estados e14 = new Estados("Jalisco", "14");
+		Estados e15 = new Estados("México", "15");
+		Estados e16 = new Estados("Michoacán de Ocampo", "16");
+		Estados e17 = new Estados("Morelos", "17");
+		Estados e18 = new Estados("Nayarit", "18");
+		Estados e19 = new Estados("Nuevo León", "19");
+		Estados e20 = new Estados("Oaxaca", "20");
+		Estados e21 = new Estados("Puebla", "21");
+		Estados e22 = new Estados("Querétaro", "22");
+		Estados e23 = new Estados("Quintana Roo", "23");
+		Estados e24 = new Estados("San Luis Potosí", "24");
+		Estados e25 = new Estados("Sinaloa", "25");
+		Estados e26 = new Estados("Sonora", "26");
+		Estados e27 = new Estados("Tabasco", "27");
+		Estados e28 = new Estados("Tamaulipas", "28");
+		Estados e29 = new Estados("Tlaxcala", "29");
+		Estados e30 = new Estados("Veracruz", "30");
+		Estados e31 = new Estados("Yucatán", "31");
+		Estados e32 = new Estados("Zacatecas", "32");
+
+		if (estado.equals(e1.nombre)) {
+			return e1.clave;
+		} else if (estado.equals(e2.nombre)) {
+			return e2.clave;
+		} else if (estado.equals(e3.nombre)) {
+			return e3.clave;
+		} else if (estado.equals(e4.nombre)) {
+			return e4.clave;
+		} else if (estado.equals(e5.nombre)) {
+			return e5.clave;
+		} else if (estado.equals(e6.nombre)) {
+			return e6.clave;
+		} else if (estado.equals(e7.nombre)) {
+			return e7.clave;
+		} else if (estado.equals(e8.nombre)) {
+			return e8.clave;
+		} else if (estado.equals(e9.nombre)) {
+			return e9.clave;
+		} else if (estado.equals(e10.nombre)) {
+			return e10.clave;
+		} else if (estado.equals(e11.nombre)) {
+			return e11.clave;
+		} else if (estado.equals(e12.nombre)) {
+			return e12.clave;
+		} else if (estado.equals(e13.nombre)) {
+			return e13.clave;
+		} else if (estado.equals(e14.nombre)) {
+			return e14.clave;
+		} else if (estado.equals(e15.nombre)) {
+			return e15.clave;
+		} else if (estado.equals(e16.nombre)) {
+			return e16.clave;
+		} else if (estado.equals(e17.nombre)) {
+			return e17.clave;
+		} else if (estado.equals(e18.nombre)) {
+			return e18.clave;
+		} else if (estado.equals(e19.nombre)) {
+			return e19.clave;
+		} else if (estado.equals(e20.nombre)) {
+			return e20.clave;
+		} else if (estado.equals(e21.nombre)) {
+			return e21.clave;
+		} else if (estado.equals(e22.nombre)) {
+			return e22.clave;
+		} else if (estado.equals(e23.nombre)) {
+			return e23.clave;
+		} else if (estado.equals(e24.nombre)) {
+			return e24.clave;
+		} else if (estado.equals(e25.nombre)) {
+			return e25.clave;
+		} else if (estado.equals(e26.nombre)) {
+			return e26.clave;
+		} else if (estado.equals(e27.nombre)) {
+			return e27.clave;
+		} else if (estado.equals(e28.nombre)) {
+			return e28.clave;
+		} else if (estado.equals(e29.nombre)) {
+			return e29.clave;
+		} else if (estado.equals(e30.nombre)) {
+			return e30.clave;
+		} else if (estado.equals(e31.nombre)) {
+			return e31.clave;
+		} else if (estado.equals(e32.nombre)) {
+			return e32.clave;
+		}
+		return "No se encontró el id";
 	}
 
 	/**
@@ -798,7 +907,7 @@ public class DescargaRestController {
 			model.setFk_solicitud_envio(soEnvio);
 			doctoVideoService.save(model);
 			logger.info("Guardar model");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error(e);
 		}

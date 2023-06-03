@@ -21,6 +21,8 @@ var creditoID;
 
 // Variable | id solicitud de envio
 var seId;
+var confId;
+var wsAutenticacionId;
 
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
@@ -363,7 +365,7 @@ function actualizarSolicitud(observacion, tipo) {
 	console.log("solicitudCore : " + solicitudCore);
 	$.ajax({
 		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&clienteID=" + clienteID + "&montoAutorizado=" + montoAuto + "&producto=" + nameProducto 
-		+ "&observaciones=" + observacion + "&solicitud=" + solicitudCore,
+		+ "&observaciones=" + observacion + "&solicitud=" + solicitudCore + "&idWSAutenticacion=" + wsAutenticacionId,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -374,7 +376,7 @@ function actualizarSolicitud(observacion, tipo) {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 
-			//enviarGeolocalizacion(respuesta);
+			enviarGeolocalizacion(respuesta);
 
 			swal("Solicitud actualizada", {
 				closeOnClickOutside: false,
@@ -414,11 +416,11 @@ function enviarGeolocalizacion(dto) {
 		dataType: "JSON",
 		contentType: 'application/json',
 		success: function(response) {
-			console.log("enviarGeolocalizacion: " + JSON.stringify(response));
+			console.log("enviarGeolocalizacion " + response);
 			// Manejar la respuesta
 		},
 		error: function(error) {
-			console.log("enviarGeolocalizacion error: " + error);
+			console.log("enviarGeolocalizacion error");
 			// Manejar el error
 		},
 	});
@@ -634,6 +636,8 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 		dataType: "JSON",
 		success: function(respuesta) {
 			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			wsAutenticacionId = idWSAutenticacion;
+			confId = idConfWS;
 			if (banderaRespuesta == 0) {
 				// 5to paso, guardar la respuesta del proceso de autenticacion a nivel sistema
 				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
