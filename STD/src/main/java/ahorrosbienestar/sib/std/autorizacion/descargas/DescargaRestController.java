@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -76,7 +78,10 @@ public class DescargaRestController {
 	private final static String operation = "Nueva disposición";
 	private final static String typeOperation = "2";
 	private final static String ip = "0.0.0.0";
-	private final static String typeProduct = "C";
+	private final static String typeProduct = "A";
+	private final static String idProduct = "2";
+
+	private Map<String, String> estadosRepublica = new HashMap<String, String>();
 
 	// Variable ruta temporal windows
 	private final static int RUTA_TEMPORAL_WS = 51;
@@ -153,7 +158,7 @@ public class DescargaRestController {
 					coordenadasDTO.setCustomerNumber(clienteId.toString());
 					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
 					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
-					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
+					coordenadasDTO.setIdProduct(idProduct);
 					coordenadasDTO.setAccessSystem(nameProducto);
 					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
 					respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
@@ -348,11 +353,11 @@ public class DescargaRestController {
 		InputStreamReader isr = new InputStreamReader(is);
 		Gson gson = new Gson();
 		JsonObject json = gson.fromJson(isr, JsonObject.class);
-		String address = json.get("display_name").getAsString();
+		String address = removerAcentosPalabra(json.get("display_name").getAsString());
 		logger.info("Dirección: " + address);
 		JsonObject objetoDireccion = json.getAsJsonObject("address");
 		logger.info("Estado: " + objetoDireccion.get("state").getAsString());
-		
+
 		// clave del estado
 		String clave = claveDeEstado(objetoDireccion.get("state").getAsString());
 
@@ -367,108 +372,60 @@ public class DescargaRestController {
 		return llenarDTO;
 	}
 
+	public static String removerAcentosPalabra(String valor) {
+		// Cadena de caracteres original a sustituir.
+		String original = "áàäéèëíìïóòöúùuÁÀÄÉÈËÍÌÏÓÒÖÚÙÜçÇ";
+		// Cadena de caracteres ASCII que reemplazarán los originales.
+		String ascii = "aaaeeeiiiooouuuAAAEEEIIIOOOUUUcC";
+		String output = valor;
+		for (int i = 0; i < original.length(); i++) {
+			// Reemplazamos los caracteres especiales.
+			output = output.replace(original.charAt(i), ascii.charAt(i));
+		} // for i
+		return output;
+	}
+
 	public String claveDeEstado(String estado) {
 
 		// Creación de un objeto utilizando el constructor
-		Estados e1 = new Estados("Aguascalientes", "01");
-		Estados e2 = new Estados("Baja California", "02");
-		Estados e3 = new Estados("Baja California Sur", "03");
-		Estados e4 = new Estados("Campeche", "04");
-		Estados e5 = new Estados("Coahuila de Zaragoza", "05");
-		Estados e6 = new Estados("Colima", "06");
-		Estados e7 = new Estados("Chiapas", "07");
-		Estados e8 = new Estados("Chihuahua", "08");
-		Estados e9 = new Estados("Ciudad de México", "09");
-		Estados e10 = new Estados("Durango", "10");
-		Estados e11 = new Estados("Guanajuato", "11");
-		Estados e12 = new Estados("Guerrero", "12");
-		Estados e13 = new Estados("Hidalgo", "13");
-		Estados e14 = new Estados("Jalisco", "14");
-		Estados e15 = new Estados("México", "15");
-		Estados e16 = new Estados("Michoacán de Ocampo", "16");
-		Estados e17 = new Estados("Morelos", "17");
-		Estados e18 = new Estados("Nayarit", "18");
-		Estados e19 = new Estados("Nuevo León", "19");
-		Estados e20 = new Estados("Oaxaca", "20");
-		Estados e21 = new Estados("Puebla", "21");
-		Estados e22 = new Estados("Querétaro", "22");
-		Estados e23 = new Estados("Quintana Roo", "23");
-		Estados e24 = new Estados("San Luis Potosí", "24");
-		Estados e25 = new Estados("Sinaloa", "25");
-		Estados e26 = new Estados("Sonora", "26");
-		Estados e27 = new Estados("Tabasco", "27");
-		Estados e28 = new Estados("Tamaulipas", "28");
-		Estados e29 = new Estados("Tlaxcala", "29");
-		Estados e30 = new Estados("Veracruz", "30");
-		Estados e31 = new Estados("Yucatán", "31");
-		Estados e32 = new Estados("Zacatecas", "32");
+		estadosRepublica.put("Aguascalientes", "01");
+		estadosRepublica.put("Baja California", "02");
+		estadosRepublica.put("Baja California Sur", "03");
+		estadosRepublica.put("Campeche", "04");
+		estadosRepublica.put("Coahuila", "05");
+		estadosRepublica.put("Colima", "06");
+		estadosRepublica.put("Chiapas", "07");
+		estadosRepublica.put("Chihuahua", "08");
+		estadosRepublica.put("Ciudad de México", "09");
+		estadosRepublica.put("Durango", "10");
+		estadosRepublica.put("Guanajuato", "11");
+		estadosRepublica.put("Guerrero", "12");
+		estadosRepublica.put("Hidalgo", "13");
+		estadosRepublica.put("Jalisco", "14");
+		estadosRepublica.put("México", "15");
+		estadosRepublica.put("Michoacán", "16");
+		estadosRepublica.put("Morelos", "17");
+		estadosRepublica.put("Nayarit", "18");
+		estadosRepublica.put("Nuevo León", "19");
+		estadosRepublica.put("Oaxaca", "20");
+		estadosRepublica.put("Puebla", "21");
+		estadosRepublica.put("Querétaro", "22");
+		estadosRepublica.put("Quintana Roo", "23");
+		estadosRepublica.put("San Luis Potosí", "24");
+		estadosRepublica.put("Sinaloa", "25");
+		estadosRepublica.put("Sonora", "26");
+		estadosRepublica.put("Tabasco", "27");
+		estadosRepublica.put("Tamaulipas", "28");
+		estadosRepublica.put("Tlaxcala", "29");
+		estadosRepublica.put("Veracruz", "30");
+		estadosRepublica.put("Yucatán", "31");
+		estadosRepublica.put("Zacatecas", "32");
 
-		if (estado.equals(e1.nombre)) {
-			return e1.clave;
-		} else if (estado.equals(e2.nombre)) {
-			return e2.clave;
-		} else if (estado.equals(e3.nombre)) {
-			return e3.clave;
-		} else if (estado.equals(e4.nombre)) {
-			return e4.clave;
-		} else if (estado.equals(e5.nombre)) {
-			return e5.clave;
-		} else if (estado.equals(e6.nombre)) {
-			return e6.clave;
-		} else if (estado.equals(e7.nombre)) {
-			return e7.clave;
-		} else if (estado.equals(e8.nombre)) {
-			return e8.clave;
-		} else if (estado.equals(e9.nombre)) {
-			return e9.clave;
-		} else if (estado.equals(e10.nombre)) {
-			return e10.clave;
-		} else if (estado.equals(e11.nombre)) {
-			return e11.clave;
-		} else if (estado.equals(e12.nombre)) {
-			return e12.clave;
-		} else if (estado.equals(e13.nombre)) {
-			return e13.clave;
-		} else if (estado.equals(e14.nombre)) {
-			return e14.clave;
-		} else if (estado.equals(e15.nombre)) {
-			return e15.clave;
-		} else if (estado.equals(e16.nombre)) {
-			return e16.clave;
-		} else if (estado.equals(e17.nombre)) {
-			return e17.clave;
-		} else if (estado.equals(e18.nombre)) {
-			return e18.clave;
-		} else if (estado.equals(e19.nombre)) {
-			return e19.clave;
-		} else if (estado.equals(e20.nombre)) {
-			return e20.clave;
-		} else if (estado.equals(e21.nombre)) {
-			return e21.clave;
-		} else if (estado.equals(e22.nombre)) {
-			return e22.clave;
-		} else if (estado.equals(e23.nombre)) {
-			return e23.clave;
-		} else if (estado.equals(e24.nombre)) {
-			return e24.clave;
-		} else if (estado.equals(e25.nombre)) {
-			return e25.clave;
-		} else if (estado.equals(e26.nombre)) {
-			return e26.clave;
-		} else if (estado.equals(e27.nombre)) {
-			return e27.clave;
-		} else if (estado.equals(e28.nombre)) {
-			return e28.clave;
-		} else if (estado.equals(e29.nombre)) {
-			return e29.clave;
-		} else if (estado.equals(e30.nombre)) {
-			return e30.clave;
-		} else if (estado.equals(e31.nombre)) {
-			return e31.clave;
-		} else if (estado.equals(e32.nombre)) {
-			return e32.clave;
+		if (estadosRepublica.containsKey(estado)) {
+			return estadosRepublica.get(estado);
 		}
-		return "No se encontró el id";
+
+		return "0";
 	}
 
 	/**
