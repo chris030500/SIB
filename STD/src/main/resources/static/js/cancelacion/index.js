@@ -1,3 +1,7 @@
+// Con esta variable verificamos si tiene registro en el campo de vc_requisition_id
+var vcRequisitionId;
+
+
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
 	var loc = window.location;
@@ -251,13 +255,25 @@ function alertaMotivoEliminacion() {
 	})
 		.then((value) => {
 			if (value && value.length <= 200) {
-				// Llamamos a nuestro spinner
-				spinner.style.display = 'block';
-				principal.style.display = 'none';
+
 				// guardamos las observaciones en una variable
 				observacionesCancelacion = value;
-				// 1er paso, llamar la autenticacion del provedor (NA-AT)
-				autenticacion();
+
+				// Validamos si tiene valor el campo vc_requisition_id
+				if (vcRequisitionId) {
+					
+					// Llamamos a nuestro spinner
+					spinner.style.display = 'block';
+					principal.style.display = 'none';
+					// Si la solicitud tiene vc_requisition_id, cancelamos a nivel ws y a nivel sistema.
+					autenticacion();
+					
+				} else {
+					// Si la solicitud no tiene vc_requisition_id, cancelamos a nivel sistema.
+					eliminarSolicitud();
+				}
+
+
 			} else if (value == "") {
 				// Mandamos una alerta
 				swal("Debes agregar observaciones para poder cancelar", {
@@ -324,7 +340,7 @@ function mostrarSolicitudEnvio(solicitudId) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log(respuesta);
+			//console.log(respuesta);
 			if (respuesta.pk_id_solicitud_envio == 0) {
 				// Mostramos la alerta
 				disponible.style.display = "block"
@@ -378,6 +394,10 @@ function mostrarSolicitudEnvio(solicitudId) {
 			fechaRegistro.value = respuesta.dt_fecha_registro != null ? respuesta.dt_fecha_registro : 'Sin registro';
 			fechaCancelacion.value = respuesta.dt_fecha_cancelacion != null ? respuesta.dt_fecha_cancelacion : 'Sin registro';
 			horaCancelacion.value = respuesta.vc_hora_cancelacion != null ? respuesta.vc_hora_cancelacion : 'Sin registro';
+
+			// guardamos el valor del campo vc_requisition_id
+			vcRequisitionId = respuesta.vc_requisition_id != null ? true : false;
+			console.log(vcRequisitionId);
 
 			// Guardamos el campo requisitionID para enviarlo al ws de cancelación
 			guardarRequisition = respuesta.vc_requisition_id != null ? respuesta.vc_requisition_id : null;
