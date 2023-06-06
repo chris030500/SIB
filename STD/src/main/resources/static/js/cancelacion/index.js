@@ -132,7 +132,7 @@ function buscarProducto(producto, envioID) {
 			//console.log("Respuesta buscarProducto: " + respuesta);
 			if (respuesta == 1) {
 				// Consultar la solicitud de envio
-				console.log(envioID);
+				//console.log(envioID);
 				mostrarSolicitudEnvio(envioID);
 				//console.log("Producto ya configurado");
 				//Asignamos el valor de la solicitud para poder traer los participantes
@@ -262,13 +262,13 @@ function alertaMotivoEliminacion() {
 
 				// Validamos si tiene valor el campo vc_requisition_id
 				if (vcRequisitionId) {
-					
+
 					// Llamamos a nuestro spinner
 					spinner.style.display = 'block';
 					principal.style.display = 'none';
 					// Si la solicitud tiene vc_requisition_id, cancelamos a nivel ws y a nivel sistema.
 					autenticacion();
-					
+
 				} else {
 					// Si la solicitud no tiene vc_requisition_id, cancelamos a nivel sistema.
 					eliminarSolicitud();
@@ -314,7 +314,7 @@ function eliminarSolicitud() {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 
-			//console.log('error');
+			// console.log('entró');
 
 			// Mandamos una alerta
 			swal("Hubo un error", {
@@ -397,8 +397,15 @@ function mostrarSolicitudEnvio(solicitudId) {
 			horaCancelacion.value = respuesta.vc_hora_cancelacion != null ? respuesta.vc_hora_cancelacion : 'Sin registro';
 
 			// guardamos el valor del campo vc_requisition_id
-			vcRequisitionId = respuesta.vc_requisition_id != null ? true : false;
-			console.log(vcRequisitionId);
+			if (respuesta.vc_requisition_id == null || respuesta.vc_requisition_id == "") {
+				vcRequisitionId = false;
+			} else {
+				vcRequisitionId = true;
+			}
+
+			// console.log(respuesta.vc_requisition_id);
+			// console.log(vcRequisitionId);
+			
 
 			// Guardamos el campo requisitionID para enviarlo al ws de cancelación
 			guardarRequisition = respuesta.vc_requisition_id != null ? respuesta.vc_requisition_id : null;
@@ -518,6 +525,9 @@ function conexionApi(usuario, password, userType) {
 			resultadoLogin = true;
 
 			if (JSON.stringify(respuesta).includes("error")) {
+				
+				// console.log('entró');
+				
 				banderaRespuesta = 0;
 				// console.log("Tiene error");
 				// 3er paso, guardar el proceso de autenticacion a nivel sistema
@@ -540,6 +550,9 @@ function conexionApi(usuario, password, userType) {
 			}
 		},
 		error: function(respuesta) {
+			
+			// console.log('entró');
+			
 			// Llamamos a nuestro spinner
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
@@ -713,13 +726,16 @@ function wsCancelarFirma(token) {
 				// 8vo paso, Mandamos a llamar el servicio para cancelar a nivel sistema
 				eliminarSolicitud();
 			} else {
+				
+				// console.log(respuesta);
+				
 				// Si la respuesta es false
 
 				// Llamamos a nuestro spinner
 				spinner.style.display = 'none';
 				principal.style.display = 'block';
 
-				swal("Hubo un error", {
+				swal(respuesta.error, {
 					icon: "error",
 					closeOnClickOutside: false,
 				});
@@ -729,6 +745,9 @@ function wsCancelarFirma(token) {
 			}
 
 		}, error: function(error) {
+			
+			// console.log('entró');
+			
 			// Llamamos a nuestro spinner
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
