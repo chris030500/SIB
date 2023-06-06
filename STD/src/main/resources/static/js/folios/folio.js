@@ -20,60 +20,75 @@ $(document).ready(function() {
 	eventosContadorObservacion();
 	eventosContadorOficio();
 	eventosContadorAsunto();
-	tamFile();
 	inicioTabla();
 });
 
-function tamFile(){
-	const tamMaxFile = 20971520;
+
+
+function tamFile() {
+	const tamMaxFile = 31457280;
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
-    	if(this.files[0].size > tamMaxFile){
-      				swal({
+		if (this.files[0].size > tamMaxFile) {
+			swal({
 				title: "",
-				text: "El archivo seleccionado excede el tamaño maximo permitido (20MB)",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
 				icon: "warning",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
 				this.value = "";
-			});       			
-   		 };
+			});
+		};
 	};
 }
 
-function eventosContadorObservacion(){
+function eventosContadorObservacion() {
 	const mensaje = document.getElementById('idObservacion');
 	const contador = document.getElementById('contador');
 	mensaje.addEventListener('input', function(e) {
-   		const target = e.target;
-    	const longitudMax = target.getAttribute('maxlength');
-    	const longitudAct = target.value.length;
-    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
 	});
 }
-function eventosContadorOficio(){
+function eventosContadorOficio() {
 	const mensaje = document.getElementById('noficio');
 	const contador = document.getElementById('conNoficio');
 	mensaje.addEventListener('input', function(e) {
-   		const target = e.target;
-    	const longitudMax = target.getAttribute('maxlength');
-    	const longitudAct = target.value.length;
-    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
 	});
 }
-function eventosContadorAsunto(){
+function eventosContadorAsunto() {
 	const mensaje = document.getElementById('idAsunto');
 	const contador = document.getElementById('contIdAsunto');
 	mensaje.addEventListener('input', function(e) {
-   		const target = e.target;
-    	const longitudMax = target.getAttribute('maxlength');
-    	const longitudAct = target.value.length;
-    	contador.innerHTML = `${longitudAct}/${longitudMax}`;
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
 	});
 }
 
 function iniciarfechas() {
-	const hoy_fecha = new Date().toISOString().substring(0, 10);
+	var hoyfecha = new Date();
+	
+		switch (hoyfecha.getDay()) {
+					case 0:
+						hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 1);
+						dia = dia + 0;
+						break;
+					case 6:
+						hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 2);
+						dia = dia + 0;
+						break;
+				}
+	
+	const hoy_fecha = hoyfecha.toISOString().substring(0, 10);
+
 
 	document.querySelectorAll("input[type='date'][min='hoy']")
 		.forEach(elemento => {
@@ -87,7 +102,7 @@ function iniciarfechas() {
 			elemento.max = hoy_fecha;
 		});
 
-	document.querySelectorAll("input[type='date'][value='fechaActual']")
+	document.querySelectorAll("input[type='date'][for='fechaActual']")
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "max" */
 			elemento.value = hoy_fecha;
@@ -95,30 +110,109 @@ function iniciarfechas() {
 
 }
 
-/***Actualizar fechas 
- */
-
-function calcularVencimiento() {
-
-	var plazo = document.getElementById("idPlazo").value;
-	var fecha = new Date(document.getElementById("idFechaRegistro").value.replaceAll("-", "/"));
-
-
-	for (var i = 0; i < plazo; i++) {
-		fecha.setUTCDate(fecha.getUTCDate() + 1);
-		switch (fecha.getDay()) {
-			case 0:
-				fecha.setUTCDate(fecha.getUTCDate() + 1);
+function validarFinSemana(fecha, tFecha) {
+	var correcta = true;	
+	if(fecha.getDay() == 0 || fecha.getDay() == 6){
+		var correcta = false;
+		switch (tFecha) {
+			case 1:
+				document.getElementById("idFechaRegistro").style.borderColor = "#F70707";
 				break;
-			case 6:
-				fecha.setUTCDate(fecha.getUTCDate() + 2);
+			case 2:
+				document.getElementById("idVencimiento").style.borderColor = "#F70707";
+				break;
+		}
+	}else{
+		switch (tFecha) {
+			case 1:
+				document.getElementById("idFechaRegistro").style.borderColor = "";
+				break;
+			case 2:
+				document.getElementById("idVencimiento").style.borderColor = "";
 				break;
 		}
 	}
 
+	return correcta;
+}
+
+/***Actualizar fechas 
+ */
+function calcularPlazo(opcion, fechaI, fechaF) {
+	var plazo = document.getElementById("idPlazo").value;
+	switch (opcion) {
+		case 1:
+			var dia = 0;
+			while (Date.parse(fechaI) <= Date.parse(fechaF)) {
+				switch (fechaI.getDay()) {
+					case 0:
+						fechaI.setUTCDate(fechaI.getUTCDate() + 1);
+						dia = dia + 0;
+						break;
+					case 6:
+						fechaI.setUTCDate(fechaI.getUTCDate() + 2);
+						dia = dia + 0;
+						break;
+					default:
+						fechaI.setUTCDate(fechaI.getUTCDate() + 1);
+						dia = dia + 1;
+				}
+			}
+			document.getElementById("idPlazo").value = dia;
+			fechaI = fechaF;
+			break;
+		case 2:
+			for (var i = 0; i < plazo; i++) {
+				fechaI.setUTCDate(fechaI.getUTCDate() + 1);
+				switch (fechaI.getDay()) {
+					case 0:
+						fechaI.setUTCDate(fechaI.getUTCDate() + 1);
+						break;
+					case 6:
+						fechaI.setUTCDate(fechaI.getUTCDate() + 2);
+						break;
+				}
+			}
+			break;
+	}
+	return fechaI;
+}
+
+function calcularVencimiento(opcion) {
+	var fechaInicioD = new Date(document.getElementById("idFechaRegistro").value.replaceAll("-", "/"));
+	var fechaFinD = new Date(document.getElementById("idVencimiento").value.replaceAll("-", "/"));
+	switch (opcion) {
+		case 1:
+			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2) == true) {
+				fechaVen = calcularPlazo(1, fechaInicioD, fechaFinD);
+			}else{
+				swal({
+					title: "Error",
+					text: "Seleccionar dia habil",
+					icon: "warning",
+				});
+			}
+
+			break;
+		case 2:
+			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2)== true) {
+				if (document.getElementById("idPlazo").value > 0) {
+					fechaVen = calcularPlazo(2, fechaInicioD, fechaFinD);
+				}
+			}else{
+				swal({
+					title: "Error",
+					text: "Seleccionar dia habil",
+					icon: "warning",
+				});
+			}
+
+			break;
+	}
+
 	document.querySelectorAll("input[type='date'][for='vencimientoFolio']")
 		.forEach(elemento => {
-			elemento.value = fecha.toISOString().substring(0, 10);
+			elemento.value = fechaVen.toISOString().substring(0, 10);
 		});
 
 }
@@ -189,8 +283,8 @@ function eventosModal() {
 			} else {
 				tblObservacionesLoad();
 			}
-		}else{
-				swal({
+		} else {
+			swal({
 				title: "Error",
 				text: "Fecha de vencimiento de la observacion es mayor a la fecha de vencimiento del folio.",
 				icon: "warning",
@@ -203,26 +297,38 @@ function eventosModal() {
 		document.getElementById("idFolioArchivo").value = 0;
 		tblAdjuntos.clear().draw();
 	});
-	
+
 	$("#btnGuardarFile").click(function() {
-		var form = $('#adjuntoArchivoOficio')[0];
-		var data = new FormData(form);
-		addArchivos(data)
+
+
+		if (document.getElementById("file").value.length > 0) {
+			var form = $('#adjuntoArchivoOficio')[0];
+			var data = new FormData(form);
+			addArchivos(data)
+		} else {
+			swal({
+				title: "Informacion.",
+				text: "Es necesario seleccionar un Archivo.",
+				icon: "Warning",
+				confirmButtonText: 'Aceptar'
+			})
+		}
+
 	});
 
 
 }
 
-var buscarArchivos = "buscarArchivos?idFolio="; 
-function adjuntarFiles(id){
+var buscarArchivos = "buscarArchivos?idFolio=";
+function adjuntarFiles(id) {
 	document.getElementById("idFolioArchivo").value = id;
 	var urlServicio = getAbsolutePath() + buscarArchivos + id;
 	obtDtostblAdjuntos(urlServicio);
 	document.getElementById("file").value = "";
-	
+
 }
 
-function obtDtostblAdjuntos(url){
+function obtDtostblAdjuntos(url) {
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(url, {}, function(data) {
 		tblAdjuntos.clear().draw();
@@ -235,7 +341,7 @@ function obtDtostblAdjuntos(url){
 				+ opt.pk_id_archivo
 				+ " >"
 				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
-			tblAdjuntos.row.add([opt.pk_id_archivo,opt.vc_nombre_docto, botones]).draw(false);
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -243,46 +349,46 @@ function obtDtostblAdjuntos(url){
 	});
 }
 
-function verPDF(id){
+function verPDF(id) {
 
 	var servicioPDF = "buscarPDF?idArchivo=";
-	var urlArchivo = getAbsolutePath() +servicioPDF+id;
+	var urlArchivo = getAbsolutePath() + servicioPDF + id;
 
 	window.open(urlArchivo);
 	window.focus();
-	
+
 }
 
-function mnstblAdjuntos(num){
+function mnstblAdjuntos(num) {
 	if (num > 0) {
-			swal({
-				title: "Informacion.",
-				text: "Lista de Archivos del Oficio.",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
-		} else {
-			swal({
-				title: "Informacion.",
-				text: "El Oficio no cuenta con Archivos registrados",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
-		}
+		swal({
+			title: "Informacion.",
+			text: "Lista de Archivos del Oficio.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Oficio no cuenta con Archivos registrados",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	}
 }
 
 var agregarArchivos = "subirArchivo?idFolio=";
-function addArchivos(data){	
+function addArchivos(data) {
 	$.ajax({
 		async: false,
-		url:  getAbsolutePath() + agregarArchivos+document.getElementById("idFolioArchivo").value,
+		url: getAbsolutePath() + agregarArchivos + document.getElementById("idFolioArchivo").value,
 		type: "POST",
 		enctype: 'multipart/form-data',
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
 		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
+			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
 		success: function(data) {
 			swal({
@@ -295,17 +401,17 @@ function addArchivos(data){
 			});
 		},
 		error: function(data) {
-				swal({
-					title: "Alerta",
-					text: "El tamaño del archivo es mayor al permitirdo 2MB.",
-					icon: "warning",
-				});
+			swal({
+				title: "Alerta",
+				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+				icon: "warning",
+			});
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 6000);
+			setTimeout($.unblockUI, 600);
 		}
 	});
-	
+
 }
 
 function validacionesAgregarObs(fecha1) {
@@ -313,7 +419,7 @@ function validacionesAgregarObs(fecha1) {
 	if (Date.parse(fecha1) > Date.parse(fechaVencimientoObs)) {
 		document.getElementById("idFechaVencimiento").style.borderColor = "#F70707";
 		result = true;
-	}else{
+	} else {
 		document.getElementById("idFechaVencimiento").style.borderColor = "";
 		result = false
 	}
@@ -321,107 +427,117 @@ function validacionesAgregarObs(fecha1) {
 }
 
 function tblObservacionesLoad() {
-	if(seleccionoFolio() == 0){
-			if(datosObservacionValidos() == 0){
-				var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
-				urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
-				urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-				urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
-				urlServicio = urlServicio + "&folioID=" + folioID;
-				peticionPost(urlServicio, 2, folioID);	
-			}else{
-				swal({
-				title: "Alerta",
-				text: "Todos los datos son obligatorios.",
-				icon: "warning",
-				});
-			}
-			
-	}else{
-		swal({
-				title: "Alerta",
-				text: "Debe seleccionar un Oficio para relacionar la Observacion",
-				icon: "warning",
-			});
-	}
-
-}
-function seleccionoFolio(){
-	var correcto = 0;
-	
-	if(folioID != undefined){	
-		document.getElementById("lblSeleccion").style.borderColor = "";
-		correcto = 0;
-	}else{
-		document.getElementById("lblSeleccion").style.borderColor = "#F70707";
-		correcto = 1;
-	}
-	
-	return correcto;
-}
-
-function datosObservacionValidos(){
-	var correcto = 0;
-	
-	if(document.getElementById("idAreaAtencion").value > 0){
-		document.getElementById("idAreaAtencion").style.borderColor = "";
-		correcto = correcto + 0;
-	}else{
-		document.getElementById("idAreaAtencion").style.borderColor = "#F70707";
-		correcto = correcto + 1;
-	}
-	
-	if(document.getElementById("idResponsableAtencion").value > 0){
-		correcto = correcto + 0;
-		document.getElementById("idResponsableAtencion").style.borderColor = "";
-	}else{
-		correcto = correcto + 1;
-		document.getElementById("idResponsableAtencion").style.borderColor = "#F70707";
-	}
-	
-	if(document.getElementById("idFechaVencimiento").value.length > 0){
-		correcto = correcto + 0;
-		document.getElementById("idFechaVencimiento").style.borderColor = "";
-	}else{
-		correcto = correcto + 1;
-		document.getElementById("idFechaVencimiento").style.borderColor = "#F70707";
-	}
-	
-	if(document.getElementById("idObservacion").value.length > 0){
-		correcto = correcto + 0;
-		document.getElementById("idObservacion").style.borderColor = "";
-	}else{
-		correcto = correcto + 1;
-		document.getElementById("idObservacion").style.borderColor = "#F70707";
-	}
-	
-	return correcto; 
-}
-
-function modificarObs() {
-	if(seleccionoFolio() == 0){
-		if(datosObservacionValidos() == 0){
-				var asignacion = (document.getElementById("idReasignacion").value == 2)?"&reasignar=1":"&reasignar=0";
-				var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
-				urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
-				urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
-				urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-				urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
-				urlServicio = urlServicio + asignacion;
-				peticionPost(urlServicio, 2, folioID);
-		}else{
+	if (seleccionoFolio() == 0) {
+		if  (datosObservacionValidos() == 0) {
+			var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
+			urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
+			urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
+			urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+			urlServicio = urlServicio + "&folioID=" + folioID;
+			urlServicio = urlServicio + "&obsOficio=" + document.getElementById("obsOficio").value;
+			peticionPost(urlServicio, 2, folioID);
+		} else {
 			swal({
 				title: "Alerta",
 				text: "Todos los datos son obligatorios.",
 				icon: "warning",
 			});
 		}
-	}else{
+
+	} else {
+		swal({
+			title: "Alerta",
+			text: "Debe seleccionar un Oficio para relacionar la Observacion",
+			icon: "warning",
+		});
+	}
+
+}
+function seleccionoFolio() {
+	var correcto = 0;
+
+	if (folioID != undefined) {
+		document.getElementById("lblSeleccion").style.borderColor = "";
+		correcto = 0;
+	} else {
+		document.getElementById("lblSeleccion").style.borderColor = "#F70707";
+		correcto = 1;
+	}
+
+	return correcto;
+}
+
+function datosObservacionValidos() {
+	var correcto = 0;
+
+	if (document.getElementById("idAreaAtencion").value > 0) {
+		document.getElementById("idAreaAtencion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("idAreaAtencion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+
+	if (document.getElementById("idResponsableAtencion").value > 0) {
+		correcto = correcto + 0;
+		document.getElementById("idResponsableAtencion").style.borderColor = "";
+	} else {
+		correcto = correcto + 1;
+		document.getElementById("idResponsableAtencion").style.borderColor = "#F70707";
+	}
+
+	if (document.getElementById("idFechaVencimiento").value.length > 0) {
+		correcto = correcto + 0;
+		document.getElementById("idFechaVencimiento").style.borderColor = "";
+	} else {
+		correcto = correcto + 1;
+		document.getElementById("idFechaVencimiento").style.borderColor = "#F70707";
+	}
+
+	if (document.getElementById("idObservacion").value.length > 0)  {
+		correcto = correcto + 0;
+		document.getElementById("idObservacion").style.borderColor = "";
+	} else {
+		correcto = correcto + 1;
+		document.getElementById("idObservacion").style.borderColor = "#F70707";
+	}
+	if (document.getElementById("obsOficio").value > 0)  {
+		correcto = correcto + 0;
+		document.getElementById("obsOficio").style.borderColor = "";
+	} else {
+		correcto = correcto + 1;
+		document.getElementById("obsOficio").style.borderColor = "#F70707";
+	}
+
+	return correcto;
+}
+
+function modificarObs() {
+	if (seleccionoFolio() == 0)  {
+		if (datosObservacionValidos() == 0)  {
+			var asignacion = (document.getElementById("idReasignacion").value == 2) ? "&reasignar=1" : "&reasignar=0";
+			var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
+			urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
+			urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
+			urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
+			urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+			urlServicio = urlServicio + asignacion;
+			urlServicio = urlServicio + "&obsOficio=" + document.getElementById("obsOficio").value;
+			
+			peticionPost(urlServicio, 2, folioID);
+		} else {
 			swal({
 				title: "Alerta",
-				text: "Debe seleccionar un Oficio para relacionar la Observacion",
+				text: "Todos los datos son obligatorios.",
 				icon: "warning",
 			});
+		}
+	} else {
+		swal({
+			title: "Alerta",
+			text: "Debe seleccionar un Oficio para relacionar la Observacion",
+			icon: "warning",
+		});
 	}
 
 }
@@ -434,6 +550,7 @@ function reiniciarDatos() {
 	document.getElementById("idObservacion").value = "";
 	document.getElementById("idObservacionSelect").value = "0";
 	document.getElementById("idReasignacion").value = "0";
+	document.getElementById("obsOficio").value = 0;
 }
 
 
@@ -444,7 +561,7 @@ function guardarFolio(proceso) {
 			urlServicio = getAbsolutePath() + altaFolio;
 			break;
 		case 2:
-			urlServicio = getAbsolutePath() + modFolio+document.getElementById("idUnico").value+"&noficio=";
+			urlServicio = getAbsolutePath() + modFolio+ document.getElementById("idUnico").value + "&noficio=";
 			break;
 		default:
 			urlServicio = getAbsolutePath() + inicio;
@@ -462,10 +579,10 @@ function guardarFolio(proceso) {
 	urlServicio = urlServicio + "&dt_Vencimiento=" + document.getElementById("idVencimiento").value;
 	urlServicio = urlServicio + "&i_estatus=" + document.getElementById("idEstatusOficio").value;
 	urlServicio = urlServicio + "&vc_ruta=" + "C:";
-	
+
 	$("#modalFolio").hide();
 	peticionPost(urlServicio, 1, 0);
-	
+
 }
 
 function peticionPost(urlServicio, num, numFolio) {
@@ -515,87 +632,87 @@ function guardarVacio() {
 
 	if (document.getElementById("noficio").value.length == 0) {
 		document.getElementById("noficio").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion+ 1;
 	} else {
 		document.getElementById("noficio").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 
 	if (document.getElementById("idRecepcion").value.length == 0) {
 		document.getElementById("idRecepcion").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idRecepcion").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 	if (document.getElementById("idAsunto").value.length == 0) {
 		document.getElementById("idAsunto").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion+ 1;
 	} else {
 		document.getElementById("idAsunto").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idDirigido").value == '0') {
 		document.getElementById("idDirigido").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion+ 1;
 	} else {
 		document.getElementById("idDirigido").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 
 	if (document.getElementById("iPuesto").value.length == 0) {
 		document.getElementById("iPuesto").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion+ 1;
 	} else {
 		document.getElementById("iPuesto").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 	if (document.getElementById("idTipoOficio").value == '0') {
 		document.getElementById("idTipoOficio").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion+ 1;
 	} else {
 		document.getElementById("idTipoOficio").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 
 	if (document.getElementById("idOrganoEmite").value == '0') {
 		document.getElementById("idOrganoEmite").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idOrganoEmite").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion+ 0;
 	}
 
 	if (document.getElementById("idFechaRegistro").value.length == 0) {
 		document.getElementById("idFechaRegistro").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idFechaRegistro").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idPlazo").value == 0) {
 		document.getElementById("idPlazo").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idPlazo").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idVencimiento").value.length == 0) {
 		document.getElementById("idVencimiento").style.borderColor = "#F70707";
-		validacion = validacion+1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idVencimiento").style.borderColor = '';
-		validacion = validacion+0;
+		validacion = validacion + 0;
 	}
 	//if (document.getElementById("idEstatusOficio").value.length == 0) {
-		//document.getElementById("idEstatusOficio").style.borderColor = "#F70707";
-		//validacion = true;
+	//document.getElementById("idEstatusOficio").style.borderColor = "#F70707";
+	//validacion = true;
 	//} else {
-		//document.getElementById("idEstatusOficio").style.borderColor = '';
-		//validacion = false;
+	//document.getElementById("idEstatusOficio").style.borderColor = '';
+	//validacion = false;
 	//}
 
 	return validacion;
@@ -612,17 +729,17 @@ function obtenerPuesto(idEmpleado) {
 
 function obtEmpleadoArea(idArea) {
 	console.log(idArea.value);
-	if(idArea.value > 0){
+	if (idArea.value > 0) {
 		var buscarEmpleados = getAbsolutePath() + buscarxArea + idArea.value;
-		listaResponsable(buscarEmpleados, 0);	
-	}else{
+		listaResponsable(buscarEmpleados, 0);
+	} else {
 		swal({
-				title: "",
-				text: "Seleccione una Area de Atencion Valida.",
-				icon: "warning",
-			});
+			title: "",
+			text: "Seleccione una Area de Atencion Valida.",
+			icon: "warning",
+		});
 	}
-	
+
 }
 function listaResponsable(url, valor) {
 	$.blockUI({ message: 'Espere un momento...' });
@@ -650,16 +767,16 @@ function observaciones(idFolio) {
 
 
 function asignarFechaVencimiento(fechaV) {
-	
+
 	const hoy = new Date();
 
 	var fecha1 = $(fechaV).parents("tr").find("td").eq(4).html();
 	var fecha = $(fechaV).parents("tr").find("td").eq(5).html();
 	var fechaVencimiento = new Date(fecha.replaceAll("-", "/")).toISOString().substring(0, 10);
 	var fechaRegistro;
-	if(hoy > Date.parse(fecha1)){
+	if (hoy > Date.parse(fecha1)) {
 		fechaRegistro = hoy.toISOString().substring(0, 10);
-	}else{
+	} else {
 		fechaRegistro = new Date(fecha1.replaceAll("-", "/")).toISOString().substring(0, 10);
 	}
 
@@ -694,31 +811,31 @@ function obtenerDatostblObservaciones(url) {
 				+ opt.pk_id_observacion
 				+ " >"
 				+ " <i class='bi bi-pencil-square'></i>";
-			tblObservacion.row.add([opt.pk_id_observacion, opt.vc_area, opt.vc_responsable,
+			tblObservacion.row.add([opt.i_observacion_oficio,opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, opt.vc_confirma, opt.vc_desc_rechazo, botones]).draw(false);
-			tblObservacion.column(0).visible(false);
+			//tblObservacion.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
 		mnsExisteRegistros(tblObservacion.rows().count());
 	});
 }
 
-function mnsExisteRegistros(num){
+function mnsExisteRegistros(num) {
 	if (num > 0) {
-			swal({
-				title: "Informacion.",
-				text: "Se consultaron las observaciones del Oficio.",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
-		} else {
-			swal({
-				title: "Informacion.",
-				text: "El Oficio no cuenta con observaciones registradas",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
-		}
+		swal({
+			title: "Informacion.",
+			text: "Se consultaron las observaciones del Oficio.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Oficio no cuenta con observaciones registradas",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	}
 }
 
 function getAbsolutePath() {
@@ -749,7 +866,7 @@ function inicioTabla() {
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
-		
+
 	});
 	tblAdjuntos = $("#tblAdjuntos").DataTable({
 		"language": {
@@ -759,7 +876,7 @@ function inicioTabla() {
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
-		
+
 	});
 }
 function editarFolio(id) {
@@ -822,6 +939,7 @@ function obtenerObservacion(url) {
 		document.getElementById("idFechaVencimiento").value = data.dt_fecha_vencimiento;
 		document.getElementById("idObservacion").value = data.vc_descripcion;
 		document.getElementById("idReasignacion").value = data.i_confirma;
+		document.getElementById("obsOficio").value = data.i_observacion_oficio;
 		listaResponsable(getAbsolutePath() + buscarxArea + data.i_area, data.i_responsable);
 		setTimeout($.unblockUI, 100);
 	});

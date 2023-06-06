@@ -384,6 +384,7 @@ public class CatalogosCEService {
 						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
 						+ ",t1.DT_FECHA_ASGINACION,t1.DT_FECHA_VENCIMIENTO,t1.VC_DESCRIPCION,t4.V_VALOR,t5.V_VALOR,t1.I_CONFIRMA "
 						+ ",IFNULL(t1.VC_DESCRIPCION_RECHAZO,'-') "
+						+ ",IFNULL(t1.I_OBSERVACION_OFICIO,0) "
 						+ "FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.empleadoID = t1.I_RESPONSABLE "
 						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
@@ -406,6 +407,7 @@ public class CatalogosCEService {
 						e.setVc_confirma(rs.getString(8));
 						e.setI_confirma(rs.getInt(9));
 						e.setVc_desc_rechazo(rs.getString(10));
+						e.setI_observacion_oficio(rs.getInt(11));
 						return e;
 					}
 				});

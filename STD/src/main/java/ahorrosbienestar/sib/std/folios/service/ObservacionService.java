@@ -20,10 +20,10 @@ public class ObservacionService {
 		return iObservacionRepository.save(altaObservacion);
 	}
 
-	public int modObservacion(Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
+	public int modObservacion(Integer obsOficio,Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
 			String idFechaVencimiento, String desObservacion, Integer usuarioMod, Integer usuarioElimino) {
 		
-		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioMod,usuarioElimino);
+		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioMod,usuarioElimino,obsOficio);
 	}
 
 	public int inactivarRegistro(Integer idObservacion, Integer usuarioElimina) {

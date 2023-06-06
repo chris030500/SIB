@@ -11,6 +11,7 @@ public class ObservacionesxFolio {
 	private String vc_confirma;
 	private int i_confirma;
 	private String vc_desc_rechazo;
+	private int i_observacion_oficio;
 	public int getPk_id_observacion() {
 		return pk_id_observacion;
 	}
@@ -71,5 +72,11 @@ public class ObservacionesxFolio {
 	public void setVc_desc_rechazo(String vc_desc_rechazo) {
 		this.vc_desc_rechazo = vc_desc_rechazo;
 	}
-	
+	public int getI_observacion_oficio() {
+		return i_observacion_oficio;
+	}
+	public void setI_observacion_oficio(int i_observacion_oficio) {
+		this.i_observacion_oficio = i_observacion_oficio;
+	}
+
 }

@@ -41,7 +41,7 @@
 					<div class="row" style="margin-top : 15px ">
 						<input id="idFolioSelec" name="idFolioSelect" type="hidden" value="0">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="tblOficio">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblOficio">
 								<thead>
 									<tr>
 										<th style="visibility:collapse; display:none;"></th>
@@ -129,7 +129,11 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-10">
+						<div class="col-md-2">
+							<label class="col-form-label"> No. Observacion en el Oficio:</label>
+							<input class="form-control" type="number" id="obsOficio" placeholder="No. de Observacion del Oficio" min="1">
+						</div>
+						<div class="col-md-8">
 							<label class="col-form-label"> Observación a Atender:</label>
 							<textarea type="text-Area" class="form-control" id="idObservacion"
 								placeholder="Observación a Atender" maxlength="600" rows="3"></textarea>
@@ -147,7 +151,7 @@
 							<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservacion">
 								<thead>
 									<tr>
-										<th style="visibility:collapse; display:none;"></th>
+										<th>No. Observacion</th>
 										<th>Area de Atencion</th>
 										<th>Responsable</th>
 										<th>Fecha de Asignación</th>
@@ -232,13 +236,12 @@
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Fecha de Registro:</label>
-											<input class="form-control" type="date" id="idFechaRegistro" min="hoy"
-												value="">
+											<input class="form-control" type="date" id="idFechaRegistro" for="fechaActual" th:disabled="true" onchange="calcularVencimiento(1)">
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Plazo de Atención (dias habiles): </label>
 											<input class="form-control" type="number" id="idPlazo"
-												placeholder="Plazo de Atención" onchange="calcularVencimiento()"
+												placeholder="Plazo de Atención" onchange="calcularVencimiento(2)"
 												min="1">
 										</div>
 									</div>
@@ -247,7 +250,7 @@
 										<div class="col-md-4">
 											<label class="col-form-label"> Fecha de Vencimiento:</label>
 											<input class="form-control" type="date" id="idVencimiento"
-												placeholder="Fecha de Vencimiento" for="vencimientoFolio">
+												placeholder="Fecha de Vencimiento" for="vencimientoFolio" min="hoy" onchange="calcularVencimiento(1)">
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Estatus del Oficio:</label>
@@ -272,7 +275,7 @@
 				</div>
 			</div>
 			<div class="modal" id="modalAdjuntos">
-				<div class="modal-dialog modal-xl modal-dialog-centered">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
@@ -281,7 +284,7 @@
 								<div class="row" style="margin-top : 15px ">
 									<form id="adjuntoArchivoOficio">
 										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-										<input class="form-control" type="file" id="file" name="file" accept=".pdf" required>
+										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
 									</form>
 								</div>
 								<div class="row" style="margin-top : 15px ">
