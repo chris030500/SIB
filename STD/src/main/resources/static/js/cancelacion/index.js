@@ -1,4 +1,3 @@
-
 // Con esta variable verificamos si tiene registro en el campo de vc_requisition_id
 var vcRequisitionId;
 
