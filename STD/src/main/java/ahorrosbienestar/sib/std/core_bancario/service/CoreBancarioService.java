@@ -33,7 +33,7 @@ public class CoreBancarioService {
 	// Declaramos que SP se va a ejecutar (validar la solicitud)
 	public List<ValidaSolicitudDto> validaSolicitud(int solicitud) {
 
-		// String sql = "call microfin.SIB_SP_VALIDA_SOLICITUD (?);";
+		//String sql = "call SIB.SP_VALIDA_SOLICITUD (?);";
 		String sql = "SELECT * FROM SIB.TBL_SIB_VALIDA_SOLICITUD WHERE SolicitudCreditoID = ?;";
 		logger.info("Ejecutando call SIB_VALIDA_SOLICITUD (" + solicitud + ")");
 		// System.out.println("Querry: " + sql + ", 1) " + solicitud );
