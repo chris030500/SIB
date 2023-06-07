@@ -125,7 +125,7 @@ public class CrearXmlService {
 			// Asignamos los nuevos parametros.
 			String nuevoMensaje = mensaje.replace("$variable1", direccion).replace("$variable2", nombre)
 					.replace("$variable3", "$" + monto).replace("$variable4", plazo).replace("$variable5", tasa + "%")
-					.replace("$variable6", tasaMoratoria + "%").replace("$variable7", plazo);
+					.replace("$variable6", tasaMoratoria + "%");
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			// Elemento raíz
@@ -226,25 +226,25 @@ public class CrearXmlService {
 			rootElement.appendChild(signers);
 
 			Element signerName = doc.createElement("signerName");
-			//signerName.setTextContent(nombre);
-			signerName.setTextContent("Osvaldo Escamilla");
+			signerName.setTextContent(nombre);
+			//signerName.setTextContent("Osvaldo Escamilla");
 			signers.appendChild(signerName);
 
 			Element mailSigner = doc.createElement("mail");
-			// mailSigner.setTextContent(correoParticipanteTitular);
-			mailSigner.setTextContent("oescamilla@ahorrosbienestar.com");
+			mailSigner.setTextContent(correoParticipanteTitular);
+			//mailSigner.setTextContent("oescamilla@ahorrosbienestar.com");
 			//mailSigner.setTextContent("conchitafrida@gmail.com");
 			signers.appendChild(mailSigner);
 
 			Element phoneSigner = doc.createElement("phone");
-			// phoneSigner.setTextContent("+52" + telefonoCelular);
-			phoneSigner.setTextContent("+524428971930");
+			phoneSigner.setTextContent("+52" + telefonoCelular);
+			//phoneSigner.setTextContent("+524428971930");
 			//phoneSigner.setTextContent("+524422723677");
 			signers.appendChild(phoneSigner);
 
 			Element signDevicePhoneSigner = doc.createElement("signDevicePhone");
-			// signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
-			signDevicePhoneSigner.setTextContent("+524428971930");
+			signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
+			//signDevicePhoneSigner.setTextContent("+524428971930");
 			//signDevicePhoneSigner.setTextContent("+524422723677");
 			signers.appendChild(signDevicePhoneSigner);
 
@@ -253,8 +253,8 @@ public class CrearXmlService {
 			signers.appendChild(authenticationType);
 
 			Element authenticationData = doc.createElement("authenticationData");
-			// authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
-			authenticationData.setTextContent("1930");
+			authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
+			//authenticationData.setTextContent("1930");
 			//authenticationData.setTextContent("3677");
 			signers.appendChild(authenticationData);
 

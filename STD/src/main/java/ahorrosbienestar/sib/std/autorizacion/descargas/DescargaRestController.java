@@ -72,7 +72,7 @@ public class DescargaRestController {
 
 	@Autowired
 	private DoctoVideoService doctoVideoService;
-	
+
 	// Variables geolocalizacion
 	private final static String typeDevice = "M";
 	private final static String operation = "Nueva disposición";
@@ -85,7 +85,7 @@ public class DescargaRestController {
 
 	// Variable ruta temporal linux
 	private final static int RUTA_TEMPORAL_LN = 56;
-	
+
 	// Variable ruta direccion
 	private final static int RUTA_DIRECCIONES = 60;
 
@@ -116,9 +116,9 @@ public class DescargaRestController {
 			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
 
 			// Definimos los parámetros de espera
-			int intentosMaximos = 3;
-			int tiempoEspera = 30000; // 30 segundos
-			// int tiempoEspera = 120000; // 2 minutos
+			int intentosMaximos = 4;
+			//int tiempoEspera = 30000; // 30 segundos
+			int tiempoEspera = 27000; // 45 segundos
 
 			// Realizamos los intentos para encontrar el archivo
 			for (int intento = 1; intento <= intentosMaximos; intento++) {
@@ -127,14 +127,37 @@ public class DescargaRestController {
 				File ubicacionZip = new File(rutaTemporal.getVc_valor_propiedad());
 
 				File archivoZip = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+				
 				logger.info(" Existe archivo descargado zip: " + archivoZip.exists() + "\t"
 						+ archivoZip.getAbsolutePath() + "\t" + archivoZip.getName());
 
+				
+
 				if (archivoZip.exists()) {
+					
+					Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
+
+					SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+
+					int identificador = soEnvio.getI_identificador_ruta();
+					
+					File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
+					
+					String carpetaFinal = carpetaVideo + "\\" + clienteId + "\\" + clienteId + "-" + solicitud + "-"
+							+ identificador;
+					File carpetaVideograbación = new File(carpetaFinal + "\\" + CARPETA_NUEVA);
+					//File destino = new File(carpetaVideograbación.getAbsolutePath().toString());
+					//Path destino = Paths.get((carpetaVideograbación.getAbsolutePath()).toString());
+					
+					//moveFile(archivoPdf, destino);
+		            //moveFile(archivoKey, destino);
+		            //moveFile(archivoFad, destino);
+					
 					// Se encontró el archivo, procedemos con el resto del proceso
 					// Obtenemos las coordenadas
 					coordenadasDTO = extaerJSON(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
 
+					
 					// Movemos el archivo en la ruta temporal
 //					Path origen = Paths.get(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
 //					Path destino = Paths.get(
@@ -149,8 +172,8 @@ public class DescargaRestController {
 //					guardarBitacora(solicitudEnvio, destino.toString());
 					guardarBitacora(solicitudEnvio, ubicacionZip.getAbsolutePath());
 					extraerArchivos(archivoZip, solicitudEnvio, solicitud, clienteId);
-
-					SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+					
+					//SolicitudEnvio sEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
 
 					coordenadasDTO.setCustomerNumber(clienteId.toString());
 					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
@@ -175,6 +198,37 @@ public class DescargaRestController {
 			logger.error(e);
 		}
 		return null;
+	}
+	
+	private static void archivos(File ubicacionZip, Integer solicitudEnvio, Integer clienteId, Path destino) {
+		try {
+			File archivoPdf = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".pdf");
+			File archivoKey = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".key");
+			File archivoFad = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".fad");
+			logger.info(" Existe archivo descargado pdf: " + archivoPdf.exists() + "\t"
+					+ archivoPdf.getAbsolutePath() + "\t" + archivoPdf.getName());
+
+			logger.info(" Existe archivo descargado key: " + archivoKey.exists() + "\t"
+					+ archivoKey.getAbsolutePath() + "\t" + archivoKey.getName());
+
+			logger.info(" Existe archivo descargado fad: " + archivoFad.exists() + "\t"
+					+ archivoFad.getAbsolutePath() + "\t" + archivoFad.getName());
+			File destinoCarpeta = new File(destino.toFile(), null);
+			moveFile(archivoPdf, destinoCarpeta);
+	        moveFile(archivoKey, destinoCarpeta);
+	        moveFile(archivoFad, destinoCarpeta);
+		}catch (Exception e) {
+			// TODO: handle exception
+			logger.info(e);
+		}
+		
+	}
+
+	private static void moveFile(File sourceFile, File destinationFolder) throws IOException {
+		Path sourcePath = sourceFile.toPath();
+		Path destinationPath = new File(destinationFolder, sourceFile.getName()).toPath();
+
+		Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	/**
@@ -331,7 +385,7 @@ public class DescargaRestController {
 	}
 
 	public GeolocalizacionDTO llenarGeolocalizacionDTO(GeolocalizacionDTO llenarDTO) throws IOException {
-		
+
 		// Obtenemos la ruta temporal linux
 		Configuracion rutaDirecciones = configService.obtenerConfiguracion(RUTA_DIRECCIONES);
 
@@ -341,7 +395,8 @@ public class DescargaRestController {
 		String formattedDateTime = now.format(formatter);
 
 		// Dirección
-		String url = rutaDirecciones.getVc_valor_propiedad() + "&lat=" + llenarDTO.getLatitude() + "&lon=" + llenarDTO.getLongitude();
+		String url = rutaDirecciones.getVc_valor_propiedad() + "&lat=" + llenarDTO.getLatitude() + "&lon="
+				+ llenarDTO.getLongitude();
 		URL requestUrl = new URL(url);
 		InputStream is = requestUrl.openStream();
 		InputStreamReader isr = new InputStreamReader(is);
@@ -362,272 +417,6 @@ public class DescargaRestController {
 		return llenarDTO;
 	}
 
-	/**
-	 * Método de extracción zip automático
-	 * 
-	 * @throws IOException
-	 * @throws java.text.ParseException
-	 */
-	// @Scheduled(cron = "0 0 22 * * ?")
-//	public void extraerArchivos() throws IOException, java.text.ParseException {
-//
-//		logger.info("Ejecutando extraerArchivos");
-//
-//		// Obtenemos la ruta temporal windows
-//		Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
-//
-//		// Obtenemos la ruta temporal linux
-//		Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
-//
-//		//
-//		File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
-//		logger.info("carpetaEnvio : " + carpetaEnvio);
-//		File[] archivosEnvio = carpetaEnvio.listFiles();
-//		//
-//		File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
-//		File[] archivosVideo = carpetaVideo.listFiles();
-//
-//		if (carpetaEnvio.isDirectory()) {
-//			String[] listFile = carpetaEnvio.list();
-//			logger.info("listFile.length : " + listFile.length);
-//			for (int i = 0; i < listFile.length; i++) {
-//				String nombre = listFile[i];
-//				logger.info("nombre " + i + " : " + nombre);
-//
-//			}
-//
-//		}
-//
-////		if (archivosVideo != null) {
-////			for (File video : archivosVideo) {
-////				if (video.isFile()) {
-////					if (archivosEnvio != null) {
-////						for (File envio : archivosEnvio) {
-////							//
-////							String inicioVideo = video.getName();
-////							String[] partesVideo = inicioVideo.split("-");
-////							//
-////							int indicePunto = partesVideo[1].indexOf(".");
-////							String clienteId = partesVideo[1].substring(0, indicePunto);
-////							if (clienteId.equals(envio.getName())) {
-////								// Obtener solicitud de envio
-////								SolicitudEnvio soEnvio = solicitudEnvioService
-////										.obtenerSolicitudEnvio(Integer.parseInt(partesVideo[0]));
-////
-////								// Aquí hace referencia al complemento de la ruta con el cliente
-////								String rutaCliente = clienteId + "\\" + clienteId + "-"
-////										+ soEnvio.getI_no_solicitud_core() + "-" + soEnvio.getI_identificador_ruta()
-////										+ "\\";
-////
-////								logger.info("rutaCliente: " + rutaCliente.toString());
-////
-////								// Se arma la ruta en donde ira la carpeta nueva
-////								String complemento = carpetaEnvio + "\\" + rutaCliente;
-////
-////								//
-////								Path origen = Paths.get(video.toString());
-////								Path destino = Paths.get(complemento + video.getName());
-////
-////								Files.move(origen, destino);
-////
-////								String zipDestino = complemento + "\\" + CARPETA_NUEVA;
-////
-////								// Descomprimir el archivo .zip
-////								unzip(destino.toString(), zipDestino);
-////
-////								//
-////								File fileArchivos = new File(zipDestino);
-////								File[] files = fileArchivos.listFiles();
-////								if (files != null) {
-////									for (File nuevo : files) {
-////										if (nuevo.isFile()) {
-////											guardarDoctoVideo(soEnvio.getPk_id_solicitud_envio(),
-////													rutaCliente + CARPETA_NUEVA + "\\" + nuevo.getName());
-////										}
-////									}
-////								}
-////							}
-////						}
-////					}
-////				}
-////			}
-////		}
-//	}
-
-//	public void extraerArchivos(File archivoZip, Integer solicitudEnvio, String solicitud, Integer clienteId2)
-//			throws IOException, java.text.ParseException {
-//
-//		// Obtenemos la ruta temporal windows
-//		Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
-//
-//		// Obtenemos la ruta temporal linux
-//		Configuracion rutaLinux = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
-//
-//		//
-//		File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
-//		File[] archivosEnvio = carpetaEnvio.listFiles();
-//		logger.info(carpetaEnvio);
-//
-//		//
-//		SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
-//
-//		//
-//		File carpetaVideo = new File(rutaLinux.getVc_valor_propiedad() + "\\" + clienteId2 + "\\" + clienteId2 + "-"
-//				+ soEnvio.getI_no_solicitud_core() + "-" + soEnvio.getI_identificador_ruta() + "\\");
-//		File[] archivosVideo = carpetaVideo.listFiles();
-//		logger.info(carpetaVideo);
-//
-//		// Aquí hace referencia al complemento de la ruta con el cliente
-//		String rutaCliente = clienteId2 + "\\" + clienteId2 + "-" + soEnvio.getI_no_solicitud_core() + "-"
-//				+ soEnvio.getI_identificador_ruta() + "\\";
-//
-//		// Se arma la ruta en donde ira la carpeta nueva
-//		String complemento = carpetaEnvio + "\\" + rutaCliente;
-//
-//		//
-//		Path origen = Paths.get(carpetaEnvio.toString() + "\\" + archivoZip.getName());
-//		Path destino = Paths.get(carpetaVideo.toString() + "\\" + CARPETA_NUEVA + "\\" + archivoZip.getName());
-//
-//		logger.info(origen);
-//		logger.info(destino);
-//
-//		File carpetaVideograbación = new File(carpetaVideo + "\\" + CARPETA_NUEVA);
-//
-//		carpetaVideograbación.mkdirs();
-//
-//		Files.move(origen, destino);
-//
-//		String nombreCarpeta = archivoZip.getName().replaceAll("\\.zip$", "");
-//
-//		String zipDestino = carpetaVideo + "\\" + CARPETA_NUEVA + "\\" + nombreCarpeta;
-//
-//		// Descomprimir el archivo .zip
-//		unzip(destino.toString(), zipDestino);
-//
-//		//
-//		File fileArchivos = new File(zipDestino);
-//		File[] files = fileArchivos.listFiles();
-//		if (files != null) {
-//			for (File nuevo : files) {
-//				if (nuevo.isFile()) {
-//					guardarDoctoVideo(soEnvio.getPk_id_solicitud_envio(),
-//							rutaCliente + CARPETA_NUEVA + "\\" + nuevo.getName());
-//				}
-//			}
-//		}
-//	}
-
-//	public void extraerArchivos(File archivoZip, Integer solicitudEnvio, String solicitud, Integer clienteId) throws IOException, java.text.ParseException {
-//		try {
-//
-//			logger.info("Ejecutando extraerArchivos");
-//
-//			// Obtenemos la ruta temporal windows \\Cmv020063\std\Videogracion
-//			Configuracion rutaWindows = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
-//
-//			// Obtenemos la ruta temporal linux \\Cmv020063\std\Envio\**
-//			Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
-//
-//			// Carpeta de videogravacion
-//			File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
-//			logger.info("carpetaEnvio : " + carpetaEnvio);
-//			File[] archivosEnvio = carpetaEnvio.listFiles();
-//			
-//			//Carpeta std/Envio
-//			File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
-//			logger.info("carpetaVideo : " + carpetaVideo);
-//			File[] archivosVideo = carpetaVideo.listFiles();
-//
-////			if (carpetaEnvio.isDirectory()) {
-////				String[] listFile = carpetaEnvio.list();
-////				logger.info("listFile.length : " + listFile.length);
-////				for (int i = 0; i < listFile.length; i++) {
-////					String nombre = listFile[i];
-////					logger.info("nombre " + i + " : " + nombre);
-////
-////				}
-////
-////			}
-//
-//			if (archivosVideo != null) {
-//				logger.info("Entro en archivosVideo != null");
-//				for (File video : archivosVideo) {
-//					logger.info("Entro en for video");
-//					logger.info("video.isFile: " + video.isFile());
-//					logger.info("video :" + video.getName());
-//					if (video.isFile()) {
-//						logger.info("IF video es archivo");
-//						logger.info("video: " + video.getAbsolutePath());
-//						if (archivosEnvio != null) {
-//							logger.info("archivosVideo es diferente a NULL");
-//							for (File envio : archivosEnvio) {
-//								logger.info("For envio");
-//								//
-//								String inicioVideo = video.getName();
-//								String[] partesVideo = inicioVideo.split("-");
-//								//
-//								int indicePunto = partesVideo[1].indexOf(".");
-//								String clienteId2 = partesVideo[1].substring(0, indicePunto);
-//								logger.info("clienteID2: " + clienteId2);
-//								if (clienteId2.equals(envio.getName())) {
-//									
-//									// Obtener solicitud de envio
-//									SolicitudEnvio soEnvio = solicitudEnvioService
-//											.obtenerSolicitudEnvio(Integer.parseInt(partesVideo[0]));
-//
-//									// Aquí hace referencia al complemento de la ruta con el cliente
-//									String rutaCliente = clienteId2 + "\\" + clienteId + "-"
-//											+ soEnvio.getI_no_solicitud_core() + "-" + soEnvio.getI_identificador_ruta()
-//											+ "\\";
-//
-//									logger.info("rutaCliente: " + rutaCliente.toString());
-//
-//									// Se arma la ruta en donde ira la carpeta nueva
-//									String complemento = carpetaEnvio + "\\" + rutaCliente;
-//									
-//									logger.info("complemento: " + complemento);
-//
-//									//
-//									Path origen = Paths.get(video.toString());
-//									Path destino = Paths.get(complemento + video.getName());
-//									
-//									logger.info("origen: " + origen);
-//									logger.info("destino: " + origen);
-//
-//									Files.move(origen, destino);
-//
-//									String zipDestino = complemento + "\\" + CARPETA_NUEVA;
-//
-//									// Descomprimir el archivo .zip
-//									unzip(destino.toString(), zipDestino);
-//
-//									//
-//									File fileArchivos = new File(zipDestino);
-//									File[] files = fileArchivos.listFiles();
-//									if (files != null) {
-//										for (File nuevo : files) {
-//											if (nuevo.isFile()) {
-//												logger.info("Entro en nuevo.isFile ");
-//												guardarDoctoVideo(soEnvio.getPk_id_solicitud_envio(),
-//														rutaCliente + CARPETA_NUEVA + "\\" + nuevo.getName());
-//											}
-//										}
-//									}
-//								}
-//							}
-//						} else {
-//							logger.info("Video es null");
-//						}
-//					} else {
-//						logger.info("Video no es file");
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			logger.error(e);
-//		}
-//	}
 
 	public void extraerArchivos(File archivoZip, Integer solicitudEnvio, String solicitud, Integer clienteId)
 			throws IOException, java.text.ParseException {
@@ -677,7 +466,7 @@ public class DescargaRestController {
 						logger.info("origen move: " + origen);
 						logger.info("destino move: " + destino);
 						Files.move(origen, destino);
-
+						archivos(archivoZip, solicitudEnvio, clienteId, destino);
 						String zipDestino = (carpetaVideograbación.getAbsolutePath()).toString();
 
 						logger.info("zipDestino: " + zipDestino);
@@ -703,6 +492,8 @@ public class DescargaRestController {
 					}
 
 				}
+				
+				
 
 			}
 
@@ -798,7 +589,7 @@ public class DescargaRestController {
 			model.setFk_solicitud_envio(soEnvio);
 			doctoVideoService.save(model);
 			logger.info("Guardar model");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error(e);
 		}
