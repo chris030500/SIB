@@ -36,8 +36,9 @@ public interface IDocumentoRepository extends JpaRepository<Documento, Integer> 
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_CAT_DOCUMENTO SET VC_NOMBRE_DOC = :nombreDocumento WHERE PK_ID_DOCUMENTO = :id_documento", nativeQuery = true)
-	public int editarDocumento(@Param("id_documento") Integer id_documento, @Param("nombreDocumento") String nombreDocumento);
+	@Query(value = "UPDATE TBL_CAT_DOCUMENTO SET VC_NOMBRE_DOC = :nombreDocumento, I_REQUIERE_FIRMA = :firma WHERE PK_ID_DOCUMENTO = :id_documento", nativeQuery = true)
+	public int editarDocumento(@Param("id_documento") Integer id_documento, @Param("nombreDocumento") String nombreDocumento, 
+			@Param("firma") int firma);
 
 	@Query(value = "SELECT * FROM TBL_CAT_DOCUMENTO  WHERE I_ESTATUS = 1", nativeQuery = true)
 	public List<Documento> todosDocumentos();

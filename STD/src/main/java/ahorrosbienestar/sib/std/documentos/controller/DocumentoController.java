@@ -49,9 +49,11 @@ public class DocumentoController {
 			return "documentos/index";
 		}
 		
-		@PostMapping("/altaDocumento/{nombreDocumento}")
-		public ResponseEntity<?> altaDocumento(Model model,@PathVariable (name ="nombreDocumento") String nombreDocumento){
+		@PostMapping("/altaDocumento/{nombreDocumento}/{firma}")
+		public ResponseEntity<?> altaDocumento(Model model,@PathVariable (name ="nombreDocumento") String nombreDocumento,
+				@PathVariable (name ="firma") int firma){
 			String mensaje ="Documento Registrado Correctamente.";
+			//System.out.println("firma: " + firma);
 			ArrayList<String> respuesta = new ArrayList<String>();
 			try {
 				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -70,7 +72,7 @@ public class DocumentoController {
 					altaDocumento.setUsr_registra(usuario.get(0).getPk_id_usuario());
 					altaDocumento.setInd_doc_cliente(estatus); //revisar valor a insertar
 					altaDocumento.setVc_nombre_doc(nombreDocumento.replace("|", "/"));
-					
+					altaDocumento.setI_requiere_firma(firma);
 					
 					documentoService.save(altaDocumento);
 					respuesta.add(mensaje);
@@ -119,14 +121,16 @@ public class DocumentoController {
 			}
 		}
 		
-		@PostMapping("/editar/{id_documento}/{nombreDocumento}")
-		public ResponseEntity<?> editarDocumento(@PathVariable (name ="id_documento") Integer id_documento,@PathVariable (name ="nombreDocumento") String nombreDocumento) {
+		@PostMapping("/editar/{id_documento}/{nombreDocumento}/{firma}")
+		public ResponseEntity<?> editarDocumento(@PathVariable (name ="id_documento") Integer id_documento,
+				@PathVariable (name ="nombreDocumento") String nombreDocumento,
+				@PathVariable (name ="firma") int firma) {
 			String mensaje ="Documento Actualizado";
 			ArrayList<String> respuesta = new ArrayList<String>();
 			try {
 				
 				if(documentoService.existeDocumento(nombreDocumento) == 0) {
-					documentoService.editarDocumento(id_documento,nombreDocumento.replace("|", "/"));
+					documentoService.editarDocumento(id_documento,nombreDocumento.replace("|", "/"), firma);
 					respuesta.add(mensaje);
 					
 				}else {

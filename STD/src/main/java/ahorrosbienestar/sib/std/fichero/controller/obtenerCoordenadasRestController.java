@@ -138,6 +138,7 @@ public class obtenerCoordenadasRestController {
 			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
+			logger.info("obtenerCoordenadasPagare");
 			String pdfPath = url;
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Pagare.pdf";
 			File file = new File(pdfPath);
@@ -220,6 +221,7 @@ public class obtenerCoordenadasRestController {
 			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
+			logger.info("obtenerCoordenadasPlanPagos");
 			String pdfPath = url;
 			//String pdfPath = "C:/Users/osvaldo.escamilla/Documents/PlandePagos.pdf";
 			File file = new File(pdfPath);
@@ -231,7 +233,7 @@ public class obtenerCoordenadasRestController {
 
 			// List<CoordenadaDocumento> coordenadas =
 			// coordenadaDocumentoService.obtenerCoordenadaDocto(docto.getPk_id_documento());
-			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService.obtenerCoordenadaDocto(29);
+			List<CoordenadaDocumento> coordenadas = coordenadaDocumentoService.obtenerCoordenadaDocto(docto.getPk_id_documento());
 
 			logger.info("Coordenadas: " + coordenadas);
 			//logger.info("Coordenadas: " + coordenadas);
@@ -383,6 +385,7 @@ public class obtenerCoordenadasRestController {
 			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
+			logger.info("obtenerCoordenadasAnexosContrato");
 			String pdfPath = url;
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/AnexosContrato.pdf";
 			File file = new File(pdfPath);
@@ -743,6 +746,7 @@ public class obtenerCoordenadasRestController {
 			// logger.info("RutaAbsoluta: " + rutaAbsoluta);
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/Modelo.pdf";
 			// Obtenemos el documento para despues obtener el número total de hojas.
+			logger.info("obtenerCoordenadasContrato");
 			String pdfPath = url;
 			// String pdfPath =
 			// "C:/Users/osvaldo.escamilla/Documents/Contrato_Apertura_272195_23_03_2023.pdf";
@@ -1178,6 +1182,7 @@ public class obtenerCoordenadasRestController {
 			throws IOException {
 		try {
 
+			logger.info("obtenerCoordenadasDomiliciacion");
 			String pdfPath = url;
 			// String pdfPath = "C:/Users/osvaldo.escamilla/Documents/formato de
 			// domiciliacion.pdf";
@@ -1333,7 +1338,7 @@ public class obtenerCoordenadasRestController {
 			Documento docto) {
 
 		try {
-
+			logger.info("obtenerCoordenadasAutorizacionTransferencia");
 			String pdfPath = url;
 			// String archivo = "C:/Users/osvaldo.escamilla/Documents/autorizacion de
 			// transferencia electronica.pdf";
@@ -1390,6 +1395,36 @@ public class obtenerCoordenadasRestController {
 			logger.error("Error al obtener las coordenadas del documento de autorización de transferencia");
 			logger.error(e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento de autorización de transferencia");
+		}
+		
+	}
+	
+	@GetMapping("/noFirma")
+	public ResponseEntity<?> obtenerTotalHojasDocNoFirma(String url, DoctEnvio dEnvio) {
+
+		try {
+			
+			String pdfPath = url;
+			// String archivo = "C:/Users/osvaldo.escamilla/Documents/autorizacion de
+			// transferencia electronica.pdf";
+			File file = new File(pdfPath);
+			PDDocument document = PDDocument.load(file);
+			logger.info("noFirma");
+			logger.info(file.getName());
+			// Obtenemos el numero total de hojas del documento
+			doctEnvioService.totalHojas(document.getNumberOfPages(), dEnvio.getPk_id_docto_envio());
+				
+				logger.info("Se obtuvieron correctamente las coordenadas del documento" + file.getName());
+				return ResponseEntity
+						.ok("Se obtuvieron correctamente las coordenadas del documento");
+				
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			logger.error("Error al obtener las coordenadas del documento");
+			logger.error(e);
+			return ResponseEntity.ok("Error al obtener las coordenadas del documento ");
 		}
 		
 	}
