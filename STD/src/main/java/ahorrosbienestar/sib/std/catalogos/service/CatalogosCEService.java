@@ -264,7 +264,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMACION_RESPONSABLE and t5.I_ID_GRUPO = 8 "
 						+ "where t1.I_OBSERVACION = ?;";
 						
-				System.out.print("sql"+sql);
+				System.out.println("sql"+sql);
 				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_observacion}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
@@ -384,6 +384,7 @@ public class CatalogosCEService {
 						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
 						+ ",t1.DT_FECHA_ASGINACION,t1.DT_FECHA_VENCIMIENTO,t1.VC_DESCRIPCION,t4.V_VALOR,t5.V_VALOR,t1.I_CONFIRMA "
 						+ ",IFNULL(t1.VC_DESCRIPCION_RECHAZO,'-') "
+						+ ",IFNULL(t1.I_OBSERVACION_OFICIO,0) "
 						+ "FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.empleadoID = t1.I_RESPONSABLE "
 						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
@@ -406,6 +407,7 @@ public class CatalogosCEService {
 						e.setVc_confirma(rs.getString(8));
 						e.setI_confirma(rs.getInt(9));
 						e.setVc_desc_rechazo(rs.getString(10));
+						e.setI_observacion_oficio(rs.getInt(11));
 						return e;
 					}
 				});
@@ -427,6 +429,7 @@ public class CatalogosCEService {
 				String sql = "SELECT t1.PK_ID_OBSERVACION,t3.VC_DESCRIPCION as area "
 						+ ",CONCAT_WS(' ',t2.PrimerNombre,t2.SegundoNombre,t2.ApellidoPat, t2.ApellidoMat) as responsable "
 						+ ",t1.DT_FECHA_ASGINACION,t1.DT_FECHA_VENCIMIENTO,t1.VC_DESCRIPCION,t4.V_VALOR,t5.V_VALOR,t1.I_CONFIRMA "
+						+ ",t1.I_OBSERVACION_OFICIO "
 						+ "FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t2 on t2.empleadoID = t1.I_RESPONSABLE "
 						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
@@ -448,6 +451,7 @@ public class CatalogosCEService {
 						e.setVc_estatus(rs.getString(7));
 						e.setVc_confirma(rs.getString(8));
 						e.setI_confirma(rs.getInt(9));
+						e.setI_observacion_oficio(rs.getInt(10));
 						return e;
 					}
 				});
@@ -518,6 +522,13 @@ public class CatalogosCEService {
 				System.out.println("e"+e.getMessage());
 			}
 			return null;
+		}
+
+
+		public void actEstatusCascada(Integer idActividad) {
+			// TODO Auto-generated method stub
+			jdbcTemplate.update("CALL SIB.SP_ACTUALIZAR_ESTATUS_CASCADA (?)", idActividad);
+			
 		}
 		
 }

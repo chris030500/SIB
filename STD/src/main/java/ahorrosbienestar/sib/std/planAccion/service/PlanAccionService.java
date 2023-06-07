@@ -16,8 +16,8 @@ public class PlanAccionService {
 	}
 	
 	public int modificarPA(Integer idPA, String nombreActividad, Integer idEncargado, String dtFechaInicio,
-			String dtFechaVencimiento, int pk_id_usuario) {
-		return iPlanAccionRepository.modificarPA(idPA,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,pk_id_usuario);
+			String dtFechaVencimiento, int pk_id_usuario,int confirmaResponsable) {
+		return iPlanAccionRepository.modificarPA(idPA,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,pk_id_usuario,confirmaResponsable);
 		
 	}
 

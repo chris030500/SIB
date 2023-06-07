@@ -41,39 +41,49 @@
 						<div class="col-md-4">
 							<label class="col-form-label"> Asunto:</label>
 							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
-							<textarea type="text-Area" class="form-control" id="idAsunto"
-								placeholder="Asunto" maxlength="600" readonly></textarea>
+							<textarea type="text-Area" class="form-control" id="idAsunto" placeholder="Asunto"
+								maxlength="600" readonly></textarea>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<label class="col-form-label"> Fecha de Recibo:</label>
-							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo" readonly>
+							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo"
+								readonly>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<label class="col-form-label"> Fecha de Vencimiento:</label>
 							<input class="form-control" type="date" id="dtVencimiento"
 								placeholder="Fecha de Vencimiento" readonly>
 						</div>
+						<div class="col-md-2" style ="justify-content: center;">
+							<label class="col-form-label">Ver documentos:</label>
+							<br>
+							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
+								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
+								<i class="bi bi-file-earmark-pdf-fill"></i>
+							</button>
+						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-					<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservaciones">
-							<thead>
-								<tr>
-									<th style="visibility:collapse; display:none;"></th>
-									<th>Area de Atencion</th>
-									<th>Responsable</th>
-									<th>F. Asignación</th>
-									<th>F. Vencimiento</th>
-									<th>Observaciones a Atender</th>
-									<th>Estatus</th>
-									<th>¿Acepta la Observación?</th>
-								</tr>
-							</thead>
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 100%;"
+								id="tblObservaciones">
+								<thead>
+									<tr>
+										<th>No. Observacion</th>
+										<th>Area de Atencion</th>
+										<th>Responsable</th>
+										<th>F. Asignación</th>
+										<th>F. Vencimiento</th>
+										<th>Observaciones a Atender</th>
+										<th>Estatus</th>
+										<th>¿Acepta la Observación?</th>
+									</tr>
+								</thead>
 
-							<tbody>
-							</tbody>
+								<tbody>
+								</tbody>
 
-						</table>
+							</table>
 						</div>
 					</div>
 				</fieldset>
@@ -83,7 +93,9 @@
 			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
-					<hr><h4 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblSeleccion"></h4>
+					<hr>
+					<h4 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblSeleccion">
+					</h4>
 					<div class="row" style="margin-top : 15px ">
 						<input id="idAct" name="idAct" type="hidden" value="0">
 						<div class="col-md-6">
@@ -96,7 +108,8 @@
 							<label class="col-form-label"> Encargado de la Actividad</label>
 							<select class="form-control" id="idEncargadoActividad">
 								<option value="0">Seleccione</option>
-								<option th:each="listaEncargados : ${lista_encargados}" th:value="${listaEncargados.empleadoID}"
+								<option th:each="listaEncargados : ${lista_encargados}"
+									th:value="${listaEncargados.empleadoID}"
 									th:text="${listaEncargados.nombreCompleto}"></option>
 							</select>
 						</div>
@@ -104,11 +117,21 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Inicio</label>
-							<input class="form-control" type="date" id="dtFechaInicio" for="fechaInicio" min="fechaInicio" max="fechaVencimiento">
+							<input class="form-control" type="date" id="dtFechaInicio" for="fechaInicio"
+								min="fechaInicio" max="fechaVencimiento">
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Fecha Vencimiento</label>
-							<input class="form-control" type="date" id="dtFechaVencimiento" for="fechaVencimiento" min="fechaInicio" max="fechaVencimiento">
+							<input class="form-control" type="date" id="dtFechaVencimiento" for="fechaVencimiento"
+								min="fechaInicio" max="fechaVencimiento">
+						</div>
+						<div class="col-md-4" id="idFinActividad" style="display:none;">
+							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
+							<select class="form-control" id="idConfirmarActividad">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion:${cat_opcion_fin}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
 						</div>
 						<div class="col-md-4" style="visibility:collapse; display:none;">
 							<label class="col-form-label"> Estatus</label>
@@ -126,29 +149,68 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
-					<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
-							<thead>
-								<tr>
-									<th style="visibility:collapse; display:none;">ID</th>
-									<th>Actividad</th>
-									<th>Encargado</th>
-									<th>F. Inicio</th>
-									<th>F. Vencimiento</th>
-									<th>Estatus</th>
-									<th>Confirmar Actividad</th>
-									<th>Acciones</th>
-								</tr>
-							</thead>
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
+								<thead>
+									<tr>
+										<th style="visibility:collapse; display:none;">ID</th>
+										<th>Actividad</th>
+										<th>Encargado</th>
+										<th>F. Inicio</th>
+										<th>F. Vencimiento</th>
+										<th>Estatus</th>
+										<th>Confirmar Actividad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
 
-							<tbody>
+								<tbody>
 
-							</tbody>
+								</tbody>
 
-						</table>
-						</div>	
+							</table>
+						</div>
 					</div>
 				</fieldset>
+			</div>
+			<div class="modal" id="modalAdjuntos">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
+							<div class="modal-body">
+								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
+								<div class="row" style="visibility:collapse; display:none;">
+									<form id="adjuntoArchivoOficio">
+										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
+									</form>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
+											<thead>
+												<tr>
+													<th style="visibility:collapse; display:none;"></th>
+													<th>Nombre</th>
+													<th>Ver Documento</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnGuardarFile" style="visibility:collapse; display:none;">Guardar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCerrar">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>

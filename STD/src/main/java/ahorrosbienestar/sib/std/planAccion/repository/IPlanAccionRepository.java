@@ -19,8 +19,8 @@ public interface IPlanAccionRepository extends JpaRepository<PlanAccion, Integer
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_PLAN_ACCION SET VC_DESC_ACTIVIDAD =:nombreActividad, I_RESPONSABLE=:idEncargado, DT_FECHA_INICIO =:dtFechaInicio,DT_FECHA_VENCIMIENTO=:dtFechaVencimiento,I_USUARIO_MOD=:pk_id_usuario WHERE PK_ID_PLANACCION =:idPA", nativeQuery = true)
+	@Query(value = "UPDATE TBL_PLAN_ACCION SET VC_DESC_ACTIVIDAD =:nombreActividad, I_RESPONSABLE=:idEncargado, DT_FECHA_INICIO =:dtFechaInicio,DT_FECHA_VENCIMIENTO=:dtFechaVencimiento,I_USUARIO_MOD=:pk_id_usuario,I_CONFIRMACION_RESPONSABLE=:confirmaResponsable WHERE PK_ID_PLANACCION =:idPA", nativeQuery = true)
 	public int modificarPA(@Param("idPA") Integer idPA , @Param("nombreActividad") String nombreActividad,@Param("idEncargado") Integer idEncargado, @Param("dtFechaInicio") String dtFechaInicio,
-			@Param("dtFechaVencimiento") String dtFechaVencimiento, @Param("pk_id_usuario") int pk_id_usuario);
+			@Param("dtFechaVencimiento") String dtFechaVencimiento, @Param("pk_id_usuario") int pk_id_usuario, @Param("confirmaResponsable") int confirmaResponsable);
 
 }

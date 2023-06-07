@@ -260,14 +260,15 @@ public class FoliosController {
 					@RequestParam(name = "idResponsableAtencion") Integer idResponsableAtencion,
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
-					@RequestParam(name = "folioID") Integer folioID
+					@RequestParam(name = "folioID") Integer folioID,
+					@RequestParam(name = "obsOficio") Integer obsOficio
 					){
 				
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
 					
-						altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,folioID);
+						altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,folioID,obsOficio);
 						catalogosCEService.actEstatus(folioID,1,2);
 						respuesta.add(mensaje);
 				
@@ -278,7 +279,7 @@ public class FoliosController {
 				}
 			}
 			
-			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID) {
+			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, Integer obsOficio) {
 				Integer estatus = 1;
 				try {
 					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -303,6 +304,7 @@ public class FoliosController {
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
+					altaObs.setI_observacion_oficio(obsOficio);
 					
 					observacionService.save(altaObs);
 					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
@@ -320,7 +322,8 @@ public class FoliosController {
 					@RequestParam(name = "idResponsableAtencion") Integer idResponsableAtencion,
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
-					@RequestParam(name = "reasignar") Integer reasignar){
+					@RequestParam(name = "reasignar") Integer reasignar,
+					@RequestParam(name = "obsOficio") Integer obsOficio){
 				
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
@@ -335,13 +338,13 @@ public class FoliosController {
 					if(reasignar == 1) {
 						if(observacionService.inactivarRegistro(idObservacion,usuario.get(0).getPk_id_usuario()) == 1) {
 							Optional<Observaciones> altaObs = iObservacionRepository.findById(idObservacion);
-							altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion, altaObs.get().getI_folio());
+							altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion, altaObs.get().getI_folio(),obsOficio);
 						}else {
 							mensaje ="Error al Reasignar Observacion.";
 							respuesta.add(mensaje);
 						}
 					}else if(reasignar == 0) {
-						if(observacionService.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
+						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
 							correoCSOService.registrarCorreo(idObservacion);
 							respuesta.add(mensaje);
 						}else {
@@ -366,8 +369,13 @@ public class FoliosController {
 			@ResponseBody
 			@RequestMapping(value = "/cargarObservacion/{id}", method = RequestMethod.GET)
 			public Optional<Observaciones> cargarObservacion(@PathVariable("id") Integer id) {
-		
-				return iObservacionRepository.findById(id);
+				try {
+					return iObservacionRepository.findById(id);
+				} catch (Exception e) {
+					System.out.println(""+e.getMessage());
+					return null;
+				}
+				
 			}
 			
 			@PostMapping("/subirArchivo")
