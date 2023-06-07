@@ -120,6 +120,11 @@ public class SeguimientoFolioController {
 			altaSeguimiento.setI_confirmacion_responsable(estatus);
 			
 			iSeguimientoFolioRepository.save(altaSeguimiento);
+			catalogosCEService.actEstatus(idActividad,4,3);
+			if(estatus == 1) {
+				catalogosCEService.actEstatus(idActividad,3,1);
+				
+			}
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {

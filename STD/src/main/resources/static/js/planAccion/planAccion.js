@@ -39,6 +39,10 @@ $(document).ready(function() {
 		}
 
 	});
+	
+	$("#btnCerrar").click(function() {
+		$("#modalAdjuntos").modal("hide");
+	});
 
 	inicioTabla();
 });
@@ -59,6 +63,7 @@ function actualizarActividad() {
 	urlServicio = urlServicio+"&idEncargado=" + document.getElementById("idEncargadoActividad").value;
 	urlServicio= urlServicio+"&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
 	urlServicio = urlServicio+"&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
+	urlServicio = urlServicio+"&confirmaResponsable=" + document.getElementById("idConfirmarActividad").value;
 
 	peticionPost(urlServicio);
 }
@@ -69,7 +74,7 @@ function iniciarDtosActividad(){
 	document.getElementById("idEncargadoActividad").value = 0;
 	document.getElementById("dtFechaInicio").value = dtInicio;
 	document.getElementById("dtFechaVencimiento").value = dtVencimiento;
-	//document.getElementById("idEstatus").value = 0;
+	$("#idFinActividad").css("display", "none");
 }
 
 function peticionPost(urlServicio) {
@@ -113,19 +118,38 @@ function guardarVacio() {
 	if (document.getElementById("idNombreActividad").value.length == 0) {
 		document.getElementById("idNombreActividad").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idNombreActividad").style.borderColor = "";
+		validacion = false;
 	}
 	if (document.getElementById("idEncargadoActividad").value == 0) {
 		document.getElementById("idEncargadoActividad").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("idEncargadoActividad").style.borderColor = "";
+		validacion = false;
 	}
 	if (document.getElementById("dtFechaInicio").value.length == 0) {
 		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("dtFechaInicio").style.borderColor = "";
+		validacion = false;
 	}
 	if (document.getElementById("dtFechaVencimiento").value.length == 0) {
 		document.getElementById("dtFechaVencimiento").style.borderColor = "#F70707";
 		validacion = true;
+	}else{
+		document.getElementById("dtFechaVencimiento").style.borderColor = "";
+		validacion = false;
 	}
+	/*if (document.getElementById("idConfirmarActividad").value == 0) {
+		document.getElementById("idConfirmarActividad").style.borderColor = "#F70707";
+		validacion = true;
+	}else{
+		document.getElementById("idConfirmarActividad").style.borderColor = "";
+		validacion = false;
+	}*/
 
 	return validacion;
 }
@@ -147,6 +171,7 @@ function getAbsolutePath() {
 
 var tblObservaciones;
 var tblPlanAccion;
+var tblAdjuntos;
 function inicioTabla() {
 	tblObservaciones = $("#tblObservaciones").DataTable({
 		"language": {
@@ -165,6 +190,17 @@ function inicioTabla() {
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
+	});
+	
+	tblAdjuntos = $("#tblAdjuntos").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+
 	});
 
 }
@@ -266,9 +302,9 @@ function pintartblObservaciones() {
 	$.getJSON(urlInicio, {}, function(data) {
 		tblObservaciones.clear().draw();
 		$.each(data, function(idx, opt) {
-
 			var botonesAceptado = "";
 			var botonesAsignacion = "";
+			
 			botonesAceptado = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Registrar Actividad PA' type='button'"
 				+ " onclick='obtActividades(this)' id="
@@ -290,9 +326,9 @@ function pintartblObservaciones() {
 				+ ")' >"
 				+ " <i class='bi bi-x-circle-fill'></i>"
 				+ " </button>";
-			tblObservaciones.row.add([opt.pk_id_observacion, opt.vc_area, opt.vc_responsable,
+			tblObservaciones.row.add([opt.i_observacion_oficio, opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
-			tblObservaciones.column(0).visible(false);
+			//tblObservaciones.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
 	});
@@ -325,12 +361,12 @@ function tblActividadesPA(id){
 }
 
 function obtActividades(idObs) {
-	document.querySelector('#lblSeleccion').innerText = $(idObs).parents("tr").find("td").eq(4).html();
+	document.querySelector('#lblSeleccion').innerText = $(idObs).parents("tr").find("td").eq(5).html();
 	obsId = $(idObs).attr("id");
 	var urlServicio = getAbsolutePath() + buscarActividades + obsId;
 	obtenerActPlanAccion(urlServicio);
 	
-	asignarFechasObservacion($(idObs).parents("tr").find("td").eq(2).html(),$(idObs).parents("tr").find("td").eq(3).html());
+	asignarFechasObservacion($(idObs).parents("tr").find("td").eq(3).html(),$(idObs).parents("tr").find("td").eq(4).html());
 }
 
 var dtInicio;
@@ -371,7 +407,7 @@ function obtenerActPlanAccion(url) {
 				+ " >"
 				+ " <i class='bi bi-pencil-square'></i>";
 			tblPlanAccion.row.add([opt.id_planaccion, opt.nombreActividad, opt.nombreResponsable,
-			opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus,opt.vc_estatus_encargado, botones]).draw(false);
+			opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus,opt.vc_estatus_responsable, botones]).draw(false);
 			tblPlanAccion.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -412,9 +448,79 @@ function datosActividad(url){
 		document.getElementById("idEncargadoActividad").value = data.i_responsable;
 		document.getElementById("dtFechaInicio").value = data.dt_fecha_inicio;
 		document.getElementById("dtFechaVencimiento").value = data.dt_fecha_vencimiento;
-		//document.getElementById("idEstatus").value = data.i_estatus;
+		if(data.i_confirmacion_encargado == 2){
+			$("#idFinActividad").css("display", "none");
+		}else if(data.i_confirmacion_encargado == 1){
+			$("#idFinActividad").css("display", "block");
+			document.getElementById("idConfirmarActividad").value = data.i_confirmacion_responsable;
+		}
 		document.getElementById("idAct").value = data.pk_id_planaccion;
 	});
 }
+var buscarArchivos = "buscarArchivos?idFolio=";
+function adjuntarFiles(){ 
+	if(document.getElementById("idOficios").value > 0){
+		var urlServicio = getAbsolutePath() + buscarArchivos + document.getElementById("idOficios").value;
+		obtDtostblAdjuntos(urlServicio);
+		document.getElementById("file").value = "";
+	}else{
+		$("#modalAdjuntos").modal("hide");
+		swal({
+			title: "Atencion.",
+			text: "Seleccionar un oficio valido.",
+			icon: "warning",
+			confirmButtonText: 'Aceptar'
+		});
+		
+	}
+}
 
+function obtDtostblAdjuntos(url) {
+	$.blockUI({ message: 'Espere un momento...' });
+	$.getJSON(url, {}, function(data) {
+		tblAdjuntos.clear().draw();
+		$.each(data, function(idx, opt) {
+			var botones = " <button class='btn btn-info' tabindex='0'"
+				+ " title='Ver PDF' type='button'"
+				+ " onclick='verPDF("
+				+ opt.pk_id_archivo
+				+ ")' id="
+				+ opt.pk_id_archivo
+				+ " >"
+				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
+			tblAdjuntos.column(0).visible(false);
+		});
+		setTimeout($.unblockUI, 100);
+		mnstblAdjuntos(tblAdjuntos.rows().count());
+	});
+}
+
+function verPDF(id) {
+console.log(""+id);
+	var servicioPDF = "buscarPDF?idArchivo=";
+	var urlArchivo = getAbsolutePath() + servicioPDF + id;
+
+	window.open(urlArchivo);
+	window.focus();
+
+}
+
+function mnstblAdjuntos(num) {
+	if (num > 0) {
+		swal({
+			title: "Informacion.",
+			text: "Lista de Archivos del Oficio.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Oficio no cuenta con Archivos registrados",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	}
+}
 

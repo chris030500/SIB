@@ -1,11 +1,19 @@
 package ahorrosbienestar.sib.std.planAccion.controller;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +30,10 @@ import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
-import ahorrosbienestar.sib.std.folios.model.Observaciones;
+import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
+import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.planAccion.model.PlanAccion;
@@ -60,7 +70,15 @@ public class PlanAccionController {
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
+	@Autowired
+	private ArchivosFoliosService archivosFoliosService;
+	
+	@Autowired
+	private ConfigService configService;
+	
+	
 	private int catEstatus = 6;
+	private int catFinActividad = 8;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -84,6 +102,7 @@ public class PlanAccionController {
 			model.addAttribute("lista_folios", catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+			model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
 			
 			return "planAccion/inicio";
 		} catch (Exception e) {
@@ -104,7 +123,7 @@ public class PlanAccionController {
 		try {
 			
 			iObservacionRepository.aceptarObservacion(idObservacion);
-			catalogosCEService.actEstatus(idObservacion,2,3);
+			catalogosCEService.actEstatus(idObservacion,2,2);
 			respuesta.add(mensaje);
 				
 			
@@ -210,7 +229,7 @@ public class PlanAccionController {
 			@RequestParam(name = "dtFechaInicio") String dtFechaInicio,
 			@RequestParam(name = "dtFechaVencimiento") String dtFechaVencimiento
 			){
-		int estatusActivo = 1;
+		int estatusActivo = 2;
 		int confirmacionNo = 2;
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
@@ -239,6 +258,8 @@ public class PlanAccionController {
 				altaActividad.setI_confirmacion_responsable(confirmacionNo);
 				
 				iPlanAccionRepository.save(altaActividad);
+				
+				catalogosCEService.actEstatus(idObservacion,2,3);
 				
 				respuesta.add(mensaje);
 			
@@ -272,6 +293,7 @@ public class PlanAccionController {
 			,@RequestParam(name = "idEncargado") Integer idEncargado
 			,@RequestParam(name = "dtFechaInicio") String dtFechaInicio
 			,@RequestParam(name = "dtFechaVencimiento") String dtFechaVencimiento
+			,@RequestParam(name = "confirmaResponsable") Integer confirmaResponsable
 			){
 		
 		String mensaje ="Se actualizo registro correctamente.";
@@ -283,8 +305,10 @@ public class PlanAccionController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-
-			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario());
+			
+			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario(),confirmaResponsable);
+			catalogosCEService.actEstatus(idActividad,4,5);
+			catalogosCEService.actEstatusCascada(idActividad);
 			
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -292,6 +316,57 @@ public class PlanAccionController {
 			respuesta.add(""+e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
+	}
+	
+	/**
+	 * observaciones por folio
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/buscarArchivos")
+	public ResponseEntity<List<ArchivosFolios>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
+		
+		try {
+			return ResponseEntity.ok(archivosFoliosService.obtRegistros(idFolio));
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
+	
+	/**
+	 * observaciones por folio
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/buscarPDF")
+	public ResponseEntity<Resource> buscarPDF(@RequestParam("idArchivo") Integer idArchivo,Model model) {
+		try {
+			Optional<ArchivosFolios> dtos= archivosFoliosService.porID(idArchivo);
+			File file = new File(UrlPDFServidor()+dtos.get().getVc_ruta_docto());
+			byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+			
+			
+			ContentDisposition contentDisposition = null;
+			HttpHeaders h2 = new HttpHeaders();
+			
+			contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+			h2.setContentDisposition(contentDisposition);
+			
+			return ResponseEntity.ok().contentLength((long) bytesPDF.length)
+				    .contentType(MediaType.APPLICATION_PDF)
+				    .headers(h2).body(new ByteArrayResource(bytesPDF));
+			
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
+	
+	@GetMapping
+	public String UrlPDFServidor() {
+		String url =  configService.obtenerUrlCSO().get(0).getVc_valor_propiedad();
+		return url.toString();
 	}
 	
 }
