@@ -180,7 +180,7 @@
 							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
 							<div class="modal-body">
 								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
-								<div class="row" style="margin-top : 15px ">
+								<div class="row" style="visibility:collapse; display:none;">
 									<form id="adjuntoArchivoOficio">
 										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
 										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
@@ -204,7 +204,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile">Guardar</button>
+									id="btnGuardarFile" style="visibility:collapse; display:none;">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 							</div>
