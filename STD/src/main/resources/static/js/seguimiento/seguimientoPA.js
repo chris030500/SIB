@@ -432,7 +432,6 @@ function addArchivos(data) {
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
-				$("#modalAdjuntos").modal("show");
 				adjuntarFiles(document.getElementById("idOficios").value);
 			});
 		},
