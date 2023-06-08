@@ -157,6 +157,9 @@ public class CancelacionRestController {
 					model.setI_estatus(ESTATUS_CANCELAR_AUTO);
 					model.setVc_obser_cancelacion("Cancelación por proceso automático.");
 					model.setDt_fecha_cancelacion(fechaLocal);
+					
+					logger.info(fechaLocal);
+					
 					model.setFk_usr_cancela(usuario);
 					solicitudEnvioService.save(model);
 
