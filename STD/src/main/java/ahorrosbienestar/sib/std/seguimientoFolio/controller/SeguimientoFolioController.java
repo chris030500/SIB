@@ -67,6 +67,8 @@ public class SeguimientoFolioController {
 	@Autowired
 	private ConfigService configService;
 	
+	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
+	private String rolResponsable = "ROLE_ADMIN_CSO";
 	
 	@Autowired
 	public SeguimientoFolioController(SeguimientoFolioService seguimientoFolioService) {
@@ -75,6 +77,7 @@ public class SeguimientoFolioController {
 	
 	@GetMapping("/seguimiento")
 	public String inicioFolio(Model model) {
+		
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -82,8 +85,13 @@ public class SeguimientoFolioController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			model.addAttribute("lista_folios", catalogosCEService.listaActividadPAXEmpleado(usuario.get(0).getI_id_empleado()));
 			
+			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
+				model.addAttribute("lista_folios", catalogosCEService.listaActividadPASupervisor(usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario()));
+			}else {
+				model.addAttribute("lista_folios", catalogosCEService.listaActividadPAXEmpleado(usuario.get(0).getI_id_empleado()));
+			}
+
 			return "seguimientoFolio/seguimiento";
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -107,7 +115,12 @@ public class SeguimientoFolioController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			return ResponseEntity.ok(catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado()));
+			
+			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
+				return ResponseEntity.ok(catalogosCEService.buscarActividadesSupervisor(idFolio, usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario()));
+			}else {
+				return ResponseEntity.ok(catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado()));
+			}
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;

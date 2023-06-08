@@ -12,7 +12,6 @@ $(document).ready(function() {
 		tblAdjuntos.clear().draw();
 	});
 	$("#btnGuardarFile").click(function() {
-
 		if (document.getElementById("file").value.length > 0) {
 			var form = $('#adjuntoArchivoOficio')[0];
 			var data = new FormData(form);
@@ -385,6 +384,23 @@ function obtDtostblAdjuntos(url) {
 		mnstblAdjuntos(tblAdjuntos.rows().count());
 	});
 }
+function mnstblAdjuntos(num) {
+	if (num > 0) {
+		swal({
+			title: "Informacion.",
+			text: "Lista de Archivos del Oficio.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Oficio no cuenta con Archivos registrados",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	}
+}
 
 function verPDF(id) {
 
@@ -397,6 +413,7 @@ function verPDF(id) {
 }
 var agregarArchivos = "subirArchivo?idFolio=";
 function addArchivos(data) {
+	
 	$.ajax({
 		async: false,
 		url: getAbsolutePath() + agregarArchivos + document.getElementById("idOficios").value,
@@ -415,6 +432,7 @@ function addArchivos(data) {
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			}).then(resp => {
+				$("#modalAdjuntos").modal("show");
 				adjuntarFiles(document.getElementById("idOficios").value);
 			});
 		},
