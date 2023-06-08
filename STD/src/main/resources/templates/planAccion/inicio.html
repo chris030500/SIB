@@ -42,7 +42,7 @@
 							<label class="col-form-label"> Asunto:</label>
 							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idAsunto" placeholder="Asunto"
-								maxlength="600" readonly></textarea>
+								maxlength="400" readonly></textarea>
 						</div>
 						<div class="col-md-2">
 							<label class="col-form-label"> Fecha de Recibo:</label>
@@ -65,7 +65,7 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;"
+							<table class="table table-bordered table-striped" style="width: 120%;"
 								id="tblObservaciones">
 								<thead>
 									<tr>
@@ -102,7 +102,8 @@
 							<label class="col-form-label"> Nombre de la Actividad</label>
 							<!--<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idNombreActividad"
-								placeholder="Actividad" maxlength="600"></textarea>
+								placeholder="Actividad" maxlength="400"></textarea>
+							<div id="contNombre">0/400</div>
 						</div>
 						<div class="col-md-6">
 							<label class="col-form-label"> Encargado de la Actividad</label>
@@ -150,7 +151,7 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlanAccion">
 								<thead>
 									<tr>
 										<th style="visibility:collapse; display:none;">ID</th>
@@ -173,14 +174,14 @@
 					</div>
 				</fieldset>
 			</div>
-			<div class="modal" id="modalAdjuntos">
+			<div class="modal" id="modalAdjuntos" data-backdrop="static">
 				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
 							<div class="modal-body">
 								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
-								<div class="row" style="visibility:collapse; display:none;">
+								<div class="row">
 									<form id="adjuntoArchivoOficio">
 										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
 										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
@@ -204,7 +205,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile" style="visibility:collapse; display:none;">Guardar</button>
+									id="btnGuardarFile">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 							</div>

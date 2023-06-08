@@ -21,8 +21,45 @@ $(document).ready(function() {
 	eventosContadorOficio();
 	eventosContadorAsunto();
 	inicioTabla();
+	cargarTablaFolios();
 });
 
+var servicioFolios = "obtenerFolios"
+function cargarTablaFolios(){
+	$("#modalFolio").modal("hide");
+	var url = getAbsolutePath() + servicioFolios;
+	$.getJSON(url, {}, function(data) {
+		tblOficio.clear().draw();
+		$.each(data, function(idx, opt) {
+			var botones = " <button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
+				+ " title='Editar Registro' data-bs-target='#modalFolio' aria-controls='table-datatable' type='button'"
+				+ " onclick='editarFolio("
+				+ opt.pk_id_folio
+				+ ")' id="
+				+ opt.pk_id_folio
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-pencil-square'></i></button>"
+				+ " <button class='btn btn-info' tabindex='0' "
+				+ " title='Mostrar Observaciones' aria-controls='table-datatable' type='button'"
+				+ " onclick='observaciones(this)'"
+				+ " id="
+				+ opt.pk_id_folio
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-ui-checks'></i></button>"
+				+ " <button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
+				+ " title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'"
+				+ " onclick='adjuntarFiles("
+				+ opt.pk_id_folio
+				+ ")' id="
+				+ opt.pk_id_folio
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-file-earmark-plus-fill'></i></button>";
+			tblOficio.row.add([opt.pk_id_folio,opt.i_folio,opt.vc_asunto,opt.dt_fecha_recepcion,opt.dt_fecha_registro,opt.dt_fecha_vencimiento,opt.vc_estatus,opt.vc_tipo_oficio,opt.vc_organo_emite, botones]).draw(false);
+			tblOficio.column(0).visible(false);
+		});
+	});
+	
+}
 
 
 function tamFile() {
@@ -594,7 +631,7 @@ function peticionPost(urlServicio, num, numFolio) {
 			$.blockUI({ message: 'Espere un momento...' });
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 500);
+			setTimeout($.unblockUI, 100);
 		},
 		success: function(respuesta) {
 			swal({
@@ -608,12 +645,15 @@ function peticionPost(urlServicio, num, numFolio) {
 					//obtener registros y cargar datos en tabla observaciones
 					var url = getAbsolutePath() + buscarObservaciones + numFolio;
 					obtenerDatostblObservaciones(url);
+					cargarTablaFolios();
 					reiniciarDatos();
 				} else if (num == 1) {
 					//cargar datos de la tabla de folios
 					document.getElementById("idFolioSelec").value == 0;
-					window.location.href = getAbsolutePath() + inicio;
+					cargarTablaFolios();
+					//window.location.href = getAbsolutePath() + inicio;
 				}
+				setTimeout($.unblockUI, 100);
 			});
 
 
@@ -720,7 +760,6 @@ function guardarVacio() {
 
 
 function obtenerPuesto(idEmpleado) {
-	console.log(idEmpleado.value);
 	var urlServicio = getAbsolutePath() + puesto + idEmpleado.value;
 	$.getJSON(urlServicio, {}, function(data) {
 		$('#iPuesto').val(data[0].descripcionPuesto);
@@ -728,7 +767,6 @@ function obtenerPuesto(idEmpleado) {
 }
 
 function obtEmpleadoArea(idArea) {
-	console.log(idArea.value);
 	if (idArea.value > 0) {
 		var buscarEmpleados = getAbsolutePath() + buscarxArea + idArea.value;
 		listaResponsable(buscarEmpleados, 0);
@@ -758,9 +796,9 @@ function listaResponsable(url, valor) {
 
 function observaciones(idFolio) {
 	reiniciarDatos();
-	document.querySelector('#lblSeleccion').innerText = $(idFolio).parents("tr").find("td").eq(1).html() + "-" + $(idFolio).parents("tr").find("td").eq(2).html();
+	document.querySelector('#lblSeleccion').innerText = $(idFolio).parents("tr").find("td").eq(0).html() + "-" + $(idFolio).parents("tr").find("td").eq(1).html();
 	asignarFechaVencimiento(idFolio);
-	folioID = $(idFolio).parents("tr").find("td").eq(0).html();
+	folioID = $(idFolio).attr("id");
 	var urlServicio = getAbsolutePath() + buscarObservaciones + folioID;
 	obtenerDatostblObservaciones(urlServicio);
 }
@@ -770,8 +808,8 @@ function asignarFechaVencimiento(fechaV) {
 
 	const hoy = new Date();
 
-	var fecha1 = $(fechaV).parents("tr").find("td").eq(4).html();
-	var fecha = $(fechaV).parents("tr").find("td").eq(5).html();
+	var fecha1 = $(fechaV).parents("tr").find("td").eq(3).html();
+	var fecha = $(fechaV).parents("tr").find("td").eq(4).html();
 	var fechaVencimiento = new Date(fecha.replaceAll("-", "/")).toISOString().substring(0, 10);
 	var fechaRegistro;
 	if (hoy > Date.parse(fecha1)) {

@@ -22,13 +22,13 @@ public interface IObservacionRepository  extends JpaRepository<Observaciones, In
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_CONFIRMA = 1, DT_FECHA_CONFIRMACION =now() WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
-	public int aceptarObservacion(Integer idObservacion);
+	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_CONFIRMA = 1, DT_FECHA_CONFIRMACION =now(), I_USUARIO_MOD=:usuario WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
+	public int aceptarObservacion(Integer idObservacion,Integer usuario);
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_CONFIRMA = 2, VC_DESCRIPCION_RECHAZO =:vc_motivo, DT_FECHA_CONFIRMACION =now() WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
-	public int rechazarObservacion(Integer idObservacion, String vc_motivo);
+	@Query(value = "UPDATE TBL_OBSERVACIONESXFOLIO SET I_CONFIRMA = 2, VC_DESCRIPCION_RECHAZO =:vc_motivo, DT_FECHA_CONFIRMACION =now(), I_USUARIO_MOD=:usuario WHERE PK_ID_OBSERVACION =:idObservacion", nativeQuery = true)
+	public int rechazarObservacion(Integer idObservacion, String vc_motivo,Integer usuario);
 
 	@Modifying
 	@Transactional

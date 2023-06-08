@@ -59,7 +59,7 @@
 
 								<tbody>
 
-									<tr th:each="folio: ${lista_folios}">
+									<!--<tr th:each="folio: ${lista_folios}">
 										<td style="visibility:collapse; display:none;" th:text="${folio.pk_id_folio}">
 										</td>
 										<td th:text="${folio.i_folio}"></td>
@@ -91,7 +91,7 @@
 												<i class="bi bi-file-earmark-plus-fill"></i>
 											</button>
 										</td>
-									</tr>
+									</tr>-->
 								</tbody>
 							</table>
 						</div>
@@ -148,7 +148,7 @@
 						<input id="idObservacionSelect" name="idObservacionSelect" type="hidden" value="0">
 						<input id="idReasignacion" name="idReasignacion" type="hidden" value="0">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="tblObservacion">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblObservacion">
 								<thead>
 									<tr>
 										<th>No. Observacion</th>
@@ -274,7 +274,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="modal" id="modalAdjuntos">
+			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false" role="dialog">
 				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">

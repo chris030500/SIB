@@ -6,12 +6,45 @@ var modificarSeguimiento = "modSeguimiento?idSeguimiento=";
 var obsId = 0;
 
 $(document).ready(function() {
+	$("#btnCerrar").click(function() {
+		$("#modalAdjuntos").modal("hide");
+		document.getElementById("idFolioArchivo").value = 0;
+		tblAdjuntos.clear().draw();
+	});
+	$("#btnGuardarFile").click(function() {
+		if (document.getElementById("file").value.length > 0) {
+			var form = $('#adjuntoArchivoOficio')[0];
+			var data = new FormData(form);
+			addArchivos(data)
+		} else {
+			swal({
+				title: "Informacion.",
+				text: "Es necesario seleccionar un Archivo.",
+				icon: "Warning",
+				confirmButtonText: 'Aceptar'
+			})
+		}
+
+	});
+	eventosContadorSeguimiento();
 	eventosBotones();
 	inicioTabla();
 });
 
+function eventosContadorSeguimiento() {
+	const mensaje = document.getElementById('idtxtSeguimiento');
+	const contador = document.getElementById('contSeguimiento');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
 var tblObservaciones;
 var tblPlanAccion;
+var tblAdjuntos;
 function inicioTabla() {
 	tblPlanAccion = $("#tblPlanAccion").DataTable({
 		"language": {
@@ -31,12 +64,50 @@ function inicioTabla() {
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
 	});
+	
+	tblAdjuntos = $("#tblAdjuntos").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
 
+	});
+	
+	
 }
+
+function verActUpload(id) {
+	if (id > 0) {
+		
+		$.blockUI({ message: 'Espere un momento...' });
+		var urlServicio = getAbsolutePath() + buscarActividades + id;
+		$.getJSON(urlServicio, {}, function(data) {
+			tblPlanAccion.clear().draw();
+			$.each(data, function(idx, opt) {
+				var botones = " <button class='btn btn-info' tabindex='0'"
+					+ " title='Ver Seguimiento' type='button'"
+					+ " onclick='verSeguimiento(this)'"
+					+ " id="
+					+ opt.id_planaccion
+					+ " >"
+					+ " <i class='bi bi-ui-checks'></i>";
+				tblPlanAccion.row.add([opt.nombreActividad, opt.nombreResponsable,
+				opt.dtFechaInicio, opt.dtFechaVencimiento, opt.estatus, botones]).draw(false);
+
+			});
+			setTimeout($.unblockUI, 100);
+		});
+	}
+}
+
+
 
 function verActividades(idFolio) {
 	if (idFolio.value > 0) {
-		console.log(idFolio.value);
+		
 		$.blockUI({ message: 'Espere un momento...' });
 		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value;
 		$.getJSON(urlServicio, {}, function(data) {
@@ -228,6 +299,7 @@ function peticionPost(url) {
 			}).then(resp => {
 				iniciarAltaSeguimiento();
 				buscaSeguimiento();
+				verActUpload(document.getElementById("idOficios").value);
 			});
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
@@ -256,3 +328,124 @@ function editarSeguimiento(idSeguimiento) {
 	});
 	setTimeout($.unblockUI, 100);
 }
+
+function tamFile() {
+	const tamMaxFile = 31457280;
+	var fileTam = document.getElementById("file");
+	fileTam.onchange = function() {
+		if (this.files[0].size > tamMaxFile) {
+			swal({
+				title: "",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				this.value = "";
+			});
+		};
+	};
+}
+
+var buscarArchivos = "buscarArchivos?idFolio=";
+function adjuntarFiles(){ 
+	if(document.getElementById("idOficios").value > 0){
+		var urlServicio = getAbsolutePath() + buscarArchivos + document.getElementById("idOficios").value;
+		obtDtostblAdjuntos(urlServicio);
+		document.getElementById("file").value = "";
+	}else{
+		$("#modalAdjuntos").modal("hide");
+		swal({
+			title: "Atencion.",
+			text: "Seleccionar un oficio valido.",
+			icon: "warning",
+			confirmButtonText: 'Aceptar'
+		});
+		
+	}
+}
+
+function obtDtostblAdjuntos(url) {
+	$.blockUI({ message: 'Espere un momento...' });
+	$.getJSON(url, {}, function(data) {
+		tblAdjuntos.clear().draw();
+		$.each(data, function(idx, opt) {
+			var botones = " <button class='btn btn-info' tabindex='0'"
+				+ " title='Ver PDF' type='button'"
+				+ " onclick='verPDF("
+				+ opt.pk_id_archivo
+				+ ")' id="
+				+ opt.pk_id_archivo
+				+ " >"
+				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
+			tblAdjuntos.column(0).visible(false);
+		});
+		setTimeout($.unblockUI, 100);
+		mnstblAdjuntos(tblAdjuntos.rows().count());
+	});
+}
+function mnstblAdjuntos(num) {
+	if (num > 0) {
+		swal({
+			title: "Informacion.",
+			text: "Lista de Archivos del Oficio.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Oficio no cuenta con Archivos registrados",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	}
+}
+
+function verPDF(id) {
+
+	var servicioPDF = "buscarPDF?idArchivo=";
+	var urlArchivo = getAbsolutePath() + servicioPDF + id;
+
+	window.open(urlArchivo);
+	window.focus();
+
+}
+var agregarArchivos = "subirArchivo?idFolio=";
+function addArchivos(data) {
+	
+	$.ajax({
+		async: false,
+		url: getAbsolutePath() + agregarArchivos + document.getElementById("idOficios").value,
+		type: "POST",
+		enctype: 'multipart/form-data',
+		data: data, //pass the form data
+		processData: false,
+		contentType: false,
+		beforeSend: function() {
+			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
+		},
+		success: function(data) {
+			swal({
+				title: "",
+				text: data[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				adjuntarFiles(document.getElementById("idOficios").value);
+			});
+		},
+		error: function(data) {
+			swal({
+				title: "Alerta",
+				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+				icon: "warning",
+			});
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 600);
+		}
+	});
+
+}
+
