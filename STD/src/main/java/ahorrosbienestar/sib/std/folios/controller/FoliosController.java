@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
+import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
@@ -51,7 +52,6 @@ import org.springframework.core.io.Resource;
 @RequestMapping("folios")
 public class FoliosController {
 	
-	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(FoliosController.class);
 
 	
@@ -116,6 +116,21 @@ public class FoliosController {
 		return null;
 	}
 	
+	/**
+	 * observaciones por folio
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtenerFolios")
+	public ResponseEntity<List<ListaFolios>> obtenerFolios(Model model) {
+		
+		try {
+			return ResponseEntity.ok(catalogosCEService.obtFolios());
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
 	/**
 	 * Obtener el puesto del empleado seleccionado
 	 * @param empleadoID
@@ -339,6 +354,7 @@ public class FoliosController {
 						if(observacionService.inactivarRegistro(idObservacion,usuario.get(0).getPk_id_usuario()) == 1) {
 							Optional<Observaciones> altaObs = iObservacionRepository.findById(idObservacion);
 							altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion, altaObs.get().getI_folio(),obsOficio);
+							respuesta.add(mensaje);
 						}else {
 							mensaje ="Error al Reasignar Observacion.";
 							respuesta.add(mensaje);

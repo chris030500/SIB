@@ -42,10 +42,68 @@ $(document).ready(function() {
 	
 	$("#btnCerrar").click(function() {
 		$("#modalAdjuntos").modal("hide");
+		document.getElementById("idFolioArchivo").value = 0;
+		tblAdjuntos.clear().draw();
 	});
+	
+	$("#btnGuardarFile").click(function() {
 
+		if (document.getElementById("file").value.length > 0) {
+			var form = $('#adjuntoArchivoOficio')[0];
+			var data = new FormData(form);
+			addArchivos(data)
+		} else {
+			swal({
+				title: "Informacion.",
+				text: "Es necesario seleccionar un Archivo.",
+				icon: "Warning",
+				confirmButtonText: 'Aceptar'
+			})
+		}
+
+	});
+	
+	
+	eventosContadorNombre(); 
 	inicioTabla();
 });
+
+var agregarArchivos = "subirArchivo?idFolio=";
+function addArchivos(data) {
+	$.ajax({
+		async: false,
+		url: getAbsolutePath() + agregarArchivos + document.getElementById("idOficios").value,
+		type: "POST",
+		enctype: 'multipart/form-data',
+		data: data, //pass the form data
+		processData: false,
+		contentType: false,
+		beforeSend: function() {
+			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
+		},
+		success: function(data) {
+			swal({
+				title: "",
+				text: data[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				adjuntarFiles(document.getElementById("idOficios").value);
+			});
+		},
+		error: function(data) {
+			swal({
+				title: "Alerta",
+				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+				icon: "warning",
+			});
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 600);
+		}
+	});
+
+}
 
 function guardarActividad() {
 	var urlServicio = getAbsolutePath() + altaActividadPA + obsId;
@@ -97,6 +155,7 @@ function peticionPost(urlServicio) {
 			}).then(resp => {
 				iniciarDtosActividad();
 				tblActividadesPA(obsId);
+				verDetallePA(document.getElementById("idOficios").value)
 			});
 
 
@@ -310,7 +369,7 @@ function pintartblObservaciones() {
 				+ " onclick='obtActividades(this)' id="
 				+ opt.pk_id_observacion
 				+ " >"
-				+ " <i class='bi bi-ui-checks'></i>";
+				+ " <i class='bi bi-ui-checks'></i></button>";
 			botonesAsignacion = "<button class='btn btn-info' tabindex='0' "
 				+ " title='Acepto' type='button'"
 				+ " onclick='okObservacion("
@@ -354,6 +413,28 @@ function verDetalle(idFolio) {
 			});
 	}
 }
+
+function verDetallePA(id) {
+	if(id > 0){
+		$.blockUI({ message: 'Espere un momento...' });
+		var urlServicio = getAbsolutePath() + buscarFolio + id;
+		$.getJSON(urlServicio, {}, function(data) {
+		$('#idAsunto').val(data.vc_asunto);
+		$('#dtRecibo').val(data.dt_fecha_recepcion);
+		$('#dtVencimiento').val(data.dt_fecha_vencimiento);
+		pintartblObservaciones();
+		setTimeout($.unblockUI, 100);
+	});	
+	}else {
+			tblObservaciones.clear().draw();
+			swal({
+				title: "",
+				text: "Seleccione un Oficio Valido.",
+				icon: "warning",
+			});
+	}
+}
+
 
 function tblActividadesPA(id){
 	var urlServicio = getAbsolutePath() + buscarActividades + id;
@@ -524,3 +605,30 @@ function mnstblAdjuntos(num) {
 	}
 }
 
+function eventosContadorNombre() {
+	const mensaje = document.getElementById('idNombreActividad');
+	const contador = document.getElementById('contNombre');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
+function tamFile() {
+	const tamMaxFile = 31457280;
+	var fileTam = document.getElementById("file");
+	fileTam.onchange = function() {
+		if (this.files[0].size > tamMaxFile) {
+			swal({
+				title: "",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				this.value = "";
+			});
+		};
+	};
+}

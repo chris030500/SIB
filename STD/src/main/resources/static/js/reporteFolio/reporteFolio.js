@@ -55,21 +55,13 @@ function peticionPost(urlServicio) {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-			swal({
-				title: "",
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+		
 				var idReporte = 2;
 				var servicioReporte = "exportarReporte/generarReporte?idReporte=";
 				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_BUSQUEDA=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=" + respuesta.dt_fecha_registro;
-				
-				console.log("url:" + urlReporte);
+			
 				window.open(urlReporte);
 				window.focus();
-			});
-
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({

@@ -30,7 +30,7 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Seguimiento</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-6">
+						<div class="col-md-5">
 							<label class="col-form-label">Seleccionar Folio para mostrar Actividades</label>
 							<!--<input class="form-control" type="text" id="idPlanAccion" placeholder="Identificador del plan de acción">-->
 							<select class="form-control" id="idOficios" onchange="verActividades(this)" readonly>
@@ -40,15 +40,19 @@
 							</select>
 
 						</div>
-						<div class="col-md-2">
-							<!--<br>
-							<button type="button" class="btn btn-primary form-control" id="btnBuscar">Buscar</button>-->
+						<div class="col-md-3">
+							<label class="col-form-label">Ver documentos:</label>
+							<br>
+							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
+								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
+								<i class="bi bi-file-earmark-pdf-fill"></i>
+							</button>
 						</div>
 						<div class="col-md-4"></div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
+						<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlanAccion">
 
 							<thead>
 								<tr>
@@ -84,7 +88,8 @@
 						<div class="col-md-6">
 							<label class="col-form-label"> Seguimiento Realizado</label>
 							<textarea type="text-Area" class="form-control" id="idtxtSeguimiento"
-								placeholder="Descripcion Seguimiento Realizado" maxlength="600"></textarea>
+								placeholder="Descripcion Seguimiento Realizado" maxlength="400"></textarea>
+							<div id="contSeguimiento">0/400</div>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
@@ -106,7 +111,7 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblSeguimiento">
+						<table class="table table-bordered table-striped" style="width: 120%;" id="tblSeguimiento">
 							<thead>
 								<tr>
 									<th>Nombre de la Actividad</th>
@@ -122,6 +127,45 @@
 						</div>
 					</div>
 				</fieldset>
+			</div>
+			<div class="modal" id="modalAdjuntos" data-backdrop="static">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
+							<div class="modal-body">
+								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
+								<div class="row">
+									<form id="adjuntoArchivoOficio">
+										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
+									</form>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
+											<thead>
+												<tr>
+													<th style="visibility:collapse; display:none;"></th>
+													<th>Nombre</th>
+													<th>Ver Documento</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnGuardarFile">Guardar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCerrar">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
