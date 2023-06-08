@@ -363,6 +363,7 @@ function observacionesSolicitud(tipo) {
 // Función que autoriza la solicitud
 function actualizarSolicitud(observacion, tipo) {
 	var solicitudCore = document.getElementById('solicitud').value;
+	wsAutenticacionId = wsAutenticacionId = 'undefined' ? 0 : wsAutenticacionId;
 	console.log("solicitudCore : " + solicitudCore);
 	$.ajax({
 		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&clienteID=" + clienteID + "&montoAutorizado=" + montoAuto + "&producto=" + nameProducto 
@@ -377,7 +378,9 @@ function actualizarSolicitud(observacion, tipo) {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 
-			enviarGeolocalizacion(respuesta);
+			if (tipo == "autorizar") {
+				enviarGeolocalizacion(respuesta);	
+			}
 
 			swal("Solicitud actualizada", {
 				closeOnClickOutside: false,

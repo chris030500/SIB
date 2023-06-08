@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,7 +40,6 @@ import ahorrosbienestar.sib.std.autorizacion.respuesta.ConsumirServicioResponse;
 import ahorrosbienestar.sib.std.config_ws.bitacora_consumo.model.BitacoraConsumo;
 import ahorrosbienestar.sib.std.config_ws.bitacora_consumo.service.BitacoraConsumoService;
 import ahorrosbienestar.sib.std.config_ws.cat_conf_ws.model.CatConfWS;
-import ahorrosbienestar.sib.std.config_ws.cat_conf_ws.service.CatConfWSService;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutenticacionUser;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.service.WSAutenticacionUserService;
 
@@ -88,9 +85,6 @@ public class AutorizacionRestController {
 	private WSAutenticacionUserService wsAutenticacionUserService;
 
 	@Autowired
-	private CatConfWSService catConfWSService;
-
-	@Autowired
 	private BitacoraConsumoService bitacoraConsumoService;
 
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
@@ -113,22 +107,13 @@ public class AutorizacionRestController {
 		// Obtenemos el usuario logueado
 		Usuario usuario = usuarioService.findByNombre(auth.getName());
 
-		// Crear Fecha
+		// Hora
 		Date diaActual = new Date();
-
-		// Formato fecha
-		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
-
-		// Fecha actual
-		String fecha = formatoFecha.format(diaActual);
-		Date fechaActual = formatoFecha.parse(fecha);
-		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		// Formato para hora
 		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-
-		// Hora actual
 		String horaActual = formatoHora.format(diaActual);
+		
+		// Fecha
+		LocalDate fechaLocal = LocalDate.now();
 
 		// Solicitud envio
 		SolicitudEnvio solicitudEnvio = solicitudEnvioService.obtenerSolicitudEnvio(envioID);
@@ -154,18 +139,6 @@ public class AutorizacionRestController {
 				});
 			}
 
-			// Definimos los parámetros de espera
-//			int intentosMaximos = 3;
-//			int tiempoEspera = 2000; // 2 segundos
-//			// int tiempoEspera = 120000; // 2 minutos
-//			if(responseDTO == null) {
-//				// Realizamos los intentos para encontrar el archivo
-//				for (int intento = 1; intento <= intentosMaximos; intento++) {
-//					responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto);
-//				}
-//			}
-
-			// si es rechazar
 		} else if (tipoEstatus.equals("rechazar")) {
 
 			// Seteamos datos de la solicitud de envio

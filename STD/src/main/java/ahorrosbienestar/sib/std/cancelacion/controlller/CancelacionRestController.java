@@ -68,28 +68,24 @@ public class CancelacionRestController {
 
 		// Obtenemos el usuario logueado
 		Usuario usuario = usuarioService.findByNombre(auth.getName());
-
-		// Crear Fecha
+		
+		// Hora
 		Date diaActual = new Date();
-
-		// Formato para hora
 		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-		// Hora actual
 		String hora = formatoHora.format(diaActual);
-
-		// Formato fecha
-		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
-
-		// Fecha actual
-		String fecha = formatoFecha.format(diaActual);
-		Date fechaActual = formatoFecha.parse(fecha);
-		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		// Fecha
+		LocalDate fechaLocal = LocalDate.now();
 
 		// Cancelamos la solicitud envio
 		SolicitudEnvio model = solicitudEnvioService.obtenerSolicitudEnvio(envioID);
 		model.setI_estatus(ESTATUS_CANCELAR_MANUAL);
-		logger.info(ESTATUS_CANCELAR_MANUAL);
 		model.setVc_obser_cancelacion(motivo);
+		
+		logger.info(fechaLocal);
+		
+		model.setDt_fecha_cancelacion(fechaLocal);
+		model.setVc_hora_cancelacion(hora);
 		model.setFk_usr_cancela(usuario);
 		solicitudEnvioService.save(model);
 
@@ -117,23 +113,14 @@ public class CancelacionRestController {
 		// Obtenemos el usuario logueado
 		Usuario usuario = usuarioService.findByNombre(auth.getName());
 
-		// Fecha actual
+		// Hora
 		Date diaActual = new Date();
-
-		// Formato para hora
 		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-
-		// Hora actual
 		String hora = formatoHora.format(diaActual);
 		Date horaActual = formatoHora.parse(hora);
-
-		// Formato fecha
-		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
-
-		// Fecha actual
-		String fecha = formatoFecha.format(diaActual);
-		Date fechaActual = formatoFecha.parse(fecha);
-		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		// Fecha
+		LocalDate fechaLocal = LocalDate.now();
 
 		// Listas de solicitudes de envío con los estatus de Nivel de sistema y WS
 		List<SolicitudEnvio> listaNS = new ArrayList<SolicitudEnvio>();
@@ -169,6 +156,7 @@ public class CancelacionRestController {
 					// Cancelamos la solicitud envio
 					model.setI_estatus(ESTATUS_CANCELAR_AUTO);
 					model.setVc_obser_cancelacion("Cancelación por proceso automático.");
+					model.setDt_fecha_cancelacion(fechaLocal);
 					model.setFk_usr_cancela(usuario);
 					solicitudEnvioService.save(model);
 
@@ -220,6 +208,7 @@ public class CancelacionRestController {
 					model.setI_estatus(ESTATUS_CANCELAR_AUTO);
 					model.setVc_obser_cancelacion("Cancelación por proceso automático.");
 					model.setFk_usr_cancela(usuario);
+					model.setVc_hora_cancelacion(hora);
 					solicitudEnvioService.save(model);
 
 					// Cancelamos los doct envio
