@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
 import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.histo_notificacion.model.HistoricoNotificacion;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoricoNotificacionService;
@@ -26,6 +27,7 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import org.apache.log4j.Logger;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -53,6 +55,8 @@ public class CancelacionRestController {
 	private UsuarioService usuarioService;
 	@Autowired
 	private HistoricoNotificacionService historicoNotificacionService;
+	
+	private static final Logger logger = Logger.getLogger(CancelacionRestController.class);
 
 	// Método que cancela de manera manual
 	@RequestMapping(value = { "/cancelar_solicitud_envio" }, method = RequestMethod.GET)
@@ -84,6 +88,7 @@ public class CancelacionRestController {
 		// Cancelamos la solicitud envio
 		SolicitudEnvio model = solicitudEnvioService.obtenerSolicitudEnvio(envioID);
 		model.setI_estatus(ESTATUS_CANCELAR_MANUAL);
+		logger.info(ESTATUS_CANCELAR_MANUAL);
 		model.setVc_obser_cancelacion(motivo);
 		model.setFk_usr_cancela(usuario);
 		solicitudEnvioService.save(model);
