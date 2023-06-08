@@ -79,6 +79,8 @@ public class CoreBancarioService {
 						p.setTelefonoCelular(rs.getString(5));
 						p.setCorreoElectronico(rs.getString(6));
 						p.setDireccionCompleta(rs.getString(7));
+						p.setEstado(rs.getString(8));
+						p.setDireccion(rs.getString(9));
 						return p;
 					}
 				});

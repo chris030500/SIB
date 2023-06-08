@@ -76,12 +76,12 @@ public class CrearXmlService {
 			logger.info("CORE: " + solicitudCore);
 			// Obtenemos los datos de los participantes:
 			List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
+			List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
 			String nombre = titular.get(0).getNombreCompleto();
 			String direccion = titular.get(0).getDireccionCompleta();
 			String telefonoCelular = titular.get(0).getTelefonoCelular();
 			String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
 			logger.info("Dirección: " + direccion);
-			List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
 			String monto = datosSolicitud.get(0).getMontoAutorizado();
 			String plazo = datosSolicitud.get(0).getPlazo();
 			String tasa = datosSolicitud.get(0).getTasaFija();
