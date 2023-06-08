@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import java.text.DecimalFormat;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -66,377 +67,284 @@ public class CrearXmlService {
 
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
-	
+
 	private static final Logger logger = Logger.getLogger(CrearXmlService.class);
 
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
 
+		// Obtenemos los datos de los participantes:
+		List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
+		List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
+		List<Configuracion> configuracion = configService.findAll();
+		if (!titular.isEmpty() && !datosSolicitud.isEmpty() && !configuracion.isEmpty()) {
+			try {
+				logger.info("CORE: " + solicitudCore);
 
-		try {
-			logger.info("CORE: " + solicitudCore);
-			// Obtenemos los datos de los participantes:
-			List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
-			String nombre = titular.get(0).getNombreCompleto();
-			String direccion = titular.get(0).getDireccionCompleta();
-			String telefonoCelular = titular.get(0).getTelefonoCelular();
-			String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
-			logger.info("Dirección: " + direccion);
-			List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
-			String monto = datosSolicitud.get(0).getMontoAutorizado();
-			String plazo = datosSolicitud.get(0).getPlazo();
-			String tasa = datosSolicitud.get(0).getTasaFija();
-			String tasaMoratoria = datosSolicitud.get(0).getTasaMoratoria();
+				DecimalFormat fMonto = new DecimalFormat("###,###,###.00");
 
-			// Obtenemos el I_PRODUCTO_ID
-			int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
-			logger.info("IdPorducto: " + idProducto);
-			Producto infoProducto = productoService.findByNoProducto(idProducto);
-			logger.info("infoProducto: " + infoProducto);
-			String nombreProducto = infoProducto.getVc_nombre_producto().toString();
-			String kyc = infoProducto.getVc_identificador_kyc().toString();
-			String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
-			// Le asignamos los parametros que se requieren
-			// int solicitudEnvio = 91;
-			// String nombre = "JOSE ARTURO DE LA ROSA FUENTES";
-//			String monto = "158101.56";
-//			String plazo = "38 MESES";
-//			String tasa = "9.0000";
+				DecimalFormat ftasas = new DecimalFormat("##.00");
+				String nombre = titular.get(0).getNombreCompleto();
+				String direccionCompleta = titular.get(0).getDireccionCompleta();
+				String telefonoCelular = titular.get(0).getTelefonoCelular();
+				String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
+				String estado = titular.get(0).getEstado();
+				String direccion = titular.get(0).getDireccion();
+				logger.info("Dirección: " + direccion);
 
-			int totalPersonasFirma = titular.size();
+				String monto = fMonto.format(Double.parseDouble(datosSolicitud.get(0).getMontoAutorizado()));
+				monto = "$ " + monto.trim();
+				String plazo = datosSolicitud.get(0).getPlazo();
+				String tasa = ftasas.format(Double.parseDouble(datosSolicitud.get(0).getTasaFija()));
+				tasa = tasa.trim() + " %";
+				String tasaMoratoria = ftasas.format(Double.parseDouble(datosSolicitud.get(0).getTasaMoratoria()));
+				tasaMoratoria = tasaMoratoria.trim() + " %";
 
-			List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio, 1);
-			String ruta = documentos.get(0).getVc_ruta_docto();
-			logger.info("ruta de documentos: " + ruta);
+				// Obtenemos el I_PRODUCTO_ID
+				int idProducto = solicitudEnvioService.findById(solicitudEnvio).get().getI_producto_id();
+				logger.info("IdPorducto: " + idProducto);
+				Producto infoProducto = productoService.findByNoProducto(idProducto);
+				logger.info("infoProducto: " + infoProducto);
+				String nombreProducto = infoProducto.getVc_nombre_producto().toString();
+				String kyc = infoProducto.getVc_identificador_kyc().toString();
+				String descripcionProducto = infoProducto.getVc_descripcion_producto().toString();
 
-			String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
+				List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService
+						.obtenerInfoCoordenadas(solicitudEnvio, 1);
+				String ruta = documentos.get(0).getVc_ruta_docto();
+				logger.info("ruta de documentos: " + ruta);
 
-			logger.info("RutaFinal: " + rutaArchivoFinal);
-			String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
-			String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
+				String rutaArchivoFinal = unirArchivosService.eliminarUltimaPalabra(ruta);
 
-			// Obtenemos la leyenda del firmante.
-			String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
+				logger.info("RutaFinal: " + rutaArchivoFinal);
+				String rutaBase = configService.findAll().get(13).getVc_valor_propiedad().toString();
+				String nombreArchivoXML = configService.findAll().get(44).getVc_valor_propiedad().toString();
 
-			List<Configuracion> configuracion = configService.findAll();
+				// Obtenemos la leyenda del firmante.
+				String mensaje = configService.findAll().get(21).getVc_valor_propiedad().toString();
 
-			// logger.info("entro en if variable1");
-			// String[] words = mensaje.split("variable");
+				// Asignamos los nuevos parametros.
 
-			// Asignamos los nuevos parametros.
-			String nuevoMensaje = mensaje.replace("$variable1", direccion).replace("$variable2", nombre)
-					.replace("$variable3", "$" + monto).replace("$variable4", plazo).replace("$variable5", tasa + "%")
-					.replace("$variable6", tasaMoratoria + "%");
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			// Elemento raíz
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("requisition");
-			doc.appendChild(rootElement);
-			// Primer elemento
+				String nuevoMensaje = mensaje.replace("$variable1", estado).replace("$variable2", direccion)
+						.replace("$variable3", nombre).replace("$variable4", monto).replace("$variable5", plazo)
+						.replace("$variable6", tasa).replace("$variable7", tasaMoratoria);
+				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+				// Elemento raíz
+				Document doc = docBuilder.newDocument();
+				Element rootElement = doc.createElement("requisition");
+				doc.appendChild(rootElement);
 
-//			Element localizationNotRequired = doc
-//					.createElement(configService.findAll().get(45).getVc_nom_propiedad().toString());
-//			Element localizationNotRequired = doc.createElement(configuracion.get(45).getVc_nom_propiedad().toString());
-//			localizationNotRequired.setTextContent(configuracion.get(45).getVc_valor_propiedad().toString());
-//			rootElement.appendChild(localizationNotRequired);
+				Element contractName = doc.createElement(configuracion.get(34).getVc_nom_propiedad().toString());
+				// Nombre del documento a firmar
+				contractName.setTextContent(configuracion.get(34).getVc_valor_propiedad().toString());
+				rootElement.appendChild(contractName);
 
-			Element contractName = doc.createElement(configuracion.get(34).getVc_nom_propiedad().toString());
-			// Nombre del documento a firmar
-			contractName.setTextContent(configuracion.get(34).getVc_valor_propiedad().toString());
-			rootElement.appendChild(contractName);
-			
+				Element acceptanceLegend = doc.createElement(configuracion.get(21).getVc_nom_propiedad().toString());
+				acceptanceLegend.setTextContent(nuevoMensaje); // Leyenda que se obtiene de base de datos.
+				rootElement.appendChild(acceptanceLegend);
 
-			Element acceptanceLegend = doc.createElement(configuracion.get(21).getVc_nom_propiedad().toString());
-			acceptanceLegend.setTextContent(nuevoMensaje); // Leyenda que se obtiene de base de datos.
-			rootElement.appendChild(acceptanceLegend);
-			
-			Element idDocument = doc.createElement("idDocument");
-			// Nombre del documento a firmar
-			idDocument.setTextContent(solicitudEnvio.toString());
-			rootElement.appendChild(idDocument);
+				Element idDocument = doc.createElement("idDocument");
+				// Nombre del documento a firmar
+				idDocument.setTextContent(solicitudEnvio.toString());
+				rootElement.appendChild(idDocument);
 
-			Element validity = doc.createElement("validity");
-			// Procedimiento almacenado para obtener los días de vigencia
-			validity.setTextContent(validityXmlService.spValidityNat(solicitudEnvio));
-			//validity.setTextContent("1");
-			rootElement.appendChild(validity);
+				Element validity = doc.createElement("validity");
+				// Procedimiento almacenado para obtener los días de vigencia
+				validity.setTextContent(validityXmlService.spValidityNat(solicitudEnvio));
+				// validity.setTextContent("1");
+				rootElement.appendChild(validity);
 
-			// Tipo de contrat, se obtine de bd
-			Element contractType = doc.createElement(configuracion.get(19).getVc_nom_propiedad().toString());
-			contractType.setTextContent(configuracion.get(19).getVc_valor_propiedad().toString());
-			rootElement.appendChild(contractType);
+				// Tipo de contrat, se obtine de bd
+				Element contractType = doc.createElement(configuracion.get(19).getVc_nom_propiedad().toString());
+				contractType.setTextContent(configuracion.get(19).getVc_valor_propiedad().toString());
+				rootElement.appendChild(contractType);
 
-			// useWhatsAppTemplate
-//			Element useWhatsAppTemplate = doc.createElement(configuracion.get(46).getVc_nom_propiedad().toString());
-//			useWhatsAppTemplate.setTextContent(configuracion.get(46).getVc_valor_propiedad().toString());
-//			rootElement.appendChild(useWhatsAppTemplate);
+				// Obtenemos el id del documento unificado para buscar las coordenadas
+				Optional<DoctoUnificado> doctoUnificado = doctoUnificadoService.findByFkIdSolicituEnvio(solicitudEnvio);
+				int idDoctUnificado = doctoUnificado.get().getPk_id_docto_unificado();
+				logger.info("FirmaDoctUni: " + idDoctUnificado);
+				// Obtenemos la información de la ultima pagina para el certificado.
 
-			// Obtenemos el id del documento unificado para buscar las coordenadas
-			Optional<DoctoUnificado> doctoUnificado = doctoUnificadoService.findByFkIdSolicituEnvio(solicitudEnvio);
-			int idDoctUnificado = doctoUnificado.get().getPk_id_docto_unificado();
-			logger.info("FirmaDoctUni: " + idDoctUnificado);
-			// Obtenemos la información de la ultima pagina para el certificado.
+				List<FirmaDoctoUnificado> fDoctoUnificado = firmaDoctoUnificadoService
+						.obtenerCoordenadasFirma(idDoctUnificado);
+				int tamanoList = firmaDoctoUnificadoService.obtenerCoordenadasFirma(idDoctUnificado).size();
 
-			List<FirmaDoctoUnificado> fDoctoUnificado = firmaDoctoUnificadoService
-					.obtenerCoordenadasFirma(idDoctUnificado);
-			int tamanoList = firmaDoctoUnificadoService.obtenerCoordenadasFirma(idDoctUnificado).size();
+				logger.info("Tamaño list: " + tamanoList);
 
-			logger.info("Tamaño list: " + tamanoList);
+				logger.info("Obtener los datos de la ultima pagina: "
+						+ fDoctoUnificado.get(tamanoList - 1).getPk_id_firma_docto_unificado());
 
-			logger.info("Obtener los datos de la ultima pagina: "
-					+ fDoctoUnificado.get(tamanoList - 1).getPk_id_firma_docto_unificado());
+				int noPage = fDoctoUnificado.get(tamanoList - 1).getI_no_hoja();
+				float x1Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_x1();
+				float x2Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_x2();
+				float y1Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_y1();
+				float y2Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_y2();
+				
+				Element certificate = doc.createElement("certificate");
+				rootElement.appendChild(certificate);
 
-			int noPage = fDoctoUnificado.get(tamanoList - 1).getI_no_hoja();
-			float x1Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_x1();
-			float x2Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_x2();
-			float y1Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_y1();
-			float y2Certificate = fDoctoUnificado.get(tamanoList - 1).getF_coord_firma_y2();
-//			float xCentralCertificate = fDoctoUnificado.get(tamañoList-1).getF_coord_firma_xCentral();
-//			float yCentralCertificate = fDoctoUnificado.get(tamañoList-1).getF_coord_firma_yCentral();
+				Element pageCertificate = doc.createElement("page");
+				pageCertificate.setTextContent(String.valueOf(noPage)); // Obtenemos la última posición del documento
+				certificate.appendChild(pageCertificate);
 
-			Element certificate = doc.createElement("certificate");
-			rootElement.appendChild(certificate);
+				Element positionX1Certificate = doc.createElement("positionX1");
+				positionX1Certificate.setTextContent(String.valueOf(x1Certificate)); // Obtener centro del documento bd
+				certificate.appendChild(positionX1Certificate);
 
-			Element pageCertificate = doc.createElement("page");
-			pageCertificate.setTextContent(String.valueOf(noPage)); // Obtenemos la última posición del documento
-			certificate.appendChild(pageCertificate);
+				Element positionX2Certificate = doc.createElement("positionX2");
+				positionX2Certificate.setTextContent(String.valueOf(x2Certificate)); // Obtener centro del documento bd
+				certificate.appendChild(positionX2Certificate);
 
-			Element positionX1Certificate = doc.createElement("positionX1");
-			positionX1Certificate.setTextContent(String.valueOf(x1Certificate)); // Obtener centro del documento bd
-			certificate.appendChild(positionX1Certificate);
+				// Obtenemos centro del documento bd
+				Element positionY1Certificate = doc.createElement("positionY1");
+				positionY1Certificate.setTextContent(String.valueOf(y1Certificate));
+				certificate.appendChild(positionY1Certificate);
 
-			Element positionX2Certificate = doc.createElement("positionX2");
-			positionX2Certificate.setTextContent(String.valueOf(x2Certificate)); // Obtener centro del documento bd
-			certificate.appendChild(positionX2Certificate);
+				// Obtenemos centro del documento bd
+				Element positionY2Certificate = doc.createElement("positionY2");
+				positionY2Certificate.setTextContent(String.valueOf(y2Certificate));
+				certificate.appendChild(positionY2Certificate);
 
-			// Obtenemos centro del documento bd
-			Element positionY1Certificate = doc.createElement("positionY1");
-			positionY1Certificate.setTextContent(String.valueOf(y1Certificate));
-			certificate.appendChild(positionY1Certificate);
+				// Agregar foreach para traer los participantes.
+				Element signers = doc.createElement("signers");
+				rootElement.appendChild(signers);
 
-			// Obtenemos centro del documento bd
-			Element positionY2Certificate = doc.createElement("positionY2");
-			positionY2Certificate.setTextContent(String.valueOf(y2Certificate));
-			certificate.appendChild(positionY2Certificate);
+				Element signerName = doc.createElement("signerName");
+				signerName.setTextContent(nombre);
+				// signerName.setTextContent("Osvaldo Escamilla");
+				signers.appendChild(signerName);
 
-			// logger.info("fDoctoUnificado: " +
-			// fDoctoUnificado.get(i).getPk_id_firma_docto_unificado());
-			// Agregar foreach para traer los participantes.
-			Element signers = doc.createElement("signers");
-			rootElement.appendChild(signers);
+				Element mailSigner = doc.createElement("mail");
+				mailSigner.setTextContent(correoParticipanteTitular);
+				signers.appendChild(mailSigner);
 
-			Element signerName = doc.createElement("signerName");
-			signerName.setTextContent(nombre);
-			//signerName.setTextContent("Osvaldo Escamilla");
-			signers.appendChild(signerName);
+				Element phoneSigner = doc.createElement("phone");
+				phoneSigner.setTextContent("+52" + telefonoCelular);
+				signers.appendChild(phoneSigner);
 
-			Element mailSigner = doc.createElement("mail");
-			mailSigner.setTextContent(correoParticipanteTitular);
-			//mailSigner.setTextContent("oescamilla@ahorrosbienestar.com");
-			//mailSigner.setTextContent("conchitafrida@gmail.com");
-			signers.appendChild(mailSigner);
+				Element signDevicePhoneSigner = doc.createElement("signDevicePhone");
+				signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
 
-			Element phoneSigner = doc.createElement("phone");
-			phoneSigner.setTextContent("+52" + telefonoCelular);
-			//phoneSigner.setTextContent("+524428971930");
-			//phoneSigner.setTextContent("+524422723677");
-			signers.appendChild(phoneSigner);
+				signers.appendChild(signDevicePhoneSigner);
 
-			Element signDevicePhoneSigner = doc.createElement("signDevicePhone");
-			signDevicePhoneSigner.setTextContent("+52" + telefonoCelular);
-			//signDevicePhoneSigner.setTextContent("+524428971930");
-			//signDevicePhoneSigner.setTextContent("+524422723677");
-			signers.appendChild(signDevicePhoneSigner);
+				Element authenticationType = doc.createElement("authenticationType");
+				authenticationType.setTextContent("Código de seguridad");
+				signers.appendChild(authenticationType);
 
-			Element authenticationType = doc.createElement("authenticationType");
-			authenticationType.setTextContent("Código de seguridad");
-			signers.appendChild(authenticationType);
+				Element authenticationData = doc.createElement("authenticationData");
+				authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
 
-			Element authenticationData = doc.createElement("authenticationData");
-			authenticationData.setTextContent(codigoSeguridad(telefonoCelular, 4));
-			//authenticationData.setTextContent("1930");
-			//authenticationData.setTextContent("3677");
-			signers.appendChild(authenticationData);
+				signers.appendChild(authenticationData);
 
-			Element orderSigner = doc.createElement("order");
-			orderSigner.setTextContent(String.valueOf(1));
-			signers.appendChild(orderSigner);
+				Element orderSigner = doc.createElement("order");
+				orderSigner.setTextContent(String.valueOf(1));
+				signers.appendChild(orderSigner);
 
-			for (int i = 0; i < tamanoList; i++) {
+				for (int i = 0; i < tamanoList; i++) {
 
-				if ((tamanoList - 1) != i) {
+					if ((tamanoList - 1) != i) {
 
-					Element signaturesSigner = doc.createElement("signatures");
-					signers.appendChild(signaturesSigner);
+						Element signaturesSigner = doc.createElement("signatures");
+						signers.appendChild(signaturesSigner);
 
-					// Centro X de las coordenadas para el espació de firma.
-					Element centerXSigner = doc.createElement("centerX");
-					centerXSigner.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_xCentral()));
-					signaturesSigner.appendChild(centerXSigner);
+						// Centro X de las coordenadas para el espació de firma.
+						Element centerXSigner = doc.createElement("centerX");
+						centerXSigner
+								.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_xCentral()));
+						signaturesSigner.appendChild(centerXSigner);
 
-					// Centro Y de las coordenadas para el espació de firma.
-					Element centerYSigner = doc.createElement("centerY");
-					centerYSigner.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_yCentral()));
-					signaturesSigner.appendChild(centerYSigner);
+						// Centro Y de las coordenadas para el espació de firma.
+						Element centerYSigner = doc.createElement("centerY");
+						centerYSigner
+								.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_yCentral()));
+						signaturesSigner.appendChild(centerYSigner);
 
-					// Página donde va a solicitar el espacio de firma.
-					Element pageSigner = doc.createElement("page");
-					pageSigner.setTextContent(String.valueOf(fDoctoUnificado.get(i).getI_no_hoja()));
-					signaturesSigner.appendChild(pageSigner);
+						// Página donde va a solicitar el espacio de firma.
+						Element pageSigner = doc.createElement("page");
+						pageSigner.setTextContent(String.valueOf(fDoctoUnificado.get(i).getI_no_hoja()));
+						signaturesSigner.appendChild(pageSigner);
 
-					// Posicion x1 del espacio de firma.
-					Element positionX1 = doc.createElement("positionX1");
-					positionX1.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_x1()));
-					signaturesSigner.appendChild(positionX1);
+						// Posicion x1 del espacio de firma.
+						Element positionX1 = doc.createElement("positionX1");
+						positionX1.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_x1()));
+						signaturesSigner.appendChild(positionX1);
 
-					// Posicion x2 del espacio de firma
-					Element positionX2 = doc.createElement("positionX2");
-					positionX2.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_x2()));
-					signaturesSigner.appendChild(positionX2);
+						// Posicion x2 del espacio de firma
+						Element positionX2 = doc.createElement("positionX2");
+						positionX2.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_x2()));
+						signaturesSigner.appendChild(positionX2);
 
-					// Posicion Y1 del espacio de firma
-					Element positionY1 = doc.createElement("positionY1");
-					positionY1.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_y1()));
-					signaturesSigner.appendChild(positionY1);
+						// Posicion Y1 del espacio de firma
+						Element positionY1 = doc.createElement("positionY1");
+						positionY1.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_y1()));
+						signaturesSigner.appendChild(positionY1);
 
-					// Posicion Y2 del espacio de firma
-					Element positionY2 = doc.createElement("positionY2");
-					positionY2.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_y2()));
-					signaturesSigner.appendChild(positionY2);
+						// Posicion Y2 del espacio de firma
+						Element positionY2 = doc.createElement("positionY2");
+						positionY2.setTextContent(String.valueOf(fDoctoUnificado.get(i).getF_coord_firma_y2()));
+						signaturesSigner.appendChild(positionY2);
 
-					// Obtenemos el valor desde BD
-					Element signerType = doc.createElement(configuracion.get(20).getVc_nom_propiedad().toString());
-					signerType.setTextContent(configuracion.get(20).getVc_valor_propiedad().toString());
-					signaturesSigner.appendChild(signerType);
+						// Obtenemos el valor desde BD
+						Element signerType = doc.createElement(configuracion.get(20).getVc_nom_propiedad().toString());
+						signerType.setTextContent(configuracion.get(20).getVc_valor_propiedad().toString());
+						signaturesSigner.appendChild(signerType);
 
+					}
 				}
+
+
+				Element extraInfo = doc.createElement("extraInfo");
+				rootElement.appendChild(extraInfo);
+
+				// KYC
+				Element extraInfoProperty = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+				extraInfoProperty.setTextContent(kyc);
+				extraInfo.appendChild(extraInfoProperty);
+
+				Attr attr = doc.createAttribute("name");
+				attr.setValue("surveysProductId");
+				extraInfoProperty.setAttributeNode(attr);
+
+				// Nombre del producto
+				Element extraInfoProperty2 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+				extraInfoProperty2.setTextContent(nombreProducto);
+				extraInfo.appendChild(extraInfoProperty2);
+
+				Attr attr2 = doc.createAttribute("name");
+				attr2.setValue("productName");
+				extraInfoProperty2.setAttributeNode(attr2);
+
+				// Descripción del producto
+				Element extraInfoProperty3 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
+				extraInfoProperty3.setTextContent(descripcionProducto);
+				extraInfo.appendChild(extraInfoProperty3);
+
+				Attr attr3 = doc.createAttribute("name");
+				attr3.setValue("productDescription");
+				extraInfoProperty3.setAttributeNode(attr3);
+
+				doc.setXmlStandalone(true);
+				// Se escribe el contenido del XML en un archivo
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+				DOMSource source = new DOMSource(doc);
+				logger.info("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
+				StreamResult result = new StreamResult(new File(rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
+				transformer.transform(source, result);
+				return "1";
+			} catch (ParserConfigurationException pce) {
+				// pce.printStackTrace();
+				return pce.getMessage();
+			} catch (TransformerException tfe) {
+				// tfe.printStackTrace();
+				return tfe.getMessage();
 			}
-
-//			Element inePictureFront = doc.createElement(configuracion.get(23).getVc_nom_propiedad().toString());
-//			inePictureFront.setTextContent(configuracion.get(23).getVc_valor_propiedad().toString());
-//			signers.appendChild(inePictureFront);
-//
-//			Element inePictureBack = doc.createElement(configuracion.get(24).getVc_nom_propiedad().toString());
-//			inePictureBack.setTextContent(configuracion.get(24).getVc_valor_propiedad().toString());
-//			signers.appendChild(inePictureBack);
-//
-//			Element compareIneSelfie = doc.createElement(configuracion.get(25).getVc_nom_propiedad().toString());
-//			compareIneSelfie.setTextContent(configuracion.get(25).getVc_valor_propiedad().toString());
-//			signers.appendChild(compareIneSelfie);
-
-			// minCompareDocSelfie
-//			Element minCompareDocSelfie = doc.createElement(configuracion.get(47).getVc_nom_propiedad().toString());
-//			minCompareDocSelfie.setTextContent(configuracion.get(47).getVc_valor_propiedad().toString());
-//			signers.appendChild(minCompareDocSelfie);
-//
-//			Element compareSelfieProof = doc.createElement(configuracion.get(26).getVc_nom_propiedad().toString());
-//			compareSelfieProof.setTextContent(configuracion.get(26).getVc_valor_propiedad().toString());
-//			signers.appendChild(compareSelfieProof);
-
-//			Element urlSignerRedirect = doc
-//					.createElement(configService.findAll().get(27).getVc_nom_propiedad().toString());
-//			urlSignerRedirect.setTextContent(configService.findAll().get(27).getVc_valor_propiedad().toString());
-//			signers.appendChild(urlSignerRedirect);
-
-//			Element idType = doc.createElement(configuracion.get(28).getVc_nom_propiedad().toString());
-//			idType.setTextContent(configuracion.get(28).getVc_valor_propiedad().toString());
-//			signers.appendChild(idType);
-
-			// acceptanceVideoNotRequired
-//			Element acceptanceVideoNotRequired = doc
-//					.createElement(configuracion.get(22).getVc_nom_propiedad().toString());
-//			acceptanceVideoNotRequired.setTextContent(configuracion.get(22).getVc_valor_propiedad());
-//			rootElement.appendChild(acceptanceVideoNotRequired);
-
-			// signOnWeb
-//			Element signOnWeb = doc.createElement(configService.findAll().get(29).getVc_nom_propiedad().toString());
-//			signOnWeb.setTextContent(configService.findAll().get(29).getVc_valor_propiedad());
-//			rootElement.appendChild(signOnWeb);
-
-			// isShortPath
-//			Element isShortPath = doc.createElement(configuracion.get(30).getVc_nom_propiedad().toString());
-//			isShortPath.setTextContent(configuracion.get(30).getVc_valor_propiedad().toString());
-//			rootElement.appendChild(isShortPath);
-//
-//			// shortPad
-//			Element shortPad = doc.createElement(configuracion.get(31).getVc_nom_propiedad().toString());
-//			shortPad.setTextContent(configuracion.get(31).getVc_valor_propiedad().toString());
-//			rootElement.appendChild(shortPad);
-
-//			// processId
-//			Element processId = doc.createElement("processId");
-//			processId.setTextContent(solicitudEnvio.toString()); // Obtenemos el valor de la solicitud
-//			rootElement.appendChild(processId);
-
-			// processType
-//			Element processType = doc.createElement(configuracion.get(32).getVc_nom_propiedad().toString());
-//			processType.setTextContent(configuracion.get(32).getVc_valor_propiedad().toString());
-//			rootElement.appendChild(processType);
-//
-//			Element mailResend = doc.createElement("mailResend");
-//			rootElement.appendChild(mailResend);
-
-//			Element emailResend = doc.createElement("email");
-//			// Correo del deudor
-//			emailResend.setTextContent("oescamilla@ahorrosbienestar.com");
-//			mailResend.appendChild(emailResend);
-
-			Element extraInfo = doc.createElement("extraInfo");
-			rootElement.appendChild(extraInfo);
-
-			// KYC
-			Element extraInfoProperty = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			// extraInfoProperty.setTextContent("bf50f041-ef6e-406b-9121-bc23f5176c17");
-			extraInfoProperty.setTextContent(kyc);
-			extraInfo.appendChild(extraInfoProperty);
-
-			Attr attr = doc.createAttribute("name");
-			attr.setValue("surveysProductId");
-			extraInfoProperty.setAttributeNode(attr);
-
-			// Nombre del producto
-			Element extraInfoProperty2 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			// extraInfoProperty2.setTextContent("Pensionados digital");
-			extraInfoProperty2.setTextContent(nombreProducto);
-			extraInfo.appendChild(extraInfoProperty2);
-
-			Attr attr2 = doc.createAttribute("name");
-			attr2.setValue("productName");
-			extraInfoProperty2.setAttributeNode(attr2);
-
-			// Descripción del producto
-			Element extraInfoProperty3 = doc.createElement(configuracion.get(33).getVc_nom_propiedad().toString());
-			// extraInfoProperty3.setTextContent("Descripcion corta del producto");
-			extraInfoProperty3.setTextContent(descripcionProducto);
-			extraInfo.appendChild(extraInfoProperty3);
-
-			Attr attr3 = doc.createAttribute("name");
-			attr3.setValue("productDescription");
-			extraInfoProperty3.setAttributeNode(attr3);
-
-			doc.setXmlStandalone(true);
-			// Se escribe el contenido del XML en un archivo
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-			DOMSource source = new DOMSource(doc);
-//			StreamResult result = new StreamResult(
-//					new File("C:/Users/osvaldo.escamilla/Documents/home/CoordFirma/documentoFinal.xml"));
-			logger.info("URL XML: " + (rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
-			StreamResult result = new StreamResult(new File(rutaBase + rutaArchivoFinal + "/" + nombreArchivoXML));
-			transformer.transform(source, result);
-			return "1";
-		} catch (ParserConfigurationException pce) {
-			// pce.printStackTrace();
-			return pce.getMessage();
-		} catch (TransformerException tfe) {
-			// tfe.printStackTrace();
-			return tfe.getMessage();
 		}
 
-		// return ResponseEntity.notFound().build();
+		return "0";
 	}
 
 	public static String codigoSeguridad(String telefono, int cantidadQuitarNum) {

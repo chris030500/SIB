@@ -9,6 +9,8 @@ public class ParticipantesDto {
 	private String telefonoCelular;
 	private String correoElectronico;
 	private String direccionCompleta;
+	private String estado;
+	private String direccion;
 	
 	public int getSolicitudCreditoID() {
 		return solicitudCreditoID;
@@ -52,6 +54,19 @@ public class ParticipantesDto {
 	public void setDireccionCompleta(String direccionCompleta) {
 		this.direccionCompleta = direccionCompleta;
 	}
+	public String getEstado() {
+		return estado;
+	}
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+	public String getDireccion() {
+		return direccion;
+	}
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
+	
 	
 	
 	
