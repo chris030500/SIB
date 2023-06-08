@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
 import ahorrosbienestar.sib.std.docto_envio.service.DoctEnvioService;
 import ahorrosbienestar.sib.std.histo_notificacion.model.HistoricoNotificacion;
 import ahorrosbienestar.sib.std.histo_notificacion.service.HistoricoNotificacionService;
