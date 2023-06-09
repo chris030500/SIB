@@ -528,7 +528,7 @@ function autenticacion(banderaAutenticacion) {
 	});
 }
 
-function autenticacion(banderaAutenticacion, dto) {
+/*function autenticacion(banderaAutenticacion, dto) {
 	$.ajax({
 		async: false,
 		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
@@ -554,7 +554,7 @@ function autenticacion(banderaAutenticacion, dto) {
 			});
 		}
 	});
-}
+}*/
 
 function WS_IAD() {
 	var ws1 = "";
@@ -629,7 +629,7 @@ function conexionApi(usuario, password, userType, banderaAutenticacion) {
 					recuperarUrl(token);
 				} else if (banderaAutenticacion == 2) {
 					// recuperamos la url de requisitionFile
-					obtenerUrlRequisitionFile(token);
+					//obtenerUrlRequisitionFile(token);
 				}
 
 			}
@@ -699,7 +699,7 @@ function conexionApi(usuario, password, userType, banderaAutenticacion, dto) {
 					recuperarUrl(token);
 				} else if (banderaAutenticacion == 2) {
 					// recuperamos la url de requisitionFile
-					obtenerUrlRequisitionFile(dto, token);
+					//obtenerUrlRequisitionFile(dto, token);
 				}
 
 			}
@@ -915,40 +915,38 @@ function wsDescargaZip(token, credenciales) {
 	
 		console.log("respuesta wsDescargaZip" + JSON.stringify(response));*/
 
-		setTimeout(function() {
-			if (response.status == 200) {
-				const respuesta = {
-					success: true,
-					error: null,
-					code: null,
-				}
-
-				// Si la respuesta es true
-				resultadoLogin = true;
-				// 7mo paso, guardamos la autenticacion de la descarga
-				guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
-				// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
-				actualizarSolicitud(guardarObservaciones, guardarTipo);
-
-				banderaAutenticacion = 2;
-				// 9no paso, mandamos a llamar el metodo autenticacion para realizar requisitionFiles
-				autenticacion(banderaAutenticacion, dto);
-				//obtenerUrlRequisitionFile();
-			} else {
-				const respuesta = {
-					success: false,
-					error: "No se pudo realizar la descarga del archivo",
-					code: null,
-				}
-
-				// Si la respuesta es true
-				resultadoLogin = true;
-				// 7mo paso, guardamos la autenticacion de la descarga
-				guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
-				// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
-				actualizarSolicitud(guardarObservaciones, guardarTipo);
+		if (response.status == 200) {
+			const respuesta = {
+				success: true,
+				error: null,
+				code: null,
 			}
-		}, 3500);
+
+			// Si la respuesta es true
+			resultadoLogin = true;
+			// 7mo paso, guardamos la autenticacion de la descarga
+			guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+			// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
+			actualizarSolicitud(guardarObservaciones, guardarTipo);
+
+			banderaAutenticacion = 2;
+			// 9no paso, mandamos a llamar el metodo autenticacion para realizar requisitionFiles
+			//autenticacion(banderaAutenticacion, dto);
+			//obtenerUrlRequisitionFile();
+		} else {
+			const respuesta = {
+				success: false,
+				error: "No se pudo realizar la descarga del archivo",
+				code: null,
+			}
+
+			// Si la respuesta es true
+			resultadoLogin = true;
+			// 7mo paso, guardamos la autenticacion de la descarga
+			guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+			// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
+			actualizarSolicitud(guardarObservaciones, guardarTipo);
+		}
 	});
 }
 

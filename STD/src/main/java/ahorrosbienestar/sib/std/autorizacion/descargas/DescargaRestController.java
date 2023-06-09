@@ -116,9 +116,9 @@ public class DescargaRestController {
 			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
 
 			// Definimos los parámetros de espera
-			int intentosMaximos = 4;
-			//int tiempoEspera = 30000; // 30 segundos
-			int tiempoEspera = 27000; // 45 segundos
+			int intentosMaximos = 3;
+			int tiempoEspera = 30000; // 30 segundos
+			//int tiempoEspera = 27000; // 45 segundos
 
 			// Realizamos los intentos para encontrar el archivo
 			for (int intento = 1; intento <= intentosMaximos; intento++) {
@@ -436,11 +436,11 @@ public class DescargaRestController {
 			//
 			File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
 			logger.info("carpetaEnvio : " + carpetaEnvio);
-			File[] archivosEnvio = carpetaEnvio.listFiles();
+			//File[] archivosEnvio = carpetaEnvio.listFiles();
 			//
 			File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
 			logger.info("carpetaVideo : " + carpetaVideo);
-			File[] archivosVideo = carpetaVideo.listFiles();
+			//File[] archivosVideo = carpetaVideo.listFiles();
 
 			String carpetaFinal = carpetaVideo + "\\" + clienteId + "\\" + clienteId + "-" + solicitud + "-"
 					+ identificador;
@@ -466,7 +466,7 @@ public class DescargaRestController {
 						logger.info("origen move: " + origen);
 						logger.info("destino move: " + destino);
 						Files.move(origen, destino);
-						archivos(archivoZip, solicitudEnvio, clienteId, destino);
+						//archivos(archivoZip, solicitudEnvio, clienteId, destino);
 						String zipDestino = (carpetaVideograbación.getAbsolutePath()).toString();
 
 						logger.info("zipDestino: " + zipDestino);
@@ -594,96 +594,5 @@ public class DescargaRestController {
 			logger.error(e);
 		}
 	}
-
-//	public void guardarDoctoVideo(Integer solicitudEnvio, String ruta) throws java.text.ParseException {
-//		try {
-//			SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
-//			logger.info("Entro en guardarDoctoVideo");
-//			logger.info("ruta: " + ruta);
-//
-//			// Verificar si ya existe un objeto DoctoVideoModel con el mismo identificador
-//			DoctoVideoModel existingModel = doctoVideoService.findByIdentificador(solicitudEnvio);
-//			// Obtener la fecha actual como un objeto java.util.Date
-//			Date fechaActual = new Date();
-//			Instant instant = fechaActual.toInstant();
-//			LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-//			if (existingModel != null) {
-//				logger.info("existingModel");
-//				// Actualizar el objeto existente en lugar de crear uno nuevo
-//				existingModel.setDt_fecha_envio(localDate);
-//				existingModel.setVc_ruta_docto(ruta);
-//				existingModel.setI_estatus(1);
-//				existingModel.setFk_solicitud_envio(soEnvio);
-//				doctoVideoService.save(existingModel);
-//			} else {
-//				// Crear un nuevo objeto DoctoVideoModel
-//				logger.info("newModel");
-//				DoctoVideoModel newModel = new DoctoVideoModel();
-//				newModel.setDt_fecha_envio(localDate);
-//				newModel.setVc_ruta_docto(ruta);
-//				newModel.setI_estatus(1);
-//				newModel.setFk_solicitud_envio(soEnvio);
-//				doctoVideoService.save(newModel);
-//			}
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			logger.error(e);
-//		}
-//
-//	}
-
-//	public void guardarDoctoVideo(SolicitudEnvio soEnvio, String ruta, String nombreArchivo) throws java.text.ParseException {
-//	    logger.info("soEnvio: " + soEnvio);
-//	    if (soEnvio != null) {
-//	        // Verificar si ya existe un DoctoVideoModel con el mismo identificador
-//	        DoctoVideoModel existingModel = doctoVideoService.findBySolicitudEnvio(soEnvio);
-//	        if (existingModel != null) {
-//	            // Actualizar el modelo existente en lugar de crear uno nuevo
-//	            existingModel.setVc_ruta_docto(ruta + "\\" + nombreArchivo);
-//	            existingModel.setDt_fecha_envio(LocalDate.now());
-//	            doctoVideoService.save(existingModel);
-//	            logger.info("Actualizado doctoVideoService");
-//	        } else {
-//	            // Crear un nuevo modelo si no existe uno con el mismo identificador
-//	            DoctoVideoModel model = new DoctoVideoModel();
-//	            model.setDt_fecha_envio(LocalDate.now());
-//	            model.setVc_ruta_docto(ruta + "\\" + nombreArchivo);
-//	            model.setI_estatus(1);
-//	            model.setFk_solicitud_envio(soEnvio);
-//	            doctoVideoService.save(model);
-//	            logger.info("Guardado doctoVideoService");
-//	        }
-//	    } else {
-//	        // Manejar el caso cuando no se encuentra la solicitud de envío
-//	        logger.info("soEnvio es null");
-//	    }
-//	}
-
-//	public void guardarDoctoVideo(SolicitudEnvio soEnvio, String ruta, String nombreArchivo) throws java.text.ParseException {
-//	    logger.info("soEnvio: " + soEnvio);
-//	    if (soEnvio != null) {
-//	        DoctoVideoModel model = new DoctoVideoModel();
-//	        String rutaCompleta = ruta + "\\" + nombreArchivo;
-//	        logger.info("ruta: " + rutaCompleta);
-//
-//	        // Fecha de registro
-//	        // Obtener la fecha actual como un objeto java.util.Date
-//	        Date fechaActual = new Date();
-//	        // Convertir el objeto java.util.Date a un objeto java.time.Instant
-//	        Instant instant = fechaActual.toInstant();
-//	        // Crear un objeto java.time.LocalDate usando el objeto java.time.Instant
-//	        LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-//
-//	        model.setDt_fecha_envio(localDate);
-//	        model.setVc_ruta_docto(rutaCompleta);
-//	        model.setI_estatus(1);
-//	        model.setFk_solicitud_envio(soEnvio);
-//	        doctoVideoService.save(model);
-//	        logger.info("Guardo doctoVideoService");
-//	    } else {
-//	        // Manejar el caso cuando no se encuentra la solicitud de envío
-//	    	logger.info("soEnvio es null");
-//	    }
-//	}
 
 }
