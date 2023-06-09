@@ -399,17 +399,20 @@ public class DescargaRestController {
 		InputStreamReader isr = new InputStreamReader(is);
 		Gson gson = new Gson();
 		JsonObject json = gson.fromJson(isr, JsonObject.class);
-		String address = removerAcentosPalabra(json.get("display_name").getAsString());
-		logger.info("Dirección: " + address);
+		//String address = removerAcentosPalabra(json.get("display_name").getAsString());
+		//logger.info("Dirección: " + address);
 		JsonObject objetoDireccion = json.getAsJsonObject("address");
+		
+		
 		logger.info("Estado: " + objetoDireccion.get("state").getAsString());
 
 		// clave del estado
 		String clave = claveDeEstado(objetoDireccion.get("state").getAsString());
-
+		String road = new StringBuilder().append(objetoDireccion.get("road").getAsString()).append(" ").append(objetoDireccion.get("neighbourhood").getAsString()).append(" ").append(objetoDireccion.get("postcode").getAsString()).append(" ").append(objetoDireccion.get("county").getAsString()).append(" ").append(objetoDireccion.get("city").getAsString()).toString();
+		logger.info("Direccion: " + road);
 		llenarDTO.setTypeDevice(typeDevice);
 		llenarDTO.setRegistrationDataTime(formattedDateTime);
-		llenarDTO.setAddressGeolocation(address);
+		llenarDTO.setAddressGeolocation(road);
 		llenarDTO.setOperation(operation);
 		llenarDTO.setTypeOperation(typeOperation);
 		llenarDTO.setIp(ip);

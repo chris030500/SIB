@@ -218,7 +218,7 @@ public class AutorizacionRestController {
 			Gson gson = new Gson();
 
 			final String JSONEntrada = gson.toJson(respuestaDTO);
-
+			logger.info(JSONEntrada);
 			HttpEntity<GeolocalizacionDTO> request = new HttpEntity<>(respuestaDTO, headers);
 
 			ConsumirServicioResponse respon = restTemplate.postForObject(urlGeo.getVc_valor_propiedad(), request,
@@ -285,8 +285,8 @@ public class AutorizacionRestController {
 		model.setFk_id_conf_ws(catConfWS);
 		model.setFk_id_solicitud_envio(solicitudModel);
 		model.setFk_usr_solicita(usu);
-		logger.info(model);
 		bitacoraConsumoService.save(model);
+		logger.info("Geolocalización terminada");
 		return HttpStatus.OK;
 	}
 
