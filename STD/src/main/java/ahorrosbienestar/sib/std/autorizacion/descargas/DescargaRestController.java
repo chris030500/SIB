@@ -9,50 +9,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.swing.JFileChooser;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
-import com.fasterxml.jackson.core.JsonParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import ahorrosbienestar.sib.std.autorizacion.descargas.bitacora_zip.model.BitacoraZipModel;
 import ahorrosbienestar.sib.std.autorizacion.descargas.bitacora_zip.service.BitacoraZipService;
 import ahorrosbienestar.sib.std.autorizacion.descargas.docto_video.model.DoctoVideoModel;
 import ahorrosbienestar.sib.std.autorizacion.descargas.docto_video.service.DoctoVideoService;
-import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
+import ahorrosbienestar.sib.std.autorizacion.descargas.dto.DatosDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
-
 import org.apache.log4j.Logger;
 import lombok.AllArgsConstructor;
 
@@ -78,7 +68,10 @@ public class DescargaRestController {
 	private final static String operation = "Nueva disposición";
 	private final static String typeOperation = "2";
 	private final static String ip = "0.0.0.0";
-	private final static String typeProduct = "C";
+	private final static String typeProduct = "A";
+	private final static String idProduct = "2";
+
+	private Map<String, String> estadosRepublica = new HashMap<String, String>();
 
 	// Variable ruta temporal windows
 	private final static int RUTA_TEMPORAL_WS = 51;
@@ -105,12 +98,12 @@ public class DescargaRestController {
 	 * @throws ParseException
 	 * @throws java.text.ParseException
 	 */
-	public GeolocalizacionDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado,
-			String nameProducto, String solicitud) throws IOException, ParseException, java.text.ParseException {
+	public DatosDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado, String nameProducto,
+			String solicitud, Integer idWSAutenticacion) throws IOException, ParseException, java.text.ParseException {
 
 		try {
-			GeolocalizacionDTO respuestaDTO = new GeolocalizacionDTO();
-			GeolocalizacionDTO coordenadasDTO = new GeolocalizacionDTO();
+			DatosDTO respuestaDTO = new DatosDTO();
+			DatosDTO coordenadasDTO = new DatosDTO();
 
 			// Obtenemos la ruta temporal
 			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
@@ -178,9 +171,11 @@ public class DescargaRestController {
 					coordenadasDTO.setCustomerNumber(clienteId.toString());
 					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
 					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
-					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
+					coordenadasDTO.setIdProduct(idProduct);
 					coordenadasDTO.setAccessSystem(nameProducto);
 					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
+					respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
+					respuestaDTO.setSolicitudEnvio(solicitudEnvio);
 					return respuestaDTO;
 				}
 
@@ -326,9 +321,9 @@ public class DescargaRestController {
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("resource")
-	public GeolocalizacionDTO extaerJSON(String filePath) throws IOException, ParseException {
+	public DatosDTO extaerJSON(String filePath) throws IOException, ParseException {
 
-		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
+		DatosDTO responseDTO = new DatosDTO();
 
 		// Ruta del archivo ZIP
 		String zipFilePath = filePath;
@@ -384,7 +379,9 @@ public class DescargaRestController {
 		return responseDTO;
 	}
 
-	public GeolocalizacionDTO llenarGeolocalizacionDTO(GeolocalizacionDTO llenarDTO) throws IOException {
+
+	public DatosDTO llenarGeolocalizacionDTO(DatosDTO llenarDTO) throws IOException {
+
 
 		// Obtenemos la ruta temporal linux
 		Configuracion rutaDirecciones = configService.obtenerConfiguracion(RUTA_DIRECCIONES);
@@ -402,9 +399,13 @@ public class DescargaRestController {
 		InputStreamReader isr = new InputStreamReader(is);
 		Gson gson = new Gson();
 		JsonObject json = gson.fromJson(isr, JsonObject.class);
-		String address = json.get("display_name").getAsString();
+		String address = removerAcentosPalabra(json.get("display_name").getAsString());
 		logger.info("Dirección: " + address);
-		// System.out.println("Dirección: " + address);
+		JsonObject objetoDireccion = json.getAsJsonObject("address");
+		logger.info("Estado: " + objetoDireccion.get("state").getAsString());
+
+		// clave del estado
+		String clave = claveDeEstado(objetoDireccion.get("state").getAsString());
 
 		llenarDTO.setTypeDevice(typeDevice);
 		llenarDTO.setRegistrationDataTime(formattedDateTime);
@@ -413,9 +414,67 @@ public class DescargaRestController {
 		llenarDTO.setTypeOperation(typeOperation);
 		llenarDTO.setIp(ip);
 		llenarDTO.setTypeProduct(typeProduct);
-		llenarDTO.setIdState("22");
+		llenarDTO.setIdState(clave);
 		return llenarDTO;
 	}
+
+
+	public static String removerAcentosPalabra(String valor) {
+		// Cadena de caracteres original a sustituir.
+		String original = "áàäéèëíìïóòöúùuÁÀÄÉÈËÍÌÏÓÒÖÚÙÜçÇ";
+		// Cadena de caracteres ASCII que reemplazarán los originales.
+		String ascii = "aaaeeeiiiooouuuAAAEEEIIIOOOUUUcC";
+		String output = valor;
+		for (int i = 0; i < original.length(); i++) {
+			// Reemplazamos los caracteres especiales.
+			output = output.replace(original.charAt(i), ascii.charAt(i));
+		} // for i
+		return output;
+	}
+
+	public String claveDeEstado(String estado) {
+
+		// Creación de un objeto utilizando el constructor
+		estadosRepublica.put("Aguascalientes", "01");
+		estadosRepublica.put("Baja California", "02");
+		estadosRepublica.put("Baja California Sur", "03");
+		estadosRepublica.put("Campeche", "04");
+		estadosRepublica.put("Coahuila", "05");
+		estadosRepublica.put("Colima", "06");
+		estadosRepublica.put("Chiapas", "07");
+		estadosRepublica.put("Chihuahua", "08");
+		estadosRepublica.put("Ciudad de México", "09");
+		estadosRepublica.put("Durango", "10");
+		estadosRepublica.put("Guanajuato", "11");
+		estadosRepublica.put("Guerrero", "12");
+		estadosRepublica.put("Hidalgo", "13");
+		estadosRepublica.put("Jalisco", "14");
+		estadosRepublica.put("México", "15");
+		estadosRepublica.put("Michoacán", "16");
+		estadosRepublica.put("Morelos", "17");
+		estadosRepublica.put("Nayarit", "18");
+		estadosRepublica.put("Nuevo León", "19");
+		estadosRepublica.put("Oaxaca", "20");
+		estadosRepublica.put("Puebla", "21");
+		estadosRepublica.put("Querétaro", "22");
+		estadosRepublica.put("Quintana Roo", "23");
+		estadosRepublica.put("San Luis Potosí", "24");
+		estadosRepublica.put("Sinaloa", "25");
+		estadosRepublica.put("Sonora", "26");
+		estadosRepublica.put("Tabasco", "27");
+		estadosRepublica.put("Tamaulipas", "28");
+		estadosRepublica.put("Tlaxcala", "29");
+		estadosRepublica.put("Veracruz", "30");
+		estadosRepublica.put("Yucatán", "31");
+		estadosRepublica.put("Zacatecas", "32");
+
+		if (estadosRepublica.containsKey(estado)) {
+			return estadosRepublica.get(estado);
+		}
+
+		return "0";
+	}
+
 
 
 	public void extraerArchivos(File archivoZip, Integer solicitudEnvio, String solicitud, Integer clienteId)
@@ -436,11 +495,11 @@ public class DescargaRestController {
 			//
 			File carpetaEnvio = new File(rutaWindows.getVc_valor_propiedad());
 			logger.info("carpetaEnvio : " + carpetaEnvio);
-			//File[] archivosEnvio = carpetaEnvio.listFiles();
+			File[] archivosEnvio = carpetaEnvio.listFiles();
 			//
 			File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
 			logger.info("carpetaVideo : " + carpetaVideo);
-			//File[] archivosVideo = carpetaVideo.listFiles();
+			File[] archivosVideo = carpetaVideo.listFiles();
 
 			String carpetaFinal = carpetaVideo + "\\" + clienteId + "\\" + clienteId + "-" + solicitud + "-"
 					+ identificador;
@@ -466,7 +525,7 @@ public class DescargaRestController {
 						logger.info("origen move: " + origen);
 						logger.info("destino move: " + destino);
 						Files.move(origen, destino);
-						//archivos(archivoZip, solicitudEnvio, clienteId, destino);
+						archivos(archivoZip, solicitudEnvio, clienteId, destino);
 						String zipDestino = (carpetaVideograbación.getAbsolutePath()).toString();
 
 						logger.info("zipDestino: " + zipDestino);
@@ -594,5 +653,6 @@ public class DescargaRestController {
 			logger.error(e);
 		}
 	}
+
 
 }

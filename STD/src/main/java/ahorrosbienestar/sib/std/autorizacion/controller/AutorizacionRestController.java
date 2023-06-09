@@ -1,26 +1,30 @@
 package ahorrosbienestar.sib.std.autorizacion.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.Gson;
+
 import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
+import ahorrosbienestar.sib.std.autorizacion.descargas.dto.DatosDTO;
 import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -32,12 +36,22 @@ import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import lombok.AllArgsConstructor;
+import ahorrosbienestar.sib.std.autorizacion.respuesta.ConsumirServicioResponse;
+import ahorrosbienestar.sib.std.config_ws.bitacora_consumo.model.BitacoraConsumo;
+import ahorrosbienestar.sib.std.config_ws.bitacora_consumo.service.BitacoraConsumoService;
+import ahorrosbienestar.sib.std.config_ws.cat_conf_ws.model.CatConfWS;
+import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutenticacionUser;
+import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.service.WSAutenticacionUserService;
+
 import org.apache.log4j.Logger;
 
 @CrossOrigin
 @RestController
 @AllArgsConstructor
 public class AutorizacionRestController {
+
+	// variable proceso origen
+	private final static String PROCESO_ORIGEN = "GEOLOCALIZACIÓN";
 
 	// variable estatus de autorizar
 	private final static int ESTATUS_AUTORIZAR = 6;
@@ -67,18 +81,25 @@ public class AutorizacionRestController {
 	@Autowired
 	private ConfigService configService;
 
+	@Autowired
+	private WSAutenticacionUserService wsAutenticacionUserService;
+
+	@Autowired
+	private BitacoraConsumoService bitacoraConsumoService;
+
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
 
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)
-	public GeolocalizacionDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
+	public DatosDTO cambiarEstatusSolicitud(@RequestParam("tipoEstatus") String tipoEstatus,
 			@RequestParam("envioID") Integer envioID, @RequestParam("clienteID") Integer clienteID,
 			@RequestParam("montoAutorizado") Float montoAutorizado, @RequestParam("producto") String producto,
-			@RequestParam("observaciones") String observaciones, @RequestParam("solicitud") String solicitud)
+			@RequestParam("observaciones") String observaciones, @RequestParam("solicitud") String solicitud,
+			@RequestParam("idWSAutenticacion") Integer idWSAutenticacion)
 			throws ParseException, IOException, org.json.simple.parser.ParseException {
 
 		//
-		GeolocalizacionDTO responseDTO = new GeolocalizacionDTO();
+		DatosDTO responseDTO = new DatosDTO();
 
 		// Autentificación para obtener el nombre del usuario logueado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -86,22 +107,13 @@ public class AutorizacionRestController {
 		// Obtenemos el usuario logueado
 		Usuario usuario = usuarioService.findByNombre(auth.getName());
 
-		// Crear Fecha
+		// Hora
 		Date diaActual = new Date();
-
-		// Formato fecha
-		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
-
-		// Fecha actual
-		String fecha = formatoFecha.format(diaActual);
-		Date fechaActual = formatoFecha.parse(fecha);
-		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		// Formato para hora
 		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-
-		// Hora actual
 		String horaActual = formatoHora.format(diaActual);
+		
+		// Fecha
+		LocalDate fechaLocal = LocalDate.now();
 
 		// Solicitud envio
 		SolicitudEnvio solicitudEnvio = solicitudEnvioService.obtenerSolicitudEnvio(envioID);
@@ -109,7 +121,7 @@ public class AutorizacionRestController {
 		// si es autorizar
 		if (tipoEstatus.equals("autorizar")) {
 
-			responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto, solicitud);
+			responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto, solicitud, idWSAutenticacion);
 			logger.info("responseDTO: " + responseDTO);
 
 			if (responseDTO != null) {
@@ -127,18 +139,6 @@ public class AutorizacionRestController {
 				});
 			}
 
-			// Definimos los parámetros de espera
-//			int intentosMaximos = 3;
-//			int tiempoEspera = 2000; // 2 segundos
-//			// int tiempoEspera = 120000; // 2 minutos
-//			if(responseDTO == null) {
-//				// Realizamos los intentos para encontrar el archivo
-//				for (int intento = 1; intento <= intentosMaximos; intento++) {
-//					responseDTO = descargaRestController.guardarDocto(envioID, clienteID, montoAutorizado, producto);
-//				}
-//			}
-
-			// si es rechazar
 		} else if (tipoEstatus.equals("rechazar")) {
 
 			// Seteamos datos de la solicitud de envio
@@ -184,70 +184,110 @@ public class AutorizacionRestController {
 		historicoNotificacionService.save(model);
 	}
 
-//	@RequestMapping(value = { "/api_geo" }, method = RequestMethod.GET)
-//	public CredencialesGeoDTO apiGeolocalizacion() {
-//		CredencialesGeoDTO respuestaDTO = new CredencialesGeoDTO();
-//		Configuracion url = configService.obtenerConfiguracion(ID_GEOLOCALIZACION);
-//		Configuracion autentificacion = configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
-//		respuestaDTO.setUrl(url.getVc_valor_propiedad());
-//		respuestaDTO.setAutentificacion(autentificacion.getVc_valor_propiedad());
-//		return respuestaDTO;
-//	}
-
 	@RequestMapping(value = { "/api_geo" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void llamarApiGeolocalizacion(GeolocalizacionDTO geolocalizacionDTO) {
-		
-		Configuracion urlGeo = configService.obtenerConfiguracion(ID_GEOLOCALIZACION);
-		Configuracion autentificacionGeo = configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
-		
-        try {
-            // URL de destino
-            URL url = new URL(urlGeo.getVc_valor_propiedad());
+	public HttpStatus llamarApiGeolocalizacion(@RequestBody DatosDTO datosDTO) throws ParseException {
 
-            // Abrir conexión
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		try {
 
-            // Configurar método POST
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
+			GeolocalizacionDTO respuestaDTO = new GeolocalizacionDTO();
+			respuestaDTO.setCustomerNumber(datosDTO.getCustomerNumber());
+			respuestaDTO.setNumberProvisions(datosDTO.getNumberProvisions());
+			respuestaDTO.setOperationAmount(datosDTO.getOperationAmount());
+			respuestaDTO.setTypeDevice(datosDTO.getTypeDevice());
+			respuestaDTO.setRegistrationDataTime(datosDTO.getRegistrationDataTime());
+			respuestaDTO.setLatitude(datosDTO.getLatitude());
+			respuestaDTO.setLongitude(datosDTO.getLongitude());
+			respuestaDTO.setAddressGeolocation(datosDTO.getAddressGeolocation());
+			respuestaDTO.setOperation(datosDTO.getOperation());
+			respuestaDTO.setTypeOperation(datosDTO.getTypeOperation());
+			respuestaDTO.setIp(datosDTO.getIp());
+			respuestaDTO.setTypeProduct(datosDTO.getTypeProduct());
+			respuestaDTO.setIdProduct(datosDTO.getIdProduct());
+			respuestaDTO.setIdState(datosDTO.getIdState());
+			respuestaDTO.setAccessSystem(datosDTO.getAccessSystem());
 
-            // Datos a enviar en el cuerpo de la solicitud (en formato JSON)
-            String jsonData = geolocalizacionDTO.toString();
+			Configuracion urlGeo = configService.obtenerConfiguracion(ID_GEOLOCALIZACION);
+			Configuracion autentificacionGeo = configService.obtenerConfiguracion(AUTENTIFICAION_GEOLOCALIZACION);
 
-            // Establecer el tipo de contenido del cuerpo de la solicitud como application/json
-            connection.setRequestProperty("Content-Type", "application/json");
+			RestTemplate restTemplate = new RestTemplate();
 
-            // Agregar encabezados personalizados si es necesario
-            connection.setRequestProperty("autentificacion", autentificacionGeo.getVc_valor_propiedad());
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("autentificacion", autentificacionGeo.getVc_valor_propiedad());
+			headers.set("Content-Type", "application/json");
 
-            // Escribir los datos en el cuerpo de la solicitud
-            logger.info(connection);
-            OutputStream outputStream = connection.getOutputStream();
-            logger.info(outputStream);
-            outputStream.write(jsonData.getBytes());
-            outputStream.flush();
-            outputStream.close();
+			Gson gson = new Gson();
 
-            // Obtener la respuesta
-            int responseCode = connection.getResponseCode();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            StringBuilder response = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            
-            reader.close();
+			final String JSONEntrada = gson.toJson(respuestaDTO);
 
-            // Mostrar la respuesta
-            logger.info("Response Code: " + responseCode);
-            logger.info("Response Body: " + response.toString());
-            
-        } catch (Exception e) {
-            //e.printStackTrace();
-        	logger.info(e);
-        }
-		
+			HttpEntity<GeolocalizacionDTO> request = new HttpEntity<>(respuestaDTO, headers);
+
+			ConsumirServicioResponse respon = restTemplate.postForObject(urlGeo.getVc_valor_propiedad(), request,
+					ConsumirServicioResponse.class);
+
+			final String JSONSalida = gson.toJson(respon);
+
+			bitacoraGeolocalizacion(JSONEntrada, JSONSalida, datosDTO.getIdWSAutenticacion(), datosDTO.getSolicitudEnvio());
+
+			return HttpStatus.OK;
+
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+			bitacoraGeolocalizacion(e.getMessage(), e.getMessage(), datosDTO.getIdWSAutenticacion(), datosDTO.getSolicitudEnvio());
+			return HttpStatus.BAD_REQUEST;
+		}
+
+	}
+
+	public HttpStatus bitacoraGeolocalizacion(String jsonEntrada, String jsonSalida, Integer autenticacionUser, Integer solicitudEnvio) throws ParseException {
+
+		// Autentificación para obtener el nombre del usuario logueado
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		// Obtenemos el nombre del usuario autentificado
+		Usuario usu = usuarioService.findByNombre(auth.getName());
+
+		// Buscamos wsAutenticacionUser
+		WSAutenticacionUser wsAutenticacionUser = wsAutenticacionUserService.findeById(autenticacionUser).get();
+
+		// Buscamos wsRespuestaAutenticacion
+		CatConfWS catConfWS = wsAutenticacionUser.getFk_id_conf_ws();
+
+		// Buscamos la solicitud envio
+		SolicitudEnvio solicitudModel = solicitudEnvioService.findById(solicitudEnvio).get();
+
+		// Crear Fecha
+		Date diaActual = new Date();
+
+		// Formato fecha
+		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
+
+		// Fecha actual
+		String fecha = formatoFecha.format(diaActual);
+		Date fechaActual = formatoFecha.parse(fecha);
+		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		// Formato para hora
+		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+
+		// Hora actual
+		String horaActual = formatoHora.format(diaActual);
+
+		// -------------------------- Inicia el guardado de informacion
+		// -------------------------- //
+		BitacoraConsumo model = new BitacoraConsumo();
+		model.setDt_fecha_solicitud(fechaLocal);
+		model.setVc_hora_solicitud(horaActual);
+		model.setVc_json_envio(jsonEntrada);
+		model.setVc_json_respuesta(jsonSalida);
+		model.setVc_resultado_consumo(jsonSalida);
+		model.setVc_tp_proceso_origen(PROCESO_ORIGEN);
+		model.setFk_id_autenticacion_usr(wsAutenticacionUser);
+		model.setFk_id_conf_ws(catConfWS);
+		model.setFk_id_solicitud_envio(solicitudModel);
+		model.setFk_usr_solicita(usu);
+		logger.info(model);
+		bitacoraConsumoService.save(model);
+		return HttpStatus.OK;
 	}
 
 }
