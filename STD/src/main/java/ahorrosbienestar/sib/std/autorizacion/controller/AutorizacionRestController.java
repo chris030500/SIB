@@ -265,6 +265,7 @@ public class AutorizacionRestController {
 
 		// -------------------------- Inicia el guardado de informacion
 		// -------------------------- //
+		logger.info("Guardando la bitacora");
 		BitacoraConsumo model = new BitacoraConsumo();
 		model.setDt_fecha_solicitud(fechaLocal);
 		model.setVc_hora_solicitud(horaActual);
