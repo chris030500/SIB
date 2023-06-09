@@ -528,7 +528,6 @@ public class DescargaRestController {
 						logger.info("origen move: " + origen);
 						logger.info("destino move: " + destino);
 						Files.move(origen, destino);
-						archivos(archivoZip, solicitudEnvio, clienteId, destino);
 						String zipDestino = (carpetaVideograbación.getAbsolutePath()).toString();
 
 						logger.info("zipDestino: " + zipDestino);
