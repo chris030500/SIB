@@ -255,22 +255,13 @@ public class AutorizacionRestController {
 		// Buscamos la solicitud envio
 		SolicitudEnvio solicitudModel = solicitudEnvioService.findById(solicitudEnvio).get();
 
-		// Crear Fecha
+		// Hora
 		Date diaActual = new Date();
-
-		// Formato fecha
-		SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy/mm/dd");
-
-		// Fecha actual
-		String fecha = formatoFecha.format(diaActual);
-		Date fechaActual = formatoFecha.parse(fecha);
-		LocalDate fechaLocal = fechaActual.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		// Formato para hora
 		SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-
-		// Hora actual
 		String horaActual = formatoHora.format(diaActual);
+		
+		// Fecha
+		LocalDate fechaLocal = LocalDate.now();
 
 		// -------------------------- Inicia el guardado de informacion
 		// -------------------------- //
