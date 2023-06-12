@@ -22,8 +22,8 @@ public class DoctoVideoModel {
 	
 	@Id
 	@Column(name = "PK_ID_DOCTO_VIDEO")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_docto_video1_seq")
-	@SequenceGenerator(name = "tbl_docto_video1_seq", sequenceName = "tbl_docto_video1_seq", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_docto_video_seq")
+	@SequenceGenerator(name = "tbl_docto_video_seq", sequenceName = "tbl_docto_video_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_docto_envio;
 	
 	@Column(name = "DT_FECHA_ENVIO")
@@ -35,10 +35,6 @@ public class DoctoVideoModel {
 	@Column(name = "I_ESTATUS")
 	private int i_estatus;
 	
-	//@OneToMany
-	//@OneToOne
-	//@ManyToOne
-	//@OneToOne
 	@ManyToOne
 	@JoinColumn(name = "FK_SOLICITUD_ENVIO")
 	private SolicitudEnvio fk_solicitud_envio;

@@ -21,6 +21,8 @@ var creditoID;
 
 // Variable | id solicitud de envio
 var seId;
+var confId;
+var wsAutenticacionId;
 
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
@@ -334,8 +336,9 @@ function observacionesSolicitud(tipo) {
 				if (tipo == "rechazar") {
 					actualizarSolicitud(guardarObservaciones, guardarTipo);
 				} else if (tipo == "autorizar") {
+					var banderaAutenticacion = 1;
 					// 1er paso, llamar la autenticacion del provedor (NA-AT)
-					autenticacion();
+					autenticacion(banderaAutenticacion);
 				}
 
 			} else if (observaciones == "") {
@@ -360,10 +363,11 @@ function observacionesSolicitud(tipo) {
 // Función que autoriza la solicitud
 function actualizarSolicitud(observacion, tipo) {
 	var solicitudCore = document.getElementById('solicitud').value;
+	wsAutenticacionId = wsAutenticacionId == 'undefined' ? 0 : wsAutenticacionId;
 	console.log("solicitudCore : " + solicitudCore);
 	$.ajax({
 		url: newUrlBase + "autorizar_la_solicitud?tipoEstatus=" + tipo + "&envioID=" + seId + "&clienteID=" + clienteID + "&montoAutorizado=" + montoAuto + "&producto=" + nameProducto 
-		+ "&observaciones=" + observacion + "&solicitud=" + solicitudCore,
+		+ "&observaciones=" + observacion + "&solicitud=" + solicitudCore + "&idWSAutenticacion=" + wsAutenticacionId,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -374,7 +378,9 @@ function actualizarSolicitud(observacion, tipo) {
 			spinner.style.display = 'none';
 			principal.style.display = 'block';
 
-			//enviarGeolocalizacion(respuesta);
+			if (tipo == "autorizar") {
+				enviarGeolocalizacion(respuesta);	
+			}
 
 			swal("Solicitud actualizada", {
 				closeOnClickOutside: false,
@@ -402,7 +408,7 @@ function actualizarSolicitud(observacion, tipo) {
 
 // Función a conexión con Api SAT
 function enviarGeolocalizacion(dto) {
-	
+
 	console.log(dto);
 
 	var data = JSON.stringify(dto);
@@ -414,11 +420,11 @@ function enviarGeolocalizacion(dto) {
 		dataType: "JSON",
 		contentType: 'application/json',
 		success: function(response) {
-			console.log("enviarGeolocalizacion: " + JSON.stringify(response));
+			console.log("enviarGeolocalizacion " + response);
 			// Manejar la respuesta
 		},
 		error: function(error) {
-			console.log("enviarGeolocalizacion error: " + error);
+			console.log("enviarGeolocalizacion error");
 			// Manejar el error
 		},
 	});
@@ -499,7 +505,7 @@ function regresarMoneda(nombre, valor) {
  */
 
 //Funcion para obtener las credenciales para Autenticarse con el proveedor (NA-AT)
-function autenticacion() {
+function autenticacion(banderaAutenticacion) {
 	$.ajax({
 		async: false,
 		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
@@ -510,7 +516,7 @@ function autenticacion() {
 			var password = respuesta[1];
 			var userType = respuesta[2];
 			// 2do paso, hacer conexión con el api de NA-AT
-			conexionApi(usuario, password, userType);
+			conexionApi(usuario, password, userType, banderaAutenticacion);
 
 		},
 		error: function(respuesta) {
@@ -526,6 +532,34 @@ function autenticacion() {
 		}
 	});
 }
+
+/*function autenticacion(banderaAutenticacion, dto) {
+	$.ajax({
+		async: false,
+		url: newUrlBase + "catConfWs/obtenerParamWSAuten",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var usuario = respuesta[0];
+			var password = respuesta[1];
+			var userType = respuesta[2];
+			// 2do paso, hacer conexión con el api de NA-AT
+			conexionApi(usuario, password, userType, banderaAutenticacion, dto);
+
+		},
+		error: function(respuesta) {
+			// Llamamos a nuestro spinner
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
+
+			swal({
+				icon: "info",
+				title: "Hubo un error con la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}*/
 
 function WS_IAD() {
 	var ws1 = "";
@@ -554,7 +588,7 @@ function WS_IAD() {
 
 
 //Funcion para realizar la autenticacion con el proveedor (NA-AT)
-function conexionApi(usuario, password, userType) {
+function conexionApi(usuario, password, userType, banderaAutenticacion) {
 	// obtenemos la direccion de ws
 	var webService = WS_IAD();
 	var solicitudEnvio = seId;
@@ -570,7 +604,7 @@ function conexionApi(usuario, password, userType) {
 		async: false,
 		url: webService + "/autenticacion/autenticacion?usernameBody=" + usuario + "&passwordBody=" + password +
 			"&grant_typeBody=" + userType,
-		type: "GET",
+		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
 			resultadoLogin = true;
@@ -594,8 +628,85 @@ function conexionApi(usuario, password, userType) {
 				var token = respuesta.access_token;
 				// 3er paso, guardar el proceso de autenticacion a nivel sistema
 				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
-				// 4to paso, recuperar la url de descarga
-				recuperarUrl(token);
+
+				if (banderaAutenticacion == 1) {
+					// 4to paso, recuperar la url de descarga
+					recuperarUrl(token);
+				} else if (banderaAutenticacion == 2) {
+					// recuperamos la url de requisitionFile
+					//obtenerUrlRequisitionFile(token);
+				}
+
+			}
+		},
+		error: function(respuesta) {
+
+			// Llamamos a nuestro spinner
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
+
+			resultadoLogin = false;
+			banderaRespuesta = 0;
+			// 3er paso, guardar el proceso de autenticacion a nivel sistema
+			guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+			swal({
+				icon: "info",
+				title: "Hubo un error con la conexión de la autenticación",
+				showConfirmButton: false
+			});
+		}
+	});
+}
+
+function conexionApi(usuario, password, userType, banderaAutenticacion, dto) {
+	// obtenemos la direccion de ws
+	var webService = WS_IAD();
+	var solicitudEnvio = seId;
+	var resultadoLogin = false;
+	var idConfWS = 1;
+	var username = "username:" + usuario;
+	var password2 = "password:" + password;
+	var grandType = "grandType:" + userType;
+
+	var jsonEnvio = [username, password2, grandType];
+	var banderaRespuesta = 0;
+	$.ajax({
+		async: false,
+		url: webService + "/autenticacion/autenticacion?usernameBody=" + usuario + "&passwordBody=" + password +
+			"&grant_typeBody=" + userType,
+		type: "POST",
+		dataType: "JSON",
+		success: function(respuesta) {
+			resultadoLogin = true;
+
+			console.log("Autenticacion: " + JSON.stringify(respuesta));
+			if (JSON.stringify(respuesta).includes("error")) {
+
+				banderaRespuesta = 0;
+				// 3er paso, guardar el proceso de autenticacion a nivel sistema
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+
+				swal({
+					icon: "info",
+					title: "Hubo un error con la conexión en la autenticación",
+					showConfirmButton: false
+				});
+
+			} else {
+
+				banderaRespuesta = 1;
+				var token = respuesta.access_token;
+				// 3er paso, guardar el proceso de autenticacion a nivel sistema
+				guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta);
+
+				if (banderaAutenticacion == 1) {
+					// 4to paso, recuperar la url de descarga
+					recuperarUrl(token);
+				} else if (banderaAutenticacion == 2) {
+					// recuperamos la url de requisitionFile
+					//obtenerUrlRequisitionFile(dto, token);
+				}
+
 			}
 		},
 		error: function(respuesta) {
@@ -618,7 +729,6 @@ function conexionApi(usuario, password, userType) {
 }
 
 
-
 //Funcion para guardar la Autenticacion
 function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, respuesta, banderaRespuesta) {
 	var datosConexionApi = JSON.stringify(respuesta);
@@ -634,6 +744,8 @@ function guardarWSAuteUsu(resultadoLogin, solicitudEnvio, idConfWS, jsonEnvio, r
 		dataType: "JSON",
 		success: function(respuesta) {
 			var idWSAutenticacion = respuesta.pk_id_ws_autenticacion;
+			wsAutenticacionId = idWSAutenticacion;
+			confId = idConfWS;
 			if (banderaRespuesta == 0) {
 				// 5to paso, guardar la respuesta del proceso de autenticacion a nivel sistema
 				guardarRespAutenticacion(datosConexionApi, token, scope, jti, idWSAutenticacion, solicitudEnvio, banderaRespuesta);
@@ -768,72 +880,163 @@ function recuperarUrl(token) {
 
 // Función principal de la descarga del zip en WS
 function wsDescargaZip(token, credenciales) {
-  var resultadoLogin = false;
-  var idConfWS = 5;
-  var requisision = guardarRequisition;
-  var jsonEnvio = [requisision];
-  var header = "Bearer " + token;
+	var resultadoLogin = false;
+	var idConfWS = 5;
+	var requisision = guardarRequisition;
+	var jsonEnvio = [requisision];
+	var header = "Bearer " + token;
 
-  const dto = {
-    idValidation: requisision
-  }
+	const dto = {
+		idRequisition: requisision
+	}
 
-  var parametros = JSON.stringify(dto);
+	var parametros = JSON.stringify(dto);
 
-  // Mandamos a llamar el servicio de ws
-  axios({
-    url: credenciales, // URL del servidor para descargar el archivo
-    method: 'POST',
-    responseType: 'blob', // Tipo de respuesta esperado
-    data: parametros,
-    headers: {
-      'Authorization': header,
-      'Content-Type': 'application/json'
-    },
-  }).then(response => {
-    const url = window.URL.createObjectURL(new Blob([response.data])); // Crea una URL de objeto a partir de la respuesta
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', seId + "-" + clienteID + '.zip'); // Establece el nombre de archivo de descarga
-    document.body.appendChild(link);
-    link.click(); // Hace clic en el enlace
-    document.body.removeChild(link); // Elimina el enlace del DOM
-    window.URL.revokeObjectURL(url); // Libera recursos de memoria
+	console.log("Parametros: " + parametros);
 
-    /*var urlExacta = url;
 
-    console.log("URL exacta del archivo: " + urlExacta);
+	// Mandamos a llamar el servicio de ws
+	axios({
+		url: credenciales, // URL del servidor para descargar el archivo
+		method: 'POST',
+		responseType: 'blob', // Tipo de respuesta esperado
+		data: parametros,
+		headers: {
+			'Authorization': header,
+			'Content-Type': 'application/json'
+		},
+	}).then(response => {
+		console.log("Response data: " + response.data);
+		const url = window.URL.createObjectURL(new Blob([response.data])); // Crea una URL de objeto a partir de la respuesta
+		const link = document.createElement('a');
+		link.href = url;
+		link.setAttribute('download', seId + "-" + clienteID + '.zip'); // Establece el nombre de archivo de descarga
+		document.body.appendChild(link);
+		link.click(); // Hace clic en el enlace
+		document.body.removeChild(link); // Elimina el enlace del DOM
+		window.URL.revokeObjectURL(url); // Libera recursos de memoria
 
-    console.log("respuesta wsDescargaZip" + JSON.stringify(response));*/
+		/*var urlExacta = url;
+	
+		console.log("URL exacta del archivo: " + urlExacta);
+	
+		console.log("respuesta wsDescargaZip" + JSON.stringify(response));*/
 
-    if (response.status == 200) {
-      const respuesta = {
-        success: true,
-        error: null,
-        code: null,
-      }
+		if (response.status == 200) {
+			const respuesta = {
+				success: true,
+				error: null,
+				code: null,
+			}
 
-      // Si la respuesta es true
-      resultadoLogin = true;
-      // 7mo paso, guardamos la autenticacion de la descarga
-      guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
-      // 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
-      actualizarSolicitud(guardarObservaciones, guardarTipo);
-    } else {
-      const respuesta = {
-        success: false,
-        error: "No se pudo realizar la descarga del archivo",
-        code: null,
-      }
+			// Si la respuesta es true
+			resultadoLogin = true;
+			// 7mo paso, guardamos la autenticacion de la descarga
+			guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+			// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
+			actualizarSolicitud(guardarObservaciones, guardarTipo);
 
-      // Si la respuesta es true
-      resultadoLogin = true;
-      // 7mo paso, guardamos la autenticacion de la descarga
-      guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
-      // 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
-      actualizarSolicitud(guardarObservaciones, guardarTipo);
-    }
-  });
+			banderaAutenticacion = 2;
+			// 9no paso, mandamos a llamar el metodo autenticacion para realizar requisitionFiles
+			//autenticacion(banderaAutenticacion, dto);
+			//obtenerUrlRequisitionFile();
+		} else {
+			const respuesta = {
+				success: false,
+				error: "No se pudo realizar la descarga del archivo",
+				code: null,
+			}
+
+			// Si la respuesta es true
+			resultadoLogin = true;
+			// 7mo paso, guardamos la autenticacion de la descarga
+			guardarWSAuteDescarga(resultadoLogin, idConfWS, jsonEnvio, respuesta);
+			// 8vo paso, mandamos a llamar al metodo de autorizar a nivel sistema
+			actualizarSolicitud(guardarObservaciones, guardarTipo);
+		}
+	});
+}
+
+
+
+function obtenerUrlRequisitionFile(dto, token) {
+	var webService = WS_IAD();
+	console.log("Entro en obtenerUrlRequisitionFile");
+	$.ajax({
+		url: webService + "/ws_url_requisitionFiles",
+		type: "GET",
+		success: function(respuesta) {
+			console.log("url de descarga: " + JSON.stringify(respuesta));
+			var urlRequisition = JSON.stringify(respuesta).replace(/"/g, '');
+
+			// mandamos a llamar el metodo para obtener el JSON del requisitionFiles
+			obtenerRequisitionFile(urlRequisition, dto, token);
+		},
+		error: function(error) {
+
+			// Llamamos a nuestro spinner
+			spinner.style.display = 'none';
+			principal.style.display = 'block';
+
+			swal({
+				icon: "info",
+				title: "Hubo un error al recupear el api",
+				showConfirmButton: false
+			});
+
+		}
+	});
+}
+
+function obtenerRequisitionFile(urlRequisition, dto, token) {
+	console.log("Entro en obtenerRequisitionFile")
+	//var header = "Bearer " + token;
+	var requisitionId = dto.idRequisition;
+	//var requisitionId = "e0f3f4c1-dcc3-4e9a-867d-8b0754f59b8e";
+	var url = urlRequisition + requisitionId;
+	console.log("requisitionId: " + requisitionId);
+	console.log("urlRequisition: " + urlRequisition);
+	console.log("URL: " + urlRequisition + requisitionId);
+	axios.get(url, {
+		headers: {
+			Authorization: "Bearer " + token
+		}
+	})
+		.then(function(response) {
+
+			// La solicitud se completó exitosamente
+			console.log("Respuesta obtenerRequisitionFile: ");
+			var fileNames = response.data.data.files.map(file => file.fileName);
+			console.log("fileNames: " + fileNames);
+
+			var base64Values = response.data.data.files.map(file => file.base64);
+			console.log("base64: " + base64Values);
+
+			response.data.data.files.forEach(file => {
+				descargarArchivo(file.base64, file.fileName);
+			});
+
+		})
+		.catch(function(error) {
+			// Ocurrió un error en la solicitud
+			console.error("Error en la solicitud:", error);
+		});
+}
+
+function descargarArchivo(base64Content, fileName) {
+	// Crear un enlace temporal
+	const nombreArchivo = fileName;
+	const extension = nombreArchivo.split('.').pop();
+	const link = document.createElement('a');
+	link.href = `data:application/octet-stream;base64,${base64Content}`;
+	link.download = seId + "-" + clienteID + "." + extension;
+
+	// Simular un clic en el enlace
+	document.body.appendChild(link);
+	link.click();
+
+	// Eliminar el enlace temporal
+	document.body.removeChild(link);
 }
 
 
@@ -884,7 +1087,7 @@ function guardarRespAutenDescarga(respuestaEnvioSoli, idWSAutenticacion) {
 		type: "POST",
 		dataType: "JSON",
 		success: function(respuesta) {
-			
+
 			var autenUser = idWSAutenticacion;
 			var resAuten = respuesta.pk_id_respuesta_autenticacion_seq;
 			// 10mo paso, guardamos la bitacora del proceso de descarga a nivel sistema
