@@ -33,4 +33,8 @@ public class ArchivosFoliosService {
 		return iArchivosFoliosRepository.findById(idArchivo);
 	}
 
+	public int actualizar(Integer idArchivo) {
+		return iArchivosFoliosRepository.actualizar(idArchivo);
+	}
+
 }

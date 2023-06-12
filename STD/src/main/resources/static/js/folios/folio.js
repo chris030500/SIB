@@ -377,7 +377,7 @@ function obtDtostblAdjuntos(url) {
 				+ ")' id="
 				+ opt.pk_id_archivo
 				+ " >"
-				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
+				+ " <i class='bi bi-file-earmark-pdf-fill'></i></button>";
 			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
@@ -493,7 +493,7 @@ function tblObservacionesLoad() {
 function seleccionoFolio() {
 	var correcto = 0;
 
-	if (folioID != undefined) {
+	if (folioID != undefined && folioID > 0) {
 		document.getElementById("lblSeleccion").style.borderColor = "";
 		correcto = 0;
 	} else {
@@ -580,10 +580,11 @@ function modificarObs() {
 }
 
 function reiniciarDatos() {
+		
 	document.getElementById("idObservacionSelect").value = 0;
 	document.getElementById("idAreaAtencion").value = 0;
 	document.getElementById("idResponsableAtencion").value = 0;
-	document.getElementById("idFechaVencimiento").value = fechaVencimientoObs;
+	document.getElementById("idFechaVencimiento").value = (folioID > 0)?new Date(fechaVencimientoObs.replaceAll("-", "/")).toISOString().substring(0, 10):"";
 	document.getElementById("idObservacion").value = "";
 	document.getElementById("idObservacionSelect").value = "0";
 	document.getElementById("idReasignacion").value = "0";
@@ -650,7 +651,12 @@ function peticionPost(urlServicio, num, numFolio) {
 				} else if (num == 1) {
 					//cargar datos de la tabla de folios
 					document.getElementById("idFolioSelec").value == 0;
+					folioID = 0;
+					tblObservacion.clear().draw();
 					cargarTablaFolios();
+					reiniciarDatos();
+					document.getElementById("lblSeleccion").innerText ="";
+					
 					//window.location.href = getAbsolutePath() + inicio;
 				}
 				setTimeout($.unblockUI, 100);

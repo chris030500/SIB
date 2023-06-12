@@ -250,7 +250,7 @@
 										<div class="col-md-4">
 											<label class="col-form-label"> Fecha de Vencimiento:</label>
 											<input class="form-control" type="date" id="idVencimiento"
-												placeholder="Fecha de Vencimiento" for="vencimientoFolio" min="hoy" onchange="calcularVencimiento(1)">
+												placeholder="Fecha de Vencimiento" for="vencimientoFolio" min="hoy"><!--onchange="calcularVencimiento(1)"-->
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Estatus del Oficio:</label>
@@ -304,6 +304,7 @@
 								</div>
 							</div>
 							<div class="modal-footer">
+								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblCargaAdjunto"></h1>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnGuardarFile">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
