@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -20,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
 import com.google.gson.Gson;
-
 import ahorrosbienestar.sib.std.autorizacion.descargas.DescargaRestController;
 import ahorrosbienestar.sib.std.autorizacion.descargas.dto.DatosDTO;
 import ahorrosbienestar.sib.std.autorizacion.descargas.dto.GeolocalizacionDTO;
@@ -42,7 +39,6 @@ import ahorrosbienestar.sib.std.config_ws.bitacora_consumo.service.BitacoraConsu
 import ahorrosbienestar.sib.std.config_ws.cat_conf_ws.model.CatConfWS;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutenticacionUser;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.service.WSAutenticacionUserService;
-
 import org.apache.log4j.Logger;
 
 @CrossOrigin
