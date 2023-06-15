@@ -1,6 +1,6 @@
 var opcMenu = "opciones/generarMenu";
 $(document).ready(function() {
-	obtenerObservacion();
+	//obtenerObservacion();
 });
 
 function obtenerObservacion() {

@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -14,11 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 @Entity
 @Table(name="TBL_OPCIONES_ROL")
 public class OpcionesMenu {
@@ -50,6 +47,11 @@ public class OpcionesMenu {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_BAJA")
 	private LocalDate dt_fecha_baja;
+	
+	@ManyToOne
+	@JoinColumn(name = "fk_menu")
+	private Menus fk_menu;
+
 
 	public int getPk_id_opcion() {
 		return pk_id_opcion;
@@ -105,5 +107,15 @@ public class OpcionesMenu {
 
 	public void setDt_fecha_baja(LocalDate dt_fecha_baja) {
 		this.dt_fecha_baja = dt_fecha_baja;
+	}
+
+	public Menus getFk_menu() {
+		return fk_menu;
+	}
+
+	public void setFk_menu(Menus fk_menu) {
+		this.fk_menu = fk_menu;
 	}	
+	
+	
 }

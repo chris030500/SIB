@@ -12,11 +12,12 @@ import ahorrosbienestar.sib.std.planAccion.controller.PlanAccionController;
 @Controller
 @RequestMapping("opciones")
 public class OpcionesMenuController {
-	private static final Logger logger = Logger.getLogger(PlanAccionController.class);
+	private static final Logger logger = Logger.getLogger(OpcionesMenuController.class);
 
-	@GetMapping("/generarMenu")
-	public ResponseEntity<?> buscarActividadesPlan(Model model) {
-		System.out.println("Buscando Opciones.....");
-		return null;
-	}
+//	@GetMapping("/generarMenu")
+//	public ResponseEntity<?> buscarActividadesPlan(Model model) {
+//		System.out.println("Buscando Opciones.....");
+//		return null;
+//	}
+	
 }
