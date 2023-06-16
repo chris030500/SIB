@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -32,8 +30,11 @@ public class OpcionesMenu {
 	@Column(name = "VC_NOMBRE_PANTALLA", columnDefinition = "VARCHAR(200)")
 	private String vc_nombre_pantalla;
 	
-	@Column(name = "I_TIPO", columnDefinition = "TINYINT(1)")
-	private int i_tipo;
+	@Column(name = "VC_CONTROLLER", columnDefinition = "VARCHAR(200)")
+	private String vc_controller;
+	
+	@Column(name = "I_NIVEL", columnDefinition = "TINYINT(1)")
+	private int i_nivel;
 	
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
 	private int i_estatus;
@@ -48,25 +49,12 @@ public class OpcionesMenu {
 	@Column(name = "DT_FECHA_BAJA")
 	private LocalDate dt_fecha_baja;
 	
-	@ManyToOne
-	@JoinColumn(name = "fk_menu")
-	private Menus fk_menu;
-
-
 	public int getPk_id_opcion() {
 		return pk_id_opcion;
 	}
 
 	public void setPk_id_opcion(int pk_id_opcion) {
 		this.pk_id_opcion = pk_id_opcion;
-	}
-
-	public int getI_menu() {
-		return i_menu;
-	}
-
-	public void setI_menu(int i_menu) {
-		this.i_menu = i_menu;
 	}
 
 	public String getVc_nombre_pantalla() {
@@ -77,12 +65,12 @@ public class OpcionesMenu {
 		this.vc_nombre_pantalla = vc_nombre_pantalla;
 	}
 
-	public int getI_tipo() {
-		return i_tipo;
+	public int getI_nivel() {
+		return i_nivel;
 	}
 
-	public void setI_tipo(int i_tipo) {
-		this.i_tipo = i_tipo;
+	public void setI_nivel(int i_nivel) {
+		this.i_nivel = i_nivel;
 	}
 
 	public int getI_estatus() {
@@ -109,13 +97,12 @@ public class OpcionesMenu {
 		this.dt_fecha_baja = dt_fecha_baja;
 	}
 
-	public Menus getFk_menu() {
-		return fk_menu;
+	public String getVc_controller() {
+		return vc_controller;
 	}
 
-	public void setFk_menu(Menus fk_menu) {
-		this.fk_menu = fk_menu;
-	}	
-	
+	public void setVc_controller(String vc_controller) {
+		this.vc_controller = vc_controller;
+	}
 	
 }

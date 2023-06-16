@@ -15,6 +15,7 @@ import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
+import ahorrosbienestar.sib.std.core_bancario.dto.MenuSistema;
 
 @Service
 public class CoreBancarioService {
@@ -157,6 +158,32 @@ public class CoreBancarioService {
 		});
 		logger.info("consulta productos captacion: " + lsp);
 		return lsp;
+	}
+	
+	public List<MenuSistema> listaMenu(Integer opcionBusqueda, Integer rol) {
+		
+		try {
+			String sql = "CALL SIB.SP_CONSULTA_MENU (?,?);";
+			List<MenuSistema> ls = jdbcTemplate.query(sql, new Object[] { opcionBusqueda, rol},
+					new RowMapper<MenuSistema>() {
+						public MenuSistema mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							MenuSistema dtosMenu = new MenuSistema();
+							
+							dtosMenu.setPk_id_menu(rs.getInt(1));
+							dtosMenu.setVc_nombre_menu(rs.getString(2));
+							dtosMenu.setPk_id_opcion(rs.getInt(3));
+							dtosMenu.setVc_nombre_pantalla(rs.getString(4));
+							return dtosMenu;
+						}
+					});
+			
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
+		
+	
 	}
 
 }

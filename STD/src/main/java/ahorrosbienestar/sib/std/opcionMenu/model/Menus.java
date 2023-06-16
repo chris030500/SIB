@@ -35,7 +35,7 @@ public class Menus {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
-
+	
 	public int getPk_id_menu() {
 		return pk_id_menu;
 	}

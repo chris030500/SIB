@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
 
@@ -29,6 +30,9 @@ public class RolController {
 
 	
 	private RolService rolService;
+	
+	@Autowired
+	private CoreBancarioService coreBancarioService;
 	
 	private String estatusA = "ACTIVO";
 	private String estatusI = "INACTIVO";
@@ -45,6 +49,9 @@ public class RolController {
 			model.addAttribute("rol", rol);
 			//Mostramos todos los usuarios
 			model.addAttribute("roles", rolService.findAll());
+			
+			model.addAttribute("listaMenu", coreBancarioService.listaMenu(2,0));
+			model.addAttribute("listaOpciones", coreBancarioService.listaMenu(1,0));
 			return "roles/index";
 		}
 	

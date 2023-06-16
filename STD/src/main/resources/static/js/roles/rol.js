@@ -117,6 +117,16 @@ function inicioTabla(){
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
 	});
+	
+	$("#menuRol").DataTable({
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
 }
 
 function inactivarRol(btnID) {
@@ -195,4 +205,7 @@ function populateModalRol(data) {
 	$('#inombreRol').val(nombreRol);
 	inputDescripcion.value = descripcionRol;
 }
-
+/**Relacionar opciones de Menu */
+function consultarOpciones(idRol){
+	console.log(""+idRol);
+}
