@@ -47,8 +47,7 @@ $(document).ready(function() {
 		//document.getElementById("nombreRol").value = "";
 		//document.getElementById("descripcionRol").value = "";
 	});
-	
-	
+		
 	inicioTabla();
 });
 
@@ -209,3 +208,60 @@ function populateModalRol(data) {
 function consultarOpciones(idRol){
 	console.log(""+idRol);
 }
+/**
+ * 
+ */
+
+function checkTodo() {
+	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+}
+
+function limpiarcheck() {
+	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+}
+
+
+function checkOpciones(id){
+	var idTabla = $(id).attr('id');
+	console.log(""+id);
+	if (id.checked) {
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+
+function checkMenu(id){
+	var idTabla = $(id).parents("tr").find("table").attr("id");
+	console.log(""+id);
+	if (id.checked) {
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+
+function checkTodos(id){
+	if (id.checked) {
+		document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+

@@ -158,7 +158,7 @@
 			</div>
 
 			<div class="modal fade" id="rolMenu">
-				<div class="modal-dialog modal-xl modal-dialog-centered">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<div class="modal-header">
 							<h4 class="modal-title" id="lblTitulo">Pantallas por Rol</h4>
@@ -170,7 +170,7 @@
 									<tr>
 										<th>
 											<input type="checkbox" class="custom-control-input" name="" th:value="Todos"
-												th:id="idTodos" />
+												th:id="idTodos" th:onclick="checkTodos(this)"/>
 										</th>
 										<th>Menu</th>
 										<th>Pantallas</th>
@@ -180,17 +180,17 @@
 									<tr th:each="menu: ${listaMenu}">
 										<td>
 											<input type="checkbox" class="custom-control-input" name=""
-												th:value="${menu.pk_id_menu}" th:id="${menu.pk_id_menu}" />
+												th:value="${menu.pk_id_menu}" th:id="'M'+${menu.pk_id_menu}" th:onclick="checkMenu(this)"/>
 										</td>
 										<td th:text="${menu.vc_nombre_menu}"></td>
 										<td>
-											<table class="table table-bordered table-striped" style="width: 50%;"
-												id="opcionesRol">
+											<table class="table table-bordered table-striped" style="width: 100%;"
+												th:id="'O'+${menu.pk_id_menu}">
 												<thead>
 													<tr>
 														<th>
 															<input type="checkbox" class="custom-control-input" name=""
-																th:value="Todos" th:id="idTodosOpciones" />
+																th:onclick="checkOpciones(this)" th:id="'O'+${menu.pk_id_menu}" />
 														</th>
 														<th>Seleccionar pantalla</th>
 													</tr>
@@ -200,7 +200,7 @@
 														th:if="${menu.pk_id_menu == opciones.pk_id_menu}">
 														<td>
 															<input type="checkbox" class="custom-control-input" name=""
-																th:value="${opciones.pk_id_opcion}"
+																th:value="'O'+${menu.pk_id_menu}"
 																th:id="${opciones.pk_id_opcion}" />
 														</td>
 														<td th:text="${opciones.vc_nombre_pantalla}"></td>
