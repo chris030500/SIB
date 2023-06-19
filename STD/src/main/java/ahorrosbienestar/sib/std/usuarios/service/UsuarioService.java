@@ -86,6 +86,10 @@ public class UsuarioService {
 		return iUsuarioRepository.destruirSesion(usuario);
 	}
 	
+	public int destruirSesionUsuario() {
+		return iUsuarioRepository.destruirSesionUsuario();
+	}
+	
 	
 	
 	
