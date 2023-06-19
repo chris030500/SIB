@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
+
 @Configuration
 public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 	
@@ -31,6 +32,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 	
 	@Autowired
 	private DataSource datasource;
+	
 	
 	
 	@Override
@@ -51,7 +53,18 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 		.antMatchers("/videoGrabacion/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA")
 		.anyRequest().authenticated()
 		.and()
-			.formLogin().loginPage("/login")
+			.formLogin()
+			.successHandler((request, response, authentication) -> {
+                // Obtiene el nombre de usuario
+                String username = authentication.getName();
+
+                // Almacena el nombre de usuario en la sesión
+                request.getSession().setAttribute("username", username);
+
+                // Redirecciona a la página principal u otra página deseada
+                response.sendRedirect("/");
+            })
+			.loginPage("/login")
 			.permitAll()
 			.and()
 			.logout().permitAll()

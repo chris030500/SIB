@@ -80,6 +80,7 @@ public class ProductoController {
 			model.addAttribute("cat_prodcuto_captacion", coreBancarioService.obtProductosCaptacion());
 			model.addAttribute("cat_prodcuto", coreBancarioService.obtProductos());
 			model.addAttribute("listaProductos", productoContratoService.listaDeProductosConContrato());
+			//model.addAttribute("listaProductos", productoService.listaDeProductosConContrato2());
 			model.addAttribute("listDocumentos", documentoService.todosDocumentos());
 
 			model.addAttribute("listadoContratos", catContratoService.listaContratosActivos());

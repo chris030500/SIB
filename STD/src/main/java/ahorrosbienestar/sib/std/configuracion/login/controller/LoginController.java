@@ -44,25 +44,21 @@ public class LoginController extends HttpServlet {
             Model model, Principal principal, RedirectAttributes flash, HttpSession session) {
         logger.info("Principal: " + principal);
         logger.debug("cargando index");
-        String sessionStatus = (String) session.getAttribute("sessionStatus");
-        System.out.println("sessionStatus: " + sessionStatus);
+       
+        
         //HttpSession misession= request.getSession();
         //System.out.println("missesion: " + misession.getAttribute(principal.toString()));
         //System.out.println("Principal: " + principal);
-        if ("activo".equals(sessionStatus)) {
-            // La sesión está activa
-        	System.out.println("La sesión está activa");
-        } else {
-            // La sesión está inactiva
-        	System.out.println("La sesión está inactiva");
-        }
-        
+    
         if(principal != null) {
             
             //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
             //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
 //            System.out.println("Principal != null");
             logger.info("Principal != null");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	        String username = authentication.getName();
+	        System.out.println("Username login: " + username);
             return "redirect:/";
         }
         
