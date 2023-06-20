@@ -68,9 +68,8 @@
 									<i class="bi bi-arrow-repeat"></i>
 								</button>
 								<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-									title="Relacionar componentes" data-bs-target="#rolMenu"
-									aria-controls="table-datatable" type="button"
-									th:onclick="'consultarOpciones(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
+									title="Relacionar Opciones de Menu" aria-controls="table-datatable" type="button" data-bs-target="#rolMenu"
+									th:onclick="consultarOpciones(this)" th:id="${rol.pk_id_rol}" data-tooltip="Add">
 									<i class="bi bi-ui-checks"></i>
 								</button>
 							</td>
@@ -161,7 +160,7 @@
 				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h4 class="modal-title" id="lblTitulo">Pantallas por Rol</h4>
+							<h2 class="modal-title" id="lblTituloRol"></h2>
 						</div>
 						<div class="modal-body">
 							<div class="table-responsive">
@@ -179,8 +178,8 @@
 								<tbody>
 									<tr th:each="menu: ${listaMenu}">
 										<td>
-											<input type="checkbox" class="custom-control-input" name=""
-												th:value="${menu.pk_id_menu}" th:id="'M'+${menu.pk_id_menu}" th:onclick="checkMenu(this)"/>
+											<!--<input type="checkbox" class="custom-control-input" name=""
+												th:value="${menu.pk_id_menu}" th:id="'M'+${menu.pk_id_menu}" th:onclick="checkMenu(this)"/>-->
 										</td>
 										<td th:text="${menu.vc_nombre_menu}"></td>
 										<td>
@@ -189,8 +188,8 @@
 												<thead>
 													<tr>
 														<th>
-															<input type="checkbox" class="custom-control-input" name=""
-																th:onclick="checkOpciones(this)" th:id="'O'+${menu.pk_id_menu}" />
+															<!--<input type="checkbox" class="custom-control-input" name=""
+																th:onclick="checkOpciones(this)" th:id="'O'+${menu.pk_id_menu}" />-->
 														</th>
 														<th>Seleccionar pantalla</th>
 													</tr>
@@ -211,14 +210,15 @@
 									</tr>
 								</tbody>
 							</table>
+							<input type="hidden" id="idRolRel">
 						 </div>
 						</div>
 						<!-- Modal footer -->
 						<div class="modal-footer">
 							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnGuardar">Guardar</button>
+								id="btnRelRolOpciones">Guardar</button>
 							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCerrar">Cerrar</button>
+								id="btnCerrarRelRol">Cerrar</button>
 						</div>
 					</div>
 				</div>

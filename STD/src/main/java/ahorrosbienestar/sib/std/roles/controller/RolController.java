@@ -2,12 +2,15 @@ package ahorrosbienestar.sib.std.roles.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +24,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
+import ahorrosbienestar.sib.std.opcionMenu.model.RelRolOpciones;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("rol")
@@ -34,8 +41,15 @@ public class RolController {
 	@Autowired
 	private CoreBancarioService coreBancarioService;
 	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
+	
 	private String estatusA = "ACTIVO";
 	private String estatusI = "INACTIVO";
+	private int estatus = 1; // activo
 	
 	@Autowired
 	public RolController (RolService rolService) {
@@ -155,4 +169,158 @@ public class RolController {
 		public ResponseEntity<?> findById(@PathVariable(name = "id") Integer id){
 			return ResponseEntity.ok(rolService.findById(id));
 		}
+		/**
+		 * Relacion de Rol y opciones. 
+		 */
+		@PostMapping("/altaRelRolOpcion")
+		public ResponseEntity<?> altaRelRolOpcion(Model model,	@RequestParam(name = "idsRolOpciones") ArrayList<Integer> idsRolOpciones,@RequestParam(name = "idRol") Integer idRol) {
+			String mensaje = "";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			
+			try {
+				mensaje = "Registro Correcto.";
+				LocalDate fecha = LocalDate.now();
+				
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+				for (int idOpcion : idsRolOpciones) {
+					if(iRelRolOpcionesRepository.existeOpcion(idRol,idOpcion) == 0) {
+						RelRolOpciones registroRelRolOpcion = new RelRolOpciones();
+						registroRelRolOpcion.setDt_fecha_registro(fecha);
+						registroRelRolOpcion.setFk_opcion(idOpcion);
+						registroRelRolOpcion.setFk_rol(idRol);
+						registroRelRolOpcion.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+						registroRelRolOpcion.setI_estatus(estatus);
+						
+						iRelRolOpcionesRepository.save(registroRelRolOpcion);
+						
+					}else {
+						iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuario.get(0).getPk_id_usuario());
+					}
+				}
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println("" + e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+		@GetMapping("/consultaOpciones")
+		public ResponseEntity<?> consultaDocumentos(@RequestParam(name = "idRol") Integer idRol) {
+			try {
+				List<RelRolOpciones> solicitudDatos = iRelRolOpcionesRepository.buscarOpciones(idRol);
+
+				return ResponseEntity.ok(solicitudDatos);
+
+			} catch (Exception e) {
+				System.out.print("--" + e.getMessage());
+			}
+			return null;
+		}
+		
+		@PostMapping("/actualizarOpciones")
+		public ResponseEntity<?> actualizarOpciones(Model model, @RequestParam(name = "idRol") Integer idRol,
+				@RequestParam(name = "idsOpciones") ArrayList<Integer> idsOpciones,
+				@RequestParam(name = "idsAnteriores") ArrayList<Integer> idsAnteriores) {
+			String mensaje = "";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				mensaje = "Menu Actualizado Correctamente.";
+				LocalDate fecha = LocalDate.now();
+				
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+
+				// Alta de nuevos opciones.
+				ArrayList<Integer> altaNewDocumentos = new ArrayList<Integer>();
+				for (int element : idsOpciones) {
+					if (!idsAnteriores.contains(element)) {
+						altaNewDocumentos.add(element);
+					}
+				}
+
+				// Actualizar estatus de opciones
+				ArrayList<Integer> actualizarDocumentos = new ArrayList<Integer>();
+				for (int element : idsAnteriores) {
+					if (!idsOpciones.contains(element)) {
+						actualizarDocumentos.add(element);
+					}
+				}
+
+				if (altaNewDocumentos.size() > 0) {
+					for (int idOpcion : altaNewDocumentos) {
+
+						if(iRelRolOpcionesRepository.existeOpcion(idRol,idOpcion) == 0) {
+							RelRolOpciones registroRelRolOpcion = new RelRolOpciones();
+							registroRelRolOpcion.setDt_fecha_registro(fecha);
+							registroRelRolOpcion.setFk_opcion(idOpcion);
+							registroRelRolOpcion.setFk_rol(idRol);
+							registroRelRolOpcion.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+							registroRelRolOpcion.setI_estatus(estatus);
+							
+							iRelRolOpcionesRepository.save(registroRelRolOpcion);
+							
+						}else {
+							iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuario.get(0).getPk_id_usuario());
+						}
+					}
+				}
+
+				if (actualizarDocumentos.size() > 0) {
+					for (int idOpcion : actualizarDocumentos) {
+						if (iRelRolOpcionesRepository.existeOpcion(idRol,idOpcion) != 0) {
+							iRelRolOpcionesRepository.inactivarRelacion(idRol, idOpcion,usuario.get(0).getPk_id_usuario());
+						}
+					}
+				}
+
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println("" + e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+		
+		@PostMapping("/bajaOpciones")
+		public ResponseEntity<?> bajaOpciones(Model model,  @RequestParam(name = "idRol") Integer idRol,
+				@RequestParam(name = "idsAnteriores") ArrayList<Integer> idsAnteriores) {
+			String mensaje = "";
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				mensaje = "Menu Actualizado Correctamente.";
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+				for (int idDocumento : idsAnteriores) {
+					iRelRolOpcionesRepository.inactivarRelacion(idRol, idDocumento,usuario.get(0).getPk_id_usuario());
+				}
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				System.out.println("" + e.getMessage());
+				mensaje = "Ocurrio un error. Intente mas tarde.";
+				respuesta.add(mensaje);
+				return ResponseEntity.ok(respuesta);
+			}
+		}
+
 }
