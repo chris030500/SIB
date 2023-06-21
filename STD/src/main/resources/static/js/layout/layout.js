@@ -1,9 +1,9 @@
 var opcMenu = "opciones/generarMenu";
 $(document).ready(function() {
-	obtenerObservacion();
+	pintarMenuxRol();
 });
 
-function obtenerObservacion() {
+function pintarMenuxRol() {
 	var url = "http://localhost:8080/STD/"+opcMenu;
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
