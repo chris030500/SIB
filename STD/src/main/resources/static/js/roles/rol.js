@@ -4,6 +4,13 @@ var cargarRolEditar = "cargarRol/";
 var modificarRoles = "modificarRoles?idRol=";
 var inicio = "index";
 
+/**
+ * relacionar opciones 
+ */
+var idsAnteriores = " ";
+var altaRelRolOpcion = "altaRelRolOpcion?idsRolOpciones=";
+var actualizarOpciones = "actualizarOpciones?idRol=";
+var bajaOpciones = "bajaOpciones?idRol=";
 
 $(document).ready(function() {
 	
@@ -44,13 +51,59 @@ $(document).ready(function() {
 		$("#editarRol").modal("hide");
 		document.getElementById("inombreRol").style.borderColor = '';
 		document.getElementById("inputDescripcion").style.borderColor = '';
-		//document.getElementById("nombreRol").value = "";
-		//document.getElementById("descripcionRol").value = "";
 	});
 	
+	$("#btnRelRolOpciones").click(function() {
+		var ids = "";
+		document.querySelectorAll('#menuRol input[type=checkbox]:checked').forEach(function(checkElement) {
+			if (checkElement.id != 'idTodos') {
+				ids += checkElement.id + " ";
+			}
+		});
+		
+		var listaOpciones = "";
+		var listaOpcionesAnteriores = "";
+		var urlGuardar = "";
+		var idRolSelect =$("#idRolRel").val();
+		
+		
+		if (ids.trim().length > 0 && idsAnteriores.trim().length == 0) {
+			listaOpciones = ids.trim().split(' ');
+			urlGuardar = getAbsolutePath() + altaRelRolOpcion + listaOpciones+"&idRol="+idRolSelect;
+
+			enviarPeticion(urlGuardar);
+		}else if (ids.trim().length > 0 && idsAnteriores.trim().length > 0) {
+			listaOpciones = ids.trim().split(' ');
+			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
+
+			urlGuardar = getAbsolutePath() + actualizarOpciones + idRolSelect +  "&idsOpciones=" + listaOpciones + "&idsAnteriores=" + listaOpcionesAnteriores;
+
+			enviarPeticion(urlGuardar);
+		}else if (ids.trim().length == 0 && idsAnteriores.trim().length > 0) {
+			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
+			urlGuardar = getAbsolutePath() + bajaOpciones + idRolSelect + "&idsAnteriores=" + listaOpcionesAnteriores;
+			//baja
+			enviarPeticion(urlGuardar);
+		}else {
+			swal({
+				title: "",
+				text: "No ha seleccionado ninguna opcion",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			})
+		}
+		
+	});
 	
+	$("#btnCerrarRelRol").click(function() {
+		$("#rolMenu").modal("hide");
+		limpiarcheck();
+	});
+
+		
 	inicioTabla();
 });
+
 
 function altaRol(){
 		var nombreRol = document.getElementById("nombreRol").value;
@@ -109,6 +162,16 @@ function getAbsolutePath() {
 
 function inicioTabla(){
 	$("#rolTable").DataTable({
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	$("#menuRol").DataTable({
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
         },
@@ -194,5 +257,133 @@ function populateModalRol(data) {
 	$('#idRol').val(idRol);
 	$('#inombreRol').val(nombreRol);
 	inputDescripcion.value = descripcionRol;
+}
+/**Relacionar opciones de Menu */
+var consultaOpciones = "consultaOpciones?idRol=";
+var idsAnteriores = " ";
+function consultarOpciones(idRol){
+	document.querySelector('#lblTituloRol').innerText ="Opciones relacionadas al Rol:"+$(idRol).parents("tr").find("td").eq(1).html();
+	$("#idRolRel").val($(idRol).attr("id"));
+	
+	var urlGuardar = getAbsolutePath()+consultaOpciones+$("#idRolRel").val();
+	console.log("consultar datos");
+	
+	$.ajax({
+		url: urlGuardar,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			idsAnteriores = "";
+			for (var i in respuesta) {
+				document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+
+					if (checkElement.id != 'idTodos') {
+						if (checkElement.id == respuesta[i].fk_opcion) {
+							idsAnteriores += checkElement.id + " ";
+							checkElement.checked = true;
+						}
+					}
+				});
+			}
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+	
+}
+/**
+ * 
+ */
+
+function checkTodo() {
+	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+}
+
+function limpiarcheck() {
+	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+}
+
+
+function checkOpciones(id){
+	var idTabla = $(id).attr('id');
+	console.log(""+id);
+	if (id.checked) {
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+
+function checkMenu(id){
+	var idTabla = $(id).parents("tr").find("table").attr("id");
+	console.log(""+id);
+	if (id.checked) {
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+
+function checkTodos(id){
+	if (id.checked) {
+		document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = true;
+	});
+	}else{
+			document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = false;
+	});
+	}
+}
+
+function enviarPeticion(urlGuardar) {
+
+	$.ajax({
+		url: urlGuardar,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend : function(){
+			 document.getElementById('btnRelRolOpciones').disabled = true;
+			 $.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function(){
+			document.getElementById('btnRelRolOpciones').disabled = false;
+			setTimeout($.unblockUI, 2000); 
+		},
+		success: function(respuesta) {
+			$("#rolMenu").modal("hide");
+			swal({
+				title: "",
+				text: respuesta[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				limpiarcheck();
+			});
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
 }
 
