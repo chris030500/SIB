@@ -12,11 +12,18 @@ function pintarMenuxRol() {
 			  menu.style.display = "block";
 			  console.log("menu"+opt.pk_id_menu)
 			for(var i=0; i < opt.opcMenu.length; i++){
-				 var opcion = document.getElementById('O'+opt.opcMenu[i].pk_id_opcion);
+				 var opcion = document.getElementById('M_O'+opt.opcMenu[i].pk_id_opcion);
 				 opcion.style.display = "block";
 			}
 		});
+		document.querySelectorAll("#sidebar [style='display:none;']").forEach(function(checkElement) {
+			console.log("" + checkElement.id);
+			$('#'+ checkElement.id+'').remove();
+			//document.getElementById(''+checkElement.id+'').parentNode.removeChild(document.getElementById(''+checkElement.id+''));	
+		});
 	});
+	
+
 }
 
 
