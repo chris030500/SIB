@@ -385,7 +385,7 @@ function pintartblObservaciones() {
 				+ ")' >"
 				+ " <i class='bi bi-x-circle-fill'></i>"
 				+ " </button>";
-			tblObservaciones.row.add([opt.i_observacion_oficio, opt.vc_area, opt.vc_responsable,
+			tblObservaciones.row.add([opt.vc_observacion_oficio, opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
 			//tblObservaciones.column(0).visible(false);
 		});

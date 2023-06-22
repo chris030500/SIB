@@ -12,10 +12,10 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ContentDisposition.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,7 +47,6 @@ import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import org.springframework.core.io.Resource;
 @Controller
 @RequestMapping("folios")
 public class FoliosController {
@@ -276,7 +275,7 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "folioID") Integer folioID,
-					@RequestParam(name = "obsOficio") Integer obsOficio
+					@RequestParam(name = "obsOficio") String obsOficio
 					){
 				
 				String mensaje ="Registro Correctamente.";
@@ -294,7 +293,7 @@ public class FoliosController {
 				}
 			}
 			
-			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, Integer obsOficio) {
+			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, String obsOficio) {
 				Integer estatus = 1;
 				try {
 					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -319,7 +318,7 @@ public class FoliosController {
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
-					altaObs.setI_observacion_oficio(obsOficio);
+					altaObs.setVc_descripcion_rechazo(obsOficio);
 					
 					observacionService.save(altaObs);
 					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
@@ -338,7 +337,7 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "reasignar") Integer reasignar,
-					@RequestParam(name = "obsOficio") Integer obsOficio){
+					@RequestParam(name = "obsOficio") String obsOficio){
 				
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();

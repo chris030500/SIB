@@ -20,6 +20,7 @@ $(document).ready(function() {
 	eventosContadorObservacion();
 	eventosContadorOficio();
 	eventosContadorAsunto();
+	evContadorObsOficio();
 	inicioTabla();
 	cargarTablaFolios();
 });
@@ -89,6 +90,18 @@ function eventosContadorObservacion() {
 		contador.innerHTML = `${longitudAct}/${longitudMax}`;
 	});
 }
+
+function evContadorObsOficio() {
+	const mensaje = document.getElementById('obsOficio');
+	const contador = document.getElementById('contadorObsOficio');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
 function eventosContadorOficio() {
 	const mensaje = document.getElementById('noficio');
 	const contador = document.getElementById('conNoficio');
@@ -538,7 +551,7 @@ function datosObservacionValidos() {
 		correcto = correcto + 1;
 		document.getElementById("idObservacion").style.borderColor = "#F70707";
 	}
-	if (document.getElementById("obsOficio").value > 0)  {
+	if (document.getElementById("obsOficio").value.length > 0 && document.getElementById("obsOficio").value != 0 )  {
 		correcto = correcto + 0;
 		document.getElementById("obsOficio").style.borderColor = "";
 	} else {
@@ -855,7 +868,7 @@ function obtenerDatostblObservaciones(url) {
 				+ opt.pk_id_observacion
 				+ " >"
 				+ " <i class='bi bi-pencil-square'></i>";
-			tblObservacion.row.add([opt.i_observacion_oficio,opt.vc_area, opt.vc_responsable,
+			tblObservacion.row.add([opt.vc_observacion_oficio,opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, opt.vc_confirma, opt.vc_desc_rechazo, botones]).draw(false);
 			//tblObservacion.column(0).visible(false);
 		});
@@ -983,7 +996,7 @@ function obtenerObservacion(url) {
 		document.getElementById("idFechaVencimiento").value = data.dt_fecha_vencimiento;
 		document.getElementById("idObservacion").value = data.vc_descripcion;
 		document.getElementById("idReasignacion").value = data.i_confirma;
-		document.getElementById("obsOficio").value = data.i_observacion_oficio;
+		document.getElementById("obsOficio").value = data.vc_observacion_oficio;
 		listaResponsable(getAbsolutePath() + buscarxArea + data.i_area, data.i_responsable);
 		setTimeout($.unblockUI, 100);
 	});
