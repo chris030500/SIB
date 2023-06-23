@@ -272,7 +272,7 @@ public class SeguimientoFolioController {
 			ContentDisposition contentDisposition = null;
 			HttpHeaders h2 = new HttpHeaders();
 			
-			contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+			contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 			h2.setContentDisposition(contentDisposition);
 			
 			return ResponseEntity.ok().contentLength((long) bytesPDF.length)

@@ -85,6 +85,7 @@ public class PlanAccionController {
 	
 	private int catEstatus = 6;
 	private int catFinActividad = 8;
+	private int tipoArchivo = 9;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -108,6 +109,7 @@ public class PlanAccionController {
 			model.addAttribute("lista_folios", catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
 			
 			return "planAccion/inicio";
@@ -368,7 +370,7 @@ public class PlanAccionController {
 			ContentDisposition contentDisposition = null;
 			HttpHeaders h2 = new HttpHeaders();
 			
-			contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+			contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 			h2.setContentDisposition(contentDisposition);
 			
 			return ResponseEntity.ok().contentLength((long) bytesPDF.length)

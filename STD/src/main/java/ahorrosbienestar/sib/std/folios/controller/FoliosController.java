@@ -87,6 +87,7 @@ public class FoliosController {
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
+	private int tipoArchivo = 9;
 	
 	@Autowired
 	public FoliosController (FolioService folioService) {
@@ -105,6 +106,7 @@ public class FoliosController {
 			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
 			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
 			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
 			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
@@ -499,7 +501,7 @@ public class FoliosController {
 					ContentDisposition contentDisposition = null;
 					HttpHeaders h2 = new HttpHeaders();
 					
-					contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+					contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 					h2.setContentDisposition(contentDisposition);
 					
 					return ResponseEntity.ok().contentLength((long) bytesPDF.length)

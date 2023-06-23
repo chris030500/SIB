@@ -562,13 +562,13 @@ function obtDtostblAdjuntos(url) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Ver PDF' type='button'"
+				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
 				+ opt.pk_id_archivo
 				+ ")' id="
 				+ opt.pk_id_archivo
 				+ " >"
-				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
+				+ " <i class='bi bi-download'></i></button>";
 			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
@@ -631,4 +631,29 @@ function tamFile() {
 			});
 		};
 	};
+}
+
+function asignarArchivo(archivo) {
+
+	if (document.getElementById(archivo.id).value > 0) {
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		 document.getElementById("file").value = "";
+		$('#file').attr("accept", extension);
+		$('#file').attr("disabled", false);
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "Se requiere seleccionar una opcion valida",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", "");
+		$('#file').attr("disabled", true);
+
+	}
 }
