@@ -187,7 +187,8 @@ public class SeguimientoFolioController {
 	public ResponseEntity<?> modSeguimiento(
 			@RequestParam(name = "idSeguimiento") Integer idSeguimiento
 		   ,@RequestParam(name = "desc_seguimiento") String desc_seguimiento
-		   ,@RequestParam(name = "estatus") Integer estatus){
+		   ,@RequestParam(name = "estatus") Integer estatus
+		   ,@RequestParam(name = "idActividad") Integer idActividad){
 		
 		String mensaje ="Se Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
@@ -200,6 +201,10 @@ public class SeguimientoFolioController {
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
 			seguimientoFolioService.modificarSeguimiento(idSeguimiento,desc_seguimiento,estatus,usuario.get(0).getPk_id_usuario());
+			if(estatus == 1) {
+				catalogosCEService.actEstatus(idActividad,3,1);
+				correoCSOService.registrarCorreo(idActividad,2);
+			}
 		
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
