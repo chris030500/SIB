@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
+import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
@@ -85,6 +86,7 @@ public class PlanAccionController {
 	
 	private int catEstatus = 6;
 	private int catFinActividad = 8;
+	private int tipoArchivo = 9;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -105,9 +107,9 @@ public class PlanAccionController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
-			model.addAttribute("lista_folios", catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
 			
 			return "planAccion/inicio";
@@ -164,7 +166,7 @@ public class PlanAccionController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			if(iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo,usuario.get(0).getPk_id_usuario()) == 1) {
-				correoCSOService.registrarCorreo(idObservacion);
+				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
 			return ResponseEntity.ok(respuesta);
@@ -186,7 +188,7 @@ public class PlanAccionController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
-	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, Model model) {
+	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, @RequestParam("estatus") Integer estatus) {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -195,7 +197,7 @@ public class PlanAccionController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio);
+			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio,estatus);
 			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -368,7 +370,7 @@ public class PlanAccionController {
 			ContentDisposition contentDisposition = null;
 			HttpHeaders h2 = new HttpHeaders();
 			
-			contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+			contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 			h2.setContentDisposition(contentDisposition);
 			
 			return ResponseEntity.ok().contentLength((long) bytesPDF.length)
@@ -452,6 +454,26 @@ public class PlanAccionController {
 			System.out.println("--"+e.getMessage());
 			return 0;
 		}
+	}
+	
+	@GetMapping("/obtFolios")
+	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			List<ListaFolioXEmpleado>  listaFolio = catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado(),estatus);
+			
+			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	
 	}
 	
 }

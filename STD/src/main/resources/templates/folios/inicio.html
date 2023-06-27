@@ -131,7 +131,8 @@
 					<div class="row">
 						<div class="col-md-2">
 							<label class="col-form-label"> No. Observacion en el Oficio:</label>
-							<input class="form-control" type="number" id="obsOficio" placeholder="No. de Observacion del Oficio" min="1">
+							<input class="form-control" type="text" id="obsOficio" placeholder="No. de Observacion del Oficio" maxlength="50">
+							<div id="contadorObsOficio">0/50</div>
 						</div>
 						<div class="col-md-8">
 							<label class="col-form-label"> Observación a Atender:</label>
@@ -282,10 +283,22 @@
 							<div class="modal-body">
 								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
 								<div class="row" style="margin-top : 15px ">
-									<form id="adjuntoArchivoOficio">
-										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
-									</form>
+									<div class="col-md-4">
+										<label class="col-form-label"> Tipo de Archivo:</label>
+											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+													th:id="${opcionTipo.v_pantalla}">
+												</option>
+											</select>
+									</div>
+									<div class="col-md-8">
+										<form id="adjuntoArchivoOficio">
+											<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+											<input class="form-control" type="file" id="file" name="file" accept="" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
+										</form>
+									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">

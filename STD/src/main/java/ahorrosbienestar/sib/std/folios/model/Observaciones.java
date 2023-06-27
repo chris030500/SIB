@@ -79,8 +79,8 @@ public class Observaciones {
 	@Column(name = "VC_DESCRIPCION_RECHAZO", columnDefinition = "VARCHAR(600)")
 	private String vc_descripcion_rechazo;
 	
-	@Column(name = "I_OBSERVACION_OFICIO", columnDefinition = "INT")
-	private int i_observacion_oficio;
+	@Column(name = "VC_OBSERVACION_OFICIO", columnDefinition = "VARCHAR(50)")
+	private String vc_observacion_oficio;
 
 	public LocalDate getDt_fecha_confirmacion() {
 		return dt_fecha_confirmacion;
@@ -210,13 +210,12 @@ public class Observaciones {
 		this.i_usuario_elimino = i_usuario_elimino;
 	}
 
-	public int getI_observacion_oficio() {
-		return i_observacion_oficio;
+	public String getVc_observacion_oficio() {
+		return vc_observacion_oficio;
 	}
 
-	public void setI_observacion_oficio(int i_observacion_oficio) {
-		this.i_observacion_oficio = i_observacion_oficio;
+	public void setVc_observacion_oficio(String vc_observacion_oficio) {
+		this.vc_observacion_oficio = vc_observacion_oficio;
 	}
-	
-		
+
 }

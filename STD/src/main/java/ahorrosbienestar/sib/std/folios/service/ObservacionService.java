@@ -20,7 +20,7 @@ public class ObservacionService {
 		return iObservacionRepository.save(altaObservacion);
 	}
 
-	public int modObservacion(Integer obsOficio,Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
+	public int modObservacion(String obsOficio,Integer idObservacion, Integer idAreaAtencion, Integer idResponsableAtencion,
 			String idFechaVencimiento, String desObservacion, Integer usuarioMod, Integer usuarioElimino) {
 		
 		return iObservacionRepository.modObservacion(idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioMod,usuarioElimino,obsOficio);

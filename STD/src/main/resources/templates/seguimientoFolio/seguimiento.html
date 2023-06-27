@@ -30,25 +30,32 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Seguimiento</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-5">
-							<label class="col-form-label">Seleccionar Folio para mostrar Actividades</label>
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus Actividad</label>
+							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label">No. de Oficio</label>
 							<!--<input class="form-control" type="text" id="idPlanAccion" placeholder="Identificador del plan de acción">-->
 							<select class="form-control" id="idOficios" onchange="verActividades(this)" readonly>
 								<option value="0">Seleccione</option>
-								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
-									th:text="${listaFolios.folio}"></option>
+								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>-->
 							</select>
 
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-4">
 							<label class="col-form-label">Ver documentos:</label>
 							<br>
 							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
 								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
-								<i class="bi bi-file-earmark-pdf-fill"></i>
+								<i class="bi bi-files"></i>
 							</button>
 						</div>
-						<div class="col-md-4"></div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
@@ -136,10 +143,23 @@
 							<div class="modal-body">
 								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
 								<div class="row">
-									<form id="adjuntoArchivoOficio">
-										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
-									</form>
+									<div class="col-md-4">
+											<label class="col-form-label"> Tipo de Archivo:</label>
+											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+													th:id="${opcionTipo.v_pantalla}">
+												</option>
+											</select>
+									</div>
+									<div class="col-md-8">
+										<form id="adjuntoArchivoOficio">
+											<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+											<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
+										</form>
+									</div>
+									
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">

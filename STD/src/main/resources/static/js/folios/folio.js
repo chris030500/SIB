@@ -20,12 +20,13 @@ $(document).ready(function() {
 	eventosContadorObservacion();
 	eventosContadorOficio();
 	eventosContadorAsunto();
+	evContadorObsOficio();
 	inicioTabla();
 	cargarTablaFolios();
 });
 
 var servicioFolios = "obtenerFolios"
-function cargarTablaFolios(){
+function cargarTablaFolios() {
 	$("#modalFolio").modal("hide");
 	var url = getAbsolutePath() + servicioFolios;
 	$.getJSON(url, {}, function(data) {
@@ -53,12 +54,12 @@ function cargarTablaFolios(){
 				+ ")' id="
 				+ opt.pk_id_folio
 				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-file-earmark-plus-fill'></i></button>";
-			tblOficio.row.add([opt.pk_id_folio,opt.i_folio,opt.vc_asunto,opt.dt_fecha_recepcion,opt.dt_fecha_registro,opt.dt_fecha_vencimiento,opt.vc_estatus,opt.vc_tipo_oficio,opt.vc_organo_emite, botones]).draw(false);
+				+ " <i class='bi bi-files'></i></button>";
+			tblOficio.row.add([opt.pk_id_folio, opt.i_folio, opt.vc_asunto, opt.dt_fecha_recepcion, opt.dt_fecha_registro, opt.dt_fecha_vencimiento, opt.vc_estatus, opt.vc_tipo_oficio, opt.vc_organo_emite, botones]).draw(false);
 			tblOficio.column(0).visible(false);
 		});
 	});
-	
+
 }
 
 
@@ -89,6 +90,18 @@ function eventosContadorObservacion() {
 		contador.innerHTML = `${longitudAct}/${longitudMax}`;
 	});
 }
+
+function evContadorObsOficio() {
+	const mensaje = document.getElementById('obsOficio');
+	const contador = document.getElementById('contadorObsOficio');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
 function eventosContadorOficio() {
 	const mensaje = document.getElementById('noficio');
 	const contador = document.getElementById('conNoficio');
@@ -112,18 +125,18 @@ function eventosContadorAsunto() {
 
 function iniciarfechas() {
 	var hoyfecha = new Date();
-	
-		switch (hoyfecha.getDay()) {
-					case 0:
-						hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 1);
-						dia = dia + 0;
-						break;
-					case 6:
-						hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 2);
-						dia = dia + 0;
-						break;
-				}
-	
+
+	switch (hoyfecha.getDay()) {
+		case 0:
+			hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 1);
+			dia = dia + 0;
+			break;
+		case 6:
+			hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 2);
+			dia = dia + 0;
+			break;
+	}
+
 	const hoy_fecha = hoyfecha.toISOString().substring(0, 10);
 
 
@@ -148,8 +161,8 @@ function iniciarfechas() {
 }
 
 function validarFinSemana(fecha, tFecha) {
-	var correcta = true;	
-	if(fecha.getDay() == 0 || fecha.getDay() == 6){
+	var correcta = true;
+	if (fecha.getDay() == 0 || fecha.getDay() == 6) {
 		var correcta = false;
 		switch (tFecha) {
 			case 1:
@@ -159,7 +172,7 @@ function validarFinSemana(fecha, tFecha) {
 				document.getElementById("idVencimiento").style.borderColor = "#F70707";
 				break;
 		}
-	}else{
+	} else {
 		switch (tFecha) {
 			case 1:
 				document.getElementById("idFechaRegistro").style.borderColor = "";
@@ -222,7 +235,7 @@ function calcularVencimiento(opcion) {
 		case 1:
 			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2) == true) {
 				fechaVen = calcularPlazo(1, fechaInicioD, fechaFinD);
-			}else{
+			} else {
 				swal({
 					title: "Error",
 					text: "Seleccionar dia habil",
@@ -232,11 +245,11 @@ function calcularVencimiento(opcion) {
 
 			break;
 		case 2:
-			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2)== true) {
+			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2) == true) {
 				if (document.getElementById("idPlazo").value > 0) {
 					fechaVen = calcularPlazo(2, fechaInicioD, fechaFinD);
 				}
-			}else{
+			} else {
 				swal({
 					title: "Error",
 					text: "Seleccionar dia habil",
@@ -371,13 +384,13 @@ function obtDtostblAdjuntos(url) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Ver PDF' type='button'"
+				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
 				+ opt.pk_id_archivo
 				+ ")' id="
 				+ opt.pk_id_archivo
 				+ " >"
-				+ " <i class='bi bi-file-earmark-pdf-fill'></i></button>";
+				+ " <i class='bi bi-download'></i></button>";
 			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
@@ -465,7 +478,7 @@ function validacionesAgregarObs(fecha1) {
 
 function tblObservacionesLoad() {
 	if (seleccionoFolio() == 0) {
-		if  (datosObservacionValidos() == 0) {
+		if (datosObservacionValidos() == 0) {
 			var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
 			urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
 			urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
@@ -531,14 +544,14 @@ function datosObservacionValidos() {
 		document.getElementById("idFechaVencimiento").style.borderColor = "#F70707";
 	}
 
-	if (document.getElementById("idObservacion").value.length > 0)  {
+	if (document.getElementById("idObservacion").value.length > 0) {
 		correcto = correcto + 0;
 		document.getElementById("idObservacion").style.borderColor = "";
 	} else {
 		correcto = correcto + 1;
 		document.getElementById("idObservacion").style.borderColor = "#F70707";
 	}
-	if (document.getElementById("obsOficio").value > 0)  {
+	if (document.getElementById("obsOficio").value.length > 0 && document.getElementById("obsOficio").value != 0) {
 		correcto = correcto + 0;
 		document.getElementById("obsOficio").style.borderColor = "";
 	} else {
@@ -550,8 +563,8 @@ function datosObservacionValidos() {
 }
 
 function modificarObs() {
-	if (seleccionoFolio() == 0)  {
-		if (datosObservacionValidos() == 0)  {
+	if (seleccionoFolio() == 0) {
+		if (datosObservacionValidos() == 0) {
 			var asignacion = (document.getElementById("idReasignacion").value == 2) ? "&reasignar=1" : "&reasignar=0";
 			var urlServicio = getAbsolutePath() + modObservaciones + document.getElementById("idObservacionSelect").value;
 			urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
@@ -560,7 +573,7 @@ function modificarObs() {
 			urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
 			urlServicio = urlServicio + asignacion;
 			urlServicio = urlServicio + "&obsOficio=" + document.getElementById("obsOficio").value;
-			
+
 			peticionPost(urlServicio, 2, folioID);
 		} else {
 			swal({
@@ -580,11 +593,11 @@ function modificarObs() {
 }
 
 function reiniciarDatos() {
-		
+
 	document.getElementById("idObservacionSelect").value = 0;
 	document.getElementById("idAreaAtencion").value = 0;
 	document.getElementById("idResponsableAtencion").value = 0;
-	document.getElementById("idFechaVencimiento").value = (folioID > 0)?new Date(fechaVencimientoObs.replaceAll("-", "/")).toISOString().substring(0, 10):"";
+	document.getElementById("idFechaVencimiento").value = (folioID > 0) ? new Date(fechaVencimientoObs.replaceAll("-", "/")).toISOString().substring(0, 10) : "";
 	document.getElementById("idObservacion").value = "";
 	document.getElementById("idObservacionSelect").value = "0";
 	document.getElementById("idReasignacion").value = "0";
@@ -599,7 +612,7 @@ function guardarFolio(proceso) {
 			urlServicio = getAbsolutePath() + altaFolio;
 			break;
 		case 2:
-			urlServicio = getAbsolutePath() + modFolio+ document.getElementById("idUnico").value + "&noficio=";
+			urlServicio = getAbsolutePath() + modFolio + document.getElementById("idUnico").value + "&noficio=";
 			break;
 		default:
 			urlServicio = getAbsolutePath() + inicio;
@@ -655,8 +668,8 @@ function peticionPost(urlServicio, num, numFolio) {
 					tblObservacion.clear().draw();
 					cargarTablaFolios();
 					reiniciarDatos();
-					document.getElementById("lblSeleccion").innerText ="";
-					
+					document.getElementById("lblSeleccion").innerText = "";
+
 					//window.location.href = getAbsolutePath() + inicio;
 				}
 				setTimeout($.unblockUI, 100);
@@ -678,10 +691,10 @@ function guardarVacio() {
 
 	if (document.getElementById("noficio").value.length == 0) {
 		document.getElementById("noficio").style.borderColor = "#F70707";
-		validacion = validacion+ 1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("noficio").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idRecepcion").value.length == 0) {
@@ -689,11 +702,11 @@ function guardarVacio() {
 		validacion = validacion + 1;
 	} else {
 		document.getElementById("idRecepcion").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 	if (document.getElementById("idAsunto").value.length == 0) {
 		document.getElementById("idAsunto").style.borderColor = "#F70707";
-		validacion = validacion+ 1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idAsunto").style.borderColor = '';
 		validacion = validacion + 0;
@@ -701,25 +714,25 @@ function guardarVacio() {
 
 	if (document.getElementById("idDirigido").value == '0') {
 		document.getElementById("idDirigido").style.borderColor = "#F70707";
-		validacion = validacion+ 1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idDirigido").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("iPuesto").value.length == 0) {
 		document.getElementById("iPuesto").style.borderColor = "#F70707";
-		validacion = validacion+ 1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("iPuesto").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 	if (document.getElementById("idTipoOficio").value == '0') {
 		document.getElementById("idTipoOficio").style.borderColor = "#F70707";
-		validacion = validacion+ 1;
+		validacion = validacion + 1;
 	} else {
 		document.getElementById("idTipoOficio").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idOrganoEmite").value == '0') {
@@ -727,7 +740,7 @@ function guardarVacio() {
 		validacion = validacion + 1;
 	} else {
 		document.getElementById("idOrganoEmite").style.borderColor = '';
-		validacion = validacion+ 0;
+		validacion = validacion + 0;
 	}
 
 	if (document.getElementById("idFechaRegistro").value.length == 0) {
@@ -855,7 +868,7 @@ function obtenerDatostblObservaciones(url) {
 				+ opt.pk_id_observacion
 				+ " >"
 				+ " <i class='bi bi-pencil-square'></i>";
-			tblObservacion.row.add([opt.i_observacion_oficio,opt.vc_area, opt.vc_responsable,
+			tblObservacion.row.add([opt.vc_observacion_oficio, opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, opt.vc_confirma, opt.vc_desc_rechazo, botones]).draw(false);
 			//tblObservacion.column(0).visible(false);
 		});
@@ -983,7 +996,7 @@ function obtenerObservacion(url) {
 		document.getElementById("idFechaVencimiento").value = data.dt_fecha_vencimiento;
 		document.getElementById("idObservacion").value = data.vc_descripcion;
 		document.getElementById("idReasignacion").value = data.i_confirma;
-		document.getElementById("obsOficio").value = data.i_observacion_oficio;
+		document.getElementById("obsOficio").value = data.vc_observacion_oficio;
 		listaResponsable(getAbsolutePath() + buscarxArea + data.i_area, data.i_responsable);
 		setTimeout($.unblockUI, 100);
 	});
@@ -993,7 +1006,34 @@ function obtenerObservacion(url) {
 		text: "Se consulto la informacion de la observacion",
 		icon: "success",
 		confirmButtonText: 'Aceptar'
-	})
+	});
+}
+
+function asignarArchivo(archivo) {
+
+	if (document.getElementById(archivo.id).value > 0) {
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		 document.getElementById("file").value = "";
+		$('#file').attr("accept", extension);
+		$('#file').attr("disabled", false);
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "Se requiere seleccionar una opcion valida",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", "");
+		$('#file').attr("disabled", true);
+
+	}
+
+
 }
 
 
