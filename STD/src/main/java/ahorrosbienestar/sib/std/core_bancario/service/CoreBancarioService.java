@@ -15,6 +15,9 @@ import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
+import ahorrosbienestar.sib.std.core_bancario.dto.MenuSistema;
+import ahorrosbienestar.sib.std.core_bancario.dto.MenuxRol;
+import ahorrosbienestar.sib.std.core_bancario.dto.OpcionesxRol;
 
 @Service
 public class CoreBancarioService {
@@ -159,6 +162,82 @@ public class CoreBancarioService {
 		});
 		logger.info("consulta productos captacion: " + lsp);
 		return lsp;
+	}
+	
+	public List<MenuSistema> listaMenu(Integer opcionBusqueda, Integer rol) {
+		
+		try {
+			String sql = "CALL SIB.SP_CONSULTA_MENU (?,?,?);";
+			List<MenuSistema> ls = jdbcTemplate.query(sql, new Object[] { opcionBusqueda, rol,0},
+					new RowMapper<MenuSistema>() {
+						public MenuSistema mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							MenuSistema dtosMenu = new MenuSistema();
+							
+							dtosMenu.setPk_id_menu(rs.getInt(1));
+							dtosMenu.setVc_nombre_menu(rs.getString(2));
+							dtosMenu.setPk_id_opcion(rs.getInt(3));
+							dtosMenu.setVc_nombre_pantalla(rs.getString(4));
+							return dtosMenu;
+						}
+					});
+			
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
+		
+	
+	}
+	
+	public List<MenuxRol> listaOpcionesxRol(Integer opcion, Integer rol){
+		try {
+			String sql = "CALL SIB.SP_CONSULTA_MENU (?,?,?);";
+			List<MenuxRol> ls = jdbcTemplate.query(sql, new Object[] { opcion, rol,0},
+					new RowMapper<MenuxRol>() {
+						public MenuxRol mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							
+							MenuxRol dtosMenu = new MenuxRol();
+							
+							dtosMenu.setPk_id_menu(rs.getInt(1));
+							dtosMenu.setVc_nombre_menu(rs.getString(2));
+							
+							
+							return dtosMenu;
+						}
+					});
+			
+			for (MenuxRol menu : ls) {
+				menu.setOpcMenu(opcsMenu(3,rol,menu.getPk_id_menu()));
+			}
+
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
+	}
+	
+	public List<OpcionesxRol> opcsMenu(Integer opcion, Integer rol,Integer idMenu){
+		try {
+			String sql = "CALL SIB.SP_CONSULTA_MENU (?,?,?);";
+			List<OpcionesxRol> ls = jdbcTemplate.query(sql, new Object[] { opcion, rol,idMenu},
+					new RowMapper<OpcionesxRol>() {
+						public OpcionesxRol mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							OpcionesxRol opcMenu = new OpcionesxRol();
+							opcMenu.setPk_id_opcion(rs.getInt(1));
+							opcMenu.setVc_nombre_pantalla(rs.getString(2));
+							opcMenu.setVc_controller(rs.getString(3));
+							opcMenu.setI_nivel(rs.getInt(4));
+							return opcMenu;
+						}
+					});
+			
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
 	}
 
 }
