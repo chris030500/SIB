@@ -166,7 +166,7 @@ public class PlanAccionController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			if(iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo,usuario.get(0).getPk_id_usuario()) == 1) {
-				correoCSOService.registrarCorreo(idObservacion);
+				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
 			return ResponseEntity.ok(respuesta);
@@ -188,7 +188,7 @@ public class PlanAccionController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
-	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, Model model) {
+	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, @RequestParam("estatus") Integer estatus) {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -197,7 +197,7 @@ public class PlanAccionController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio);
+			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio,estatus);
 			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());

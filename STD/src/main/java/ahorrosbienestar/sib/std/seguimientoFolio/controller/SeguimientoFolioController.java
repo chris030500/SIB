@@ -33,6 +33,7 @@ import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
 import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
 import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
 import ahorrosbienestar.sib.std.planAccion.controller.PlanAccionController;
@@ -71,6 +72,9 @@ public class SeguimientoFolioController {
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private CorreoCSOService correoCSOService;
 	
 	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
 	private String rolResponsable = "ROLE_ADMIN_CSO";
@@ -161,7 +165,7 @@ public class SeguimientoFolioController {
 			catalogosCEService.actEstatus(idActividad,4,3);
 			if(estatus == 1) {
 				catalogosCEService.actEstatus(idActividad,3,1);
-				
+				correoCSOService.registrarCorreo(idActividad,2);
 			}
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

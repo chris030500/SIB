@@ -356,7 +356,7 @@ function peticion(url) {
 
 }
 function pintartblObservaciones() {
-	var urlInicio = getAbsolutePath() + listaObservacion + document.getElementById("idOficios").value;
+	var urlInicio = getAbsolutePath() + listaObservacion + document.getElementById("idOficios").value+"&estatus="+document.getElementById("idEstatusFiltro").value;
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(urlInicio, {}, function(data) {
 		tblObservaciones.clear().draw();

@@ -320,10 +320,10 @@ public class FoliosController {
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
-					altaObs.setVc_descripcion_rechazo(obsOficio);
+					altaObs.setVc_observacion_oficio(obsOficio);
 					
 					observacionService.save(altaObs);
-					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
+					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
 					
 				} catch (Exception e) {
 					System.out.println("--"+e.getMessage());
@@ -362,7 +362,7 @@ public class FoliosController {
 						}
 					}else if(reasignar == 0) {
 						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
-							correoCSOService.registrarCorreo(idObservacion);
+							correoCSOService.registrarCorreo(idObservacion,1);
 							respuesta.add(mensaje);
 						}else {
 							respuesta.add("No se actualizo correctamente");

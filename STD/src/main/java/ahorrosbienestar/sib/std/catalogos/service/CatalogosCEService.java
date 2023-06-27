@@ -423,7 +423,7 @@ public class CatalogosCEService {
 		 * @param idFolio
 		 * @return
 		 */
-		public List<ObservacionesxFolio> obtObservacionesxEmpleado(Integer idempleado,Integer idFolio) {
+		public List<ObservacionesxFolio> obtObservacionesxEmpleado(Integer idempleado,Integer idFolio,Integer estatus) {
 			logger.info("Ejecutando busqueda de folio: ");
 			try {
 				String sql = "SELECT t1.PK_ID_OBSERVACION,t3.VC_DESCRIPCION as area "
@@ -435,10 +435,10 @@ public class CatalogosCEService {
 						+ "inner join CE.TBL_AREA t3 on t3.PK_ID_AREA = t1.I_AREA "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ESTATUS and t4.I_ID_GRUPO = 6 "
 						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
-						+ "where t1.I_FOLIO = ? and I_RESPONSABLE = ? AND t1.I_CONFIRMA in (0,1) "
+						+ "where t1.I_FOLIO = ? and I_RESPONSABLE = ? AND t1.I_CONFIRMA in (0,1) and t1.I_ESTATUS= ? "
 						+ "order by 1;";
 				System.out.println("sql--"+sql);
-				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio,idempleado}, new RowMapper<ObservacionesxFolio>() {
+				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio,idempleado,estatus}, new RowMapper<ObservacionesxFolio>() {
 					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ObservacionesxFolio e = new ObservacionesxFolio();
 						
@@ -463,11 +463,11 @@ public class CatalogosCEService {
 		}
 
 
-		public List<CorreoCSO> datosCorreo(int pk_id_observacion) {
-			String sql = "CALL SP_DATOS_CORREO_CSO (?);";
+		public List<CorreoCSO> datosCorreo(int pk_id_observacion, int tipoRegistro) {
+			String sql = "CALL SP_DATOS_CORREO_CSO (?,?);";
 			
 			logger.info("Ejecutando: " + sql + "(" + pk_id_observacion + ")");
-			List<CorreoCSO> ls = jdbcTemplate.query(sql, new Object[] { pk_id_observacion },
+			List<CorreoCSO> ls = jdbcTemplate.query(sql, new Object[] { pk_id_observacion,tipoRegistro},
 					new RowMapper<CorreoCSO>() {
 						public CorreoCSO mapRow(ResultSet rs, final int rowNum) throws SQLException {
 							CorreoCSO dtosCorreo = new CorreoCSO();
