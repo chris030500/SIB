@@ -38,5 +38,9 @@ public class RolService {
 		public Rol edit(Rol rol) {
 			return iRolRepository.save(rol);
 		}
+		
+		public Rol findByIdRol(Integer id) {
+			return iRolRepository.findByIdRol(id);
+		}
 
 }
