@@ -413,6 +413,59 @@ function verDetalle(idFolio) {
 			});
 	}
 }
+var obtFolios = "obtFolios?estatus=";
+function consultaDatos(idEstatus){
+	iniciarPantalla();
+	if(idEstatus.value > 0){
+			$.blockUI({ message: 'Espere un momento...' });
+			var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
+		
+			$.getJSON(urlServicio, {}, function(data) {
+				if(data.length > 0){
+					$.each(data, function(idx, opt) {
+						$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
+					});
+				}
+				$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+				setTimeout($.unblockUI, 100);
+			});
+	}else{
+		
+		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+		swal({
+			title: "",
+			text: "Seleccione un estatus Valido.",
+			icon: "warning",
+		});
+	}
+}
+
+function iniciarPantalla(){
+	$("#idOficios").empty();
+	reiniciarSeccionObservaciones();
+	reiniciarSeccionPlanAccion();
+}
+
+function reiniciarSeccionObservaciones(){
+	tblObservaciones.clear().draw();
+	$('#idAsunto').val('');
+	$('#dtRecibo').val('');
+	$('#dtVencimiento').val('');
+	
+}
+function reiniciarSeccionPlanAccion(){
+	tblPlanAccion.clear().draw();
+	document.querySelector('#lblSeleccion').innerText = "";
+	obsId = 0;
+	$('#dtFechaInicio').val('');
+	$('#dtFechaVencimiento').val('');
+	$('#dtFechaInicio').attr("min","fechaInicio");
+	$('#dtFechaInicio').attr("max","fechaVencimiento");
+	$('#dtFechaVencimiento').attr("min","fechaInicio");
+	$('#dtFechaVencimiento').attr("max","fechaVencimiento");
+	
+}
+
 
 function verDetallePA(id) {
 	if(id > 0){
@@ -460,7 +513,8 @@ function asignarFechasObservacion(fecha1, fecha2){
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "min" */
 			elemento.min = fechaInicio;
-			document.getElementById("dtFechaInicio").value = fechaInicio;
+			$('#dtFechaInicio').val(fechaInicio);
+			//document.getElementById("dtFechaInicio").value = fechaInicio;
 	});
 	dtInicio = fechaInicio;
 	
@@ -468,7 +522,8 @@ function asignarFechasObservacion(fecha1, fecha2){
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "min" */
 			elemento.max = fechaVencimiento;
-			document.getElementById("dtFechaVencimiento").value = fechaVencimiento;
+			$('#dtFechaVencimiento').val(fechaVencimiento);
+			//document.getElementById("dtFechaVencimiento").value = fechaVencimiento;
 	});
 	dtVencimiento = fechaVencimiento
 }

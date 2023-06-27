@@ -142,14 +142,14 @@ public class CatalogosCEService {
 		 * @param areaID
 		 * @return
 		 */
-		public List<ListaFolioXEmpleado> listaFolioXEmpleado(Integer idEmpleado) {
+		public List<ListaFolioXEmpleado> listaFolioXEmpleado(Integer idEmpleado, Integer estatus) {
 			logger.info("Ejecutando lista Folio por Empleado: ");
 			try {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
-						+ " where t1.I_RESPONSABLE = ? and t1.I_CONFIRMA IN (1,0);";
+						+ " where t1.I_RESPONSABLE = ? and t1.I_CONFIRMA IN (1,0) and t1.I_ESTATUS = ?;";
 				System.out.print("sql"+sql);
-				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
+				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
 						e.setFolio(rs.getString(1));
@@ -206,7 +206,7 @@ public class CatalogosCEService {
 		 * @param areaID
 		 * @return
 		 */
-		public List<ActividadesPA> buscarActividadesxEmpleado(Integer i_folio, Integer empleadoID) {
+		public List<ActividadesPA> buscarActividadesxEmpleado(Integer i_folio, Integer empleadoID, Integer estatus) {
 			logger.info("Ejecutando lista empleados por area: ");
 			try {
 				String sql = "select t1.PK_ID_PLANACCION "
@@ -219,10 +219,10 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OBSERVACIONESXFOLIO t2 on t1.I_OBSERVACION = t2.PK_ID_OBSERVACION and t2.I_CONFIRMA = 1 "
 						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t3 on t1.I_RESPONSABLE = t3.EmpleadoID "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t1.I_ESTATUS = t4.I_OPCION and t4.I_ID_GRUPO = 6 "
-						+ "where I_FOLIO = ? and t1.I_RESPONSABLE = ? "
+						+ "where t2.I_FOLIO = ? and t1.I_RESPONSABLE = ? and t1.I_ESTATUS = ? "
 						+ "order by t1.DT_FECHA_INICIO asc; ";
 				System.out.print("sql"+sql);
-				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_folio,empleadoID}, new RowMapper<ActividadesPA>() {
+				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_folio,empleadoID,estatus}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
 						
@@ -498,16 +498,16 @@ public class CatalogosCEService {
 		 * @param areaID
 		 * @return
 		 */
-		public List<ListaFolioXEmpleado> listaActividadPAXEmpleado(Integer idEmpleado) {
+		public List<ListaFolioXEmpleado> listaActividadPAXEmpleado(Integer idEmpleado, Integer estatus) {
 			logger.info("Ejecutando lista Folio por Empleado: ");
 			try {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO "
 						+ " FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
-						+ " where t3.I_RESPONSABLE = ?;";
+						+ " where t3.I_RESPONSABLE = ? and t3.I_ESTATUS=?;";
 				System.out.print("sql"+sql);
-				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado}, new RowMapper<ListaFolioXEmpleado>() {
+				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
 						e.setFolio(rs.getString(1));
@@ -532,16 +532,16 @@ public class CatalogosCEService {
 		}
 
 
-		public Object listaActividadPASupervisor(Integer i_id_empleado, Integer pk_id_usuario) {
+		public List<ListaFolioXEmpleado> listaActividadPASupervisor(Integer i_id_empleado, Integer pk_id_usuario, Integer estatus) {
 			logger.info("Ejecutando lista Folio por Empleado: ");
 			try {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO "
 						+ " FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
-						+ " where t3.I_RESPONSABLE = ? or t3.I_USUARIO_REGISTRO = ?;";
+						+ " where (t3.I_RESPONSABLE = ? or t3.I_USUARIO_REGISTRO = ?) and t3.I_ESTATUS = ?;";
 				System.out.print("sql"+sql);
-				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {i_id_empleado,pk_id_usuario}, new RowMapper<ListaFolioXEmpleado>() {
+				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {i_id_empleado,pk_id_usuario,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
 						e.setFolio(rs.getString(1));
@@ -559,7 +559,7 @@ public class CatalogosCEService {
 		}
 
 
-		public List<ActividadesPA> buscarActividadesSupervisor(Integer idFolio, int i_id_empleado, int pk_id_usuario) {
+		public List<ActividadesPA> buscarActividadesSupervisor(Integer idFolio, int i_id_empleado, int pk_id_usuario,Integer estatus) {
 			logger.info("Actividades gistradas y asignadas: ");
 			try {
 				String sql = "select t1.PK_ID_PLANACCION "
@@ -572,10 +572,10 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OBSERVACIONESXFOLIO t2 on t1.I_OBSERVACION = t2.PK_ID_OBSERVACION and t2.I_CONFIRMA = 1 "
 						+ "inner join CE.TBL_MICROFIN_EMPLEADOS t3 on t1.I_RESPONSABLE = t3.EmpleadoID "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t1.I_ESTATUS = t4.I_OPCION and t4.I_ID_GRUPO = 6 "
-						+ "where I_FOLIO = ? and t1.I_RESPONSABLE = ? or t1.I_USUARIO_REGISTRO = ? "
+						+ "where (t2.I_FOLIO = ? and t1.I_ESTATUS = ?) and (t1.I_RESPONSABLE = ? or t1.I_USUARIO_REGISTRO = ?) "
 						+ "order by t1.DT_FECHA_INICIO asc; ";
 				System.out.print("sql"+sql);
-				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {idFolio,i_id_empleado,pk_id_usuario}, new RowMapper<ActividadesPA>() {
+				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {idFolio,estatus,i_id_empleado,pk_id_usuario}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
 						

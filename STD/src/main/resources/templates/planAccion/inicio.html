@@ -29,32 +29,41 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Aceptar Asignacion</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-2">
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus Observacion</label>
+							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
 							<label class="col-form-label"> No. de Oficio</label>
 							<select class="form-control" id="idOficios" onchange="verDetalle(this)" readonly>
 								<option value="0">Seleccione</option>
-								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
-									th:text="${listaFolios.folio}"></option>
+								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>-->
 							</select>
-							<!--<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">-->
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Asunto:</label>
-							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idAsunto" placeholder="Asunto"
 								maxlength="400" readonly></textarea>
 						</div>
-						<div class="col-md-2">
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						
+						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Recibo:</label>
 							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo"
 								readonly>
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Vencimiento:</label>
 							<input class="form-control" type="date" id="dtVencimiento"
 								placeholder="Fecha de Vencimiento" readonly>
 						</div>
-						<div class="col-md-2" style ="justify-content: center;">
+						<div class="col-md-4" style ="justify-content: center;">
 							<label class="col-form-label">Ver documentos:</label>
 							<br>
 							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"

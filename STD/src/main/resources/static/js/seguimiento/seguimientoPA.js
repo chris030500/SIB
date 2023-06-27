@@ -42,7 +42,7 @@ function eventosContadorSeguimiento() {
 	});
 }
 
-var tblObservaciones;
+var tblSeguimiento;
 var tblPlanAccion;
 var tblAdjuntos;
 function inicioTabla() {
@@ -83,7 +83,7 @@ function verActUpload(id) {
 	if (id > 0) {
 		
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + id;
+		var urlServicio = getAbsolutePath() + buscarActividades + id+"&estatus="+document.getElementById("idEstatusFiltro").value;
 		$.getJSON(urlServicio, {}, function(data) {
 			tblPlanAccion.clear().draw();
 			$.each(data, function(idx, opt) {
@@ -109,7 +109,7 @@ function verActividades(idFolio) {
 	if (idFolio.value > 0) {
 		
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value;
+		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value+"&estatus="+document.getElementById("idEstatusFiltro").value;
 		$.getJSON(urlServicio, {}, function(data) {
 			tblPlanAccion.clear().draw();
 			$.each(data, function(idx, opt) {
@@ -474,5 +474,47 @@ function asignarArchivo(archivo) {
 	}
 
 
+}
+
+var obtFolios = "obtFolios?estatus=";
+function consultaDatos(idEstatus){
+	iniciarPantalla();
+	if(idEstatus.value > 0){
+		$.blockUI({ message: 'Espere un momento...' });
+			var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
+			$.getJSON(urlServicio, {}, function(data) {
+				if(data.length > 0){
+					$.each(data, function(idx, opt) {
+						$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
+					});
+				}
+				$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+				setTimeout($.unblockUI, 100);
+			});
+	}else{
+		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+		swal({
+			title: "",
+			text: "Seleccione un estatus Valido.",
+			icon: "warning",
+		});
+	}
+}
+
+function iniciarPantalla(){
+	$("#idOficios").empty();
+	reiniciarSeccionPA();
+	reiniciarSeccionSeguiento();
+}
+
+function reiniciarSeccionPA(){
+	tblPlanAccion.clear().draw();
+}
+
+function reiniciarSeccionSeguiento(){
+	tblSeguimiento.clear().draw();
+	document.getElementById("idActividad").value = 0;
+	$('#idNombreActividad').val('');
+	iniciarAltaSeguimiento();
 }
 

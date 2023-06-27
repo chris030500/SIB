@@ -30,17 +30,25 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Seguimiento</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-5">
-							<label class="col-form-label">Seleccionar Folio para mostrar Actividades</label>
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus Actividad</label>
+							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label">No. de Oficio</label>
 							<!--<input class="form-control" type="text" id="idPlanAccion" placeholder="Identificador del plan de acción">-->
 							<select class="form-control" id="idOficios" onchange="verActividades(this)" readonly>
 								<option value="0">Seleccione</option>
-								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
-									th:text="${listaFolios.folio}"></option>
+								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>-->
 							</select>
 
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-4">
 							<label class="col-form-label">Ver documentos:</label>
 							<br>
 							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
@@ -48,7 +56,6 @@
 								<i class="bi bi-files"></i>
 							</button>
 						</div>
-						<div class="col-md-4"></div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
