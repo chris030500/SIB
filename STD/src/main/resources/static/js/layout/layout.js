@@ -4,22 +4,20 @@ $(document).ready(function() {
 });
 
 function pintarMenuxRol() {
-	var url = "http://localhost:8080/STD/"+opcMenu;
+	var url = window.location.href.substring(0,26)+opcMenu;
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {
 			  var menu = document.getElementById(''+opt.pk_id_menu+'');
 			  menu.style.display = "block";
-			  console.log("menu"+opt.pk_id_menu)
+			  
 			for(var i=0; i < opt.opcMenu.length; i++){
 				 var opcion = document.getElementById('M_O'+opt.opcMenu[i].pk_id_opcion);
 				 opcion.style.display = "block";
 			}
 		});
-		document.querySelectorAll("#sidebar [style='display:none;']").forEach(function(checkElement) {
-			console.log("" + checkElement.id);
+		document.querySelectorAll("#sidebar [style='display:none;']").forEach(function(checkElement) {			
 			$('#'+ checkElement.id+'').remove();
-			//document.getElementById(''+checkElement.id+'').parentNode.removeChild(document.getElementById(''+checkElement.id+''));	
 		});
 	});
 	
