@@ -194,7 +194,7 @@ function eventosBotones() {
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
 				} else {
-					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId;
+					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId + "&idActividad="+document.getElementById("idActividad").value;
 					urlServicio = urlServicio + "&desc_seguimiento=" + document.getElementById("idtxtSeguimiento").value;
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
