@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Generación de contraseña</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card mb-4">
+						<div class="card-header"></div>
+						<div class="card-body">
+							<form th:action="@{/configuracion/guardarContrasena}" method="get">
+								<div class="form-group">
+									<label for="contrasena">Ingresa la contraseña:</label> <input type="text"
+										class="form-control" id="contrasena" name="contrasena" required
+										placeholder="Contraseña" autocomplete="off">
+								</div>
+								<!--Especifica el periodo en días que tiene permitido estar activa . -->
+								<br>
+								<div>
+
+									<h1 style="text-align:center">Parametros de la contraseña</h1>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Longitud: </div>
+										<div class="col-lg-9 col-md-8">
+											<p th:text="${longitud}"></p>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Mayusculas: </div>
+										<div class="col-lg-9 col-md-8">
+											<p th:text="${mayusculas}"></p>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Minusculas: </div>
+										<div class="col-lg-9 col-md-8">
+											<p th:text="${minusculas}"></p>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Números: </div>
+										<div class="col-lg-9 col-md-8">
+											<p th:text="${numeros}"></p>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Caracteres especiales: </div>
+										<div class="col-lg-9 col-md-8">
+											<p th:text="${caracteres}"></p>
+										</div>
+									</div>
+
+								</div>
+
+								<br>
+								<div class="col-sm-2">
+									<button type="button" onclick="generarContrasena()"
+										class="btn btn-primary">Guardar</button>
+								</div>
+							</form>
+						</div>
+
+						<!--<th:block th:replace="_modals :: modal('exampleModal')">modal</th:block>-->
+						<!--<th:block th:replace="_modals :: modal('exampleModal1')">modal</th:block>-->
+						<!--<th:block th:replace="_modals :: modal('exampleModal2')">modal</th:block>-->
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/configuracion.js}"></script>
+	</th:block>
+</body>
+
+</html>

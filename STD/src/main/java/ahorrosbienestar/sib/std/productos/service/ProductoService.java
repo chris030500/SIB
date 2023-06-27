@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.productos.model.Producto;
+import ahorrosbienestar.sib.std.productos.producto_contrato.model.ProductoContrato;
 import ahorrosbienestar.sib.std.productos.repository.IProductoRepository;
 
 
@@ -78,6 +79,10 @@ public class ProductoService {
 		
 		public int cambiarKycYDescripcion(String kyc, String descripcion, Integer idProducto) {
 			return iProductoRepository.cambiarKycYDescripcion(kyc, descripcion, idProducto);
+		}
+		
+		public List<Producto> listaDeProductosConContrato2() {
+			return iProductoRepository.listaDeProductosConContrato2();
 		}
 		
 		
