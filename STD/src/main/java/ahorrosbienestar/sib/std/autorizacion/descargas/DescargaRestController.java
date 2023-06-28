@@ -32,6 +32,8 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import ahorrosbienestar.sib.std.autorizacion.descargas.bitacora_zip.model.BitacoraZipModel;
@@ -171,7 +173,8 @@ public class DescargaRestController {
 					coordenadasDTO.setCustomerNumber(clienteId.toString());
 					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
 					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
-					coordenadasDTO.setIdProduct(idProduct);
+					//coordenadasDTO.setIdProduct(idProduct);
+					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
 					coordenadasDTO.setAccessSystem(nameProducto);
 					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
 					respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
