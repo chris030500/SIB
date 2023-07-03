@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 //import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,10 +34,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import ahorrosbienestar.sib.std.configuracion.login.component.CustomAuthenticationFailureHandler;
 
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuGeneral;
-import ahorrosbienestar.sib.std.core_bancario.dto.MenuxRol;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+
 
 
 @Configuration
@@ -52,32 +51,9 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CoreBancarioService coreBancarioService;
 	
-	@Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
     
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//            .jdbcAuthentication()
-//                .dataSource(datasource)
-//                .passwordEncoder(passwordEncoder())
-//                .usersByUsernameQuery("SELECT u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO, "
-//                		+ "hc.I_NUMERO_INTENTOS_FALLIDOS FROM TBL_CAT_USUARIOS AS u "
-//                		+ "INNER JOIN TBL_HIST_CONTRASENIA AS hc ON (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO) "
-//                		+ "WHERE u.I_ESTATUS_USUARIO = 1 AND u.I_ESTATUS_SESION = 0 AND hc.VC_INDICADOR_ACTIVO = 1 AND u.VC_NOMBRE_USUARIO = ?")
-//                .authoritiesByUsernameQuery("SELECT u.VC_NOMBRE_USUARIO, r.VC_NOMBRE_ROL, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO "
-//                		+ "FROM TBL_CAT_USUARIOS AS u "
-//                		+ "INNER JOIN TBL_CAT_ROL AS r ON (u.Rol_idRol = r.PK_ID_ROL) "
-//                		+ "INNER JOIN TBL_HIST_CONTRASENIA AS hc ON (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO) "
-//                		+ "WHERE hc.VC_INDICADOR_ACTIVO = 1 AND u.VC_NOMBRE_USUARIO = ?");
-//    }
-
 		
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
