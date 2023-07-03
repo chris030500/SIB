@@ -51,17 +51,39 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		try {
-			List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
-			
-			//Aqui especificamos a que url el usuario tiene acceso
+		
 			http.
 			csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").permitAll()
+			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").permitAll();
+			
+			List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
+	        for (MenuGeneral permisos : menuGeneral) {
+	            http.csrf().disable()
+				.authorizeRequests()
+	                    .antMatchers(permisos.getVc_nombre_controller())
+	                    .hasAnyRole(permisos.getVc_nombre_rol().split(","));
+	        }
+			
+	        http.csrf().disable()
+			.authorizeRequests()
+	        .anyRequest().authenticated()
+			.and()
+			.formLogin().loginPage("/login")
+			.permitAll()
+			.and()
+			.logout().permitAll()
+			.and()
+			.exceptionHandling().accessDeniedPage("/error_403");
+	        
+	       
+			//Aqui especificamos a que url el usuario tiene acceso
+//			http.
+//			csrf().disable()
+//			.authorizeRequests()
+//			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").permitAll()
 //			.antMatchers("/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**").hasAnyRole("ADMIN" , "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS","ADMIN_CSO")
 //			.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS","ADMIN_CSO")
-			.antMatchers(menuGeneral.stream().map(MenuGeneral::getVc_nombre_controller).toArray(String[]::new))
-            .hasAnyRole(menuGeneral.stream().flatMap(a -> Arrays.stream(a.getVc_nombre_rol().split(","))).map(String::trim).toArray(String[]::new))
 //			.antMatchers("/documento/**").hasAnyRole("ADMIN_PRUEBA")
 //			.antMatchers("/producto/**").hasAnyRole("ADMIN_PRUEBA")
 //			.antMatchers("/autorizar/**").hasAnyRole("ADMIN_PRUEBA")
@@ -74,14 +96,15 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter{
 //			.antMatchers("/planAccion/**").hasAnyRole("ADMIN_PRUEBA")
 //			.antMatchers("/seguimientoFolio/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
 //			.antMatchers("/reporteFolio/**").hasAnyRole("ADMIN_CSO", "CONSULTA_CSO", "ATENCION_CSO", "RESPONSABLE_CSO","REGISTRO_CSO")
-			.anyRequest().authenticated()
-			.and()
-				.formLogin().loginPage("/login")
-				.permitAll()
-				.and()
-				.logout().permitAll()
-				.and()
-				.exceptionHandling().accessDeniedPage("/error_403");
+//			.anyRequest().authenticated()
+//			.and()
+//				.formLogin().loginPage("/login")
+//				.permitAll()
+//				.and()
+//				.logout().permitAll()
+//				.and()
+//				.exceptionHandling().accessDeniedPage("/error_403");
+			
 			
 	
 			http
