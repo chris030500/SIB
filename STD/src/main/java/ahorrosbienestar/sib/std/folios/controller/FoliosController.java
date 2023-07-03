@@ -12,10 +12,10 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ContentDisposition.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,7 +47,6 @@ import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import org.springframework.core.io.Resource;
 @Controller
 @RequestMapping("folios")
 public class FoliosController {
@@ -93,16 +92,15 @@ public class FoliosController {
 	public FoliosController (FolioService folioService) {
 		this.folioService = folioService;
 	}
-	
+		
 	/**
 	 * Cargar listas iniciales de la pantalla
 	 * @param model
 	 * @return
 	 */
 	@GetMapping("/folio")
-	public String inicioFolio(Model model) {
-		try {
-						
+	public String inicioFolio(Model model) {		
+		try {			
 			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
 			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));

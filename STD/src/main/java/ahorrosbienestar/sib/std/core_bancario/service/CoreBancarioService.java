@@ -15,6 +15,7 @@ import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
+import ahorrosbienestar.sib.std.core_bancario.dto.MenuGeneral;
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuSistema;
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuxRol;
 import ahorrosbienestar.sib.std.core_bancario.dto.OpcionesxRol;
@@ -228,6 +229,26 @@ public class CoreBancarioService {
 							opcMenu.setVc_controller(rs.getString(3));
 							opcMenu.setI_nivel(rs.getInt(4));
 							return opcMenu;
+						}
+					});
+			
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
+	}
+	
+	public List<MenuGeneral> menuGeneral(){
+		try {
+			String sql = "CALL SIB.SP_ACCESO_MENU_GENERAL();";
+			List<MenuGeneral> ls = jdbcTemplate.query(sql, new Object[] {},
+					new RowMapper<MenuGeneral>() {
+						public MenuGeneral mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							MenuGeneral accesoMenu = new MenuGeneral();
+							accesoMenu.setVc_nombre_rol(rs.getString(1));
+							accesoMenu.setVc_nombre_controller(rs.getString(2));
+							return accesoMenu;
 						}
 					});
 			
