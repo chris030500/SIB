@@ -72,16 +72,16 @@ public class SolicitudEnvio {
 	@Column(name = "DT_FECHA_CANCELACION")
 	private LocalDate dt_fecha_cancelacion;
 	
-	@Column(name = "I_INFO_DESCARGA", columnDefinition = "TINYINT(1)")
-	private int i_info_descarga;
+//	@Column(name = "I_INFO_DESCARGA", columnDefinition = "TINYINT(1)")
+//	private int i_info_descarga;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@Column(name = "DT_FECHA_DESCARGA")
-	private LocalDate dt_fecha_descarga;
+//	@JsonFormat(pattern = "yyyy-MM-dd")
+//	@DateTimeFormat(pattern = "yyyy-MM-dd")
+//	@Column(name = "DT_FECHA_DESCARGA")
+//	private LocalDate dt_fecha_descarga;
 	
-	@Column(name = "VC_RUTA")
-	private String vc_ruta;
+//	@Column(name = "VC_RUTA")
+//	private String vc_ruta;
 	
 	@Column(name = "I_IDENTIFICADOR_RUTA")
 	private int i_identificador_ruta;
@@ -228,29 +228,29 @@ public class SolicitudEnvio {
 		this.fk_usr_cancela = fk_usr_cancela;
 	}
 
-	public int getI_info_descarga() {
-		return i_info_descarga;
-	}
-
-	public void setI_info_descarga(int i_info_descarga) {
-		this.i_info_descarga = i_info_descarga;
-	}
-
-	public LocalDate getDt_fecha_descarga() {
-		return dt_fecha_descarga;
-	}
-
-	public void setDt_fecha_descarga(LocalDate dt_fecha_descarga) {
-		this.dt_fecha_descarga = dt_fecha_descarga;
-	}
-
-	public String getVc_ruta() {
-		return vc_ruta;
-	}
-
-	public void setVc_ruta(String vc_ruta) {
-		this.vc_ruta = vc_ruta;
-	}
+//	public int getI_info_descarga() {
+//		return i_info_descarga;
+//	}
+//
+//	public void setI_info_descarga(int i_info_descarga) {
+//		this.i_info_descarga = i_info_descarga;
+//	}
+//
+//	public LocalDate getDt_fecha_descarga() {
+//		return dt_fecha_descarga;
+//	}
+//
+//	public void setDt_fecha_descarga(LocalDate dt_fecha_descarga) {
+//		this.dt_fecha_descarga = dt_fecha_descarga;
+//	}
+//
+//	public String getVc_ruta() {
+//		return vc_ruta;
+//	}
+//
+//	public void setVc_ruta(String vc_ruta) {
+//		this.vc_ruta = vc_ruta;
+//	}
 
 	public String getVc_obser_cancelacion() {
 		return vc_obser_cancelacion;

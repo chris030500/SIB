@@ -87,6 +87,7 @@ public class FoliosController {
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
+	private int tipoArchivo = 9;
 	
 	@Autowired
 	public FoliosController (FolioService folioService) {
@@ -104,6 +105,7 @@ public class FoliosController {
 			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
 			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
 			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
 			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
@@ -274,7 +276,7 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "folioID") Integer folioID,
-					@RequestParam(name = "obsOficio") Integer obsOficio
+					@RequestParam(name = "obsOficio") String obsOficio
 					){
 				
 				String mensaje ="Registro Correctamente.";
@@ -292,7 +294,7 @@ public class FoliosController {
 				}
 			}
 			
-			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, Integer obsOficio) {
+			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, String obsOficio) {
 				Integer estatus = 1;
 				try {
 					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -317,10 +319,10 @@ public class FoliosController {
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
-					altaObs.setI_observacion_oficio(obsOficio);
+					altaObs.setVc_observacion_oficio(obsOficio);
 					
 					observacionService.save(altaObs);
-					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
+					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
 					
 				} catch (Exception e) {
 					System.out.println("--"+e.getMessage());
@@ -336,7 +338,7 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "reasignar") Integer reasignar,
-					@RequestParam(name = "obsOficio") Integer obsOficio){
+					@RequestParam(name = "obsOficio") String obsOficio){
 				
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
@@ -359,7 +361,7 @@ public class FoliosController {
 						}
 					}else if(reasignar == 0) {
 						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
-							correoCSOService.registrarCorreo(idObservacion);
+							correoCSOService.registrarCorreo(idObservacion,1);
 							respuesta.add(mensaje);
 						}else {
 							respuesta.add("No se actualizo correctamente");
@@ -498,7 +500,7 @@ public class FoliosController {
 					ContentDisposition contentDisposition = null;
 					HttpHeaders h2 = new HttpHeaders();
 					
-					contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+					contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 					h2.setContentDisposition(contentDisposition);
 					
 					return ResponseEntity.ok().contentLength((long) bytesPDF.length)

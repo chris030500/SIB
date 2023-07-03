@@ -35,10 +35,6 @@ public class DoctoVideoModel {
 	@Column(name = "I_ESTATUS")
 	private int i_estatus;
 	
-	//@OneToMany
-	//@OneToOne
-	//@ManyToOne
-	//@OneToOne
 	@ManyToOne
 	@JoinColumn(name = "FK_SOLICITUD_ENVIO")
 	private SolicitudEnvio fk_solicitud_envio;

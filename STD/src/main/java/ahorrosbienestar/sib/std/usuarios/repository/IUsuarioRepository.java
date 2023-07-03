@@ -71,12 +71,13 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS SET I_ESTATUS_SESION = 0 WHERE PK_ID_USUARIO  > :usuario", nativeQuery=true)
+	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS SET I_ESTATUS_SESION = 0 WHERE PK_ID_USUARIO  = :usuario", nativeQuery=true)
 	public int destruirSesion(@Param("usuario") int usuario);
 	
 	@Modifying
-    @Query(value = "UPDATE USUARIO SET I_ESTATUS_SESION = 0", nativeQuery = true)
-    void destruirSesionUsuario();
+	@Transactional
+    @Query(value = "UPDATE SIB.TBL_CAT_USUARIOS SET I_ESTATUS_SESION = 0 WHERE PK_ID_USUARIO > 0 AND I_ESTATUS_SESION = 1", nativeQuery = true)
+    public int destruirSesionUsuario();
 	
 	
 	

@@ -943,7 +943,11 @@ function conexionApi(usuario, password, userType, validacion, solicitudEnvio) {
 				showConfirmButton: false
 
 			});
+			document.getElementById('btnVoBoDocumentos').disabled = false;
+			document.getElementById('spanCargando').style.display = 'none';
+			document.getElementById('spanGuardar').style.display = 'block';
 			loader.classList.add("hide-loader");
+			//loader.classList.add("hide-loader");
 		}
 	});
 }
@@ -1177,7 +1181,7 @@ function envioDocFirmaAPI(xml, pdf, hash, token, soliEnvio) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			//var resultadoLogin = true;
-			//console.log("Respuesta success envioDocFirmaAPI: " + JSON.stringify(respuesta));
+			console.log("Respuesta success envioDocFirmaAPI: " + JSON.stringify(respuesta));
 			if (JSON.stringify(respuesta).includes("error")) {
 				resultadoLogin = false;
 				//console.log("Tiene error envioDocFirmaAPI");
@@ -1238,6 +1242,7 @@ function guardarWSAuteUsuEnvDoctFirma(resultadoLogin, solicitudEnvio, idConfWS, 
 	//console.log("Ejecutando guardarWSAuteUsuEnvDoctFirma: " + JSON.stringify(resJson));
 	var tpProceso = "ENVIO DE DOCUMENTOS";
 	var respuestaEnvioSoli = JSON.stringify(resJson);
+	console.log("respuestaEnvioSoli: " + respuestaEnvioSoli);
 	if (respuestaEnvioSoli.includes("requisitionId")) {
 		//console.log("Si tiene requisition ID");
 		var requisitionId = resJson.data.requisitionId;
