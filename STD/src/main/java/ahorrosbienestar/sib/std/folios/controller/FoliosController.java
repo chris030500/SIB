@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import ahorrosbienestar.sib.std.catalogos.dto.ArchivosAdjuntos;
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
@@ -405,6 +406,7 @@ public class FoliosController {
 				try {
 					if(files.length > 0) {
 						for(MultipartFile file: files) {
+							if(archivosFoliosService.existeNombre(file.getOriginalFilename(),idFolio) == 0) {
 							 byte[] bytes = file.getBytes();
 							 File directorio = new File(UrlPDFServidor()+idFolio);
 							 if(!directorio.exists()) {
@@ -422,6 +424,9 @@ public class FoliosController {
 			                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 			                     mensaje="Se agrego archivo correctamente.";
 							 }
+						   }else {
+							   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+						   }
 						}
 					}else {
 						mensaje="No subio archivo.";
@@ -446,6 +451,14 @@ public class FoliosController {
 				Integer respuesta=0;
 				try {
 				
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					UserDetails userDetails = null;
+					if (principal instanceof UserDetails) {
+						userDetails = (UserDetails) principal;
+					}
+					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+					
+					
 					LocalDate fecha = LocalDate.now();
 					ArchivosFolios alta = new ArchivosFolios();
 					alta.setI_folio(Integer.parseInt(idFolio));
@@ -453,6 +466,7 @@ public class FoliosController {
 					alta.setI_estatus(estatus);
 					alta.setVc_ruta_docto(urlArchivo);
 					alta.setVc_nombre_docto(nombreArchivo);
+					alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
 					
 					ArchivosFolios registro = archivosFoliosService.registrar(alta);
 					
@@ -475,10 +489,10 @@ public class FoliosController {
 			 * @return
 			 */
 			@GetMapping("/buscarArchivos")
-			public ResponseEntity<List<ArchivosFolios>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
+			public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
-					return ResponseEntity.ok(archivosFoliosService.obtRegistros(idFolio));
+					return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
 					return null;

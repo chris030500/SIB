@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
+import ahorrosbienestar.sib.std.catalogos.dto.ArchivosAdjuntos;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
 import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
@@ -79,6 +80,7 @@ public class SeguimientoFolioController {
 	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
 	private String rolResponsable = "ROLE_ADMIN_CSO";
 	private int catEstatus = 6;
+	private int tipoArchivo = 9;
 	
 	@Autowired
 	public SeguimientoFolioController(SeguimientoFolioService seguimientoFolioService) {
@@ -89,7 +91,7 @@ public class SeguimientoFolioController {
 	public String inicioFolio(Model model) {
 		
 		try {
-					
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
 			
 			return "seguimientoFolio/seguimiento";
@@ -254,10 +256,10 @@ public class SeguimientoFolioController {
 	 * @return
 	 */
 	@GetMapping("/buscarArchivos")
-	public ResponseEntity<List<ArchivosFolios>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
+	public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 		
 		try {
-			return ResponseEntity.ok(archivosFoliosService.obtRegistros(idFolio));
+			return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;
@@ -309,6 +311,7 @@ public class SeguimientoFolioController {
 		try {
 			if(files.length > 0) {
 				for(MultipartFile file: files) {
+					if(archivosFoliosService.existeNombre(file.getOriginalFilename(),idFolio) == 0) {
 					 byte[] bytes = file.getBytes();
 					 File directorio = new File(UrlPDFServidor()+idFolio);
 					 if(!directorio.exists()) {
@@ -326,6 +329,9 @@ public class SeguimientoFolioController {
 	                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 	                     mensaje="Se agrego archivo correctamente.";
 					 }
+					}else {
+						   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+					}
 				}
 			}else {
 				mensaje="No subio archivo.";
@@ -343,7 +349,13 @@ public class SeguimientoFolioController {
 		Integer estatus = 1;
 		Integer respuesta=0;
 		try {
-		
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
 			LocalDate fecha = LocalDate.now();
 			ArchivosFolios alta = new ArchivosFolios();
 			alta.setI_folio(Integer.parseInt(idFolio));
@@ -351,6 +363,8 @@ public class SeguimientoFolioController {
 			alta.setI_estatus(estatus);
 			alta.setVc_ruta_docto(urlArchivo);
 			alta.setVc_nombre_docto(nombreArchivo);
+			alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
+			
 			
 			ArchivosFolios registro = archivosFoliosService.registrar(alta);
 			

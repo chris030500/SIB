@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
+import ahorrosbienestar.sib.std.catalogos.dto.ArchivosAdjuntos;
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaAreas;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
@@ -595,5 +596,24 @@ public class CatalogosCEService {
 				return null;
 			}
 		}
+		
+		public List<ArchivosAdjuntos> datosArchivos(Integer idFolio) {
+			String sql = "CALL SIB.SP_DATOS_TBLS_CSO (?,?);";
+			
+			List<ArchivosAdjuntos> ls = jdbcTemplate.query(sql, new Object[] {1,idFolio},
+					new RowMapper<ArchivosAdjuntos>() {
+						public ArchivosAdjuntos mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							ArchivosAdjuntos dtosAdjuntos = new ArchivosAdjuntos();
+							dtosAdjuntos.setPk_id_archivo(rs.getInt(1));
+							dtosAdjuntos.setVc_nombre_docto(rs.getString(2));
+							dtosAdjuntos.setVc_nombre_adjunto(rs.getString(3));
+
+							return dtosAdjuntos;
+						}
+					});
+			
+			return ls;
+		}
+		
 		
 }
