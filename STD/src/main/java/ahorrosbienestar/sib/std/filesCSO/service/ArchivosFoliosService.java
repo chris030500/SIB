@@ -37,4 +37,8 @@ public class ArchivosFoliosService {
 		return iArchivosFoliosRepository.actualizar(idArchivo);
 	}
 
+	public int existeNombre(String name, String idFolio) {
+		return iArchivosFoliosRepository.existeNombre(name,idFolio);
+	}
+
 }

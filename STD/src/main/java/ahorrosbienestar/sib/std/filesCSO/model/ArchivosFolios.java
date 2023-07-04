@@ -40,6 +40,9 @@ public class ArchivosFolios {
 	@Column(name = "VC_NOMBRE_DOCTO", columnDefinition = "VARCHAR(600)")
 	private String vc_nombre_docto;
 	
+	@Column(name = "I_EMPLEADO_REGISTRO", columnDefinition = "INT")
+	private int i_empleado_registro;
+	
 	public int getPk_id_archivo() {
 		return pk_id_archivo;
 	}
@@ -86,6 +89,14 @@ public class ArchivosFolios {
 
 	public void setVc_nombre_docto(String vc_nombre_docto) {
 		this.vc_nombre_docto = vc_nombre_docto;
+	}
+
+	public int getI_empleado_registro() {
+		return i_empleado_registro;
+	}
+
+	public void setI_empleado_registro(int i_empleado_registro) {
+		this.i_empleado_registro = i_empleado_registro;
 	}
 	
 }

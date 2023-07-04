@@ -13,9 +13,21 @@ $(document).ready(function() {
 	});
 	$("#btnGuardarFile").click(function() {
 		if (document.getElementById("file").value.length > 0) {
-			var form = $('#adjuntoArchivoOficio')[0];
-			var data = new FormData(form);
-			addArchivos(data)
+			
+		    Swal.fire({
+				title: 'Procesando.....',
+  				text: 'Espere un momento..',
+  				timer: 4000, // tiempo en milisegundos
+ 				timerProgressBar: true,
+  				showConfirmButton: false
+			}).then((result) => {
+  				// Este código se ejecutará después de que el temporizador haya terminado
+ 				 if (result.dismiss === Swal.DismissReason.timer) {
+    					var form = $('#adjuntoArchivoOficio')[0];
+						var data = new FormData(form);
+						addArchivos(data)
+ 				 }
+			});
 		} else {
 			swal({
 				title: "Informacion.",
@@ -377,7 +389,7 @@ function obtDtostblAdjuntos(url) {
 				+ opt.pk_id_archivo
 				+ " >"
 				+ " <i class='bi bi-download'></i></button>";
-			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto,opt.vc_nombre_adjunto,botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
