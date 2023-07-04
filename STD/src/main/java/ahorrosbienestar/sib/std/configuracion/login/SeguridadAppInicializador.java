@@ -57,6 +57,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// Aqui especificamos a que url el usuario tiene acceso
 		http.csrf().disable().authorizeRequests().antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+				.antMatchers("/STD/login").permitAll()
 				.antMatchers("/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**")
 				.hasAnyRole("ADMIN", "EJECUTIVO", "VALIDADOR", "CONSULTA", "AUTORIZADOR", "ARCHIVO", "PRODUCTOS")
 				.antMatchers("/configuracion/**", "/configuracion/guardarConfContrasena/**",
