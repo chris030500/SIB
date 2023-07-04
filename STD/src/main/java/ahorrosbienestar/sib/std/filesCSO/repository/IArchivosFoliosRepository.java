@@ -20,4 +20,7 @@ public interface IArchivosFoliosRepository extends JpaRepository<ArchivosFolios,
 	@Query(value="UPDATE SIB.TBL_ARCHIVOS_FOLIOS SET I_ESTATUS=:2 WHERE PK_ID_ARCHIVO =:idArchivo ",nativeQuery = true)
 	public int actualizar(@Param("idArchivo") Integer idArchivo);
 
+	@Query(value = "SELECT count(*) FROM SIB.TBL_ARCHIVOS_FOLIOS  WHERE VC_NOMBRE_DOCTO=:name and I_ESTATUS=1 and I_FOLIO=:idFolio", nativeQuery = true)
+	public int existeNombre(@Param("name") String name,@Param("idFolio") String idFolio);
+
 }

@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.xml.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,6 +22,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -36,6 +39,7 @@ import ahorrosbienestar.sib.std.firma_docto_unificado.model.FirmaDoctoUnificado;
 import ahorrosbienestar.sib.std.firma_docto_unificado.service.FirmaDoctoUnificadoService;
 import ahorrosbienestar.sib.std.productos.model.Producto;
 import ahorrosbienestar.sib.std.productos.service.ProductoService;
+import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 
 @Service
@@ -76,6 +80,7 @@ public class CrearXmlService {
 		List<ParticipantesDto> titular = coreBancarioService.traeParticipantes(solicitudCore);
 		List<ValidaSolicitudDto> datosSolicitud = coreBancarioService.validaSolicitud(solicitudCore);
 		List<Configuracion> configuracion = configService.findAll();
+		SolicitudEnvio fecha = solicitudEnvioService.findById(solicitudEnvio).get();
 		if (!titular.isEmpty() && !datosSolicitud.isEmpty() && !configuracion.isEmpty()) {
 			try {
 				logger.info("CORE: " + solicitudCore);
@@ -89,8 +94,20 @@ public class CrearXmlService {
 				String correoParticipanteTitular = titular.get(0).getCorreoElectronico();
 				String estado = titular.get(0).getEstado();
 				String direccion = titular.get(0).getDireccion();
-				logger.info("Dirección: " + direccion);
+				String productoSafi = datosSolicitud.get(0).getProducto();
+				LocalDate fechaVideograbacion = fecha.getDt_fecha_envio();
+				
+				// Crear un formateador de fecha personalizado
+		        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("d 'de' MMMM 'del' yyyy", new Locale("es"));
 
+		        // Formatear la fecha
+		        String fechaFormateada = fechaVideograbacion.format(formateador);
+		        
+				logger.info("Dirección: " + direccion);
+				logger.info("fechaVideograbacion" + fechaVideograbacion);
+				
+				
+				
 				String monto = fMonto.format(Double.parseDouble(datosSolicitud.get(0).getMontoAutorizado()));
 				monto = "$ " + monto.trim();
 				String plazo = datosSolicitud.get(0).getPlazo();
@@ -124,9 +141,11 @@ public class CrearXmlService {
 
 				// Asignamos los nuevos parametros.
 
-				String nuevoMensaje = mensaje.replace("$variable1", estado).replace("$variable2", direccion)
-						.replace("$variable3", nombre).replace("$variable4", monto).replace("$variable5", plazo)
-						.replace("$variable6", tasa).replace("$variable7", tasaMoratoria);
+				String nuevoMensaje = mensaje.replace("$variable1", fechaFormateada).replace("$variable2", estado)
+						.replace("$variable3", direccion)
+						.replace("$variable4", nombre).replace("$variable5", productoSafi)
+						.replace("$variable6", monto).replace("$variable7", plazo)
+						.replace("$variable8", tasa).replace("$variable9", tasaMoratoria);
 				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				// Elemento raíz
