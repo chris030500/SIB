@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+
 
 @Repository
 public interface IConfiguracionRepository extends JpaRepository<Configuracion, Integer> {
@@ -89,4 +89,7 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'urlCSO';", nativeQuery = true)
 	public List<Configuracion> obtenerUrlCSO();
+	
+	@Query(value = "SELECT VC_VALOR_PROPIEDAD FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD =:nomPropiedad", nativeQuery = true)
+	public String buscarPropiedad(@Param("nomPropiedad") String nomPropiedad);
 }
