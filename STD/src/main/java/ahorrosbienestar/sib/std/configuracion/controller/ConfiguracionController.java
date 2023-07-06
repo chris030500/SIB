@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,7 +32,10 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -51,24 +56,41 @@ public class ConfiguracionController {
 
 	@Autowired
 	private ConfigService configService;
-
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
+	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(ConfiguracionController.class);
 
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
+	
 	// Cargamos la vista de la configuracion de los parametros de la contraseña
 
 	@GetMapping("/contrasena")
 	public String inicio(Model model) throws IOException {
 		logger.info("Ejecutando contrasena");
+		String nombrePantalla = "Contraseña";
+		if(validarAcceso(nombrePantalla) == 1) {
+			model.addAttribute("titulo", "configuracion");
+			model.addAttribute("longitud", configService.findAll().get(0).getVc_valor_propiedad());
+			model.addAttribute("caracteres", configService.findAll().get(1).getVc_valor_propiedad());
+			model.addAttribute("numeros", configService.findAll().get(2).getVc_valor_propiedad());
+			model.addAttribute("minusculas", configService.findAll().get(3).getVc_valor_propiedad());
+			model.addAttribute("mayusculas", configService.findAll().get(4).getVc_valor_propiedad());
 
-		model.addAttribute("titulo", "configuracion");
-		model.addAttribute("longitud", configService.findAll().get(0).getVc_valor_propiedad());
-		model.addAttribute("caracteres", configService.findAll().get(1).getVc_valor_propiedad());
-		model.addAttribute("numeros", configService.findAll().get(2).getVc_valor_propiedad());
-		model.addAttribute("minusculas", configService.findAll().get(3).getVc_valor_propiedad());
-		model.addAttribute("mayusculas", configService.findAll().get(4).getVc_valor_propiedad());
-
-		return "configuracion/configuracionContrasena";
+			rutaDireccion = "configuracion/configuracionContrasena";
+		}else {
+			rutaDireccion = rutaError;
+		}
+		return rutaDireccion;
 	}
 
 	// Guardamos la configuracion de los parametros de la contraseña
@@ -93,12 +115,20 @@ public class ConfiguracionController {
 	@GetMapping("/bloqueoSesiones")
 	public String sesiones(Model model) throws IOException {
 		logger.info("Ejecutando Sesiones");
-		model.addAttribute("titulo", "Configuración de sesiones");
-		model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
-		model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
-		model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
-
-		return "configuracion/bloqueoSesiones";
+		String nombrePantalla = "Sesiones";
+		if(validarAcceso(nombrePantalla) == 1) {
+			model.addAttribute("titulo", "Configuración de sesiones");
+			model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
+			model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
+			model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
+			
+			rutaDireccion = "configuracion/bloqueoSesiones";
+		}else {
+			rutaDireccion = rutaError;
+		}
+		
+		
+		return rutaDireccion;
 	}
 
 	@PostMapping("/guardarBloqueoSesiones")
@@ -120,8 +150,16 @@ public class ConfiguracionController {
 	@GetMapping("/sesionesInactiva")
 	public String sesionesInactivas(Model model) throws IOException {
 		logger.info("Ejecutando SesionesInactivas");
-		model.addAttribute("titulo", "Sesiones inactivas");
-		return "configuracion/bloqueoInactividad";
+		String nombrePantalla = "Sesiones";
+		if(validarAcceso(nombrePantalla) == 1) {
+			model.addAttribute("titulo", "Sesiones inactivas");
+			rutaDireccion = "configuracion/bloqueoInactividad";
+		}else {
+			rutaDireccion = rutaError;
+		}
+		
+		
+		return rutaDireccion;
 	}
 
 	// Desbloqueo de sesión o cuenta del usuario
@@ -217,4 +255,19 @@ public class ConfiguracionController {
 				Integer.parseInt(configService.findAll().get(1).getVc_valor_propiedad())));
 	}
 
+	public int validarAcceso(String pantalla) {
+				
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(pantalla));
+		
+		
+	}
+	
+	
 }

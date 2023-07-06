@@ -11,6 +11,8 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +28,12 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -50,6 +55,18 @@ public class UsuarioController {
 	@Autowired
 	private ConfiguracionService configuracionService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
+	
+	private static final String nombrePantalla = "Usuarios";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(UsuarioController.class);
 
@@ -57,15 +74,21 @@ public class UsuarioController {
 	@GetMapping("/formulario")
 	public String InicioUsuario(Model model) {
 		logger.info("Ejecutando formulario");
-		Usuario usuario = new Usuario();
-		HistContrasena hc = new HistContrasena();
-		//logger.info("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
-		model.addAttribute("historico", hc);
-		model.addAttribute("usuario", usuario);
 		
-		// Mostramos todos los usuarios
-		model.addAttribute("usuarios", usuarioService.findAll());
-		return "usuario/usuarios";
+		if(validarAcceso() == 1) {
+			Usuario usuario = new Usuario();
+			HistContrasena hc = new HistContrasena();
+			//logger.info("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
+			model.addAttribute("historico", hc);
+			model.addAttribute("usuario", usuario);
+			
+			// Mostramos todos los usuarios
+			model.addAttribute("usuarios", usuarioService.findAll());
+			rutaDireccion = "usuario/usuarios";
+		}else {
+			rutaDireccion = rutaError;
+		}
+		return rutaDireccion;
 	}
 
 	@GetMapping("/altaUsuario")
@@ -123,6 +146,20 @@ public class UsuarioController {
 				Integer.parseInt(caracteres)));
 	}
 	
+	public int validarAcceso() {
+		
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
+	}
 	
 
 }

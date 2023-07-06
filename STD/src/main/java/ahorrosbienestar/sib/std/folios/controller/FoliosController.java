@@ -46,6 +46,8 @@ import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
@@ -85,10 +87,21 @@ public class FoliosController {
 	@Autowired
 	private ArchivosFoliosService archivosFoliosService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
 	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Alta Oficio";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
+
 	
 	@Autowired
 	public FoliosController (FolioService folioService) {
@@ -102,15 +115,22 @@ public class FoliosController {
 	 */
 	@GetMapping("/folio")
 	public String inicioFolio(Model model) {		
-		try {			
-			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
-			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
-			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
-			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
-			return "folios/inicio";
+		try {
+			if(validarAcceso() == 1) {
+				model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
+				model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
+				model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
+				model.addAttribute("lista_folios",catalogosCEService.obtFolios());
+				
+				rutaDireccion = "folios/inicio";
+			}else {
+				rutaDireccion = rutaError;
+			}
+
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 		}
@@ -525,5 +545,20 @@ public class FoliosController {
 					System.out.print("--" + e.getMessage());
 					return null;
 				}
+			}
+			
+			public int validarAcceso() {
+				
+				
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+				return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+				
+				
 			}
 }

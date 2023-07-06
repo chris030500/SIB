@@ -37,6 +37,8 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
 import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
 import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.planAccion.controller.PlanAccionController;
 import ahorrosbienestar.sib.std.seguimientoFolio.model.SeguimientoFolio;
 import ahorrosbienestar.sib.std.seguimientoFolio.repository.ISeguimientoFolioRepository;
@@ -77,10 +79,20 @@ public class SeguimientoFolioController {
 	@Autowired
 	private CorreoCSOService correoCSOService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
 	private String rolResponsable = "ROLE_ADMIN_CSO";
 	private int catEstatus = 6;
 	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Seguimiento";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
 	
 	@Autowired
 	public SeguimientoFolioController(SeguimientoFolioService seguimientoFolioService) {
@@ -91,10 +103,15 @@ public class SeguimientoFolioController {
 	public String inicioFolio(Model model) {
 		
 		try {
-			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			
-			return "seguimientoFolio/seguimiento";
+
+			if(validarAcceso() == 1) {
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				rutaDireccion = "seguimientoFolio/seguimiento";
+			}else {
+				rutaDireccion = rutaError;
+			}
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 		}
@@ -404,5 +421,20 @@ public class SeguimientoFolioController {
 			return null;
 		}
 	
+	}
+	
+	public int validarAcceso() {
+		
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
 	}
 }

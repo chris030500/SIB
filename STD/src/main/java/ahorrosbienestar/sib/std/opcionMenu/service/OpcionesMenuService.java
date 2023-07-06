@@ -20,5 +20,10 @@ public class OpcionesMenuService {
 	public List<OpcionesMenu> findAll(){
 		return iOpcionesMenuRepository.findAll();
 	}
+
+	public int buscarRelacion(String nombrepantalla) {
+		
+		return iOpcionesMenuRepository.buscarRelacion(nombrepantalla);
+	}
 	
 }

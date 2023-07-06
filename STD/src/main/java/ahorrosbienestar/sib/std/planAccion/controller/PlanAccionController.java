@@ -41,6 +41,8 @@ import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
 import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.planAccion.model.PlanAccion;
 import ahorrosbienestar.sib.std.planAccion.repository.IPlanAccionRepository;
 import ahorrosbienestar.sib.std.planAccion.service.PlanAccionService;
@@ -84,10 +86,20 @@ public class PlanAccionController {
 	@Autowired
 	private ConfigService configService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	
 	private int catEstatus = 6;
 	private int catFinActividad = 8;
 	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Registro de Plan de Accion";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -101,19 +113,25 @@ public class PlanAccionController {
 	@GetMapping("/aceptarAsignacion")
 	public String inicioFolio(Model model) {
 		try {
+			
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-
-			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
 			
-			return "planAccion/inicio";
+			if(validarAcceso() == 1) {
+				model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
+				rutaDireccion = "planAccion/inicio";
+			}else {
+				rutaDireccion = rutaError;
+			}
+		
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 			return null;
@@ -487,6 +505,21 @@ public class PlanAccionController {
 			return null;
 		}
 	
+	}
+	
+	public int validarAcceso() {
+		
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
 	}
 	
 }
