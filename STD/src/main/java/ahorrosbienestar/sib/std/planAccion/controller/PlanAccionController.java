@@ -165,6 +165,7 @@ public class PlanAccionController {
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 		}
+		logger.info(respuesta);
 		return ResponseEntity.ok(respuesta);
 	}
 	/**
@@ -188,14 +189,16 @@ public class PlanAccionController {
 				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
-	
+		
 	}
 	
 	
@@ -348,11 +351,12 @@ public class PlanAccionController {
 			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario(),confirmaResponsable);
 			catalogosCEService.actEstatus(idActividad,4,5);
 			catalogosCEService.actEstatusCascada(idActividad);
-			
+			logger.info(respuesta);
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			respuesta.add(""+e.getMessage());
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -427,6 +431,7 @@ public class PlanAccionController {
 		                        Files.write(nuevoPath, bytes);
 		                        datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 		                        mensaje="Se agrego archivo correctamente.";
+		                        logger.info(mensaje);
 						 }else {
 							 logger.error("Error al crear directorio: " + directorio);
 						 }
@@ -435,13 +440,16 @@ public class PlanAccionController {
 	                     Files.write(nuevoPath, bytes);
 	                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 	                     mensaje="Se agrego archivo correctamente.";
+	                     logger.info(mensaje);
 					 }
 					}else {
 						   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+						   logger.info(mensaje);
 					}
 				}
 			}else {
 				mensaje="No subio archivo.";
+				logger.info(mensaje);
 			}
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

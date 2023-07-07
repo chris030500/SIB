@@ -144,7 +144,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/obtenerFolios")
 	public ResponseEntity<List<ListaFolios>> obtenerFolios(Model model) {
-		
+		 logger.info("/obtenerFolios");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtFolios());
 		} catch (Exception e) {
@@ -160,7 +160,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/buscarPuesto")
 	public ResponseEntity<?> buscarPuesto(@RequestParam("empleadoID") Integer empleadoID, Model model) {
-
+		logger.info("/buscarPuesto");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtenerPuesto(empleadoID));
 		} catch (Exception e) {
@@ -176,6 +176,7 @@ public class FoliosController {
 	@GetMapping("/busquedaxArea")
 	public ResponseEntity<?> busquedaxArea(@RequestParam("areaID") Integer areaID){
 		try {
+			logger.info("/busquedaxArea"+"dtos:"+areaID);
 			List<EmpleadosCE> listaResponsables = catalogosCEService.busquedaxArea(areaID);
 			return ResponseEntity.ok((listaResponsables != null)?listaResponsables:0);
 		} catch (Exception e) {
@@ -201,6 +202,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/altaFolio"+"dtos:"+noficio);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -255,6 +257,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/modificarFolio"+"dtos:"+id);
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -282,6 +285,7 @@ public class FoliosController {
 			public ResponseEntity<List<ObservacionesxFolio>> buscarObservaciones(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
+					logger.info("/buscarObservaciones"+"dtos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.obtObservaciones(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
@@ -299,7 +303,7 @@ public class FoliosController {
 					@RequestParam(name = "folioID") Integer folioID,
 					@RequestParam(name = "obsOficio") String obsOficio
 					){
-				
+				logger.info("/altaObservacion"+"dtos:"+idAreaAtencion);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -344,7 +348,7 @@ public class FoliosController {
 					
 					observacionService.save(altaObs);
 					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
-					
+					logger.info("Registro Correo:"+altaObs.getPk_id_observacion());
 				} catch (Exception e) {
 					System.out.println("--"+e.getMessage());
 				} 
@@ -387,7 +391,8 @@ public class FoliosController {
 						}else {
 							respuesta.add("No se actualizo correctamente");
 						}
-					}			
+					}		
+					logger.info("modificarObservacion:"+idObservacion);
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
 					respuesta.add(e.getMessage());
@@ -434,6 +439,7 @@ public class FoliosController {
 				                        Files.write(nuevoPath, bytes);
 				                        datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 				                        mensaje="Se agrego archivo correctamente.";
+				                        logger.info(mensaje);
 								 }else {
 									 logger.error("Error al crear directorio: " + directorio);
 								 }
@@ -442,13 +448,16 @@ public class FoliosController {
 			                     Files.write(nuevoPath, bytes);
 			                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 			                     mensaje="Se agrego archivo correctamente.";
+			                     logger.info(mensaje);
 							 }
 						   }else {
 							   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+							   logger.info(mensaje);
 						   }
 						}
 					}else {
 						mensaje="No subio archivo.";
+						logger.info(mensaje);
 					}
 					respuesta.add(mensaje);
 					return ResponseEntity.ok(respuesta);
@@ -511,6 +520,7 @@ public class FoliosController {
 			public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
+					logger.info("/buscarArchivos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
@@ -526,6 +536,7 @@ public class FoliosController {
 			@GetMapping("/buscarPDF")
 			public ResponseEntity<Resource> buscarPDF(@RequestParam("idArchivo") Integer idArchivo,Model model) {
 				try {
+					logger.info("/buscarPDF:"+idArchivo);
 					Optional<ArchivosFolios> dtos= archivosFoliosService.porID(idArchivo);
 					File file = new File(UrlPDFServidor()+dtos.get().getVc_ruta_docto());
 					byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
