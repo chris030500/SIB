@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 
 function pintarMenuxRol() {
-	var url = window.location.href.substring(0,26)+opcMenu;
+	var url = window.location.href.substring(0,22)+opcMenu;
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {
