@@ -50,9 +50,6 @@ public class CrudRestController {
 	private UsuarioService usuarioService;
 
 	@Autowired
-	private FormatoPldService formatoPldService;
-
-	@Autowired
 	private BitacoraPldService bitacoraPldService;
 
 	@Autowired
