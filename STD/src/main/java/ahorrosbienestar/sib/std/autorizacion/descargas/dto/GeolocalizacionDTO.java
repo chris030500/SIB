@@ -109,5 +109,5 @@ public class GeolocalizacionDTO {
 	public void setAccessSystem(String accessSystem) {
 		this.accessSystem = accessSystem;
 	}
-
+	
 }

@@ -75,8 +75,9 @@ public class UnirArchivosService {
 		DoctoUnificado doctoUnificado = new DoctoUnificado();
 		logger.info("SolicitudEnvio: " + solicitudEnvio);
 		int operación = 0;
-		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio,
-				operación);
+//		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerInfoCoordenadas(solicitudEnvio,
+//				operación);
+		List<ObtenerCoordenadas> documentos = obtenerCoordenadasJDBCService.obtenerDocumentosSolicitud(solicitudEnvio);
 		logger.info("Tamaño de la lista: " + documentos.size());
 
 		String ruta = documentos.get(0).getVc_ruta_docto();
@@ -172,7 +173,11 @@ public class UnirArchivosService {
 				int auxIdDoctoEnvio = documentos.get(i).getPk_id_docto_envio();
 				logger.info("Docto envio:" + auxIdDoctoEnvio);
 				logger.info("Total hojas: " + totalHojas2);
+				logger.info("tamanoObtenerCoordDocts: " + tamanoObtenerCoordDocts);
 				for (int j = 0; j < tamanoObtenerCoordDocts; j++) {
+					//logger.info("j :" + j + "tamanoObtenerCoordDocts: " + tamanoObtenerCoordDocts);
+					
+					logger.info("auxIdDoctoEnvio: " + auxIdDoctoEnvio);
 					if (auxIdDoctoEnvio == obtenerCoordDocts.get(j).getPk_id_docto_envio()) {
 
 						int tHojas = obtenerCoordDocts.get(j).getTotal_hojas();
@@ -184,6 +189,16 @@ public class UnirArchivosService {
 						float xCentral = obtenerCoordDocts.get(j).getCoordenada_xCentral();
 						float yCentral = obtenerCoordDocts.get(j).getCoordenada_yCentral();
 						int hojaFirmaDoctUnificado = ((totalHojas2 - tHojas) + noHoja);
+						logger.info("Posicion obtener coordenadas: " + j);
+						logger.info("tHojas: " + tHojas);
+						logger.info("noHoja: " + noHoja);
+						logger.info("x1: " + x1);
+						logger.info("x2: " + x2);
+						logger.info("y1: " + y1);
+						logger.info("y2: " + y2);
+						logger.info("xCentral: " + xCentral);
+						logger.info("yCentral: " + yCentral);
+						logger.info("hojaFirmaDoctUnificado: " + hojaFirmaDoctUnificado);
 
 						// Guardamos las coordenadas de las paginas del documento unificado
 
@@ -198,20 +213,22 @@ public class UnirArchivosService {
 						fDoctoUnificado.setF_coord_firma_y2(y2);
 
 						firmaDoctoUnificadoService.save(fDoctoUnificado);
-
-//						logger.info("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
+						logger.info("Guardo fDoctoUnificado" + fDoctoUnificado.getPk_id_firma_docto_unificado());
+						logger.info("Firma docto: " + obtenerCoordDocts.get(j).getId_firma_docto());
+						logger.info("doctoUnificado: " + doctoUnificado.getPk_id_docto_unificado());
 //						logger.info("x1: " + x1);
 //						logger.info("x2: " + x2);
 //						logger.info("y1: " + y1);
 //						logger.info("y2: " + y2);
 //						logger.info("xCentral: " + xCentral);
 //						logger.info("yCentral: " + yCentral);
-						// logger.info("No Hoja: " + obtenerCoordDocts.get(j).getNo_hoja());
-						// logger.info("Total hojas en segundo: " +
-						// obtenerCoordDocts.get(j).getTotal_hojas());
+						 logger.info("No Hoja: " + obtenerCoordDocts.get(j).getNo_hoja());
+						 logger.info("Total hojas en segundo: " +
+						 obtenerCoordDocts.get(j).getTotal_hojas());
 						logger.info("Hoja firma doc concatenado = " + hojaFirmaDoctUnificado);
 //						int sumaHojas = auxIdDoctoEnvio + obtenerCoordDocts.get(j).getTotal_hojas();
 //						logger.info("Suma Hojas: " + sumaHojas);
+						logger.info("---------------------------------------");
 
 					}
 				}

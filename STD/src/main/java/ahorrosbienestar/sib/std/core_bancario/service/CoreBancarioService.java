@@ -15,6 +15,7 @@ import ahorrosbienestar.sib.std.core_bancario.dto.ParticipantesDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ProductosDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ValidaSolicitudDto;
 import ahorrosbienestar.sib.std.core_bancario.dto.ListaProductos;
+import ahorrosbienestar.sib.std.core_bancario.dto.MenuGeneral;
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuSistema;
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuxRol;
 import ahorrosbienestar.sib.std.core_bancario.dto.OpcionesxRol;
@@ -36,7 +37,7 @@ public class CoreBancarioService {
 	// Declaramos que SP se va a ejecutar (validar la solicitud)
 	public List<ValidaSolicitudDto> validaSolicitud(int solicitud) {
 
-		// String sql = "call microfin.SIB_SP_VALIDA_SOLICITUD (?);";
+		//String sql = "call SIB.SP_VALIDA_SOLICITUD (?);";
 		String sql = "SELECT * FROM SIB.TBL_SIB_VALIDA_SOLICITUD WHERE SolicitudCreditoID = ?;";
 		logger.info("Ejecutando call SIB_VALIDA_SOLICITUD (" + solicitud + ")");
 		// System.out.println("Querry: " + sql + ", 1) " + solicitud );
@@ -82,6 +83,8 @@ public class CoreBancarioService {
 						p.setTelefonoCelular(rs.getString(5));
 						p.setCorreoElectronico(rs.getString(6));
 						p.setDireccionCompleta(rs.getString(7));
+						p.setEstado(rs.getString(8));
+						p.setDireccion(rs.getString(9));
 						return p;
 					}
 				});
@@ -228,6 +231,26 @@ public class CoreBancarioService {
 							opcMenu.setVc_controller(rs.getString(3));
 							opcMenu.setI_nivel(rs.getInt(4));
 							return opcMenu;
+						}
+					});
+			
+			return ls;
+		} catch (Exception e) {
+			System.out.print(""+ e.getMessage());
+			return null;
+		}
+	}
+	
+	public List<MenuGeneral> menuGeneral(){
+		try {
+			String sql = "CALL SIB.SP_ACCESO_MENU_GENERAL();";
+			List<MenuGeneral> ls = jdbcTemplate.query(sql, new Object[] {},
+					new RowMapper<MenuGeneral>() {
+						public MenuGeneral mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							MenuGeneral accesoMenu = new MenuGeneral();
+							accesoMenu.setVc_nombre_rol(rs.getString(1));
+							accesoMenu.setVc_nombre_controller(rs.getString(2));
+							return accesoMenu;
 						}
 					});
 			

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
-import ahorrosbienestar.sib.std.planAccion.controller.PlanAccionController;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -38,7 +37,7 @@ public class OpcionesMenuController {
 				userDetails = (UserDetails) principal;
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
+			logger.info("controller /opciones");
 			return ResponseEntity.ok(coreBancarioService.listaOpcionesxRol(4, usuario.get(0).getRol_idRol().getPk_id_rol()));
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());

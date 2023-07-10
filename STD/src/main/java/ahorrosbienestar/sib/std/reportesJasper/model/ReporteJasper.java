@@ -31,6 +31,9 @@ public class ReporteJasper {
 	@Column(name = "DT_FECHA_REGISTRO")
 	private Date dt_fecha_registro;
 	
+	@Column(name = "VC_EXTENSION", columnDefinition = "VARCHAR(50)")
+	private String vc_extension;
+	
 	public int getPk_id_reporte() {
 		return pk_id_reporte;
 	}
@@ -77,6 +80,14 @@ public class ReporteJasper {
 
 	public void setDt_fecha_registro(Date dt_fecha_registro) {
 		this.dt_fecha_registro = dt_fecha_registro;
+	}
+
+	public String getVc_extension() {
+		return vc_extension;
+	}
+
+	public void setVc_extension(String vc_extension) {
+		this.vc_extension = vc_extension;
 	}
 
 	

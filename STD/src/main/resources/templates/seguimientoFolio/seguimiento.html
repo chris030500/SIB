@@ -112,7 +112,7 @@
 						</div>
 						<div class="col-md-2">
 							<label class="col-form-label"></label>
-							<button type="button" class="btn btn-primary form-control" id="btnGuardar">Guardar</button>
+							<button type="button" class="btn btn-primary form-control" id="btnGuardar" th:disabled="${rolMonitoreo == true}">Guardar</button>
 						</div>
 						<div class="col-md-4"></div>
 					</div>
@@ -180,7 +180,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile">Guardar</button>
+									id="btnGuardarFile" th:disabled="${rolMonitoreo == true}">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 							</div>

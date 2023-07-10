@@ -34,6 +34,9 @@ public class Documento {
 	@Column(name = "VC_NOMBRE_DOC", columnDefinition = "VARCHAR(300)")
 	private String vc_nombre_doc;
 	
+	@Column(name = "I_REQUIERE_FIRMA", columnDefinition = "TINYINT(1)")
+	private int i_requiere_firma;
+	
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
 	private int i_estatus;
 	
@@ -108,6 +111,16 @@ public class Documento {
 	public void setDt_fecha_baja(LocalDate dt_fecha_baja) {
 		this.dt_fecha_baja = dt_fecha_baja;
 	}
+
+	public int getI_requiere_firma() {
+		return i_requiere_firma;
+	}
+
+	public void setI_requiere_firma(int i_requiere_firma) {
+		this.i_requiere_firma = i_requiere_firma;
+	}
+	
+	
 	
 	
 
