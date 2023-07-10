@@ -98,8 +98,11 @@ public class PlanAccionController {
 	private int tipoArchivo = 9;
 	
 	private static final String nombrePantalla = "Registro de Plan de Accion";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -119,13 +122,14 @@ public class PlanAccionController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
 			if(validarAcceso() == 1) {
 				model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
 				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
 				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 				model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
+				model.addAttribute("rolMonitoreo", usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
 				rutaDireccion = "planAccion/inicio";
 			}else {
 				rutaDireccion = rutaError;
@@ -212,14 +216,8 @@ public class PlanAccionController {
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
 	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, @RequestParam("estatus") Integer estatus) {
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio,estatus);
+			return (this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo))?catalogosCEService.obtObservaciones(idFolio,estatus):catalogosCEService.obtObservacionesxEmpleado(this.usuario.get(0).getI_id_empleado(), idFolio,estatus);
 			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -498,14 +496,20 @@ public class PlanAccionController {
 	@GetMapping("/obtFolios")
 	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			
+			List<ListaFolioXEmpleado>  listaFolio = null;
 			
-			List<ListaFolioXEmpleado>  listaFolio = catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado(),estatus);
+			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo)) {
+				listaFolio = catalogosCEService.listaFolios(estatus);
+			}else {
+				listaFolio = catalogosCEService.listaFolioXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);	
+			}
 			
 			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
 		} catch (Exception e) {

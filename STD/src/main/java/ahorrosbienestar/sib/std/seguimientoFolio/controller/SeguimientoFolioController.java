@@ -85,14 +85,17 @@ public class SeguimientoFolioController {
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
-	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
-	private String rolResponsable = "ROLE_ADMIN_CSO";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
+	private static final String rolAdmin = "ROLE_RESPONSABLE";
+	private static final String rolResponsable = "ROLE_ADMIN";
 	private int catEstatus = 6;
 	private int tipoArchivo = 9;
 	
 	private static final String nombrePantalla = "Seguimiento";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
 	
 	@Autowired
 	public SeguimientoFolioController(SeguimientoFolioService seguimientoFolioService) {
@@ -103,10 +106,11 @@ public class SeguimientoFolioController {
 	public String inicioFolio(Model model) {
 		
 		try {
-
+		
 			if(validarAcceso() == 1) {
 				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("rolMonitoreo", this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
 				rutaDireccion = "seguimientoFolio/seguimiento";
 			}else {
 				rutaDireccion = rutaError;
@@ -128,17 +132,19 @@ public class SeguimientoFolioController {
 	public ResponseEntity<?> buscarActividadesPlan(@RequestParam("idFolio") Integer idFolio,@RequestParam("estatus") Integer estatus) {
 		
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			List<ActividadesPA> listaActividades;
+			List<ActividadesPA> listaActividades = null;
 			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
 				listaActividades = catalogosCEService.buscarActividadesSupervisor(idFolio, usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario(),estatus);
-			}else {
+			}else if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo))
+				listaActividades = catalogosCEService.buscarActividades(idFolio,estatus);
+			else{
 				listaActividades = catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado(),estatus);
 			}
 			
@@ -400,19 +406,21 @@ public class SeguimientoFolioController {
 	@GetMapping("/obtFolios")
 	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			List<ListaFolioXEmpleado> listaFolio;
+			List<ListaFolioXEmpleado> listaFolio = null;
 			
-			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
-				listaFolio = catalogosCEService.listaActividadPASupervisor(usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario(),estatus);
+			if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
+				listaFolio = catalogosCEService.listaActividadPASupervisor(this.usuario.get(0).getI_id_empleado(),this.usuario.get(0).getPk_id_usuario(),estatus);
+			}else if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo)){
+				listaFolio = catalogosCEService.listaActividades(estatus);
 			}else {
-				listaFolio = catalogosCEService.listaActividadPAXEmpleado(usuario.get(0).getI_id_empleado(),estatus);
+				listaFolio = catalogosCEService.listaActividadPAXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);
 			}
 
 			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
@@ -431,7 +439,7 @@ public class SeguimientoFolioController {
 		if (principal instanceof UserDetails) {
 			userDetails = (UserDetails) principal;
 		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 		
 		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
 		

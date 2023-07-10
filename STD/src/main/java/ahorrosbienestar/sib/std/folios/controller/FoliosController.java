@@ -100,7 +100,10 @@ public class FoliosController {
 	
 	private static final String nombrePantalla = "Alta Oficio";
 	private static final String rutaError = "errores/error_403";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
 	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
 
 	
 	@Autowired
@@ -124,7 +127,8 @@ public class FoliosController {
 				model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
 				model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
 				model.addAttribute("lista_folios",catalogosCEService.obtFolios());
-				
+				model.addAttribute("rolMonitoreo",this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
+
 				rutaDireccion = "folios/inicio";
 			}else {
 				rutaDireccion = rutaError;
@@ -566,7 +570,7 @@ public class FoliosController {
 				if (principal instanceof UserDetails) {
 					userDetails = (UserDetails) principal;
 				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
 				return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
 				
