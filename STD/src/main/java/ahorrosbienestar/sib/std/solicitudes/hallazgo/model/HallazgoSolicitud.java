@@ -24,8 +24,8 @@ public class HallazgoSolicitud {
 	
 	@Column(name = "PK_ID_HALLAZGO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hallazgo_solicitud_seq")
-	@SequenceGenerator(name = "hallazgo_solicitud_seq", sequenceName = "hallazgo_solicitud_seq", 
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_hallazgo_solicitud_seq")
+	@SequenceGenerator(name = "tbl_hallazgo_solicitud_seq", sequenceName = "tbl_hallazgo_solicitud_seq", 
 						initialValue = 1, allocationSize = 1)
 	private int pk_id_hallazgo_solicitud;
 	

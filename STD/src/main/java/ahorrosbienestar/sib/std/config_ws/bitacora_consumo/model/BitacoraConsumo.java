@@ -28,8 +28,8 @@ public class BitacoraConsumo {
     
     @Column(name = "PK_ID_BITACORA_CONSUMO")
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bitacora_consumo_seq")
-    @SequenceGenerator(name = "bitacora_consumo_seq", sequenceName = "bitacora_consumo_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_bitacora_consumo_seq")
+    @SequenceGenerator(name = "tbl_bitacora_consumo_seq", sequenceName = "tbl_bitacora_consumo_seq", initialValue = 1, allocationSize = 1)
     private int pk_id_bitacora_consumo;
     
     @OneToOne

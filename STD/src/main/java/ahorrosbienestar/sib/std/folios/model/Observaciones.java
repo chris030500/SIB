@@ -20,8 +20,8 @@ public class Observaciones {
 	
 	@Column(name = "PK_ID_OBSERVACION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="observacion_seq")
-	@SequenceGenerator(name = "observacion_seq", sequenceName = "observacion_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_observacion_seq")
+	@SequenceGenerator(name = "tbl_observacion_seq", sequenceName = "tbl_observacion_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_observacion;
 	
 	//@ManyToOne
