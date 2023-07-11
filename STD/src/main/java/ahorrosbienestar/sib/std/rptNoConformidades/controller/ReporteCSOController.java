@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -54,6 +55,9 @@ public class ReporteCSOController {
 	
 	@Autowired IReporteRepository iReporteRepository;
 	
+	@Autowired
+	private CatalogosCEService catalogosCEService;
+	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
@@ -77,6 +81,7 @@ public class ReporteCSOController {
 				model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
 				model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
 				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_oficios", catalogosCEService.obtFolios());
 				rutaDireccion = "reporteFolio/reporteCSO";
 			}else {
 				rutaDireccion = rutaError;
@@ -96,7 +101,8 @@ public class ReporteCSOController {
 			,@RequestParam(name = "dtFechaFin") String dtFechaFin
 			,@RequestParam(name = "iEstatus") Integer iEstatus
 			,@RequestParam(name = "iEmite") Integer iEmite
-			,@RequestParam(name = "iTipo") Integer iTipo){
+			,@RequestParam(name = "iTipo") Integer iTipo
+			,@RequestParam(name = "idOficio") Integer idOficio){
 		
 		
 		ArrayList<String> respuesta = new ArrayList<String>();
@@ -120,6 +126,7 @@ public class ReporteCSOController {
 			altaBusqueda.setI_organo_emite(iEmite);
 			altaBusqueda.setI_tipo_oficio(iTipo);
 			altaBusqueda.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+			altaBusqueda.setI_folio(idOficio);
 			
 			iReporteCSORepository.save(altaBusqueda);
 			
