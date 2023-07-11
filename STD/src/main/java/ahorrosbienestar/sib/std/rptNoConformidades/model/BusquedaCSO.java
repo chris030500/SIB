@@ -52,6 +52,9 @@ public class BusquedaCSO {
 	
 	@Column(name = "I_TODOS", columnDefinition = "INT")
 	private int i_todos;
+	
+	@Column(name = "I_FOLIO", columnDefinition = "INT")
+	private int i_folio;
 
 	public int getPk_id_busqueda() {
 		return pk_id_busqueda;
@@ -123,6 +126,14 @@ public class BusquedaCSO {
 
 	public void setI_todos(int i_todos) {
 		this.i_todos = i_todos;
+	}
+
+	public int getI_folio() {
+		return i_folio;
+	}
+
+	public void setI_folio(int i_folio) {
+		this.i_folio = i_folio;
 	}
 	
 }

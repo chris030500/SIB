@@ -36,10 +36,12 @@ function registrarBusqueda(){
 		urlSevicio = urlSevicio + "&iEstatus=0";
 		urlSevicio = urlSevicio + "&iEmite=0";
 		urlSevicio = urlSevicio + "&iTipo=0";
+		urlSevicio = urlSevicio + "&idOficio=0";
 	}else{
 		urlSevicio = urlSevicio + "&iEstatus="+((document.getElementById("iEstatus").value> 0)?document.getElementById("iEstatus").value:0);
 		urlSevicio = urlSevicio + "&iEmite="+((document.getElementById("iEmite").value > 0)?document.getElementById("iEmite").value:0);
 		urlSevicio = urlSevicio + "&iTipo="+((document.getElementById("iOficio").value>0)?document.getElementById("iOficio").value:0);
+		urlSevicio = urlSevicio + "&idOficio="+((document.getElementById("nrOficio").value>0)?document.getElementById("nrOficio").value:0);
 	}
 	peticionPost(urlSevicio);
 

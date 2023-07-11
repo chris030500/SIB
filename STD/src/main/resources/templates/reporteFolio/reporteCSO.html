@@ -49,7 +49,16 @@
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Parametros de Busqueda.</legend>
 							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-4">
+								<div class="col-md-3">
+									<label class="col-form-label"> Nro. Oficio</label>
+									<select class="form-control" id="nrOficio">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_lista_oficios}"
+												th:value="${opcionTipo.pk_id_folio}" th:text="${opcionTipo.i_folio}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3">
 									<label class="col-form-label"> Tipo Oficio</label>
 									<select class="form-control" id="iOficio">
 										<option value="0">Seleccione</option>
@@ -58,7 +67,7 @@
 										</option>
 									</select>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<label class="col-form-label"> Organo que la Emite</label>
 									<select class="form-control" id="iEmite">
 										<option value="0">Seleccione</option>
@@ -67,7 +76,7 @@
 										</option>
 									</select>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<label class="col-form-label"> Estatus del Oficio</label>
 									<select class="form-control" id="iEstatus">
 										<option value="0">Seleccione</option>
