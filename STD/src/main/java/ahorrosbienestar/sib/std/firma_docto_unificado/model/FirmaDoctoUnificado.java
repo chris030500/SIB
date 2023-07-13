@@ -18,8 +18,8 @@ public class FirmaDoctoUnificado {
 	
 	@Column(name = "PK_ID_FIRMA_DOCTO_UNIFICADO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "firma_docto_unificado_seq")
-	@SequenceGenerator(name = "firma_docto_unificado_seq", sequenceName = "firma_docto_unificado_seq", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_firma_docto_unificado_seq")
+	@SequenceGenerator(name = "tbl_firma_docto_unificado_seq", sequenceName = "tbl_firma_docto_unificado_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_firma_docto_unificado;
 	
 	@ManyToOne

@@ -23,8 +23,8 @@ public class WSRespuestaAutenticacion {
  
     @Column(name = "PK_ID_RESPUESTA_AUTENTICACION")
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ws_respuesta_autenticacion_seq")
-    @SequenceGenerator(name = "ws_respuesta_autenticacion_seq", sequenceName = "ws_respuesta_autenticacion_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_ws_respuesta_autenticacion_seq")
+    @SequenceGenerator(name = "tbl_ws_respuesta_autenticacion_seq", sequenceName = "tbl_ws_respuesta_autenticacion_seq", initialValue = 1, allocationSize = 1)
     private int pk_id_respuesta_autenticacion_seq;
     
     @OneToOne

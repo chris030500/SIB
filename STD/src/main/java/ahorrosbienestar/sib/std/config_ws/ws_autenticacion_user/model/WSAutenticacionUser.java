@@ -27,8 +27,8 @@ public class WSAutenticacionUser {
     
     @Column(name = "PK_ID_WS_AUTENTICACION")
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ws_autenticacion_user_seq")
-    @SequenceGenerator(name = "ws_autenticacion_user_seq", sequenceName = "ws_autenticacion_user_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_ws_autenticacion_user_seq")
+    @SequenceGenerator(name = "tbl_ws_autenticacion_user_seq", sequenceName = "tbl_ws_autenticacion_user_seq", initialValue = 1, allocationSize = 1)
     private int pk_id_ws_autenticacion;
     
     @ManyToOne

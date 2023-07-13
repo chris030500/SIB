@@ -28,9 +28,9 @@ public class DoctEnvio {
 	
 	@Column(name = "PK_ID_DOCTO_ENVIO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "docto_envio_seq")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_docto_envio_seq")
 	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TBL_DOCTO_ENVIO_SEQ")
-	@SequenceGenerator(name = "docto_envio_seq", sequenceName = "docto_envio_seq", initialValue = 1, allocationSize = 1)
+	@SequenceGenerator(name = "tbl_docto_envio_seq", sequenceName = "tbl_docto_envio_seq", initialValue = 1, allocationSize = 1)
 	//@SequenceGenerator(name = "TBL_DOCTO_ENVIO_SEQ", sequenceName = "TBL_DOCTO_ENVIO_SEQ", initialValue = 1, allocationSize = 1)
 	private int pk_id_docto_envio;
 	

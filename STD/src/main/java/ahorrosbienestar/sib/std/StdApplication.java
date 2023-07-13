@@ -4,11 +4,12 @@ package ahorrosbienestar.sib.std;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 
-
+@EnableCaching(proxyTargetClass = true)
 @SpringBootApplication
 @EnableEncryptableProperties
 public class StdApplication implements CommandLineRunner {
