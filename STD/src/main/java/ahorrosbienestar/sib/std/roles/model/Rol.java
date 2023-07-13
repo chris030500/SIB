@@ -21,8 +21,8 @@ public class Rol {
 	
 	@Column(name = "PK_ID_ROL")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="rol_seq")
-	@SequenceGenerator(name = "rol_seq", sequenceName = "rol_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_rol_seq")
+	@SequenceGenerator(name = "tbl_rol_seq", sequenceName = "tbl_rol_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_rol;
 	
 	@Column(name = "VC_NOMBRE_ROL", columnDefinition = "VARCHAR(100)")

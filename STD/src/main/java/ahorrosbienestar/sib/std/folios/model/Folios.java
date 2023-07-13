@@ -20,8 +20,8 @@ public class Folios {
 	
 	@Column(name = "PK_ID_FOLIO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="folio_seq")
-	@SequenceGenerator(name = "folio_seq", sequenceName = "folio_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_folio_seq")
+	@SequenceGenerator(name = "tbl_folio_seq", sequenceName = "tbl_folio_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_folio;
 	
 	@Column(name = "VC_FOLIO", columnDefinition = "VARCHAR(100)")

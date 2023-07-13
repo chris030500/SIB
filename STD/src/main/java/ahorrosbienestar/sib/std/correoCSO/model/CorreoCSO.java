@@ -21,8 +21,8 @@ public class CorreoCSO {
 	
 	@Column(name = "PK_ID_CORREO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="correoCSO_seq")
-	@SequenceGenerator(name = "correoCSO_seq", sequenceName = "correoCSO_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_correoCSO_seq")
+	@SequenceGenerator(name = "tbl_correoCSO_seq", sequenceName = "tbl_correoCSO_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_correo_notificacion;
 	
 	@JsonFormat(pattern = "yyyy/MM/dd hh:mm:ss")
