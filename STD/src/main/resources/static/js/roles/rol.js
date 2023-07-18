@@ -100,6 +100,10 @@ $(document).ready(function() {
 		limpiarcheck();
 	});
 
+	eventosContadorNombreRol();
+	eventosContadorDesRol();
+	eventosContadorNombreRolE();
+	eventosContadorDesRolE();
 		
 	inicioTabla();
 });
@@ -386,4 +390,49 @@ function enviarPeticion(urlGuardar) {
 		}
 	});
 }
+
+function eventosContadorNombreRol() {
+	const mensaje = document.getElementById('nombreRol');
+	const contador = document.getElementById('nombreContador');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
+function eventosContadorDesRol() {
+	const mensaje = document.getElementById('descripcionRol');
+	const contador = document.getElementById('desRolContador');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
+function eventosContadorNombreRolE() {
+	const mensaje = document.getElementById('inombreRol');
+	const contador = document.getElementById('nomContadorE');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
+function eventosContadorDesRolE() {
+	const mensaje = document.getElementById('inputDescripcion');
+	const contador = document.getElementById('desRolContadorE');
+	mensaje.addEventListener('input', function(e) {
+		const target = e.target;
+		const longitudMax = target.getAttribute('maxlength');
+		const longitudAct = target.value.length;
+		contador.innerHTML = `${longitudAct}/${longitudMax}`;
+	});
+}
+
 
