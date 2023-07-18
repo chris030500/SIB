@@ -42,14 +42,13 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 			csrf().disable()
 			.authorizeRequests()
 			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").permitAll();
-			List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
-	        for (MenuGeneral permisos : menuGeneral) {
-	            http.csrf().disable()
-				.authorizeRequests()
-	                    .antMatchers(permisos.getVc_nombre_controller().split(","))
-	                    .hasAnyRole(permisos.getVc_nombre_rol());
-	        }
-			
+			/*
+			 * List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
+			 * if(menuGeneral.size() > 0) { for (MenuGeneral permisos : menuGeneral) {
+			 * http.csrf().disable() .authorizeRequests()
+			 * .antMatchers(permisos.getVc_nombre_controller().split(","))
+			 * .hasAnyRole(permisos.getVc_nombre_rol()); } }
+			 */
 	        http.csrf().disable()
 			.authorizeRequests()
 	        .anyRequest().authenticated().and()
