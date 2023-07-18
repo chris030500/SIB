@@ -27,30 +27,27 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         Usuario usuario = usuarioService.findByNombre(username);
         
         if (usuario != null) {
-        	if (usuario.getI_estatus_cuenta() == 0) {
-        		request.getSession().setAttribute("error", "Error en el inicio de sesión: "
+            if (usuario.getI_estatus_cuenta() == 0) {
+                request.getSession().setAttribute("error", "Error en el inicio de sesión: "
                         + "Usuario bloqueado");
-             // Redirigir a la página de inicio de sesión
-                response.sendRedirect("/login");
-        	} else {
-        		int failedAttempts = usuario.getI_intentos_fallidos();
+            } else {
+                int failedAttempts = usuario.getI_intentos_fallidos();
                 failedAttempts++;
                 usuario.setI_intentos_fallidos(failedAttempts);
-                
+
                 if (failedAttempts >= 3) {
                     usuario.setI_estatus_cuenta(0);
                 }
-                
+
                 usuarioService.save(usuario);
                 request.getSession().setAttribute("error", "Error en el inicio de sesión: "
                         + "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-             // Redirigir a la página de inicio de sesión
-                response.sendRedirect("/login");
-        	}
-            
-           
-        } 
-        
-        
+            }
+        } else {
+        	request.getSession().setAttribute("error", null);
+        }
+
+        // Redirigir internamente a la página de inicio de sesión
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 }

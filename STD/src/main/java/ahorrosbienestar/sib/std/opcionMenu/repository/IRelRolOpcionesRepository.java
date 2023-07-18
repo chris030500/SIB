@@ -11,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
  
 import ahorrosbienestar.sib.std.opcionMenu.model.RelRolOpciones;
 import ahorrosbienestar.sib.std.roles.model.Rol;
- 
+
 @Repository
 public interface IRelRolOpcionesRepository extends JpaRepository<RelRolOpciones, Integer>{
+
  
     @Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_REL_ROL_OPCIONES WHERE FK_ROL =:idRol and FK_OPCION=:idOpcion", nativeQuery = true)
     public int existeOpcion(@Param("idRol") Integer idRol, @Param("idOpcion") Integer idOpcion);
@@ -35,3 +36,4 @@ public interface IRelRolOpcionesRepository extends JpaRepository<RelRolOpciones,
     public int validarAcceso(@Param("idRol") Integer idRol, @Param("idOpcion") Integer idOpcion);
  
 }
+

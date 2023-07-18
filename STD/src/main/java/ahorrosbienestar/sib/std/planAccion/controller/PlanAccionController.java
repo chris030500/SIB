@@ -41,6 +41,8 @@ import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
 import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.planAccion.model.PlanAccion;
 import ahorrosbienestar.sib.std.planAccion.repository.IPlanAccionRepository;
 import ahorrosbienestar.sib.std.planAccion.service.PlanAccionService;
@@ -84,10 +86,23 @@ public class PlanAccionController {
 	@Autowired
 	private ConfigService configService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	
 	private int catEstatus = 6;
 	private int catFinActividad = 8;
 	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Registro de Plan de Accion";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
 	
 	@Autowired
 	public PlanAccionController(PlanAccionService planAccionService) {
@@ -101,19 +116,26 @@ public class PlanAccionController {
 	@GetMapping("/aceptarAsignacion")
 	public String inicioFolio(Model model) {
 		try {
+			
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-
-			model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return "planAccion/inicio";
+			if(validarAcceso() == 1) {
+				model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
+				model.addAttribute("rolMonitoreo", usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
+				rutaDireccion = "planAccion/inicio";
+			}else {
+				rutaDireccion = rutaError;
+			}
+		
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 			return null;
@@ -147,6 +169,7 @@ public class PlanAccionController {
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 		}
+		logger.info(respuesta);
 		return ResponseEntity.ok(respuesta);
 	}
 	/**
@@ -170,14 +193,16 @@ public class PlanAccionController {
 				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
-	
+		
 	}
 	
 	
@@ -191,14 +216,8 @@ public class PlanAccionController {
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
 	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, @RequestParam("estatus") Integer estatus) {
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return catalogosCEService.obtObservacionesxEmpleado(usuario.get(0).getI_id_empleado(), idFolio,estatus);
+			return (this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo))?catalogosCEService.obtObservaciones(idFolio,estatus):catalogosCEService.obtObservacionesxEmpleado(this.usuario.get(0).getI_id_empleado(), idFolio,estatus);
 			
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
@@ -330,11 +349,12 @@ public class PlanAccionController {
 			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario(),confirmaResponsable);
 			catalogosCEService.actEstatus(idActividad,4,5);
 			catalogosCEService.actEstatusCascada(idActividad);
-			
+			logger.info(respuesta);
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			respuesta.add(""+e.getMessage());
+			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -409,6 +429,7 @@ public class PlanAccionController {
 		                        Files.write(nuevoPath, bytes);
 		                        datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 		                        mensaje="Se agrego archivo correctamente.";
+		                        logger.info(mensaje);
 						 }else {
 							 logger.error("Error al crear directorio: " + directorio);
 						 }
@@ -417,13 +438,16 @@ public class PlanAccionController {
 	                     Files.write(nuevoPath, bytes);
 	                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 	                     mensaje="Se agrego archivo correctamente.";
+	                     logger.info(mensaje);
 					 }
 					}else {
 						   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+						   logger.info(mensaje);
 					}
 				}
 			}else {
 				mensaje="No subio archivo.";
+				logger.info(mensaje);
 			}
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -472,14 +496,20 @@ public class PlanAccionController {
 	@GetMapping("/obtFolios")
 	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			
+			List<ListaFolioXEmpleado>  listaFolio = null;
 			
-			List<ListaFolioXEmpleado>  listaFolio = catalogosCEService.listaFolioXEmpleado(usuario.get(0).getI_id_empleado(),estatus);
+			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo)) {
+				listaFolio = catalogosCEService.listaFolios(estatus);
+			}else {
+				listaFolio = catalogosCEService.listaFolioXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);	
+			}
 			
 			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
 		} catch (Exception e) {
@@ -487,6 +517,21 @@ public class PlanAccionController {
 			return null;
 		}
 	
+	}
+	
+	public int validarAcceso() {
+		
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
 	}
 	
 }

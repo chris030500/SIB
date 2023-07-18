@@ -255,7 +255,7 @@
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Estatus del Oficio:</label>
-											<select class="form-control" id="idEstatusOficio" th:disabled="true">
+											<select class="form-control" id="idEstatusOficio" th:disabled="${rolMonitoreo == false}">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_lista_estatus}"
 													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">

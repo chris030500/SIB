@@ -125,7 +125,7 @@ function eventosContadorAsunto() {
 
 function iniciarfechas() {
 	var hoyfecha = new Date();
-
+    var dia = 0;
 	switch (hoyfecha.getDay()) {
 		case 0:
 			hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 1);

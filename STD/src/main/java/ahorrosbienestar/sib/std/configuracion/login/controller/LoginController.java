@@ -59,24 +59,17 @@ public class LoginController extends HttpServlet {
         
         if(principal != null) {
             
-            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-            //flash.addFlashAttribute("info", "Ya ha inciado sesión anteriormente");
-//            System.out.println("Principal != null");
             logger.info("Principal != null");
             return "redirect:/";
         }
+        //model.addAttribute("error", "Mensaje de error");
+
         
-        if(error != null) {
-            model.addAttribute("error", "Error en el inicio de sesión: "
-                    + "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-            logger.info("Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+        if (request.getSession().getAttribute("error") != null) {
+            model.addAttribute("error", request.getSession().getAttribute("error"));
+            request.getSession().removeAttribute("error"); // Eliminar el mensaje de error anterior
         }
         
-//        if(logout != null) {
-//            model.addAttribute("success", "Has cerrado sesión con éxito");
-//        }
-        
-        //loginService.spActivarSesion(principal.getName());
         return "login";
     }
 	

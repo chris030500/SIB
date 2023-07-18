@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.reportesJasper.component.Desencriptar;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 @CrossOrigin
@@ -35,18 +37,31 @@ import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 public class JasperReportController {
 	
 	@Autowired
+	private Desencriptar desencriptar;
+	
+	@Autowired
 	private ConfigService configService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	
 	
     //protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(JasperReportController.class);
 	
+	
+	private static final String jaspersserver_url = "jaspersserver_url";
+	private static final String jaspersserver_username = "jaspersserver_username";
+	private static final String jaspersserver_password = "jaspersserver_password";
+	
     private String extPDF = ".pdf";
     private String extXLS = ".xls";
+    
+    
     
     
 	@SuppressWarnings("deprecation")
@@ -59,16 +74,17 @@ public class JasperReportController {
     		 * para el campo parametros si envian mas de 1 parametro usar el caracter "~" para dividir los parametros ejemplo: FECHA_INICIO=2023/03/01~FECHA_FIN=2023/03/05
 						
     		 */
-    		
-    		
     					logger.info("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
 						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
-    					String urlGenerarReporte = configService.findAll().get(14).getVc_valor_propiedad()+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
+    					String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
     					
     					logger.info("url:"+urlGenerarReporte);
+    				
+    					
     					HttpHeaders headers = new HttpHeaders();
-    				    headers = createHeaders(configService.findAll().get(15).getVc_valor_propiedad(), configService.findAll().get(16).getVc_valor_propiedad());
+    				    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
+    				    		//configService.findAll().get(16).getVc_valor_propiedad());
     					headers.set("Content-Type",report.getVc_tipo_contenido());
     					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
       					

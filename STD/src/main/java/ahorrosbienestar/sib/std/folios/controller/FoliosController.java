@@ -46,6 +46,8 @@ import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
@@ -85,33 +87,54 @@ public class FoliosController {
 	@Autowired
 	private ArchivosFoliosService archivosFoliosService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
 	private int tipoArchivo = 9;
 	
+	private static final String nombrePantalla = "Alta Oficio";
+	private static final String rutaError = "errores/error_403";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
+	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
+
+	
 	@Autowired
 	public FoliosController (FolioService folioService) {
 		this.folioService = folioService;
 	}
-	
+		
 	/**
 	 * Cargar listas iniciales de la pantalla
 	 * @param model
 	 * @return
 	 */
 	@GetMapping("/folio")
-	public String inicioFolio(Model model) {
+	public String inicioFolio(Model model) {		
 		try {
-						
-			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
-			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
-			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
-			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
-			return "folios/inicio";
+			if(validarAcceso() == 1) {
+				model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
+				model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
+				model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
+				model.addAttribute("lista_folios",catalogosCEService.obtFolios());
+				model.addAttribute("rolMonitoreo",this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
+
+				rutaDireccion = "folios/inicio";
+			}else {
+				rutaDireccion = rutaError;
+			}
+
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 		}
@@ -125,7 +148,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/obtenerFolios")
 	public ResponseEntity<List<ListaFolios>> obtenerFolios(Model model) {
-		
+		 logger.info("/obtenerFolios");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtFolios());
 		} catch (Exception e) {
@@ -141,7 +164,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/buscarPuesto")
 	public ResponseEntity<?> buscarPuesto(@RequestParam("empleadoID") Integer empleadoID, Model model) {
-
+		logger.info("/buscarPuesto");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtenerPuesto(empleadoID));
 		} catch (Exception e) {
@@ -157,6 +180,7 @@ public class FoliosController {
 	@GetMapping("/busquedaxArea")
 	public ResponseEntity<?> busquedaxArea(@RequestParam("areaID") Integer areaID){
 		try {
+			logger.info("/busquedaxArea"+"dtos:"+areaID);
 			List<EmpleadosCE> listaResponsables = catalogosCEService.busquedaxArea(areaID);
 			return ResponseEntity.ok((listaResponsables != null)?listaResponsables:0);
 		} catch (Exception e) {
@@ -182,6 +206,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/altaFolio"+"dtos:"+noficio);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -236,6 +261,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/modificarFolio"+"dtos:"+id);
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -263,6 +289,7 @@ public class FoliosController {
 			public ResponseEntity<List<ObservacionesxFolio>> buscarObservaciones(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
+					logger.info("/buscarObservaciones"+"dtos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.obtObservaciones(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
@@ -280,7 +307,7 @@ public class FoliosController {
 					@RequestParam(name = "folioID") Integer folioID,
 					@RequestParam(name = "obsOficio") String obsOficio
 					){
-				
+				logger.info("/altaObservacion"+"dtos:"+idAreaAtencion);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -325,7 +352,7 @@ public class FoliosController {
 					
 					observacionService.save(altaObs);
 					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
-					
+					logger.info("Registro Correo:"+altaObs.getPk_id_observacion());
 				} catch (Exception e) {
 					System.out.println("--"+e.getMessage());
 				} 
@@ -368,7 +395,8 @@ public class FoliosController {
 						}else {
 							respuesta.add("No se actualizo correctamente");
 						}
-					}			
+					}		
+					logger.info("modificarObservacion:"+idObservacion);
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
 					respuesta.add(e.getMessage());
@@ -415,6 +443,7 @@ public class FoliosController {
 				                        Files.write(nuevoPath, bytes);
 				                        datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 				                        mensaje="Se agrego archivo correctamente.";
+				                        logger.info(mensaje);
 								 }else {
 									 logger.error("Error al crear directorio: " + directorio);
 								 }
@@ -423,13 +452,16 @@ public class FoliosController {
 			                     Files.write(nuevoPath, bytes);
 			                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 			                     mensaje="Se agrego archivo correctamente.";
+			                     logger.info(mensaje);
 							 }
 						   }else {
 							   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+							   logger.info(mensaje);
 						   }
 						}
 					}else {
 						mensaje="No subio archivo.";
+						logger.info(mensaje);
 					}
 					respuesta.add(mensaje);
 					return ResponseEntity.ok(respuesta);
@@ -492,6 +524,7 @@ public class FoliosController {
 			public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
+					logger.info("/buscarArchivos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
@@ -507,6 +540,7 @@ public class FoliosController {
 			@GetMapping("/buscarPDF")
 			public ResponseEntity<Resource> buscarPDF(@RequestParam("idArchivo") Integer idArchivo,Model model) {
 				try {
+					logger.info("/buscarPDF:"+idArchivo);
 					Optional<ArchivosFolios> dtos= archivosFoliosService.porID(idArchivo);
 					File file = new File(UrlPDFServidor()+dtos.get().getVc_ruta_docto());
 					byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
@@ -526,5 +560,20 @@ public class FoliosController {
 					System.out.print("--" + e.getMessage());
 					return null;
 				}
+			}
+			
+			public int validarAcceso() {
+				
+				
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+				return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+				
+				
 			}
 }

@@ -137,7 +137,7 @@
 						</div>
 						<div class="col-md-4" id="idFinActividad" style="display:none;">
 							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
-							<select class="form-control" id="idConfirmarActividad">
+							<select class="form-control" id="idConfirmarActividad" th:disabled="${rolMonitoreo == true}">
 								<option value="0">Seleccione</option>
 								<option th:each="opcion:${cat_opcion_fin}" th:value="${opcion.i_opcion}"
 									th:text="${opcion.v_valor}"></option>
@@ -155,7 +155,7 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-10"></div>
 						<div class="col-md-2">
-							<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
+							<button type="button" class="btn btn-primary form-control" id="btnAgregar" th:disabled="${rolMonitoreo == true}">Agregar</button>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
@@ -232,7 +232,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile">Guardar</button>
+									id="btnGuardarFile" th:disabled="${rolMonitoreo == true}">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 							</div>
