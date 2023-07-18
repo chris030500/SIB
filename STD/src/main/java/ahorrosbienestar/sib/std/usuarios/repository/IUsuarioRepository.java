@@ -24,6 +24,10 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
 	public List<Usuario> obtenerNombreUsuario(@Param ( "nombreUsuario" ) String nombreUsuario);
 	
+	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS WHERE PK_ID_USUARIO = :idUsuario AND VC_NOMBRE_USUARIO = :nombreUsuario", nativeQuery = true)
+	public List<Usuario> obtenerNombreUsuarioYIdusuario(@Param ( "nombreUsuario" ) String nombreUsuario, @Param ( "idUsuario" ) Integer idUsuario);
+	
+	
 	//Consulta para activar la sesion de un usuario mediante ID
 	@Modifying
 	@Transactional
@@ -54,8 +58,8 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 	
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS set VC_NOMBRE_USUARIO = :usuario WHERE PK_ID_USUARIO = :idUsuario", nativeQuery=true)
-	public int cambiarNombreUsuario( @Param("usuario") String usuario, @Param("idUsuario") Integer idUsuario);
+	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS set VC_NOMBRE_USUARIO = :usuario, Rol_idRol = :idRol WHERE PK_ID_USUARIO = :idUsuario", nativeQuery=true)
+	public int cambiarNombreUsuario( @Param("usuario") String usuario, @Param("idUsuario") Integer idUsuario, @Param("idRol") Integer idRol);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = ?1", nativeQuery = true)
 	public Usuario findByNombre(String nombre);

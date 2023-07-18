@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -105,10 +107,40 @@ public class UsuarioRestController {
 	}
 
 	// Buscar usuario por nombre y trae toda su información
-	@GetMapping("/nombreUsuario/{nombre}")
-	public ResponseEntity<?> findByUsuarioNombre(@PathVariable(name = "nombre") String nombre) {
+	@GetMapping("/nombreUsuario/{nombre}/{idUsuario}")
+	public ResponseEntity<?> findByUsuarioNombre(@PathVariable(name = "nombre") String nombre,
+			@PathVariable(name = "idUsuario") Integer idUsuario) {
 		logger.info("Ingreso en findByUsuarioNombre");
+		logger.info("idUsuario: " + idUsuario);
+		if(usuarioService.obtenerNombreUsuarioYIdusuario(nombre, idUsuario) != null && usuarioService.findByNombre(nombre).getPk_id_usuario() == idUsuario
+				|| usuarioService.findByNombreUsuarioBoolean(nombre) != null) {
+			logger.info(usuarioService.obtenerNombreUsuarioYIdusuario(nombre, idUsuario).get(0).getVc_nombre_usuario());
+				logger.info("El usuario: " + nombre + "se puede editar");
+				return ResponseEntity.ok("1");
+		} else {
+				logger.info("El usuario: " + nombre + " no se puede editar");
+				return ResponseEntity.ok("0");
+			
+		}
+		
+		//return ResponseEntity.ok(usuarioService.findByUsuarioNombre(nombre));
+	}
+	
+	// Buscar usuario por nombre y trae toda su información
+	@GetMapping("/nombreUsuario2/{nombre}")
+	public ResponseEntity<?> findByUsuarioNombre2(@PathVariable(name = "nombre") String nombre
+			) {
+		logger.info("Ingreso en findByUsuarioNombre2");
+		//logger.info("idUsuario: " + idUsuario);
+		logger.info("nombre: " + nombre);
+		logger.info("Consulta: " + usuarioService.obtenerNombreUsuarioYIdusuario(nombre, 9).get(0).getVc_nombre_usuario());
+		Usuario validarNombreYUsuario = (Usuario) usuarioService.obtenerNombreUsuarioYIdusuario(nombre, 9);
+		logger.info("validarNombreYUsuario: " + validarNombreYUsuario);
+		if (validarNombreYUsuario != null) {
+			return ResponseEntity.ok("1");
+		} else {
 		return ResponseEntity.ok(usuarioService.findByUsuarioNombre(nombre));
+		}
 	}
 
 	// Buscar usuario por nombre (true = existe, false = no existe)
@@ -173,33 +205,47 @@ public class UsuarioRestController {
 
 	@RequestMapping(value = { "/editar_usuario" }, method = RequestMethod.POST)
 	public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("usuario") String usuario,
-			@RequestParam("idUsuario") Integer idUsuario) {
-		logger.info("Usuario: " + usuario);
-		logger.info("IdUsuario: " + idUsuario);
-		logger.info("Ingreso en cambiarNombreUsuario");
-		logger.info("Usuario: " + usuario);
-		logger.info("IdUsuario: " + idUsuario);
-		if (usuario != null && idUsuario != null) {
-			logger.info("Puede realizar el cambio de usuario");
-			logger.info("Puede realizar el cambio de usuario");
-			Usuario usu = usuarioService.findById(idUsuario).get();
-
-			return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario));
+			@RequestParam("idUsuario") Integer idUsuario,
+			@RequestParam("rol") Integer idRol) {
+		try {
+			logger.info("Usuario: " + usuario);
+			logger.info("IdUsuario: " + idUsuario);
+			logger.info("Ingreso en cambiarNombreUsuario");
+			logger.info("Usuario: " + usuario);
+			logger.info("IdUsuario: " + idUsuario);
+			logger.info("idRol:" + idRol);
+			if (usuario != null && idUsuario != null) {
+				logger.info("Puede realizar el cambio de usuario");
+				//logger.info("Puede realizar el cambio de usuario");
+				Usuario usu = usuarioService.findById(idUsuario).get();
+				
+				
+				return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario, idRol));
+				
+				
+				
+			}
+			// logger.info("No puede realizar el cambio de usuario");
+			logger.info("No puede realizar el cambio de usuario");
+			return ResponseEntity.notFound().build();
+		} catch (Exception e) {
+			System.out.println(""+e.getMessage());
+			return ResponseEntity.notFound().build();
 		}
-		// logger.info("No puede realizar el cambio de usuario");
-		logger.info("No puede realizar el cambio de usuario");
-		return ResponseEntity.notFound().build();
+		
 
 	}
 
 	@RequestMapping(value = { "/editar_usuario/contrasenia" }, method = RequestMethod.POST)
 	public ResponseEntity<?> cambiarContraseniaUsuario(@RequestParam("usuario") String usuario,
-			@RequestParam("idUsuario") Integer idUsuario, @RequestParam("password") String password) {
+			@RequestParam("idUsuario") Integer idUsuario, @RequestParam("password") String password
+			) {
 		logger.info("Usuario: " + usuario);
 		logger.info("IdUsuario: " + idUsuario);
 		logger.info("Ingreso en cambiarContraseniaUsuario");
 		logger.info("Usuario: " + usuario);
 		logger.info("IdUsuario: " + idUsuario);
+		
 		if (usuario != null && idUsuario != null) {
 			logger.info("Puede realizar el cambio de contraseña");
 

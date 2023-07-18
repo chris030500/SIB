@@ -183,6 +183,7 @@ function populateModal(data) {
 	console.log("Data en populateModal: " + JSON.stringify(data));
 	$('#nombre').val(data.vc_nombre_usuario);
 	$('#idUsuario').val(data.pk_id_usuario);
+	$('#rol').val(data.rol_idRol.pk_id_rol);
 	//$('#update-name').val(data.name);
 }
 
@@ -472,6 +473,7 @@ function editarUsuario() {
 
 	var idUsuario = document.getElementById('idUsuario').value;
 	var nombreUsuario = document.getElementById('nombre').value;
+	var rol = document.getElementById('rol').value;
 	//var urlBase = getAbsolutePath();
 	//Primero validamos que el nombre de usuario no exista.
 	if (nombreUsuario == "") {
@@ -485,68 +487,33 @@ function editarUsuario() {
 	} else {
 		console.log("Puede continuar");
 		$.ajax({
-			url: newUrlBase + "nombreUsuario/" + nombreUsuario,
-			type: "GET",
-			dataType: "JSON",
-			success: function(respuesta) {
+			url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
+				"&idUsuario=" + idUsuario + "&rol=" + rol,
+			type: "POST",
+			success: function() {
 				/*console.log("Entro en success de get");
 				console.log("Respuesta: " +respuesta);*/
-				console.log("Validar NombreUsuario: ");
-				console.log("Respuesta: " + JSON.stringify(respuesta));
-				if (respuesta != null) {
-					console.log("El nombre de usuario ya existe");
-					swal({
-						icon: 'warning',
-						title: "El nombre de usuario ya existe, favor de usar otro nombre",
-						showConfirmButton: false
-
-					});
-				} else if (respuesta == null) {
-					console.log("El nombre de usuario no existe");
-					$.ajax({
-						url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
-							"&idUsuario=" + idUsuario,
-						type: "POST",
-						success: function() {
-							/*console.log("Entro en success de get");
-							console.log("Respuesta: " +respuesta);*/
 
 
-							swal({
-								icon: 'success',
-								title: "Se cambio correctamente el nombre de usuario.",
-								showConfirmButton: false
-
-							}).then((result) => {
-								window.location.reload();
-							});
-
-						},
-						error: function() {
-							//console.log("Entro en error");
-							swal({
-								icon: 'warning',
-								title: "No se reactivo el usuario",
-								showConfirmButton: false
-
-							}).then((result) => {
-								window.location.reload();
-							});
-
-						}
-					});
-
-				}
-
-			},
-			error: function(respuesta) {
-				/*console.log("Entro en error");
-				console.log("respuesta: " + JSON.stringify(respuesta));*/
 				swal({
-					icon: 'warning',
-					title: respuesta.statusText,
+					icon: 'success',
+					title: "Se cambio correctamente el usuario: " + nombreUsuario,
 					showConfirmButton: false
 
+				}).then((result) => {
+					window.location.reload();
+				});
+
+			},
+			error: function() {
+				//console.log("Entro en error");
+				swal({
+					icon: 'warning',
+					title: "No se realizo los cambios del usuario, favor de validar los datos ingresados. ",
+					showConfirmButton: false
+
+				}).then((result) => {
+					window.location.reload();
 				});
 
 			}

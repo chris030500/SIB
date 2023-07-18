@@ -78,9 +78,12 @@ public class UsuarioController {
 		if(validarAcceso() == 1) {
 			Usuario usuario = new Usuario();
 			HistContrasena hc = new HistContrasena();
+			List<Rol> roles = rolService.findAll();
+			//Rol roles = new Rol();
 			//logger.info("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
 			model.addAttribute("historico", hc);
 			model.addAttribute("usuario", usuario);
+			model.addAttribute("roles", roles);
 			
 			// Mostramos todos los usuarios
 			model.addAttribute("usuarios", usuarioService.findAll());

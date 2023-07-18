@@ -46,6 +46,10 @@ public class UsuarioService {
 		return iUsuarioRepository.findByNombreUsuario(nombreUsuario);
 	}
 	
+	public List<Usuario> obtenerNombreUsuarioYIdusuario(String nombreUsuario, Integer idUsuario){
+		return iUsuarioRepository.obtenerNombreUsuarioYIdusuario(nombreUsuario, idUsuario);
+	}
+	
 	public int activarUsuarioSesion(Integer id) {
 		return iUsuarioRepository.activarUsuarioSesion(id);
 	}
@@ -62,8 +66,8 @@ public class UsuarioService {
 		return iUsuarioRepository.bajaUsuarioEstatus(id);
 	}
 	
-	public int cambiarNombreUsuario(String usuario, Integer idUsuario) {
-		return iUsuarioRepository.cambiarNombreUsuario(usuario, idUsuario);
+	public int cambiarNombreUsuario(String usuario, Integer idUsuario, Integer idRol) {
+		return iUsuarioRepository.cambiarNombreUsuario(usuario, idUsuario, idRol);
 	}
 	
 	public Usuario findByNombre(String nombre){
