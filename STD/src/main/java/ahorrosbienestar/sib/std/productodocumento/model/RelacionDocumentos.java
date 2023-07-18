@@ -20,8 +20,8 @@ public class RelacionDocumentos {
 	
 	@Column(name = "ID_REL_PROD_DOCT")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_relDocumento_seq")
-	@SequenceGenerator(name = "tbl_relDocumento_seq", sequenceName = "tbl_relDocumento_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="relDocumento_seq")
+	@SequenceGenerator(name = "relDocumento_seq", sequenceName = "relDocumento_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_rel_prod_doct;
 	
 	@Column(name = "FK_PRODUCTO", columnDefinition = "int")

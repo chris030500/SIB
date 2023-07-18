@@ -52,10 +52,11 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
 			+ "WHERE u.PK_ID_USUARIO = :id and contra.VC_INDICADOR_ACTIVO = 1", nativeQuery = true)
 	public Optional<Usuario> findById(@Param ( "id" ) Integer id);
 	
-	@Modifying
-	@Transactional
-	@Query(value = "UPDATE SIB.TBL_CAT_USUARIOS set VC_NOMBRE_USUARIO = :usuario WHERE PK_ID_USUARIO = :idUsuario", nativeQuery=true)
-	public int cambiarNombreUsuario( @Param("usuario") String usuario, @Param("idUsuario") Integer idUsuario);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE SIB.TBL_CAT_USUARIOS set VC_NOMBRE_USUARIO = :usuario, Rol_idRol = :idRol WHERE PK_ID_USUARIO = :idUsuario", nativeQuery=true)
+    public int cambiarNombreUsuario( @Param("usuario") String usuario, @Param("idUsuario") Integer idUsuario, @Param("idRol") Integer idRol);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CAT_USUARIOS AS u WHERE u.VC_NOMBRE_USUARIO = ?1", nativeQuery = true)
 	public Usuario findByNombre(String nombre);

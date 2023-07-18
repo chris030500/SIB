@@ -20,8 +20,8 @@ public class CatConfWS {
     
     @Column(name = "PK_ID_CAT_CONF_WS")
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_cat_conf_ws_seq")
-    @SequenceGenerator(name = "tbl_cat_conf_ws_seq", sequenceName = "tbl_cat_conf_ws_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cat_conf_ws_seq")
+    @SequenceGenerator(name = "cat_conf_ws_seq", sequenceName = "cat_conf_ws_seq", initialValue = 1, allocationSize = 1)
     private int pk_id_cat_conf_ws_seq;
     
     @Column(name = "VC_LLAVE_PARAMETRO", columnDefinition = "VARCHAR(60)")

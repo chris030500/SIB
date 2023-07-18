@@ -31,8 +31,8 @@ public class Usuario {
 	
 	@Column(name = "PK_ID_USUARIO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_usuario_seq")
-	@SequenceGenerator(name = "tbl_usuario_seq", sequenceName = "tbl_usuario_seq", initialValue = 2, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="usuario_seq")
+	@SequenceGenerator(name = "usuario_seq", sequenceName = "usuario_seq", initialValue = 2, allocationSize=1)
 	private int pk_id_usuario;
 	
 	@Column(name = "VC_NOMBRE_USUARIO", columnDefinition = "VARCHAR(45)")

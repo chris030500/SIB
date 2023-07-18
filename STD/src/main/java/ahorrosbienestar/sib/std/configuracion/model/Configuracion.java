@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 public class Configuracion {
 	@Column(name = "PK_ID_CONFIGURACION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_configuracion_proc_seq")
-	@SequenceGenerator(name = "tbl_configuracion_proc_seq", sequenceName = "tbl_configuracion_proc_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="configuracion_proc_seq")
+	@SequenceGenerator(name = "configuracion_proc_seq", sequenceName = "configuracion_proc_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_configuracion;
 	
 	@Column(name = "VC_NOM_PROPIEDAD", columnDefinition = "VARCHAR(100)")

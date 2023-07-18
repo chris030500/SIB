@@ -21,8 +21,8 @@ public class ProcesoValidacion {
 	
 	@Column(name = "PK_ID_PROC_VALIDACION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_proc_validacion_seq")
-	@SequenceGenerator(name = "tbl_proc_validacion_seq", sequenceName = "tbl_proc_validacion_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="proc_validacion_seq")
+	@SequenceGenerator(name = "proc_validacion_seq", sequenceName = "proc_validacion_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_proc_validacion;
 	
 	@Column(name = "VC_DESCRIPCION", columnDefinition = "VARCHAR(45)")
