@@ -57,5 +57,9 @@ public class RolService {
 			
 			return iRolRepository.modificarRoles(idRol,nombreRol,descripcionRol);
 		}
+		
+		public List<Rol> findByRolActivo(){
+			return iRolRepository.findByRolActivo();
+		}
 
 }

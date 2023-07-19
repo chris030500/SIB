@@ -78,7 +78,7 @@ public class UsuarioController {
         if(validarAcceso() == 1) {
             Usuario usuario = new Usuario();
             HistContrasena hc = new HistContrasena();
-            List<Rol> roles = rolService.findAll();
+            List<Rol> roles = rolService.findByRolActivo();
             //Rol roles = new Rol();
             //logger.info("hc: " + hc.getUsr_historico_contrasena_id().getPk_id_usuario());
             model.addAttribute("historico", hc);
@@ -97,7 +97,7 @@ public class UsuarioController {
     @GetMapping("/altaUsuario")
     public String AltaUsuario(Model model) throws IOException {
         logger.info("Ejecutando alta usuario");
-        List<Rol> roles = rolService.findAll();
+        List<Rol> roles = rolService.findByRolActivo();
         String contrasena = configService.findAll().get(5).getVc_valor_propiedad().toString();
 //        InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
 //        Properties properties = new Properties();
