@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +55,6 @@ public class UsuarioRestController {
 
 	@Autowired
 	private HistContrasenaService histContrasenaService;
-	
 	
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
@@ -212,7 +213,28 @@ public class UsuarioRestController {
 		logger.info("Ingreso en cambiarContraseniaUsuario");
 		logger.info("Usuario: " + usuario);
 		logger.info("IdUsuario: " + idUsuario);
+		
+		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
+		//System.out.println("valorUltimasContrasenas: " + valorUltimasContrasenas);
+		
 		if (usuario != null && idUsuario != null) {
+			List<HistContrasena> ultimasContrasenas = histContrasenaService.findTopByUsuarioByFechaDesc(idUsuario, Integer.parseInt(valorUltimasContrasenas));
+			boolean coincideContrasena = false;
+			for (HistContrasena historicoContrasena : ultimasContrasenas) {
+	            if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+	            	coincideContrasena = true;
+	            	
+	            	ResponseEntity.notFound().build();
+	            	
+					//return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+					break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
+	            }
+	        }
+			
+			if (coincideContrasena) {
+				logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
+				return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+			}
 			logger.info("Puede realizar el cambio de contraseña");
 
 			Usuario usu = usuarioService.findById(idUsuario).get();

@@ -1,12 +1,12 @@
 function getAbsolutePath() {
-    var loc = window.location;
-    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
 //Funcion para que genere la contraseña
 function generarContrasena() {
-    var urlBase = getAbsolutePath();
+	var urlBase = getAbsolutePath();
 	console.log("Entro en generarContrasena");
 	var contrasenia = $('#password').val();
 
@@ -41,6 +41,29 @@ function generarContrasena() {
 							window.location.replace(urlBase);
 						});
 
+					},
+					error: function(xhr, status, error) {
+						if (xhr.status === 400) {
+							var errorMessage = xhr.responseText;
+							// Mostrar el mensaje de error al usuario
+							console.log(errorMessage);
+							swal({
+								type: 'warning',
+								title: errorMessage,
+								showConfirmButton: false
+							}).then((result) => {
+								window.location.replace(urlBase);
+							});
+						} else {
+							// Manejar otros errores de la solicitud AJAX
+							swal({
+								type: 'warning',
+								title: "Error al cambiar la contraseña",
+								showConfirmButton: false
+							}).then((result) => {
+								window.location.replace(urlBase);
+							});
+						}
 					}
 				});
 			}
