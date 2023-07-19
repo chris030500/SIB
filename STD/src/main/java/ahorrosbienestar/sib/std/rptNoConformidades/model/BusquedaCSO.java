@@ -19,8 +19,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class BusquedaCSO {
 	@Column(name = "PK_ID_BUSQUEDA")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="busqueda_seq")
-	@SequenceGenerator(name = "busqueda_seq", sequenceName = "busqueda_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_busqueda_seq")
+	@SequenceGenerator(name = "tbl_busqueda_seq", sequenceName = "tbl_busqueda_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_busqueda;
 	
 	@Column(name = "I_USUARIO_REGISTRO", columnDefinition = "INT")

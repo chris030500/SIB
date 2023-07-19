@@ -28,8 +28,8 @@ public class SolicitudEnvio {
 
 	@Column(name = "PK_ID_SOLICITUD_ENVIO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "solicitud_envio_seq")
-	@SequenceGenerator(name = "solicitud_envio_seq", sequenceName = "solicitud_envio_seq", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_solicitud_envio_seq")
+	@SequenceGenerator(name = "tbl_solicitud_envio_seq", sequenceName = "tbl_solicitud_envio_seq", initialValue = 1, allocationSize = 1)
 	private int pk_id_solicitud_envio;
 
 	@Column(name = "I_NO_SOLICITUD_CORE")

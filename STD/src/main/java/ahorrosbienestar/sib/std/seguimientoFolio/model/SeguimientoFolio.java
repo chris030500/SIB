@@ -20,8 +20,8 @@ public class SeguimientoFolio {
 	
 	@Column(name = "PK_ID_SEGUIMIENTO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="seguimiento_seq")
-	@SequenceGenerator(name = "seguimiento_seq", sequenceName = "seguimiento_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_seguimiento_seq")
+	@SequenceGenerator(name = "tbl_seguimiento_seq", sequenceName = "tbl_seguimiento_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_seguimiento;
 	
 	@Column(name = "I_PLANACCION", columnDefinition = "INT")
