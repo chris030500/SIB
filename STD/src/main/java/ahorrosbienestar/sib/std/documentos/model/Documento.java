@@ -27,8 +27,8 @@ public class Documento {
 	
 	@Column(name = "PK_ID_DOCUMENTO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_documento_seq")
-	@SequenceGenerator(name = "tbl_documento_seq", sequenceName = "tbl_documento_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="documento_seq")
+	@SequenceGenerator(name = "documento_seq", sequenceName = "documento_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_documento;
 	
 	@Column(name = "VC_NOMBRE_DOC", columnDefinition = "VARCHAR(300)")

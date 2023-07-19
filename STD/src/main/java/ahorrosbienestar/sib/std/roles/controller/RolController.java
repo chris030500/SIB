@@ -97,7 +97,7 @@ public class RolController {
 					
 					altaRol.setDt_fecha_registro(fecha);
 					altaRol.setVc_descripcion_rol(descripcionRol);
-					altaRol.setVc_nombre_rol(descripcionRol);
+					altaRol.setVc_nombre_rol(nombreRol);
 					altaRol.setVc_estatus(estatusA);
 					
 					rolService.save(altaRol);

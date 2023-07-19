@@ -25,8 +25,8 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 public class HistoricoNotificacion {
 	@Column(name = "PK_ID_HISTORICO_NOTIFICACION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_hist_notificacion_seq")
-	@SequenceGenerator(name = "tbl_hist_notificacion_seq", sequenceName = "tbl_hist_notificacion_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="hist_notificacion_seq")
+	@SequenceGenerator(name = "hist_notificacion_seq", sequenceName = "hist_notificacion_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_historico_notificacion;
 	
 //	@Column(name = "VC_CORREO")
