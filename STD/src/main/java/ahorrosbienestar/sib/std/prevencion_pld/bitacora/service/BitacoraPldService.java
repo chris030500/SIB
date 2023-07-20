@@ -24,7 +24,7 @@ public class BitacoraPldService {
 	}
 	
 	public List<BitacoraPldModel> todoBitacora() {
-		return bitacoraPldRepository.findAll();
+		return bitacoraPldRepository.todoBitacora();
 	}
 	
 }

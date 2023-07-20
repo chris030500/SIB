@@ -101,6 +101,7 @@ function obtenerRol() {
 			if (nombreRol == "ROLE_AUX_PLD") {
 				relacionliEs.style.display = "none";
 				thAccion.style.display = "none";
+				cargaArchivo.style.display = "block";
 			} else if (nombreRol == "ROLE_CONS_PLD") {
 				relacionliEs.style.display = "none";
 				cargaArchivo.style.display = "none";
@@ -692,6 +693,7 @@ function guardarBitacora() {
 			// console.log(resp);
 			swal("Bitacora actualizada", {
 				closeOnClickOutside: false,
+				text: "Si usted guardó el archivo podrá consultar el respaldo en el siguiente repositorio: " + resp.nombreRol,
 				icon: "success",
 			})
 				.then((value) => {

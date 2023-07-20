@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.autorizacion.controller.AutorizacionRestController;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.prevencion_pld.bitacora.dto.BitacoraPldDTO;
 import ahorrosbienestar.sib.std.prevencion_pld.bitacora.model.BitacoraPldModel;
 import ahorrosbienestar.sib.std.prevencion_pld.bitacora.service.BitacoraPldService;
@@ -36,6 +38,12 @@ import lombok.AllArgsConstructor;
 @RestController
 @AllArgsConstructor
 public class CrudRestController {
+	
+	private final static int REPOSITORIO_FORMATO = 64;
+	private final static String ARCHIVO_FINAL = "FormatoTerceros";
+
+	@Autowired
+	private ConfigService configService;
 
 	@Autowired
 	private ListasPldService listasPldService;
@@ -131,8 +139,10 @@ public class CrudRestController {
 
 	// Guardado bitacora
 	@RequestMapping(value = {"/agregar_bitacora"}, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public HttpStatus guardarBitacora(@RequestBody BitacoraPldDTO bitacora) {
+	public RolPldDTO guardarBitacora(@RequestBody BitacoraPldDTO bitacora) {
+		RolPldDTO repositorio = new RolPldDTO();
 		try {
+			Configuracion configuracion = configService.obtenerConfiguracion(REPOSITORIO_FORMATO);
 			BitacoraPldModel model = new BitacoraPldModel();
 			LocalDate fechaLocal = LocalDate.now();
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -147,13 +157,15 @@ public class CrudRestController {
 			model.setVc_comentarios(bitacora.getComentarios());
 			model.setDt_fecha(fechaLocal);
 			model.setFk_usuario_registro(usuario);
-			bitacoraPldService.save(model);
+			// bitacoraPldService.save(model);
 			logger.info("se guardó la bitacora");
-			return HttpStatus.OK;
+			repositorio.setNombreRol(configuracion.getVc_valor_propiedad() + ARCHIVO_FINAL + "-" + fechaLocal.toString() + ".txt");
+			return repositorio;
 		} catch (Exception e) {
 			logger.info("no se guardó la bitacora");
 			logger.info(e.getMessage());
-			return HttpStatus.BAD_REQUEST;
+			repositorio.setNombreRol(e.getMessage());
+			return repositorio;
 		}
 	}
 	
