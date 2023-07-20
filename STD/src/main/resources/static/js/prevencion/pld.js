@@ -237,10 +237,12 @@ function empiezaPaginadoExclusion() {
 
 		var listaCell = document.createElement("td");
 		listaCell.textContent = datosPaginados[i].vc_lista;
+		listaCell.style.textAlign = "center";
 		row.appendChild(listaCell);
 
 		var estatusCell = document.createElement("td");
 		estatusCell.textContent = datosPaginados[i].vc_estatus;
+		estatusCell.style.textAlign = "center";
 		row.appendChild(estatusCell);
 
 		if (nombreRol == "ROLE_ADMIN_PLD") {
@@ -249,6 +251,12 @@ function empiezaPaginadoExclusion() {
 			botonEliminar.textContent = "x";
 			botonEliminar.classList.add("btn", "btn-danger"); // Agregar las clases de Bootstrap
 			botonEliminar.setAttribute("onclick", "alertaEliminar(" + datosPaginados[i].pk_id_exclusion + ")");
+			botonEliminar.style.borderRadius = "50%";
+			botonEliminar.style.width = "30px";
+			botonEliminar.style.height = "30px";
+			botonEliminar.style.padding = "0px";
+			botonEliminar.title = "Eliminar"
+			celdaAccion.style.textAlign = "center";
 			celdaAccion.appendChild(botonEliminar);
 			row.appendChild(celdaAccion);
 		}
@@ -270,6 +278,7 @@ function botonesPaginacionExclusion() {
 		button.style.backgroundColor = "#85929E";
 		button.style.border = "none";
 		button.style.color = "white";
+		button.style.margin = "2px";
 		button.style.padding = "8px 16px";
 		// Aplicar estilos al botón activo
 		if (i === paginaActualExclusion) {
@@ -418,14 +427,17 @@ function empiezaPaginadoBitacora() {
 
 		var registroCell = document.createElement("td");
 		registroCell.textContent = datosPaginados[i].numero_registro;
+		registroCell.style.textAlign = "center";
 		rows.appendChild(registroCell);
 
 		var excluidosCell = document.createElement("td");
 		excluidosCell.textContent = datosPaginados[i].registros_excluidos;
+		excluidosCell.style.textAlign = "center";
 		rows.appendChild(excluidosCell);
 
 		var finalCell = document.createElement("td");
 		finalCell.textContent = datosPaginados[i].registro_final;
+		finalCell.style.textAlign = "center";
 		rows.appendChild(finalCell);
 
 		var duracionCell = document.createElement("td");
@@ -434,6 +446,7 @@ function empiezaPaginadoBitacora() {
 
 		var estatusCell = document.createElement("td");
 		estatusCell.textContent = datosPaginados[i].estatus;
+		estatusCell.style.textAlign = "center";
 		rows.appendChild(estatusCell);
 
 		var comentarioCell = document.createElement("td");
@@ -462,6 +475,7 @@ function botonesPaginacionBitacora() {
 		button.style.border = "none";
 		button.style.color = "white";
 		button.style.padding = "8px 16px";
+		button.style.margin = "2px";
 		// Aplicar estilos al botón activo
 		if (i === paginaActualBitacora) {
 			button.style.backgroundColor = "#007bff";
