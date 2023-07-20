@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,6 +24,7 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 @Table(name="TBL_EXCLUSION_LISTA_ESTATUS_QEQ")
 public class ExclusionPldModel {
 	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name = "PK_ID_EXCLUSION")
 	private int pk_id_exclusion;

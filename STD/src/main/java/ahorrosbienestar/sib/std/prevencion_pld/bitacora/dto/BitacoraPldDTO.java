@@ -1,14 +1,18 @@
 package ahorrosbienestar.sib.std.prevencion_pld.bitacora.dto;
 
+import java.time.LocalDate;
+
 public class BitacoraPldDTO {
 
 	private String nombre_archivo;
+	private LocalDate fecha;
 	private int numero_registro;
 	private int registros_excluidos;
 	private int registro_final;
 	private String duracion;
 	private String estatus;
 	private String comentarios;
+	private String usuario;
 	
 	
 	public String getNombre_archivo() {
@@ -16,6 +20,12 @@ public class BitacoraPldDTO {
 	}
 	public void setNombre_archivo(String nombre_archivo) {
 		this.nombre_archivo = nombre_archivo;
+	}
+	public LocalDate getFecha() {
+		return fecha;
+	}
+	public void setFecha(LocalDate fecha) {
+		this.fecha = fecha;
 	}
 	public int getNumero_registro() {
 		return numero_registro;
@@ -52,6 +62,12 @@ public class BitacoraPldDTO {
 	}
 	public void setComentarios(String comentarios) {
 		this.comentarios = comentarios;
+	}
+	public String getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
 	}
 
 }

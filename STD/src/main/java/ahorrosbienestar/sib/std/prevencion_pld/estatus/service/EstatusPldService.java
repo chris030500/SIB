@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.prevencion_pld.estatus.service;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import ahorrosbienestar.sib.std.prevencion_pld.estatus.model.EstatusPldModel;
 import ahorrosbienestar.sib.std.prevencion_pld.estatus.repository.EstatusPldRepository;
@@ -28,6 +29,10 @@ public class EstatusPldService {
 	
 	public List<EstatusPldModel> estatusActivos() {
 		return estatusPldRepository.estatusActivos();
+	}
+	
+	public List<EstatusPldModel> estatusDeUnaLista(Integer idLista) {
+		return estatusPldRepository.estatusDeUnaLista(idLista);
 	}
 	
 }

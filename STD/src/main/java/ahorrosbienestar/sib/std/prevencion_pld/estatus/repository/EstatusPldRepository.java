@@ -21,5 +21,10 @@ public interface EstatusPldRepository extends JpaRepository<EstatusPldModel, Int
 	@Query(value = "SELECT * FROM SIB.TBL_CAT_ESTATUS_QEQ"
 			+ " WHERE I_ESTATUS = 1", nativeQuery = true)
 	public List<EstatusPldModel> estatusActivos();
+	
+	@Query(value = "SELECT e.* FROM SIB.TBL_CAT_ESTATUS_QEQ e"
+			+ " JOIN TBL_RELACION_LISTA_ESTATUS_QEQ r ON r.FK_ESTATUS = e.PK_ID_ESTATUS"
+			+ " WHERE r.FK_LISTA = :idLista", nativeQuery = true)
+	public List<EstatusPldModel> estatusDeUnaLista(@Param("idLista") Integer idLista);
 
 }

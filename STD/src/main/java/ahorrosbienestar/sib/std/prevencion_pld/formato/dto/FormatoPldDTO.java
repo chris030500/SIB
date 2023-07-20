@@ -2,7 +2,7 @@ package ahorrosbienestar.sib.std.prevencion_pld.formato.dto;
 
 public class FormatoPldDTO {
 	
-	private int idqeq;
+	private String idqeq;
 	private String nombre;
 	private String paterno;
 	private String materno;
@@ -28,10 +28,10 @@ public class FormatoPldDTO {
 	private String genero;
 	
 	
-	public int getIdqeq() {
+	public String getIdqeq() {
 		return idqeq;
 	}
-	public void setIdqeq(int idqeq) {
+	public void setIdqeq(String idqeq) {
 		this.idqeq = idqeq;
 	}
 	public String getNombre() {
