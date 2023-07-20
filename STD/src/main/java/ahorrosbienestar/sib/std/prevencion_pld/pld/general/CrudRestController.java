@@ -157,7 +157,7 @@ public class CrudRestController {
 			model.setVc_comentarios(bitacora.getComentarios());
 			model.setDt_fecha(fechaLocal);
 			model.setFk_usuario_registro(usuario);
-			// bitacoraPldService.save(model);
+			bitacoraPldService.save(model);
 			logger.info("se guardó la bitacora");
 			repositorio.setNombreRol(configuracion.getVc_valor_propiedad() + ARCHIVO_FINAL + "-" + fechaLocal.toString() + ".txt");
 			return repositorio;
