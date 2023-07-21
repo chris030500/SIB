@@ -12,10 +12,10 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ContentDisposition.Builder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import ahorrosbienestar.sib.std.catalogos.dto.ArchivosAdjuntos;
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
@@ -45,9 +46,10 @@ import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
 import ahorrosbienestar.sib.std.folios.repository.IObservacionRepository;
 import ahorrosbienestar.sib.std.folios.service.FolioService;
 import ahorrosbienestar.sib.std.folios.service.ObservacionService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import org.springframework.core.io.Resource;
 @Controller
 @RequestMapping("folios")
 public class FoliosController {
@@ -85,31 +87,54 @@ public class FoliosController {
 	@Autowired
 	private ArchivosFoliosService archivosFoliosService;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
+	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Alta Oficio";
+	private static final String rutaError = "errores/error_403";
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
+	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
+
 	
 	@Autowired
 	public FoliosController (FolioService folioService) {
 		this.folioService = folioService;
 	}
-	
+		
 	/**
 	 * Cargar listas iniciales de la pantalla
 	 * @param model
 	 * @return
 	 */
 	@GetMapping("/folio")
-	public String inicioFolio(Model model) {
+	public String inicioFolio(Model model) {		
 		try {
-						
-			model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
-			model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
-			model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
-			model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
-			model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
-			model.addAttribute("lista_folios",catalogosCEService.obtFolios());
-			return "folios/inicio";
+			if(validarAcceso() == 1) {
+				model.addAttribute("cat_tipo_oficio", iCatalogoRepository.generarOpciones(catTipoOficio));
+				model.addAttribute("cat_lista_reguladores", iCatalogoRepository.generarOpciones(catReguladores));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_lista_empleado", catalogosCEService.obtenerEmpleado());
+				model.addAttribute("cat_lista_areas", catalogosCEService.obtenerAreas());
+				model.addAttribute("lista_folios",catalogosCEService.obtFolios());
+				model.addAttribute("rolMonitoreo",this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
+
+				rutaDireccion = "folios/inicio";
+			}else {
+				rutaDireccion = rutaError;
+			}
+
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 		}
@@ -123,7 +148,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/obtenerFolios")
 	public ResponseEntity<List<ListaFolios>> obtenerFolios(Model model) {
-		
+		 logger.info("/obtenerFolios");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtFolios());
 		} catch (Exception e) {
@@ -139,7 +164,7 @@ public class FoliosController {
 	 */
 	@GetMapping("/buscarPuesto")
 	public ResponseEntity<?> buscarPuesto(@RequestParam("empleadoID") Integer empleadoID, Model model) {
-
+		logger.info("/buscarPuesto");
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtenerPuesto(empleadoID));
 		} catch (Exception e) {
@@ -155,6 +180,7 @@ public class FoliosController {
 	@GetMapping("/busquedaxArea")
 	public ResponseEntity<?> busquedaxArea(@RequestParam("areaID") Integer areaID){
 		try {
+			logger.info("/busquedaxArea"+"dtos:"+areaID);
 			List<EmpleadosCE> listaResponsables = catalogosCEService.busquedaxArea(areaID);
 			return ResponseEntity.ok((listaResponsables != null)?listaResponsables:0);
 		} catch (Exception e) {
@@ -180,6 +206,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/altaFolio"+"dtos:"+noficio);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -234,6 +261,7 @@ public class FoliosController {
 					@RequestParam(name = "i_estatus") Integer i_estatus,
 					@RequestParam(name = "vc_ruta") String vc_ruta
 					){
+				logger.info("/modificarFolio"+"dtos:"+id);
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -261,6 +289,7 @@ public class FoliosController {
 			public ResponseEntity<List<ObservacionesxFolio>> buscarObservaciones(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
+					logger.info("/buscarObservaciones"+"dtos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.obtObservaciones(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
@@ -276,9 +305,9 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "folioID") Integer folioID,
-					@RequestParam(name = "obsOficio") Integer obsOficio
+					@RequestParam(name = "obsOficio") String obsOficio
 					){
-				
+				logger.info("/altaObservacion"+"dtos:"+idAreaAtencion);
 				String mensaje ="Registro Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
@@ -294,7 +323,7 @@ public class FoliosController {
 				}
 			}
 			
-			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, Integer obsOficio) {
+			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, String obsOficio) {
 				Integer estatus = 1;
 				try {
 					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -319,11 +348,11 @@ public class FoliosController {
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
-					altaObs.setI_observacion_oficio(obsOficio);
+					altaObs.setVc_observacion_oficio(obsOficio);
 					
 					observacionService.save(altaObs);
-					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion());
-					
+					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
+					logger.info("Registro Correo:"+altaObs.getPk_id_observacion());
 				} catch (Exception e) {
 					System.out.println("--"+e.getMessage());
 				} 
@@ -338,7 +367,7 @@ public class FoliosController {
 					@RequestParam(name = "idFechaVencimiento") String idFechaVencimiento,
 					@RequestParam(name = "desObservacion") String desObservacion,
 					@RequestParam(name = "reasignar") Integer reasignar,
-					@RequestParam(name = "obsOficio") Integer obsOficio){
+					@RequestParam(name = "obsOficio") String obsOficio){
 				
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
@@ -361,12 +390,13 @@ public class FoliosController {
 						}
 					}else if(reasignar == 0) {
 						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
-							correoCSOService.registrarCorreo(idObservacion);
+							correoCSOService.registrarCorreo(idObservacion,1);
 							respuesta.add(mensaje);
 						}else {
 							respuesta.add("No se actualizo correctamente");
 						}
-					}			
+					}		
+					logger.info("modificarObservacion:"+idObservacion);
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
 					respuesta.add(e.getMessage());
@@ -404,6 +434,7 @@ public class FoliosController {
 				try {
 					if(files.length > 0) {
 						for(MultipartFile file: files) {
+							if(archivosFoliosService.existeNombre(file.getOriginalFilename(),idFolio) == 0) {
 							 byte[] bytes = file.getBytes();
 							 File directorio = new File(UrlPDFServidor()+idFolio);
 							 if(!directorio.exists()) {
@@ -412,6 +443,7 @@ public class FoliosController {
 				                        Files.write(nuevoPath, bytes);
 				                        datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 				                        mensaje="Se agrego archivo correctamente.";
+				                        logger.info(mensaje);
 								 }else {
 									 logger.error("Error al crear directorio: " + directorio);
 								 }
@@ -420,10 +452,16 @@ public class FoliosController {
 			                     Files.write(nuevoPath, bytes);
 			                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 			                     mensaje="Se agrego archivo correctamente.";
+			                     logger.info(mensaje);
 							 }
+						   }else {
+							   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+							   logger.info(mensaje);
+						   }
 						}
 					}else {
 						mensaje="No subio archivo.";
+						logger.info(mensaje);
 					}
 					respuesta.add(mensaje);
 					return ResponseEntity.ok(respuesta);
@@ -445,6 +483,14 @@ public class FoliosController {
 				Integer respuesta=0;
 				try {
 				
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					UserDetails userDetails = null;
+					if (principal instanceof UserDetails) {
+						userDetails = (UserDetails) principal;
+					}
+					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+					
+					
 					LocalDate fecha = LocalDate.now();
 					ArchivosFolios alta = new ArchivosFolios();
 					alta.setI_folio(Integer.parseInt(idFolio));
@@ -452,6 +498,7 @@ public class FoliosController {
 					alta.setI_estatus(estatus);
 					alta.setVc_ruta_docto(urlArchivo);
 					alta.setVc_nombre_docto(nombreArchivo);
+					alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
 					
 					ArchivosFolios registro = archivosFoliosService.registrar(alta);
 					
@@ -474,10 +521,11 @@ public class FoliosController {
 			 * @return
 			 */
 			@GetMapping("/buscarArchivos")
-			public ResponseEntity<List<ArchivosFolios>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
+			public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 				
 				try {
-					return ResponseEntity.ok(archivosFoliosService.obtRegistros(idFolio));
+					logger.info("/buscarArchivos:"+idFolio);
+					return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 				} catch (Exception e) {
 					System.out.print("--" + e.getMessage());
 					return null;
@@ -492,6 +540,7 @@ public class FoliosController {
 			@GetMapping("/buscarPDF")
 			public ResponseEntity<Resource> buscarPDF(@RequestParam("idArchivo") Integer idArchivo,Model model) {
 				try {
+					logger.info("/buscarPDF:"+idArchivo);
 					Optional<ArchivosFolios> dtos= archivosFoliosService.porID(idArchivo);
 					File file = new File(UrlPDFServidor()+dtos.get().getVc_ruta_docto());
 					byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
@@ -500,7 +549,7 @@ public class FoliosController {
 					ContentDisposition contentDisposition = null;
 					HttpHeaders h2 = new HttpHeaders();
 					
-					contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+					contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 					h2.setContentDisposition(contentDisposition);
 					
 					return ResponseEntity.ok().contentLength((long) bytesPDF.length)
@@ -511,5 +560,20 @@ public class FoliosController {
 					System.out.print("--" + e.getMessage());
 					return null;
 				}
+			}
+			
+			public int validarAcceso() {
+				
+				
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+				return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+				
+				
 			}
 }

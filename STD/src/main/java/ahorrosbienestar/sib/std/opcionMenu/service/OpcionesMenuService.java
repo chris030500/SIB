@@ -11,14 +11,19 @@ import ahorrosbienestar.sib.std.opcionMenu.repository.IOpcionesMenuRepository;
 @Service
 public class OpcionesMenuService {
 	private IOpcionesMenuRepository iOpcionesMenuRepository;
-	
+
 	@Autowired
 	public OpcionesMenuService(IOpcionesMenuRepository iOpcionesMenuRepository) {
 		this.iOpcionesMenuRepository = iOpcionesMenuRepository;
 	}
-	
-	public List<OpcionesMenu> findAll(){
+
+	public List<OpcionesMenu> findAll() {
 		return iOpcionesMenuRepository.findAll();
 	}
-	
+
+	public int buscarRelacion(String nombrepantalla) {
+
+		return iOpcionesMenuRepository.buscarRelacion(nombrepantalla);
+	}
+
 }

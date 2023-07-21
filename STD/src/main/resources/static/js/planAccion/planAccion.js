@@ -49,9 +49,20 @@ $(document).ready(function() {
 	$("#btnGuardarFile").click(function() {
 
 		if (document.getElementById("file").value.length > 0) {
-			var form = $('#adjuntoArchivoOficio')[0];
-			var data = new FormData(form);
-			addArchivos(data)
+		   Swal.fire({
+				title: 'Procesando.....',
+  				text: 'Espere un momento..',
+  				timer: 4000, // tiempo en milisegundos
+ 				timerProgressBar: true,
+  				showConfirmButton: false
+			}).then((result) => {
+  				// Este código se ejecutará después de que el temporizador haya terminado
+ 				 if (result.dismiss === Swal.DismissReason.timer) {
+    					var form = $('#adjuntoArchivoOficio')[0];
+						var data = new FormData(form);
+						addArchivos(data)
+ 				 }
+			});
 		} else {
 			swal({
 				title: "Informacion.",
@@ -356,7 +367,7 @@ function peticion(url) {
 
 }
 function pintartblObservaciones() {
-	var urlInicio = getAbsolutePath() + listaObservacion + document.getElementById("idOficios").value;
+	var urlInicio = getAbsolutePath() + listaObservacion + document.getElementById("idOficios").value+"&estatus="+document.getElementById("idEstatusFiltro").value;
 	$.blockUI({ message: 'Espere un momento...' });
 	$.getJSON(urlInicio, {}, function(data) {
 		tblObservaciones.clear().draw();
@@ -385,7 +396,7 @@ function pintartblObservaciones() {
 				+ ")' >"
 				+ " <i class='bi bi-x-circle-fill'></i>"
 				+ " </button>";
-			tblObservaciones.row.add([opt.i_observacion_oficio, opt.vc_area, opt.vc_responsable,
+			tblObservaciones.row.add([opt.vc_observacion_oficio, opt.vc_area, opt.vc_responsable,
 			opt.dt_fecha_asignacion, opt.dt_fecha_vencimiento, opt.vc_descripcion, opt.vc_estatus, (opt.i_confirma == 0) ? botonesAsignacion : botonesAceptado]).draw(false);
 			//tblObservaciones.column(0).visible(false);
 		});
@@ -413,6 +424,59 @@ function verDetalle(idFolio) {
 			});
 	}
 }
+var obtFolios = "obtFolios?estatus=";
+function consultaDatos(idEstatus){
+	iniciarPantalla();
+	if(idEstatus.value > 0){
+			$.blockUI({ message: 'Espere un momento...' });
+			var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
+		
+			$.getJSON(urlServicio, {}, function(data) {
+				if(data.length > 0){
+					$.each(data, function(idx, opt) {
+						$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
+					});
+				}
+				$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+				setTimeout($.unblockUI, 100);
+			});
+	}else{
+		
+		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+		swal({
+			title: "",
+			text: "Seleccione un estatus Valido.",
+			icon: "warning",
+		});
+	}
+}
+
+function iniciarPantalla(){
+	$("#idOficios").empty();
+	reiniciarSeccionObservaciones();
+	reiniciarSeccionPlanAccion();
+}
+
+function reiniciarSeccionObservaciones(){
+	tblObservaciones.clear().draw();
+	$('#idAsunto').val('');
+	$('#dtRecibo').val('');
+	$('#dtVencimiento').val('');
+	
+}
+function reiniciarSeccionPlanAccion(){
+	tblPlanAccion.clear().draw();
+	document.querySelector('#lblSeleccion').innerText = "";
+	obsId = 0;
+	$('#dtFechaInicio').val('');
+	$('#dtFechaVencimiento').val('');
+	$('#dtFechaInicio').attr("min","fechaInicio");
+	$('#dtFechaInicio').attr("max","fechaVencimiento");
+	$('#dtFechaVencimiento').attr("min","fechaInicio");
+	$('#dtFechaVencimiento').attr("max","fechaVencimiento");
+	
+}
+
 
 function verDetallePA(id) {
 	if(id > 0){
@@ -460,7 +524,8 @@ function asignarFechasObservacion(fecha1, fecha2){
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "min" */
 			elemento.min = fechaInicio;
-			document.getElementById("dtFechaInicio").value = fechaInicio;
+			$('#dtFechaInicio').val(fechaInicio);
+			//document.getElementById("dtFechaInicio").value = fechaInicio;
 	});
 	dtInicio = fechaInicio;
 	
@@ -468,7 +533,8 @@ function asignarFechasObservacion(fecha1, fecha2){
 		.forEach(elemento => {
 			/* A cada elemento encontrado le asignamos el atributo "min" */
 			elemento.max = fechaVencimiento;
-			document.getElementById("dtFechaVencimiento").value = fechaVencimiento;
+			$('#dtFechaVencimiento').val(fechaVencimiento);
+			//document.getElementById("dtFechaVencimiento").value = fechaVencimiento;
 	});
 	dtVencimiento = fechaVencimiento
 }
@@ -562,14 +628,14 @@ function obtDtostblAdjuntos(url) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Ver PDF' type='button'"
+				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
 				+ opt.pk_id_archivo
 				+ ")' id="
 				+ opt.pk_id_archivo
 				+ " >"
-				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
-			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
+				+ " <i class='bi bi-download'></i></button>";
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto,opt.vc_nombre_adjunto,botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -631,4 +697,29 @@ function tamFile() {
 			});
 		};
 	};
+}
+
+function asignarArchivo(archivo) {
+
+	if (document.getElementById(archivo.id).value > 0) {
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		 document.getElementById("file").value = "";
+		$('#file').attr("accept", extension);
+		$('#file').attr("disabled", false);
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "Se requiere seleccionar una opcion valida",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", "");
+		$('#file').attr("disabled", true);
+
+	}
 }

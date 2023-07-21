@@ -29,37 +29,46 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Aceptar Asignacion</legend>
 					<div class="row" style="margin-top : 15px ">
-						<div class="col-md-2">
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus Observacion</label>
+							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
 							<label class="col-form-label"> No. de Oficio</label>
 							<select class="form-control" id="idOficios" onchange="verDetalle(this)" readonly>
 								<option value="0">Seleccione</option>
-								<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
-									th:text="${listaFolios.folio}"></option>
+								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>-->
 							</select>
-							<!--<input class="form-control" type="text" id="idNoOficio" placeholder="No. de Oficio">-->
 						</div>
 						<div class="col-md-4">
 							<label class="col-form-label"> Asunto:</label>
-							<!--<input class="form-control" type="text" id="idAsunto" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idAsunto" placeholder="Asunto"
 								maxlength="400" readonly></textarea>
 						</div>
-						<div class="col-md-2">
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						
+						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Recibo:</label>
 							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo"
 								readonly>
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-4">
 							<label class="col-form-label"> Fecha de Vencimiento:</label>
 							<input class="form-control" type="date" id="dtVencimiento"
 								placeholder="Fecha de Vencimiento" readonly>
 						</div>
-						<div class="col-md-2" style ="justify-content: center;">
+						<div class="col-md-4" style ="justify-content: center;">
 							<label class="col-form-label">Ver documentos:</label>
 							<br>
 							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
 								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
-								<i class="bi bi-file-earmark-pdf-fill"></i>
+								<i class="bi bi-files"></i>
 							</button>
 						</div>
 					</div>
@@ -128,7 +137,7 @@
 						</div>
 						<div class="col-md-4" id="idFinActividad" style="display:none;">
 							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
-							<select class="form-control" id="idConfirmarActividad">
+							<select class="form-control" id="idConfirmarActividad" th:disabled="${rolMonitoreo == true}">
 								<option value="0">Seleccione</option>
 								<option th:each="opcion:${cat_opcion_fin}" th:value="${opcion.i_opcion}"
 									th:text="${opcion.v_valor}"></option>
@@ -146,7 +155,7 @@
 					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-10"></div>
 						<div class="col-md-2">
-							<button type="button" class="btn btn-primary form-control" id="btnAgregar">Agregar</button>
+							<button type="button" class="btn btn-primary form-control" id="btnAgregar" th:disabled="${rolMonitoreo == true}">Agregar</button>
 						</div>
 					</div>
 					<div class="row" style="margin-top : 15px ">
@@ -182,10 +191,27 @@
 							<div class="modal-body">
 								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
 								<div class="row">
-									<form id="adjuntoArchivoOficio">
+									
+									<div class="col-md-4">
+										<label class="col-form-label"> Tipo de Archivo:</label>
+											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+													th:id="${opcionTipo.v_pantalla}">
+												</option>
+											</select>
+										
+									</div>
+									<div class="col-md-8">
+										<form id="adjuntoArchivoOficio">
 										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required>
+										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
 									</form>
+										
+									</div>
+									
+									
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
@@ -194,6 +220,7 @@
 												<tr>
 													<th style="visibility:collapse; display:none;"></th>
 													<th>Nombre</th>
+													<th>Nombre Usuario Adjunto</th>
 													<th>Ver Documento</th>
 												</tr>
 											</thead>
@@ -205,7 +232,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile">Guardar</button>
+									id="btnGuardarFile" th:disabled="${rolMonitoreo == true}">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 							</div>

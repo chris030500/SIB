@@ -13,9 +13,21 @@ $(document).ready(function() {
 	});
 	$("#btnGuardarFile").click(function() {
 		if (document.getElementById("file").value.length > 0) {
-			var form = $('#adjuntoArchivoOficio')[0];
-			var data = new FormData(form);
-			addArchivos(data)
+			
+		    Swal.fire({
+				title: 'Procesando.....',
+  				text: 'Espere un momento..',
+  				timer: 4000, // tiempo en milisegundos
+ 				timerProgressBar: true,
+  				showConfirmButton: false
+			}).then((result) => {
+  				// Este código se ejecutará después de que el temporizador haya terminado
+ 				 if (result.dismiss === Swal.DismissReason.timer) {
+    					var form = $('#adjuntoArchivoOficio')[0];
+						var data = new FormData(form);
+						addArchivos(data)
+ 				 }
+			});
 		} else {
 			swal({
 				title: "Informacion.",
@@ -42,7 +54,7 @@ function eventosContadorSeguimiento() {
 	});
 }
 
-var tblObservaciones;
+var tblSeguimiento;
 var tblPlanAccion;
 var tblAdjuntos;
 function inicioTabla() {
@@ -83,7 +95,7 @@ function verActUpload(id) {
 	if (id > 0) {
 		
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + id;
+		var urlServicio = getAbsolutePath() + buscarActividades + id+"&estatus="+document.getElementById("idEstatusFiltro").value;
 		$.getJSON(urlServicio, {}, function(data) {
 			tblPlanAccion.clear().draw();
 			$.each(data, function(idx, opt) {
@@ -109,7 +121,7 @@ function verActividades(idFolio) {
 	if (idFolio.value > 0) {
 		
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value;
+		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value+"&estatus="+document.getElementById("idEstatusFiltro").value;
 		$.getJSON(urlServicio, {}, function(data) {
 			tblPlanAccion.clear().draw();
 			$.each(data, function(idx, opt) {
@@ -194,7 +206,7 @@ function eventosBotones() {
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
 				} else {
-					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId;
+					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId + "&idActividad="+document.getElementById("idActividad").value;
 					urlServicio = urlServicio + "&desc_seguimiento=" + document.getElementById("idtxtSeguimiento").value;
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
@@ -370,14 +382,14 @@ function obtDtostblAdjuntos(url) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Ver PDF' type='button'"
+				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
 				+ opt.pk_id_archivo
 				+ ")' id="
 				+ opt.pk_id_archivo
 				+ " >"
-				+ " <i class='bi bi-file-earmark-pdf-fill'></i>";
-			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, botones]).draw(false);
+				+ " <i class='bi bi-download'></i></button>";
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto,opt.vc_nombre_adjunto,botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -447,5 +459,74 @@ function addArchivos(data) {
 		}
 	});
 
+}
+
+function asignarArchivo(archivo) {
+
+	if (document.getElementById(archivo.id).value > 0) {
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		 document.getElementById("file").value = "";
+		$('#file').attr("accept", extension);
+		$('#file').attr("disabled", false);
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "Se requiere seleccionar una opcion valida",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", "");
+		$('#file').attr("disabled", true);
+
+	}
+
+
+}
+
+var obtFolios = "obtFolios?estatus=";
+function consultaDatos(idEstatus){
+	iniciarPantalla();
+	if(idEstatus.value > 0){
+		$.blockUI({ message: 'Espere un momento...' });
+			var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
+			$.getJSON(urlServicio, {}, function(data) {
+				if(data.length > 0){
+					$.each(data, function(idx, opt) {
+						$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
+					});
+				}
+				$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+				setTimeout($.unblockUI, 100);
+			});
+	}else{
+		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+		swal({
+			title: "",
+			text: "Seleccione un estatus Valido.",
+			icon: "warning",
+		});
+	}
+}
+
+function iniciarPantalla(){
+	$("#idOficios").empty();
+	reiniciarSeccionPA();
+	reiniciarSeccionSeguiento();
+}
+
+function reiniciarSeccionPA(){
+	tblPlanAccion.clear().draw();
+}
+
+function reiniciarSeccionSeguiento(){
+	tblSeguimiento.clear().draw();
+	document.getElementById("idActividad").value = 0;
+	$('#idNombreActividad').val('');
+	iniciarAltaSeguimiento();
 }
 

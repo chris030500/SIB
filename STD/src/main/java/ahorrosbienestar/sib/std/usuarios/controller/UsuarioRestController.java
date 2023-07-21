@@ -171,26 +171,38 @@ public class UsuarioRestController {
 		return ResponseEntity.ok(usuarioService.save(usuario));
 	}
 
-	@RequestMapping(value = { "/editar_usuario" }, method = RequestMethod.POST)
-	public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("usuario") String usuario,
-			@RequestParam("idUsuario") Integer idUsuario) {
-		logger.info("Usuario: " + usuario);
-		logger.info("IdUsuario: " + idUsuario);
-		logger.info("Ingreso en cambiarNombreUsuario");
-		logger.info("Usuario: " + usuario);
-		logger.info("IdUsuario: " + idUsuario);
-		if (usuario != null && idUsuario != null) {
-			logger.info("Puede realizar el cambio de usuario");
-			logger.info("Puede realizar el cambio de usuario");
-			Usuario usu = usuarioService.findById(idUsuario).get();
-
-			return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario));
-		}
-		// logger.info("No puede realizar el cambio de usuario");
-		logger.info("No puede realizar el cambio de usuario");
-		return ResponseEntity.notFound().build();
-
-	}
+    @RequestMapping(value = { "/editar_usuario" }, method = RequestMethod.POST)
+    public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("usuario") String usuario,
+            @RequestParam("idUsuario") Integer idUsuario,
+            @RequestParam("rol") Integer idRol) {
+        try {
+            logger.info("Usuario: " + usuario);
+            logger.info("IdUsuario: " + idUsuario);
+            logger.info("Ingreso en cambiarNombreUsuario");
+            logger.info("Usuario: " + usuario);
+            logger.info("IdUsuario: " + idUsuario);
+            logger.info("idRol:" + idRol);
+            if (usuario != null && idUsuario != null) {
+                logger.info("Puede realizar el cambio de usuario");
+                //logger.info("Puede realizar el cambio de usuario");
+                Usuario usu = usuarioService.findById(idUsuario).get();
+                
+                
+                return ResponseEntity.ok(usuarioService.cambiarNombreUsuario(usuario, idUsuario, idRol));
+                
+                
+                
+            }
+            // logger.info("No puede realizar el cambio de usuario");
+            logger.info("No puede realizar el cambio de usuario");
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            System.out.println(""+e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+        
+ 
+    }
 
 	@RequestMapping(value = { "/editar_usuario/contrasenia" }, method = RequestMethod.POST)
 	public ResponseEntity<?> cambiarContraseniaUsuario(@RequestParam("usuario") String usuario,
@@ -206,7 +218,7 @@ public class UsuarioRestController {
 			Usuario usu = usuarioService.findById(idUsuario).get();
 			histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
 			String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-			logger.info("Días que va a estar activa la contraseña: " + pDias);
+			//logger.info("Días que va a estar activa la contraseña: " + pDias);
 			// Establecemos el formato de la fecha
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			// Obtenemos la fecha en String
@@ -216,10 +228,10 @@ public class UsuarioRestController {
 			LocalDate localDateHoy = LocalDate.parse(fechaActual);
 			// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
 
-			localDate = localDate.plusDays(Long.parseLong(pDias));
+			//localDate = localDate.plusDays(Long.parseLong(pDias));
 
 			HistContrasena hc = new HistContrasena();
-			hc.setDt_vig_cont_fin(localDate);
+			hc.setDt_vig_cont_fin(localDateHoy);
 			hc.setDt_vig_cont_inicio(localDateHoy);
 			hc.setVc_indicador_activo(1);
 			hc.setUsr_historico_contrasena_id(usu);

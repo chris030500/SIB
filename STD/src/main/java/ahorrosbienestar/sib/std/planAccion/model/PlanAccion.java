@@ -20,8 +20,8 @@ public class PlanAccion {
 	
 	@Column(name = "PK_ID_PLANACCION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="planAccion_seq")
-	@SequenceGenerator(name = "planAccion_seq", sequenceName = "planAccion_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_planAccion_seq")
+	@SequenceGenerator(name = "tbl_planAccion_seq", sequenceName = "tbl_planAccion_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_planaccion;
 	
 	@Column(name = "I_OBSERVACION", columnDefinition = "INT")

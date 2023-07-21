@@ -22,8 +22,8 @@ public class Contrato {
 
 	@Column(name = "PK_ID_CONTRATO")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="contrato_seq")
-	@SequenceGenerator(name = "contrato_seq", sequenceName = "contrato_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_contrato_seq")
+	@SequenceGenerator(name = "tbl_contrato_seq", sequenceName = "tbl_contrato_seq", initialValue = 1, allocationSize=1)
 	private int pk_id_contrato;
 	
 	@Column(name = "I_NO_SOLICITUD", columnDefinition = "INT")

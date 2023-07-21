@@ -6,7 +6,9 @@ $(document).ready(function() {
 			if (document.getElementById('ckTodos').checked == true) {
 					registrarBusqueda();
 			} else if (document.getElementById('ckTodos').checked == false) {
-				if (valVacio() == false) {
+				
+				registrarBusqueda();
+				/*if (valVacio() == false) {
 					registrarBusqueda();
 				}else {
 					swal({
@@ -14,7 +16,7 @@ $(document).ready(function() {
 						text: "Se requiere seleccionar una opcion valida.",
 						icon: "warning",
 					});
-				}
+				}*/
 			}
 		} else {
 			swal({
@@ -34,10 +36,12 @@ function registrarBusqueda(){
 		urlSevicio = urlSevicio + "&iEstatus=0";
 		urlSevicio = urlSevicio + "&iEmite=0";
 		urlSevicio = urlSevicio + "&iTipo=0";
+		urlSevicio = urlSevicio + "&idOficio=0";
 	}else{
-		urlSevicio = urlSevicio + "&iEstatus="+document.getElementById("iEstatus").value;
-		urlSevicio = urlSevicio + "&iEmite="+document.getElementById("iEmite").value;
-		urlSevicio = urlSevicio + "&iTipo="+document.getElementById("iOficio").value;
+		urlSevicio = urlSevicio + "&iEstatus="+((document.getElementById("iEstatus").value> 0)?document.getElementById("iEstatus").value:0);
+		urlSevicio = urlSevicio + "&iEmite="+((document.getElementById("iEmite").value > 0)?document.getElementById("iEmite").value:0);
+		urlSevicio = urlSevicio + "&iTipo="+((document.getElementById("iOficio").value>0)?document.getElementById("iOficio").value:0);
+		urlSevicio = urlSevicio + "&idOficio="+((document.getElementById("nrOficio").value>0)?document.getElementById("nrOficio").value:0);
 	}
 	peticionPost(urlSevicio);
 
@@ -55,11 +59,9 @@ function peticionPost(urlServicio) {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
+
+				var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
 		
-				var idReporte = 2;
-				var servicioReporte = "exportarReporte/generarReporte?idReporte=";
-				var urlReporte = window.location.origin + "/STD/" + servicioReporte + idReporte + "&parametros=?ID_BUSQUEDA=" + respuesta.pk_id_busqueda + "&tipoDocumento=.xls" + "&identificadorDoc=" + respuesta.dt_fecha_registro;
-			
 				window.open(urlReporte);
 				window.focus();
 

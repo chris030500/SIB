@@ -28,11 +28,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.dto.ActividadesPA;
+import ahorrosbienestar.sib.std.catalogos.dto.ArchivosAdjuntos;
+import ahorrosbienestar.sib.std.catalogos.dto.ListaFolioXEmpleado;
 import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoCSO.service.CorreoCSOService;
 import ahorrosbienestar.sib.std.filesCSO.model.ArchivosFolios;
 import ahorrosbienestar.sib.std.filesCSO.service.ArchivosFoliosService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.planAccion.controller.PlanAccionController;
 import ahorrosbienestar.sib.std.seguimientoFolio.model.SeguimientoFolio;
 import ahorrosbienestar.sib.std.seguimientoFolio.repository.ISeguimientoFolioRepository;
@@ -67,8 +73,29 @@ public class SeguimientoFolioController {
 	@Autowired
 	private ConfigService configService;
 	
-	private String rolAdmin = "ROLE_RESPONSABLE_CSO";
-	private String rolResponsable = "ROLE_ADMIN_CSO";
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private CorreoCSOService correoCSOService;
+	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	private static final String rolMonitoreo = "ROLE_MONITOREO";
+	private static final String rolAdmin = "ROLE_RESPONSABLE";
+	private static final String rolResponsable = "ROLE_ADMIN";
+	private int catEstatus = 6;
+	private int tipoArchivo = 9;
+	
+	private static final String nombrePantalla = "Seguimiento";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
+	
+	List<Usuario> usuario = null;
 	
 	@Autowired
 	public SeguimientoFolioController(SeguimientoFolioService seguimientoFolioService) {
@@ -79,20 +106,16 @@ public class SeguimientoFolioController {
 	public String inicioFolio(Model model) {
 		
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
-				model.addAttribute("lista_folios", catalogosCEService.listaActividadPASupervisor(usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario()));
+		
+			if(validarAcceso() == 1) {
+				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
+				model.addAttribute("rolMonitoreo", this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo));
+				rutaDireccion = "seguimientoFolio/seguimiento";
 			}else {
-				model.addAttribute("lista_folios", catalogosCEService.listaActividadPAXEmpleado(usuario.get(0).getI_id_empleado()));
+				rutaDireccion = rutaError;
 			}
-
-			return "seguimientoFolio/seguimiento";
+			return rutaDireccion;
 		} catch (Exception e) {
 			System.out.println(""+e.getMessage());
 		}
@@ -106,21 +129,26 @@ public class SeguimientoFolioController {
 	 * @return
 	 */
 	@GetMapping("/buscarActividadesxEmpleado")
-	public ResponseEntity<List<ActividadesPA>> buscarActividadesPlan(@RequestParam("idFolio") Integer idFolio,Model model) {
+	public ResponseEntity<?> buscarActividadesPlan(@RequestParam("idFolio") Integer idFolio,@RequestParam("estatus") Integer estatus) {
 		
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
+			List<ActividadesPA> listaActividades = null;
 			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
-				return ResponseEntity.ok(catalogosCEService.buscarActividadesSupervisor(idFolio, usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario()));
-			}else {
-				return ResponseEntity.ok(catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado()));
+				listaActividades = catalogosCEService.buscarActividadesSupervisor(idFolio, usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario(),estatus);
+			}else if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo))
+				listaActividades = catalogosCEService.buscarActividades(idFolio,estatus);
+			else{
+				listaActividades = catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado(),estatus);
 			}
+			
+			return ResponseEntity.ok((listaActividades != null)?listaActividades:0);
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;
@@ -162,7 +190,7 @@ public class SeguimientoFolioController {
 			catalogosCEService.actEstatus(idActividad,4,3);
 			if(estatus == 1) {
 				catalogosCEService.actEstatus(idActividad,3,1);
-				
+				correoCSOService.registrarCorreo(idActividad,2);
 			}
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -184,7 +212,8 @@ public class SeguimientoFolioController {
 	public ResponseEntity<?> modSeguimiento(
 			@RequestParam(name = "idSeguimiento") Integer idSeguimiento
 		   ,@RequestParam(name = "desc_seguimiento") String desc_seguimiento
-		   ,@RequestParam(name = "estatus") Integer estatus){
+		   ,@RequestParam(name = "estatus") Integer estatus
+		   ,@RequestParam(name = "idActividad") Integer idActividad){
 		
 		String mensaje ="Se Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
@@ -197,6 +226,10 @@ public class SeguimientoFolioController {
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
 			seguimientoFolioService.modificarSeguimiento(idSeguimiento,desc_seguimiento,estatus,usuario.get(0).getPk_id_usuario());
+			if(estatus == 1) {
+				catalogosCEService.actEstatus(idActividad,3,1);
+				correoCSOService.registrarCorreo(idActividad,2);
+			}
 		
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -246,10 +279,10 @@ public class SeguimientoFolioController {
 	 * @return
 	 */
 	@GetMapping("/buscarArchivos")
-	public ResponseEntity<List<ArchivosFolios>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
+	public ResponseEntity<List<ArchivosAdjuntos>> buscarArchivos(@RequestParam("idFolio") Integer idFolio,Model model) {
 		
 		try {
-			return ResponseEntity.ok(archivosFoliosService.obtRegistros(idFolio));
+			return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 		} catch (Exception e) {
 			System.out.print("--" + e.getMessage());
 			return null;
@@ -272,7 +305,7 @@ public class SeguimientoFolioController {
 			ContentDisposition contentDisposition = null;
 			HttpHeaders h2 = new HttpHeaders();
 			
-			contentDisposition = ContentDisposition.builder("inline").filename(dtos.get().getVc_nombre_docto().toString()).build();
+			contentDisposition = ContentDisposition.builder("attachment").filename(dtos.get().getVc_nombre_docto().toString()).build();
 			h2.setContentDisposition(contentDisposition);
 			
 			return ResponseEntity.ok().contentLength((long) bytesPDF.length)
@@ -301,6 +334,7 @@ public class SeguimientoFolioController {
 		try {
 			if(files.length > 0) {
 				for(MultipartFile file: files) {
+					if(archivosFoliosService.existeNombre(file.getOriginalFilename(),idFolio) == 0) {
 					 byte[] bytes = file.getBytes();
 					 File directorio = new File(UrlPDFServidor()+idFolio);
 					 if(!directorio.exists()) {
@@ -318,6 +352,9 @@ public class SeguimientoFolioController {
 	                     datosArchivo(idFolio+"/"+ file.getOriginalFilename(),idFolio,file.getOriginalFilename());
 	                     mensaje="Se agrego archivo correctamente.";
 					 }
+					}else {
+						   mensaje="Ya cuenta con un archivo registrado con este nombre:"+file.getOriginalFilename();
+					}
 				}
 			}else {
 				mensaje="No subio archivo.";
@@ -335,7 +372,13 @@ public class SeguimientoFolioController {
 		Integer estatus = 1;
 		Integer respuesta=0;
 		try {
-		
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
 			LocalDate fecha = LocalDate.now();
 			ArchivosFolios alta = new ArchivosFolios();
 			alta.setI_folio(Integer.parseInt(idFolio));
@@ -343,6 +386,8 @@ public class SeguimientoFolioController {
 			alta.setI_estatus(estatus);
 			alta.setVc_ruta_docto(urlArchivo);
 			alta.setVc_nombre_docto(nombreArchivo);
+			alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
+			
 			
 			ArchivosFolios registro = archivosFoliosService.registrar(alta);
 			
@@ -358,5 +403,46 @@ public class SeguimientoFolioController {
 		}
 	}
 	
+	@GetMapping("/obtFolios")
+	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
+		try {
+//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			UserDetails userDetails = null;
+//			if (principal instanceof UserDetails) {
+//				userDetails = (UserDetails) principal;
+//			}
+//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			List<ListaFolioXEmpleado> listaFolio = null;
+			
+			if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
+				listaFolio = catalogosCEService.listaActividadPASupervisor(this.usuario.get(0).getI_id_empleado(),this.usuario.get(0).getPk_id_usuario(),estatus);
+			}else if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo)){
+				listaFolio = catalogosCEService.listaActividades(estatus);
+			}else {
+				listaFolio = catalogosCEService.listaActividadPAXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);
+			}
+
+			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
 	
+	}
+	
+	public int validarAcceso() {
+		
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
+	}
 }

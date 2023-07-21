@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
 import ahorrosbienestar.sib.std.opcionMenu.model.RelRolOpciones;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.roles.model.Rol;
 import ahorrosbienestar.sib.std.roles.service.RolService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -47,9 +48,17 @@ public class RolController {
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+
 	private String estatusA = "ACTIVO";
 	private String estatusI = "INACTIVO";
 	private int estatus = 1; // activo
+	
+	private static final String nombrePantalla = "Roles";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
 	
 	@Autowired
 	public RolController (RolService rolService) {
@@ -59,14 +68,20 @@ public class RolController {
 	//Inicio de roles
 		@GetMapping("/index")
 		public String InicioUsuario(Model model) {
-			Rol rol = new Rol();
-			model.addAttribute("rol", rol);
-			//Mostramos todos los usuarios
-			model.addAttribute("roles", rolService.findAll());
+			if(validarAcceso() == 1) {
+				Rol rol = new Rol();
+				model.addAttribute("rol", rol);
+				//Mostramos todos los usuarios
+				model.addAttribute("roles", rolService.findAll());
+				
+				model.addAttribute("listaMenu", coreBancarioService.listaMenu(2,0));
+				model.addAttribute("listaOpciones", coreBancarioService.listaMenu(1,0));
+				rutaDireccion = "roles/index";
+			}else {
+				rutaDireccion = rutaError;
+			}
 			
-			model.addAttribute("listaMenu", coreBancarioService.listaMenu(2,0));
-			model.addAttribute("listaOpciones", coreBancarioService.listaMenu(1,0));
-			return "roles/index";
+			return rutaDireccion;
 		}
 	
 	//Dar de alta un rol utilizando metodo POST
@@ -82,7 +97,7 @@ public class RolController {
 					
 					altaRol.setDt_fecha_registro(fecha);
 					altaRol.setVc_descripcion_rol(descripcionRol);
-					altaRol.setVc_nombre_rol(descripcionRol);
+					altaRol.setVc_nombre_rol(nombreRol);
 					altaRol.setVc_estatus(estatusA);
 					
 					rolService.save(altaRol);
@@ -322,5 +337,19 @@ public class RolController {
 				return ResponseEntity.ok(respuesta);
 			}
 		}
-
+		
+		public int validarAcceso() {
+			
+			
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+			
+			
+		}
 }

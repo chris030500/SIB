@@ -18,8 +18,8 @@ import lombok.Setter;
 public class Catalogo {
 	@Column(name = "PK_ID")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="busqueda_seq")
-	@SequenceGenerator(name = "busqueda_seq", sequenceName = "busqueda_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_busqueda_seq")
+	@SequenceGenerator(name = "tbl_busqueda_seq", sequenceName = "tbl_busqueda_seq", initialValue = 1, allocationSize=1)
 	private int pk_id;
 	
 	@Column(name = "I_ID_GRUPO")
