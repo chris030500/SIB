@@ -36,7 +36,7 @@ const fileInput = document.getElementById('inputArchivo');
 var datosNull = "\u0000";
 var datosVacios = "               ";
 var datosFecha = "________";
-var datosNa = "N/A";
+var datosNa = "";
 //
 var spinner = document.getElementById("spinnerId");
 var verInfo = document.getElementById("verInfo");
@@ -98,15 +98,15 @@ function obtenerRol() {
 		success: function(resp) {
 			nombreRol = resp.nombreRol;
 			console.log(nombreRol);
-			if (nombreRol == "ROLE_AUX_PLD") {
+			if (nombreRol == "AUX") {
 				relacionliEs.style.display = "none";
 				thAccion.style.display = "none";
 				cargaArchivo.style.display = "block";
-			} else if (nombreRol == "ROLE_CONS_PLD") {
+			} else if (nombreRol == "CONS") {
 				relacionliEs.style.display = "none";
 				cargaArchivo.style.display = "none";
 				thAccion.style.display = "none";
-			} else if (nombreRol == "ROLE_ADMIN_PLD") {
+			} else if (nombreRol == "ADMIN") {
 				relacionliEs.style.display = "block";
 				thAccion.style.display = "block";
 				cargaArchivo.style.display = "block";
@@ -172,7 +172,7 @@ function catalogoEstatus() {
 				// Crear una opción para cada elemento en el JSON
 				var opcion = document.createElement("option");
 				opcion.value = resp[i].pk_id_estatus; // Valor de la opción
-				opcion.text = resp[i].vc_estatus; // Texto de la opción
+				opcion.text = resp[i].vc_estatus == "" ? "Vacío" : resp[i].vc_estatus; // Texto de la opción
 				// Agregar la opción al select
 				catEstatus.add(opcion);
 			}
@@ -241,11 +241,11 @@ function empiezaPaginadoExclusion() {
 		row.appendChild(listaCell);
 
 		var estatusCell = document.createElement("td");
-		estatusCell.textContent = datosPaginados[i].vc_estatus;
+		estatusCell.textContent = datosPaginados[i].vc_estatus == "" ? "Vacío" : datosPaginados[i].vc_estatus;
 		estatusCell.style.textAlign = "center";
 		row.appendChild(estatusCell);
 
-		if (nombreRol == "ROLE_ADMIN_PLD") {
+		if (nombreRol == "ADMIN") {
 			var celdaAccion = document.createElement("td");
 			var botonEliminar = document.createElement("button");
 			botonEliminar.textContent = "x";
@@ -568,10 +568,12 @@ function convertirArchivo() {
 
 // Filtro de exclusiones
 function filtroExclusiones(data) {
-	var datosFiltrados = [];
-	for (var i = 0; i < paginadoExclusion.length; i++) {
-		datosFiltrados = data.filter((dato) => dato.lista != paginadoExclusion[i].vc_lista && dato.estatus != paginadoExclusion[i].vc_estatus);
-	}
+	const datosFiltrados = data.filter(item => {
+		return !paginadoExclusion.some(exclusion =>
+			item.lista === exclusion.vc_lista && item.estatus === exclusion.vc_estatus
+		);
+	});
+	// console.log(datosFiltrados);
 	// Uso de la función para convertir encabezados a mayúscula
 	const listaDatosMayuscula = convertirEncabezadosAMayuscula(datosFiltrados);
 	// numero de finales
