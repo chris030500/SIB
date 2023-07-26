@@ -1,0 +1,103 @@
+VENC00089101	Yasmin Lol Be	Hoil	Noh	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 José María Morelos Quintana Roo Suplente MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yasmin Lol Be Hoil Noh	Hoil Noh	N/A	F
+VENC00089102	Yassemy Guadalupe	Casanova	Pool	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Tulum Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yassemy Guadalupe Casanova Pool	Casanova Pool	N/A	F
+VENC00089103	Yave Jesús	Alonzo	Godoy	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente PAN 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yave Jesús Alonzo Godoy	Alonzo Godoy	N/A	M
+VENC00089104	Yazareth De Jesús	Rosado	Chávez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yazareth De Jesús Rosado Chávez	Rosado Chávez	N/A	F
+VENC00089105	Yazmin	Barral	Reyes	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico 1 Ciudad del Carmen Campeche Propietario PVEM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yazmin Barral Reyes	Barral Reyes	N/A	F
+VENC00089106	Yazmin	Cruz	Santoyo	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Puerto Morelos Quintana Roo Suplente Candidatura ComúnPAN/PRD/C 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yazmin Cruz Santoyo	Cruz Santoyo	N/A	F
+VENC00089107	Yazmin Michell	Segura	Pérez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Puerto Morelos Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yazmin Michell Segura Pérez	Segura Pérez	N/A	F
+VENC00089108	Yazmin Stefhany	Ordoñez	Zaldívar	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Kanasín Yucatán Suplente PT 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yazmin Stefhany Ordoñez Zaldívar	Ordoñez Zaldívar	N/A	F
+VENC00089109	Yelmi María	Cruz	Jiménez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Kanasín Yucatán Suplente PVEM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yelmi María Cruz Jiménez	Cruz Jiménez	N/A	F
+VENC00089110	Yendi Yaneli	Rivero	Pérez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Ciudad del Carmen Campeche Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yendi Yaneli Rivero Pérez	Rivero Pérez	N/A	F
+VENC00089111	Yeni Clarissa	Xiu	Yam	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 Felipe Carrillo Puerto Quintana Roo Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yeni Clarissa Xiu Yam	Xiu Yam	N/A	F
+VENC00089112	Yeni Elizabeth	Aes	Hernández	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Ciudad del Carmen Campeche Propietario PVEM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yeni Elizabeth Aes Hernández	Aes Hernández	N/A	F
+VENC00089113	Yeni Guadalupe	Pool	Canche	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Hecelchakán Campeche Propietario RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yeni Guadalupe Pool Canche	Pool Canche	N/A	F
+VENC00089114	Yensunni Idalia	Martínez	Hernández	MAHY870817MVZRRN06	MAHY870817DT3	19870817	VENC	1 años	N/A	Candidato a Síndico Othón P. Blanco Quintana Roo Propietario Juntos Haremos HistoriaMORENA/PVEM/PT/MAS 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yensunni Idalia Martínez Hernández	Martínez Hernández	N/A	F
+VENC00089115	Yeraldine Berenice	Yam	Moo	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico José María Morelos Quintana Roo Suplente PT 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yeraldine Berenice Yam Moo	Yam Moo	N/A	F
+VENC00089116	Yerania Rubí	Agustín	Cortes	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Puerto Morelos Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yerania Rubí Agustín Cortes	Agustín Cortes	N/A	F
+VENC00089117	Yesenia	Hidalgo	Gamas	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 8 Solidaridad Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesenia Hidalgo Gamas	Hidalgo Gamas	N/A	F
+VENC00089118	Yesenia	Jardines	Salazar	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 2 Othón P. Blanco Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesenia Jardines Salazar	Jardines Salazar	N/A	F
+VENC00089119	Yesenia Francisca	Pérez	Jiménez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 7 Ciudad del Carmen Campeche Suplente FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesenia Francisca Pérez Jiménez	Pérez Jiménez	N/A	F
+VENC00089120	Yesenia Pamela	Pool	Álvarez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Acanceh Yucatán Suplente MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesenia Pamela Pool Álvarez	Pool Álvarez	N/A	F
+VENC00089121	Yesica Noemy	May	May	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Kanasín Yucatán Suplente PRD 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesica Noemy May May	May May	N/A	F
+VENC00089122	Yesmy Yaret Del Pilar	Castillo	Couoh	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico 1 Campeche Campeche Propietario MC 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yesmy Yaret Del Pilar Castillo Couoh	Castillo Couoh	N/A	F
+VENC00089123	Yoana Yasmin	Caballero	Capeline	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Bacalar Quintana Roo Propietario FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yoana Yasmin Caballero Capeline	Caballero Capeline	N/A	F
+VENC00089124	Yocelyn Isel	Huchin	Calan	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Calkiní Campeche Suplente MC 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yocelyn Isel Huchin Calan	Huchin Calan	N/A	F
+VENC00089125	Yolanda	Vázquez	Luna	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 2 Solidaridad Quintana Roo Propietario FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Vázquez Luna	Vázquez Luna	N/A	F
+VENC00089126	Yolanda Del Carmen	Poot	Tucuch	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Hopelchén Campeche Suplente MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Del Carmen Poot Tucuch	Poot Tucuch	N/A	F
+VENC00089127	Yolanda Del Socorro	Pérez	Dzib	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 Calkiní Campeche Suplente FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Del Socorro Pérez Dzib	Pérez Dzib	N/A	F
+VENC00089128	Yolanda Enriqueta	Pereyro	Vázquez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente Nueva Alianza Yucatán 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Enriqueta Pereyro Vázquez	Pereyro Vázquez	N/A	F
+VENC00089129	Yolanda Jazmín	Ucan	Herrera	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 José María Morelos Quintana Roo Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Jazmín Ucan Herrera	Ucan Herrera	N/A	F
+VENC00089130	Yolanda Noemi	Interian	Beltrán	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Acanceh Yucatán Propietario PVEM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yolanda Noemi Interian Beltrán	Interian Beltrán	N/A	F
+VENC00089131	Yoni	González	Zetina	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 Campeche Campeche Suplente PT 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yoni González Zetina	González Zetina	N/A	M
+VENC00089132	Yony Mariola	Basto	Mejía	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Tixpéhual Yucatán Propietario PAN 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yony Mariola Basto Mejía	Basto Mejía	N/A	F
+VENC00089133	Yoselin Yanet	López	Camal	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 José María Morelos Quintana Roo Suplente MAS 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yoselin Yanet López Camal	López Camal	N/A	F
+VENC00089134	Yosmar Miguel	Escobar	Hernández	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Solidaridad Quintana Roo Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yosmar Miguel Escobar Hernández	Escobar Hernández	N/A	M
+VENC00089135	Yossmar Jaaziel	Fuentes	Tuz	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 2 Lázaro Cárdenas Quintana Roo Propietario PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yossmar Jaaziel Fuentes Tuz	Fuentes Tuz	N/A	M
+VENC00089136	Yosuham Oliver	Román	López	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Solidaridad Quintana Roo Suplente Va Por Quintana RooPAN/PRI/PRD/C 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yosuham Oliver Román López	Román López	N/A	M
+VENC00089137	Yrene	Gallegos	Falconi	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Kanasín Yucatán Propietario RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yrene Gallegos Falconi	Gallegos Falconi	N/A	F
+VENC00089138	Ysabel Cristina	Córdova	Ake	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Tixpéhual Yucatán Propietario MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ysabel Cristina Córdova Ake	Córdova Ake	N/A	F
+VENC00089139	Yuli Magali	Cahuich	Yam	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 Cozumel Quintana Roo Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yuli Magali Cahuich Yam	Cahuich Yam	N/A	F
+VENC00089140	Yulissa Guadalupe	Calderón	Chacón	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Bacalar Quintana Roo Suplente MC 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yulissa Guadalupe Calderón Chacón	Calderón Chacón	N/A	F
+VENC00089141	Yumiko Akemi	Ley	Gamboa	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Mérida Yucatán Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yumiko Akemi Ley Gamboa	Ley Gamboa	N/A	F
+VENC00089142	Yunger Miguel	Ake	Chale	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Acanceh Yucatán Propietario PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yunger Miguel Ake Chale	Ake Chale	N/A	M
+VENC00089143	Yuri Alicia	Ceballos	Chan	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Ciudad del Carmen Campeche Propietario FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yuri Alicia Ceballos Chan	Ceballos Chan	N/A	F
+VENC00089144	Yuri Yoari	Herrera	Duran	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 2 Champotón Campeche Suplente RSP 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yuri Yoari Herrera Duran	Herrera Duran	N/A	F
+VENC00089145	Yuridia Shirley	Ku	Constantino	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico 1 Campeche Campeche Suplente MC 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yuridia Shirley Ku Constantino	Ku Constantino	N/A	F
+VENC00089146	Yussif Andrey	Ordaz	Pool	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Acanceh Yucatán Propietario MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yussif Andrey Ordaz Pool	Ordaz Pool	N/A	M
+VENC00089147	Yusy Del Socorro	Cárdenas	Flores	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente PT 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yusy Del Socorro Cárdenas Flores	Cárdenas Flores	N/A	F
+VENC00089148	Yvonne Del Jesús	Caballero	Polanco	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 Campeche Campeche Suplente FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yvonne Del Jesús Caballero Polanco	Caballero Polanco	N/A	F
+VENC00089149	Zacil Guadalupe	Pérez	Balam	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 Lázaro Cárdenas Quintana Roo Propietario PAN 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zacil Guadalupe Pérez Balam	Pérez Balam	N/A	F
+VENC00089150	Zaida Maribel	Pool	Hernández	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 3 Lázaro Cárdenas Quintana Roo Propietario PRD 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zaida Maribel Pool Hernández	Pool Hernández	N/A	F
+VENC00089151	Zandy Evelyn	Celis	Güémez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 6 Isla Mujeres Quintana Roo Suplente Juntos Haremos HistoriaMORENA/PVEM/PT/MAS 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zandy Evelyn Celis Güémez	Celis Güémez	N/A	F
+VENC00089152	Zayde Badia	Yabur	Ceballos	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 Champotón Campeche Propietario Va Por CampechePRI/PAN/PRD 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zayde Badia Yabur Ceballos	Yabur Ceballos	N/A	F
+VENC00089153	Zazil Estefanny	Lizama	Quintal	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente PT 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zazil Estefanny Lizama Quintal	Lizama Quintal	N/A	F
+VENC00089154	Zazil Ha	Dzib	Mazum	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 5 Lázaro Cárdenas Quintana Roo Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zazil Ha Dzib Mazum	Dzib Mazum	N/A	M
+VENC00089155	Zeila Zurine	Ramírez	Herrera	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico Kanasín Yucatán Propietario PRD 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zeila Zurine Ramírez Herrera	Ramírez Herrera	N/A	F
+VENC00089156	Zetzil Briseida	Gómez	May	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Cozumel Quintana Roo Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zetzil Briseida Gómez May	Gómez May	N/A	F
+VENC00089157	Zeydi Dianely	Yeh	Poot	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 1 Felipe Carrillo Puerto Quintana Roo Suplente FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zeydi Dianely Yeh Poot	Yeh Poot	N/A	F
+VENC00089158	Zimri Priscyla	Tzuc	Chan	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente PES 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zimri Priscyla Tzuc Chan	Tzuc Chan	N/A	F
+VENC00089159	Zoé Margaret	Mendoza	Castro	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 4 Lázaro Cárdenas Quintana Roo Propietario FXM 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zoé Margaret Mendoza Castro	Mendoza Castro	N/A	F
+VENC00089160	Zoila Elide	Canul	Mukul	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Timucuy Yucatán Suplente MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zoila Elide Canul Mukul	Canul Mukul	N/A	F
+VENC00089161	Zoila Guadalupe	Mex	Medina	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Tixpéhual Yucatán Propietario MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zoila Guadalupe Mex Medina	Mex Medina	N/A	F
+VENC00089162	Zolila Mercedes	Alpuche	Manzanilla	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente Nueva Alianza Yucatán 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zolila Mercedes Alpuche Manzanilla	Alpuche Manzanilla	N/A	F
+VENC00089163	Zorobabel	Ramos	Blanco	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor 2 Puerto Morelos Quintana Roo Propietario Candidatura ComúnPAN/PRD/C 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zorobabel Ramos Blanco	Ramos Blanco	N/A	M
+VENC00089164	Zugeydi	Serralta	Vázquez	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Síndico José María Morelos Quintana Roo Propietario MORENA 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zugeydi Serralta Vázquez	Serralta Vázquez	N/A	F
+VENC00089165	Zulma Marisol	Arroyo	Pantoja	N/A	N/A	N/A	VENC	1 años	N/A	Candidato a Regidor Mérida Yucatán Suplente Nueva Alianza Yucatán 2021	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Zulma Marisol Arroyo Pantoja	Arroyo Pantoja	N/A	F
+YEME6908434	Abd	Al-Khaliq	Al-Houthi	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abd Al-Khaliq Al-Houthi	Al-Khaliq Al-Houthi	N/A	D
+YEME6908434.1	Abd	Al-Khaliq	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abd Al-Khaliq	Al-Khaliq	N/A	D
+YEME6908434.2	Abd	Al-Khaliq	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abd Al-Khaliq	Al-Khaliq	N/A	D
+YEME6908434.3	Abd	Al-Khaliq	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abd Al-Khaliq	Al-Khaliq	N/A	D
+YEME6908434.5	Abd	Al-Khaliq	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abd Al-Khaliq	Al-Khaliq	N/A	D
+YEME6908435	Abdullah	Yahya	Al Hakim	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya Al Hakim	Yahya Al Hakim	N/A	D
+YEME6908435.1	Abdullah	Yahya	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya	Yahya	N/A	D
+YEME6908435.2	Abdullah	Yahya	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya	Yahya	N/A	D
+YEME6908435.3	Abdullah	Yahya	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya	Yahya	N/A	D
+YEME6908435.4	Abdullah	Yahya	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya	Yahya	N/A	D
+YEME6908435.6	Abdullah	Yahya	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdullah Yahya	Yahya	N/A	D
+YEME6908863	Saleh	Mesfer	Saleh Al Shaer	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer Saleh Al Shaer	Mesfer Saleh Al Shaer	N/A	D
+YEME6908863.1	Saleh	Mesfer	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer	Mesfer	N/A	D
+YEME6908863.2	Saleh	Mesfer	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer	Mesfer	N/A	D
+YEME6908863.3	Saleh	Mesfer	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer	Mesfer	N/A	D
+YEME6908863.4	Saleh	Mesfer	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer	Mesfer	N/A	D
+YEME6908863.6	Saleh	Mesfer	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Saleh Mesfer	Mesfer	N/A	D
+YEME6908436	Ali	Abdullah	Saleh	N/A	N/A	19450321	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ali Abdullah Saleh	Abdullah Saleh	N/A	D
+YEME6908864	Muhammad	Abd 	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Muhammad Abd Al-Karim Al-Ghamari	Abd Al-Karim Al-Ghamari	N/A	D
+YEME6908883	Ahmad	Al-Hamzi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ahmad Al-Hamzi	Al-Hamzi	N/A	D
+YEME6908883.1	Ahmad	Al-Hamzi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ahmad Al-Hamzi	Al-Hamzi	N/A	D
+YEME6908883.2	Ahmad	Al-Hamzi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ahmad Al-Hamzi	Al-Hamzi	N/A	D
+YEME6908883.4	Ahmad	Al-Hamzi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ahmad Al-Hamzi	Al-Hamzi	N/A	D
+YEME6908455	Abdulmalik	Al-Houthi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Abdulmalik Al-Houthi	Al-Houthi	N/A	D
+YEME6908865	Yusuf	Al-Madani	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Yusuf Al-Madani	Al-Madani	N/A	D
+YEME6908885	Motlaq	Amer	Al-Marrani	N/A	N/A	19840101	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Motlaq Amer Al-Marrani	Amer Al-Marrani	N/A	D
+YEME6908885.2	Motlaq	Amer	N/A	N/A	N/A	19840101	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Motlaq Amer	Amer	N/A	D
+YEME6908884	Mansur	Al-Sa?adi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Mansur Al-Sa?adi	Al-Sa?adi	N/A	D
+YEME6908884.1	Mansur	Al-Sa?adi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Mansur Al-Sa?adi	Al-Sa?adi	N/A	D
+YEME6908884.3	Mansur	Al-Sa?adi	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Mansur Al-Sa?adi	Al-Sa?adi	N/A	D
+YEME6908436.2	Ali	Abdullah	N/A	N/A	N/A	19450321	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ali Abdullah	Abdullah	N/A	D
+YEME6908456	Ahmed	Ali	Abdullah Saleh	N/A	N/A	19720725	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Ahmed Ali Abdullah Saleh	Ali Abdullah Saleh	N/A	D
+YEME6908856	Sultan	Saleh	Aida Aida Zabin	N/A	N/A	19860205	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Sultan Saleh Aida Aida Zabin	Saleh Aida Aida Zabin	N/A	D
+YEME6908856.2	Sultan	Saleh	N/A	N/A	N/A	19860205	YEME	N/A	N/A	N/A	0	0	N/A	N/A	N/A	N/A	N/A	N/A	N/A	Sultan Saleh	Saleh	N/A	D
+YEME6908876	N/A	N/A	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	The Houthis	N/A	N/A	N/A	N/A	The Houthis	N/A	N/A	D
+YEME6908876.1	N/A	N/A	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	The Houthis	N/A	N/A	N/A	N/A	The Houthis	N/A	N/A	D
+YEME6908876.2	N/A	N/A	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	The Houthis	N/A	N/A	N/A	N/A	The Houthis	N/A	N/A	D
+YEME6908876.4	N/A	N/A	N/A	N/A	N/A	N/A	YEME	N/A	N/A	N/A	0	0	N/A	N/A	The Houthis	N/A	N/A	N/A	N/A	The Houthis	N/A	N/A	D
