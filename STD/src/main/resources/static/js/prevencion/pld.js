@@ -106,7 +106,7 @@ function obtenerRol() {
 				relacionliEs.style.display = "none";
 				cargaArchivo.style.display = "none";
 				thAccion.style.display = "none";
-			} else if (nombreRol == "ADMIN") {
+			} else if (nombreRol == "GES") {
 				relacionliEs.style.display = "block";
 				thAccion.style.display = "block";
 				cargaArchivo.style.display = "block";
@@ -245,7 +245,7 @@ function empiezaPaginadoExclusion() {
 		estatusCell.style.textAlign = "center";
 		row.appendChild(estatusCell);
 
-		if (nombreRol == "ADMIN") {
+		if (nombreRol == "GES") {
 			var celdaAccion = document.createElement("td");
 			var botonEliminar = document.createElement("button");
 			botonEliminar.textContent = "x";

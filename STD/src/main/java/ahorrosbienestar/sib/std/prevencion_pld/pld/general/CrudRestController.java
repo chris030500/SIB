@@ -38,7 +38,7 @@ public class CrudRestController {
 
 	private final static int REPOSITORIO_FORMATO = 64;
 	private final static String ARCHIVO_FINAL = "FormatoTerceros";
-	private final static int ADMINISTRADOR = 65;
+	private final static int GESTOR = 65;
 	private final static int AUXILIAR = 66;
 	private final static int CONSULTOR = 67;
 	private final static String EXTERNO = "EXTERNO";
@@ -185,8 +185,8 @@ public class CrudRestController {
 					.valorPropiedad(Integer.toString(usuario.getRol_idRol().getPk_id_rol()));
 			logger.info("se encontró la configuración");
 			switch (configuracion.getPk_id_configuracion()) {
-			case ADMINISTRADOR:
-				logger.info("admin");
+			case GESTOR:
+				logger.info("gestor");
 				rol.setNombreRol(configuracion.getVc_nom_propiedad());
 				break;
 			case AUXILIAR:
