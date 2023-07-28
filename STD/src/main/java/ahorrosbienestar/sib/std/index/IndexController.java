@@ -9,7 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
-
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
 
@@ -57,14 +57,14 @@ public class IndexController {
 
 	@Autowired
 	private ConfiguracionService configuracionService;
-	
+
 	@Autowired
 	private ConfigService configService;
 
 	@Autowired
 	private LoginService loginService;
 
-	//protected final Log logger = LogFactory.getLog(this.getClass());
+	// protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(IndexController.class);
 
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
@@ -89,7 +89,7 @@ public class IndexController {
 				return "redirect:/cambio_contrasena";
 			}
 			logger.info("Ingreso al sistema");
-		} 
+		}
 
 //		logger.info("Cambia el estatus de sesión a activo (1)");
 		// logger.info("Puede acceder al sistema");
@@ -108,10 +108,33 @@ public class IndexController {
 	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
 		logger.info("Ejecutando guardarCambioContrasena");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		//logger.info("Password: " + password);
-		
 		// Buscamos la información del usuario
 		Usuario usu = usuarioService.findByNombre(auth.getName());
+		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
+
+		List<HistContrasena> ultimasContrasenas = histContrasenaService.findTopByUsuarioByFechaDesc(usu.getPk_id_usuario(),
+				Integer.parseInt(valorUltimasContrasenas));
+		boolean coincideContrasena = false;
+		for (HistContrasena historicoContrasena : ultimasContrasenas) {
+			if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+				coincideContrasena = true;
+
+				ResponseEntity.notFound().build();
+
+				// return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas
+				// 3 contraseñas");
+				break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
+			}
+		}
+		
+		if (coincideContrasena) {
+			logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
+			return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+		}
+		logger.info("Puede realizar el cambio de contraseña");
+
+		// logger.info("Password: " + password);
+
 		logger.info("Pk_Usu: " + usu.getPk_id_usuario());
 		// Con el id del usuario vamos a dar de baja la contraseña que se tiene
 		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
@@ -122,7 +145,7 @@ public class IndexController {
 //		properties.load(inputStream);
 //
 //		properties.getProperty("pDias");
-		
+
 		String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
 		logger.info("Días que va a estar activa la contraseña: " + pDias);
 		// Establecemos el formato de la fecha
@@ -162,13 +185,9 @@ public class IndexController {
 		String numeros = configService.findAll().get(2).getVc_valor_propiedad();
 		String caracteres = configService.findAll().get(1).getVc_valor_propiedad();
 
-		return ResponseEntity.ok(
-				configuracionService.mensajeParametros(contrasena, 
-						Integer.parseInt(longitud),
-						Integer.parseInt(mayusculas),
-						Integer.parseInt(minusculas),
-						Integer.parseInt(numeros),
-						Integer.parseInt(caracteres)));
+		return ResponseEntity.ok(configuracionService.mensajeParametros(contrasena, Integer.parseInt(longitud),
+				Integer.parseInt(mayusculas), Integer.parseInt(minusculas), Integer.parseInt(numeros),
+				Integer.parseInt(caracteres)));
 	}
 
 }

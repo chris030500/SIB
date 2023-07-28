@@ -60,5 +60,9 @@ public class HistContrasenaService {
 	public Optional<HistContrasena> findByIdHisto(Integer id){
 		return iHistContrasenaRepository.findByIdHisto(id);
 	}
+	
+	public List<HistContrasena> findTopByUsuarioByFechaDesc(Integer idUsuario, Integer limite){
+		return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(idUsuario, limite);
+	}
 
 }
