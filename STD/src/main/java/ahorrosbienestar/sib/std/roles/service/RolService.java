@@ -38,5 +38,28 @@ public class RolService {
 		public Rol edit(Rol rol) {
 			return iRolRepository.save(rol);
 		}
+		
+		public Rol findByIdRol(Integer id) {
+			return iRolRepository.findByIdRol(id);
+		}
+
+		public int existeRol(String nombreRol) {
+			
+			return iRolRepository.existeRol(nombreRol);
+		}
+
+		public int updateEstatus(Integer idRol, String estatus) {
+		
+			return iRolRepository.updateEstatus(idRol,estatus);
+		}
+
+		public int modificarRoles(Integer idRol,String nombreRol, String descripcionRol) {
+			
+			return iRolRepository.modificarRoles(idRol,nombreRol,descripcionRol);
+		}
+		
+		public List<Rol> findByRolActivo(){
+			return iRolRepository.findByRolActivo();
+		}
 
 }

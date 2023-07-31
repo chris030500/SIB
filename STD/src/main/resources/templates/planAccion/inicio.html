@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Plan de accion</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div id="divAceptarAsignacion" class="container">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Aceptar Asignacion</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Estatus Observacion</label>
+							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> No. de Oficio</label>
+							<select class="form-control" id="idOficios" onchange="verDetalle(this)" readonly>
+								<option value="0">Seleccione</option>
+								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
+									th:text="${listaFolios.folio}"></option>-->
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Asunto:</label>
+							<textarea type="text-Area" class="form-control" id="idAsunto" placeholder="Asunto"
+								maxlength="400" readonly></textarea>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Recibo:</label>
+							<input class="form-control" type="date" id="dtRecibo" placeholder="Fecha de Recibo"
+								readonly>
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Vencimiento:</label>
+							<input class="form-control" type="date" id="dtVencimiento"
+								placeholder="Fecha de Vencimiento" readonly>
+						</div>
+						<div class="col-md-4" style ="justify-content: center;">
+							<label class="col-form-label">Ver documentos:</label>
+							<br>
+							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
+								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
+								<i class="bi bi-files"></i>
+							</button>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 120%;"
+								id="tblObservaciones">
+								<thead>
+									<tr>
+										<th>No. Observacion</th>
+										<th>Area de Atencion</th>
+										<th>Responsable</th>
+										<th>F. Asignación</th>
+										<th>F. Vencimiento</th>
+										<th>Observaciones a Atender</th>
+										<th>Estatus</th>
+										<th>¿Acepta la Observación?</th>
+									</tr>
+								</thead>
+
+								<tbody>
+								</tbody>
+
+							</table>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+
+			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
+					<hr>
+					<h4 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblSeleccion">
+					</h4>
+					<div class="row" style="margin-top : 15px ">
+						<input id="idAct" name="idAct" type="hidden" value="0">
+						<div class="col-md-6">
+							<label class="col-form-label"> Nombre de la Actividad</label>
+							<!--<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">-->
+							<textarea type="text-Area" class="form-control" id="idNombreActividad"
+								placeholder="Actividad" maxlength="400"></textarea>
+							<div id="contNombre">0/400</div>
+						</div>
+						<div class="col-md-6">
+							<label class="col-form-label"> Encargado de la Actividad</label>
+							<select class="form-control" id="idEncargadoActividad">
+								<option value="0">Seleccione</option>
+								<option th:each="listaEncargados : ${lista_encargados}"
+									th:value="${listaEncargados.empleadoID}"
+									th:text="${listaEncargados.nombreCompleto}"></option>
+							</select>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha de Inicio</label>
+							<input class="form-control" type="date" id="dtFechaInicio" for="fechaInicio"
+								min="fechaInicio" max="fechaVencimiento">
+						</div>
+						<div class="col-md-4">
+							<label class="col-form-label"> Fecha Vencimiento</label>
+							<input class="form-control" type="date" id="dtFechaVencimiento" for="fechaVencimiento"
+								min="fechaInicio" max="fechaVencimiento">
+						</div>
+						<div class="col-md-4" id="idFinActividad" style="display:none;">
+							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
+							<select class="form-control" id="idConfirmarActividad" th:disabled="${rolMonitoreo == true}">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion:${cat_opcion_fin}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+						<div class="col-md-4" style="visibility:collapse; display:none;">
+							<label class="col-form-label"> Estatus</label>
+							<select class="form-control" id="idEstatus" th:disabled="true">
+								<option value="0">Seleccione</option>
+								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+									th:text="${opcion.v_valor}"></option>
+							</select>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="col-md-10"></div>
+						<div class="col-md-2">
+							<button type="button" class="btn btn-primary form-control" id="btnAgregar" th:disabled="${rolMonitoreo == true}">Agregar</button>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlanAccion">
+								<thead>
+									<tr>
+										<th style="visibility:collapse; display:none;">ID</th>
+										<th>Actividad</th>
+										<th>Encargado</th>
+										<th>F. Inicio</th>
+										<th>F. Vencimiento</th>
+										<th>Estatus</th>
+										<th>Confirmar Actividad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+
+								<tbody>
+
+								</tbody>
+
+							</table>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div class="modal" id="modalAdjuntos" data-backdrop="static">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
+							<div class="modal-body">
+								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
+								<div class="row">
+									
+									<div class="col-md-4">
+										<label class="col-form-label"> Tipo de Archivo:</label>
+											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+													th:id="${opcionTipo.v_pantalla}">
+												</option>
+											</select>
+										
+									</div>
+									<div class="col-md-8">
+										<form id="adjuntoArchivoOficio">
+										<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+										<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
+									</form>
+										
+									</div>
+									
+									
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
+											<thead>
+												<tr>
+													<th style="visibility:collapse; display:none;"></th>
+													<th>Nombre</th>
+													<th>Nombre Usuario Adjunto</th>
+													<th>Ver Documento</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnGuardarFile" th:disabled="${rolMonitoreo == true}">Guardar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCerrar">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/planAccion/planAccion.js}"></script>
+	</th:block>
+</body>
+
+</html>
