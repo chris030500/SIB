@@ -181,21 +181,20 @@ public class CrudRestController {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
-			Configuracion configuracion = configService
-					.valorPropiedad(Integer.toString(usuario.getRol_idRol().getPk_id_rol()));
+			Configuracion configuracion = configService.valorPropiedad(Integer.toString(usuario.getRol_idRol().getPk_id_rol()));
 			logger.info("se encontró la configuración");
 			switch (configuracion.getPk_id_configuracion()) {
 			case GESTOR:
 				logger.info("gestor");
-				rol.setNombreRol(configuracion.getVc_nom_propiedad());
+				rol.setNombreRol(configuracion.getVc_valor_propiedad());
 				break;
 			case AUXILIAR:
 				logger.info("auxiliar");
-				rol.setNombreRol(configuracion.getVc_nom_propiedad());
+				rol.setNombreRol(configuracion.getVc_valor_propiedad());
 				break;
 			case CONSULTOR:
 				logger.info("consultor");
-				rol.setNombreRol(configuracion.getVc_nom_propiedad());
+				rol.setNombreRol(configuracion.getVc_valor_propiedad());
 				break;
 			default:
 				break;

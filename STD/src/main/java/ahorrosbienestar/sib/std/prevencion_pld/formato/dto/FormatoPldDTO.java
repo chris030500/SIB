@@ -2,19 +2,19 @@ package ahorrosbienestar.sib.std.prevencion_pld.formato.dto;
 
 public class FormatoPldDTO {
 	
-	private String idqeq;
+	private String id_persona;
 	private String nombre;
 	private String paterno;
 	private String materno;
 	private String curp;
 	private String rfc;
-	private String fecnac;
+	private String fecha_nacimiento;
 	private String lista;
 	private String estatus;
 	private String dependencia;
 	private String puesto;
 	private String iddispo;
-	private String curpok;
+	private String curp_ok;
 	private String idrel;
 	private String parentesco;
 	private String razonsoc;
@@ -22,17 +22,17 @@ public class FormatoPldDTO {
 	private String issste;
 	private String imss;
 	private String ingresos;
-	private String nomcomp;
+	private String nombrecomp;
 	private String apellidos;
 	private String entidad;
-	private String genero;
+	private String sexo;
 	
 	
-	public String getIdqeq() {
-		return idqeq;
+	public String getId_persona() {
+		return id_persona;
 	}
-	public void setIdqeq(String idqeq) {
-		this.idqeq = idqeq;
+	public void setId_persona(String id_persona) {
+		this.id_persona = id_persona;
 	}
 	public String getNombre() {
 		return nombre;
@@ -64,11 +64,11 @@ public class FormatoPldDTO {
 	public void setRfc(String rfc) {
 		this.rfc = rfc;
 	}
-	public String getFecnac() {
-		return fecnac;
+	public String getFecha_nacimiento() {
+		return fecha_nacimiento;
 	}
-	public void setFecnac(String fecnac) {
-		this.fecnac = fecnac;
+	public void setFecha_nacimiento(String fecha_nacimiento) {
+		this.fecha_nacimiento = fecha_nacimiento;
 	}
 	public String getLista() {
 		return lista;
@@ -100,11 +100,11 @@ public class FormatoPldDTO {
 	public void setIddispo(String iddispo) {
 		this.iddispo = iddispo;
 	}
-	public String getCurpok() {
-		return curpok;
+	public String getCurp_ok() {
+		return curp_ok;
 	}
-	public void setCurpok(String curpok) {
-		this.curpok = curpok;
+	public void setCurp_ok(String curp_ok) {
+		this.curp_ok = curp_ok;
 	}
 	public String getIdrel() {
 		return idrel;
@@ -148,11 +148,11 @@ public class FormatoPldDTO {
 	public void setIngresos(String ingresos) {
 		this.ingresos = ingresos;
 	}
-	public String getNomcomp() {
-		return nomcomp;
+	public String getNombrecomp() {
+		return nombrecomp;
 	}
-	public void setNomcomp(String nomcomp) {
-		this.nomcomp = nomcomp;
+	public void setNombrecomp(String nombrecomp) {
+		this.nombrecomp = nombrecomp;
 	}
 	public String getApellidos() {
 		return apellidos;
@@ -166,11 +166,11 @@ public class FormatoPldDTO {
 	public void setEntidad(String entidad) {
 		this.entidad = entidad;
 	}
-	public String getGenero() {
-		return genero;
+	public String getSexo() {
+		return sexo;
 	}
-	public void setGenero(String genero) {
-		this.genero = genero;
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
 	}
 	
 }

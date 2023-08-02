@@ -94,6 +94,6 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	public String buscarPropiedad(@Param("nomPropiedad") String nomPropiedad);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION"
-			+ " WHERE VC_VALOR_PROPIEDAD = :valor", nativeQuery = true)
+			+ " WHERE VC_NOM_PROPIEDAD = :valor", nativeQuery = true)
 	public Configuracion valorPropiedad(@Param("valor") String valor);
 }
