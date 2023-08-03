@@ -492,27 +492,31 @@ function botonesPaginacionBitacora() {
 
 // Leer el archivo .txt
 fileInput.addEventListener('change', (event) => {
-	spinner.style.display = "block";
-	verInfo.style.display = "none";
-	botonGenerar.style.display = "none";
-	const file = event.target.files[0];
-	const fileName = file.name;
-	const fileExtension = fileName.split('.').pop();
-	if (fileExtension === 'txt') {
-		// Ejemplo de uso
-		const archivoSeleccionado = fileInput.files[0];
-		leerArchivo(archivoSeleccionado);
-	} else {
-		spinner.style.display = "none";
-		verInfo.style.display = "block";
+	if (fileInput.files.length > 0) {
+		spinner.style.display = "block";
+		verInfo.style.display = "none";
 		botonGenerar.style.display = "none";
-		// El archivo seleccionado no es un archivo .txt
-		swal("Por favor, selecciona un archivo .txt", {
-			closeOnClickOutside: false,
-			icon: "warning",
-		});
-		// Puedes restablecer el valor del campo de entrada de archivos si lo deseas
-		fileInput.value = '';
+		const file = event.target.files[0];
+		const fileName = file.name;
+		const fileExtension = fileName.split('.').pop();
+		if (fileExtension === 'txt') {
+			// Ejemplo de uso
+			const archivoSeleccionado = fileInput.files[0];
+			leerArchivo(archivoSeleccionado);
+		} else {
+			spinner.style.display = "none";
+			verInfo.style.display = "block";
+			botonGenerar.style.display = "none";
+			// El archivo seleccionado no es un archivo .txt
+			swal("Por favor, selecciona un archivo .txt", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+			// Puedes restablecer el valor del campo de entrada de archivos si lo deseas
+			fileInput.value = '';
+		}
+	} else {
+		botonGenerar.style.display = "none";
 	}
 });
 
@@ -532,19 +536,19 @@ function convertirArchivo() {
 		for (var i = 1; i < lineas.length; i++) {
 			var campos = lineas[i].split('	');
 			var registro = {
-				id_persona: campos[0] = campos[0] == datosNull || campos[0] == datosVacios || campos[0] == datosFecha ? datosNa : campos[0],
+				idqeq: campos[0] = campos[0] == datosNull || campos[0] == datosVacios || campos[0] == datosFecha ? datosNa : campos[0],
 				nombre: campos[1] = campos[1] == datosNull || campos[1] == datosVacios || campos[1] == datosFecha ? datosNa : campos[1],
 				paterno: campos[2] = campos[2] == datosNull || campos[2] == datosVacios || campos[2] == datosFecha ? datosNa : campos[2],
 				materno: campos[3] = campos[3] == datosNull || campos[3] == datosVacios || campos[3] == datosFecha ? datosNa : campos[3],
 				curp: campos[4] = campos[4] == datosNull || campos[4] == datosVacios || campos[4] == datosFecha ? datosNa : campos[4],
 				rfc: campos[5] = campos[5] == datosNull || campos[5] == datosVacios || campos[5] == datosFecha ? datosNa : campos[5],
-				fecha_nacimiento: campos[6] = campos[6] == datosNull || campos[6] == datosVacios || campos[6] == datosFecha ? datosNa : campos[6],
+				fecnac: campos[6] = campos[6] == datosNull || campos[6] == datosVacios || campos[6] == datosFecha ? datosNa : campos[6],
 				lista: campos[7] = campos[7] == datosNull || campos[7] == datosVacios || campos[7] == datosFecha ? datosNa : campos[7],
 				estatus: campos[8] = campos[8] == datosNull || campos[8] == datosVacios || campos[8] == datosFecha ? datosNa : campos[8],
 				dependencia: campos[9] = campos[9] == datosNull || campos[9] == datosVacios || campos[9] == datosFecha ? datosNa : campos[9],
 				puesto: campos[10] = campos[10] == datosNull || campos[10] == datosVacios || campos[10] == datosFecha ? datosNa : campos[10],
 				iddispo: campos[11] = campos[11] == datosNull || campos[11] == datosVacios || campos[11] == datosFecha ? datosNa : campos[11],
-				curp_ok: campos[12] = campos[12] == datosNull || campos[12] == datosVacios || campos[12] == datosFecha ? datosNa : campos[12],
+				curpok: campos[12] = campos[12] == datosNull || campos[12] == datosVacios || campos[12] == datosFecha ? datosNa : campos[12],
 				idrel: campos[13] = campos[13] == datosNull || campos[13] == datosVacios || campos[13] == datosFecha ? datosNa : campos[13],
 				parentesco: campos[14] = campos[14] == datosNull || campos[14] == datosVacios || campos[14] == datosFecha ? datosNa : campos[14],
 				razonsoc: campos[15] = campos[15] == datosNull || campos[15] == datosVacios || campos[15] == datosFecha ? datosNa : campos[15],
@@ -552,10 +556,10 @@ function convertirArchivo() {
 				issste: campos[17] = campos[17] == datosNull || campos[17] == datosVacios || campos[17] == datosFecha ? datosNa : campos[17],
 				imss: campos[18] = campos[18] == datosNull || campos[18] == datosVacios || campos[18] == datosFecha ? datosNa : campos[18],
 				ingresos: campos[19] = campos[19] == datosNull || campos[19] == datosVacios || campos[19] == datosFecha ? datosNa : campos[19],
-				nombrecomp: campos[20] = campos[20] == datosNull || campos[20] == datosVacios || campos[20] == datosFecha ? datosNa : campos[20],
+				nomcomp: campos[20] = campos[20] == datosNull || campos[20] == datosVacios || campos[20] == datosFecha ? datosNa : campos[20],
 				apellidos: campos[21] = campos[21] == datosNull || campos[21] == datosVacios || campos[21] == datosFecha ? datosNa : campos[21],
 				entidad: campos[22] = campos[22] == datosNull || campos[22] == datosVacios || campos[22] == datosFecha ? datosNa : campos[22],
-				sexo: campos[23]
+				genero: campos[23]
 			};
 			registros.push(registro);
 		}
@@ -636,9 +640,9 @@ function guardarArchivoTXT(texto, nombreArchivo) {
 // Función para validar los encabezados
 function validarEncabezados(encabezados) {
 	// Definir los encabezados válidos
-	const encabezadosValidos = ['ID_PERSONA', 'NOMBRE', 'PATERNO', 'MATERNO', 'CURP', 'RFC', 'FECHA_NACIMIENTO', 'LISTA', 'ESTATUS', 'DEPENDENCIA', 
-								'PUESTO', 'IDDISPO', 'CURP_OK', 'IDREL', 'PARENTESCO', 'RAZONSOC', 'RFCMORAL', 'ISSSTE', 'IMSS', 'INGRESOS', 
-								'NOMBRECOMP', 'APELLIDOS', 'ENTIDAD', 'SEXO'];
+	const encabezadosValidos = ['ID_PERSONA', 'NOMBRE', 'PATERNO', 'MATERNO', 'CURP', 'RFC', 'FECHA_NACIMIENTO', 'LISTA', 'ESTATUS', 'DEPENDENCIA',
+		'PUESTO', 'IDDISPO', 'CURP_OK', 'IDREL', 'PARENTESCO', 'RAZONSOC', 'RFCMORAL', 'ISSSTE', 'IMSS', 'INGRESOS',
+		'NOMBRECOMP', 'APELLIDOS', 'ENTIDAD', 'SEXO'];
 
 	// Comprobar si los encabezados son válidos
 	for (let i = 0; i < encabezados.length; i++) {
