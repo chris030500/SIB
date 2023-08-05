@@ -33,9 +33,6 @@ public class BitacoraPldRestController {
 		List<BitacoraPldDTO> responseDTO = new ArrayList<BitacoraPldDTO>();
 		List<BitacoraPldModel> bitacoraModel = bitacoraPldService.todoBitacora();
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Usuario usuario = usuarioService.findByNombre(auth.getName());
-		
 		bitacoraModel.forEach(bitacora -> {
 			BitacoraPldDTO dto = new BitacoraPldDTO();
 			dto.setNombre_archivo(bitacora.getVc_nombre_archivo());
@@ -46,7 +43,7 @@ public class BitacoraPldRestController {
 			dto.setDuracion(bitacora.getVc_duracion());
 			dto.setEstatus(bitacora.getVc_estatus());
 			dto.setComentarios(bitacora.getVc_comentarios());
-			dto.setUsuario(usuario.getVc_nombre_usuario());
+			dto.setUsuario(bitacora.getFk_usuario_registro().getVc_nombre_usuario());
 			responseDTO.add(dto);
 		});
 		
