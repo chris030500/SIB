@@ -92,4 +92,12 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	
 	@Query(value = "SELECT VC_VALOR_PROPIEDAD FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD =:nomPropiedad", nativeQuery = true)
 	public String buscarPropiedad(@Param("nomPropiedad") String nomPropiedad);
+	
+	//Consulta para actualizar valor VC_VALOR_PROPIEDAD por PK
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CONFIGURACION SET VC_VALOR_PROPIEDAD = :propiedad WHERE PK_ID_CONFIGURACION = :idConfiguracion", nativeQuery = true)
+	public int cambiarValorPropiedad(@Param("propiedad") String propiedad, @Param("idConfiguracion") Integer idConfiguracion);
+	
+	
 }

@@ -83,5 +83,9 @@ public class ConfigService {
 	public List<Configuracion>  obtenerUrlCSO() {
 		return iConfiguracionRepository.obtenerUrlCSO();
 	}
+	
+	public int cambiarValorPropiedad(String propiedad, Integer idConfiguracion) {
+		return iConfiguracionRepository.cambiarValorPropiedad(propiedad, idConfiguracion);
+	}
 
 }

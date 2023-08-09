@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/vendor/css/dataTables.bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/css/ejemplo.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center">Ofertas Automaticas</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<br>
+							<!-- Div para los botones de parametrizacion de los procesos-->
+							<div class="row justify-content-center">
+								<div class="col-auto">
+									<button class="btn btn-dark mb-2" data-toggle="modal"
+										data-target="#modalFidelidad">Parametros Fidelidad</button>
+								</div>
+								<div class="col-auto">
+									<button class="btn btn-dark mb-2" data-toggle="modal"
+										data-target="#modalCampana">Parametros
+										Campañas VIP</button>
+								</div>
+							</div>
+							<!-- Fin div para los botones de parametrizacion de los procesos-->
+
+							<!-- Div para los botones de ejecucion de los procesos-->
+							<div class="row justify-content-center">
+								<div class="col-auto">
+									<button class="btn btn-primary mb-2">Ejecutar Nomina</button>
+								</div>
+								<div class="col-auto">
+									<button class="btn btn-primary mb-2">Ejuctar Fidelidad</button>
+								</div>
+								<div class="col-auto">
+									<button class="btn btn-primary mb-2">Ejecutar Campañas VIP</button>
+								</div>
+							</div>
+							<!-- Fin div para los botones de ejecucion de los procesos-->
+
+							<!-- Div para el botón "Agregar Clasificación" modalClasificacion-->
+							<div class="row justify-content-start">
+								<div class="col-auto">
+									<button class="btn btn-success mb-2" style="margin-left: 15px !important;"
+										data-toggle="modal" data-target="#modalClasificacion"><i
+											class="fas fa-plus"></i>
+										Agregar
+										Clasificación</button>
+								</div>
+							</div>
+							<!-- Fin div para el botón "Agregar Clasificación" -->
+
+							<div class="row">
+
+								<table class="table table-striped" id="clasificacionBaseTable">
+									<thead>
+										<tr>
+											<th>Base</th>
+											<th>Clasificacion</th>
+											<th>Vigencia</th>
+											<th>Estatus</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="clasificacion : ${clasificacionBases}">
+											<td th:text="${clasificacion.fk_id_base.vc_nombre_base}"></td>
+											<td th:text="${clasificacion.vc_abreviacion_clasificacion}"></td>
+											<td th:text="${clasificacion.i_vigencia_clasificacion}"></td>
+											<td th:if="${clasificacion.i_estatus_clasificacion == 1}">Activo</td>
+											<td th:if="${clasificacion.i_estatus_clasificacion == 0}">Inactivo</td>
+											<td>
+												<div class="dt-buttons">
+													<button class="btn btn-info" tabindex="0"
+														data-bs-toggle="modalEditClasificacion" title="Editar"
+														data-bs-target="#basicModal" aria-controls="table-datatable"
+														type="button"
+														th:attr="data-clasificacion-id=${clasificacion.pk_id_clasificacion}"
+														data-tooltip="Add">
+														<i class="bi bi-file-person-fill"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+
+			</div>
+
+			<!-- Modal Fidelidad-->
+			<div class="modal fade" id="modalFidelidad" tabindex="-1" role="dialog"
+				aria-labelledby="modalFidelidadLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="modalFidelidadLabel">Parametros Fidelidad </h5>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="dCominzoProceso">Agregar día que comienza el proceso</label>
+								<input type="number" class="form-control" id="dComienzoProceso"
+									th:value="${dComienzoProceso}">
+							</div>
+							<div class="form-group">
+								<label for="dFinalProceso">Agregar día que termina el proceso</label>
+								<input type="number" class="form-control" id="dFinalProceso"
+									th:value="${dFinalProceso}">
+							</div>
+							<div class="form-group">
+								<label for="hComienzoProceso">Agregar hora inicial del proceso</label>
+								<input type="time" class="form-control" id="hComienzoProceso"
+									th:value="${hComienzoProceso}">
+							</div>
+							<div class="form-group">
+								<label for="hFinalProceso">Agregar hora final del proceso</label>
+								<input type="time" class="form-control" id="hFinalProceso" th:value="${hFinalProceso}">
+							</div>
+							<div class="form-group">
+								<label for="mPeriodoEjecucion">Agregar tiempo (minutos) de periodos de
+									ejecución</label>
+								<input type="number" class="form-control" id="mPeriodoEjecucion"
+									th:value="${mPeriodoEjecucion}">
+							</div>
+							<div class="form-group">
+								<label for="rutaArchivo">Agregar la ruta del archivo</label>
+								<input type="text" class="form-control" id="rutaArchivo" th:value="${rutaArchivo}">
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+							<button type="button" onclick="guardarParametrosFidelidad()" class="btn btn-primary">Guardar
+								Cambios</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Fin Modal Fidelidad-->
+
+			<!-- Modal Campaña VIP -->
+
+			<div class="modal fade" id="modalCampana" tabindex="-1" role="dialog" aria-labelledby="modalCampanaLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="modalCampanaLabel">Parametros Campaña </h5>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="dComienzoCampana">Agregar día que comienza el proceso</label>
+								<input type="number" class="form-control" id="dComienzoCampana"
+									th:value="${dComienzoCampana}">
+							</div>
+							<div class="form-group">
+								<label for="dFinalCampana">Agregar día que termina el proceso</label>
+								<input type="number" class="form-control" id="dFinalCampana"
+									th:value="${dFinalCampana}">
+							</div>
+							<div class="form-group">
+								<label for="hComienzoCampana">Agregar hora inicial del proceso</label>
+								<input type="time" class="form-control" id="hComienzoCampana"
+									th:value="${hComienzoCampana}">
+							</div>
+							<div class="form-group">
+								<label for="hFinalCampana">Agregar hora final del proceso</label>
+								<input type="time" class="form-control" id="hFinalCampana" th:value="${hFinalCampana}">
+							</div>
+							<div class="form-group">
+								<label for="mPeriodoCampana">Agregar tiempo (minutos) de periodos de
+									ejecución</label>
+								<input type="number" class="form-control" id="mPeriodoCampana"
+									th:value="${mPeriodoCampana}">
+							</div>
+							<div class="form-group">
+								<br>
+								<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}"
+									disabled />
+								<label for="mensajeCampana">Generación automatica de mensaje</label>
+								<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
+									th:title="'Ejemplo de mensaje: '+ ${mensajeCampana}">
+									<i class="fa fa-info-circle"></i>
+								</button>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+							<button type="button" onclick="guardarParametrosCampanaVIP()"
+								class="btn btn-primary">Guardar
+								Cambios</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Fin Modal Campaña VIP -->
+
+			<!-- Modal Clasificación -->
+
+			<div class="modal fade" id="modalClasificacion" tabindex="-1" role="dialog"
+				aria-labelledby="modalClasificacionLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="modalClasificacionLabel">Agregar Clasificación </h5>
+						</div>
+						<div class="modal-body">
+							<div class="form-group row">
+								<label for="base">Agregar base a la que pertenece: </label>
+								<select class="form-control" id="base" onchange="toggleCheckboxAndContent(this)">
+									<option value="0">Seleccione una base</option>
+									<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
+										th:text="${base.vc_nombre_base}">
+									</option>
+								</select>
+								<!--<input type="number" class="form-control" id="base" th:value="${base}">-->
+							</div>
+							<div class="form-group">
+								<label for="dFinalCampana">Nombre de la clasificación: </label>
+								<input type="text" class="form-control" id="nomClasificacion"
+									>
+							</div>
+							<div class="form-group">
+								<label for="abrevacion">Abreviación de la clasificación: </label>
+								<input type="text" class="form-control" id="abrevacion" >
+							</div>
+							<div class="form-group">
+								<label for="codigoClasificacion">Agregar codigo de clasificación: </label>
+								<input type="text" class="form-control" id="codigoClasificacion"
+									>
+							</div>
+							<div class="form-group">
+								<label for="vigenciaClasificacion">Vigencia en días
+									ejecución: </label>
+								<input type="number" class="form-control" id="vigenciaClasificacion"
+									>
+							</div>
+							<div id="contenidoCheckbox">
+								<div class="form-group">
+									<br>
+									<input type="checkbox" id="confMensaje" onclick="toggleMensajeClasificacion()" />
+									<label for="confMensaje">¿Se requiere configurar mensaje?</label>
+									<input type="text" class="form-control" id="mensajeClasificacion"
+										>
+								</div>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+							<button type="button" onclick="validarYGuardarClasificacion()"
+								class="btn btn-primary">Guardar
+								Cambios</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Fin Modal Clasificacion -->
+
+			<!-- Modal Editar Clasificación -->
+
+			<div class="modal fade" id="modalEditarClasificacion" tabindex="-1" role="dialog"
+				aria-labelledby="modalEditarClasificacionLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="modalEditarClasificacionLabel">Editar Clasificación </h5>
+						</div>
+						<div class="modal-body">
+							<div class="form-group row">
+								<label for="base">Agregar base a la que pertenece: </label>
+								<select class="form-control" id="base2" onchange="toggleCheckboxAndContent(this)">
+									<option value="0">Seleccione una base</option>
+									<option th:each="base2 : ${bases}" th:value="${base2.pk_id_base}"
+										th:text="${base2.vc_nombre_base}">
+									</option>
+								</select>
+								<!--<input type="number" class="form-control" id="base" th:value="${base}">-->
+							</div>
+							<div class="form-group">
+								<label for="nomClasificacion2">Nombre de la clasificación: </label>
+								<input type="text" class="form-control" id="nomClasificacion2"
+									th:value="${nomClasificacion}">
+							</div>
+							<div class="form-group">
+								<label for="abrevacion2">Abreviación de la clasificación: </label>
+								<input type="text" class="form-control" id="abrevacion2" th:value="${abrevacion}">
+							</div>
+							<div class="form-group">
+								<label for="codigoClasificacion2">Agregar codigo de clasificación: </label>
+								<input type="text" class="form-control" id="codigoClasificacion2"
+									th:value="${codigoClasificacion}">
+							</div>
+							<div class="form-group">
+								<label for="vigenciaClasificacion2">Vigencia en días
+									ejecución: </label>
+								<input type="number" class="form-control" id="vigenciaClasificacion2"
+									th:value="${vigenciaClasificacion}">
+							</div>
+							<div class="form-group" style="display: none;">
+								<label for="idClasificacion">ID</label>
+								<input type="text" class="form-control" id="idClasificacion"
+									th:value="${pkIdClasificacion}">
+							</div>
+							<div id="contenidoCheckbox">
+								<div class="form-group">
+									<br>
+									<input type="checkbox" id="confMensaje2" onclick="toggleMensajeClasificacionEdit()" />
+									<label for="confMensaje2">¿Se requiere configurar mensaje?</label>
+									<input type="text" class="form-control" id="mensajeClasificacion2" 
+										th:value="${mensajeClasificacion}">
+								</div>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+							<button type="button" onclick="validarClasificacionEditar()"
+								class="btn btn-primary">Guardar
+								Cambios</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Fin Modal Editar Clasificacion -->
+
+
+
+
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script th:src="@{/js/ofertasAutomaticas/parametrosFidelidad.js}"></script>
+		<script th:src="@{/js/ofertasAutomaticas/parametrosCampanaVIP.js}"></script>
+		<script th:src="@{/js/ofertasAutomaticas/clasificacionBase.js}"></script>
+		<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
+		<!--<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!--JavaScript-->
+	</th:block>
+</body>
+
+</html>
