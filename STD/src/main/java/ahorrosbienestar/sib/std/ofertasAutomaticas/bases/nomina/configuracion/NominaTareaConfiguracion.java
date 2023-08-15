@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.component;
+package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -27,7 +27,7 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
  */
 @Configuration
 @EnableScheduling
-public class NominaTareaComponent {
+public class NominaTareaConfiguracion {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -35,10 +35,8 @@ public class NominaTareaComponent {
     @Autowired
     BasesService basesService;
 
-    private boolean lastExecutionHadData = false;
-    private long lastExecutionTime = 0;
 
-    private static final Logger logger = Logger.getLogger(NominaTareaComponent.class);
+    private static final Logger logger = Logger.getLogger(NominaTareaConfiguracion.class);
 
     @Autowired
     private TaskScheduler taskScheduler;
@@ -129,8 +127,9 @@ public class NominaTareaComponent {
 
 
     // Método para actualizar la tarea programada con una nueva expresión 
-    // @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
-    @Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
+    
+    //@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
+    @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
     public void actualizarExpresionCron() {
     	System.out.println("actualizarExpresionCron:");
     	synchronized (cronTaskLock) {
