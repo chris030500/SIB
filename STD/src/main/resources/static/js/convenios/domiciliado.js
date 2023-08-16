@@ -220,11 +220,21 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			// Crear un enlace temporal y simular un clic para descargar automáticamente
 			const downloadLink = document.createElement('a');
 			downloadLink.href = URL.createObjectURL(modifiedBlob);
-			downloadLink.download = 'nuevo_archivo' + originalFile.name;
+			downloadLink.download = 'layout banorte';
 			downloadLink.style.display = 'none'; // Ocultar el enlace
 			document.body.appendChild(downloadLink);
 			downloadLink.click();
 			document.body.removeChild(downloadLink);
+
+			swal("Filtro realizado", {
+				closeOnClickOutside: false,
+				text: "Se concluyo el filtrado del layout",
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+
 		};
 
 		reader.readAsArrayBuffer(originalFile);
