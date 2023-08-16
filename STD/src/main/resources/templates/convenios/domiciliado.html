@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<div class="container" id="principalId">
+			<div class="row">
+				<!-- Columna principal -->
+				<div class="col-md-12">
+					<!-- Card principal -->
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Cobro Domiciliado</h2>
+						</div>
+						<div class="card-body" style="padding-top: 20px">
+
+							<div class="row" style="padding-top: 20px;">
+								<div class="col-sm-12">
+									<li><label>Cargar archivo</label></li>
+								</div>
+							</div>
+
+							<div class="row" style="padding-top: 20px;">
+								<div class="col-sm-4" style="padding: 5px;">
+									<input type="file" id="idArchivo" accept=".txt">
+								</div>
+								<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
+									<button class="btn btn-primary" id="nuevoLayout">Generar
+										archivo</button>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="container" id="spinnerId" style="display: none;">
+			<div class="row">
+				<!-- Columna principal -->
+				<div class="col-md-12">
+					<!-- Card principal -->
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Cobro Domiciliado</h2>
+						</div>
+						<div class="card-body" style="padding-top: 20px; text-align: center;">
+
+							<div class="row" style="margin: 20%;">
+								<div class="col-sm-12">
+									<div class="spinner-border"
+										style="color: cornflowerblue; width: 200px; height: 200px;"></div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/convenios/domiciliado.js}"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	</th:block>
+</body>
+
+</html>
