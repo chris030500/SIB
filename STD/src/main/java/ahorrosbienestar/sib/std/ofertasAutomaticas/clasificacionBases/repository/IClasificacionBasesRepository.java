@@ -3,9 +3,11 @@ package ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.repositor
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 
@@ -16,4 +18,9 @@ public interface IClasificacionBasesRepository extends JpaRepository<Clasificaci
 	@Query(value = "SELECT * FROM SIB.TBL_CLASIFICACION_BASES_OA WHERE FK_ID_BASE = :base \r\n"
 			+ "AND (VC_NOMBRE_CLASIFICACION = :nomClasificacion OR VC_CODIGO_CLASIFICACION = :codClasificacion)", nativeQuery = true)
 	public Optional<ClasificacionBases> validarExistClasiBase(@Param("base") Integer base, @Param("nomClasificacion") String nomClasificacion, @Param("codClasificacion") String codClasificacion);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CLASIFICACION_BASES_OA SET I_ESTATUS_CLASIFICACION = :estatus WHERE PK_ID_CLASIFICACION = :idClasificacion", nativeQuery = true)
+	public int cambiarEstatusClasificacion(@Param("idClasificacion") Integer idClasificacion, @Param("estatus") Integer estatus);
 }

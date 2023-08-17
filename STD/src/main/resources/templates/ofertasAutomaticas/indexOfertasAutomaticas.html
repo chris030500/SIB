@@ -52,7 +52,7 @@
 									<button class="btn btn-primary mb-2">Ejecutar Nomina</button>
 								</div>
 								<div class="col-auto">
-									<button class="btn btn-primary mb-2">Ejuctar Fidelidad</button>
+									<button class="btn btn-primary mb-2">Ejecutar Fidelidad</button>
 								</div>
 								<div class="col-auto">
 									<button class="btn btn-primary mb-2">Ejecutar Campañas VIP</button>
@@ -101,7 +101,24 @@
 														data-tooltip="Add">
 														<i class="bi bi-file-person-fill"></i>
 													</button>
+													
+													<button class="btn btn-danger" tabindex="0" data-bs-toggle="tooltip"
+														data-bs-placement="top" title="Baja Clasificación"
+														aria-controls="table-datatable" type="button"
+														data-tooltip="Refresh"
+														th:onclick="'bajaClasificacion(' + ${clasificacion.pk_id_clasificacion} + ')'">
+														<i class="bi bi-dash-circle"></i>
+													</button>
+													
+													<button class="btn btn-secondary" tabindex="0" data-bs-toggle="tooltip"
+														data-bs-placement="top" title="Alta Clasificación"
+														aria-controls="table-datatable" type="button"
+														data-tooltip="Refresh"
+														th:onclick="'altaClasificacion(' + ${clasificacion.pk_id_clasificacion} + ')'">
+														<i class="bi bi-check-circle"></i>
+													</button>
 												</div>
+
 											</td>
 										</tr>
 									</tbody>
@@ -248,31 +265,27 @@
 							</div>
 							<div class="form-group">
 								<label for="dFinalCampana">Nombre de la clasificación: </label>
-								<input type="text" class="form-control" id="nomClasificacion"
-									>
+								<input type="text" class="form-control" id="nomClasificacion">
 							</div>
 							<div class="form-group">
 								<label for="abrevacion">Abreviación de la clasificación: </label>
-								<input type="text" class="form-control" id="abrevacion" >
+								<input type="text" class="form-control" id="abrevacion">
 							</div>
 							<div class="form-group">
 								<label for="codigoClasificacion">Agregar codigo de clasificación: </label>
-								<input type="text" class="form-control" id="codigoClasificacion"
-									>
+								<input type="text" class="form-control" id="codigoClasificacion">
 							</div>
 							<div class="form-group">
 								<label for="vigenciaClasificacion">Vigencia en días
 									ejecución: </label>
-								<input type="number" class="form-control" id="vigenciaClasificacion"
-									>
+								<input type="number" class="form-control" id="vigenciaClasificacion">
 							</div>
 							<div id="contenidoCheckbox">
 								<div class="form-group">
 									<br>
 									<input type="checkbox" id="confMensaje" onclick="toggleMensajeClasificacion()" />
 									<label for="confMensaje">¿Se requiere configurar mensaje?</label>
-									<input type="text" class="form-control" id="mensajeClasificacion"
-										>
+									<input type="text" class="form-control" id="mensajeClasificacion">
 								</div>
 							</div>
 
@@ -329,6 +342,8 @@
 								<input type="number" class="form-control" id="vigenciaClasificacion2"
 									th:value="${vigenciaClasificacion}">
 							</div>
+
+
 							<div class="form-group" style="display: none;">
 								<label for="idClasificacion">ID</label>
 								<input type="text" class="form-control" id="idClasificacion"
@@ -337,9 +352,10 @@
 							<div id="contenidoCheckbox">
 								<div class="form-group">
 									<br>
-									<input type="checkbox" id="confMensaje2" onclick="toggleMensajeClasificacionEdit()" />
+									<input type="checkbox" id="confMensaje2"
+										onclick="toggleMensajeClasificacionEdit()" />
 									<label for="confMensaje2">¿Se requiere configurar mensaje?</label>
-									<input type="text" class="form-control" id="mensajeClasificacion2" 
+									<input type="text" class="form-control" id="mensajeClasificacion2"
 										th:value="${mensajeClasificacion}">
 								</div>
 							</div>
@@ -347,8 +363,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-							<button type="button" onclick="validarClasificacionEditar()"
-								class="btn btn-primary">Guardar
+							<button type="button" onclick="validarClasificacionEditar()" class="btn btn-primary">Guardar
 								Cambios</button>
 						</div>
 					</div>

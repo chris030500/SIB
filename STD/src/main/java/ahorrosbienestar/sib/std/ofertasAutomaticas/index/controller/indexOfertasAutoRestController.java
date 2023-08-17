@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +59,29 @@ public class indexOfertasAutoRestController {
 			
 		}
 
+	}
+	
+	@GetMapping("/cambiarEstatusClasificacion")
+	public ResponseEntity<?> cambiarEstatusClasificacion(@RequestParam("id") Integer id,
+			@RequestParam("estatus") Integer estatus) {
+		try {
+			logger.info("Ingreso en cambiarEstatusClasificacion");
+			ClasificacionBases clasificacion = clasificacionBasesService.findById(id).get();
+			if (clasificacion == null) {
+	            return ResponseEntity.notFound().build();
+	        }
+			
+			if (clasificacion.getI_estatus_clasificacion() == estatus) {
+	            return ResponseEntity.badRequest().body("El nuevo estatus es igual al estatus actual.");
+	        }
+			//clasificacionBasesService.cambiarEstatusClasificacion(id, estatus);
+			 //return ResponseEntity.ok("ok");
+			return ResponseEntity.ok(clasificacionBasesService.cambiarEstatusClasificacion(id, estatus) );
+		} catch (Exception e) {
+			// TODO: handle exception
+			return ResponseEntity.notFound().build();
+		}
+		
 	}
 	
 	@GetMapping("/obtenerDetallesClasificacion")

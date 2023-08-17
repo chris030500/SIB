@@ -43,5 +43,9 @@ public class ClasificacionBasesService {
 			return null;
 		}
 	}
+	
+	public int cambiarEstatusClasificacion(Integer idClasificacion, Integer estatus) {
+		return iClasificacionBasesRepository.cambiarEstatusClasificacion(idClasificacion, estatus);
+	}
 
 }
