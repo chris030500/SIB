@@ -442,7 +442,7 @@ public class FidelidadTareaConfiguracion {
 
 		workbook.close();
 		inputStream.close();
-		eliminarArchivo(filePath);
+		//eliminarArchivo(filePath);
 	}
 
 	public void comparativaREUSClienteSNPublicidad() {

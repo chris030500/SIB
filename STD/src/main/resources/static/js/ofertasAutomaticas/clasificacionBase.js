@@ -421,3 +421,66 @@ function guardarClasificacionEditar(baseValue, nomClasificacionValue, abrevacion
 		}
 	});
 }
+
+function bajaClasificacion(clasificacion){
+	console.log("clasificacion: " + clasificacion);
+	console.log("urlBase: " + urlBase);
+	estatusBaja = 0;
+	$.ajax({
+		url: urlBase + "cambiarEstatusClasificacion?id=" + encodeURIComponent(clasificacion) +
+			"&estatus=" + encodeURIComponent(estatusBaja),
+		type: "GET",
+		success: function(respuesta) {
+			console.log("Respuesta: " + respuesta);
+
+			swal({
+				title: "Se ha dado de baja la clasificación",
+				icon: "success",
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			console.log("XMLHttpRequest: " + XMLHttpRequest);
+			console.log("textStatus: " + textStatus);
+			console.log("errorThrown: " + errorThrown);
+			swal({
+				title: "Error, ",
+				text: "No se puede dar de baja debido a que el estatus es inactivo.",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function altaClasificacion(clasificacion){
+	console.log("clasificacion: " + clasificacion);
+	console.log("urlBase: " + urlBase);
+	estatusAlta = 1;
+	$.ajax({
+		url: urlBase + "cambiarEstatusClasificacion?id=" + encodeURIComponent(clasificacion) +
+			"&estatus=" + encodeURIComponent(estatusAlta),
+		type: "GET",
+		success: function(respuesta) {
+			//console.log("Respuesta: " + respuesta);
+			console.log("Respuesta: " + JSON.stringify(respuesta));
+			swal({
+				title: "Se ha dado de alta la clasificación",
+				icon: "success",
+			}).then((result) => {
+				window.location.reload();
+			});
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			console.log("XMLHttpRequest: " + XMLHttpRequest);
+			console.log("textStatus: " + textStatus);
+			console.log("errorThrown: " + errorThrown);
+			swal({
+				title: "Error, ",
+				text: "No se puede dar de alta debido a que el estatus es activo.",
+				icon: "warning",
+			});
+		}
+	});
+}
+
