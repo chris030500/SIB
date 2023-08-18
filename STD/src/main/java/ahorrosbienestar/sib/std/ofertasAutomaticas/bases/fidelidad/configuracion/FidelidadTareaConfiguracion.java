@@ -461,7 +461,7 @@ public class FidelidadTareaConfiguracion {
 	}
 
 	// Método para actualizar la tarea programada con una nueva expresión
-	// @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00
+	// @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
 	// P.M
 	// @Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor
 	// según tus necesidades)

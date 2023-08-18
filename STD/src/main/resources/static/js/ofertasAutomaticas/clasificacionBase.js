@@ -247,10 +247,10 @@ $(document).on('click', '.btn-info', function() {
 			toggleMensajeClasificacionEdit();
 		},
 		error: function() {
-			swal({
+			/*swal({
 				text: "Error al obtener los detalles de la clasificación.",
 				icon: "warning",
-			});
+			})*/;
 			//alert('Error al obtener los detalles de la clasificación.');
 		}
 	});
