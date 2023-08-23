@@ -260,3 +260,53 @@ var principal = document.getElementById("principalId");
 /**
  * Fin
  */
+
+
+/**
+ * Obtener la lista de bancos activos
+ *  */
+var catalogoBancos = document.getElementById("catalogoId");
+var valorSeleccionado;
+
+window.onload = function() {
+	$.ajax({
+		url: newUrlBase + "lista_bancos",
+		type: 'GET',
+		dataType: 'json',
+		success: function(resp) {
+			console.log(resp);
+			for (var i = 0; i < resp.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = resp[i].pk_id_banco;
+				opcion.text = resp[i].vc_nombre;
+				catalogoBancos.add(opcion);
+			}
+			catalogoBancos.addEventListener("change", function() {
+				valorSeleccionado = catalogoBancos.value;
+			})
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
+}
+
+/**
+ * Fin
+ *  */
+
+
+/**
+ * Mandar los valore del archivo
+ *  */
+
+function mandarValores() {
+	const dto = {
+		entrada: "",
+		salida: ""
+	}
+}
+
+/**
+ * Fin
+ *  */ 
