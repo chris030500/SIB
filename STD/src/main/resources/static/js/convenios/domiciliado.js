@@ -259,7 +259,7 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			// Crear un enlace temporal y simular un clic para descargar automáticamente
 			const downloadLink = document.createElement('a');
 			downloadLink.href = URL.createObjectURL(modifiedBlob);
-			downloadLink.download = 'CI08108' + diaMesActual + ".pag";
+			downloadLink.download = prefijoArchivo + diaMesActual + ".pag";
 			downloadLink.style.display = 'none'; // Ocultar el enlace
 			document.body.appendChild(downloadLink);
 			downloadLink.click();
@@ -339,6 +339,7 @@ window.onload = function() {
 		}
 	});
 	mostrarBitacora();
+	obtenerPrefijo();
 }
 
 /**
@@ -485,6 +486,30 @@ function botonesPaginacionBitacora() {
 		});
 		paginationContainer.appendChild(button);
 	}
+}
+
+/**
+ * Fin
+ */
+
+
+/**
+ * Obtener prefijo del archivo
+ *  */
+var prefijoArchivo;
+// mostrar la tabla
+function obtenerPrefijo() {
+	$.ajax({
+		url: newUrlBase + "prefijo_archivo",
+		type: "GET",
+		dataType: "JSON",
+		success: function(resp) {
+			prefijoArchivo = resp.prefijoArchivo;
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
 }
 
 /**

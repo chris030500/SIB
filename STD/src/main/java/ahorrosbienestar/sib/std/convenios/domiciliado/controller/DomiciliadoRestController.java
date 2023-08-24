@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import ahorrosbienestar.sib.std.autorizacion.controller.AutorizacionRestController;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.convenios.banco.model.BancoModel;
 import ahorrosbienestar.sib.std.convenios.banco.service.BancoService;
 import ahorrosbienestar.sib.std.convenios.detalleCarga.model.DetalleCargaModel;
 import ahorrosbienestar.sib.std.convenios.detalleCarga.service.DetalleCargaService;
 import ahorrosbienestar.sib.std.convenios.domiciliado.dto.ClabeDTO;
 import ahorrosbienestar.sib.std.convenios.domiciliado.dto.ProcesoDTO;
+import ahorrosbienestar.sib.std.convenios.domiciliado.dto.ValorDTO;
 import ahorrosbienestar.sib.std.convenios.domiciliado.model.CuentasModel;
 import ahorrosbienestar.sib.std.convenios.domiciliado.service.CuentasService;
 import ahorrosbienestar.sib.std.convenios.procesoCarga.bitacora.model.ProcesoCargaBitacoraModel;
@@ -50,12 +54,18 @@ public class DomiciliadoRestController {
 
 	@Autowired
 	DetalleCargaService detalleCargaService;
-	
+
 	@Autowired
 	ProcesoCargaBitacoraService procesoCargaBitacoraService;
 
+	@Autowired
+	ConfigService configService;
+
 	// Logger
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
+
+	// prefijo archivo
+	private final static int PREFIJO_ARCHIVO = 72;
 
 	@RequestMapping(value = {"/recibir_clabe" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<ClabeDTO> datosCuentaClabe(@RequestBody List<ClabeDTO> listaClabeDTO) {
@@ -101,7 +111,7 @@ public class DomiciliadoRestController {
 			logger.info("Se encontró la autenticación");
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
 			logger.info("Se encontró el usuario");
-			
+
 			// fecha
 			LocalDate fechaLocal = LocalDate.now();
 
@@ -132,11 +142,31 @@ public class DomiciliadoRestController {
 		}
 
 	}
-	
-	
+
 	@RequestMapping(value = { "/bitacora" }, method = RequestMethod.GET)
 	public List<ProcesoCargaBitacoraModel> bitacora() {
 		return procesoCargaBitacoraService.listaBitacora();
+	}
+
+	@RequestMapping(value = { "/prefijo_archivo" }, method = RequestMethod.GET)
+	public ValorDTO prefijoArchivo() {
+		ValorDTO valorDTO = new ValorDTO();
+		try {
+			// usuario
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			logger.info("Se encontró la autenticación");
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			logger.info("Se encontró el usuario");
+			// configuración
+			Configuracion configuracion = configService.obtenerConfiguracion(PREFIJO_ARCHIVO);
+			logger.info("Se encontró la configuración");
+			valorDTO.setPrefijoArchivo(configuracion.getVc_valor_propiedad());
+			return valorDTO;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.info(e.getMessage());
+			return null;
+		}
 	}
 
 }
