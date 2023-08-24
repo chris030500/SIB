@@ -32,6 +32,7 @@ inputArchivo.addEventListener('change', function(event) {
 			if (validarEncabezado(contenido)) {
 				obtenerValores(contenido);
 				imprimirCuentas();
+				botonGenerar.style.display = "block";
 			} else {
 				// Realiza alguna acción en caso de encabezados inválidos
 				spinner.style.display = "none";
@@ -71,7 +72,7 @@ function validarEncabezado(archivoContenido) {
 
 	const primeraLinea = lineas[0]; // Tomar la primera línea
 	const lineaSinEspacios = primeraLinea.replace(/\s/g, ''); // Eliminar espacios en blanco
-	console.log(lineaSinEspacios.length);
+	// console.log(lineaSinEspacios.length);
 	return lineaSinEspacios.length === 87;
 }
 
@@ -90,7 +91,7 @@ function obtenerValores(datos) {
 
 // Función para imprimir todas las CLABES en el objeto cuentas
 function imprimirCuentas() {
-	console.log("Lista de CLABES en el objeto cuentasObjeto:");
+	// console.log("Lista de CLABES en el objeto cuentasObjeto:");
 
 	const clabesJSON = cuentasObjeto.clabes.map((clabe) => {
 		return {
@@ -120,10 +121,10 @@ function datosCuentaClabe(clabes) {
 		dataType: 'json',
 		success: function(resp) {
 			informacionClabes = resp;
-			console.log(informacionClabes);
+			// console.log(informacionClabes);
 		},
 		error: function(error) {
-			console.log(error);
+			// console.log(error);
 		}
 	});
 }
@@ -133,10 +134,18 @@ function datosCuentaClabe(clabes) {
 
 
 /**
- * Generar el nuevo layout
+ * Generar el nuevo layout (Banorte)
  */
 
 var botonGenerar = document.getElementById("idBotonGenerar");
+var contenidoEntrada;
+var contenidoSalida;
+var numeroRegistro = 0;
+var numeroMonto = 0;
+// Crear un nuevo objeto de fecha
+var fechaActual = new Date();
+// Obtener el día del mes actual
+var diaMesActual = fechaActual.getDate();
 
 // Leer el archivo .txt
 inputArchivo.addEventListener('change', (event) => {
@@ -147,11 +156,23 @@ inputArchivo.addEventListener('change', (event) => {
 		const file = event.target.files[0];
 		const fileName = file.name;
 		const fileExtension = fileName.split('.').pop();
+
 		if (fileExtension === 'txt') {
-			// si es un archivo .txt
-			spinner.style.display = "none";
-			principal.style.display = "block";
-			botonGenerar.style.display = "block";
+			const reader = new FileReader();
+
+			reader.onload = function(event) {
+				// console.log('entró');
+				spinner.style.display = "none";
+				principal.style.display = "block";
+
+				const content = event.target.result;
+				contenidoEntrada = content.toString(); // Convertir el contenido a string
+
+				// La variable 'contenidoEntrada' contiene todos los caracteres del archivo de entrada
+				// console.log(contenidoEntrada);
+			};
+
+			reader.readAsText(file); // Leer el archivo como texto
 		} else {
 			spinner.style.display = "none";
 			principal.style.display = "block";
@@ -170,7 +191,10 @@ inputArchivo.addEventListener('change', (event) => {
 });
 
 
+// Se genera el nuevo archivo (layout)
 document.getElementById('nuevoLayout').addEventListener('click', () => {
+	numeroMonto = 0;
+	numeroRegistro = 0;
 	spinner.style.display = "block";
 	principal.style.display = "none";
 	if (inputArchivo.files.length > 0) {
@@ -198,6 +222,16 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 					lines[i] = lines[i].substring(0, posicionAddRfc) + informacionClabes[i - 1].rfcOficial + lines[i].substring(posicionAddRfc);
 					// Eliminar espacio rfc
 					lines[i] = lines[i].substring(0, posicionRemoveRfc) + lines[i].substring(posicionRemoveRfc + 13);
+
+					// Obtener la suma de los importes
+					const startIndex = 99;
+					const numberOfCharacters = 15;
+					const importe = lines[i].substr(startIndex, numberOfCharacters);
+					// console.log(importe);
+					// Convertir a entero
+					const totalImporte = parseInt(importe, 10);
+					// console.log(totalImporte);
+					numeroMonto = numeroMonto + totalImporte;
 				}
 				return lines.join('\n');
 			};
@@ -210,6 +244,11 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 
 			// Aplicar cambios desde la segunda línea basados en posiciones de caracteres
 			const modifiedText = applyPositionBasedChangesFromSecondLine(lines, posicionAddCredito, posicionRemoveCredito, posicionAddRfc, posicionRemoveRfc);
+			contenidoSalida = modifiedText;
+			// Obtener el numero de registros
+			numeroRegistro = lines.slice(1).length;
+			// console.log(numeroRegistro);
+			// console.log(numeroMonto);
 
 			// Convertir la cadena de texto modificada nuevamente a un ArrayBuffer
 			const modifiedData = new TextEncoder().encode(modifiedText);
@@ -220,21 +259,27 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			// Crear un enlace temporal y simular un clic para descargar automáticamente
 			const downloadLink = document.createElement('a');
 			downloadLink.href = URL.createObjectURL(modifiedBlob);
-			downloadLink.download = 'layout banorte';
+			downloadLink.download = 'CI08108' + diaMesActual + ".pag";
 			downloadLink.style.display = 'none'; // Ocultar el enlace
 			document.body.appendChild(downloadLink);
 			downloadLink.click();
 			document.body.removeChild(downloadLink);
 
-			swal("Filtro realizado", {
+			swal({
+				title: '¿El archivo se generó de manera correcta?',
+				text: "En caso de que si, dar en Aceptar para actualizar la bitacora",
 				closeOnClickOutside: false,
-				text: "Se concluyo el filtrado del layout",
-				icon: "success",
+				icon: "warning",
+				buttons: ["Recargar", "Aceptar"],
+				confirmButtonColor: '#3498DB',
 			})
-				.then((value) => {
-					window.location.reload();
+				.then((save) => {
+					if (save) {
+						mandarValores();
+					} else {
+						window.location.reload();
+					}
 				});
-
 		};
 
 		reader.readAsArrayBuffer(originalFile);
@@ -266,6 +311,7 @@ var principal = document.getElementById("principalId");
  * Obtener la lista de bancos activos
  *  */
 var catalogoBancos = document.getElementById("catalogoId");
+var vistaCarga = document.getElementById("cargaId");
 var valorSeleccionado;
 
 window.onload = function() {
@@ -274,7 +320,7 @@ window.onload = function() {
 		type: 'GET',
 		dataType: 'json',
 		success: function(resp) {
-			console.log(resp);
+			// console.log(resp);
 			for (var i = 0; i < resp.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = resp[i].pk_id_banco;
@@ -283,12 +329,16 @@ window.onload = function() {
 			}
 			catalogoBancos.addEventListener("change", function() {
 				valorSeleccionado = catalogoBancos.value;
+				if (valorSeleccionado != null | valorSeleccionado != undefined) {
+					vistaCarga.style.display = "block";
+				}
 			})
 		},
 		error: function(error) {
-			console.log(error);
+			// console.log(error);
 		}
 	});
+	mostrarBitacora();
 }
 
 /**
@@ -302,11 +352,141 @@ window.onload = function() {
 
 function mandarValores() {
 	const dto = {
-		entrada: "",
-		salida: ""
+		entrada: contenidoEntrada,
+		salida: contenidoSalida,
+		banco: parseInt(valorSeleccionado),
+		cantidadRegistro: numeroRegistro,
+		totalMonto: numeroMonto
+	}
+	var enviar = JSON.stringify(dto);
+	// console.log(dto);
+	$.ajax({
+		url: newUrlBase + "valores_layout",
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(resp) {
+			// console.log(resp);
+			if (resp == "OK") {
+				swal("Filtro realizado", {
+					closeOnClickOutside: false,
+					text: "Bitacora actualizada",
+					icon: "success",
+				})
+					.then((value) => {
+						window.location.reload();
+					});
+			}
+		}, error: function(error) {
+			// console.log(error);
+		}
+	});
+}
+
+/**
+ * Fin
+ *  */
+
+
+/**
+ * Mostrar la bitacora
+ *  */
+var tablaProceso = document.getElementById("bitacoraId");
+var tbodyProceso = tablaProceso.querySelector("tbody");
+var paginadoBitacora;
+const resultadosPorPaginaBitacora = 5; // Número de resultados por página
+let paginaActualBitacora = 1; // Página actual
+
+// mostrar la tabla
+function mostrarBitacora() {
+	$.ajax({
+		url: newUrlBase + "bitacora",
+		type: "GET",
+		dataType: "JSON",
+		success: function(resp) {
+			paginadoBitacora = resp;
+			inicioPaginado();
+		},
+		error: function(error) {
+			// console.log(error.responseJSON.message);
+		}
+	});
+}
+
+// Inicia el paginado de la bitacora
+function inicioPaginado() {
+	tbodyProceso.innerHTML = ""; // Limpiar la tabla antes de mostrar los nuevos datos
+	const inicio = (paginaActualBitacora - 1) * resultadosPorPaginaBitacora;
+	const fin = inicio + resultadosPorPaginaBitacora;
+	const datosPaginados = paginadoBitacora.slice(inicio, fin);
+	// Iterar sobre los datos del JSON y crear las filas de la tabla
+	for (var i = 0; i < datosPaginados.length; i++) {
+		var rows = document.createElement("tr");
+
+		var numCell = document.createElement("td");
+		numCell.textContent = datosPaginados[i].pk_id_proceso;
+		numCell.style.textAlign = "center";
+		rows.appendChild(numCell);
+
+		var nombreCell = document.createElement("td");
+		nombreCell.textContent = datosPaginados[i].vc_nombre;
+		nombreCell.style.textAlign = "center";
+		rows.appendChild(nombreCell);
+
+		var cantidadRegistroCell = document.createElement("td");
+		cantidadRegistroCell.textContent = datosPaginados[i].i_cantidad_registro;
+		cantidadRegistroCell.style.textAlign = "center";
+		rows.appendChild(cantidadRegistroCell);
+
+		var totalMontoCell = document.createElement("td");
+		totalMontoCell.textContent = datosPaginados[i].i_total_monto;
+		totalMontoCell.style.textAlign = "center";
+		rows.appendChild(totalMontoCell);
+
+		var fechaCell = document.createElement("td");
+		fechaCell.textContent = datosPaginados[i].dt_fecha_carga;
+		fechaCell.style.textAlign = "center";
+		rows.appendChild(fechaCell);
+
+		var usuarioCell = document.createElement("td");
+		usuarioCell.textContent = datosPaginados[i].vc_nombre_usuario;
+		usuarioCell.style.textAlign = "center";
+		rows.appendChild(usuarioCell);
+
+		tbodyProceso.appendChild(rows);
+	}
+	botonesPaginacionBitacora();
+}
+
+// Botones del Paginado
+function botonesPaginacionBitacora() {
+	const paginationContainer = document.getElementById("paginadoId");
+	paginationContainer.innerHTML = ""; // Limpiar los botones de paginación
+	const totalPages = Math.ceil(paginadoBitacora.length / resultadosPorPaginaBitacora);
+	for (let i = 1; i <= totalPages; i++) {
+		const button = document.createElement("button");
+		button.textContent = i;
+		// Establecer los estilos en línea usando la propiedad style
+		button.style.backgroundColor = "#85929E";
+		button.style.border = "none";
+		button.style.color = "white";
+		button.style.padding = "8px 16px";
+		button.style.margin = "2px";
+		// Aplicar estilos al botón activo
+		if (i === paginaActualBitacora) {
+			button.style.backgroundColor = "#007bff";
+		}
+		// Agrega más estilos si es necesario
+		button.addEventListener("click", function() {
+			paginaActualBitacora = i;
+			inicioPaginado();
+			botonesPaginacionBitacora();
+		});
+		paginationContainer.appendChild(button);
 	}
 }
 
 /**
  * Fin
- *  */ 
+ */

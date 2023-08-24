@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -20,6 +22,7 @@ import ahorrosbienestar.sib.std.convenios.procesoCarga.model.ProcesoCargaModel;
 public class DetalleCargaModel {
 	
 	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PK_ID_DETALLE")
 	private int pk_id_detalle;
 	

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -14,12 +16,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ahorrosbienestar.sib.std.convenios.banco.model.BancoModel;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
 @Table(name = "TBL_PROCESO_CARGA_CNV")
 public class ProcesoCargaModel {
 	
 	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PK_ID_PROCESO")
 	private int pk_id_proceso;
 	
@@ -38,8 +42,9 @@ public class ProcesoCargaModel {
 	@Column(name = "DT_FECHA_CARGA")
 	private LocalDate dt_fecha_carga;
 	
-	@Column(name = "VC_USUARIO_CARGA")
-	private String vc_usuario_carga;
+	@OneToOne
+	@JoinColumn(name = "FK_USUARIO_CARGA")
+	private Usuario fk_usuario_carga;
 
 	public int getPk_id_proceso() {
 		return pk_id_proceso;
@@ -81,12 +86,12 @@ public class ProcesoCargaModel {
 		this.dt_fecha_carga = dt_fecha_carga;
 	}
 
-	public String getVc_usuario_carga() {
-		return vc_usuario_carga;
+	public Usuario getFk_usuario_carga() {
+		return fk_usuario_carga;
 	}
 
-	public void setVc_usuario_carga(String vc_usuario_carga) {
-		this.vc_usuario_carga = vc_usuario_carga;
+	public void setFk_usuario_carga(Usuario fk_usuario_carga) {
+		this.fk_usuario_carga = fk_usuario_carga;
 	}
 
 }

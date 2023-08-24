@@ -38,19 +38,46 @@
 								</div>
 							</div>
 
-							<div class="row" style="padding-top: 40px;">
+							<div id="cargaId" style="display: none;">
+								<div class="row" style="padding-top: 40px;">
+									<div class="col-sm-12">
+										<li><label>Cargar archivo</label></li>
+									</div>
+								</div>
+
+								<div class="row" style="padding-top: 10px;">
+									<div class="col-sm-4">
+										<input type="file" id="idArchivo" accept=".txt">
+									</div>
+									<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
+										<button class="btn btn-primary" id="nuevoLayout">Generar
+											archivo</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="row" style="padding-top: 50px;">
 								<div class="col-sm-12">
-									<li><label>Cargar archivo</label></li>
+									<li><label>Proceso de carga</label></li>
 								</div>
 							</div>
 
 							<div class="row" style="padding-top: 10px;">
-								<div class="col-sm-4">
-									<input type="file" id="idArchivo" accept=".txt">
-								</div>
-								<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
-									<button class="btn btn-primary" id="nuevoLayout">Generar
-										archivo</button>
+								<div class="col-sm-12">
+									<table class="table table-striped" id="bitacoraId">
+										<thead>
+											<tr>
+												<th style="text-align: center;">N°</th>
+												<th style="text-align: center;">Banco</th>
+												<th style="text-align: center;">Cantidad registro</th>
+												<th style="text-align: center;">Total monto</th>
+												<th style="text-align: center;">Fecha</th>
+												<th style="text-align: center;">Usuario</th>
+											</tr>
+										</thead>
+										<tbody></tbody>
+									</table>
+									<div style="text-align: right;" id="paginadoId"></div>
 								</div>
 							</div>
 
