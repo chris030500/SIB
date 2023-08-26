@@ -65,7 +65,7 @@ public class DomiciliadoRestController {
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
 
 	// prefijo archivo
-	private final static int PREFIJO_ARCHIVO = 72;
+	private final static int PREFIJO_ARCHIVO = 68;
 
 	@RequestMapping(value = {"/recibir_clabe" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<ClabeDTO> datosCuentaClabe(@RequestBody List<ClabeDTO> listaClabeDTO) {
