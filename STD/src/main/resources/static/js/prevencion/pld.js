@@ -618,23 +618,36 @@ function convertirListaATexto(datos) {
 
 // Función para crear y guardar el archivo en formato ANSI
 function guardarArchivoTXT(texto, nombreArchivo) {
-	const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), texto], { type: 'text/plain;charset=utf-8' });
-	const url = URL.createObjectURL(blob);
-	const a = document.createElement('a');
-	a.href = url;
-	a.download = nombreArchivo;
-	document.body.appendChild(a);
-	a.click();
-	URL.revokeObjectURL(url);
-	document.body.removeChild(a);
-	spinner.style.display = "none";
-	verInfo.style.display = "block";
-	// Obtenemos el tiempo de finalización
-	proFin = performance.now();
-	// Calculamos la diferencia para obtener el tiempo transcurrido
-	const tiempoTranscurrido = proFin - proInicio;
-	tDuracion = convertirMilisegundosAHora(tiempoTranscurrido);
-	guardarBitacora();
+    // Dividir el texto en líneas, eliminar espacios en blanco y unir con CRLF
+    const lineas = texto.split('\n');
+    const contenidoConCRLF = lineas.map(linea => linea.trim()).join('\r\n');
+
+    // Convertir el contenido a bytes ANSI
+    const textBytes = new Uint8Array(contenidoConCRLF.length);
+
+    for (let i = 0; i < contenidoConCRLF.length; i++) {
+        textBytes[i] = contenidoConCRLF.charCodeAt(i) & 0xFF; // Mantener solo el byte menos significativo
+    }
+
+    // Crear el blob con el contenido CRLF
+    const blob = new Blob([new Uint8Array(textBytes)], { type: 'text/plain;charset=windows-1252' });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    spinner.style.display = "none";
+    verInfo.style.display = "block";
+    // Obtenemos el tiempo de finalización
+    proFin = performance.now();
+    // Calculamos la diferencia para obtener el tiempo transcurrido
+    const tiempoTranscurrido = proFin - proInicio;
+    tDuracion = convertirMilisegundosAHora(tiempoTranscurrido);
+    guardarBitacora();
 }
 
 // Función para validar los encabezados
