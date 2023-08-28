@@ -229,7 +229,7 @@ function calcularPlazo(opcion, fechaI, fechaF) {
 }
 
 function calcularVencimiento(opcion) {
-	var fechaInicioD = new Date(document.getElementById("idFechaRegistro").value.replaceAll("-", "/"));
+	var fechaInicioD = new Date(document.getElementById("idRecepcion").value.replaceAll("-", "/"));
 	var fechaFinD = new Date(document.getElementById("idVencimiento").value.replaceAll("-", "/"));
 	switch (opcion) {
 		case 1:
