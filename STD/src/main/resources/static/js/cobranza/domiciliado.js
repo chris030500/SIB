@@ -32,7 +32,9 @@ inputArchivo.addEventListener('change', function(event) {
 			if (validarEncabezado(contenido)) {
 				obtenerValores(contenido);
 				imprimirCuentas();
-				botonGenerar.style.display = "block";
+				if (fileExtension == "txt" && contenido) {
+					botonGenerar.style.display = "block";
+				}
 			} else {
 				// Realiza alguna acción en caso de encabezados inválidos
 				spinner.style.display = "none";
@@ -136,7 +138,7 @@ function datosCuentaClabe(clabes) {
 /**
  * Generar el nuevo layout (Banorte)
  */
-
+var fileExtension;
 var botonGenerar = document.getElementById("idBotonGenerar");
 var contenidoEntrada;
 var contenidoSalida;
@@ -155,23 +157,18 @@ inputArchivo.addEventListener('change', (event) => {
 		botonGenerar.style.display = "none";
 		const file = event.target.files[0];
 		const fileName = file.name;
-		const fileExtension = fileName.split('.').pop();
-
+		fileExtension = fileName.split('.').pop();
 		if (fileExtension === 'txt') {
 			const reader = new FileReader();
-
 			reader.onload = function(event) {
 				// console.log('entró');
 				spinner.style.display = "none";
 				principal.style.display = "block";
-
 				const content = event.target.result;
 				contenidoEntrada = content.toString(); // Convertir el contenido a string
-
 				// La variable 'contenidoEntrada' contiene todos los caracteres del archivo de entrada
 				// console.log(contenidoEntrada);
 			};
-
 			reader.readAsText(file); // Leer el archivo como texto
 		} else {
 			spinner.style.display = "none";
@@ -214,24 +211,26 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			const applyPositionBasedChangesFromSecondLine = (lines, posicionAddCredito, posicionRemoveCredito, posicionAddRfc, posicionRemoveRfc) => {
 				// Realizar cambios en líneas específicas
 				for (let i = 1; i < lines.length; i++) { // Comenzar desde la segunda línea
-					// Agregar credito
-					lines[i] = lines[i].substring(0, posicionAddCredito) + informacionClabes[i - 1].creditoId + lines[i].substring(posicionAddCredito);
-					// Eliminar espacio credito
-					lines[i] = lines[i].substring(0, posicionRemoveCredito) + lines[i].substring(posicionRemoveCredito + 12);
-					// Agregar rfc
-					lines[i] = lines[i].substring(0, posicionAddRfc) + informacionClabes[i - 1].rfcOficial + lines[i].substring(posicionAddRfc);
-					// Eliminar espacio rfc
-					lines[i] = lines[i].substring(0, posicionRemoveRfc) + lines[i].substring(posicionRemoveRfc + 13);
+					if (informacionClabes[i - 1] != undefined) {
+						// Agregar credito
+						lines[i] = lines[i].substring(0, posicionAddCredito) + informacionClabes[i - 1].creditoId + lines[i].substring(posicionAddCredito);
+						// Eliminar espacio credito
+						lines[i] = lines[i].substring(0, posicionRemoveCredito) + lines[i].substring(posicionRemoveCredito + 12);
+						// Agregar rfc
+						lines[i] = lines[i].substring(0, posicionAddRfc) + informacionClabes[i - 1].rfcOficial + lines[i].substring(posicionAddRfc);
+						// Eliminar espacio rfc
+						lines[i] = lines[i].substring(0, posicionRemoveRfc) + lines[i].substring(posicionRemoveRfc + 13);
 
-					// Obtener la suma de los importes
-					const startIndex = 99;
-					const numberOfCharacters = 15;
-					const importe = lines[i].substr(startIndex, numberOfCharacters);
-					// console.log(importe);
-					// Convertir a entero
-					const totalImporte = parseInt(importe, 10);
-					// console.log(totalImporte);
-					numeroMonto = numeroMonto + totalImporte;
+						// Obtener la suma de los importes
+						const startIndex = 99;
+						const numberOfCharacters = 15;
+						const importe = lines[i].substr(startIndex, numberOfCharacters);
+						// console.log(importe);
+						// Convertir a entero
+						const totalImporte = parseInt(importe, 10);
+						// console.log(totalImporte);
+						numeroMonto = numeroMonto + totalImporte;
+					}
 				}
 				return lines.join('\n');
 			};
