@@ -1,11 +1,16 @@
 package ahorrosbienestar.sib.std.cobranza.domiciliado.model;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "TBL_CUENTASTRANS_MF")
@@ -26,6 +31,11 @@ public class CuentasModel {
 	
 	@Column(name = "CLABE")
 	private String clabe;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "FechaMinistrado")
+	private LocalDate fechaMinistrado;
 
 	public int getPk_id_cuentas() {
 		return pk_id_cuentas;
@@ -65,6 +75,14 @@ public class CuentasModel {
 
 	public void setClabe(String clabe) {
 		this.clabe = clabe;
+	}
+
+	public LocalDate getFechaMinistrado() {
+		return fechaMinistrado;
+	}
+
+	public void setFechaMinistrado(LocalDate fechaMinistrado) {
+		this.fechaMinistrado = fechaMinistrado;
 	}
 
 }
