@@ -114,10 +114,11 @@ public class NominaTareaConfiguracion {
 
         if (basesService.esHorarioValido(horaInicio, horaFin) && basesService.esDiaValido(diaInicio)) {
         	System.out.println("Ejecuta los SP");
-            jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_CONVENIO(30)");
-            jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_SN_CONVENIO(30)");
-            jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_CONVENIO(30)");
-            jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_SN_CONVENIO(30)");
+        	jdbcTemplate.update("CALL SIB.SP_MIGRA_BD_NOMINA_LIQUIDADOS_NLIQUIDADOS(30)");
+            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_CONVENIO(30)");
+            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_SN_CONVENIO(30)");
+            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_CONVENIO(30)");
+            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_SN_CONVENIO(30)");
 //            lastExecutionHadData = true; // Actualizar según los resultados del SP
 //            lastExecutionTime = System.currentTimeMillis();
         }
