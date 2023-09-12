@@ -180,13 +180,11 @@ function populateModalContra(data) {
 
 // Assign the data values to the modal form.
 function populateModal(data) {
-
 	//console.log("Data en populateModal: " + JSON.stringify(data));
 	$('#nombre').val(data.vc_nombre_usuario);
 	$('#idUsuario').val(data.pk_id_usuario);
 	$('#rol').val(data.rol_idRol.pk_id_rol);
 	//$('#update-name').val(data.name);
-
 }
 
 function altaUsuario() {
@@ -479,7 +477,7 @@ function editarUsuario() {
 	//var urlBase = getAbsolutePath();
 	//Primero validamos que el nombre de usuario no exista.
 	if (nombreUsuario == "") {
-		console.log("Ingresa un nombre de usuario");
+		//console.log("Ingresa un nombre de usuario");
 		swal({
 			icon: 'warning',
 			title: "El campo de nombre de usuario está vacío, ingresa un nombre",
@@ -487,14 +485,14 @@ function editarUsuario() {
 
 		});
 	} else {
-		console.log("Puede continuar");
+		//console.log("Puede continuar");
 		$.ajax({
 			url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
 				"&idUsuario=" + idUsuario + "&rol=" + rol,
 			type: "POST",
 			success: function() {
-				/*console.log("Entro en success de get");
-				console.log("Respuesta: " +respuesta);*/
+				/*//console.log("Entro en success de get");
+				//console.log("Respuesta: " +respuesta);*/
 
 
 				swal({
@@ -508,7 +506,7 @@ function editarUsuario() {
 
 			},
 			error: function() {
-				//console.log("Entro en error");
+				////console.log("Entro en error");
 				swal({
 					icon: 'warning',
 					title: "No se realizo los cambios del usuario, favor de validar los datos ingresados. ",
@@ -521,7 +519,6 @@ function editarUsuario() {
 			}
 		});
 	}
-
 
 }
 
@@ -557,7 +554,8 @@ function cambiarContrasenia() {
 							"&idUsuario=" + idUsuario + "&password=" + contrasenia,
 						type: "POST",
 						success: function() {
-							////console.log("Entro en guardar contraseña");
+							console.log("Entro en guardar contraseña");
+							console.log("Respuesta: " + respuesta);
 							swal({
 								type: 'success',
 								title: 'Contraseña cambiada correctamente',
@@ -566,6 +564,29 @@ function cambiarContrasenia() {
 								window.location.replace(newUrlBase + "formulario");
 							});
 
+						},
+						error: function(xhr, status, error) {
+							if (xhr.status === 400) {
+								var errorMessage = xhr.responseText;
+								// Mostrar el mensaje de error al usuario
+								console.log(errorMessage);
+								swal({
+									type: 'warning',
+									title: errorMessage,
+									showConfirmButton: false
+								}).then((result) => {
+									window.location.replace(newUrlBase + "formulario");
+								});
+							} else {
+								// Manejar otros errores de la solicitud AJAX
+								swal({
+									type: 'warning',
+									title: "Error al cambiar la contraseña",
+									showConfirmButton: false
+								}).then((result) => {
+									window.location.replace(newUrlBase + "formulario");
+								});
+							}
 						}
 					});
 				}

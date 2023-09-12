@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -84,8 +85,8 @@ public class ConfigService {
 		return iConfiguracionRepository.obtenerUrlCSO();
 	}
 	
-	public int cambiarValorPropiedad(String propiedad, Integer idConfiguracion) {
-		return iConfiguracionRepository.cambiarValorPropiedad(propiedad, idConfiguracion);
+	public Configuracion valorPropiedad(String valor) {
+		return iConfiguracionRepository.valorPropiedad(valor);
 	}
 
 }
