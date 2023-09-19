@@ -86,5 +86,11 @@ public class BasesService {
         return cal.get(Calendar.DAY_OF_MONTH);
     }
 
+	public int actParams(Integer basesID, String dComienzoProceso, String dFinalProceso, String hComienzoProceso,
+			String hFinalProceso, String mPeriodoEjecucion, String rutaArchivo) {
+		// TODO Auto-generated method stub
+		return iBasesRepository.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo);
+	}
+
 
 }

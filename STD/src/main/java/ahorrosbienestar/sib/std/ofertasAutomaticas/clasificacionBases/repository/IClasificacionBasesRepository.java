@@ -23,4 +23,12 @@ public interface IClasificacionBasesRepository extends JpaRepository<Clasificaci
 	@Transactional
 	@Query(value = "UPDATE SIB.TBL_CLASIFICACION_BASES_OA SET I_ESTATUS_CLASIFICACION = :estatus WHERE PK_ID_CLASIFICACION = :idClasificacion", nativeQuery = true)
 	public int cambiarEstatusClasificacion(@Param("idClasificacion") Integer idClasificacion, @Param("estatus") Integer estatus);
+
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_CLASIFICACION_BASES_OA "
+			+ "WHERE FK_ID_BASE = :idBase and "
+			+ "VC_NOMBRE_CLASIFICACION= :nomClasificacion and "
+			+ "VC_ABREVIACION_CLASIFICACION= :abrevacion and "
+			+ "VC_CODIGO_CLASIFICACION= :codigoClasificacion", nativeQuery = true)
+	public int existeClasificacion(@Param("idBase") Integer idBase,@Param("nomClasificacion") String nomClasificacion,@Param("abrevacion") String abrevacion,
+			@Param("codigoClasificacion") String codigoClasificacion);
 }
