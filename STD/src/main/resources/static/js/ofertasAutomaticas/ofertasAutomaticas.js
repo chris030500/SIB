@@ -189,6 +189,7 @@ function btnsModal(){
 	});
 	
 	$("#btnCerrar").click(function() {
+		idClasificacion = 0;
    		limpiarDatosClasificacion();
    		$("#modalClasificacion").modal("hide");
 	});
@@ -212,7 +213,16 @@ function btnsModal(){
  	});
  	
  	$("#btnRegistrarClasif").click(function() {
-  		altaDtosClasificacion();
+		 if(idClasificacion > 0){
+			 //actualizacion de clasificaciones
+			 console.log("es una modificacion");
+		 }else{
+			 //alta de clasificacion
+			 console.log("es un alta");
+			 altaDtosClasificacion();
+		 }
+		 
+  		
  	});
  	
 }
