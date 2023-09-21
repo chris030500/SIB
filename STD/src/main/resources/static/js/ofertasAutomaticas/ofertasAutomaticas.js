@@ -102,20 +102,20 @@ function iniciaTblClasificacion(){
 				
 			var btnsActivar = " <button class='btn btn-success' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Activar Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
-				+ " onclick='altaClasificacion("
+				+ " onclick='activarClasificacion(this)' id="
 				+ opt.pk_id_clasificacion
-				+ ")' id="
-				+ opt.pk_id_clasificacion
+				+ " for="
+				+ opt.i_estatus_clasificacion
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-check2-circle'></i></button>";
 			
 			
 			var btnBaja= " <button class='btn btn-warning' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Baja Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
-				+ " onclick='bajaClasificacion("
+				+ " onclick='bajaClasificacion(this)' id="
 				+ opt.pk_id_clasificacion
-				+ ")' id="
-				+ opt.pk_id_clasificacion
+				+ " for="
+				+ opt.i_estatus_clasificacion
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-x-circle'></i></button>";
 				
@@ -213,16 +213,7 @@ function btnsModal(){
  	});
  	
  	$("#btnRegistrarClasif").click(function() {
-		 if(idClasificacion > 0){
-			 //actualizacion de clasificaciones
-			 console.log("es una modificacion");
-		 }else{
-			 //alta de clasificacion
-			 console.log("es un alta");
-			 altaDtosClasificacion();
-		 }
-		 
-  		
+			 DtosClasificacion();  		
  	});
  	
 }
@@ -385,10 +376,10 @@ function limpiarDatosClasificacion(){
 	document.getElementById("abrevacion").value = '';
 	document.getElementById("codigoClasificacion").value = '';
 	document.getElementById("vigenciaClasificacion").value = 1;
-	document.getElementById("mensajeClasificacion").value = '';
-	document.getElementById("mensajeClasificacion").style.display = "none";
-	document.getElementById("contMns").style.display = "none";
-	$("#confMensaje").prop('checked', false);
+	//document.getElementById("mensajeClasificacion").value = '';
+	//document.getElementById("mensajeClasificacion").style.display = "none";
+	//document.getElementById("contMns").style.display = "none";
+	//$("#confMensaje").prop('checked', false);
 
 	
 }
@@ -413,7 +404,13 @@ function validarVacioClasificacion(){
 	var correcto = 0;
 	url = "";
 	if(document.getElementById("base").value > 0){
-   		url = "altaClasificacion?idBase=" + encodeURIComponent(document.getElementById("base").value);
+		if(idClasificacion > 0){
+			url = "modClasificacion?idClass=" + encodeURIComponent(idClasificacion);
+			url = url +"&idBase="+ encodeURIComponent(document.getElementById("base").value);
+		}else{
+			url = "altaClasificacion?idBase=" + encodeURIComponent(document.getElementById("base").value);
+		}
+
    		document.getElementById("base").style.borderColor = "";
    		correcto = correcto + 0;
    }else{
@@ -454,7 +451,7 @@ function validarVacioClasificacion(){
     	correcto = correcto + 1;
    }
    
-   if( $('#confMensaje').prop('checked') ) {
+   if( iMensaje == 2 ) {
 	   
 	   if(document.getElementById("mensajeClasificacion").value.length > 0){
 		   	url = url + "&mensajeClasificacion="+ encodeURIComponent(document.getElementById("mensajeClasificacion").value);
@@ -465,7 +462,7 @@ function validarVacioClasificacion(){
     		correcto = correcto + 1;  
 	   }
    }else{
-		url = url + "&mensajeClasificacion="+ encodeURIComponent(document.getElementById("mensajeClasificacion").value);
+		url = url + "&mensajeClasificacion="+ encodeURIComponent(document.getElementById("msnCampania").value);
    		document.getElementById("mensajeClasificacion").style.borderColor = "";
    		correcto = correcto + 0;   
    }
@@ -474,7 +471,7 @@ function validarVacioClasificacion(){
 	
 }
 
-function altaDtosClasificacion(){
+function DtosClasificacion(){
 	
 	if(validarVacioClasificacion() == 0){
 		console.log(getAbsolutePath()+url);
@@ -493,7 +490,7 @@ function altaDtosClasificacion(){
  * Mayusculas
  */
 function mayusculas(comp){
-	comp.value = comp.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+	comp.value = comp.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 	
 }
 
@@ -514,7 +511,6 @@ function peticionClasificacion(ruta){
 var idClasificacion=0;
 function modalClass(data){
 				   
-	
 	document.getElementById("base").value = data.fk_id_base.pk_id_base;
 	document.getElementById("nomClasificacion").value = data.vc_nombre_clasificacion;
 	document.getElementById("abrevacion").value = data.vc_abreviacion_clasificacion;
@@ -526,5 +522,74 @@ function modalClass(data){
 	$("#modalClasificacion").modal("show");
 }
 
+function activarClasificacion(idClass){
+	
+	var estatus = $(idClass).attr('for');
+	if(estatus == 0){
+		Swal.fire({
+		title: "¿Se activara la Clasificación?",
+		showCancelButton: true,
+		confirmButtonText: "Acepto",
+		cancelButtonText: "Cancelar",
+		}).then(resultado => {
+			if (resultado.value) {
+					url= "";
+					url = "activarClasificacion?idClass="+$(idClass).attr('id');
+					peticionPost(2,getAbsolutePath()+url);
+			}
+		});
+	}else{
+		swal({
+			title: "Alerta",
+			text: "La Clasificación esta Activa.",
+			icon: "warning",
+			});
+	}
+}
+
+function bajaClasificacion(idClass){
+	var estatus = $(idClass).attr('for');
+	if(estatus == 1){
+		Swal.fire({
+			title: "¿Se inactivara la Clasificación?",
+			showCancelButton: true,
+			confirmButtonText: "Acepto",
+			cancelButtonText: "Cancelar",
+		}).then(resultado => {
+			if (resultado.value) {				
+					url= "";
+					url = "bajaClasificacion?idClass="+$(idClass).attr('id');
+					peticionPost(2,getAbsolutePath()+url);
+			}
+		});
+	}else{
+		swal({
+			title: "Alerta ",
+			text: "La Clasificación esta inactiva.",
+			icon: "warning",
+		});
+	}
+
+}
+var iMensaje = 0;
+function mostrarMensaje(idB){
+	
+	var idSelect = document.getElementById($(idB).attr('id'));
+	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
+	iMensaje = opcionSeleccionada.getAttribute("for");
+	
+	if(iMensaje == 1){
+		document.getElementById("mnsCampania").style.display = "block";
+	}else{
+		document.getElementById("mnsCampania").style.display = "none";
+	}
+	
+	if(iMensaje == 2){
+		document.getElementById("contenidoCheckbox").style.display = "block";
+	}else{
+		document.getElementById("contenidoCheckbox").style.display = "none";
+	}
+	
+}
 
 

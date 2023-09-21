@@ -44,7 +44,7 @@ public class indexOfertasAutoController {
 
 	// Constantes Campañas VIP
 	private final static int CAMPANAS_VIP = 3;
-	private final static int MENSAJE_CAMPANA_VIP = 68;
+	private final static String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
 	
 	// Constante Activo
 	private final static int ACTIVO = 1;
@@ -82,12 +82,12 @@ public class indexOfertasAutoController {
 	 try {
 		if(validarAcceso()== 1){
 			logger.info("Ejecutando ofertasAutomaticas");
-			boolean mensajeAuto = false;
+			/*boolean mensajeAuto = false;
 			Optional<Bases> fidelidad = basesService.findById(FIDELIDAD);
 			Optional<Bases> campanaVIP = basesService.findById(CAMPANAS_VIP);
-			Configuracion mensajeCampana = configService.obtenerConfiguracion(MENSAJE_CAMPANA_VIP);
+			
 
-			List<Bases> bases = basesService.findAll();
+			
 			List<ClasificacionBases> clasificacionBases = clasificacionBasesService.findAll();
 
 			model.addAttribute("dComienzoProceso", fidelidad.get().getVc_dia_inicio_proceso());
@@ -106,14 +106,14 @@ public class indexOfertasAutoController {
 				mensajeAuto = true;
 			} else {
 				mensajeAuto = false;
-			}
-			model.addAttribute("habilitarMensajeCampana", mensajeAuto);
+			}*/
+			//model.addAttribute("habilitarMensajeCampana", mensajeAuto);
+			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
 			//model.addAttribute("lista_configuracion", baseService.findAll());
-
+			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
-			model.addAttribute("clasificacionBases", clasificacionBases);
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
 			rutaDireccion = rutaError;
@@ -356,25 +356,30 @@ public class indexOfertasAutoController {
 		logger.info("/altaClasificacion");
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
-		try {
-			
-			if(clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion,codigoClasificacion) == 0) {
-				LocalDateTime  fecha = LocalDateTime.now();
-				
-				ClasificacionBases altaClasificacion = new ClasificacionBases();
-				altaClasificacion.setFk_id_base(basesService.findById(idBase).orElseThrow());
-				altaClasificacion.setVc_nombre_clasificacion(nomClasificacion);
-				altaClasificacion.setVc_abreviacion_clasificacion(abrevacion);
-				altaClasificacion.setVc_codigo_clasificacion(codigoClasificacion);
-				altaClasificacion.setI_vigencia_clasificacion(vigenciaClasificacion);
-				altaClasificacion.setVc_mensaje_clasificacion(mensajeClasificacion);
-				altaClasificacion.setDt_fecha_registro(fecha);
-				altaClasificacion.setI_estatus_clasificacion(ACTIVO);
-				
-				clasificacionBasesService.save(altaClasificacion);
-				respuesta.add(mensaje);
+		try {		
+			//clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion,codigoClasificacion)
+			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
+				if(clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion) == 0) {
+					LocalDateTime  fecha = LocalDateTime.now();
+					
+					ClasificacionBases altaClasificacion = new ClasificacionBases();
+					altaClasificacion.setFk_id_base(basesService.findById(idBase).orElseThrow());
+					altaClasificacion.setVc_nombre_clasificacion(nomClasificacion);
+					altaClasificacion.setVc_abreviacion_clasificacion(abrevacion);
+					altaClasificacion.setVc_codigo_clasificacion(codigoClasificacion);
+					altaClasificacion.setI_vigencia_clasificacion(vigenciaClasificacion);
+					altaClasificacion.setVc_mensaje_clasificacion(mensajeClasificacion);
+					altaClasificacion.setDt_fecha_registro(fecha);
+					altaClasificacion.setI_estatus_clasificacion(ACTIVO);
+					
+					clasificacionBasesService.save(altaClasificacion);
+					respuesta.add(mensaje);
+				}else {
+					mensaje = "Existe Clasificación, se recomienda editar el registro existente";
+					respuesta.add(mensaje);
+				}
 			}else {
-				mensaje = "Existe Clasificacion registrada, se recomienda modificar el registro existente.";
+				mensaje = "Existe codigo Clasificacion registrado.";
 				respuesta.add(mensaje);
 			}
 			return ResponseEntity.ok(respuesta);
@@ -399,7 +404,93 @@ public class indexOfertasAutoController {
 		
 	}
 	
+	/**
+	 * Metodo para modificar una clasificacion
+	 * @return
+	 */
 	
+	@PostMapping("/modClasificacion")
+	public ResponseEntity<?> modClasificacion(
+			@RequestParam(name = "idClass") Integer idClass,
+			@RequestParam(name = "idBase") Integer idBase, 
+			@RequestParam(name = "nomClasificacion") String nomClasificacion, 
+			@RequestParam(name = "abrevacion") String abrevacion,
+			@RequestParam(name = "codigoClasificacion") String codigoClasificacion,
+			@RequestParam(name = "vigenciaClasificacion") Integer vigenciaClasificacion,
+			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
+			){
+		logger.info("/modClasificacion");
+		String mensaje ="Actualizo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+		
+			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
+				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
+					respuesta.add(mensaje);
+				}else {
+					respuesta.add("No fue posible actualizar, intente mas tarde.");
+				}
+			}else {
+				mensaje = "No fue posible actualizar. Existe codigo clasificacion registrado.";
+				respuesta.add(mensaje);
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	/**
+	 * Metodo para activar una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/activarClasificacion")
+	public ResponseEntity<?> activarClasificacion(
+			@RequestParam(name = "idClass") Integer idClass
+			){
+		logger.info("/activarClasificacion");
+		String mensaje ="Activo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			if(clasificacionBasesService.activarClasificacion(idClass) == 1) {
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible activar, intente mas tarde.");
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	/**
+	 * Metodo para inactivar una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/bajaClasificacion")
+	public ResponseEntity<?> bajaClasificacion(
+			@RequestParam(name = "idClass") Integer idClass
+			){
+		logger.info("/inactivarClasificacion");
+		String mensaje ="Inactivo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible activar, intente mas tarde.");
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
 	public int validarAcceso() {
 		
 		

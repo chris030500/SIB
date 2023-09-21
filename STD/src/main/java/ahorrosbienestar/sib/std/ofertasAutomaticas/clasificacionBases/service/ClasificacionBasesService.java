@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.repository.IClasificacionBasesRepository;
 
@@ -49,10 +50,28 @@ public class ClasificacionBasesService {
 		return iClasificacionBasesRepository.cambiarEstatusClasificacion(idClasificacion, estatus);
 	}
 
-	public int existeClasificacion(Integer idBase, String nomClasificacion, String abrevacion,
-			String codigoClasificacion) {
+	public int existeClasificacion(Integer idBase, String nomClasificacion, String abrevacion) {
 	
-		return iClasificacionBasesRepository.existeClasificacion(idBase,nomClasificacion,abrevacion,codigoClasificacion);
+		return iClasificacionBasesRepository.existeClasificacion(idBase,nomClasificacion,abrevacion);
 	}
 
+	public int updateClasificacion(Integer idClass, Integer idBase, String nomClasificacion, String abrevacion,
+			String codigoClasificacion, Integer vigenciaClasificacion, String mensajeClasificacion) {
+	
+		return iClasificacionBasesRepository.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion);
+	}
+
+	public int activarClasificacion(Integer idClass) {
+		
+		return iClasificacionBasesRepository.activarClasificacion(idClass);
+	}
+
+	public int bajaClasificacion(Integer idClass) {
+		
+		return iClasificacionBasesRepository.bajaClasificacion(idClass);
+	}
+
+	public int existeCodigo(String codigoClasificacion) {
+		return iClasificacionBasesRepository.existeCodigo(codigoClasificacion);
+	}
 }

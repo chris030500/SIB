@@ -142,10 +142,11 @@
 						<div class="modal-body">
 							<div class="form-group row">
 								<label for="base">Agregar base a la que pertenece: </label>
-								<select class="form-control" id="base">
+								<input id="mnsCampaña" th:value="${mensajeCampana}" type="hidden">
+								<select class="form-control" id="base" onchange="mostrarMensaje(this)">
 									<option value="0">Seleccione una base</option>
 									<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
-										th:text="${base.vc_nombre_base}">
+										th:text="${base.vc_nombre_base}" th:for="${base.i_mensaje_proceso}">
 									</option>
 								</select>
 								<!--<input type="number" class="form-control" id="base" th:value="${base}">-->
@@ -169,17 +170,27 @@
 									ejecución: </label>
 								<input type="number" class="form-control" id="vigenciaClasificacion" min="1" placeholder="Vigencia en días">
 							</div>
-							<div id="contenidoCheckbox">
+							<div id="contenidoCheckbox" style="display:none;">
 								<div class="form-group">
 									<br>
-									<input type="checkbox" id="confMensaje" onclick="checkMns()" />
-									<label for="confMensaje">¿Se requiere configurar mensaje?</label>
+									<!--<input type="checkbox" id="confMensaje" onclick="checkMns()" />-->
+									<label for="confMensaje">Configurar mensaje</label>
 									<textarea type="text-Area" class="form-control" id="mensajeClasificacion"
 												placeholder="Ingresar Mensaje" maxlength="200" rows="4" onkeyup="mayusculas(this);"></textarea>
-									
 									<div id="contMns">0/200</div>
 								</div>
 							</div>
+							<div class="form-group" id="mnsCampania" style="display:none;">
+								<br>
+								<!--<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}" disabled />-->
+								<label>Mensaje Default Campaña</label>
+								<textarea type="text-Area" class="form-control" id="msnCampania"
+								maxlength="200" rows="4" th:text="${mensajeCampana}" th:value="${mensajeCampana}" disabled></textarea>
+								<!--<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
+									th:title="'Mensaje Configurado: '+ ${mensajeCampana}">
+								</button>-->
+							</div>
+							
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal"  id="btnCerrar">Cerrar</button>

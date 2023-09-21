@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 
 @Repository
@@ -27,8 +28,38 @@ public interface IClasificacionBasesRepository extends JpaRepository<Clasificaci
 	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_CLASIFICACION_BASES_OA "
 			+ "WHERE FK_ID_BASE = :idBase and "
 			+ "VC_NOMBRE_CLASIFICACION= :nomClasificacion and "
-			+ "VC_ABREVIACION_CLASIFICACION= :abrevacion and "
-			+ "VC_CODIGO_CLASIFICACION= :codigoClasificacion", nativeQuery = true)
-	public int existeClasificacion(@Param("idBase") Integer idBase,@Param("nomClasificacion") String nomClasificacion,@Param("abrevacion") String abrevacion,
-			@Param("codigoClasificacion") String codigoClasificacion);
+			+ "VC_ABREVIACION_CLASIFICACION= :abrevacion", nativeQuery = true)
+	public int existeClasificacion(@Param("idBase") Integer idBase,@Param("nomClasificacion") String nomClasificacion,@Param("abrevacion") String abrevacion);
+
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CLASIFICACION_BASES_OA SET FK_ID_BASE= :idBase, "
+			+ "VC_NOMBRE_CLASIFICACION= :nomClasificacion, "
+			+ "VC_ABREVIACION_CLASIFICACION= :abrevacion, "
+			+ "VC_CODIGO_CLASIFICACION= :codigoClasificacion,"
+			+ "I_VIGENCIA_CLASIFICACION= :vigenciaClasificacion, "
+			+ "VC_MENSAJE_CLASIFICACION= :mensajeClasificacion "
+			+ "WHERE PK_ID_CLASIFICACION = :idClass", nativeQuery = true)
+	public int updateClasificacion(@Param("idClass") Integer idClass, @Param("idBase") Integer idBase,@Param("nomClasificacion")  String nomClasificacion, @Param("abrevacion") String abrevacion,
+			@Param("codigoClasificacion") String codigoClasificacion,@Param("vigenciaClasificacion") Integer vigenciaClasificacion, @Param("mensajeClasificacion") String mensajeClasificacion);
+
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CLASIFICACION_BASES_OA SET "
+			+ "I_ESTATUS_CLASIFICACION = 1 "
+			+ "WHERE PK_ID_CLASIFICACION = :idClass", nativeQuery = true)
+	public int activarClasificacion(@Param("idClass") Integer idClass);
+
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_CLASIFICACION_BASES_OA SET "
+			+ "I_ESTATUS_CLASIFICACION = 0 "
+			+ "WHERE PK_ID_CLASIFICACION = :idClass", nativeQuery = true)
+	public int bajaClasificacion(Integer idClass);
+
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_CLASIFICACION_BASES_OA "
+			+ "WHERE VC_CODIGO_CLASIFICACION= :codigoClasificacion", nativeQuery = true)
+	public int existeCodigo(@Param("codigoClasificacion") String codigoClasificacion);
+
+	
 }
