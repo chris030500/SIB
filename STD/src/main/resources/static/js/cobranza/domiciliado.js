@@ -17,7 +17,7 @@ var newUrlBase = urlPrincipal.replace("/cobranza", "");
  */
 
 /**
- * Pasos para obtener la cuenta CLABE del archivo
+ * Pasos para obtener la cuenta CLABE del archivo Layoyt Banorte
  */
 const inputArchivo = document.getElementById('idArchivo');
 var cuentasObjeto = {}; // Cambiamos el array por un objeto
@@ -312,6 +312,8 @@ var principal = document.getElementById("principalId");
 var catalogoBancos = document.getElementById("catalogoId");
 var vistaCarga = document.getElementById("cargaId");
 var valorSeleccionado;
+var vistaBanorte = document.getElementById("vistaBanorteId");
+var vistaBancomer = document.getElementById("vistaBancomerId");
 
 window.onload = function() {
 	$.ajax({
@@ -327,9 +329,15 @@ window.onload = function() {
 				catalogoBancos.add(opcion);
 			}
 			catalogoBancos.addEventListener("change", function() {
+				vistaCarga.style.display = "block";
 				valorSeleccionado = catalogoBancos.value;
-				if (valorSeleccionado != null | valorSeleccionado != undefined) {
-					vistaCarga.style.display = "block";
+				document.getElementById("nombreBancoId").textContent = catalogoBancos.options[valorSeleccionado].text;
+				if (valorSeleccionado == 1) {
+					vistaBanorte.style.display = "block";
+					vistaBancomer.style.display = "none";
+				} else {
+					vistaBanorte.style.display = "none";
+					vistaBancomer.style.display = "block";
 				}
 			})
 		},
@@ -397,6 +405,8 @@ var tbodyProceso = tablaProceso.querySelector("tbody");
 var paginadoBitacora;
 const resultadosPorPaginaBitacora = 5; // Número de resultados por página
 let paginaActualBitacora = 1; // Página actual
+const paginationContainer = document.getElementById("paginadoId");
+var sinDatos = document.getElementById("sinDatosId");
 
 // mostrar la tabla
 function mostrarBitacora() {
@@ -407,6 +417,11 @@ function mostrarBitacora() {
 		success: function(resp) {
 			paginadoBitacora = resp;
 			inicioPaginado();
+			if (paginadoBitacora.length == 0) {
+				sinDatos.style.display = "block";
+			} else {
+				sinDatos.style.display = "none";
+			}
 		},
 		error: function(error) {
 			// console.log(error.responseJSON.message);
@@ -440,7 +455,7 @@ function inicioPaginado() {
 		rows.appendChild(cantidadRegistroCell);
 
 		var totalMontoCell = document.createElement("td");
-		totalMontoCell.textContent = datosPaginados[i].i_total_monto;
+		totalMontoCell.textContent = parseFloat(datosPaginados[i].i_total_monto).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 		totalMontoCell.style.textAlign = "center";
 		rows.appendChild(totalMontoCell);
 
@@ -461,7 +476,6 @@ function inicioPaginado() {
 
 // Botones del Paginado
 function botonesPaginacionBitacora() {
-	const paginationContainer = document.getElementById("paginadoId");
 	paginationContainer.innerHTML = ""; // Limpiar los botones de paginación
 	const totalPages = Math.ceil(paginadoBitacora.length / resultadosPorPaginaBitacora);
 	for (let i = 1; i <= totalPages; i++) {
@@ -504,6 +518,127 @@ function obtenerPrefijo() {
 		dataType: "JSON",
 		success: function(resp) {
 			prefijoArchivo = resp.prefijoArchivo;
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
+}
+
+/**
+ * Fin
+ */
+
+
+/**
+ * Validar la carga del Layout de BBVA
+ */
+const archivoBancomer = document.getElementById('archivoBancomerId');
+const botonBancomer = document.getElementById('botonBancomerId');
+
+function validarArchivo() {
+	const archivo = archivoBancomer.files[0];
+	const nombreArchivo = archivo.name;
+	// Verificar si la extensión es .txt
+	if (nombreArchivo.endsWith('.txt')) {
+		const reader = new FileReader();
+		reader.onload = function(event) {
+			const contenido = event.target.result;
+			const lineas = contenido.split('\n');
+			if (lineas.length > 0) {
+				const primeraLinea = lineas[0].trim(); // Eliminar espacios en blanco al inicio y al final
+				const registros = primeraLinea.split(' ');
+				// Verificar encabezado				
+				if (registros.length === 32) {
+					let vacio = false;
+					if (lineas[1].trim() == '') {
+						vacio = true;
+					}
+					// Verificar que las líneas siguientes no estén vacías
+					if (!vacio) {
+						// --- Ultimo filtró de validación ---
+						botonBancomer.style.display = 'block';
+						obtenerDatosBancomer(lineas);
+					} else {
+						// El archivo viene vacío
+						swal("Archivo vacío", {
+							closeOnClickOutside: false,
+							icon: "warning",
+						});
+						archivoBancomer.value = '';
+						botonBancomer.style.display = 'none';
+					}
+				} else {
+					// El archivo tiene un encabezado invalido
+					swal("Encabezado invalido", {
+						closeOnClickOutside: false,
+						icon: "warning",
+					});
+					archivoBancomer.value = '';
+					botonBancomer.style.display = 'none';
+				}
+			}
+		};
+		reader.readAsText(archivo);
+	} else {
+		// El archivo seleccionado no es un archivo .txt
+		swal("Selecciona un archivo .txt", {
+			closeOnClickOutside: false,
+			icon: "warning",
+		});
+		archivoBancomer.value = '';
+		botonBancomer.style.display = 'none';
+	}
+}
+
+/**
+ * Fin
+ */
+
+/**
+ * Obtener los datos del Layout de BBVA
+ */
+const dtoList = [];
+
+function obtenerDatosBancomer(lineas) {
+	if (lineas.length > 1) {
+		const registrosBancomer = lineas.slice(1); // Obtener las líneas después de la primera
+		registrosBancomer.map(linea => {
+			const dto = {
+				fechaAplicacion: linea.substr(28, 8),
+				importe: linea.substr(13, 15),
+				numeroBanco: linea.substr(70, 3),
+				numeroCuenta: linea.substr(75, 20),
+				importeIVA: linea.substr(215, 15),
+				motivoDevolucion: linea.substr(277, 2),
+				referenciaNumerica: linea.substr(230, 7)
+			}
+			dtoList.push(dto);
+		});
+	}
+}
+/**
+ * Fin
+ */
+
+/**
+ * Mandar los datos de BBVA
+ */
+function mandarDatosBancomer() {
+	console.log(dtoList);
+	$.ajax({
+		url: newUrlBase + "datos_bancomer",
+		type: 'POST',
+		data: JSON.stringify(dtoList), // Convierte la lista en una cadena JSON
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: function(resp) {
+			console.log(resp);
+			if (resp[0].includes("No se encontró la cuenta CLABE")) {
+				console.log(true);
+			} else {
+				console.log(false);
+			}
 		},
 		error: function(error) {
 			console.log(error);

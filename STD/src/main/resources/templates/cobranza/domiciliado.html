@@ -41,18 +41,28 @@
 							<div id="cargaId" style="display: none;">
 								<div class="row" style="padding-top: 40px;">
 									<div class="col-sm-12">
-										<li><label>Cargar archivo</label></li>
+										<li><label>Cargar archivo (<span id="nombreBancoId"></span>) </label></li>
 									</div>
 								</div>
+							</div>
 
-								<div class="row" style="padding-top: 10px;">
-									<div class="col-sm-4">
-										<input type="file" id="idArchivo" accept=".txt">
-									</div>
-									<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
-										<button class="btn btn-primary" id="nuevoLayout">Generar
-											archivo</button>
-									</div>
+							<div class="row" id="vistaBanorteId" style="padding-top: 10px; display: none;">
+								<div class="col-sm-4">
+									<input type="file" id="idArchivo" accept=".txt">
+								</div>
+								<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
+									<button class="btn btn-primary" id="nuevoLayout">Generar
+										archivo</button>
+								</div>
+							</div>
+
+							<div class="row" id="vistaBancomerId" style="padding-top: 10px; display: none;">
+								<div class="col-sm-4">
+									<input type="file" id="archivoBancomerId" accept=".txt" onchange="validarArchivo()">
+								</div>
+								<div class="col-sm-6" id="botonBancomerId" style="display: none;">
+									<button class="btn btn-primary" id="layoutBancomer" onclick="mandarDatosBancomer()">Generar
+										archivo</button>
 								</div>
 							</div>
 
@@ -78,6 +88,12 @@
 										<tbody></tbody>
 									</table>
 									<div style="text-align: right;" id="paginadoId"></div>
+								</div>
+							</div>
+
+							<div class="row" id="sinDatosId" style="text-align: center;">
+								<div class="col-sm-12">
+									<h3>Sin registros</h3>
 								</div>
 							</div>
 
