@@ -556,6 +556,20 @@ function validarArchivo() {
 					}
 					// Verificar que las líneas siguientes no estén vacías
 					if (!vacio) {
+						// Verificar si hay líneas vacías con espacios
+						for (let i = 0; i < lineas.length; i++) {
+							const linea = lineas[i].trim(); // Eliminar espacios en blanco al principio y al final
+							if (linea.length === 0 || /^\s+$/.test(linea)) {
+								// El archivo contiene una línea vacía
+								swal("El archivo no puede contener líneas vacías", {
+									closeOnClickOutside: false,
+									icon: "warning",
+								});
+								archivoBancomer.value = '';
+								botonBancomer.style.display = 'none';
+								return;
+							}
+						}
 						// --- Ultimo filtró de validación ---
 						botonBancomer.style.display = 'block';
 						obtenerDatosBancomer(lineas);
@@ -624,6 +638,9 @@ function obtenerDatosBancomer(lineas) {
 /**
  * Mandar los datos de BBVA
  */
+
+var pagosDomiciliados;
+
 function mandarDatosBancomer() {
 	console.log(dtoList);
 	$.ajax({
@@ -633,17 +650,35 @@ function mandarDatosBancomer() {
 		contentType: 'application/json; charset=utf-8',
 		dataType: 'json',
 		success: function(resp) {
-			console.log(resp);
 			if (resp[0].includes("No se encontró la cuenta CLABE")) {
-				console.log(true);
+				swal(resp[0], {
+					closeOnClickOutside: false,
+					icon: "warning",
+				});
+				archivoBancomer.value = '';
+				botonBancomer.style.display = 'none';
 			} else {
-				console.log(false);
+				pagosDomiciliados = resp;
+				nuevoArchivoBancomer(pagosDomiciliados);
 			}
 		},
 		error: function(error) {
 			console.log(error);
 		}
 	});
+}
+
+/**
+ * Fin
+ */
+
+
+/**
+ * Generar el nuevo archivo para BBVA
+ */
+
+function nuevoArchivoBancomer(pagosDom) {
+	
 }
 
 /**

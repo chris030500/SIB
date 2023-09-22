@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.cobranza.banco.procesoBancomer;
+package ahorrosbienestar.sib.std.cobranza.banco.procesoBancomer.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class ProcesoBancomerRestController {
 				String referenciaSE = obtenerReferenciaServicioEmisor(cuentaClabeModel.getCliente_id() + cuentaClabeModel.getRfc_oficial());
 				
 				// Referencia Leyenda Emisor
-				String referenciaLE = "0" + cuentaClabeModel.getCredito_id() + formatoBanorte.get(3).getVc_valor();
+				String referenciaLE = obtenerReferenciaLeyendaEmisor("0" + cuentaClabeModel.getCredito_id() + formatoBanorte.get(3).getVc_valor());
 
 				lineas.add(formatoBanorte.get(0).getVc_valor() 
 						+ bancomer.getFechaAplicacion()
@@ -64,17 +64,17 @@ public class ProcesoBancomerRestController {
 						+ referenciaSE 
 						+ referenciaLE 
 						+ bancomer.getImporte()
-						// + cuentaClabeModel.getRfc_oficial() 
-						// + bancomer.getNumeroBanco()
-						// + formatoBanorte.get(2).getVc_valor() 
-						// + nuevoNC 
-						// + formatoBanorte.get(4).getVc_valor()
-						// + formatoBanorte.get(5).getVc_valor() 
-						// + nuevoIVA 
-						// + formatoBanorte.get(6).getVc_valor()
-						// + bancomer.getMotivoDevolucion() 
-						// + bancomer.getReferenciaNumerica()
-						// + formatoBanorte.get(7).getVc_valor()
+						+ cuentaClabeModel.getRfc_oficial() 
+						+ bancomer.getNumeroBanco()
+						+ formatoBanorte.get(2).getVc_valor() 
+						+ nuevoNC 
+						+ formatoBanorte.get(4).getVc_valor()
+						+ formatoBanorte.get(5).getVc_valor() 
+						+ nuevoIVA 
+						+ formatoBanorte.get(6).getVc_valor()
+						+ bancomer.getMotivoDevolucion() 
+						+ bancomer.getReferenciaNumerica()
+						+ formatoBanorte.get(7).getVc_valor()
 						);
 			});
 			return lineas;
@@ -83,6 +83,20 @@ public class ProcesoBancomerRestController {
 			lineas.add("No se encontró la cuenta CLABE: " + cuentaQueNoExiste);
 			return lineas;
 		}
+	}
+	
+	public String obtenerReferenciaLeyendaEmisor(String referenciaLE) {
+		
+        // Calcular cuántos espacios faltan para llegar a 40
+        int espaciosFaltantes = 40 - referenciaLE.length();
+
+        // Crear una cadena con los espacios faltantes
+        String espacios = " ".repeat(espaciosFaltantes);
+
+        // Concatenar los espacios a la variable original
+        String variableConEspacios = referenciaLE + espacios;
+		
+		return variableConEspacios;
 	}
 	
 	public String obtenerReferenciaServicioEmisor(String referenciaSE) {
