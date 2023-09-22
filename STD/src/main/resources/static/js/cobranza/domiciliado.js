@@ -520,7 +520,7 @@ function obtenerPrefijo() {
 			prefijoArchivo = resp.prefijoArchivo;
 		},
 		error: function(error) {
-			console.log(error);
+			// console.log(error);
 		}
 	});
 }
@@ -544,6 +544,8 @@ function validarArchivo() {
 		const reader = new FileReader();
 		reader.onload = function(event) {
 			const contenido = event.target.result;
+			contenidoEntrada = contenido.toString();
+			// console.log(contenidoEntrada);
 			const lineas = contenido.split('\n');
 			if (lineas.length > 0) {
 				const primeraLinea = lineas[0].trim(); // Eliminar espacios en blanco al inicio y al final
@@ -642,7 +644,7 @@ function obtenerDatosBancomer(lineas) {
 var pagosDomiciliados;
 
 function mandarDatosBancomer() {
-	console.log(dtoList);
+	// console.log(dtoList);
 	$.ajax({
 		url: newUrlBase + "datos_bancomer",
 		type: 'POST',
@@ -663,7 +665,7 @@ function mandarDatosBancomer() {
 			}
 		},
 		error: function(error) {
-			console.log(error);
+			// console.log(error);
 		}
 	});
 }
@@ -677,8 +679,49 @@ function mandarDatosBancomer() {
  * Generar el nuevo archivo para BBVA
  */
 
-function nuevoArchivoBancomer(pagosDom) {
-	
+function nuevoArchivoBancomer(registros) {
+	// Concatenar los registros con saltos de línea
+	const contenido = registros.join('\n');
+	// -- datos de salida -- //
+	contenidoSalida = contenido;
+	// -- total de registros por linea -- //
+	numeroRegistro = registros.slice(1).length;
+	// -- suma de los importes -- //
+	for (let i = 1; i < registros.length; i++) { // Comenzar desde la segunda línea
+		// Obtener la suma de los importes
+		const startIndex = 99;
+		const numberOfCharacters = 15;
+		const importe = registros[i].substr(startIndex, numberOfCharacters);
+		// Convertir a entero
+		const totalImporte = parseInt(importe, 10);
+		numeroMonto = numeroMonto + totalImporte;
+	}
+
+	// Crear un objeto Blob para el contenido del archivo
+	const blob = new Blob([contenido], { type: 'text/plain' });
+
+	// Crear un enlace para descargar el archivo
+	const enlaceDescarga = document.createElement('a');
+	enlaceDescarga.href = URL.createObjectURL(blob);
+	enlaceDescarga.download = prefijoArchivo + diaMesActual + '.pag';
+	enlaceDescarga.click();
+
+	swal({
+		title: '¿El archivo se generó de manera correcta?',
+		text: "En caso de que si, dar en Aceptar para actualizar la bitacora",
+		closeOnClickOutside: false,
+		icon: "warning",
+		buttons: ["Recargar", "Aceptar"],
+		confirmButtonColor: '#3498DB',
+	})
+		.then((save) => {
+			if (save) {
+				mandarValores();
+			} else {
+				window.location.reload();
+			}
+		});
+
 }
 
 /**
