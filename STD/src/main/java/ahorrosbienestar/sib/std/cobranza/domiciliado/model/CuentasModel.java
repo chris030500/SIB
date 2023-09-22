@@ -34,7 +34,7 @@ public class CuentasModel {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@Column(name = "FechaMinistrado")
+	@Column(name = "FECHA_MINISTRADO")
 	private LocalDate fechaMinistrado;
 
 	public int getPk_id_cuentas() {
