@@ -424,7 +424,7 @@ public class indexOfertasAutoController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 		
-			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
+			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
 				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
 					respuesta.add(mensaje);
 				}else {

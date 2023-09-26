@@ -122,6 +122,8 @@ public class FidelidadTareaConfiguracion {
 		String urlDirectorio = datos.getVc_ruta_proceso();
 		System.out.println("urlDirectorio: " + urlDirectorio);
 		System.out.println("archivo: " + archivo);
+		//e
+		lastExecutionSuccessful = false;
 		if (lastExecutionSuccessful) {
 			System.out.println("ejecutarFidelidad: Ejecución anterior fallida. Salida temprana.");
 			return;
@@ -468,7 +470,7 @@ public class FidelidadTareaConfiguracion {
 	//fixedDelay = 60000 
 	//@Scheduled(cron = "0 0 8,20 * * *")
 
-	@Scheduled(fixedDelay = 9000000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
+	@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
 	public void continuarEjecucion() {
 		System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
 		if (!lastExecutionSuccessful) {

@@ -74,4 +74,9 @@ public class ClasificacionBasesService {
 	public int existeCodigo(String codigoClasificacion) {
 		return iClasificacionBasesRepository.existeCodigo(codigoClasificacion);
 	}
+
+	public int existeCodigoMod(String codigoClasificacion, Integer idClass) {
+		return iClasificacionBasesRepository.existeCodigoMod(codigoClasificacion,idClass);
+	}
+
 }

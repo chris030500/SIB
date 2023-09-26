@@ -61,5 +61,9 @@ public interface IClasificacionBasesRepository extends JpaRepository<Clasificaci
 			+ "WHERE VC_CODIGO_CLASIFICACION= :codigoClasificacion", nativeQuery = true)
 	public int existeCodigo(@Param("codigoClasificacion") String codigoClasificacion);
 
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_CLASIFICACION_BASES_OA "
+			+ "WHERE VC_CODIGO_CLASIFICACION= :codigoClasificacion and PK_ID_CLASIFICACION <> :idClass", nativeQuery = true)
+	public int existeCodigoMod(String codigoClasificacion, Integer idClass);
+
 	
 }
