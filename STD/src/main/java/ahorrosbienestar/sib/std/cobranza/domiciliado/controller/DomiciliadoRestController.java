@@ -72,6 +72,7 @@ public class DomiciliadoRestController {
 		List<ClabeDTO> listaRes = new ArrayList<ClabeDTO>();
 		try {
 			listaClabeDTO.forEach(clabe -> {
+				logger.info(clabe.getClabe());
 				CuentasModel model = cuentasService.datosCuentaClabe(clabe.getClabe());
 				logger.info("se encontraron los datos de la cuenta CLABE");
 				ClabeDTO dto = new ClabeDTO();

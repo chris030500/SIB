@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.cobranza.banco.procesoBancomer.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +36,11 @@ public class ProcesoBancomerRestController {
 	
 	private static String cuentaQueNoExiste = "";
 
-	@RequestMapping(value = {
-			"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> obtenerDatosBancomer(@RequestBody List<ProcesoBancomerDTO> listaDatosBancomer) {
 		List<String> lineas = new ArrayList<String>();
 		List<FormatoBanorteModel> formatoBanorte = formatoBanorteService.listaDeDatos();
+
 		try {
 			listaDatosBancomer.forEach(bancomer -> {
 				// Numero de cuenta
@@ -77,12 +78,34 @@ public class ProcesoBancomerRestController {
 						+ formatoBanorte.get(7).getVc_valor()
 						);
 			});
+			
+			// Obteniendo el encabezado;
+			String encabezado = obtenerEncabezado(formatoBanorte);
+			
 			return lineas;
 		} catch (Exception e) {
 			// TODO: handle exception
 			lineas.add("No se encontró la cuenta CLABE: " + cuentaQueNoExiste);
 			return lineas;
 		}
+	}
+	
+	public String obtenerEncabezado(List<FormatoBanorteModel> formatoBanorte) {
+
+		// Fecha
+		LocalDate fechaProceso = LocalDate.now();
+		//
+		String crearEncabezado;
+
+		crearEncabezado = formatoBanorte.get(8).getVc_valor() 
+				+ formatoBanorte.get(9).getVc_valor()
+				+ formatoBanorte.get(10).getVc_valor() 
+				+ fechaProceso 
+				+ formatoBanorte.get(11).getVc_valor();
+		
+		logger.info(crearEncabezado);
+		
+		return crearEncabezado.replace("-", "");
 	}
 	
 	public String obtenerReferenciaLeyendaEmisor(String referenciaLE) {

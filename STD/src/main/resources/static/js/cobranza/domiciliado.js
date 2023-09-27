@@ -652,7 +652,8 @@ function mandarDatosBancomer() {
 		contentType: 'application/json; charset=utf-8',
 		dataType: 'json',
 		success: function(resp) {
-			if (resp[0].includes("No se encontró la cuenta CLABE")) {
+			console.log(resp);
+			/*if (resp[0].includes("No se encontró la cuenta CLABE")) {
 				swal(resp[0], {
 					closeOnClickOutside: false,
 					icon: "warning",
@@ -662,7 +663,7 @@ function mandarDatosBancomer() {
 			} else {
 				pagosDomiciliados = resp;
 				nuevoArchivoBancomer(pagosDomiciliados);
-			}
+			}*/
 		},
 		error: function(error) {
 			// console.log(error);
