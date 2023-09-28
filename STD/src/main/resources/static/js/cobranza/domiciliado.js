@@ -126,11 +126,12 @@ function datosCuentaClabe(clabes) {
 			// console.log(informacionClabes);
 		},
 		error: function(error) {
+			console.log(error);
 			spinner.style.display = "none";
 			principal.style.display = "block";
 			botonGenerar.style.display = "none";
 			inputArchivo.value = '';
-			swal(error, {
+			swal(error.responseJSON.error, {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
