@@ -12,7 +12,7 @@ public interface CuentasRepository extends JpaRepository<CuentasModel, Integer> 
 
 	@Query(value = "SELECT * FROM SIB.TBL_CUENTASTRANS_MF"
 			+ " WHERE Clabe = :clabe"
-			+ " ORDER BY FechaMinistrado ASC"
+			+ " ORDER BY FECHA_MINISTRADO ASC"
 			+ " LIMIT 1",  nativeQuery = true)
 	public CuentasModel datosCuentaClabe(@Param("clabe") String clabe);
 	

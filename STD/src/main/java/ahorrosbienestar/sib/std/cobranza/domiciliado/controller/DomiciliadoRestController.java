@@ -69,25 +69,43 @@ public class DomiciliadoRestController {
 
 	@RequestMapping(value = {"/recibir_clabe" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<ClabeDTO> datosCuentaClabe(@RequestBody List<ClabeDTO> listaClabeDTO) {
-		List<ClabeDTO> listaRes = new ArrayList<ClabeDTO>();
-		try {
-			listaClabeDTO.forEach(clabe -> {
-				CuentasModel model = cuentasService.datosCuentaClabe(clabe.getClabe());
-				logger.info("se encontraron los datos de la cuenta CLABE");
-				ClabeDTO dto = new ClabeDTO();
-				dto.setClienteId(model.getCliente_id());
-				dto.setClabe(model.getClabe());
-				dto.setCreditoId("0" + model.getCredito_id());
-				dto.setRfcOficial(model.getRfc_oficial());
-				listaRes.add(dto);
-			});
-			return listaRes;
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.info(e.getMessage());
-			return null;
-		}
+	    List<ClabeDTO> listaRes = new ArrayList<>();
+	    List<String> cuentasNoEncontradas = new ArrayList<>();
+
+	    try {
+	        listaClabeDTO.forEach(clabe -> {
+	            String cuenta = clabe.getClabe();
+	            CuentasModel model = cuentasService.datosCuentaClabe(cuenta);
+
+	            if (model != null) {
+	                ClabeDTO dto = new ClabeDTO();
+	                dto.setClienteId(model.getCliente_id());
+	                dto.setClabe(model.getClabe());
+	                dto.setCreditoId("0" + model.getCredito_id());
+	                dto.setRfcOficial(model.getRfc_oficial());
+	                listaRes.add(dto);
+	            } else {
+	                cuentasNoEncontradas.add(cuenta);
+	            }
+	        });
+
+	        // Log cuentas no encontradas
+	        for (String cuenta : cuentasNoEncontradas) {
+	            logger.info("No se encontró la cuenta CLABE: " + cuenta);
+	        }
+
+	        return listaRes;
+	    } catch (Exception e) {
+	        // Log cuentas no encontradas en caso de excepción
+	        for (String cuenta : cuentasNoEncontradas) {
+	            logger.info("No se encontró la cuenta CLABE: " + cuenta);
+	        }
+	        
+	        logger.error("Ocurrió un error al procesar las cuentas CLABE", e);
+	        return null;
+	    }
 	}
+
 
 	@RequestMapping(value = { "/lista_bancos" }, method = RequestMethod.GET)
 	public List<BancoModel> listaBancos() {
@@ -103,7 +121,8 @@ public class DomiciliadoRestController {
 		}
 	}
 
-	@RequestMapping(value = {"/valores_layout" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/valores_layout" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public HttpStatus valoresLayout(@RequestBody ProcesoDTO dto) {
 		try {
 			// usuario
