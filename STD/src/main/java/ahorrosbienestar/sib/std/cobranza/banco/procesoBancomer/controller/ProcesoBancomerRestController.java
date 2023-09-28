@@ -33,10 +33,11 @@ public class ProcesoBancomerRestController {
 
 	// Logger
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
-	
+
 	private static String cuentaQueNoExiste = "";
 
-	@RequestMapping(value = {"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> obtenerDatosBancomer(@RequestBody List<ProcesoBancomerDTO> listaDatosBancomer) {
 		List<String> lineas = new ArrayList<String>();
 		List<FormatoBanorteModel> formatoBanorte = formatoBanorteService.listaDeDatos();
@@ -46,7 +47,7 @@ public class ProcesoBancomerRestController {
 				// Numero de cuenta
 				String numeroCuenta = bancomer.getNumeroCuenta();
 				String nuevoNC = numeroCuenta.substring(2, numeroCuenta.length());
-				cuentaQueNoExiste = numeroCuenta; 
+				cuentaQueNoExiste = numeroCuenta;
 				// Importe IVA
 				String importeIVA = bancomer.getImporteIVA();
 				String nuevoIVA = importeIVA.substring(7, importeIVA.length());
@@ -54,34 +55,36 @@ public class ProcesoBancomerRestController {
 				CuentasModel cuentaClabeModel = cuentasService.datosCuentaClabe(nuevoNC);
 				logger.info("Se encontró la cuenta CLABE");
 				// Referencia Servicio Emisor
-				String referenciaSE = obtenerReferenciaServicioEmisor(cuentaClabeModel.getCliente_id() + cuentaClabeModel.getRfc_oficial());
-				
-				// Referencia Leyenda Emisor
-				String referenciaLE = obtenerReferenciaLeyendaEmisor("0" + cuentaClabeModel.getCredito_id() + formatoBanorte.get(3).getVc_valor());
+				String referenciaSE = obtenerReferenciaServicioEmisor(
+						cuentaClabeModel.getCliente_id() + cuentaClabeModel.getRfc_oficial());
 
-				lineas.add(formatoBanorte.get(0).getVc_valor() 
-						+ bancomer.getFechaAplicacion()
-						+ formatoBanorte.get(1).getVc_valor() 
-						+ referenciaSE 
-						+ referenciaLE 
-						+ bancomer.getImporte()
-						+ cuentaClabeModel.getRfc_oficial() 
-						+ bancomer.getNumeroBanco()
-						+ formatoBanorte.get(2).getVc_valor() 
-						+ nuevoNC 
-						+ formatoBanorte.get(4).getVc_valor()
-						+ formatoBanorte.get(5).getVc_valor() 
-						+ nuevoIVA 
-						+ formatoBanorte.get(6).getVc_valor()
-						+ bancomer.getMotivoDevolucion() 
-						+ bancomer.getReferenciaNumerica()
-						+ formatoBanorte.get(7).getVc_valor()
-						);
+				// Referencia Leyenda Emisor
+				String referenciaLE = obtenerReferenciaLeyendaEmisor(
+						"0" + cuentaClabeModel.getCredito_id() + formatoBanorte.get(3).getVc_valor());
+
+				lineas.add(formatoBanorte.get(0).getVc_valor() + bancomer.getFechaAplicacion()
+						+ formatoBanorte.get(1).getVc_valor() + referenciaSE + referenciaLE + bancomer.getImporte()
+						+ cuentaClabeModel.getRfc_oficial() + bancomer.getNumeroBanco()
+						+ formatoBanorte.get(2).getVc_valor() + nuevoNC + formatoBanorte.get(4).getVc_valor()
+						+ formatoBanorte.get(5).getVc_valor() + nuevoIVA + formatoBanorte.get(6).getVc_valor()
+						+ bancomer.getMotivoDevolucion() + bancomer.getReferenciaNumerica()
+						+ formatoBanorte.get(7).getVc_valor());
 			});
-			
+
 			// Obteniendo el encabezado;
-			String encabezado = obtenerEncabezado(formatoBanorte);
-			
+			lineas.forEach(cuenta -> {
+				// Verifica que la longitud de la cadena sea suficiente
+				if (cuenta.length() >= 116) {
+					// Obtiene los caracteres desde la posición 100 a la 115 (índices 99 a 114)
+					String subString = cuenta.substring(99, 115);
+
+					// Imprime la subcadena obtenida
+					System.out.println("Caracteres desde la posición 100 a la 115: " + subString);
+				}
+			});
+
+			String encabezado = obtenerEncabezado(formatoBanorte, String.valueOf(lineas.size()));
+
 			return lineas;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -89,59 +92,69 @@ public class ProcesoBancomerRestController {
 			return lineas;
 		}
 	}
-	
-	public String obtenerEncabezado(List<FormatoBanorteModel> formatoBanorte) {
+
+	public String obtenerEncabezado(List<FormatoBanorteModel> formatoBanorte, String totalR) {
+
+		int desiredLength = 6; // Longitud deseada
+
+		// Calcula la cantidad de ceros que necesitas agregar
+		int zerosToAdd = Math.max(0, desiredLength - totalR.length());
+
+		// Agrega los ceros necesarios a la izquierda
+		StringBuilder totalRegistros = new StringBuilder();
+		for (int i = 0; i < zerosToAdd; i++) {
+			totalRegistros.append('0');
+		}
+		totalRegistros.append(totalR);
 
 		// Fecha
 		LocalDate fechaProceso = LocalDate.now();
 		//
 		String crearEncabezado;
 
-		crearEncabezado = formatoBanorte.get(8).getVc_valor() 
-				+ formatoBanorte.get(9).getVc_valor()
-				+ formatoBanorte.get(10).getVc_valor() 
-				+ fechaProceso 
-				+ formatoBanorte.get(11).getVc_valor();
-		
+		crearEncabezado = formatoBanorte.get(8).getVc_valor() + formatoBanorte.get(9).getVc_valor()
+				+ formatoBanorte.get(10).getVc_valor() + fechaProceso + formatoBanorte.get(11).getVc_valor()
+				+ totalRegistros;
+
 		logger.info(crearEncabezado);
-		
+
 		return crearEncabezado.replace("-", "");
 	}
-	
+
 	public String obtenerReferenciaLeyendaEmisor(String referenciaLE) {
-		
-        // Calcular cuántos espacios faltan para llegar a 40
-        int espaciosFaltantes = 40 - referenciaLE.length();
 
-        // Crear una cadena con los espacios faltantes
-        String espacios = " ".repeat(espaciosFaltantes);
+		// Calcular cuántos espacios faltan para llegar a 40
+		int espaciosFaltantes = 40 - referenciaLE.length();
 
-        // Concatenar los espacios a la variable original
-        String variableConEspacios = referenciaLE + espacios;
-		
+		// Crear una cadena con los espacios faltantes
+		String espacios = " ".repeat(espaciosFaltantes);
+
+		// Concatenar los espacios a la variable original
+		String variableConEspacios = referenciaLE + espacios;
+
 		return variableConEspacios;
 	}
-	
+
 	public String obtenerReferenciaServicioEmisor(String referenciaSE) {
-		
-        // Calcular cuántos ceros agregar
-        int cerosFaltantes = 19 - referenciaSE.length();
-        
-        // Rellenar con ceros hasta 6 caracteres
-        StringBuilder nuevoReferenciaSE = new StringBuilder(referenciaSE);
-        for (int i = 0; i < cerosFaltantes; i++) {
-        	nuevoReferenciaSE.insert(0, '0');
-        }
-        
-        // Calcular cuántos espacios faltan para llegar a 40
-        int espaciosFaltantes = 40 - nuevoReferenciaSE.length();
 
-        // Crear una cadena con los espacios faltantes
-        String espacios = " ".repeat(espaciosFaltantes);
+		// Calcular cuántos ceros agregar
+		int cerosFaltantes = 19 - referenciaSE.length();
 
-        // Concatenar los espacios a la variable original
-        String variableConEspacios = nuevoReferenciaSE + espacios;
-		
+		// Rellenar con ceros hasta 6 caracteres
+		StringBuilder nuevoReferenciaSE = new StringBuilder(referenciaSE);
+		for (int i = 0; i < cerosFaltantes; i++) {
+			nuevoReferenciaSE.insert(0, '0');
+		}
+
+		// Calcular cuántos espacios faltan para llegar a 40
+		int espaciosFaltantes = 40 - nuevoReferenciaSE.length();
+
+		// Crear una cadena con los espacios faltantes
+		String espacios = " ".repeat(espaciosFaltantes);
+
+		// Concatenar los espacios a la variable original
+		String variableConEspacios = nuevoReferenciaSE + espacios;
+
 		return variableConEspacios;
 	}
 
