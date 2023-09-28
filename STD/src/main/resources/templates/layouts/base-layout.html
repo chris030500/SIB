@@ -290,6 +290,23 @@
 					</ul>
 				</li>
 				<!-- Fin Prevencion PLD -->
+
+				<!-- Convenios -->
+				<li style="display:none;" class="nav-item" th:id="8">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-convenios"
+						data-bs-toggle="collapse">
+						<i class="bi bi-bank"></i><span>Cobranza</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-convenios" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O21" class="nav-item" style="display:none;">
+							<a th:href="@{/cobranza/domiciliado}">
+								<i class="bi bi-cash"></i><span>Cobro Domiciliado</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Convenios -->
 			</ul>
 
 			<!-- /.sidebar -->

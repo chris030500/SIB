@@ -189,7 +189,7 @@
 										<div class="col-md-4">
 											<label class="col-form-label"> Fecha de Recepción:</label>
 											<input class="form-control" type="date" id="idRecepcion"
-												placeholder="Fecha de Recepción" max="hoy" for="fechaActual">
+												placeholder="Fecha de Recepción" max="hoy" for="fechaActual" onchange="calcularVencimiento(1)">
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Asunto:</label>
@@ -251,7 +251,7 @@
 										<div class="col-md-4">
 											<label class="col-form-label"> Fecha de Vencimiento:</label>
 											<input class="form-control" type="date" id="idVencimiento"
-												placeholder="Fecha de Vencimiento" for="vencimientoFolio" min="hoy"><!--onchange="calcularVencimiento(1)"-->
+												placeholder="Fecha de Vencimiento" for="vencimientoFolio" min="hoy" onchange="calcularVencimiento(1)"><!--onchange="calcularVencimiento(1)"-->
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Estatus del Oficio:</label>
