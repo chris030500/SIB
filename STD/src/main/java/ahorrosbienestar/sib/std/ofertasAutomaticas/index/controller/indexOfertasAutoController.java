@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
@@ -74,6 +75,9 @@ public class indexOfertasAutoController {
 	@Autowired
 	private BasesService baseService;
 	
+	@Autowired
+	private EnvioCorreoService envioCorreoService;
+	
 	
 	List<Usuario> usuario = null;
 
@@ -108,6 +112,9 @@ public class indexOfertasAutoController {
 				mensajeAuto = false;
 			}*/
 			//model.addAttribute("habilitarMensajeCampana", mensajeAuto);
+			
+			envioCorreoService.enviarCorreo("jtrejo@ahorrosbienestar.com", "observacion", "ya esta configurado el correo");
+			
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
