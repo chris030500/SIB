@@ -219,13 +219,13 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			const applyPositionBasedChangesFromSecondLine = (lines, posicionAddCredito, posicionRemoveCredito, posicionAddRfc, posicionRemoveRfc) => {
 				// Realizar cambios en líneas específicas
 				for (let i = 1; i < lines.length; i++) { // Comenzar desde la segunda línea
-					if (informacionClabes[i - 1] != undefined) {
+					if (informacionClabes.datos[i - 1] != undefined) {
 						// Agregar credito
-						lines[i] = lines[i].substring(0, posicionAddCredito) + informacionClabes[i - 1].creditoId + lines[i].substring(posicionAddCredito);
+						lines[i] = lines[i].substring(0, posicionAddCredito) + informacionClabes.datos[i - 1].creditoId + lines[i].substring(posicionAddCredito);
 						// Eliminar espacio credito
 						lines[i] = lines[i].substring(0, posicionRemoveCredito) + lines[i].substring(posicionRemoveCredito + 12);
 						// Agregar rfc
-						lines[i] = lines[i].substring(0, posicionAddRfc) + informacionClabes[i - 1].rfcOficial + lines[i].substring(posicionAddRfc);
+						lines[i] = lines[i].substring(0, posicionAddRfc) + informacionClabes.datos[i - 1].rfcOficial + lines[i].substring(posicionAddRfc);
 						// Eliminar espacio rfc
 						lines[i] = lines[i].substring(0, posicionRemoveRfc) + lines[i].substring(posicionRemoveRfc + 13);
 
