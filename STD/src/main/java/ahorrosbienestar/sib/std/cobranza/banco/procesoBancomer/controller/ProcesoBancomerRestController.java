@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.internal.inject.ParamConverters.TypeValueOf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 import ahorrosbienestar.sib.std.autorizacion.controller.AutorizacionRestController;
 import ahorrosbienestar.sib.std.cobranza.banco.procesoBancomer.dto.ProcesoBancomerDTO;
@@ -35,6 +38,8 @@ public class ProcesoBancomerRestController {
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
 
 	private static String cuentaQueNoExiste = "";
+
+	private int sumaRegistros = 0;
 
 	@RequestMapping(value = {
 			"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -76,15 +81,15 @@ public class ProcesoBancomerRestController {
 				// Verifica que la longitud de la cadena sea suficiente
 				if (cuenta.length() >= 116) {
 					// Obtiene los caracteres desde la posición 100 a la 115 (índices 99 a 114)
-					String subString = cuenta.substring(99, 115);
-
-					// Imprime la subcadena obtenida
-					System.out.println("Caracteres desde la posición 100 a la 115: " + subString);
+					String subString = cuenta.substring(99, 114);
+					sumaRegistros = sumaRegistros + Integer.parseInt(subString);
 				}
 			});
 
-			String encabezado = obtenerEncabezado(formatoBanorte, String.valueOf(lineas.size()));
-
+			// Se recupera el encabezado
+			String encabezado = obtenerEncabezado(formatoBanorte, String.valueOf(lineas.size()), sumaRegistros);
+	        lineas.add(0, encabezado);
+			System.out.println(lineas);
 			return lineas;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -93,32 +98,61 @@ public class ProcesoBancomerRestController {
 		}
 	}
 
-	public String obtenerEncabezado(List<FormatoBanorteModel> formatoBanorte, String totalR) {
-
-		int desiredLength = 6; // Longitud deseada
+	public String obtenerEncabezado(List<FormatoBanorteModel> formatoBanorte, String numRegistros, int importeRegistros) {
+		// Importe registros
+		StringBuilder importeR = encabezadoImporteRegistros(String.valueOf(importeRegistros));
+		// Total registros
+		StringBuilder totalR = encabezadoTotalRegistros(numRegistros);
+		// Fecha
+		LocalDate fechaProceso = LocalDate.now();
+		
+		// Encabezado
+		String crearEncabezado = formatoBanorte.get(8).getVc_valor() 
+				+ formatoBanorte.get(9).getVc_valor()
+				+ formatoBanorte.get(10).getVc_valor() 
+				+ fechaProceso.toString().replace("-", "") 
+				+ formatoBanorte.get(11).getVc_valor() 
+				+ totalR
+				+ importeR
+				+ totalR
+				+ importeR
+				+ formatoBanorte.get(12).getVc_valor();
+		
+        int espaciosFaltantes = 117;
+        // Crear una cadena de espacios en blanco
+        String espacio = " ".repeat(espaciosFaltantes);
+        // Concatenar los espacios en blanco a la cadena original
+        String encabezado = crearEncabezado + espacio;
+		logger.info(encabezado);
+		return encabezado;
+	}
+	
+	public StringBuilder encabezadoImporteRegistros(String importe) {
+		int desiredLength = 15; // Longitud deseada
 
 		// Calcula la cantidad de ceros que necesitas agregar
-		int zerosToAdd = Math.max(0, desiredLength - totalR.length());
+		int zerosToAdd = Math.max(0, desiredLength - importe.length());
 
 		// Agrega los ceros necesarios a la izquierda
 		StringBuilder totalRegistros = new StringBuilder();
 		for (int i = 0; i < zerosToAdd; i++) {
 			totalRegistros.append('0');
 		}
-		totalRegistros.append(totalR);
+		return totalRegistros.append(importe);
+	}
 
-		// Fecha
-		LocalDate fechaProceso = LocalDate.now();
-		//
-		String crearEncabezado;
+	public StringBuilder encabezadoTotalRegistros(String size) {
+		int desiredLength = 6; // Longitud deseada
 
-		crearEncabezado = formatoBanorte.get(8).getVc_valor() + formatoBanorte.get(9).getVc_valor()
-				+ formatoBanorte.get(10).getVc_valor() + fechaProceso + formatoBanorte.get(11).getVc_valor()
-				+ totalRegistros;
+		// Calcula la cantidad de ceros que necesitas agregar
+		int zerosToAdd = Math.max(0, desiredLength - size.length());
 
-		logger.info(crearEncabezado);
-
-		return crearEncabezado.replace("-", "");
+		// Agrega los ceros necesarios a la izquierda
+		StringBuilder totalRegistros = new StringBuilder();
+		for (int i = 0; i < zerosToAdd; i++) {
+			totalRegistros.append('0');
+		}
+		return totalRegistros.append(size);
 	}
 
 	public String obtenerReferenciaLeyendaEmisor(String referenciaLE) {
