@@ -85,6 +85,23 @@ function iniciaTblParametros(){
  	
 }
 
+function ejecutarProceso(idBaseEjecutar){
+	
+	Swal.fire({
+		title: "¿Esta seguro de ejecutar el proceso manual?",
+		showCancelButton: true,
+		confirmButtonText: "Acepto",
+		cancelButtonText: "Cancelar",
+	}).then(resultado => {
+			if (resultado.value) {
+					url= "";
+					url = "ejecutarProceso?idBase="+idBaseEjecutar;
+					peticionPost(3,getAbsolutePath()+url);
+			}
+	});
+
+}
+
 var obtClasificacion = "obtClasificacion";
 function iniciaTblClasificacion(){
 	 url = getAbsolutePath() + obtClasificacion;
@@ -352,6 +369,8 @@ function peticionPost(metodo,metodoUrl){
 				}else if(metodo == 2){
 					iniciaTblClasificacion();
 					limpiarDatosClasificacion();
+				}else if(metodo == 3){
+					console.log("--");
 				}
 				setTimeout($.unblockUI, 100);
 			});

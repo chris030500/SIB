@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
@@ -78,6 +79,9 @@ public class indexOfertasAutoController {
 	@Autowired
 	private EnvioCorreoService envioCorreoService;
 	
+	@Autowired
+	private FidelidadTareaConfiguracion fidelidadTareaConfiguracion;
+	
 	
 	List<Usuario> usuario = null;
 
@@ -113,7 +117,7 @@ public class indexOfertasAutoController {
 			}*/
 			//model.addAttribute("habilitarMensajeCampana", mensajeAuto);
 			
-			envioCorreoService.enviarCorreo("jtrejo@ahorrosbienestar.com", "observacion", "ya esta configurado el correo");
+			//envioCorreoService.enviarCorreo("jtrejo@ahorrosbienestar.com", "observacion", "ya esta configurado el correo");
 			
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
@@ -304,6 +308,7 @@ public class indexOfertasAutoController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
+				//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
 				respuesta.add(mensaje);
 			}else {
 				respuesta.add("No fue posible actualizar. Intente mas tarde.");
@@ -433,7 +438,9 @@ public class indexOfertasAutoController {
 		
 			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
 				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
+					fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
 					respuesta.add(mensaje);
+					
 				}else {
 					respuesta.add("No fue posible actualizar, intente mas tarde.");
 				}
@@ -498,6 +505,34 @@ public class indexOfertasAutoController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
+	
+	/***
+	 * 
+	 * @return
+	 */
+	@PostMapping("/ejecutarProceso")
+	public ResponseEntity<?> ejecutarProceso(
+			@RequestParam(name = "idBase") Integer idBase
+			){
+		logger.info("/ejecutarProceso");
+		String mensaje ="El proceso ha terminado.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			fidelidadTareaConfiguracion.ejecutarFidelidad();			
+			
+			
+			/*if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("Ocurrio un error.");
+			}*/
+			return ResponseEntity.ok(respuesta.add(mensaje));
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
 	public int validarAcceso() {
 		
 		

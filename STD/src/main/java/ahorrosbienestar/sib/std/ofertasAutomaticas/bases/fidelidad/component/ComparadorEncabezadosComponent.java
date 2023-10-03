@@ -56,7 +56,7 @@ public class ComparadorEncabezadosComponent {
 			for (int i = 0; i < expectedHeaders.length; i++) {
 				Cell cell = headerRow.getCell(i);
 				if (cell == null || !cell.getStringCellValue().equals(expectedHeaders[i])) {
-					incorrectHeaders.add(expectedHeaders[i]);
+					incorrectHeaders.add(cell.getStringCellValue());
 				}
 			}
 		} // El recurso FileInputStream se cerrará automáticamente aquí

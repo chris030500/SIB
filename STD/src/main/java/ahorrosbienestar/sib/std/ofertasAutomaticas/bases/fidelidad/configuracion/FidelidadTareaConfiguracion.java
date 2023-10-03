@@ -35,12 +35,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ArchivoValidadorComponent;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ComparadorEncabezadosComponent;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service.FidelidadService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
-
+import java.text.DecimalFormat;
 /**
  * @author osvaldo.escamilla
  *
@@ -69,6 +70,9 @@ public class FidelidadTareaConfiguracion {
 
 	@Autowired
 	private FidelidadService fidelidadService;
+	
+	@Autowired
+	private EnvioCorreoService envioCorreoService;
 
 	private static final Logger logger = Logger.getLogger(FidelidadTareaConfiguracion.class);
 
@@ -79,6 +83,8 @@ public class FidelidadTareaConfiguracion {
 	private boolean isRunning = false; // Variable de bloqueo
 	private boolean lastExecutionSuccessful = false;
 	private int lastSuccessfulMonth = -1;
+	private String titulo = ""; 
+	private String errores = "";
 
 	@PostConstruct
 	public void init() {
@@ -159,23 +165,32 @@ public class FidelidadTareaConfiguracion {
 
 					} else {
 						System.out.println("Los siguientes encabezados no coinciden:");
+						errores = "";
 						for (String incorrectHeader : incorrectHeaders) {
+							errores = errores+"-"+incorrectHeader+"<br>";
 							System.out.println("- " + incorrectHeader);
 						}
+						titulo = "ERROR ENCABEZADO";
+						envioCorreoService.prepararCorreo(titulo,errores);
 						lastExecutionSuccessful = false;
 						//Enviamos el metodo para borrar el archivo excel
-						eliminarArchivo(urlDirectorio + "/" + archivo);
+						//eliminarArchivo(urlDirectorio + "/" + archivo);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 					lastExecutionSuccessful = false;
 				}
 			} else {
+				//vc_nombre_propiedad tabla TBL_MNS_CORREO
+				titulo = "NO EXISTE ARCHIVO"; 
+				envioCorreoService.prepararCorreo(titulo,errores);
 				System.out.println("Archivo no encontrado.");
 				lastExecutionSuccessful = false;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			titulo = "NO EXISTE ARCHIVO"; 
+			
+			envioCorreoService.prepararCorreo(titulo,errores);
 			lastExecutionSuccessful = false;
 		} finally {
 			isRunning = false; // Desbloquear la ejecución
@@ -184,267 +199,288 @@ public class FidelidadTareaConfiguracion {
 
 	@Transactional
 	public void procesarArchivoExcel(String filePath) throws IOException, ParseException {
+		String rowNull ="";	
+		
+		try {
+			System.out.println("procesarArchivoExcel");
+			String nombreHoja = configService.obtenerConfiguracion(70).getVc_valor_propiedad();
+			System.out.println("nombreHoja: " + nombreHoja);
+			FileInputStream inputStream = new FileInputStream(filePath);
+			Workbook workbook = new XSSFWorkbook(inputStream);
+			Sheet sheet = workbook.getSheet(nombreHoja); // Cambiar al nombre correcto de la hoja
 
-		System.out.println("procesarArchivoExcel");
-		String nombreHoja = configService.obtenerConfiguracion(70).getVc_valor_propiedad();
-		System.out.println("nombreHoja: " + nombreHoja);
-		FileInputStream inputStream = new FileInputStream(filePath);
-		Workbook workbook = new XSSFWorkbook(inputStream);
-		Sheet sheet = workbook.getSheet(nombreHoja); // Cambiar al nombre correcto de la hoja
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Cambia el formato según lo que se encuentre
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Cambia el formato según lo que se encuentre
 																			// en la celda
-		List<String> errores = new ArrayList<>();
-		int filaInicial = 1;
-		// for (Row row : sheet) {
-		for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
-			Row row = sheet.getRow(i);
-			if (row == null || row.getCell(0) == null) {
-				break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
-			}
-			System.out.println("for de row: " + (i + 1));
-			// StringBuilder error = new StringBuilder("Registro " + (i + 1) + ": ");
+			List<String> errores = new ArrayList<>();
+			int filaInicial = 1;
+			// for (Row row : sheet) {
+			for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				if (row == null || row.getCell(0) == null) {
+					titulo = "ERROR CONTENIDO";
+					envioCorreoService.prepararCorreo(titulo,"Tiene vaores nulos la Fila " + (i + 1) + ".Todos los datos son requeridos");
+					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
+				}
+				System.out.println("for de row: " + (i + 1));
+				rowNull = "El renglon: " + (i + 1)+" contiene datos nulos, todos los datos son obligatorios.";
+				// StringBuilder error = new StringBuilder("Registro " + (i + 1) + ": ");
 
-			try {
-				double clienteIdCellValue = row.getCell(0).getNumericCellValue();
-				int clienteId = (int) clienteIdCellValue; // Convertir a int
-				System.out.println("clienteId: " + clienteId);
-			} catch (IllegalStateException e) {
-				System.out.println("Error en clienteId: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
-				continue; // Ir a la siguiente fila
-			}
-			try {
-				String nombreCliente = row.getCell(1).getStringCellValue();
-				System.out.println("nombreCliente: " + nombreCliente);
-			} catch (IllegalStateException e) {
-				System.out.println("Error en nombreCliente: El valor no es una cadena de texto.");
-				errores.add("Fila " + (i + 1) + " El campo Nombre Cliente no es una cadena de texto");
-				continue; // Ir a la siguiente fila
-			}
-
-			try {
-				String region = row.getCell(2).getStringCellValue();
-				System.out.println("region: " + region);
-			} catch (IllegalStateException e) {
-				System.out.println("Error en region: El valor no es una cadena de texto.");
-				errores.add("Fila " + (i + 1) + " El campo Region no es una cadena de texto");
-				continue; // Ir a la siguiente fila
-			}
-
-			try {
-				String nombreSucursal = row.getCell(3).getStringCellValue();
-				System.out.println("nombreSucursal: " + nombreSucursal);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en nombreSucursal: El valor no es una cadena de texto.");
-				errores.add("Fila " + (i + 1) + " El campo Nombre Sucursal no es una cadena de texto");
-				continue; // Ir a la siguiente fila
-			}
-
-			try {
-				Date fechaNacimiento = row.getCell(4).getDateCellValue();
-				System.out.println("fechaNacimiento: " + dateFormat.format(fechaNacimiento));
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en fechaNacimiento: El valor no es una fecha valida.");
-				errores.add("Fila " + (i + 1) + " El campo Fecha de Nacimiento no es una fecha valida ");
-				continue;
-			}
-
-			try {
-				double edadCellValue = row.getCell(5).getNumericCellValue();
-				int edad = (int) edadCellValue;
-				System.out.println("edad: " + edad);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en edad: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Edad no es numérico");
-				continue;
-			}
-
-			try {
-				double creditoIdCellValue = row.getCell(6).getNumericCellValue();
-				int creditoId = (int) creditoIdCellValue;
-				System.out.println("creditoId: " + creditoId);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en creditoId: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Credito Id no es numérico");
-				continue;
-			}
-
-			try {
-				String nombreProducto = row.getCell(7).getStringCellValue();
-				System.out.println("nombreProducto: " + nombreProducto);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en nombreProducto: El valor no es una cadena de texto.");
-				errores.add("Fila " + (i + 1) + " El campo Nombre Producto no es una cadena de texto");
-				continue;
-			}
-
-			try {
-				double montoOriginal = row.getCell(8).getNumericCellValue();
-				System.out.println("montoOriginal: " + montoOriginal);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en montoOriginal: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Monto Original no es numérico");
-				continue;
-			}
-
-			try {
-				double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
-				int maxDiasMora = (int) maxDiasMoraCellValue;
-				System.out.println("maxDiasMora: " + maxDiasMora);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en maxDiasMora: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numérico");
-				continue;
-			}
-
-			try {
-				double telCelularCellValue = row.getCell(10).getNumericCellValue();
-				int telCelular = (int) telCelularCellValue;
-				System.out.println("telCelular: " + telCelular);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en telCelular: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numérico");
-				continue;
-			}
-
-			try {
-				double telRecadosCellValue = row.getCell(11).getNumericCellValue();
-				int telRecados = (int) telRecadosCellValue;
-				System.out.println("telRecados: " + telRecados);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en telRecados: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numérico");
-				continue;
-			}
-
-			try {
-				double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
-				int telEmpleado = (int) telEmpleadoCellValue;
-				System.out.println("telEmpleado: " + telEmpleado);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en telEmpleado: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numérico");
-				continue;
-			}
-
-			try {
-				double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
-				int telReferencia1 = (int) telReferencia1CellValue;
-				System.out.println("telReferencia1: " + telReferencia1);
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en telReferencia1: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numérico");
-				continue;
-			}
-
-			try {
-				double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
-				int telReferencia2 = (int) telReferencia2CellValue;
-				System.out.println("telReferencia2: " + telReferencia2);
-
-			} catch (IllegalStateException e) {
-				// TODO: handle exception
-				System.out.println("Error en telReferencia2: El valor no es numérico.");
-				errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
-				continue;
-			}
-
-			// Luego, puedes llamar a un método para insertar los datos en la base de datos
-			// fidelidadService.insertarEnBD(clienteId, nombreCliente, region,
-			// nombreSucursal, fechaNacimiento, edad, creditoId, nombreProducto,
-			// montoOriginal, maxDiasMora, telCelular, telRecados, telEmpleado,
-			// telReferencia1, telReferencia2);
-		}
-
-		System.out.println("lista errores: " + errores.isEmpty());
-		if (!errores.isEmpty()) {
-			// Mostrar o manejar los errores encontrados antes de insertar en BD
-			System.out.println("HAY ERRORES: ");
-			for (String error : errores) {
-				System.out.println(error);
-			}
-
-		} else {
-			// Llamar al método para insertar en BD solo si no hay errores
-			System.out.println("No hay errores");
-			try {
-				for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
-					Row row = sheet.getRow(i);
-					if (row == null || row.getCell(0) == null) {
-						break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
-					}
+				try {
 					double clienteIdCellValue = row.getCell(0).getNumericCellValue();
 					int clienteId = (int) clienteIdCellValue; // Convertir a int
-
+					System.out.println("clienteId: " + clienteId);
+				} catch (IllegalStateException e) {
+					System.out.println("Error en clienteId: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
+					continue; // Ir a la siguiente fila
+				}
+				try {
 					String nombreCliente = row.getCell(1).getStringCellValue();
+					System.out.println("nombreCliente: " + nombreCliente);
+				} catch (IllegalStateException e) {
+					System.out.println("Error en nombreCliente: El valor no es una cadena de texto.");
+					errores.add("Fila " + (i + 1) + " El campo Nombre Cliente no es una cadena de texto");
+					continue; // Ir a la siguiente fila
+				}
 
+				try {
 					String region = row.getCell(2).getStringCellValue();
+					System.out.println("region: " + region);
+				} catch (IllegalStateException e) {
+					System.out.println("Error en region: El valor no es una cadena de texto.");
+					errores.add("Fila " + (i + 1) + " El campo Region no es una cadena de texto");
+					continue; // Ir a la siguiente fila
+				}
 
+				try {
 					String nombreSucursal = row.getCell(3).getStringCellValue();
+					System.out.println("nombreSucursal: " + nombreSucursal);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en nombreSucursal: El valor no es una cadena de texto.");
+					errores.add("Fila " + (i + 1) + " El campo Nombre Sucursal no es una cadena de texto");
+					continue; // Ir a la siguiente fila
+				}
 
+				try {
 					Date fechaNacimiento = row.getCell(4).getDateCellValue();
-					String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada
-																					// como cadena
+					System.out.println("fechaNacimiento: " + dateFormat.format(fechaNacimiento));
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en fechaNacimiento: El valor no es una fecha valida.");
+					errores.add("Fila " + (i + 1) + " El campo Fecha de Nacimiento no es una fecha valida ");
+					continue;
+				}
 
-					// Convertir la cadena formateada nuevamente a un objeto Date
-					Date fechaFormateadaComoDate = dateFormat.parse(fechaFormateada);
-
+				try {
 					double edadCellValue = row.getCell(5).getNumericCellValue();
 					int edad = (int) edadCellValue;
+					System.out.println("edad: " + edad);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en edad: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Edad no es numérico");
+					continue;
+				}
 
+				try {
 					double creditoIdCellValue = row.getCell(6).getNumericCellValue();
 					int creditoId = (int) creditoIdCellValue;
+					System.out.println("creditoId: " + creditoId);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en creditoId: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Credito Id no es numérico");
+					continue;
+				}
 
+				try {
 					String nombreProducto = row.getCell(7).getStringCellValue();
+					System.out.println("nombreProducto: " + nombreProducto);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en nombreProducto: El valor no es una cadena de texto.");
+					errores.add("Fila " + (i + 1) + " El campo Nombre Producto no es una cadena de texto");
+					continue;
+				}
 
+				try {
 					double montoOriginal = row.getCell(8).getNumericCellValue();
+					System.out.println("montoOriginal: " + montoOriginal);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en montoOriginal: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Monto Original no es numérico");
+					continue;
+				}
 
+				try {
 					double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
 					int maxDiasMora = (int) maxDiasMoraCellValue;
-
-					double telCelularCellValue = row.getCell(10).getNumericCellValue();
-					String telCelular = String.valueOf((int) telCelularCellValue);
-
-					double telRecadosCellValue = row.getCell(11).getNumericCellValue();
-					String telRecados = String.valueOf((int) telRecadosCellValue);
-
-					double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
-					String telEmpleado = String.valueOf((int) telEmpleadoCellValue);
-
-					double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
-					String telReferencia1 = String.valueOf((int) telReferencia1CellValue);
-
-					double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
-					String telReferencia2 = String.valueOf((int) telReferencia2CellValue);
-					// Obtener los valores de las celdas y llamar al método insertarEnBD
-					// throw new RuntimeException("Simulando error al insertar en la base de
-					// datos");
-					fidelidadService.insertarEnBD(clienteId, nombreCliente, region, nombreSucursal,
-							fechaFormateadaComoDate, edad, creditoId, nombreProducto, montoOriginal, maxDiasMora,
-							telCelular, telRecados, telEmpleado, telReferencia1, telReferencia2);
+					System.out.println("maxDiasMora: " + maxDiasMora);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en maxDiasMora: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numérico");
+					continue;
 				}
-			} catch (Exception e) {
-				System.out.println("Error al insertar en la base de datos: " + e.getMessage());
-				throw e;
+
+				try {
+					double telCelularCellValue = row.getCell(10).getNumericCellValue();
+					int telCelular = (int) telCelularCellValue;
+					System.out.println("telCelular: " + telCelular);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en telCelular: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numérico");
+					continue;
+				}
+
+				try {
+					double telRecadosCellValue = row.getCell(11).getNumericCellValue();
+					int telRecados = (int) telRecadosCellValue;
+					System.out.println("telRecados: " + telRecados);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en telRecados: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numérico");
+					continue;
+				}
+
+				try {
+					double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
+					int telEmpleado = (int) telEmpleadoCellValue;
+					System.out.println("telEmpleado: " + telEmpleado);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en telEmpleado: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numérico");
+					continue;
+				}
+
+				try {
+					double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
+					int telReferencia1 = (int) telReferencia1CellValue;
+					System.out.println("telReferencia1: " + telReferencia1);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en telReferencia1: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numérico");
+					continue;
+				}
+
+				try {
+					double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
+					int telReferencia2 = (int) telReferencia2CellValue;
+					System.out.println("telReferencia2: " + telReferencia2);
+
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en telReferencia2: El valor no es numérico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
+					continue;
+				}
+
+				// Luego, puedes llamar a un método para insertar los datos en la base de datos
+				// fidelidadService.insertarEnBD(clienteId, nombreCliente, region,
+				// nombreSucursal, fechaNacimiento, edad, creditoId, nombreProducto,
+				// montoOriginal, maxDiasMora, telCelular, telRecados, telEmpleado,
+				// telReferencia1, telReferencia2);
 			}
 
-		}
+			System.out.println("lista errores: " + errores.isEmpty());
+			if (!errores.isEmpty()) {
+				// Mostrar o manejar los errores encontrados antes de insertar en BD
+				System.out.println("HAY ERRORES: ");
+				String erroresMns = "";
+				for (String error : errores) {
+					erroresMns = erroresMns+"-"+error+"<br>";
+					System.out.println(error);
+				}
+				titulo = "ERROR CONTENIDO";
+				envioCorreoService.prepararCorreo(titulo,erroresMns);
 
-		workbook.close();
-		inputStream.close();
-		//eliminarArchivo(filePath);
+			} else {
+				// Llamar al método para insertar en BD solo si no hay errores
+				System.out.println("No hay errores");
+				try {
+					for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
+						Row row = sheet.getRow(i);
+						if (row == null || row.getCell(0) == null) {
+							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
+						}
+						double clienteIdCellValue = row.getCell(0).getNumericCellValue();
+						int clienteId = (int) clienteIdCellValue; // Convertir a int
+
+						String nombreCliente = row.getCell(1).getStringCellValue();
+
+						String region = row.getCell(2).getStringCellValue();
+
+						String nombreSucursal = row.getCell(3).getStringCellValue();
+
+						Date fechaNacimiento = row.getCell(4).getDateCellValue();
+						String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada
+																						// como cadena
+
+						// Convertir la cadena formateada nuevamente a un objeto Date
+						Date fechaFormateadaComoDate = dateFormat.parse(fechaFormateada);
+
+						double edadCellValue = row.getCell(5).getNumericCellValue();
+						int edad = (int) edadCellValue;
+
+						double creditoIdCellValue = row.getCell(6).getNumericCellValue();
+						int creditoId = (int) creditoIdCellValue;
+
+						String nombreProducto = row.getCell(7).getStringCellValue();
+
+						double montoOriginal = row.getCell(8).getNumericCellValue();
+
+						double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
+						int maxDiasMora = (int) maxDiasMoraCellValue;
+
+						DecimalFormat decimalFormat = new DecimalFormat("#");
+	                    //String formattedValue = decimalFormat.format(numericValue);
+						
+						double telCelularCellValue = row.getCell(10).getNumericCellValue();
+						String telCelular = decimalFormat.format(telCelularCellValue);  
+								//String.valueOf((int) telCelularCellValue);
+
+						double telRecadosCellValue = row.getCell(11).getNumericCellValue();
+						String telRecados = decimalFormat.format(telRecadosCellValue);
+
+						double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
+						String telEmpleado = decimalFormat.format(telEmpleadoCellValue);
+
+						double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
+						String telReferencia1 = decimalFormat.format(telReferencia1CellValue);
+
+						double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
+						String telReferencia2 = decimalFormat.format(telReferencia2CellValue);
+						// Obtener los valores de las celdas y llamar al método insertarEnBD
+						// throw new RuntimeException("Simulando error al insertar en la base de
+						// datos");
+						fidelidadService.insertarEnBD(clienteId, nombreCliente, region, nombreSucursal,
+								fechaFormateadaComoDate, edad, creditoId, nombreProducto, montoOriginal, maxDiasMora,
+								telCelular, telRecados, telEmpleado, telReferencia1, telReferencia2);
+					}
+				} catch (Exception e) {
+					System.out.println("Error al insertar en la base de datos: " + e.getMessage());
+					throw e;
+				}
+
+			}
+
+			workbook.close();
+			inputStream.close();
+			//eliminarArchivo(filePath);
+		} catch (Exception e) {
+			System.out.println("");
+			titulo = "ERROR CONTENIDO";
+			envioCorreoService.prepararCorreo(titulo,rowNull);
+		}
+		
+		
+
 	}
 
 	public void comparativaREUSClienteSNPublicidad() {
@@ -470,13 +506,13 @@ public class FidelidadTareaConfiguracion {
 	//fixedDelay = 60000 
 	//@Scheduled(cron = "0 0 8,20 * * *")
 
-	@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
+	@Scheduled(fixedDelay = 90000000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
 	public void continuarEjecucion() {
 		System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
 		if (!lastExecutionSuccessful) {
 			actualizarExpresionCronFidelidad(); // Continuar ejecución según el cron en caso de error
 		} else {
-			int currentMonth = LocalDate.now().getMonthValue();
+			int currentMonth = LocalDate.now().getMonthValue()-1;
 			if (lastSuccessfulMonth != currentMonth) {
 				lastSuccessfulMonth = currentMonth; // Marcar el mes exitoso
 				actualizarExpresionCronFidelidad(); // Reiniciar el cron para el próximo mes
