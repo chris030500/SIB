@@ -644,7 +644,6 @@ function obtenerDatosBancomer(lineas) {
 var pagosDomiciliados;
 
 function mandarDatosBancomer() {
-	// console.log(dtoList);
 	$.ajax({
 		url: newUrlBase + "datos_bancomer",
 		type: 'POST',
@@ -652,21 +651,18 @@ function mandarDatosBancomer() {
 		contentType: 'application/json; charset=utf-8',
 		dataType: 'json',
 		success: function(resp) {
-			console.log(resp);
-			/*if (resp[0].includes("No se encontró la cuenta CLABE")) {
-				swal(resp[0], {
-					closeOnClickOutside: false,
-					icon: "warning",
-				});
-				archivoBancomer.value = '';
-				botonBancomer.style.display = 'none';
-			} else {
-				pagosDomiciliados = resp;
-				nuevoArchivoBancomer(pagosDomiciliados);
-			}*/
+			pagosDomiciliados = resp;
+			nuevoArchivoBancomer(pagosDomiciliados);
 		},
 		error: function(error) {
-			// console.log(error);
+			spinner.style.display = "none";
+			principal.style.display = "block";
+			botonBancomer.style.display = "none";
+			archivoBancomer.value = '';
+			swal(error.responseJSON.error, {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
 		}
 	});
 }
@@ -682,17 +678,17 @@ function mandarDatosBancomer() {
 
 function nuevoArchivoBancomer(registros) {
 	// Concatenar los registros con saltos de línea
-	const contenido = registros.join('\n');
+	const contenido = registros.datos.join('\n');
 	// -- datos de salida -- //
 	contenidoSalida = contenido;
 	// -- total de registros por linea -- //
-	numeroRegistro = registros.slice(1).length;
+	numeroRegistro = registros.datos.slice(1).length;
 	// -- suma de los importes -- //
-	for (let i = 1; i < registros.length; i++) { // Comenzar desde la segunda línea
+	for (let i = 1; i < registros.datos.length; i++) { // Comenzar desde la segunda línea
 		// Obtener la suma de los importes
 		const startIndex = 99;
 		const numberOfCharacters = 15;
-		const importe = registros[i].substr(startIndex, numberOfCharacters);
+		const importe = registros.datos[i].substr(startIndex, numberOfCharacters);
 		// Convertir a entero
 		const totalImporte = parseInt(importe, 10);
 		numeroMonto = numeroMonto + totalImporte;
