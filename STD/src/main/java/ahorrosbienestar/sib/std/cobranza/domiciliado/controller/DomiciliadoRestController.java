@@ -2,12 +2,15 @@ package ahorrosbienestar.sib.std.cobranza.domiciliado.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,25 +71,40 @@ public class DomiciliadoRestController {
 	private final static int PREFIJO_ARCHIVO = 68;
 
 	@RequestMapping(value = {"/recibir_clabe" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public List<ClabeDTO> datosCuentaClabe(@RequestBody List<ClabeDTO> listaClabeDTO) {
-		List<ClabeDTO> listaRes = new ArrayList<ClabeDTO>();
+	public ResponseEntity<Map<String, Object>> datosCuentaClabe(@RequestBody List<ClabeDTO> listaClabeDTO) {
+		Map<String, Object> response = new HashMap<>();
+		List<ClabeDTO> listaRes = new ArrayList<>();
+		List<String> cuentasNoEncontradas = new ArrayList<>();
+		String mensajeError = null;
+
 		try {
 			listaClabeDTO.forEach(clabe -> {
-				logger.info(clabe.getClabe());
-				CuentasModel model = cuentasService.datosCuentaClabe(clabe.getClabe());
+				String cuenta = clabe.getClabe();
+				CuentasModel model = cuentasService.datosCuentaClabe(cuenta);
 				logger.info("se encontraron los datos de la cuenta CLABE");
+				if (model == null) {
+					cuentasNoEncontradas.add(cuenta);
+				}
+
+
 				ClabeDTO dto = new ClabeDTO();
 				dto.setClienteId(model.getCliente_id());
 				dto.setClabe(model.getClabe());
 				dto.setCreditoId("0" + model.getCredito_id());
 				dto.setRfcOficial(model.getRfc_oficial());
 				listaRes.add(dto);
+
 			});
-			return listaRes;
+			response.put("datos", listaRes);
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			// TODO: handle exception
-			logger.info(e.getMessage());
-			return null;
+			// Log cuentas no encontradas en caso de excepción
+			for (String cuenta : cuentasNoEncontradas) {
+				logger.info("No se encontró la cuenta CLABE: " + cuenta);
+				mensajeError = "No se encontró la cuenta CLABE: " + cuenta;
+			}
+			response.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 
