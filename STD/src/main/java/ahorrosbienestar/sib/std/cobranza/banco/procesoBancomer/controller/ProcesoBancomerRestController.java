@@ -40,7 +40,7 @@ public class ProcesoBancomerRestController {
 	// Logger
 	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
 
-	private int sumaRegistros = 0;
+	private static int sumaRegistros = 0;
 
 	@RequestMapping(value = {"/datos_bancomer" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> obtenerDatosBancomer(@RequestBody List<ProcesoBancomerDTO> listaDatosBancomer) {
