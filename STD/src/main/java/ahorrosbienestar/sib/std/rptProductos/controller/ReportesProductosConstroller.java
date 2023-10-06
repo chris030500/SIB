@@ -41,7 +41,7 @@ public class ReportesProductosConstroller {
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired 
-	IReporteRepository iReporteRepository;
+	private IReporteRepository iReporteRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;

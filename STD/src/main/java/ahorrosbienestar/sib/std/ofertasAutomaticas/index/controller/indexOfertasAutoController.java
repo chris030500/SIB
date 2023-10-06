@@ -24,11 +24,16 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -54,18 +59,19 @@ public class indexOfertasAutoController {
 	private static final String nombrePantalla = "Ofertas Automaticas";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
+	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
 	
 	@Autowired
-	ConfigService configService;
+	private ConfigService configService;
 
 	@Autowired
-	BasesService basesService;
+	private BasesService basesService;
 
 	@Autowired
-	ClasificacionBasesService clasificacionBasesService;
+	private ClasificacionBasesService clasificacionBasesService;
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
@@ -76,12 +82,21 @@ public class indexOfertasAutoController {
 	@Autowired
 	private BasesService baseService;
 	
-	@Autowired
-	private EnvioCorreoService envioCorreoService;
 	
 	@Autowired
 	private FidelidadTareaConfiguracion fidelidadTareaConfiguracion;
 	
+	@Autowired
+	private NominaTareaConfiguracion nominaTareaConfiguracion;
+	
+	@Autowired
+	private CampaniasVIPTareaConfiguracion campaniasVIPTareaConfiguracion;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired 
+	private JasperReportController jasperReportController;
 	
 	List<Usuario> usuario = null;
 
@@ -518,24 +533,51 @@ public class indexOfertasAutoController {
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			fidelidadTareaConfiguracion.ejecutarFidelidad();			
 			
-			
-			/*if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
-				respuesta.add(mensaje);
-			}else {
-				respuesta.add("Ocurrio un error.");
-			}*/
-			return ResponseEntity.ok(respuesta.add(mensaje));
+			switch(idBase) {
+			case 1:
+				System.out.print("Base de Nomina");
+				nominaTareaConfiguracion.procesarNomina();
+				respuesta.add("Ejecutar Base Nomina");
+				break;
+			case 2:
+				fidelidadTareaConfiguracion.ejecutarFidelidad();			
+				respuesta.add("Ejecutar Base Fidelidad");
+				break;
+			case 3:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
+					respuesta.add("Ejecutar Base Campañas VIP");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+				}
+				
+				break;
+			}
+			generarArchivoOA();
+			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
 	}
 	
+	public void generarArchivoOA() {
+		try {
+			String parametros="";
+			String nombreArchivo = "rpt_layout_Ofertas_Automaticas";
+			Bases datos = basesService.findById(2).get();
+			String urlDirectorio = datos.getVc_ruta_proceso();
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
+			jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
+		} catch (Exception e) {
+			System.out.println("Error"+e.getMessage());
+		}
+
+	}
+	
 	public int validarAcceso() {
-		
-		
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		UserDetails userDetails = null;
 		if (principal instanceof UserDetails) {

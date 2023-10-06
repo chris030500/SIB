@@ -35,9 +35,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoCSO.model.CorreoCSO;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ArchivoValidadorComponent;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ComparadorEncabezadosComponent;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.model.Fidelidad;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service.FidelidadService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
@@ -151,7 +153,8 @@ public class FidelidadTareaConfiguracion {
 							System.out.println("Entro en try para procesarArchivoExcel");
 							procesarArchivoExcel(urlDirectorio + "/" + archivo);
 							// Se manda a llamar el metodo para validar REUS y Clientes SN publicidad
-							comparativaREUSClienteSNPublicidad();
+							//comparativaREUSClienteSNPublicidad();
+							procesarCampaniaFidelidad();
 
 							lastExecutionSuccessful = true; // Marcar como exitoso
 
@@ -404,67 +407,104 @@ public class FidelidadTareaConfiguracion {
 				// Llamar al método para insertar en BD solo si no hay errores
 				System.out.println("No hay errores");
 				try {
+					
+					Date fechaRegistro = new Date();
+					List<Fidelidad> listaFidelidad = new ArrayList<>();
 					for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 						Row row = sheet.getRow(i);
 						if (row == null || row.getCell(0) == null) {
 							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 						}
+						DecimalFormat decimalFormat = new DecimalFormat("#");
+						
+						Fidelidad registroExcel = new Fidelidad();
+						
 						double clienteIdCellValue = row.getCell(0).getNumericCellValue();
 						int clienteId = (int) clienteIdCellValue; // Convertir a int
+						
+						
+						registroExcel.setI_cliente_id(clienteId);
 
 						String nombreCliente = row.getCell(1).getStringCellValue();
+						registroExcel.setVc_nombre_completo_cliente(nombreCliente);
 
 						String region = row.getCell(2).getStringCellValue();
+						registroExcel.setVc_region(region);
 
 						String nombreSucursal = row.getCell(3).getStringCellValue();
+						registroExcel.setVc_nombre_sucurs(nombreSucursal);
 
 						Date fechaNacimiento = row.getCell(4).getDateCellValue();
-						String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada
-																						// como cadena
-
+						String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada// como cadena
 						// Convertir la cadena formateada nuevamente a un objeto Date
 						Date fechaFormateadaComoDate = dateFormat.parse(fechaFormateada);
+						registroExcel.setDt_fecha_nacimiento(fechaFormateadaComoDate);
+						
 
 						double edadCellValue = row.getCell(5).getNumericCellValue();
 						int edad = (int) edadCellValue;
+						registroExcel.setI_edad(edad);
 
 						double creditoIdCellValue = row.getCell(6).getNumericCellValue();
-						int creditoId = (int) creditoIdCellValue;
+						long creditoId = Long.parseLong(decimalFormat.format(creditoIdCellValue));
+						registroExcel.setI_credito_id(creditoId);
 
 						String nombreProducto = row.getCell(7).getStringCellValue();
+						registroExcel.setVc_nombre_producto(nombreProducto);
 
 						double montoOriginal = row.getCell(8).getNumericCellValue();
+						registroExcel.setD_monto_original(montoOriginal);
 
 						double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
 						int maxDiasMora = (int) maxDiasMoraCellValue;
+						registroExcel.setI_max_dia_mora(maxDiasMora);
 
-						DecimalFormat decimalFormat = new DecimalFormat("#");
+						
 	                    //String formattedValue = decimalFormat.format(numericValue);
 						
 						double telCelularCellValue = row.getCell(10).getNumericCellValue();
 						String telCelular = decimalFormat.format(telCelularCellValue);  
 								//String.valueOf((int) telCelularCellValue);
+						registroExcel.setVc_telefono_celular(telCelular);
 
 						double telRecadosCellValue = row.getCell(11).getNumericCellValue();
 						String telRecados = decimalFormat.format(telRecadosCellValue);
+						registroExcel.setVc_telefono_recados(telRecados);
 
 						double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
 						String telEmpleado = decimalFormat.format(telEmpleadoCellValue);
+						registroExcel.setVc_telefono_empleado(telEmpleado);
 
 						double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
 						String telReferencia1 = decimalFormat.format(telReferencia1CellValue);
+						registroExcel.setVc_telefono_referencia_1(telReferencia1);
 
 						double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
 						String telReferencia2 = decimalFormat.format(telReferencia2CellValue);
+						registroExcel.setVc_telefono_referencia_2(telReferencia2);
+						
+						registroExcel.setDt_fecha_registro(fechaRegistro);
 						// Obtener los valores de las celdas y llamar al método insertarEnBD
 						// throw new RuntimeException("Simulando error al insertar en la base de
 						// datos");
-						fidelidadService.insertarEnBD(clienteId, nombreCliente, region, nombreSucursal,
+						
+						/*fidelidadService.insertarEnBD(clienteId, nombreCliente, region, nombreSucursal,
 								fechaFormateadaComoDate, edad, creditoId, nombreProducto, montoOriginal, maxDiasMora,
-								telCelular, telRecados, telEmpleado, telReferencia1, telReferencia2);
+								telCelular, telRecados, telEmpleado, telReferencia1, telReferencia2);*/
+						
+						listaFidelidad.add(registroExcel);
+						if(listaFidelidad.size() == 1000) {
+							fidelidadService.registrarFidelidad(listaFidelidad);
+							listaFidelidad.clear();
+						}
+						
 					}
+					fidelidadService.registrarFidelidad(listaFidelidad);
+					listaFidelidad.clear();
+					
 				} catch (Exception e) {
 					System.out.println("Error al insertar en la base de datos: " + e.getMessage());
+					logger.error("Error al insertar en la base de datos: " + e.getMessage());
 					throw e;
 				}
 
@@ -483,9 +523,16 @@ public class FidelidadTareaConfiguracion {
 
 	}
 
-	public void comparativaREUSClienteSNPublicidad() {
-		System.out.println("ejecutar comparativaREUSClienteSNPublicidad");
-		jdbcTemplate.update("CALL SIB.SP_VALIDAR_Y_ACTUALIZAR_REGISTROS_FIDELIDAD()");
+	public void procesarCampaniaFidelidad() {
+		
+		try {
+			System.out.println("ejecutar comparativaREUSClienteSNPublicidad");
+			jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
+		} catch (Exception e) {
+			logger.error("Error: "+e.getMessage());
+		}
+		
+		
 	}
 	
 	private void eliminarArchivo(String filePath) {

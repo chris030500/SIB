@@ -113,8 +113,7 @@ public class NominaTareaConfiguracion {
         System.out.println("-----------------------------");
 
         if (basesService.esHorarioValido(horaInicio, horaFin) && basesService.esDiaValido(diaInicio)) {
-        	System.out.println("Ejecuta los SP");
-        	jdbcTemplate.update("CALL SIB.SP_MIGRA_BD_NOMINA_LIQUIDADOS_NLIQUIDADOS(30)");
+        	procesarNomina();
             //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_CONVENIO(30)");
             //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_SN_CONVENIO(30)");
             //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_CONVENIO(30)");
@@ -123,6 +122,15 @@ public class NominaTareaConfiguracion {
 //            lastExecutionTime = System.currentTimeMillis();
         }
 
+    }
+    
+    public synchronized void procesarNomina() {
+    	try {
+    		System.out.println("Ejecuta los SP");
+        	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(1)");
+		} catch (Exception e) {
+			System.out.println("Error:"+e.getMessage());
+		}
     }
 
 
