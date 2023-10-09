@@ -383,6 +383,17 @@ public class FidelidadTareaConfiguracion {
 					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
 					continue;
 				}
+				
+				try {
+					String plazoOferta = row.getCell(15).getStringCellValue();
+					System.out.println("plazoOferta: " + plazoOferta);
+				} catch (IllegalStateException e) {
+					// TODO: handle exception
+					System.out.println("Error en plazoOferta: El valor no es una cadena de texto.");
+					errores.add("Fila " + (i + 1) + " El campo plazo oferta no es una cadena de texto");
+					continue; // Ir a la siguiente fila
+				}
+
 
 				// Luego, puedes llamar a un método para insertar los datos en la base de datos
 				// fidelidadService.insertarEnBD(clienteId, nombreCliente, region,
@@ -483,7 +494,12 @@ public class FidelidadTareaConfiguracion {
 						String telReferencia2 = decimalFormat.format(telReferencia2CellValue);
 						registroExcel.setVc_telefono_referencia_2(telReferencia2);
 						
+						String plazoOferta = row.getCell(15).getStringCellValue();
+						registroExcel.setVc_plazo_oferta(plazoOferta);
+						
 						registroExcel.setDt_fecha_registro(fechaRegistro);
+						
+						
 						// Obtener los valores de las celdas y llamar al método insertarEnBD
 						// throw new RuntimeException("Simulando error al insertar en la base de
 						// datos");

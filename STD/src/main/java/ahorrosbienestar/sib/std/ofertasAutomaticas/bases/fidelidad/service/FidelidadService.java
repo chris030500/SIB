@@ -29,8 +29,8 @@ public class FidelidadService {
 			System.out.println("ejecutando insertarEnBD");
 			 String insertQuery = "INSERT INTO SIB.TBL_FIDELIDAD_OA(I_CLIENTE_ID, VC_NOMBRE_COMPLETO_CLIENTE, VC_REGION, VC_NOMBRE_SUCURS, DT_FECHA_NACIMIENTO"
 			 		+ ", I_EDAD, I_CREDITO_ID, VC_NOMBRE_PRODUCTO, D_MONTO_ORIGINAL, I_MAX_DIA_MORA, VC_TELEFONO_CELULAR, VC_TELEFONO_RECADOS"
-			 		+ ", VC_TELEFONO_EMPLEADO, VC_TELEFONO_REFERENCIA_1, VC_TELEFONO_REFERENCIA_2,DT_FECHA_REGISTRO) VALUES \r\n"
-						+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+			 		+ ", VC_TELEFONO_EMPLEADO, VC_TELEFONO_REFERENCIA_1, VC_TELEFONO_REFERENCIA_2,DT_FECHA_REGISTRO,VC_PLAZO_OFERTA) VALUES \r\n"
+						+ " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
 			 
 			 
 			 jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
@@ -54,6 +54,7 @@ public class FidelidadService {
 		                preparedStatement.setString(15, regFidelidad.getVc_telefono_referencia_2());
 		                java.sql.Date fechaRegistro = new java.sql.Date(regFidelidad.getDt_fecha_registro().getTime());
 		                preparedStatement.setDate(16,fechaRegistro);
+		                preparedStatement.setString(17,regFidelidad.getVc_plazo_oferta());
 		            }
 
 		            @Override
@@ -61,10 +62,7 @@ public class FidelidadService {
 		                return listaFidelidad.size();
 		            }
 		        });
-			 
-			 
-		
-		        
+
 		       /* jdbcTemplate.batchUpdate(insertQuery, new BatchPreparedStatementSetter() {
 		            @Override
 		            public void setValues(PreparedStatement ps, int i) throws SQLException {

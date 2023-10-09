@@ -74,6 +74,9 @@ public class Fidelidad {
 	
 	@Column(name = "I_ESTATUS_OFERTA", columnDefinition = "INT DEFAULT 1")
 	private int i_estatus_ofertas;
+	
+	@Column(name = "VC_PLAZO_OFERTA", columnDefinition = "VARCHAR(100)")
+	private String vc_plazo_oferta;
 
 	public int getPk_id_fidelidad() {
 		return pk_id_fidelidad;
@@ -234,5 +237,14 @@ public class Fidelidad {
 	public void setDt_fecha_registro(Date dt_fecha_registro) {
 		this.dt_fecha_registro = dt_fecha_registro;
 	}
+
+	public String getVc_plazo_oferta() {
+		return vc_plazo_oferta;
+	}
+
+	public void setVc_plazo_oferta(String vc_plazo_oferta) {
+		this.vc_plazo_oferta = vc_plazo_oferta;
+	}
+	
 	
 }
