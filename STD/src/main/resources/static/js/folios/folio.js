@@ -12,6 +12,8 @@ var altaObservaciones = "altaObservacion?idAreaAtencion=";
 var inicio = "folio";
 var fechaVencimientoObs;
 
+var fechaHabil = true;
+
 
 $(document).ready(function() {
 
@@ -125,7 +127,7 @@ function eventosContadorAsunto() {
 
 function iniciarfechas() {
 	var hoyfecha = new Date();
-    var dia = 0;
+	var dia = 0;
 	switch (hoyfecha.getDay()) {
 		case 0:
 			hoyfecha.setUTCDate(hoyfecha.getUTCDate() + 1);
@@ -166,19 +168,23 @@ function validarFinSemana(fecha, tFecha) {
 		var correcta = false;
 		switch (tFecha) {
 			case 1:
-				document.getElementById("idFechaRegistro").style.borderColor = "#F70707";
+				document.getElementById("idRecepcion").style.borderColor = "#F70707";
+				fechaHabil = false;
 				break;
 			case 2:
 				document.getElementById("idVencimiento").style.borderColor = "#F70707";
+				fechaHabil = false;
 				break;
 		}
 	} else {
 		switch (tFecha) {
 			case 1:
-				document.getElementById("idFechaRegistro").style.borderColor = "";
+				document.getElementById("idRecepcion").style.borderColor = "";
+				fechaHabil = true;
 				break;
 			case 2:
 				document.getElementById("idVencimiento").style.borderColor = "";
+				fechaHabil = true;
 				break;
 		}
 	}
@@ -229,32 +235,37 @@ function calcularPlazo(opcion, fechaI, fechaF) {
 }
 
 function calcularVencimiento(opcion) {
-	var fechaInicioD = new Date(document.getElementById("idFechaRegistro").value.replaceAll("-", "/"));
+	var fechaInicioD = new Date(document.getElementById("idRecepcion").value.replaceAll("-", "/"));
 	var fechaFinD = new Date(document.getElementById("idVencimiento").value.replaceAll("-", "/"));
+	//var fechaVen = new Date();
 	switch (opcion) {
 		case 1:
 			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2) == true) {
-				fechaVen = calcularPlazo(1, fechaInicioD, fechaFinD);
+				fechaFinD = calcularPlazo(1, fechaInicioD, fechaFinD);
+
 			} else {
 				swal({
 					title: "Error",
 					text: "Seleccionar dia habil",
 					icon: "warning",
 				});
+
 			}
 
 			break;
 		case 2:
 			if (validarFinSemana(fechaInicioD, 1) == true && validarFinSemana(fechaFinD, 2) == true) {
 				if (document.getElementById("idPlazo").value > 0) {
-					fechaVen = calcularPlazo(2, fechaInicioD, fechaFinD);
+					fechaFinD = calcularPlazo(2, fechaInicioD, fechaFinD);
 				}
+
 			} else {
 				swal({
 					title: "Error",
 					text: "Seleccionar dia habil",
 					icon: "warning",
 				});
+
 			}
 
 			break;
@@ -262,9 +273,8 @@ function calcularVencimiento(opcion) {
 
 	document.querySelectorAll("input[type='date'][for='vencimientoFolio']")
 		.forEach(elemento => {
-			elemento.value = fechaVen.toISOString().substring(0, 10);
+			elemento.value = fechaFinD.toISOString().substring(0, 10);
 		});
-
 }
 
 function validarFechas(fecha1, fecha2) {
@@ -294,28 +304,40 @@ function validarFechas(fecha1, fecha2) {
 
 function eventosModal() {
 	$("#btnRegistrar").click(function() {
+		if (fechaHabil == true) {
 
-		if (validarFechas(document.getElementById("idFechaRegistro").value, document.getElementById("idVencimiento").value) == false) {
-			if (guardarVacio() == 0) {
-				if (document.getElementById("idFolioSelec").value == 0) {
-					guardarFolio(1);
+			if (validarFechas(document.getElementById("idFechaRegistro").value, document.getElementById("idVencimiento").value) == false) {
+				if (guardarVacio() == 0) {
+
+					if (document.getElementById("idFolioSelec").value == 0) {
+						guardarFolio(1);
+					} else {
+						guardarFolio(2);
+					}
+
+
 				} else {
-					guardarFolio(2);
+					swal({
+						title: "Error",
+						text: "Registrar datos obligatorios",
+						icon: "warning",
+					});
 				}
 			} else {
 				swal({
 					title: "Error",
-					text: "Registrar datos obligatorios",
+					text: "Fecha de Registro y/o Fecha de Vencimiento son Incorrectas",
 					icon: "warning",
 				});
 			}
 		} else {
 			swal({
 				title: "Error",
-				text: "Fecha de Registro y/o Fecha de Vencimiento son Incorrectas",
+				text: "Fecha en fin de semana.",
 				icon: "warning",
 			});
 		}
+
 
 
 	});
@@ -354,19 +376,19 @@ function eventosModal() {
 		if (document.getElementById("file").value.length > 0) {
 			Swal.fire({
 				title: 'Procesando.....',
-  				text: 'Espere un momento..',
-  				timer: 4000, // tiempo en milisegundos
- 				timerProgressBar: true,
-  				showConfirmButton: false
+				text: 'Espere un momento..',
+				timer: 4000, // tiempo en milisegundos
+				timerProgressBar: true,
+				showConfirmButton: false
 			}).then((result) => {
-  				// Este código se ejecutará después de que el temporizador haya terminado
- 				 if (result.dismiss === Swal.DismissReason.timer) {
-    					var form = $('#adjuntoArchivoOficio')[0];
-						var data = new FormData(form);
-						addArchivos(data)
- 				 }
+				// Este código se ejecutará después de que el temporizador haya terminado
+				if (result.dismiss === Swal.DismissReason.timer) {
+					var form = $('#adjuntoArchivoOficio')[0];
+					var data = new FormData(form);
+					addArchivos(data)
+				}
 			});
-		
+
 		} else {
 			swal({
 				title: "Informacion.",
@@ -403,7 +425,7 @@ function obtDtostblAdjuntos(url) {
 				+ opt.pk_id_archivo
 				+ " >"
 				+ " <i class='bi bi-download'></i></button>";
-			tblAdjuntos.row.add([opt.pk_id_archivo,opt.vc_nombre_docto,opt.vc_nombre_adjunto, botones]).draw(false);
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, opt.vc_nombre_adjunto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -1026,7 +1048,7 @@ function asignarArchivo(archivo) {
 	if (document.getElementById(archivo.id).value > 0) {
 		var opcionesArchivo = document.getElementById(archivo.id);
 		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
-		 document.getElementById("file").value = "";
+		document.getElementById("file").value = "";
 		$('#file').attr("accept", extension);
 		$('#file').attr("disabled", false);
 	} else {

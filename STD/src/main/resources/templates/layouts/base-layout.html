@@ -27,7 +27,7 @@
 
 	<div class="d-flex align-items-center justify-content-between">
 		<a th:href="@{/inicio}" class="logo d-flex align-items-center">
-			<!--<img src="assets/img/logo.png" alt="">-->
+			<img src="assets/img/logo.png" alt="">
 			<span class="d-none d-lg-block">Bienestar</span>
 		</a>
 		<i class="fa fa-bars toggle-sidebar-btn"></i>
@@ -290,22 +290,22 @@
 					</ul>
 				</li>
 				<!-- Fin Prevencion PLD -->
-					<!-- Prevención PLD -->
+				<!-- Convenios -->
 				<li style="display:none;" class="nav-item" th:id="8">
-					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-prevencion"
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-convenios"
 						data-bs-toggle="collapse">
-						<i class="bi bi-incognito"></i><span>Cobranza</span>
+						<i class="bi bi-bank"></i><span>Cobranza</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
-					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+					<ul id="config-nav-convenios" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li th:id="M_O21" class="nav-item" style="display:none;">
-							<a th:href="@{/prevencion/pld}">
-								<i class="bi bi-fingerprint"></i><span>PLD</span>
+							<a th:href="@{/cobranza/domiciliado}">
+								<i class="bi bi-cash"></i><span>Cobro Domiciliado</span>
 							</a>
 						</li>
 					</ul>
 				</li>
-				<!-- Fin Prevencion PLD -->
+				<!-- Fin Convenios -->
 				<!-- Productos -->
 				<li style="display:none;" class="nav-item" th:id="9">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-ofertasAuto"
