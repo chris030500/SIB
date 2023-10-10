@@ -24,11 +24,16 @@ public class ComparadorEncabezadosComponent {
 
 	@Autowired
 	ConfigService configService;
+	
+	private String propiedadNombreHoja = "hojaFidelidad";
+	private String propiedadEncabezados = "encabezadosFidelidad";
 
 	public List<String> compararHeader(String archivoPath) throws IOException {
 		System.out.println("compararHeader");
-		String nombreHoja = configService.obtenerConfiguracion(70).getVc_valor_propiedad();
-		String headersComparar = configService.obtenerConfiguracion(71).getVc_valor_propiedad();
+		String nombreHoja =  configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
+				//configService.obtenerConfiguracion(70).getVc_valor_propiedad();
+		String headersComparar = configService.valorPropiedad(propiedadEncabezados).getVc_valor_propiedad();
+				//configService.obtenerConfiguracion(71).getVc_valor_propiedad();
 		// String headersComparar = "\"Cliente ID\", \"Nombre Cliente\", \"Region\",
 		// \"Sucursal\", \"Fecha Nacimiento\", \"Edad\", \"credito_id\", \"Nombre
 		// Producto\", \"Monto Original\", \"Maximo Dias Mora\", \"Telefono Celular\",

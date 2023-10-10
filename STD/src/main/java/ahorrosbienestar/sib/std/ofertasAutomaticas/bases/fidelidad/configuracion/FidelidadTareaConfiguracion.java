@@ -87,6 +87,8 @@ public class FidelidadTareaConfiguracion {
 	private int lastSuccessfulMonth = -1;
 	private String titulo = ""; 
 	private String errores = "";
+	private String propiedadNombreArchivo = "archivoFidelidad";
+	private String propiedadNombreHoja = "hojaFidelidad";
 
 	@PostConstruct
 	public void init() {
@@ -126,7 +128,10 @@ public class FidelidadTareaConfiguracion {
 	public synchronized void ejecutarFidelidad() {
 		System.out.println("ejecutarFidelidad");
 		Bases datos = basesService.findById(2).get();
-		String archivo = configService.obtenerConfiguracion(69).getVc_valor_propiedad();
+		
+		
+		String archivo = configService.valorPropiedad(propiedadNombreArchivo).getVc_valor_propiedad(); 
+				//configService.obtenerConfiguracion(69).getVc_valor_propiedad();
 		String urlDirectorio = datos.getVc_ruta_proceso();
 		System.out.println("urlDirectorio: " + urlDirectorio);
 		System.out.println("archivo: " + archivo);
@@ -206,7 +211,8 @@ public class FidelidadTareaConfiguracion {
 		
 		try {
 			System.out.println("procesarArchivoExcel");
-			String nombreHoja = configService.obtenerConfiguracion(70).getVc_valor_propiedad();
+			String nombreHoja = configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
+					//configService.obtenerConfiguracion(70).getVc_valor_propiedad();
 			System.out.println("nombreHoja: " + nombreHoja);
 			FileInputStream inputStream = new FileInputStream(filePath);
 			Workbook workbook = new XSSFWorkbook(inputStream);

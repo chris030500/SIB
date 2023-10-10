@@ -109,35 +109,7 @@ public class indexOfertasAutoController {
 	 try {
 		if(validarAcceso()== 1){
 			logger.info("Ejecutando ofertasAutomaticas");
-			/*boolean mensajeAuto = false;
-			Optional<Bases> fidelidad = basesService.findById(FIDELIDAD);
-			Optional<Bases> campanaVIP = basesService.findById(CAMPANAS_VIP);
-			
-
-			
-			List<ClasificacionBases> clasificacionBases = clasificacionBasesService.findAll();
-
-			model.addAttribute("dComienzoProceso", fidelidad.get().getVc_dia_inicio_proceso());
-			model.addAttribute("dFinalProceso", fidelidad.get().getVc_dia_fin_proceso());
-			model.addAttribute("hComienzoProceso", fidelidad.get().getVc_hora_inicio_proceso());
-			model.addAttribute("hFinalProceso", fidelidad.get().getVc_hora_fin_proceso());
-			model.addAttribute("mPeriodoEjecucion", fidelidad.get().getVc_periodo_ejecucion_proceso());
-			model.addAttribute("rutaArchivo", fidelidad.get().getVc_ruta_proceso());
-
-			model.addAttribute("dComienzoCampana", campanaVIP.get().getVc_dia_inicio_proceso());
-			model.addAttribute("dFinalCampana", campanaVIP.get().getVc_dia_fin_proceso());
-			model.addAttribute("hComienzoCampana", campanaVIP.get().getVc_hora_inicio_proceso());
-			model.addAttribute("hFinalCampana", campanaVIP.get().getVc_hora_fin_proceso());
-			model.addAttribute("mPeriodoCampana", campanaVIP.get().getVc_periodo_ejecucion_proceso());
-			if (campanaVIP.get().getI_mensaje_proceso() == 1) {
-				mensajeAuto = true;
-			} else {
-				mensajeAuto = false;
-			}*/
-			//model.addAttribute("habilitarMensajeCampana", mensajeAuto);
-			
-			//envioCorreoService.enviarCorreo("jtrejo@ahorrosbienestar.com", "observacion", "ya esta configurado el correo");
-			
+					
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
