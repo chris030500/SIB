@@ -25,8 +25,7 @@ public class ClasificacionBases {
 	
 	@Column(name = "PK_ID_CLASIFICACION")
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="tbl_clasificacion_bases_seq")
-	@SequenceGenerator(name = "tbl_clasificacion_bases_seq", sequenceName = "tbl_clasificacion_bases_seq", initialValue = 1, allocationSize=1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pk_id_clasificacion;
 	
 	@Column(name = "VC_NOMBRE_CLASIFICACION", columnDefinition = "VARCHAR(100) DEFAULT NULL")
@@ -41,14 +40,14 @@ public class ClasificacionBases {
 	@Column(name = "I_VIGENCIA_CLASIFICACION", columnDefinition = "INT DEFAULT NULL")
 	private int i_vigencia_clasificacion;
 	
-	@Column(name = "I_CONFIGURACION_MENSAJE", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	@Column(name = "I_CONFIGURACION_MENSAJE", columnDefinition = "INT DEFAULT NULL")
 	private int i_configuracion_mensaje;
 	
 	@Column(name = "VC_MENSAJE_CLASIFICACION", columnDefinition = "VARCHAR (200) DEFAULT NULL")
 	private String vc_mensaje_clasificacion;
 
 
-	@Column(name = "I_ESTATUS_CLASIFICACION", columnDefinition = "TINYINT(1) DEFAULT NULL COMMENT '1 = ACTIVO, 0 = INACTIVO'")
+	@Column(name = "I_ESTATUS_CLASIFICACION", columnDefinition = "INT DEFAULT NULL COMMENT '1 = ACTIVO, 0 = INACTIVO'")
 	private int i_estatus_clasificacion;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
