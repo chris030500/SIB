@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
@@ -29,6 +28,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.model.ProcesoBase;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.service.ProcesoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
@@ -94,6 +95,9 @@ public class indexOfertasAutoController {
 	
 	@Autowired 
 	private IReporteRepository iReporteRepository;
+	
+	@Autowired 
+	private ProcesoService procesoService;
 	
 	@Autowired 
 	private JasperReportController jasperReportController;
@@ -529,10 +533,20 @@ public class indexOfertasAutoController {
 	public ResponseEntity<?> ejecutarProceso(
 			@RequestParam(name = "idBase") Integer idBase
 			){
+		String estatusProceso = "P";//procesando
+		LocalDate fecha = LocalDate.now();
+		
 		logger.info("/ejecutarProceso");
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
+			//registrar Proceso de BD
+			ProcesoBase nuevoProceso = new ProcesoBase();
+			nuevoProceso.setI_tipo_base(idBase);
+			nuevoProceso.setDt_fecha_registro(fecha);
+			nuevoProceso.setVc_estatus_proceso(estatusProceso);
+			procesoService.save(nuevoProceso);
+			
 			
 			switch(idBase) {
 			case 1:
@@ -557,6 +571,7 @@ public class indexOfertasAutoController {
 			generarArchivoOA();
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
+			System.out.print("Error"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
