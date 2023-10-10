@@ -569,7 +569,7 @@ public class FidelidadTareaConfiguracion {
 	//fixedDelay = 60000 
 	//@Scheduled(cron = "0 0 8,20 * * *")
 
-	@Scheduled(fixedDelay = 90000000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
+	@Scheduled(cron = "0 30 8,20 * * *") // Ejecutar cada 30 min
 	public void continuarEjecucion() {
 		System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
 		if (!lastExecutionSuccessful) {
