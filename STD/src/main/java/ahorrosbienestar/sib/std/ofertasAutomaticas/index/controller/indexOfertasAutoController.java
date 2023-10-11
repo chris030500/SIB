@@ -1,0 +1,580 @@
+package ahorrosbienestar.sib.std.ofertasAutomaticas.index.controller;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.model.ProcesoBase;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.service.ProcesoService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+
+@Controller
+@RequestMapping("/ofertasAutomaticas")
+public class indexOfertasAutoController {
+
+	private static final Logger logger = Logger.getLogger(indexOfertasAutoController.class);
+
+	// Constante Nomina
+	private final static int NOMINA = 1;
+
+	// Constantes Fidelidad
+	private final static int FIDELIDAD = 2;
+
+	// Constantes Campañas VIP
+	private final static int CAMPANAS_VIP = 3;
+	private final static String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
+	
+	// Constante Activo
+	private final static int ACTIVO = 1;
+	
+	private static final String nombrePantalla = "Ofertas Automaticas";
+	private static final String rutaError = "errores/error_403";
+	private String rutaDireccion="";
+	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
+
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;	
+	
+	@Autowired
+	private ConfigService configService;
+
+	@Autowired
+	private BasesService basesService;
+
+	@Autowired
+	private ClasificacionBasesService clasificacionBasesService;
+	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private BasesService baseService;
+	
+	
+	@Autowired
+	private FidelidadTareaConfiguracion fidelidadTareaConfiguracion;
+	
+	@Autowired
+	private NominaTareaConfiguracion nominaTareaConfiguracion;
+	
+	@Autowired
+	private CampaniasVIPTareaConfiguracion campaniasVIPTareaConfiguracion;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired 
+	private ProcesoService procesoService;
+	
+	@Autowired 
+	private JasperReportController jasperReportController;
+	
+	List<Usuario> usuario = null;
+
+	@GetMapping("/index")
+	public String indexOfertasAuto(Model model) throws IOException {
+	 try {
+		if(validarAcceso()== 1){
+			logger.info("Ejecutando ofertasAutomaticas");
+					
+			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
+			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
+			//Bases Configuracion 
+			//model.addAttribute("lista_configuracion", baseService.findAll());
+			List<Bases> bases = basesService.findAll();
+			model.addAttribute("bases", bases);
+			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
+		}else {
+			rutaDireccion = rutaError;
+		}
+		return rutaDireccion;
+	 }catch(Exception e) {
+		
+		 System.out.println(""+e.getMessage());
+	 }	
+	 return null;
+	}
+
+	@PostMapping("/guardarParamFidelidad")
+	public String guardarParametrosFidelidad(@RequestParam("dComienzoProceso") String dComienzoProceso,
+			@RequestParam("dFinalProceso") String dFinalProceso,
+			@RequestParam("hComienzoProceso") String hComienzoProceso,
+			@RequestParam("hFinalProceso") String hFinalProceso,
+			@RequestParam("mPeriodoEjecucion") String mPeriodoEjecucion,
+			@RequestParam("rutaArchivo") String rutaArchivo) {
+
+		try {
+			logger.info("Ejecutando guardarParamFidelidad");
+			// Buscamos por ID en bases para validar que exista el registro
+			Optional<Bases> baseFidelidadOptional = basesService.findById(FIDELIDAD);
+
+			// Si existe algún valor realiza la actualizacion
+			if (baseFidelidadOptional.isPresent()) {
+				Bases baseFidelidad = baseFidelidadOptional.get();
+				baseFidelidad.setVc_dia_inicio_proceso(dComienzoProceso);
+				baseFidelidad.setVc_dia_fin_proceso(dFinalProceso);
+				baseFidelidad.setVc_hora_inicio_proceso(hComienzoProceso);
+				baseFidelidad.setVc_hora_fin_proceso(hFinalProceso);
+				baseFidelidad.setVc_periodo_ejecucion_proceso(mPeriodoEjecucion);
+				baseFidelidad.setVc_ruta_proceso(rutaArchivo);
+				basesService.actualizarUsuario(baseFidelidad);
+			}
+
+			return "redirect:/ofertasAutomaticas/index";
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@PostMapping("/guardarParamCampanaVIP")
+	public String guardarParamCampanaVIP(@RequestParam("dComienzoCampana") String dComienzoCampana,
+			@RequestParam("dFinalCampana") String dFinalCampana,
+			@RequestParam("hComienzoCampana") String hComienzoCampana,
+			@RequestParam("hFinalCampana") String hFinalCampana,
+			@RequestParam("mPeriodoCampana") String mPeriodoCampana) {
+
+		try {
+			logger.info("Ejecutando guardarParamCampanaVIP");
+
+			// Buscamos por ID en bases para validar que exista el registro
+			Optional<Bases> baseCampanaOptional = basesService.findById(CAMPANAS_VIP);
+
+			// Si existe algún valor realiza la actualizacion
+			if (baseCampanaOptional.isPresent()) {
+				Bases baseCampana = baseCampanaOptional.get();
+				baseCampana.setVc_dia_inicio_proceso(dComienzoCampana);
+				baseCampana.setVc_dia_fin_proceso(dFinalCampana);
+				baseCampana.setVc_hora_inicio_proceso(hComienzoCampana);
+				baseCampana.setVc_hora_fin_proceso(hFinalCampana);
+				baseCampana.setVc_periodo_ejecucion_proceso(mPeriodoCampana);
+				basesService.actualizarUsuario(baseCampana);
+			}
+
+			return "redirect:/ofertasAutomaticas/index";
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
+
+	@PostMapping("/guardarClasificacion")
+	public String guardarClasificacion(@RequestParam("base") Integer base,
+			@RequestParam("nomClasificacion") String nomClasificacion, @RequestParam("abrevacion") String abrevacion,
+			@RequestParam("codigoClasificacion") String codigoClasificacion,
+			@RequestParam("vigenciaClasificacion") Integer vigenciaClasificacion,
+			@RequestParam("mensajeClasificacion") String mensajeClasificacion,
+			@RequestParam("confMensaje") boolean confMensaje, 
+			@RequestParam(name = "id", required = false) Integer id) {
+
+		try {
+			logger.info("Ejecutando guardarClasificacion");
+			System.out.println("id: " + id);
+			Integer integerValue = confMensaje ? 1 : 0;
+			LocalDateTime localDateTime = LocalDateTime.now();
+
+			Optional<Bases> tipoBase = basesService.findById(base);
+
+			// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
+			// HH:mm:ss");
+			System.out.println("base: " + base);
+			System.out.println("nomClasificacion: " + nomClasificacion.toUpperCase());
+			System.out.println("abrevacion: " + abrevacion.toUpperCase());
+			System.out.println("codigoClasificacion: " + codigoClasificacion.toUpperCase());
+			System.out.println("vigenciaClasificacion: " + vigenciaClasificacion);
+			System.out.println("mensajeClasificacion: " + mensajeClasificacion);
+			System.out.println("integerValue: " + integerValue);
+			System.out.println("localDateTime: " + localDateTime);
+
+			if (id != null) {
+				System.out.println("Entro en id!=null");
+				Optional<ClasificacionBases> clasificacionExistente = clasificacionBasesService.findById(id);
+				System.out.println("clasificacionExistente: " + clasificacionExistente.get().getPk_id_clasificacion());
+				if (clasificacionExistente.isPresent()) {
+					ClasificacionBases clasificacionBases = clasificacionExistente.get();
+					clasificacionBases.setVc_nombre_clasificacion(nomClasificacion.toUpperCase());
+					clasificacionBases.setVc_abreviacion_clasificacion(abrevacion.toUpperCase());
+					clasificacionBases.setVc_codigo_clasificacion(codigoClasificacion.toUpperCase());
+					clasificacionBases.setI_vigencia_clasificacion(vigenciaClasificacion);
+					clasificacionBases.setI_configuracion_mensaje(integerValue);
+					clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
+					clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+
+					clasificacionBasesService.actualizarClasificacion(clasificacionBases);
+
+					System.out.println("Nombre Base: " + tipoBase.get().getVc_nombre_base());
+					return "redirect:/ofertasAutomaticas/index";
+				} else {
+					// Manejar el escenario donde el ID no corresponde a un registro existente
+					return "El ID de clasificación no es válido.";
+				}
+			} else {
+				ClasificacionBases clasificacionBases = new ClasificacionBases();
+				clasificacionBases.setVc_nombre_clasificacion(nomClasificacion.toUpperCase());
+				clasificacionBases.setVc_abreviacion_clasificacion(abrevacion.toUpperCase());
+				clasificacionBases.setVc_codigo_clasificacion(codigoClasificacion.toUpperCase());
+				clasificacionBases.setI_vigencia_clasificacion(vigenciaClasificacion);
+				clasificacionBases.setDt_fecha_registro(localDateTime);
+				clasificacionBases.setI_configuracion_mensaje(integerValue);
+				clasificacionBases.setI_estatus_clasificacion(1);
+				clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
+				clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+
+				clasificacionBasesService.save(clasificacionBases);
+
+				System.out.println("Nombre Base: " + tipoBase.get().getVc_nombre_base());
+				return "redirect:/ofertasAutomaticas/index";
+			}
+
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			e.printStackTrace();
+			return e.getMessage();
+		}
+
+	}
+	
+	//Metodos Nuevos paa consulta de Informacion.
+	//Optional<Bases>
+	
+	@GetMapping("/consultaParametros")
+	public ResponseEntity<?> consultaParametros(@RequestParam(name = "idBase") Integer idBase){		
+		try {
+			logger.info("/consultaParametros"+idBase);
+			return ResponseEntity.ok(basesService.findById(idBase));
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
+	@PostMapping("/actualizarParametro")
+	public ResponseEntity<?> actualizarParametro(
+			@RequestParam(name = "idBase") Integer basesID, 
+			@RequestParam(name = "dComienzoProceso") String dComienzoProceso, 
+			@RequestParam(name = "dFinalProceso") String dFinalProceso,
+			@RequestParam(name = "hComienzoProceso") String hComienzoProceso,
+			@RequestParam(name = "hFinalProceso") String hFinalProceso,
+			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion,
+			@RequestParam(name = "rutaArchivo") String rutaArchivo
+			){
+		logger.info("/actualizarParametro");
+		String mensaje ="Actualizo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
+				//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible actualizar. Intente mas tarde.");
+			}
+			
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(""+e.getMessage());
+			return null;
+		}
+	}
+	/***
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtParametros")
+	public ResponseEntity<List<Bases>> obtenerFolios(Model model) {
+		 logger.info("/obtParametros");
+		try {
+			return ResponseEntity.ok(baseService.findAll());
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
+	/***
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtClasificacion")
+	public ResponseEntity<List<ClasificacionBases>> obtClasificacion(Model model) {
+		 logger.info("/obtClasificacion");
+		try {
+			return ResponseEntity.ok(clasificacionBasesService.findAll());
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+	}
+	/**
+	 * Metodo para dar de alta una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/altaClasificacion")
+	public ResponseEntity<?> altaClasificacion(
+			@RequestParam(name = "idBase") Integer idBase, 
+			@RequestParam(name = "nomClasificacion") String nomClasificacion, 
+			@RequestParam(name = "abrevacion") String abrevacion,
+			@RequestParam(name = "codigoClasificacion") String codigoClasificacion,
+			@RequestParam(name = "vigenciaClasificacion") Integer vigenciaClasificacion,
+			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
+			){
+		logger.info("/altaClasificacion");
+		String mensaje ="Registro Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {		
+			//clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion,codigoClasificacion)
+			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
+				if(clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion) == 0) {
+					LocalDateTime  fecha = LocalDateTime.now();
+					
+					ClasificacionBases altaClasificacion = new ClasificacionBases();
+					altaClasificacion.setFk_id_base(basesService.findById(idBase).orElseThrow());
+					altaClasificacion.setVc_nombre_clasificacion(nomClasificacion);
+					altaClasificacion.setVc_abreviacion_clasificacion(abrevacion);
+					altaClasificacion.setVc_codigo_clasificacion(codigoClasificacion);
+					altaClasificacion.setI_vigencia_clasificacion(vigenciaClasificacion);
+					altaClasificacion.setVc_mensaje_clasificacion(mensajeClasificacion);
+					altaClasificacion.setDt_fecha_registro(fecha);
+					altaClasificacion.setI_estatus_clasificacion(ACTIVO);
+					
+					clasificacionBasesService.save(altaClasificacion);
+					respuesta.add(mensaje);
+				}else {
+					mensaje = "Existe Clasificación, se recomienda editar el registro existente";
+					respuesta.add(mensaje);
+				}
+			}else {
+				mensaje = "Existe codigo Clasificacion registrado.";
+				respuesta.add(mensaje);
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	//Metodos Nuevos para consulta de Informacion.
+	//Optional<Bases>
+	
+	@GetMapping("/consultaClasificacion")
+	public ResponseEntity<?> consultaClasificacion(@RequestParam(name = "idClass") Integer idClass){		
+		try {
+			logger.info("/consultaClasificacion"+idClass);
+			return ResponseEntity.ok(clasificacionBasesService.findById(idClass));
+		} catch (Exception e) {
+			System.out.print("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * Metodo para modificar una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/modClasificacion")
+	public ResponseEntity<?> modClasificacion(
+			@RequestParam(name = "idClass") Integer idClass,
+			@RequestParam(name = "idBase") Integer idBase, 
+			@RequestParam(name = "nomClasificacion") String nomClasificacion, 
+			@RequestParam(name = "abrevacion") String abrevacion,
+			@RequestParam(name = "codigoClasificacion") String codigoClasificacion,
+			@RequestParam(name = "vigenciaClasificacion") Integer vigenciaClasificacion,
+			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
+			){
+		logger.info("/modClasificacion");
+		String mensaje ="Actualizo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+		
+			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
+				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
+					fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+					respuesta.add(mensaje);
+					
+				}else {
+					respuesta.add("No fue posible actualizar, intente mas tarde.");
+				}
+			}else {
+				mensaje = "No fue posible actualizar. Existe codigo clasificacion registrado.";
+				respuesta.add(mensaje);
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	/**
+	 * Metodo para activar una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/activarClasificacion")
+	public ResponseEntity<?> activarClasificacion(
+			@RequestParam(name = "idClass") Integer idClass
+			){
+		logger.info("/activarClasificacion");
+		String mensaje ="Activo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			if(clasificacionBasesService.activarClasificacion(idClass) == 1) {
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible activar, intente mas tarde.");
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	/**
+	 * Metodo para inactivar una clasificacion
+	 * @return
+	 */
+	
+	@PostMapping("/bajaClasificacion")
+	public ResponseEntity<?> bajaClasificacion(
+			@RequestParam(name = "idClass") Integer idClass
+			){
+		logger.info("/inactivarClasificacion");
+		String mensaje ="Inactivo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible activar, intente mas tarde.");
+			}
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	/***
+	 * 
+	 * @return
+	 */
+	@PostMapping("/ejecutarProceso")
+	public ResponseEntity<?> ejecutarProceso(
+			@RequestParam(name = "idBase") Integer idBase
+			){
+		String estatusProceso = "P";//procesando
+		LocalDate fecha = LocalDate.now();
+		
+		logger.info("/ejecutarProceso");
+		String mensaje ="El proceso ha terminado.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			//registrar Proceso de BD
+			ProcesoBase nuevoProceso = new ProcesoBase();
+			nuevoProceso.setI_tipo_base(idBase);
+			nuevoProceso.setDt_fecha_registro(fecha);
+			nuevoProceso.setVc_estatus_proceso(estatusProceso);
+			procesoService.save(nuevoProceso);
+			
+			
+			switch(idBase) {
+			case 1:
+				System.out.print("Base de Nomina");
+				nominaTareaConfiguracion.procesarNomina();
+				respuesta.add("Ejecutar Base Nomina");
+				break;
+			case 2:
+				fidelidadTareaConfiguracion.ejecutarFidelidad();			
+				respuesta.add("Ejecutar Base Fidelidad");
+				break;
+			case 3:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
+					respuesta.add("Ejecutar Base Campañas VIP");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+				}
+				
+				break;
+			}
+			generarArchivoOA();
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			System.out.print("Error"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	public void generarArchivoOA() {
+		try {
+			String parametros="";
+			String nombreArchivo = "rpt_layout_Ofertas_Automaticas";
+			Bases datos = basesService.findById(2).get();
+			String urlDirectorio = datos.getVc_ruta_proceso();
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
+			jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
+		} catch (Exception e) {
+			System.out.println("Error"+e.getMessage());
+		}
+
+	}
+	
+	public int validarAcceso() {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		
+		
+	}
+
+}

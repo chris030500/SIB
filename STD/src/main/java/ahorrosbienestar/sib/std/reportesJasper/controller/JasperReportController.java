@@ -30,6 +30,10 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.reportesJasper.component.Desencriptar;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.FileOutputStream;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/exportarReporte")
@@ -139,6 +143,66 @@ public class JasperReportController {
     				    .headers(h2).body(new ByteArrayResource(responseBody));
     					    		
     	
+		} catch (Exception e) {
+			System.out.print(""+e.getMessage());
+		}
+		return null;
+    }
+	
+	@SuppressWarnings("deprecation")
+	@RequestMapping("generarArchivoRuta")
+    public ResponseEntity<Resource> generarArchivoRuta(
+    			@RequestParam(name = "idReporte") Integer idReporte
+    			, @RequestParam(name = "parametros") String parametros
+    			, @RequestParam(name = "tipoDocumento") String tipoDocumento
+    			, @RequestParam(name = "identificadorDoc") String identificadorDoc
+    			, @RequestParam(name = "rutaCreacion") String rutaCreacion) {
+   	 
+    	try {
+    		/**
+    		 * 
+    		 * para el campo parametros si envian mas de 1 parametro usar el caracter "~" para dividir los parametros ejemplo: FECHA_INICIO=2023/03/01~FECHA_FIN=2023/03/05
+						
+    		 */
+    					logger.info("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
+						ReporteJasper report = iReporteRepository.getById(idReporte);
+    				
+    					String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
+    					
+    					logger.info("url:"+urlGenerarReporte);
+    				
+    					
+    					HttpHeaders headers = new HttpHeaders();
+    				    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
+    				    		//configService.findAll().get(16).getVc_valor_propiedad());
+    					headers.set("Content-Type",report.getVc_tipo_contenido());
+    					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
+      					
+    					   					
+    					// Request Body
+    					MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+    					// Request Entity
+    					HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+    					
+    					// RestTemplate
+    					RestTemplate restTemplate = new RestTemplate();
+
+    					// DELETE cancelar
+    					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
+
+    					// ResponseBody
+    					byte[] responseBody = response.getBody();
+    					
+    					
+    					Path archivoPath = Paths.get(rutaCreacion+"/"+identificadorDoc+report.getVc_extension());
+    					
+    					FileOutputStream archivoOutputStream = new FileOutputStream(archivoPath.toString());
+    					archivoOutputStream.write(responseBody);
+    					
+    					archivoOutputStream.close();
+    					System.out.println("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
+
 		} catch (Exception e) {
 			System.out.print(""+e.getMessage());
 		}

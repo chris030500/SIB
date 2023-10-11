@@ -39,6 +39,7 @@ import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioController {
+
  
     @Autowired
     private UsuarioService usuarioService;
@@ -134,7 +135,6 @@ public class UsuarioController {
     @GetMapping("/mensajeContrasena")
     public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
 //        InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
-//
 //        Properties properties = new Properties();
 //        properties.load(inputStream);
         logger.info("Ejecutando mensajeContrasena");
