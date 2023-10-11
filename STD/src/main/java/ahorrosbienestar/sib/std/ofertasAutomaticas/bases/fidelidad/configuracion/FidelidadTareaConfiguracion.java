@@ -51,7 +51,6 @@ import java.text.DecimalFormat;
 @Configuration
 @EnableScheduling
 public class FidelidadTareaConfiguracion {
-
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
@@ -98,15 +97,20 @@ public class FidelidadTareaConfiguracion {
 	}
 
 	public void actualizarExpresionCronFidelidad() {
-		System.out.println("actualizarExpresionCronFidelidad:");
-		synchronized (cronTaskLockFidelidad) {
-			if (cronTaskFidelidad != null) {
-				cronTaskFidelidad.cancel(true);
-			}
+		
+		try {
+			System.out.println("actualizarExpresionCronFidelidad:");
+			synchronized (cronTaskLockFidelidad) {
+				if (cronTaskFidelidad != null) {
+					cronTaskFidelidad.cancel(true);
+				}
 
-			String nuevaExpresionCron = calcularExpresionCronFidelidad();
-			cronTaskFidelidad = taskSchedulerFidelidad.schedule(() -> ejecutarFidelidad(),
-					new CronTrigger(nuevaExpresionCron));
+				String nuevaExpresionCron = calcularExpresionCronFidelidad();
+				cronTaskFidelidad = taskSchedulerFidelidad.schedule(() -> ejecutarFidelidad(),
+						new CronTrigger(nuevaExpresionCron));
+			}
+		} catch (Exception e) {
+			System.out.print("Error:"+e.getMessage());
 		}
 	}
 
@@ -577,15 +581,20 @@ public class FidelidadTareaConfiguracion {
 
 	@Scheduled(cron = "0 30 8,20 * * *") // Ejecutar cada 30 min
 	public void continuarEjecucion() {
-		System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
-		if (!lastExecutionSuccessful) {
-			actualizarExpresionCronFidelidad(); // Continuar ejecución según el cron en caso de error
-		} else {
-			int currentMonth = LocalDate.now().getMonthValue()-1;
-			if (lastSuccessfulMonth != currentMonth) {
-				lastSuccessfulMonth = currentMonth; // Marcar el mes exitoso
-				actualizarExpresionCronFidelidad(); // Reiniciar el cron para el próximo mes
+		try {
+			logger.error("lastExecutionSuccessful: " + lastExecutionSuccessful);
+			System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
+			if (!lastExecutionSuccessful) {
+				actualizarExpresionCronFidelidad(); // Continuar ejecución según el cron en caso de error
+			} else {
+				int currentMonth = LocalDate.now().getMonthValue()-1;
+				if (lastSuccessfulMonth != currentMonth) {
+					lastSuccessfulMonth = currentMonth; // Marcar el mes exitoso
+					actualizarExpresionCronFidelidad(); // Reiniciar el cron para el próximo mes
+				}
 			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
 		}
 	}
 

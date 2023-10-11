@@ -47,8 +47,13 @@ public class NominaTareaConfiguracion {
 
     @PostConstruct
     public void init() {
-        String expresionCronInicial = calcularExpresionCron();
-        cronTaskLiquidadoConvenio = taskScheduler.schedule(this::ejecutarNomina, new CronTrigger(expresionCronInicial));
+        try {
+          	String expresionCronInicial = calcularExpresionCron();
+            cronTaskLiquidadoConvenio = taskScheduler.schedule(this::ejecutarNomina, new CronTrigger(expresionCronInicial));
+		} catch (Exception e) {
+			logger.error(""+e.getMessage());
+		}
+  
         //cronTask = taskScheduler.schedule(() -> ejecutarNominaLiquidadosConvenio(), new CronTrigger(expresionCronInicial));
     }
 
@@ -141,13 +146,19 @@ public class NominaTareaConfiguracion {
     @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
     public void actualizarExpresionCron() {
     	System.out.println("actualizarExpresionCron:");
-    	synchronized (cronTaskLock) {
-            if (cronTaskLiquidadoConvenio != null) {
-                cronTaskLiquidadoConvenio.cancel(true);
-            }
+    	try {
+    		synchronized (cronTaskLock) {
+                if (cronTaskLiquidadoConvenio != null) {
+                    cronTaskLiquidadoConvenio.cancel(true);
+                }
 
-            String nuevaExpresionCron = calcularExpresionCron();
-            cronTaskLiquidadoConvenio = taskScheduler.schedule(() -> ejecutarNomina(), new CronTrigger(nuevaExpresionCron));
-        }
+                String nuevaExpresionCron = calcularExpresionCron();
+                cronTaskLiquidadoConvenio = taskScheduler.schedule(() -> ejecutarNomina(), new CronTrigger(nuevaExpresionCron));
+            }
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+		}
+    	
+    	
     }
 }
