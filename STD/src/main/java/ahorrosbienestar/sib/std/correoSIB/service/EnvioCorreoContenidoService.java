@@ -27,6 +27,7 @@ public class EnvioCorreoContenidoService {
 	@SuppressWarnings("deprecation")
 	public List<ContenidoCorreo> contenidoCorreo(String titulo, String errores) {
 		try {
+			logger.info("titulo"+titulo+" errores:"+errores);;
 			String sql = "CALL SIB.SP_MNS_CORREO(?,?);";
 			List<ContenidoCorreo> ls = jdbcTemplate.query(sql, new Object[] {titulo,errores},
 					new RowMapper<ContenidoCorreo>() {
@@ -41,6 +42,7 @@ public class EnvioCorreoContenidoService {
 					});
 			return ls;
 		} catch (Exception e) {
+			logger.error("error"+e.getMessage());
 			System.out.println("error"+e.getMessage());
 			return null;
 		}
