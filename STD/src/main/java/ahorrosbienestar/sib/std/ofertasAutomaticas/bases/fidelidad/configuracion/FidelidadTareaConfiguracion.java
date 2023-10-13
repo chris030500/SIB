@@ -158,6 +158,7 @@ public class FidelidadTareaConfiguracion {
 					incorrectHeaders = comparadorEncabezados.compararHeader(urlDirectorio + "/" + archivo);
 					if (incorrectHeaders.isEmpty()) {
 						System.out.println("El archivo y los encabezados son válidos.");
+						logger.info("El archivo y los encabezados son válidos.");
 						try {
 							System.out.println("Entro en try para procesarArchivoExcel");
 							procesarArchivoExcel(urlDirectorio + "/" + archivo);
@@ -236,6 +237,7 @@ public class FidelidadTareaConfiguracion {
 					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 				}
 				System.out.println("for de row: " + (i + 1));
+				logger.info("for de row: " + (i + 1));
 				rowNull = "El renglon: " + (i + 1)+" contiene datos nulos, todos los datos son obligatorios.";
 				// StringBuilder error = new StringBuilder("Registro " + (i + 1) + ": ");
 
@@ -243,6 +245,7 @@ public class FidelidadTareaConfiguracion {
 					double clienteIdCellValue = row.getCell(0).getNumericCellValue();
 					int clienteId = (int) clienteIdCellValue; // Convertir a int
 					System.out.println("clienteId: " + clienteId);
+					logger.info("clienteId: " + clienteId);
 				} catch (IllegalStateException e) {
 					System.out.println("Error en clienteId: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
@@ -424,6 +427,7 @@ public class FidelidadTareaConfiguracion {
 				}
 				titulo = "ERROR CONTENIDO";
 				envioCorreoService.prepararCorreo(titulo,erroresMns);
+				logger.info("Error archivo:"+erroresMns);
 
 			} else {
 				// Llamar al método para insertar en BD solo si no hay errores

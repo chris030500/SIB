@@ -6,12 +6,14 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,6 +29,8 @@ public class EnvioCorreoService {
 	
 	@Autowired
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
+	@Autowired
+	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
 	
 	@Autowired
 	public EnvioCorreoService(JavaMailSender mailSender, EnvioCorreoContenidoService envioCorreoContenidoService) {
@@ -46,6 +50,8 @@ public class EnvioCorreoService {
 				
 			}
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			logger.info("Error:"+e.getStackTrace());
 			System.out.println(e.getMessage());
 		}
 	}
@@ -59,6 +65,8 @@ public class EnvioCorreoService {
 		    correo.setText(mensaje);
 		    mailSender.send(correo);
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			logger.info("Error:"+e.getStackTrace());
 			System.out.println(e.getMessage());
 		}
 		
@@ -78,6 +86,8 @@ public class EnvioCorreoService {
 			
 			mailSender.send(message);
 		} catch (MessagingException e) {
+			logger.info("Error:"+e.getMessage());
+			logger.info("Error:"+e.getStackTrace());
 			System.out.print("Error:"+e.getMessage());
 			e.printStackTrace();
 		}
