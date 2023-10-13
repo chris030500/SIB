@@ -204,6 +204,7 @@ public class FidelidadTareaConfiguracion {
 			
 			envioCorreoService.prepararCorreo(titulo,errores);
 			lastExecutionSuccessful = false;
+			
 		} finally {
 			isRunning = false; // Desbloquear la ejecución
 		}
