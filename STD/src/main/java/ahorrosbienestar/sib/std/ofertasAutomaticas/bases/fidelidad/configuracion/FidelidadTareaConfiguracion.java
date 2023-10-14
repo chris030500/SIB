@@ -3,10 +3,14 @@
  */
 package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -15,13 +19,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import java.io.FileInputStream;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,11 +35,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.correoCSO.model.CorreoCSO;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ArchivoValidadorComponent;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.component.ComparadorEncabezadosComponent;
@@ -43,7 +43,6 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.model.Fidelid
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service.FidelidadService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
-import java.text.DecimalFormat;
 /**
  * @author osvaldo.escamilla
  *
@@ -110,7 +109,8 @@ public class FidelidadTareaConfiguracion {
 						new CronTrigger(nuevaExpresionCron));
 			}
 		} catch (Exception e) {
-			System.out.print("Error:"+e.getMessage());
+			logger.error("Error:"+e.getMessage());
+		
 		}
 	}
 
@@ -169,9 +169,9 @@ public class FidelidadTareaConfiguracion {
 							lastExecutionSuccessful = true; // Marcar como exitoso
 
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							System.out.println("Error al cargar la informacion en BD");
-							System.out.println(e.getMessage());
+							
+							logger.error("Error:"+e.getMessage());
+							
 							e.printStackTrace();
 							lastExecutionSuccessful = false;
 						}
@@ -181,7 +181,8 @@ public class FidelidadTareaConfiguracion {
 						errores = "";
 						for (String incorrectHeader : incorrectHeaders) {
 							errores = errores+"-"+incorrectHeader+"<br>";
-							System.out.println("- " + incorrectHeader);
+							logger.error("- " + incorrectHeader);
+							
 						}
 						titulo = "ERROR ENCABEZADO";
 						envioCorreoService.prepararCorreo(titulo,errores);
@@ -190,6 +191,7 @@ public class FidelidadTareaConfiguracion {
 						//eliminarArchivo(urlDirectorio + "/" + archivo);
 					}
 				} catch (IOException e) {
+					logger.error("Error:"+e.getMessage());
 					e.printStackTrace();
 					lastExecutionSuccessful = false;
 				}
@@ -197,12 +199,13 @@ public class FidelidadTareaConfiguracion {
 				//vc_nombre_propiedad tabla TBL_MNS_CORREO
 				titulo = "NO EXISTE ARCHIVO"; 
 				envioCorreoService.prepararCorreo(titulo,errores);
-				System.out.println("Archivo no encontrado.");
+				logger.info("Archivo no encontrado.");
+				
 				lastExecutionSuccessful = false;
 			}
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
 			titulo = "NO EXISTE ARCHIVO"; 
-			
 			envioCorreoService.prepararCorreo(titulo,errores);
 			lastExecutionSuccessful = false;
 			
@@ -236,7 +239,7 @@ public class FidelidadTareaConfiguracion {
 					envioCorreoService.prepararCorreo(titulo,"Tiene vaores nulos la Fila " + (i + 1) + ".Todos los datos son requeridos");
 					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 				}
-				System.out.println("for de row: " + (i + 1));
+				
 				logger.info("for de row: " + (i + 1));
 				rowNull = "El renglon: " + (i + 1)+" contiene datos nulos, todos los datos son obligatorios.";
 				// StringBuilder error = new StringBuilder("Registro " + (i + 1) + ": ");
@@ -247,44 +250,49 @@ public class FidelidadTareaConfiguracion {
 					System.out.println("clienteId: " + clienteId);
 					logger.info("clienteId: " + clienteId);
 				} catch (IllegalStateException e) {
-					System.out.println("Error en clienteId: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en clienteId: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
 					continue; // Ir a la siguiente fila
 				}
 				try {
 					String nombreCliente = row.getCell(1).getStringCellValue();
-					System.out.println("nombreCliente: " + nombreCliente);
+					
+					logger.info("nombreCliente: " + nombreCliente);
 				} catch (IllegalStateException e) {
-					System.out.println("Error en nombreCliente: El valor no es una cadena de texto.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en nombreCliente: El valor no es una cadena de texto.");
 					errores.add("Fila " + (i + 1) + " El campo Nombre Cliente no es una cadena de texto");
 					continue; // Ir a la siguiente fila
 				}
 
 				try {
 					String region = row.getCell(2).getStringCellValue();
-					System.out.println("region: " + region);
+					logger.info("region: " + region);
 				} catch (IllegalStateException e) {
-					System.out.println("Error en region: El valor no es una cadena de texto.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en region: El valor no es una cadena de texto.");
 					errores.add("Fila " + (i + 1) + " El campo Region no es una cadena de texto");
 					continue; // Ir a la siguiente fila
 				}
 
 				try {
 					String nombreSucursal = row.getCell(3).getStringCellValue();
-					System.out.println("nombreSucursal: " + nombreSucursal);
+					logger.info("nombreSucursal: " + nombreSucursal);
 				} catch (IllegalStateException e) {
 					// TODO: handle exception
-					System.out.println("Error en nombreSucursal: El valor no es una cadena de texto.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en nombreSucursal: El valor no es una cadena de texto.");
 					errores.add("Fila " + (i + 1) + " El campo Nombre Sucursal no es una cadena de texto");
 					continue; // Ir a la siguiente fila
 				}
 
 				try {
 					Date fechaNacimiento = row.getCell(4).getDateCellValue();
-					System.out.println("fechaNacimiento: " + dateFormat.format(fechaNacimiento));
+					logger.info("fechaNacimiento: " + dateFormat.format(fechaNacimiento));
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en fechaNacimiento: El valor no es una fecha valida.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en fechaNacimiento: El valor no es una fecha valida.");
 					errores.add("Fila " + (i + 1) + " El campo Fecha de Nacimiento no es una fecha valida ");
 					continue;
 				}
@@ -292,10 +300,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double edadCellValue = row.getCell(5).getNumericCellValue();
 					int edad = (int) edadCellValue;
-					System.out.println("edad: " + edad);
+					logger.info("edad: " + edad);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en edad: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en edad: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Edad no es numérico");
 					continue;
 				}
@@ -303,30 +311,30 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double creditoIdCellValue = row.getCell(6).getNumericCellValue();
 					int creditoId = (int) creditoIdCellValue;
-					System.out.println("creditoId: " + creditoId);
+					logger.info("creditoId: " + creditoId);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en creditoId: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en creditoId: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Credito Id no es numérico");
 					continue;
 				}
 
 				try {
 					String nombreProducto = row.getCell(7).getStringCellValue();
-					System.out.println("nombreProducto: " + nombreProducto);
+					logger.info("nombreProducto: " + nombreProducto);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en nombreProducto: El valor no es una cadena de texto.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en nombreProducto: El valor no es una cadena de texto.");
 					errores.add("Fila " + (i + 1) + " El campo Nombre Producto no es una cadena de texto");
 					continue;
 				}
 
 				try {
 					double montoOriginal = row.getCell(8).getNumericCellValue();
-					System.out.println("montoOriginal: " + montoOriginal);
+					logger.info("montoOriginal: " + montoOriginal);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en montoOriginal: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en montoOriginal: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Monto Original no es numérico");
 					continue;
 				}
@@ -334,10 +342,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
 					int maxDiasMora = (int) maxDiasMoraCellValue;
-					System.out.println("maxDiasMora: " + maxDiasMora);
+					logger.info("maxDiasMora: " + maxDiasMora);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en maxDiasMora: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en maxDiasMora: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numérico");
 					continue;
 				}
@@ -345,10 +353,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double telCelularCellValue = row.getCell(10).getNumericCellValue();
 					int telCelular = (int) telCelularCellValue;
-					System.out.println("telCelular: " + telCelular);
+					logger.info("telCelular: " + telCelular);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en telCelular: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en telCelular: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numérico");
 					continue;
 				}
@@ -356,10 +364,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double telRecadosCellValue = row.getCell(11).getNumericCellValue();
 					int telRecados = (int) telRecadosCellValue;
-					System.out.println("telRecados: " + telRecados);
+					logger.info("telRecados: " + telRecados);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en telRecados: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en telRecados: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numérico");
 					continue;
 				}
@@ -367,10 +375,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
 					int telEmpleado = (int) telEmpleadoCellValue;
-					System.out.println("telEmpleado: " + telEmpleado);
+					logger.info("telEmpleado: " + telEmpleado);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en telEmpleado: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en telEmpleado: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numérico");
 					continue;
 				}
@@ -378,10 +386,10 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
 					int telReferencia1 = (int) telReferencia1CellValue;
-					System.out.println("telReferencia1: " + telReferencia1);
+					logger.info("telReferencia1: " + telReferencia1);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en telReferencia1: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en telReferencia1: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numérico");
 					continue;
 				}
@@ -389,21 +397,21 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
 					int telReferencia2 = (int) telReferencia2CellValue;
-					System.out.println("telReferencia2: " + telReferencia2);
+					logger.info("telReferencia2: " + telReferencia2);
 
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en telReferencia2: El valor no es numérico.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en telReferencia2: El valor no es numérico.");
 					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
 					continue;
 				}
 				
 				try {
 					String plazoOferta = row.getCell(15).getStringCellValue();
-					System.out.println("plazoOferta: " + plazoOferta);
+					logger.info("plazoOferta: " + plazoOferta);
 				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					System.out.println("Error en plazoOferta: El valor no es una cadena de texto.");
+					logger.error("Error:"+e.getMessage());
+					logger.info("Error en plazoOferta: El valor no es una cadena de texto.");
 					errores.add("Fila " + (i + 1) + " El campo plazo oferta no es una cadena de texto");
 					continue; // Ir a la siguiente fila
 				}
@@ -431,7 +439,7 @@ public class FidelidadTareaConfiguracion {
 
 			} else {
 				// Llamar al método para insertar en BD solo si no hay errores
-				System.out.println("No hay errores");
+				logger.info("No hay errores");
 				try {
 					
 					Date fechaRegistro = new Date();
@@ -534,7 +542,7 @@ public class FidelidadTareaConfiguracion {
 					listaFidelidad.clear();
 					
 				} catch (Exception e) {
-					System.out.println("Error al insertar en la base de datos: " + e.getMessage());
+					
 					logger.error("Error al insertar en la base de datos: " + e.getMessage());
 					throw e;
 				}
@@ -545,7 +553,7 @@ public class FidelidadTareaConfiguracion {
 			inputStream.close();
 			//eliminarArchivo(filePath);
 		} catch (Exception e) {
-			System.out.println("");
+			logger.error("Error:"+e.getMessage());
 			titulo = "ERROR CONTENIDO";
 			envioCorreoService.prepararCorreo(titulo,rowNull);
 		}
@@ -557,7 +565,7 @@ public class FidelidadTareaConfiguracion {
 	public void procesarCampaniaFidelidad() {
 		
 		try {
-			System.out.println("ejecutar comparativaREUSClienteSNPublicidad");
+			logger.info("ejecutar CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 			jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 		} catch (Exception e) {
 			logger.error("Error: "+e.getMessage());
@@ -570,9 +578,9 @@ public class FidelidadTareaConfiguracion {
 	    try {
 	        Path path = Paths.get(filePath);
 	        Files.deleteIfExists(path);
-	        System.out.println("Archivo eliminado: " + filePath);
+	        logger.info("Archivo eliminado: " + filePath);
 	    } catch (IOException e) {
-	        System.out.println("Error al eliminar el archivo: " + e.getMessage());
+	    	logger.error("Error al eliminar el archivo: " + e.getMessage());
 	    }
 	}
 
@@ -588,7 +596,7 @@ public class FidelidadTareaConfiguracion {
 	public void continuarEjecucion() {
 		try {
 			logger.error("lastExecutionSuccessful: " + lastExecutionSuccessful);
-			System.out.println("lastExecutionSuccessful: " + lastExecutionSuccessful);
+
 			if (!lastExecutionSuccessful) {
 				actualizarExpresionCronFidelidad(); // Continuar ejecución según el cron en caso de error
 			} else {

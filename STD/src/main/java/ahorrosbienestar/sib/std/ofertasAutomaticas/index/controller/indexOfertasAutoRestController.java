@@ -34,9 +34,9 @@ public class indexOfertasAutoRestController {
 		logger.info("Ingreso en validarClasificacion");
 		String codigoClas = codigoClasificacion.toUpperCase();
 		Optional<ClasificacionBases> existeClasificacionBase = clasificacionBasesService.validarExistClasiBase(base, nomClasificacion, codigoClas);
-		System.out.println("base: " + base);
-		System.out.println("nomClasificacion: " + nomClasificacion);
-		System.out.println("codigoClasificacion: " + codigoClas);
+		logger.info("base: " + base);
+		logger.info("nomClasificacion: " + nomClasificacion);
+		logger.info("codigoClasificacion: " + codigoClas);
 		
 		//System.out.println("existeClasificacionBase: " + existeClasificacionBase.get().getVc_nombre_clasificacion());
 		if (clasificacionId != null && existeClasificacionBase.isPresent()) {
@@ -49,12 +49,12 @@ public class indexOfertasAutoRestController {
 	    }
 		
 		if(existeClasificacionBase.isPresent()) {
+			
 			logger.info("Ya existe un registro similar en la clasificacion de bases");
-			System.out.println("Ya existe un registro similar en la clasificacion de bases");
 			return ResponseEntity.ok("Ya existe un registro similar en la clasificacion de bases");
 		} else {
 			logger.info("No existe un registro similar en la clasificacion de bases");
-			System.out.println("No existe un registro similar en la clasificacion de bases");
+			logger.info("No existe un registro similar en la clasificacion de bases");
 			return ResponseEntity.ok("continuar");
 			
 		}
@@ -78,7 +78,7 @@ public class indexOfertasAutoRestController {
 			 //return ResponseEntity.ok("ok");
 			return ResponseEntity.ok(clasificacionBasesService.cambiarEstatusClasificacion(id, estatus) );
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("Error:"+e.getMessage());
 			return ResponseEntity.notFound().build();
 		}
 		
