@@ -92,5 +92,9 @@ public class BasesService {
 		return iBasesRepository.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo);
 	}
 
+	public Bases obtBase(Integer id) {
+		return iBasesRepository.obtBase(id);
+	}
+
 
 }

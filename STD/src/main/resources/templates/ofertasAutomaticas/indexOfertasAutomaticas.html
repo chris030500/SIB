@@ -158,12 +158,18 @@
 							</div>
 							<div class="form-group">
 								<label for="abrevacion">Abreviación de la clasificación: </label>
-								<input type="text" class="form-control" id="abrevacion" maxlength="100" placeholder="Abreviación de la clasificación." onkeyup="mayusculas(this);">
-								<div id="contAbrevia">0/100</div>
+								<select class="form-control" id="abrevacion" onchange="mostrarCodigo(this)">
+									<option value="0">Seleccione una base</option>
+									<option th:each="tipoCampania : ${cat_tipo_campanias}" th:value="${tipoCampania.i_opcion}"
+										th:text="${tipoCampania.v_pantalla}" th:for="${tipoCampania.v_valor}">
+									</option>
+								</select>
+								<!--<input type="text" class="form-control" id="abrevacion" maxlength="100" placeholder="Abreviación de la clasificación." onkeyup="mayusculas(this);">-->
+								<!--<div id="contAbrevia">0/100</div>-->
 							</div>
 							<div class="form-group">
 								<label for="codigoClasificacion">Agregar codigo de clasificación: </label>
-								<input type="text" class="form-control" id="codigoClasificacion" maxlength="2" placeholder="Agregar codigo de clasificación." onkeyup="mayusculas(this);">
+								<input type="text" class="form-control" id="codigoClasificacion" maxlength="2" placeholder="Agregar codigo de clasificación." onkeyup="mayusculas(this);" th:disabled="true">
 							</div>
 							<div class="form-group">
 								<label for="vigenciaClasificacion">Vigencia en días
@@ -185,7 +191,7 @@
 								<!--<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}" disabled />-->
 								<label>Mensaje Default Campaña</label>
 								<textarea type="text-Area" class="form-control" id="msnCampania"
-								maxlength="200" rows="4" th:text="${mensajeCampana}" th:value="${mensajeCampana}" disabled></textarea>
+								maxlength="200" rows="4" th:text="${mensajeCampana}" th:value="${mensajeCampana}"></textarea>
 								<!--<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
 									th:title="'Mensaje Configurado: '+ ${mensajeCampana}">
 								</button>-->
