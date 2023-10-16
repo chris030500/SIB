@@ -521,11 +521,11 @@ public class indexOfertasAutoController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			//registrar Proceso de BD
-			ProcesoBase nuevoProceso = new ProcesoBase();
-			nuevoProceso.setI_tipo_base(idBase);
-			nuevoProceso.setDt_fecha_registro(fecha);
-			nuevoProceso.setVc_estatus_proceso(estatusProceso);
-			procesoService.save(nuevoProceso);
+			//ProcesoBase nuevoProceso = new ProcesoBase();
+			//nuevoProceso.setI_tipo_base(idBase);
+			//nuevoProceso.setDt_fecha_registro(fecha);
+			//nuevoProceso.setVc_estatus_proceso(estatusProceso);
+			//procesoService.save(nuevoProceso);
 			
 			
 			switch(idBase) {
