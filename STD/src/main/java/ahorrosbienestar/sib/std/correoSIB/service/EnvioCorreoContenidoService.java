@@ -43,7 +43,6 @@ public class EnvioCorreoContenidoService {
 			return ls;
 		} catch (Exception e) {
 			logger.error("error"+e.getMessage());
-			System.out.println("error"+e.getMessage());
 			return null;
 		}
 	}

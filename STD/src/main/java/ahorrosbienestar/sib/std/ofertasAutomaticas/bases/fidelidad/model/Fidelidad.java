@@ -77,6 +77,9 @@ public class Fidelidad {
 	
 	@Column(name = "VC_PLAZO_OFERTA", columnDefinition = "VARCHAR(100)")
 	private String vc_plazo_oferta;
+	
+	@Column(name = "I_PROCESO", columnDefinition = "INT DEFAULT 0")
+	private int i_proceso;
 
 	public int getPk_id_fidelidad() {
 		return pk_id_fidelidad;
@@ -244,6 +247,14 @@ public class Fidelidad {
 
 	public void setVc_plazo_oferta(String vc_plazo_oferta) {
 		this.vc_plazo_oferta = vc_plazo_oferta;
+	}
+
+	public int getI_proceso() {
+		return i_proceso;
+	}
+
+	public void setI_proceso(int i_proceso) {
+		this.i_proceso = i_proceso;
 	}
 	
 	

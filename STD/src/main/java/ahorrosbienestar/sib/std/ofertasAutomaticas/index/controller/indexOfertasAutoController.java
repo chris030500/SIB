@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
@@ -102,6 +103,10 @@ public class indexOfertasAutoController {
 	@Autowired 
 	private JasperReportController jasperReportController;
 	
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
 
 	@GetMapping("/index")
@@ -109,8 +114,8 @@ public class indexOfertasAutoController {
 	 try {
 		if(validarAcceso()== 1){
 			logger.info("Ejecutando ofertasAutomaticas");
-					
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
+			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
 			//model.addAttribute("lista_configuracion", baseService.findAll());
@@ -123,7 +128,7 @@ public class indexOfertasAutoController {
 		return rutaDireccion;
 	 }catch(Exception e) {
 		
-		 System.out.println(""+e.getMessage());
+		 logger.error(""+e.getMessage());
 	 }	
 	 return null;
 	}
@@ -204,7 +209,7 @@ public class indexOfertasAutoController {
 
 		try {
 			logger.info("Ejecutando guardarClasificacion");
-			System.out.println("id: " + id);
+			logger.info("id: " + id);
 			Integer integerValue = confMensaje ? 1 : 0;
 			LocalDateTime localDateTime = LocalDateTime.now();
 
@@ -212,19 +217,19 @@ public class indexOfertasAutoController {
 
 			// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
 			// HH:mm:ss");
-			System.out.println("base: " + base);
-			System.out.println("nomClasificacion: " + nomClasificacion.toUpperCase());
-			System.out.println("abrevacion: " + abrevacion.toUpperCase());
-			System.out.println("codigoClasificacion: " + codigoClasificacion.toUpperCase());
-			System.out.println("vigenciaClasificacion: " + vigenciaClasificacion);
-			System.out.println("mensajeClasificacion: " + mensajeClasificacion);
-			System.out.println("integerValue: " + integerValue);
-			System.out.println("localDateTime: " + localDateTime);
+			logger.info("base: " + base);
+			logger.info("nomClasificacion: " + nomClasificacion.toUpperCase());
+			logger.info("abrevacion: " + abrevacion.toUpperCase());
+			logger.info("codigoClasificacion: " + codigoClasificacion.toUpperCase());
+			logger.info("vigenciaClasificacion: " + vigenciaClasificacion);
+			logger.info("mensajeClasificacion: " + mensajeClasificacion);
+			logger.info("integerValue: " + integerValue);
+			logger.info("localDateTime: " + localDateTime);
 
 			if (id != null) {
-				System.out.println("Entro en id!=null");
+				logger.info("Entro en id!=null");
 				Optional<ClasificacionBases> clasificacionExistente = clasificacionBasesService.findById(id);
-				System.out.println("clasificacionExistente: " + clasificacionExistente.get().getPk_id_clasificacion());
+				logger.info("clasificacionExistente: " + clasificacionExistente.get().getPk_id_clasificacion());
 				if (clasificacionExistente.isPresent()) {
 					ClasificacionBases clasificacionBases = clasificacionExistente.get();
 					clasificacionBases.setVc_nombre_clasificacion(nomClasificacion.toUpperCase());
@@ -237,7 +242,7 @@ public class indexOfertasAutoController {
 
 					clasificacionBasesService.actualizarClasificacion(clasificacionBases);
 
-					System.out.println("Nombre Base: " + tipoBase.get().getVc_nombre_base());
+					logger.info("Nombre Base: " + tipoBase.get().getVc_nombre_base());
 					return "redirect:/ofertasAutomaticas/index";
 				} else {
 					// Manejar el escenario donde el ID no corresponde a un registro existente
@@ -257,7 +262,7 @@ public class indexOfertasAutoController {
 
 				clasificacionBasesService.save(clasificacionBases);
 
-				System.out.println("Nombre Base: " + tipoBase.get().getVc_nombre_base());
+				logger.info("Nombre Base: " + tipoBase.get().getVc_nombre_base());
 				return "redirect:/ofertasAutomaticas/index";
 			}
 
@@ -278,7 +283,7 @@ public class indexOfertasAutoController {
 			logger.info("/consultaParametros"+idBase);
 			return ResponseEntity.ok(basesService.findById(idBase));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.info("--" + e.getMessage());
 			return null;
 		}
 		
@@ -307,8 +312,7 @@ public class indexOfertasAutoController {
 			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(""+e.getMessage());
+			logger.error(""+e.getMessage());
 			return null;
 		}
 	}
@@ -323,7 +327,7 @@ public class indexOfertasAutoController {
 		try {
 			return ResponseEntity.ok(baseService.findAll());
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("--" + e.getMessage());
 			return null;
 		}
 	}
@@ -338,7 +342,7 @@ public class indexOfertasAutoController {
 		try {
 			return ResponseEntity.ok(clasificacionBasesService.findAll());
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("--" + e.getMessage());
 			return null;
 		}
 	}
@@ -360,13 +364,13 @@ public class indexOfertasAutoController {
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {		
-			//clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion,codigoClasificacion)
+			Bases iBase = basesService.obtBase(idBase);
 			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
 				if(clasificacionBasesService.existeClasificacion(idBase,nomClasificacion,abrevacion) == 0) {
 					LocalDateTime  fecha = LocalDateTime.now();
 					
 					ClasificacionBases altaClasificacion = new ClasificacionBases();
-					altaClasificacion.setFk_id_base(basesService.findById(idBase).orElseThrow());
+					altaClasificacion.setFk_id_base(iBase);
 					altaClasificacion.setVc_nombre_clasificacion(nomClasificacion);
 					altaClasificacion.setVc_abreviacion_clasificacion(abrevacion);
 					altaClasificacion.setVc_codigo_clasificacion(codigoClasificacion);
@@ -387,6 +391,7 @@ public class indexOfertasAutoController {
 			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -401,7 +406,7 @@ public class indexOfertasAutoController {
 			logger.info("/consultaClasificacion"+idClass);
 			return ResponseEntity.ok(clasificacionBasesService.findById(idClass));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("--" + e.getMessage());
 			return null;
 		}
 		
@@ -441,6 +446,7 @@ public class indexOfertasAutoController {
 			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -467,6 +473,7 @@ public class indexOfertasAutoController {
 			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -492,6 +499,7 @@ public class indexOfertasAutoController {
 			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -513,11 +521,11 @@ public class indexOfertasAutoController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			//registrar Proceso de BD
-			ProcesoBase nuevoProceso = new ProcesoBase();
-			nuevoProceso.setI_tipo_base(idBase);
-			nuevoProceso.setDt_fecha_registro(fecha);
-			nuevoProceso.setVc_estatus_proceso(estatusProceso);
-			procesoService.save(nuevoProceso);
+			//ProcesoBase nuevoProceso = new ProcesoBase();
+			//nuevoProceso.setI_tipo_base(idBase);
+			//nuevoProceso.setDt_fecha_registro(fecha);
+			//nuevoProceso.setVc_estatus_proceso(estatusProceso);
+			//procesoService.save(nuevoProceso);
 			
 			
 			switch(idBase) {
@@ -543,7 +551,7 @@ public class indexOfertasAutoController {
 			generarArchivoOA();
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.print("Error"+e.getMessage());
+			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -559,7 +567,7 @@ public class indexOfertasAutoController {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
 		} catch (Exception e) {
-			System.out.println("Error"+e.getMessage());
+			logger.error("Error:"+e.getMessage());
 		}
 
 	}

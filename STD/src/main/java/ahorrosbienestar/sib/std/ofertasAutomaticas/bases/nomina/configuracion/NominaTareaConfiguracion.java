@@ -119,22 +119,16 @@ public class NominaTareaConfiguracion {
 
         if (basesService.esHorarioValido(horaInicio, horaFin) && basesService.esDiaValido(diaInicio)) {
         	procesarNomina();
-            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_CONVENIO(30)");
-            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_LIQUIDADOS_SN_CONVENIO(30)");
-            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_CONVENIO(30)");
-            //jdbcTemplate.update("CALL SIB.SP_MIGRAR_BASES_NOMINA_NLIQUIDADOS_SN_CONVENIO(30)");
-//            lastExecutionHadData = true; // Actualizar según los resultados del SP
-//            lastExecutionTime = System.currentTimeMillis();
         }
 
     }
     
     public synchronized void procesarNomina() {
     	try {
-    		System.out.println("Ejecuta los SP");
+    		logger.info("Ejecuta los SP");
         	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(1)");
 		} catch (Exception e) {
-			System.out.println("Error:"+e.getMessage());
+			logger.error("Error:"+e.getMessage());
 		}
     }
 
@@ -145,7 +139,7 @@ public class NominaTareaConfiguracion {
     //@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
     @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
     public void actualizarExpresionCron() {
-    	System.out.println("actualizarExpresionCron:");
+    	logger.info("actualizarExpresionCron:");
     	try {
     		synchronized (cronTaskLock) {
                 if (cronTaskLiquidadoConvenio != null) {

@@ -2,10 +2,11 @@
  * Metodos a ejecutar en la pantalla de Ofertas Automaticas.
  */
 //inicio de la pagina
+var procesoModificacion = 0;
 $(document).ready(function() {
 	btnsModal();
 	eventcontNomClas();
-	eventcontAbrevia();
+	//eventcontAbrevia();
 	eventmensajeClasificacion();
 	iniciaTblParametros();
 	iniciaTblClasificacion();
@@ -230,7 +231,18 @@ function btnsModal(){
  	});
  	
  	$("#btnRegistrarClasif").click(function() {
-			 DtosClasificacion();  		
+		 
+		 switch(procesoModificacion){
+			 case 1:
+				 idClasificacion = 0;
+				 dtosClasificacion();
+				 procesoModificacion = 0;
+				 break;
+			case 2:
+				 dtosClasificacion();
+				 procesoModificacion = 0;
+				break;
+		 }	
  	});
  	
 }
@@ -351,12 +363,12 @@ function peticionPost(metodo,metodoUrl){
 			$.blockUI({ message: 'Espere un momento...' });
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 100);
+			setTimeout($.unblockUI, 300);
 		},
 		success: function(respuesta) {
    			url = "";
-			swal({
-				title: "",
+			Swal.fire({
+				title: '',
 				text: respuesta[0],
 				icon: "success",
 				confirmButtonText: 'Aceptar'
@@ -372,7 +384,7 @@ function peticionPost(metodo,metodoUrl){
 				}else if(metodo == 3){
 					console.log("--");
 				}
-				setTimeout($.unblockUI, 100);
+				setTimeout($.unblockUI, 300);
 			});
 
 
@@ -389,13 +401,13 @@ function peticionPost(metodo,metodoUrl){
 //clasificacion 
 
 function limpiarDatosClasificacion(){
-	
+	procesoModificacion = 1;
 	document.getElementById("base").value = 0;
 	document.getElementById("nomClasificacion").value = '';
-	document.getElementById("abrevacion").value = '';
+	document.getElementById("abrevacion").value = 0;
 	document.getElementById("codigoClasificacion").value = '';
 	document.getElementById("vigenciaClasificacion").value = 1;
-	//document.getElementById("mensajeClasificacion").value = '';
+	document.getElementById("mensajeClasificacion").value = '';
 	//document.getElementById("mensajeClasificacion").style.display = "none";
 	//document.getElementById("contMns").style.display = "none";
 	//$("#confMensaje").prop('checked', false);
@@ -445,8 +457,8 @@ function validarVacioClasificacion(){
     	document.getElementById("nomClasificacion").style.borderColor = "#F70707";
     	correcto = correcto + 1;
    }
-   if(document.getElementById("abrevacion").value.length > 0 ){
-   		url = url + "&abrevacion="+ encodeURIComponent(document.getElementById("abrevacion").value);
+   if(document.getElementById("abrevacion").value > 0 ){
+   		url = url + "&abrevacion="+ encodeURIComponent(datoAbrevacion());
    		document.getElementById("abrevacion").style.borderColor = "";
    		correcto = correcto + 0;
    }else{
@@ -490,7 +502,16 @@ function validarVacioClasificacion(){
 	
 }
 
-function DtosClasificacion(){
+function datoAbrevacion(){
+	var textoAbrevacion = "";
+	var select = document.getElementById("abrevacion");
+	var textoAbrevacion = select.options[select.selectedIndex].text;
+	
+	console.log(""+textoAbrevacion);
+	return textoAbrevacion;
+}
+
+function dtosClasificacion(){
 	
 	if(validarVacioClasificacion() == 0){
 		console.log(getAbsolutePath()+url);
@@ -515,11 +536,13 @@ function mayusculas(comp){
 
 
 function editarClasificacion(idClasi){
+	
 	var obtClasificacion = "consultaClasificacion?idClass=";
 	limpiarDatosClasificacion();
 	url="";
 	url = getAbsolutePath() + obtClasificacion + idClasi;
 	peticionClasificacion(url);
+	procesoModificacion = 2;
 }
 
 function peticionClasificacion(ruta){
@@ -532,13 +555,25 @@ function modalClass(data){
 				   
 	document.getElementById("base").value = data.fk_id_base.pk_id_base;
 	document.getElementById("nomClasificacion").value = data.vc_nombre_clasificacion;
-	document.getElementById("abrevacion").value = data.vc_abreviacion_clasificacion;
 	document.getElementById("codigoClasificacion").value = data.vc_codigo_clasificacion;
 	document.getElementById("vigenciaClasificacion").value = data.i_vigencia_clasificacion;
 	document.getElementById("mensajeClasificacion").value = data.vc_mensaje_clasificacion;
+	opcionSelect(document.getElementById("abrevacion"),data.vc_abreviacion_clasificacion);
+	mostrarMensajeMod();
 	idClasificacion=data.pk_id_clasificacion;
-	
 	$("#modalClasificacion").modal("show");
+}
+
+function opcionSelect(idSelect,datoBuscar){
+	
+	for (var i = 0; i < idSelect.options.length; i++) {
+		console.log("texto"+idSelect.options[i].text);
+  		if (idSelect.options[i].text == datoBuscar) {
+    	// Asigna el valor de la opción correspondiente al <select>
+   		 idSelect.value = idSelect.options[i].value;
+   		 break; // Puedes detener la iteración una vez que se ha encontrado la coincidencia.
+  	}
+}
 }
 
 function activarClasificacion(idClass){
@@ -611,4 +646,32 @@ function mostrarMensaje(idB){
 	
 }
 
+function mostrarCodigo(idCodigo){
+	var idSelect = document.getElementById($(idCodigo).attr('id'));
+	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
+	var codigo = opcionSeleccionada.getAttribute("for");
+	
+	document.getElementById("codigoClasificacion").value = codigo;
+	console.log(""+codigo);
+}
+
+function mostrarMensajeMod(){
+	
+	var idSelect = document.getElementById($(document.getElementById("base")).attr('id'));
+	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
+	iMensaje = opcionSeleccionada.getAttribute("for");
+	
+	if(iMensaje == 1){
+		document.getElementById("mnsCampania").style.display = "block";
+	}else{
+		document.getElementById("mnsCampania").style.display = "none";
+	}
+	
+	if(iMensaje == 2){
+		document.getElementById("contenidoCheckbox").style.display = "block";
+	}else{
+		document.getElementById("contenidoCheckbox").style.display = "none";
+	}
+	
+}
 

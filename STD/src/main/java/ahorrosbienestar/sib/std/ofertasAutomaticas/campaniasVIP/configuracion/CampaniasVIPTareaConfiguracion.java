@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.zone.ZoneRules;
 import java.util.concurrent.ScheduledFuture;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 
 /***
@@ -40,11 +42,9 @@ public class CampaniasVIPTareaConfiguracion {
     
     private final Object cronTaskLock = new Object(); // Para sincronización
     
-    
-    
-    
-    
-    
+
+    private static final Logger logger = Logger.getLogger(CampaniasVIPTareaConfiguracion.class);
+
     private String calcularExpresionCron() {
     	System.out.println("calcularExpresionCron:");
         Bases datos = basesService.findById(3).get(); //cambiar para Buscar por nombre
@@ -97,14 +97,14 @@ public class CampaniasVIPTareaConfiguracion {
         
         String horaFormateada = horaActualZonaHoraria.format(formato);
         
-        System.out.println("----------------------------");
-        System.out.println("ejecutarNominaLiquidadosConvenio");
-        System.out.println("horaInicio: " + horaInicio);
-        System.out.println("horaFin: " + horaFin);
-        System.out.println("diaInicio: " + diaInicio);
-        System.out.println("horaEjecutada: " + horaFormateada);
-        System.out.println("intervalo: " + datos.getVc_periodo_ejecucion_proceso());
-        System.out.println("-----------------------------");
+        logger.info("----------------------------");
+        logger.info("ejecutarNominaLiquidadosConvenio");
+        logger.info("horaInicio: " + horaInicio);
+        logger.info("horaFin: " + horaFin);
+        logger.info("diaInicio: " + diaInicio);
+        logger.info("horaEjecutada: " + horaFormateada);
+        logger.info("intervalo: " + datos.getVc_periodo_ejecucion_proceso());
+        logger.info("-----------------------------");
 
         if (basesService.esHorarioValido(horaInicio, horaFin) && basesService.esDiaValido(diaInicio)) {
         	procesarCampaniasVIP();
@@ -114,10 +114,10 @@ public class CampaniasVIPTareaConfiguracion {
     
     public synchronized void procesarCampaniasVIP() {
     	try {
-    		System.out.println("Ejecuta los SP");
+    		logger.info("Ejecuta los SP");
         	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(3)");
 		} catch (Exception e) {
-			System.out.println("Error:"+e.getMessage());
+			logger.error("Error:"+e.getMessage());
 		}
     
     }
@@ -128,7 +128,7 @@ public class CampaniasVIPTareaConfiguracion {
     //@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
     @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
     public void actualizarExpresionCron() {
-    	System.out.println("actualizarExpresionCron:");
+    	logger.info("actualizarExpresionCron:");
     	synchronized (cronTaskLock) {
             if (cronTaskCampaniasVIP != null) {
             	cronTaskCampaniasVIP.cancel(true);
