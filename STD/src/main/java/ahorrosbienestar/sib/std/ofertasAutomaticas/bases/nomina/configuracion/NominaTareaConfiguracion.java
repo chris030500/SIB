@@ -1,25 +1,25 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion;
 
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.zone.ZoneRules;
-import java.util.concurrent.ScheduledFuture;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
+import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.index.service.IndexOfertasAutomaticasService;
 
 /**
  * @author osvaldo.escamilla
@@ -38,121 +38,99 @@ public class NominaTareaConfiguracion {
 
     private static final Logger logger = Logger.getLogger(NominaTareaConfiguracion.class);
 
-    @Autowired
-    private TaskScheduler taskScheduler;
-
-    private ScheduledFuture<?> cronTaskLiquidadoConvenio;
+	@Autowired
+	private TaskScheduler taskSchedulerNomina;
+	@Autowired
+	private InformacionService informacionService;
+	@Autowired
+	private IndexOfertasAutomaticasService indexOfertasAutomaticasService;
+	
+	@Autowired
+	private EnvioCorreoService envioCorreoService;
+	
+	@Autowired
+    public NominaTareaConfiguracion(TaskScheduler taskSchedulerNomina) {
+        this.taskSchedulerNomina = taskSchedulerNomina;
+    }
     
-    private final Object cronTaskLock = new Object(); // Para sincronización
+    private int idBase = 1;
+	@Value("${my.job.cron}")
+	private String expresionCron;
 
     @PostConstruct
     public void init() {
+    	
         try {
-          	String expresionCronInicial = calcularExpresionCron();
-            cronTaskLiquidadoConvenio = taskScheduler.schedule(this::ejecutarNomina, new CronTrigger(expresionCronInicial));
+        	actualizarExpresionCronNomina();	
 		} catch (Exception e) {
 			logger.error(""+e.getMessage());
 		}
-  
-        //cronTask = taskScheduler.schedule(() -> ejecutarNominaLiquidadosConvenio(), new CronTrigger(expresionCronInicial));
     }
+    
+	public void actualizarExpresionCronNomina() {
+		try {
+			
+			logger.info("Proceso de Nomina.");
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+			
+			for(ValidarEjecutarCronBase valBase : validacionCron) {
+				if(!valBase.getExpresionCron().equals(expresionCron)) {
+					expresionCron = valBase.getExpresionCron();
+					// Crea un nuevo trigger con la nueva expresión cron
+		            CronTrigger trigger = new CronTrigger(expresionCron);
+		            // Reemplaza el trigger existente con el nuevo trigger
+		            taskSchedulerNomina.schedule(() -> procesarCron(), trigger);
+		            logger.info("Se actualizo cron Nomina");
+		        	
+				}else {
+					logger.info("No se actualizo Nomina");
+		        	
+		        }
+				
+			}
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+		}
+	}
+	
+	public void procesarCron() {
+		logger.info("Proceso de Nomina");
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+		
+		try {
+			LocalTime horaActual = LocalTime.now();
 
-    private String calcularExpresionCron() {
-    	System.out.println("calcularExpresionCron:");
-        Bases datos = basesService.findById(1).get();
-        int intervalo = Integer.parseInt(datos.getVc_periodo_ejecucion_proceso());
-        int horaInicio = LocalTime.parse(datos.getVc_hora_inicio_proceso(), DateTimeFormatter.ofPattern("HH:mm"))
-                .getHour();
-        int horaFin = LocalTime.parse(datos.getVc_hora_fin_proceso(), DateTimeFormatter.ofPattern("HH:mm")).getHour();
-        int diaInicio = Integer.parseInt(datos.getVc_dia_inicio_proceso());
+	        // Crear un formateador para mostrar solo horas y minutos
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        return "0 */" + intervalo + " " + horaInicio + "-" + horaFin + " " + diaInicio + " * ?";
-    }
+	        // Formatear la hora actual y mostrarla
+	        String horaYMinutos = horaActual.format(formatter);
+			for(ValidarEjecutarCronBase valBase : validacionCron) {
+				if(valBase.getI_ejecutar() == 1) {
+					procesarNomina();
+					logger.info("Se ejecuto proceso Nomina:"+horaYMinutos);
+				}else {
+					logger.info("No es tiempo de ejecutar proceso Nomina:"+horaYMinutos);
+				}
+			}			
+			
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			logger.info("el proceso de Nomina no se ejecuto");
+		}
+	}
 
-    public void ejecutarNomina() {
-        // Tu lógica de ejecución aquí
-        Bases datos = basesService.findById(1).get();
-
-        String hInicio = datos.getVc_hora_inicio_proceso();
-        String hFin = datos.getVc_hora_fin_proceso();
-        String dInicio = datos.getVc_dia_inicio_proceso();
-
-        LocalTime horaInicioL = LocalTime.parse(hInicio, DateTimeFormatter.ofPattern("HH:mm"));
-        LocalTime horaFinL = LocalTime.parse(hFin, DateTimeFormatter.ofPattern("HH:mm"));
-
-        int horaInicio = horaInicioL.getHour();
-        int horaFin = horaFinL.getHour();
-        int diaInicio = Integer.parseInt(dInicio);
-        
-        ZoneId zonaHoraria = ZoneId.of("America/Mexico_City");
-        // Obtener la hora actual con minutos
-        LocalTime horaActualConMinutos = LocalTime.now(zonaHoraria);
-
-        // Formatear la hora actual con minutos en "HH:mm"
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-        
-        //String horaFormateada = horaActualConMinutos.format(formato);
-
-     // Obtener la hora actual en la zona horaria especificada
-        ZonedDateTime horaActualZonaHoraria = ZonedDateTime.now(zonaHoraria);
-     // Verificar si la zona horaria actual está en horario de verano
-        ZoneRules zoneRules = zonaHoraria.getRules();
-        boolean esHorarioVerano = zoneRules.isDaylightSavings(horaActualZonaHoraria.toInstant());
-
-        // Si es horario de verano, restar una hora a la hora actual
-        if (esHorarioVerano) {
-            horaActualZonaHoraria = horaActualZonaHoraria.minusHours(1);
-        }
-        
-        //System.out.println("horaActualZonaHoraria: " + horaActualZonaHoraria);
-        
-        String horaFormateada = horaActualZonaHoraria.format(formato);
-        
-        System.out.println("----------------------------");
-        System.out.println("ejecutarNominaLiquidadosConvenio");
-        System.out.println("horaInicio: " + horaInicio);
-        System.out.println("horaFin: " + horaFin);
-        System.out.println("diaInicio: " + diaInicio);
-        System.out.println("horaEjecutada: " + horaFormateada);
-        System.out.println("intervalo: " + datos.getVc_periodo_ejecucion_proceso());
-        System.out.println("-----------------------------");
-
-        if (basesService.esHorarioValido(horaInicio, horaFin) && basesService.esDiaValido(diaInicio)) {
-        	procesarNomina();
-        }
-
-    }
     
     public synchronized void procesarNomina() {
     	try {
-    		logger.info("Ejecuta los SP");
+    		logger.info("Ejecuta los SP nomina");
         	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(1)");
+        	indexOfertasAutomaticasService.generarArchivoOA();
+        	
+        	String titulo = "REGISTROS DE NOMINA";
+			envioCorreoService.prepararCorreo(titulo,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
-    }
-
-
-
-    // Método para actualizar la tarea programada con una nueva expresión 
-    
-    //@Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor según tus necesidades)
-    @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00 P.M
-    public void actualizarExpresionCron() {
-    	logger.info("actualizarExpresionCron:");
-    	try {
-    		synchronized (cronTaskLock) {
-                if (cronTaskLiquidadoConvenio != null) {
-                    cronTaskLiquidadoConvenio.cancel(true);
-                }
-
-                String nuevaExpresionCron = calcularExpresionCron();
-                cronTaskLiquidadoConvenio = taskScheduler.schedule(() -> ejecutarNomina(), new CronTrigger(nuevaExpresionCron));
-            }
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-		}
-    	
-    	
     }
 }

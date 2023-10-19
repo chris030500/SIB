@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -151,6 +152,7 @@ public class JasperReportController {
 	
 	@SuppressWarnings("deprecation")
 	@RequestMapping("generarArchivoRuta")
+	@Transactional
     public ResponseEntity<Resource> generarArchivoRuta(
     			@RequestParam(name = "idReporte") Integer idReporte
     			, @RequestParam(name = "parametros") String parametros
@@ -167,41 +169,48 @@ public class JasperReportController {
     					logger.info("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
 						ReporteJasper report = iReporteRepository.getById(idReporte);
     				
-    					String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
-    					
-    					logger.info("url:"+urlGenerarReporte);
+						try {
+							String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
+							
+							logger.info("url:"+urlGenerarReporte);
+		    				
+	    					
+	    					HttpHeaders headers = new HttpHeaders();
+	    				    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
+	    				    		//configService.findAll().get(16).getVc_valor_propiedad());
+	    					headers.set("Content-Type",report.getVc_tipo_contenido());
+	    					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
+	      					
+	    					   					
+	    					// Request Body
+	    					MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+	    					// Request Entity
+	    					HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+	    					
+	    					// RestTemplate
+	    					RestTemplate restTemplate = new RestTemplate();
+
+	    					// DELETE cancelar
+	    					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
+
+	    					// ResponseBody
+	    					byte[] responseBody = response.getBody();
+	    					
+	    					
+	    					Path archivoPath = Paths.get(rutaCreacion+"/"+identificadorDoc+report.getVc_extension());
+	    					
+	    					FileOutputStream archivoOutputStream = new FileOutputStream(archivoPath.toString());
+	    					archivoOutputStream.write(responseBody);
+	    					
+	    					archivoOutputStream.close();
+	    					System.out.println("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
+	    					
+						} catch (Exception e) {
+							System.out.println("Error:"+e.getMessage());
+						}
     				
     					
-    					HttpHeaders headers = new HttpHeaders();
-    				    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
-    				    		//configService.findAll().get(16).getVc_valor_propiedad());
-    					headers.set("Content-Type",report.getVc_tipo_contenido());
-    					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
-      					
-    					   					
-    					// Request Body
-    					MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-
-    					// Request Entity
-    					HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-    					
-    					// RestTemplate
-    					RestTemplate restTemplate = new RestTemplate();
-
-    					// DELETE cancelar
-    					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
-
-    					// ResponseBody
-    					byte[] responseBody = response.getBody();
-    					
-    					
-    					Path archivoPath = Paths.get(rutaCreacion+"/"+identificadorDoc+report.getVc_extension());
-    					
-    					FileOutputStream archivoOutputStream = new FileOutputStream(archivoPath.toString());
-    					archivoOutputStream.write(responseBody);
-    					
-    					archivoOutputStream.close();
-    					System.out.println("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
 
 		} catch (Exception e) {
 			System.out.print(""+e.getMessage());

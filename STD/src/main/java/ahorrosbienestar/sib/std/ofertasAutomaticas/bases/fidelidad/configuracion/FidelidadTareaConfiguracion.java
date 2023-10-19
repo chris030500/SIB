@@ -11,13 +11,11 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -27,11 +25,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +41,9 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.model.Fidelid
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service.FidelidadService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.index.service.IndexOfertasAutomaticasService;
 /**
  * @author osvaldo.escamilla
  *
@@ -73,83 +74,105 @@ public class FidelidadTareaConfiguracion {
 	
 	@Autowired
 	private EnvioCorreoService envioCorreoService;
+	
+	@Autowired
+	private InformacionService informacionService;
+	
+	@Autowired
+	private IndexOfertasAutomaticasService indexOfertasAutomaticasService;
+		
+
+	@Autowired
+    public FidelidadTareaConfiguracion(TaskScheduler taskSchedulerFidelidad) {
+        this.taskSchedulerFidelidad = taskSchedulerFidelidad;
+    }
 
 	private static final Logger logger = Logger.getLogger(FidelidadTareaConfiguracion.class);
 
-	private ScheduledFuture<?> cronTaskFidelidad;
-
-	private final Object cronTaskLockFidelidad = new Object(); // Para sincronización
-
 	private boolean isRunning = false; // Variable de bloqueo
-	private boolean lastExecutionSuccessful = false;
-	private int lastSuccessfulMonth = -1;
+	private int contRegistro = 0;
 	private String titulo = ""; 
 	private String errores = "";
 	private String propiedadNombreArchivo = "archivoFidelidad";
 	private String propiedadNombreHoja = "hojaFidelidad";
+	private int idBase = 2;
+	@Value("${my.job.cron}")
+	private String expresionCron;
 
 	@PostConstruct
 	public void init() {
-
-		actualizarExpresionCronFidelidad();
+		try {
+			actualizarExpresionCronFidelidad();
+		} catch (Exception e) {
+			logger.error("error:"+e.getMessage());
+		}
 
 	}
-
-	public void actualizarExpresionCronFidelidad() {
+	
+	
+	public void procesarCron() {
+		logger.info("Proceso de fidelidad..");
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
 		
 		try {
-			System.out.println("actualizarExpresionCronFidelidad:");
-			synchronized (cronTaskLockFidelidad) {
-				if (cronTaskFidelidad != null) {
-					cronTaskFidelidad.cancel(true);
-				}
+			LocalTime horaActual = LocalTime.now();
 
-				String nuevaExpresionCron = calcularExpresionCronFidelidad();
-				cronTaskFidelidad = taskSchedulerFidelidad.schedule(() -> ejecutarFidelidad(),
-						new CronTrigger(nuevaExpresionCron));
-			}
+	        // Crear un formateador para mostrar solo horas y minutos
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+	        // Formatear la hora actual y mostrarla
+	        String horaYMinutos = horaActual.format(formatter);
+			for(ValidarEjecutarCronBase valBase : validacionCron) {
+				if(valBase.getI_ejecutar() == 1) {
+					ejecutarFidelidad();
+					
+					logger.info("Se ejecuto proceso Fidelidad:"+horaYMinutos);
+				}else {
+					logger.info("No es tiempo de ejecutar proceso Fidelidd:"+horaYMinutos);
+				}
+			}			
+			
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-		
+			logger.error("el proceso no se ejecuto: "+e.getMessage());
 		}
 	}
 
-	private String calcularExpresionCronFidelidad() {
-		System.out.println("calcularExpresionCronFidelidad:");
-		Bases datos = basesService.findById(2).get();
-		int intervalo = Integer.parseInt(datos.getVc_periodo_ejecucion_proceso());
-		int horaInicio = LocalTime.parse(datos.getVc_hora_inicio_proceso(), DateTimeFormatter.ofPattern("HH:mm"))
-				.getHour();
-		int horaFin = LocalTime.parse(datos.getVc_hora_fin_proceso(), DateTimeFormatter.ofPattern("HH:mm")).getHour();
-		int diaInicio = Integer.parseInt(datos.getVc_dia_inicio_proceso());
-		int diaFin = Integer.parseInt(datos.getVc_dia_fin_proceso());
-
-		return "0 */" + intervalo + " " + horaInicio + "-" + horaFin + " " + diaInicio + "," + diaFin + " * ?";
-		// return "0 */" + intervalo + " " + horaInicio + "-" + horaFin + " " +
-		// diaInicio + " * ?";
+	public void actualizarExpresionCronFidelidad() {
+		try {
+			
+			logger.info("Proceso de fidelidad..");
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+			
+			for(ValidarEjecutarCronBase valBase : validacionCron) {
+				if(!valBase.getExpresionCron().equals(expresionCron)) {
+					expresionCron = valBase.getExpresionCron();
+					// Crea un nuevo trigger con la nueva expresión cron
+		            CronTrigger trigger = new CronTrigger(expresionCron);
+		            // Reemplaza el trigger existente con el nuevo trigger
+		            taskSchedulerFidelidad.schedule(() -> procesarCron(), trigger);
+		            logger.info("Se actualizo cron Fidelidad");
+				}else {
+					logger.info("No se actualizo cron Fidelidad");
+		        }
+				
+			}
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			System.out.print("Error:"+e.getMessage());
+		}
 	}
-
+	
 	public synchronized void ejecutarFidelidad() {
-		System.out.println("ejecutarFidelidad");
+		logger.info("ejecutarFidelidad");
 		Bases datos = basesService.findById(2).get();
 		
 		
 		String archivo = configService.valorPropiedad(propiedadNombreArchivo).getVc_valor_propiedad(); 
 				//configService.obtenerConfiguracion(69).getVc_valor_propiedad();
 		String urlDirectorio = datos.getVc_ruta_proceso();
-		System.out.println("urlDirectorio: " + urlDirectorio);
-		System.out.println("archivo: " + archivo);
-		//e
-		lastExecutionSuccessful = false;
-		if (lastExecutionSuccessful) {
-			System.out.println("ejecutarFidelidad: Ejecución anterior fallida. Salida temprana.");
-			return;
-		}
-
-		if (isRunning) {
-			System.out.println("ejecutarFidelidad: El proceso ya está en ejecución. Salida temprana.");
-			return;
-		}
+		logger.info("urlDirectorio: " + urlDirectorio);
+		logger.info("archivo: " + archivo);
+		
 		try {
 			isRunning = true; // Bloquear la ejecución
 			if (archivoValidador.existeArchivo(urlDirectorio, archivo)) {
@@ -165,15 +188,13 @@ public class FidelidadTareaConfiguracion {
 							// Se manda a llamar el metodo para validar REUS y Clientes SN publicidad
 							//comparativaREUSClienteSNPublicidad();
 							procesarCampaniaFidelidad();
-
-							lastExecutionSuccessful = true; // Marcar como exitoso
+							indexOfertasAutomaticasService.generarArchivoOA();
 
 						} catch (ParseException e) {
 							
 							logger.error("Error:"+e.getMessage());
 							
 							e.printStackTrace();
-							lastExecutionSuccessful = false;
 						}
 
 					} else {
@@ -186,28 +207,25 @@ public class FidelidadTareaConfiguracion {
 						}
 						titulo = "ERROR ENCABEZADO";
 						envioCorreoService.prepararCorreo(titulo,errores);
-						lastExecutionSuccessful = false;
-						//Enviamos el metodo para borrar el archivo excel
-						//eliminarArchivo(urlDirectorio + "/" + archivo);
+						
 					}
 				} catch (IOException e) {
 					logger.error("Error:"+e.getMessage());
 					e.printStackTrace();
-					lastExecutionSuccessful = false;
 				}
 			} else {
-				//vc_nombre_propiedad tabla TBL_MNS_CORREO
+				
 				titulo = "NO EXISTE ARCHIVO"; 
 				envioCorreoService.prepararCorreo(titulo,errores);
 				logger.info("Archivo no encontrado.");
 				
-				lastExecutionSuccessful = false;
 			}
+			
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 			titulo = "NO EXISTE ARCHIVO"; 
 			envioCorreoService.prepararCorreo(titulo,errores);
-			lastExecutionSuccessful = false;
+			
 			
 		} finally {
 			isRunning = false; // Desbloquear la ejecución
@@ -219,10 +237,9 @@ public class FidelidadTareaConfiguracion {
 		String rowNull ="";	
 		
 		try {
-			System.out.println("procesarArchivoExcel");
+			logger.info("procesarArchivoExcel");
 			String nombreHoja = configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
-					//configService.obtenerConfiguracion(70).getVc_valor_propiedad();
-			System.out.println("nombreHoja: " + nombreHoja);
+			logger.info("nombreHoja: " + nombreHoja);
 			FileInputStream inputStream = new FileInputStream(filePath);
 			Workbook workbook = new XSSFWorkbook(inputStream);
 			Sheet sheet = workbook.getSheet(nombreHoja); // Cambiar al nombre correcto de la hoja
@@ -231,19 +248,16 @@ public class FidelidadTareaConfiguracion {
 																			// en la celda
 			List<String> errores = new ArrayList<>();
 			int filaInicial = 1;
-			// for (Row row : sheet) {
+			
 			for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 				Row row = sheet.getRow(i);
 				if (row == null || row.getCell(0) == null) {
-					titulo = "ERROR CONTENIDO";
-					envioCorreoService.prepararCorreo(titulo,"Tiene vaores nulos la Fila " + (i + 1) + ".Todos los datos son requeridos");
 					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 				}
 				
 				logger.info("for de row: " + (i + 1));
 				rowNull = "El renglon: " + (i + 1)+" contiene datos nulos, todos los datos son obligatorios.";
-				// StringBuilder error = new StringBuilder("Registro " + (i + 1) + ": ");
-
+				
 				try {
 					double clienteIdCellValue = row.getCell(0).getNumericCellValue();
 					int clienteId = (int) clienteIdCellValue; // Convertir a int
@@ -416,18 +430,12 @@ public class FidelidadTareaConfiguracion {
 					continue; // Ir a la siguiente fila
 				}
 
-
-				// Luego, puedes llamar a un método para insertar los datos en la base de datos
-				// fidelidadService.insertarEnBD(clienteId, nombreCliente, region,
-				// nombreSucursal, fechaNacimiento, edad, creditoId, nombreProducto,
-				// montoOriginal, maxDiasMora, telCelular, telRecados, telEmpleado,
-				// telReferencia1, telReferencia2);
 			}
 
-			System.out.println("lista errores: " + errores.isEmpty());
+			logger.error("lista errores: " + errores.isEmpty());
 			if (!errores.isEmpty()) {
 				// Mostrar o manejar los errores encontrados antes de insertar en BD
-				System.out.println("HAY ERRORES: ");
+				logger.info("HAY ERRORES: ");
 				String erroresMns = "";
 				for (String error : errores) {
 					erroresMns = erroresMns+"-"+error+"<br>";
@@ -441,14 +449,17 @@ public class FidelidadTareaConfiguracion {
 				// Llamar al método para insertar en BD solo si no hay errores
 				logger.info("No hay errores");
 				try {
+				
 					
 					Date fechaRegistro = new Date();
 					List<Fidelidad> listaFidelidad = new ArrayList<>();
 					for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 						Row row = sheet.getRow(i);
 						if (row == null || row.getCell(0) == null) {
+							contRegistro = i;
 							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 						}
+						
 						DecimalFormat decimalFormat = new DecimalFormat("#");
 						
 						Fidelidad registroExcel = new Fidelidad();
@@ -523,14 +534,6 @@ public class FidelidadTareaConfiguracion {
 						registroExcel.setDt_fecha_registro(fechaRegistro);
 						
 						
-						// Obtener los valores de las celdas y llamar al método insertarEnBD
-						// throw new RuntimeException("Simulando error al insertar en la base de
-						// datos");
-						
-						/*fidelidadService.insertarEnBD(clienteId, nombreCliente, region, nombreSucursal,
-								fechaFormateadaComoDate, edad, creditoId, nombreProducto, montoOriginal, maxDiasMora,
-								telCelular, telRecados, telEmpleado, telReferencia1, telReferencia2);*/
-						
 						listaFidelidad.add(registroExcel);
 						if(listaFidelidad.size() == 1000) {
 							fidelidadService.registrarFidelidad(listaFidelidad);
@@ -538,6 +541,7 @@ public class FidelidadTareaConfiguracion {
 						}
 						
 					}
+					
 					fidelidadService.registrarFidelidad(listaFidelidad);
 					listaFidelidad.clear();
 					
@@ -551,7 +555,7 @@ public class FidelidadTareaConfiguracion {
 
 			workbook.close();
 			inputStream.close();
-			//eliminarArchivo(filePath);
+			
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 			titulo = "ERROR CONTENIDO";
@@ -567,11 +571,12 @@ public class FidelidadTareaConfiguracion {
 		try {
 			logger.info("ejecutar CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 			jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
+			
+			titulo = "REGISTROS DE FIDELIDAD";
+			envioCorreoService.prepararCorreo(titulo,Integer.toString(contRegistro-1));
 		} catch (Exception e) {
 			logger.error("Error: "+e.getMessage());
 		}
-		
-		
 	}
 	
 	private void eliminarArchivo(String filePath) {
@@ -584,31 +589,7 @@ public class FidelidadTareaConfiguracion {
 	    }
 	}
 
-	// Método para actualizar la tarea programada con una nueva expresión
-	// @Scheduled(cron = "0 0 8,20 * * *") // Ejecutar diario a las 8:00 A.M y 8:00
-	// P.M
-	// @Scheduled(fixedDelay = 60000) // Ejecutar cada 60 segundos (ajusta el valor
-	// según tus necesidades)
-	//fixedDelay = 60000 
-	//@Scheduled(cron = "0 0 8,20 * * *")
 
-	@Scheduled(cron = "0 30 8,20 * * *") // Ejecutar cada 30 min
-	public void continuarEjecucion() {
-		try {
-			logger.error("lastExecutionSuccessful: " + lastExecutionSuccessful);
 
-			if (!lastExecutionSuccessful) {
-				actualizarExpresionCronFidelidad(); // Continuar ejecución según el cron en caso de error
-			} else {
-				int currentMonth = LocalDate.now().getMonthValue()-1;
-				if (lastSuccessfulMonth != currentMonth) {
-					lastSuccessfulMonth = currentMonth; // Marcar el mes exitoso
-					actualizarExpresionCronFidelidad(); // Reiniciar el cron para el próximo mes
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-		}
-	}
 
 }

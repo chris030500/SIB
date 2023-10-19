@@ -304,7 +304,17 @@ public class indexOfertasAutoController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
-				//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+				switch(basesID){
+					case 1:
+						nominaTareaConfiguracion.actualizarExpresionCronNomina();
+					case 2:
+						fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+						break;
+					case 3:
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampanias();
+						break;					
+				}
+				
 				respuesta.add(mensaje);
 			}else {
 				respuesta.add("No fue posible actualizar. Intente mas tarde.");
@@ -434,7 +444,7 @@ public class indexOfertasAutoController {
 		
 			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
 				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
-					fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+					
 					respuesta.add(mensaje);
 					
 				}else {
@@ -513,42 +523,49 @@ public class indexOfertasAutoController {
 	public ResponseEntity<?> ejecutarProceso(
 			@RequestParam(name = "idBase") Integer idBase
 			){
-		String estatusProceso = "P";//procesando
-		LocalDate fecha = LocalDate.now();
+	
 		
 		logger.info("/ejecutarProceso");
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			//registrar Proceso de BD
-			//ProcesoBase nuevoProceso = new ProcesoBase();
-			//nuevoProceso.setI_tipo_base(idBase);
-			//nuevoProceso.setDt_fecha_registro(fecha);
-			//nuevoProceso.setVc_estatus_proceso(estatusProceso);
-			//procesoService.save(nuevoProceso);
+		
 			
 			
 			switch(idBase) {
 			case 1:
-				System.out.print("Base de Nomina");
-				nominaTareaConfiguracion.procesarNomina();
-				respuesta.add("Ejecutar Base Nomina");
+				try {
+					System.out.print("Base de Nomina");
+					nominaTareaConfiguracion.procesarNomina();
+					respuesta.add("Se proceso Base Nomina");
+				} catch (Exception e) {
+					respuesta.add("Error:"+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
 				break;
 			case 2:
-				fidelidadTareaConfiguracion.ejecutarFidelidad();			
-				respuesta.add("Ejecutar Base Fidelidad");
+				try {
+					fidelidadTareaConfiguracion.ejecutarFidelidad();			
+					respuesta.add("Se proceso Base Fidelidad");
+				} catch (Exception e) {
+					respuesta.add("Error:"+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
 				break;
 			case 3:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
-					respuesta.add("Ejecutar Base Campañas VIP");
+					respuesta.add("Se proceso Base Campañas VIP");
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
+					System.out.println("Error"+e.getMessage());
 				}
 				
 				break;
 			}
-			generarArchivoOA();
+			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
@@ -556,22 +573,7 @@ public class indexOfertasAutoController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-	
-	public void generarArchivoOA() {
-		try {
-			String parametros="";
-			String nombreArchivo = "rpt_layout_Ofertas_Automaticas";
-			Bases datos = basesService.findById(2).get();
-			String urlDirectorio = datos.getVc_ruta_proceso();
-			
-			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
-			jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-		}
-
-	}
-	
+		
 	public int validarAcceso() {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		UserDetails userDetails = null;
