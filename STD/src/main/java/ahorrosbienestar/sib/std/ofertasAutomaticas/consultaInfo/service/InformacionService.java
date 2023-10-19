@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ProcesosBD;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 
 @Service
 public class InformacionService {
@@ -22,23 +23,19 @@ public class InformacionService {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<ProcesosBD> obtConfBD() {
-		String sql = "CALL SIB.SP_DATOS_TBLS_CSO (?,?);";
+	public List<ValidarEjecutarCronBase> obtInfoCron(Integer idBase) {
+		String sql = "CALL SIB.SP_VALIDARCRON(?);";
 		
 		@SuppressWarnings("deprecation")
-		List<ProcesosBD> ls = jdbcTemplate.query(sql, new Object[] {1,0},
-				new RowMapper<ProcesosBD>() {
-					public ProcesosBD mapRow(ResultSet rs, final int rowNum) throws SQLException {
-						ProcesosBD dtosBD_OA = new ProcesosBD();
-						dtosBD_OA.setPk_id_proceso(rs.getInt(1));
-						dtosBD_OA.setNombreBase(rs.getString(2));
-						dtosBD_OA.setDiaInicio(rs.getString(3));
-						dtosBD_OA.setDiaFin(rs.getString(4));
-						dtosBD_OA.setHoraInicio(rs.getString(5));
-						dtosBD_OA.setHoraFin(rs.getString(6));
-						dtosBD_OA.setRutaArchivo(rs.getString(7));
+		List<ValidarEjecutarCronBase> ls = jdbcTemplate.query(sql, new Object[] {idBase},
+				new RowMapper<ValidarEjecutarCronBase>() {
+					public ValidarEjecutarCronBase mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ValidarEjecutarCronBase dtosCron = new ValidarEjecutarCronBase();
 						
-						return dtosBD_OA;
+						dtosCron.setI_ejecutar(rs.getInt(1));
+						dtosCron.setExpresionCron(rs.getString(2));
+						
+						return dtosCron;
 					}
 				});
 		
