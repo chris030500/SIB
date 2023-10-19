@@ -90,7 +90,7 @@ public class FidelidadTareaConfiguracion {
 	private static final Logger logger = Logger.getLogger(FidelidadTareaConfiguracion.class);
 
 	private boolean isRunning = false; // Variable de bloqueo
-
+	private int contRegistro = 0;
 	private String titulo = ""; 
 	private String errores = "";
 	private String propiedadNombreArchivo = "archivoFidelidad";
@@ -252,8 +252,6 @@ public class FidelidadTareaConfiguracion {
 			for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 				Row row = sheet.getRow(i);
 				if (row == null || row.getCell(0) == null) {
-					titulo = "ERROR CONTENIDO";
-					envioCorreoService.prepararCorreo(titulo,"Tiene vaores nulos la Fila " + (i + 1) + ".Todos los datos son requeridos");
 					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 				}
 				
@@ -451,14 +449,17 @@ public class FidelidadTareaConfiguracion {
 				// Llamar al método para insertar en BD solo si no hay errores
 				logger.info("No hay errores");
 				try {
+				
 					
 					Date fechaRegistro = new Date();
 					List<Fidelidad> listaFidelidad = new ArrayList<>();
 					for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 						Row row = sheet.getRow(i);
 						if (row == null || row.getCell(0) == null) {
+							contRegistro = i;
 							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
 						}
+						
 						DecimalFormat decimalFormat = new DecimalFormat("#");
 						
 						Fidelidad registroExcel = new Fidelidad();
@@ -540,6 +541,7 @@ public class FidelidadTareaConfiguracion {
 						}
 						
 					}
+					
 					fidelidadService.registrarFidelidad(listaFidelidad);
 					listaFidelidad.clear();
 					
@@ -569,11 +571,12 @@ public class FidelidadTareaConfiguracion {
 		try {
 			logger.info("ejecutar CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 			jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
+			
+			titulo = "REGISTROS DE FIDELIDAD";
+			envioCorreoService.prepararCorreo(titulo,Integer.toString(contRegistro-1));
 		} catch (Exception e) {
 			logger.error("Error: "+e.getMessage());
 		}
-		
-		
 	}
 	
 	private void eliminarArchivo(String filePath) {

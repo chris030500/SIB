@@ -15,6 +15,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
@@ -45,6 +46,9 @@ public class CampaniasVIPTareaConfiguracion {
 
 	@Autowired
 	private IndexOfertasAutomaticasService indexOfertasAutomaticasService;
+	@Autowired
+	private EnvioCorreoService envioCorreoService;
+	
     
     @Autowired
     public CampaniasVIPTareaConfiguracion(TaskScheduler taskSchedulerCampanias) {
@@ -122,6 +126,8 @@ public class CampaniasVIPTareaConfiguracion {
     		logger.info("Ejecuta los SP");
         	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(3)");
         	indexOfertasAutomaticasService.generarArchivoOA();
+        	String titulo = "REGISTROS DE CAMPANIAS VIP";
+			envioCorreoService.prepararCorreo(titulo,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
