@@ -36,9 +36,9 @@ public class EnvioCorreoService {
 	     this.envioCorreoContenidoService = envioCorreoContenidoService;
 	}
 	
-	public void prepararCorreo(String titulo,String errores) {
+	public void prepararCorreo(int tipoMns,String errores) {
 		try {
-			List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(titulo,errores);
+			List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoMns,errores);
 			for(ContenidoCorreo correoContenido : listaCorreos) {
 				String[] listDireccion = correoContenido.getVc_destinatarios().split(";");
 				for(String correo : listDireccion) {

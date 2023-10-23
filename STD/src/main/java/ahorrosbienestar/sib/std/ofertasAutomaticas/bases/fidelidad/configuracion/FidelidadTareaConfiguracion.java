@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -91,7 +92,7 @@ public class FidelidadTareaConfiguracion {
 
 	private boolean isRunning = false; // Variable de bloqueo
 	private int contRegistro = 0;
-	private String titulo = ""; 
+	private int tipoCorreo = 0; 
 	private String errores = "";
 	private String propiedadNombreArchivo = "archivoFidelidad";
 	private String propiedadNombreHoja = "hojaFidelidad";
@@ -205,8 +206,9 @@ public class FidelidadTareaConfiguracion {
 							logger.error("- " + incorrectHeader);
 							
 						}
-						titulo = "ERROR ENCABEZADO";
-						envioCorreoService.prepararCorreo(titulo,errores);
+						tipoCorreo = 2;
+						logger.info("ERROR ENCABEZADO");
+						envioCorreoService.prepararCorreo(tipoCorreo,errores);
 						
 					}
 				} catch (IOException e) {
@@ -215,16 +217,18 @@ public class FidelidadTareaConfiguracion {
 				}
 			} else {
 				
-				titulo = "NO EXISTE ARCHIVO"; 
-				envioCorreoService.prepararCorreo(titulo,errores);
+				logger.info("NO EXISTE ARCHIVO");
+				tipoCorreo = 1; 
+				envioCorreoService.prepararCorreo(tipoCorreo,errores);
 				logger.info("Archivo no encontrado.");
 				
 			}
 			
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			titulo = "NO EXISTE ARCHIVO"; 
-			envioCorreoService.prepararCorreo(titulo,errores);
+			tipoCorreo = 1;
+			logger.info("NO EXISTE ARCHIVO");
+			envioCorreoService.prepararCorreo(tipoCorreo,errores);
 			
 			
 		} finally {
@@ -441,8 +445,9 @@ public class FidelidadTareaConfiguracion {
 					erroresMns = erroresMns+"-"+error+"<br>";
 					System.out.println(error);
 				}
-				titulo = "ERROR CONTENIDO";
-				envioCorreoService.prepararCorreo(titulo,erroresMns);
+				tipoCorreo = 3;
+				logger.info("ERROR CONTENIDO");
+				envioCorreoService.prepararCorreo(tipoCorreo,erroresMns);
 				logger.info("Error archivo:"+erroresMns);
 
 			} else {
@@ -558,8 +563,9 @@ public class FidelidadTareaConfiguracion {
 			
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			titulo = "ERROR CONTENIDO";
-			envioCorreoService.prepararCorreo(titulo,rowNull);
+			logger.info("ERROR CONTENIDO");
+			tipoCorreo =3;
+			envioCorreoService.prepararCorreo(tipoCorreo,rowNull);
 		}
 		
 		
@@ -572,8 +578,9 @@ public class FidelidadTareaConfiguracion {
 			logger.info("ejecutar CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 			jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(2)");
 			
-			titulo = "REGISTROS DE FIDELIDAD";
-			envioCorreoService.prepararCorreo(titulo,Integer.toString(contRegistro-1));
+			tipoCorreo = 4;
+			logger.info("REGISTROS DE FIDELIDAD");
+			envioCorreoService.prepararCorreo(tipoCorreo,"");
 		} catch (Exception e) {
 			logger.error("Error: "+e.getMessage());
 		}
