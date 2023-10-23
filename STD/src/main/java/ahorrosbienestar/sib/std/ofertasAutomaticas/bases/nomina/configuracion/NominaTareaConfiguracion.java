@@ -127,8 +127,9 @@ public class NominaTareaConfiguracion {
         	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(1)");
         	indexOfertasAutomaticasService.generarArchivoOA();
         	
-        	String titulo = "REGISTROS DE NOMINA";
-			envioCorreoService.prepararCorreo(titulo,"");
+        	int tipoCorreo = 5;
+        	// "REGISTROS DE NOMINA";
+			envioCorreoService.prepararCorreo(tipoCorreo,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}

@@ -82,9 +82,9 @@ public class CampaniasVIPTareaConfiguracion {
 			            // Reemplaza el trigger existente con el nuevo trigger
 			            taskSchedulerCampanias.schedule(() -> procesarCron(), trigger);
 			        
-			            logger.info("Se actualizo cron Nomina");
+			            logger.info("Se actualizo cron Campanias");
 					}else {
-						logger.info("No se actualizo Nomina");
+						logger.info("No se actualizo Campanias");
 			        }
 					
 				}
@@ -126,8 +126,9 @@ public class CampaniasVIPTareaConfiguracion {
     		logger.info("Ejecuta los SP");
         	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(3)");
         	indexOfertasAutomaticasService.generarArchivoOA();
-        	String titulo = "REGISTROS DE CAMPANIAS VIP";
-			envioCorreoService.prepararCorreo(titulo,"");
+        	int tipoCorreo = 6;
+        	logger.info("REGISTROS DE CAMPANIAS VIP");
+			envioCorreoService.prepararCorreo(tipoCorreo,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
