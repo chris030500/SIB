@@ -82,9 +82,9 @@ public class CampaniasVIPTareaConfiguracion {
 			            // Reemplaza el trigger existente con el nuevo trigger
 			            taskSchedulerCampanias.schedule(() -> procesarCron(), trigger);
 			        
-			            logger.info("Se actualizo cron Nomina");
+			            logger.info("Se actualizo cron Campanias");
 					}else {
-						logger.info("No se actualizo Nomina");
+						logger.info("No se actualizo Campanias");
 			        }
 					
 				}
