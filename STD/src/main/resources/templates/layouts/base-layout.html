@@ -290,7 +290,6 @@
 					</ul>
 				</li>
 				<!-- Fin Prevencion PLD -->
-
 				<!-- Convenios -->
 				<li style="display:none;" class="nav-item" th:id="8">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-convenios"
@@ -307,6 +306,29 @@
 					</ul>
 				</li>
 				<!-- Fin Convenios -->
+				<!-- Productos -->
+				<li style="display:none;" class="nav-item" th:id="9">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-ofertasAuto"
+						data-bs-toggle="collapse">
+						<i class="bi bi-cash-stack"></i><span>Productos</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-ofertasAuto" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O22" class="nav-item" style="display:none;">
+							<a th:href="@{/ofertasAutomaticas/index}">
+								<i class="bi bi-cash-coin"></i><span>Ofertas Automaticas</span>
+							</a>
+						</li>
+					</ul>
+					<ul id="config-nav-ofertasAuto" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O23" class="nav-item" style="display:none;">
+							<a th:href="@{/reportesProductos/reportes}">
+								<i class="bi bi-receipt-cutoff"></i><span>Reportes</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Productos -->
 			</ul>
 
 			<!-- /.sidebar -->
