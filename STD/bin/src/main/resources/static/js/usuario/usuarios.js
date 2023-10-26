@@ -6,7 +6,7 @@ function getAbsolutePath() {
 
 var urlBase = getAbsolutePath();
 var newUrlBase = urlBase.replace("f", "");
-//console.log("newUrlBase: " + newUrlBase);
+//////console.log("newUrlBase: " + newUrlBase);
 
 function buscarEmpleado(empleado) {
 	var urlBase = getAbsolutePath();
@@ -14,11 +14,11 @@ function buscarEmpleado(empleado) {
 
 	var busquedaEmpleado = document.getElementById("busquedaEmpleado").value;
 	var divEmpleado = document.getElementById("datosUsuario");
-	console.log("Campo busquedaEmpleado: " + busquedaEmpleado.length);
+	////console.log("Campo busquedaEmpleado: " + busquedaEmpleado.length);
 	var option = '';
-	console.log("Empleado: " + empleado);
+	////console.log("Empleado: " + empleado);
 	if (busquedaEmpleado == 0) {
-		console.log("Entro en if de busquedaEmpleado");
+		//console.log("Entro en if de busquedaEmpleado");
 		$("select#selectEmpleado").empty();
 		$("#EmpleadoId").val('');
 		$("#Nombre").val('');
@@ -27,9 +27,9 @@ function buscarEmpleado(empleado) {
 
 
 	} else {
-		console.log("Entro en else de busquedaEmpleado");
+		//console.log("Entro en else de busquedaEmpleado");
 		var newUrlEmpleado = newUrlBase.replace("usuario/a", "");
-		console.log("url base:" + newUrlEmpleado);
+		//console.log("url base:" + newUrlEmpleado);
 
 
 		$.ajax({
@@ -37,14 +37,14 @@ function buscarEmpleado(empleado) {
 			type: "GET",
 			dataType: "JSON",
 			success: function(respuesta) {
-				/*console.log(respuesta);
-				console.log(respuesta.length);*/
+				/*//console.log(respuesta);
+				//console.log(respuesta.length);*/
 				for (var i = 0; i < respuesta.length; i++) {
 					var nombre = respuesta[i].nombreCompleto;
 					var idUsuario = respuesta[i].empleadoID;
-					/*console.log()
-					console.log("nombre : " + nombre);
-					console.log("idUsuario : " + idUsuario);*/
+					/*//console.log()
+					//console.log("nombre : " + nombre);
+					//console.log("idUsuario : " + idUsuario);*/
 					option += '<option value="' + respuesta[i].empleadoID + ' " data-descripcion=' + respuesta[i].descripcion + ' >' + respuesta[i].nombreCompleto + '</option>';
 					$("select#selectEmpleado").empty().append(option);
 					//' data-descripcion='+ respuesta[i].descripcion+'
@@ -57,15 +57,15 @@ function buscarEmpleado(empleado) {
 }
 
 document.getElementById('selectEmpleado').onchange = function() {
-	console.log("Entro en jquery");
+	//console.log("Entro en jquery");
 	var selectEmpleado = document.getElementById('selectEmpleado').value;
 	var divEmpleado = document.getElementById("datosUsuario");
-	console.log("SelectEmpleado: " + selectEmpleado);
+	//console.log("SelectEmpleado: " + selectEmpleado);
 	if (selectEmpleado > 0) {
-		console.log("Entro en mayor a 0");
+		//console.log("Entro en mayor a 0");
 		divEmpleado.style.display = "block";
 	} else {
-		console.log("No tiene valor");
+		//console.log("No tiene valor");
 	}
 	/* Referencia al option seleccionado */
 	var mOption = this.options[this.selectedIndex];
@@ -102,7 +102,7 @@ $(document).ready(function($) {
 });
 
 function postEdit() {
-	console.log("Entro en postEdit");
+	//console.log("Entro en postEdit");
 	var something = $('#edit-form').serialize();
 	var editUrl = url + 'update';
 	$.post(editUrl, something, function(data) {
@@ -112,7 +112,7 @@ function postEdit() {
 }
 
 function postEditPass() {
-	console.log("Entro en postEdit");
+	//console.log("Entro en postEdit");
 	var something = $('#editPass-form').serialize();
 	var editUrl = url + 'update';
 	$.post(editUrl, something, function(data) {
@@ -123,53 +123,53 @@ function postEditPass() {
 
 function showEditModal(index) {
 	var urlBase = getAbsolutePath();
-	console.log("index: " + index);
+	//console.log("index: " + index);
 	var url = newUrlBase + "usuario/loadEntity/";
 
-	console.log("entro en showEditModal");
-	console.log("url: " + url);
+	//console.log("entro en showEditModal");
+	//console.log("url: " + url);
 
 	var editUrl = url + index;
-	console.log("editUrl: " + editUrl);
+	//console.log("editUrl: " + editUrl);
 	loadEntity(editUrl);
 }
 
 function modalCambioContra(index) {
 
-	console.log("index: " + index);
+	//console.log("index: " + index);
 	console.lo
 	var url = newUrlBase + "usuario/cambioContra/";
 
-	console.log("entro en modalCambioContra");
+	//console.log("entro en modalCambioContra");
 
 	var editUrl = url + index;
-	console.log("editUrl: " + editUrl);
+	//console.log("editUrl: " + editUrl);
 	loadCambioContra(editUrl);
 }
 
 function loadCambioContra(url) {
-	console.log("entro en loadCambioContra")
-	console.log("url: " + url);
+	//console.log("entro en loadCambioContra")
+	//console.log("url: " + url);
 	$.getJSON(url, {}, function(data) {
 		populateModalContra(data);
 	});
 }
 
 function loadEntity(url) {
-	console.log("entro en loadEntity")
-	console.log("url: " + url);
+	//console.log("entro en loadEntity")
+	//console.log("url: " + url);
 	$.getJSON(url, {}, function(data) {
 		populateModal(data);
 	});
 }
 
 function populateModalContra(data) {
-	console.log("Data en populateModalContra: " + JSON.stringify(data));
+	//console.log("Data en populateModalContra: " + JSON.stringify(data));
 
 	var usuario = data.usr_historico_contrasena_id.vc_nombre_usuario;
 	var idUsu = data.usr_historico_contrasena_id.pk_id_usuario;
-	console.log("Nombre usuario: " + usuario);
-	console.log("idUsuario: " + idUsu);
+	//console.log("Nombre usuario: " + usuario);
+	//console.log("idUsuario: " + idUsu);
 	$('#nombre1').val(usuario);
 	//var pk_id_parametros = data.pk_id_parametros;
 	//$('#idUsuario').val(idUsu);
@@ -180,48 +180,49 @@ function populateModalContra(data) {
 
 // Assign the data values to the modal form.
 function populateModal(data) {
-	console.log("Data en populateModal: " + JSON.stringify(data));
+	//console.log("Data en populateModal: " + JSON.stringify(data));
 	$('#nombre').val(data.vc_nombre_usuario);
 	$('#idUsuario').val(data.pk_id_usuario);
+	$('#rol').val(data.rol_idRol.pk_id_rol);
 	//$('#update-name').val(data.name);
 }
 
 function altaUsuario() {
 	var newAltaUsu = newUrlBase.replace("usuario/a", "");
-	console.log("newAltaUsu: " + newAltaUsu);
+	//console.log("newAltaUsu: " + newAltaUsu);
 	var nombreUsuario = document.getElementById('nombreUsuario').value;
 	var idEmpleado = document.getElementById('EmpleadoId').value;
 	var contrasena = document.getElementById('contrasena').value;
 	var rol = document.getElementById('roles').value;
-	/*console.log("Nombre Usuario: " + nombreUsuario);
-	console.log("idEmpleado: " + idEmpleado);
-	console.log("contrasena: " + contrasena);
-	console.log("Rol: " + rol);*/
+	/*//console.log("Nombre Usuario: " + nombreUsuario);
+	//console.log("idEmpleado: " + idEmpleado);
+	//console.log("contrasena: " + contrasena);
+	//console.log("Rol: " + rol);*/
 	if (idEmpleado == '') {
-		//console.log("Ingrese un colaborador");
+		////console.log("Ingrese un colaborador");
 		swal("Precaución", "Ingrese un colaborador.",
 			"info");
 	} else if (idEmpleado != '') {
 		if (nombreUsuario == '') {
-			//console.log("Ingrese un usuario");
+			////console.log("Ingrese un usuario");
 			swal("Precaución", "Ingrese un nombre de usuario.",
 				"info");
 		} else {
-			//console.log("Puede continuar");
+			////console.log("Puede continuar");
 
 			$.ajax({
 				url: newAltaUsu + "usuario/nombre/" + nombreUsuario,
 				type: "GET",
 				success: function(respuesta) {
-					/*console.log("Entro en success de get");
-					console.log("Respuesta: " +respuesta);*/
-					/*console.log("Validar NombreUsuario: ");
-					console.log("Respuesta: " + respuesta);*/
+					/*//console.log("Entro en success de get");
+					//console.log("Respuesta: " +respuesta);*/
+					/*//console.log("Validar NombreUsuario: ");
+					//console.log("Respuesta: " + respuesta);*/
 					if (respuesta == true) {
 						swal("Precaución", "Usuario ya registrado, intente con otro nombre.",
 							"info");
 					} else {
-						//console.log("Usuario para registrar");
+						////console.log("Usuario para registrar");
 						$.ajax({
 							url: newAltaUsu + "usuario/idEmpleado/" + idEmpleado,
 							type: "GET",
@@ -230,27 +231,27 @@ function altaUsuario() {
 									swal("Precaución", "Id Empleado ya registrado, intente con otro usuario.",
 										"info");
 								} else {
-									console.log("Puede continuar en agregar el usuario");
+									//console.log("Puede continuar en agregar el usuario");
 									$.ajax({
 										url: newAltaUsu + "usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
 										type: "POST",
 										success: function() {
-											console.log("Entro en success de get");
-											/*console.log("Entro en success de get");
-											console.log("Respuesta: " +respuesta);*/
+											//console.log("Entro en success de get");
+											/*//console.log("Entro en success de get");
+											//console.log("Respuesta: " +respuesta);*/
 											//return respuesta
 
-											console.log("Busca el usuario registrado con anterioridad");
-											console.log("Nombre de usuario: " + nombreUsuario);
+											//console.log("Busca el usuario registrado con anterioridad");
+											//console.log("Nombre de usuario: " + nombreUsuario);
 											$.ajax({
 												url: newAltaUsu + "usuario/nombreUsuario/" + nombreUsuario,
 												type: "GET",
 												dataType: "JSON",
 												success: function(respuesta) {
-													//console.log("respuesta lenght" + respuesta.lenght);
+													////console.log("respuesta lenght" + respuesta.lenght);
 
 													if (nombreUsuario == '') {
-														console.log("Esta vacio el campo");
+														//console.log("Esta vacio el campo");
 													} else {
 														if (respuesta != null) {
 															var data = {
@@ -259,12 +260,12 @@ function altaUsuario() {
 																vc_indicador_activo: 1,
 																usr_historico_contrasena_id: respuesta
 															};
-															console.log("Data: " + JSON.stringify(data));
-															console.log("Tiene información");
-															console.log("Respuestas");
-															console.log(respuesta);
-															console.log("PK: " + respuesta.pk_id_usuario);
-															console.log("url para hist_contrasena: " + (newAltaUsu + "hist_contrasena/"));
+															//console.log("Data: " + JSON.stringify(data));
+															//console.log("Tiene información");
+															//console.log("Respuestas");
+															//console.log(respuesta);
+															//console.log("PK: " + respuesta.pk_id_usuario);
+															//console.log("url para hist_contrasena: " + (newAltaUsu + "hist_contrasena/"));
 															$.ajax({
 																headers: {
 																	'Accept': 'application/json',
@@ -275,9 +276,9 @@ function altaUsuario() {
 																data: JSON.stringify(data),
 																dataType: "json",
 																success: function(respuesta) {
-																	/*console.log("Entro en success de get");
-																	console.log("Respuesta: " +respuesta);*/
-																	console.log("Se guardo la contraseña en historial contraseña: ");
+																	/*//console.log("Entro en success de get");
+																	//console.log("Respuesta: " +respuesta);*/
+																	//console.log("Se guardo la contraseña en historial contraseña: ");
 																	swal({
 																		icon: "success",
 																		title: "Registro de usuario exitoso.",
@@ -289,8 +290,8 @@ function altaUsuario() {
 
 																},
 																error: function(respuesta) {
-																	console.log("Entro en error");
-																	console.log("Respuesta usuario: " + JSON.stringify(respuesta));
+																	//console.log("Entro en error");
+																	//console.log("Respuesta usuario: " + JSON.stringify(respuesta));
 																	if (respuesta.status == 500) {
 																		swal({
 																			icon: "warning",
@@ -312,7 +313,7 @@ function altaUsuario() {
 															});
 
 														} else {
-															console.log("No tiene información");
+															//console.log("No tiene información");
 														}
 													}
 
@@ -321,7 +322,7 @@ function altaUsuario() {
 
 										},
 										error: function(respuesta) {
-											console.log("Entro en error");
+											//console.log("Entro en error");
 											swal({
 												icon: "warning",
 												title: "No se pudo agregar el usuario",
@@ -335,7 +336,7 @@ function altaUsuario() {
 
 							},
 							error: function(respuesta) {
-								console.log("Entro en error");
+								//console.log("Entro en error");
 								swal({
 									icon: 'warning',
 									title: respuesta,
@@ -349,8 +350,8 @@ function altaUsuario() {
 
 				},
 				error: function(respuesta) {
-					console.log("Entro en error");
-					console.log("Usu: " + JSON.stringify(respuesta));
+					//console.log("Entro en error");
+					//console.log("Usu: " + JSON.stringify(respuesta));
 					swal({
 						icon: 'warning',
 						title: respuesta,
@@ -372,15 +373,15 @@ function validarNombreUsuario(nombreUsuario) {
 		url: newUrlBase + "usuario/nombre/" + nombreUsuario,
 		type: "GET",
 		success: function(respuesta) {
-			/*console.log("Entro en success de get");
-			console.log("Respuesta: " +respuesta);*/
-			console.log("Validar NombreUsuario: ");
-			console.log("Respuesta: " + respuesta);
+			/*//console.log("Entro en success de get");
+			//console.log("Respuesta: " +respuesta);*/
+			//console.log("Validar NombreUsuario: ");
+			//console.log("Respuesta: " + respuesta);
 			return respuesta
 
 		},
 		error: function(respuesta) {
-			console.log("Entro en error");
+			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
 				title: respuesta,
@@ -394,16 +395,16 @@ function validarNombreUsuario(nombreUsuario) {
 
 //funcion para dar de baja al usuario (Estatus Usuario == false)
 function bajaUsuario(usuario) {
-	console.log("Entro en dar baja usuario");
-	console.log("Usuario: " + usuario);
+	//console.log("Entro en dar baja usuario");
+	//console.log("Usuario: " + usuario);
 	var urlBase = getAbsolutePath();
 	$.ajax({
 		url: newUrlBase + "baja_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
-			/*console.log("Entro en success de get");
-			console.log("Respuesta: " +respuesta);*/
-			console.log("Validar NombreUsuario: ");
+			/*//console.log("Entro en success de get");
+			//console.log("Respuesta: " +respuesta);*/
+			//console.log("Validar NombreUsuario: ");
 			swal({
 				icon: 'success',
 				title: "Baja de usuario correctamente.",
@@ -415,7 +416,7 @@ function bajaUsuario(usuario) {
 
 		},
 		error: function() {
-			console.log("Entro en error");
+			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
 				title: "No se realizo la baja del usuario",
@@ -432,15 +433,15 @@ function bajaUsuario(usuario) {
 //funcion para reacitvar el usuario (Estatus Usuario = true)
 function reactivarUsuario(usuario) {
 	var urlBase = getAbsolutePath();
-	console.log("Entro en reactivar usuario");
-	console.log("Usuario: " + usuario);
+	//console.log("Entro en reactivar usuario");
+	//console.log("Usuario: " + usuario);
 	$.ajax({
 		url: newUrlBase + "reactivar_usuario?usuario=" + usuario,
 		type: "POST",
 		success: function() {
-			/*console.log("Entro en success de get");
-			console.log("Respuesta: " +respuesta);*/
-			console.log("Validar NombreUsuario: ");
+			/*//console.log("Entro en success de get");
+			//console.log("Respuesta: " +respuesta);*/
+			//console.log("Validar NombreUsuario: ");
 
 			swal({
 				icon: 'success',
@@ -453,7 +454,7 @@ function reactivarUsuario(usuario) {
 
 		},
 		error: function() {
-			console.log("Entro en error");
+			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
 				title: "No se reactivo el usuario",
@@ -472,10 +473,11 @@ function editarUsuario() {
 
 	var idUsuario = document.getElementById('idUsuario').value;
 	var nombreUsuario = document.getElementById('nombre').value;
+	var rol = document.getElementById('rol').value;
 	//var urlBase = getAbsolutePath();
 	//Primero validamos que el nombre de usuario no exista.
 	if (nombreUsuario == "") {
-		console.log("Ingresa un nombre de usuario");
+		//console.log("Ingresa un nombre de usuario");
 		swal({
 			icon: 'warning',
 			title: "El campo de nombre de usuario está vacío, ingresa un nombre",
@@ -483,70 +485,35 @@ function editarUsuario() {
 
 		});
 	} else {
-		console.log("Puede continuar");
+		//console.log("Puede continuar");
 		$.ajax({
-			url: newUrlBase + "nombreUsuario/" + nombreUsuario,
-			type: "GET",
-			dataType: "JSON",
-			success: function(respuesta) {
-				/*console.log("Entro en success de get");
-				console.log("Respuesta: " +respuesta);*/
-				console.log("Validar NombreUsuario: ");
-				console.log("Respuesta: " + JSON.stringify(respuesta));
-				if (respuesta != null) {
-					console.log("El nombre de usuario ya existe");
-					swal({
-						icon: 'warning',
-						title: "El nombre de usuario ya existe, favor de usar otro nombre",
-						showConfirmButton: false
-
-					});
-				} else if (respuesta == null) {
-					console.log("El nombre de usuario no existe");
-					$.ajax({
-						url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
-							"&idUsuario=" + idUsuario,
-						type: "POST",
-						success: function() {
-							/*console.log("Entro en success de get");
-							console.log("Respuesta: " +respuesta);*/
+			url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
+				"&idUsuario=" + idUsuario + "&rol=" + rol,
+			type: "POST",
+			success: function() {
+				/*//console.log("Entro en success de get");
+				//console.log("Respuesta: " +respuesta);*/
 
 
-							swal({
-								icon: 'success',
-								title: "Se cambio correctamente el nombre de usuario.",
-								showConfirmButton: false
-
-							}).then((result) => {
-								window.location.reload();
-							});
-
-						},
-						error: function() {
-							//console.log("Entro en error");
-							swal({
-								icon: 'warning',
-								title: "No se reactivo el usuario",
-								showConfirmButton: false
-
-							}).then((result) => {
-								window.location.reload();
-							});
-
-						}
-					});
-
-				}
-
-			},
-			error: function(respuesta) {
-				/*console.log("Entro en error");
-				console.log("respuesta: " + JSON.stringify(respuesta));*/
 				swal({
-					icon: 'warning',
-					title: respuesta.statusText,
+					icon: 'success',
+					title: "Se cambio correctamente el usuario: " + nombreUsuario,
 					showConfirmButton: false
 
+				}).then((result) => {
+					window.location.reload();
+				});
+
+			},
+			error: function() {
+				////console.log("Entro en error");
+				swal({
+					icon: 'warning',
+					title: "No se realizo los cambios del usuario, favor de validar los datos ingresados. ",
+					showConfirmButton: false
+
+				}).then((result) => {
+					window.location.reload();
 				});
 
 			}
@@ -560,7 +527,7 @@ function cambiarContrasenia() {
 	var nombreUsuario = document.getElementById('nombre1').value;
 	var contrasenia = document.getElementById('password').value;
 	if (contrasenia == "") {
-		//console.log("Ingresa un password nuevo");
+		////console.log("Ingresa un password nuevo");
 		swal({
 			icon: 'warning',
 			title: "El campo de contraseña nueva está vacío, ingresa una contraseña",
@@ -568,12 +535,12 @@ function cambiarContrasenia() {
 
 		});
 	} else {
-		//console.log("NewUrlBase: " + newUrlBase);
+		////console.log("NewUrlBase: " + newUrlBase);
 		$.ajax({
 			url: newUrlBase + "mensajeContrasena?contrasena=" + contrasenia,
 			type: "GET",
 			success: function(respuesta) {
-				//console.log("Entro en success1: " + respuesta);
+				////console.log("Entro en success1: " + respuesta);
 				if (respuesta != "Si cumple con los parametros requeridos") {
 					swal({
 						type: 'warning',
@@ -587,7 +554,8 @@ function cambiarContrasenia() {
 							"&idUsuario=" + idUsuario + "&password=" + contrasenia,
 						type: "POST",
 						success: function() {
-							//console.log("Entro en guardar contraseña");
+							console.log("Entro en guardar contraseña");
+							console.log("Respuesta: " + respuesta);
 							swal({
 								type: 'success',
 								title: 'Contraseña cambiada correctamente',
@@ -596,6 +564,29 @@ function cambiarContrasenia() {
 								window.location.replace(newUrlBase + "formulario");
 							});
 
+						},
+						error: function(xhr, status, error) {
+							if (xhr.status === 400) {
+								var errorMessage = xhr.responseText;
+								// Mostrar el mensaje de error al usuario
+								console.log(errorMessage);
+								swal({
+									type: 'warning',
+									title: errorMessage,
+									showConfirmButton: false
+								}).then((result) => {
+									window.location.replace(newUrlBase + "formulario");
+								});
+							} else {
+								// Manejar otros errores de la solicitud AJAX
+								swal({
+									type: 'warning',
+									title: "Error al cambiar la contraseña",
+									showConfirmButton: false
+								}).then((result) => {
+									window.location.replace(newUrlBase + "formulario");
+								});
+							}
 						}
 					});
 				}
@@ -603,7 +594,7 @@ function cambiarContrasenia() {
 
 			},
 			error: function(respuesta) {
-				//console.log("Entro en error");
+				////console.log("Entro en error");
 				swal({
 					type: 'warning',
 					title: respuesta,
