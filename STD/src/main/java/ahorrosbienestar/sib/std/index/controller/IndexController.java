@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.index;
+package ahorrosbienestar.sib.std.index.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -68,8 +68,9 @@ public class IndexController {
 	private static final Logger logger = Logger.getLogger(IndexController.class);
 
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
-	public String index() {
+	public String index(HttpServletRequest request) {
 
+		//System.out.println(request.getRemoteAddr());
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String nombreUsuario = auth.getName();
 		Usuario usuario = usuarioService.findByNombre(nombreUsuario);

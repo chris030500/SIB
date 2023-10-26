@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.configuracion.login.controller;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
+import ahorrosbienestar.sib.std.index.model.Acceso;
+import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
@@ -31,6 +35,9 @@ public class LoginController extends HttpServlet {
 	
 	@Autowired
 	private LoginService loginService;
+	
+	@Autowired
+	private AccesoService accesoService;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(LoginController.class);
@@ -79,6 +86,25 @@ public class LoginController extends HttpServlet {
 		logger.info("Ejecutando logout");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		loginService.spDesactivarSesion(auth.getName());
+		
+		// Obteniendo  informacion del usuario con una consulta por por username
+		Usuario usuario = usuarioService.findByNombre(auth.getName());
+		int estatus = usuario.getPk_id_usuario();
+		// Setenado valores al modelo Acceso
+		Acceso acceso = new Acceso();
+		acceso.setDt_fecha_registro(new Date());
+		acceso.setI_cod_accion(3);
+		acceso.setI_id_usuario(estatus);
+		acceso.setVc_descripci("Salida del Sistema");
+		LocalDateTime locaDate = LocalDateTime.now();
+		acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
+		acceso.setVc_host_remoto(request.getRemoteHost());
+		acceso.setVc_ip_remoto(request.getRemoteAddr());
+		acceso.setVc_nom_servidor(request.getServerName());
+		acceso.setVc_usuario(auth.getName());
+		//Guardanto los valores de acceso en la base de datos
+		accesoService.save(acceso);
+		System.out.println("Acceso registrado en bitacora correctamente");
 		
 		if(auth != null) {
 			//System.out.println("auth != null");
