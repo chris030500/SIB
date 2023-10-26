@@ -61,6 +61,40 @@ function iniciaTblParametros(){
  	$.getJSON(url, {}, function(data) {
    	tblConfiguracion.clear().draw();
    		$.each(data, function(idx, opt) {
+			   
+			if(opt.i_subir_archivo == 0){
+					var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+				+ " onclick='editarParametros("
+				+ opt.pk_id_base
+				+ ")' id="
+				+ opt.pk_id_base
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-tools'></i></button>";
+				
+			var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
+				+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+				+ " onclick='ejecutarProceso("
+				+ opt.pk_id_base
+				+ ")' id="
+				+ opt.pk_id_base
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-file-play-fill'></i></button>";
+
+      		tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,opt.vc_ruta_proceso, btnsActualizar,btnEjecutar]).draw(false);
+
+			}else{
+			
+			var btnsArchivo = "<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
+				+ " title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'"
+				+ " onclick='adjuntarFiles("
+				+ opt.pk_id_base
+				+ ")' id="
+				+ opt.pk_id_base
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-files'></i></button>";
+			
+			   
       		var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
 				+ " onclick='editarParametros("
@@ -79,12 +113,134 @@ function iniciaTblParametros(){
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-file-play-fill'></i></button>";
       		
-      		tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,opt.vc_ruta_proceso, btnsActualizar,btnEjecutar]).draw(false);
+      			tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,btnsArchivo, btnsActualizar,btnEjecutar]).draw(false);
 
+			}
+			
+		
    		});
   	});
  	
 }
+
+var listarArchivos = "listaArchivos?idBase=";
+function adjuntarFiles(idBase){
+	url = "";
+	url = getAbsolutePath()+listarArchivos+idBase;
+	obtListadoArchivos(url);
+	document.getElementById("file").value = "";
+}
+
+function obtListadoArchivos(ulrServicio){
+	$.blockUI({ message: 'Espere un momento...' });
+	$.getJSON(url, {}, function(data) {
+		tblAdjuntos.clear().draw();
+		$.each(data, function(idx, opt) {
+			
+			var botones = " <button class='btn btn-info' tabindex='0'"
+				+ " title='Ver Archivo' type='button'"
+				+ " onclick='verArchivo(this)'>"
+				+ " <i class='bi bi-download'></i></button>";
+			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion,opt.fechaModifacion,opt.rutaArchivo, botones]).draw(false);
+		});
+		setTimeout($.unblockUI, 100);
+		//tblAdjuntos.column(4).visible(false);
+	});
+}
+
+var abrirArchivo = "verArchivo?ruta=";
+function verArchivo(dtosArchivo){
+	$(dtosArchivo).parents("tr").find("td").eq(4).html();
+	url = "";
+	url = getAbsolutePath()+abrirArchivo+encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(4).html())+"&nombre="+encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(0).html());
+	window.open(url);
+	window.focus();
+	
+}
+
+function asignarArchivo(archivo) {
+
+	if (document.getElementById(archivo.id).value > 0) {
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", extension);
+		$('#file').attr("disabled", false);
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "Se requiere seleccionar una opcion valida",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+
+		var opcionesArchivo = document.getElementById(archivo.id);
+		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+		document.getElementById("file").value = "";
+		$('#file').attr("accept", "");
+		$('#file').attr("disabled", true);
+
+	}
+
+
+}
+
+var agregarArchivos = "subirArchivo?idBase=2";
+function addArchivos(data) {
+	$.ajax({
+		async: false,
+		url: getAbsolutePath() + agregarArchivos,
+		type: "POST",
+		enctype: 'multipart/form-data',
+		data: data, //pass the form data
+		processData: false,
+		contentType: false,
+		beforeSend: function() {
+			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
+		},
+		success: function(data) {
+			swal({
+				title: "",
+				text: data[0],
+				icon: "success",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				adjuntarFiles(2);
+			});
+		},
+		error: function(data) {
+			swal({
+				title: "Alerta",
+				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+				icon: "warning",
+			});
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 600);
+		}
+	});
+
+}
+
+function tamFile() {
+	const tamMaxFile = 31457280;
+	var fileTam = document.getElementById("file");
+	fileTam.onchange = function() {
+		if (this.files[0].size > tamMaxFile) {
+			swal({
+				title: "",
+				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+				icon: "warning",
+				confirmButtonText: 'Aceptar'
+			}).then(resp => {
+				this.value = "";
+			});
+		};
+	};
+}
+
+
+
 
 function ejecutarProceso(idBaseEjecutar){
 	
@@ -245,8 +401,43 @@ function btnsModal(){
 		 }	
  	});
  	
-}
+ 	$("#btnGuardarFile").click(function() {
 
+
+		if (document.getElementById("file").value.length > 0) {
+			Swal.fire({
+				title: 'Procesando.....',
+				text: 'Espere un momento..',
+				timer: 4000, // tiempo en milisegundos
+				timerProgressBar: true,
+				showConfirmButton: false
+			}).then((result) => {
+				// Este código se ejecutará después de que el temporizador haya terminado
+				if (result.dismiss === Swal.DismissReason.timer) {
+					var form = $('#adjuntoArchivoOficio')[0];
+					var data = new FormData(form);
+					addArchivos(data)
+				}
+			});
+
+		} else {
+			swal({
+				title: "Informacion.",
+				text: "Es necesario seleccionar un Archivo.",
+				icon: "Warning",
+				confirmButtonText: 'Aceptar'
+			});
+		}
+
+	});
+	
+	$("#btnCerrarAdjunto").click(function() {
+		$("#modalAdjuntos").modal("hide");
+		tblAdjuntos.clear().draw();
+	});
+
+ 	
+}
 function validarDatosParams(){
    var correcto = 0;
 
