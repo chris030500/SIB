@@ -390,24 +390,76 @@
 			</div>
 
 			<!-- Fin Modal Editar Clasificacion -->
+			<!-- Inicio Ajuntos -->
+			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false" role="dialog">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Proceso de Ofertas Automaticas.</legend>
+							<div class="modal-body">
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-4">
+										<label class="col-form-label"> Tipo de Archivo:</label>
+											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+													th:id="${opcionTipo.v_pantalla}">
+												</option>
+											</select>
+									</div>
+									<div class="col-md-8">
+										<form id="adjuntoArchivoOficio">
+											<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
+											<input class="form-control" type="file" id="file" name="file" accept="" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
+										</form>
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
+											<thead>
+												<tr>
+													<th>Nombre</th>
+													<th>Peso de archivo</th>
+													<th>Fecha de Creacion</th>
+													<th>Fecha de Modificacion</th>
+													<th>Ruta Archivo</th>
+													<th>Ver archivo</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblCargaAdjunto"></h1>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnGuardarFile">Guardar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCerrarAdjunto">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!-- fin adjuntos-->
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-		<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
 		<script th:src="@{/js/ofertasAutomaticas/parametrosFidelidad.js}"></script>
 		<script th:src="@{/js/ofertasAutomaticas/parametrosCampanaVIP.js}"></script>
 		<script th:src="@{/js/ofertasAutomaticas/ofertasAutomaticas.js}"></script>
-		<!--<script th:src="@{/js/ofertasAutomaticas/clasificacionBase.js}"></script>-->
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<!--<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<!--JavaScript-->
 	</th:block>
 </body>
 

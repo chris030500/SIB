@@ -59,6 +59,18 @@ public class Bases {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_BAJA", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_baja;
+	
+	@Column(name = "I_SUBIR_ARCHIVO", 
+	columnDefinition = "INT DEFAULT 0")
+	private int i_subir_archivo;
+
+	public int getI_subir_archivo() {
+		return i_subir_archivo;
+	}
+
+	public void setI_subir_archivo(int i_subir_archivo) {
+		this.i_subir_archivo = i_subir_archivo;
+	}
 
 	public int getPk_id_base() {
 		return pk_id_base;

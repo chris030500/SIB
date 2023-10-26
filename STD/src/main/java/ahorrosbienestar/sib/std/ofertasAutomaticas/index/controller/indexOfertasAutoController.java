@@ -1,14 +1,26 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.index.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +30,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -29,15 +45,12 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.model.ProcesoBase;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.service.ProcesoService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
-import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
-import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+
 
 @Controller
 @RequestMapping("/ofertasAutomaticas")
@@ -93,21 +106,13 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private CampaniasVIPTareaConfiguracion campaniasVIPTareaConfiguracion;
-	
-	@Autowired 
-	private IReporteRepository iReporteRepository;
-	
-	@Autowired 
-	private ProcesoService procesoService;
-	
-	@Autowired 
-	private JasperReportController jasperReportController;
-	
+		
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
+	private int tipoArchivo = 12;
 
 	@GetMapping("/index")
 	public String indexOfertasAuto(Model model) throws IOException {
@@ -121,6 +126,7 @@ public class indexOfertasAutoController {
 			//model.addAttribute("lista_configuracion", baseService.findAll());
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
+			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
 			rutaDireccion = rutaError;
@@ -570,6 +576,105 @@ public class indexOfertasAutoController {
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	@GetMapping("/listaArchivos")
+    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(@RequestParam(name = "idBase") Integer idBase) throws IOException {
+		
+		Optional<Bases> bases = basesService.findById(idBase);
+        String folderPath = bases.get().getVc_ruta_proceso();   
+        Path folder = Paths.get(folderPath);
+
+        List<ArchivoOfertasAutomaticas> listaArchivos = new ArrayList<>();;
+
+        // Listar los archivos en la carpeta
+        Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+         		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+         		ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
+         		archivos.setNombreArchivo(file.getFileName().toString());
+         		archivos.setPesoArchivo((attrs.size()/1024)+" KB");
+         		
+            	logger.info("Nombre:"+archivos.getNombreArchivo());
+            	logger.info("tamaño:"+archivos.getPesoArchivo());
+            	long millis = attrs.creationTime().toMillis();
+            	FileTime fileTime = FileTime.fromMillis(millis);
+            	LocalDate fechaCreacion = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            	String fechaFormateada = fechaCreacion.toString();
+            	archivos.setFechaCreacion(fechaFormateada);
+            	
+            	long fechaModificacion = 	attrs.lastModifiedTime().toMillis();
+            	FileTime fileTimeMod = FileTime.fromMillis(fechaModificacion);
+            	LocalDate fechaMod = fileTimeMod.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            	String fechaFormateadaMod = fechaMod.toString();
+            	archivos.setFechaModifacion(fechaFormateadaMod);
+            	
+            	logger.info("fecha de creacion:"+fechaFormateada);
+            	logger.info("fecha de Modificacion:"+fechaFormateadaMod);
+            	archivos.setRutaArchivo(bases.get().getVc_ruta_proceso()+file.getFileName().toString());
+            	listaArchivos.add(archivos);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+		return ResponseEntity.ok(listaArchivos);
+
+    }
+	
+	@GetMapping("/verArchivo")
+    public ResponseEntity<Resource> descargarArchivo(@RequestParam String ruta,@RequestParam String  nombre) throws IOException {
+				
+		try {
+        File file = new File(ruta);
+        byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+		
+		
+		ContentDisposition contentDisposition = null;
+		HttpHeaders h2 = new HttpHeaders();
+		
+		contentDisposition = ContentDisposition.builder("attachment").filename(nombre).build();
+		h2.setContentDisposition(contentDisposition);
+		
+		return ResponseEntity.ok().contentLength((long) bytesPDF.length)
+			    .contentType(MediaType.APPLICATION_PDF)
+			    .headers(h2).body(new ByteArrayResource(bytesPDF));
+		}catch (Exception e) {
+			logger.info("Error:"+e.getMessage());
+			return null;
+		}
+    }
+	
+	@PostMapping("/subirArchivo")
+    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files, 
+    		@RequestParam("idBase") Integer idBase){
+		
+		
+		String mensaje ="";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		Optional<Bases> bases = basesService.findById(idBase);
+		try {
+			if(files.length > 0) {
+				for(MultipartFile file: files) {
+					 byte[] bytes = file.getBytes();
+				        String folderPath = bases.get().getVc_ruta_proceso();   
+				        Path folder = Paths.get(folderPath);
+
+						Path nuevoPath = Paths.get(folderPath+"/"+ file.getOriginalFilename());
+		                Files.write(nuevoPath, bytes);
+		                       
+		                mensaje="Se agrego archivo correctamente.";
+		                logger.info(mensaje);
+				}
+			}else {
+				mensaje="No subio archivo.";
+				logger.info(mensaje);
+			}
+			respuesta.add(mensaje);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			System.out.println("--"+e.getMessage());
+			mensaje = e.getMessage();
+			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		}
 	}

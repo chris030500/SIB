@@ -132,7 +132,6 @@ public class CampaniasVIPTareaConfiguracion {
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
-    
     }
 
 }
