@@ -178,13 +178,15 @@ public class FidelidadTareaConfiguracion {
 			isRunning = true; // Bloquear la ejecución
 			if (archivoValidador.existeArchivo(urlDirectorio, archivo)) {
 				List<String> incorrectHeaders = null;
+				logger.info("Inicia proceso de lectura de archivo.");
 				try {
-					incorrectHeaders = comparadorEncabezados.compararHeader(urlDirectorio + "/" + archivo);
+					incorrectHeaders = comparadorEncabezados.compararHeader(urlDirectorio + archivo);
+					logger.info("ruta:"+urlDirectorio+archivo);
 					if (incorrectHeaders.isEmpty()) {
-						System.out.println("El archivo y los encabezados son válidos.");
 						logger.info("El archivo y los encabezados son válidos.");
 						try {
-							System.out.println("Entro en try para procesarArchivoExcel");
+							
+							logger.info("Entro en try para procesarArchivoExcel");
 							procesarArchivoExcel(urlDirectorio + "/" + archivo);
 							// Se manda a llamar el metodo para validar REUS y Clientes SN publicidad
 							//comparativaREUSClienteSNPublicidad();
@@ -194,12 +196,10 @@ public class FidelidadTareaConfiguracion {
 						} catch (ParseException e) {
 							
 							logger.error("Error:"+e.getMessage());
-							
-							e.printStackTrace();
 						}
 
 					} else {
-						System.out.println("Los siguientes encabezados no coinciden:");
+						logger.error("Los siguientes encabezados no coinciden:");
 						errores = "";
 						for (String incorrectHeader : incorrectHeaders) {
 							errores = errores+"-"+incorrectHeader+"<br>";
@@ -213,7 +213,6 @@ public class FidelidadTareaConfiguracion {
 					}
 				} catch (IOException e) {
 					logger.error("Error:"+e.getMessage());
-					e.printStackTrace();
 				}
 			} else {
 				
