@@ -6,9 +6,13 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +36,8 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
+import ahorrosbienestar.sib.std.index.model.Acceso;
+import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -65,6 +71,9 @@ public class ConfiguracionController {
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private AccesoService accesoService;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(ConfiguracionController.class);
@@ -165,9 +174,10 @@ public class ConfiguracionController {
 	// Desbloqueo de sesión o cuenta del usuario
 	@PostMapping("/cambioSesiones")
 	public String cambioSesiones(@RequestParam(name = "desbloqueo", required = true) String desbloqueo,
-			@RequestParam(name = "selectUsuario", required = true) String[] selectUsuario) {
+			@RequestParam(name = "selectUsuario", required = true) String[] selectUsuario, HttpServletRequest request) {
 		logger.info("Ejecutando CambioSesiones");
 		Integer i = Integer.parseInt(selectUsuario[0]);
+		Usuario usu = usuarioService.findById(i).get();
 
 		if (desbloqueo.equals("desbloquearSesion")) {
 			// System.out.println("Entro en desbloquear sesion");
@@ -178,6 +188,22 @@ public class ConfiguracionController {
 			// System.out.println("Entro en desbloquear cuenta");
 			logger.info("Ejecutando desbloquear cuenta: " + i);
 			usuarioService.activarUsuarioCuenta(i);
+			
+			// Seteando valores al modelo Acceso
+			Acceso acceso = new Acceso();
+			acceso.setDt_fecha_registro(new Date());
+			acceso.setI_cod_accion(5);
+			acceso.setI_id_usuario(i);
+			acceso.setVc_descripci("Cuenta Desbloqueada");
+			LocalDateTime locaDate = LocalDateTime.now();
+			acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
+			acceso.setVc_host_remoto(request.getRemoteHost());
+			acceso.setVc_ip_remoto(request.getRemoteAddr());
+			acceso.setVc_nom_servidor(request.getServerName());
+			acceso.setVc_usuario(usu.getVc_nombre_usuario());
+			//Guardanto los valores de acceso en la base de datos
+			accesoService.save(acceso);
+			System.out.println("Cuenta Desbloqueada registrado en bitacora correctamente");
 		}
 		return "redirect:/configuracion/sesionesInactiva";
 	}
