@@ -128,4 +128,5 @@ public class Acceso {
 		this.vc_hora_registro = vc_hora_registro;
 	}
 	
+	
 }

@@ -6,4 +6,5 @@ import ahorrosbienestar.sib.std.index.model.Acceso;
 
 public interface IAccesoRepository extends JpaRepository<Acceso, Integer> {
 
+	
 }
