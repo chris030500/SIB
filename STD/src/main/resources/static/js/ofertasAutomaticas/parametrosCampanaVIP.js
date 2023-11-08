@@ -37,6 +37,7 @@ function validarFechas() {
 
 function validarHoras() {
 	console.log("Entro en validarHoras");
+	console.log("Entro en validarHoras");
 	var hComienzoCampana = document.getElementById('hComienzoCampana').value;
 	var hFinalCampana = document.getElementById('hFinalCampana').value;
 
