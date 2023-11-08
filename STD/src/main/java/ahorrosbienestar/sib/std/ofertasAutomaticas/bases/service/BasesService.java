@@ -96,5 +96,6 @@ public class BasesService {
 		return iBasesRepository.obtBase(id);
 	}
 
+	
 
 }
