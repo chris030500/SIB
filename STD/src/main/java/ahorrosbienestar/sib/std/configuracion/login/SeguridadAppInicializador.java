@@ -141,4 +141,5 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
 	}
 
+	
 }

@@ -191,5 +191,7 @@ public class IndexController {
 				Integer.parseInt(caracteres)));
 	}
 	
+	
+	
 
 }
