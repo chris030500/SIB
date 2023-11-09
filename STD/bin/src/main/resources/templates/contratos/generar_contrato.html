@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container">
+
+			<div class="card mb-3">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div class="card-body">
+							<h2 style="text-align:center; padding-top: 20px;">Generacion de Contrato</h2>
+							<hr>
+							<h6 style="text-align: center; font-size: 12px; font-weight: bold; color: red;" id="mensaje"></h6>
+						</div>
+					</div>
+				</div>
+			</div>
+			<form id="formContrato">
+				<div class="form-group row">
+					<label for="inputSolicitud" class="col-sm-4 col-form-label">Solicitud de crédito</label>
+					<div class="col-sm-6">
+						<input type="text" class="solo-numero form-control" id="inputSolicitud"
+							placeholder="Solicitud de crédito" maxlength="12">
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+							title="Buscar Solicitud" aria-controls="table-datatable" type="button"
+							data-tooltip="Show filters" th:onclick="buscarDatosSolicitud()">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputNombre" class="col-sm-4 col-form-label">Nombre del Cliente</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="inputNombre" placeholder="Nombre del Cliente"
+							readonly="readonly">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputDireccion" class="col-sm-4 col-form-label">Direccion del cliente</label>
+					<div class="col-sm-6">
+						<textarea type="text-Area" class="form-control" id="inputDireccion"
+							placeholder="Direccion del cliente" readonly="readonly"></textarea>
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputFecha" class="col-sm-4 col-form-label">Fecha de suscripción</label>
+					<div class="col-sm-6">
+						<input type="date" id="fecha" class="form-control" name="fecha">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group row " style="margin-top: 10px;">
+					<label for="inputCapital" class="col-sm-4 col-form-label">Capital Otorgado</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="inputCapital" placeholder="Capital Otorgado"
+							readonly="readonly">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputTasaOrdinaria" class="col-sm-4 col-form-label">Tasa de Interés Ordinaria</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="inputTasaOrdinaria"
+							placeholder="Tasa de interes Ordinaria" readonly="readonly">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputTasaMoratoria" class="col-sm-4 col-form-label">Tasa de Interés Moratoria</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="inputTasaMoratoria"
+							placeholder="Tasa de interes Moratoria" readonly="readonly">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+				<div class="form-group row" style="margin-top: 10px;">
+					<label for="inputCat" class="col-sm-4 col-form-label">CAT</label>
+					<div class="col-sm-6">
+						<input type="number" class="form-control" id="cat" placeholder="CAT" min="0">
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group row" style="margin-top: 10px;">
+					<div class="col-sm-5"></div>
+					<div class="col-sm-5">
+						<input type="hidden" id="valAnterior">
+						<input type="hidden" id="reca">
+					</div>
+					<div class="col-sm-2 text-right">
+						<button class="btn btn-warning" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+							title="Generar Contrato" aria-controls="table-datatable" type="button"
+							data-tooltip="Show filters" th:onclick="verReporte()">
+							<i class="bi bi-filetype-pdf"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/contratos/contrato.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!--JavaScript-->
+	</th:block>
+</body>
+
+</html>
