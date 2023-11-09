@@ -25,4 +25,6 @@ public class AccesoService {
 	public List<Acceso> findAll(){
 		return iAccesoRepository.findAll();
 	}
+	
+	
 }

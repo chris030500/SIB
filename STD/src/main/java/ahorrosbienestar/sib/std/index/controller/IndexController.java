@@ -190,5 +190,8 @@ public class IndexController {
 				Integer.parseInt(mayusculas), Integer.parseInt(minusculas), Integer.parseInt(numeros),
 				Integer.parseInt(caracteres)));
 	}
+	
+	
+	
 
 }

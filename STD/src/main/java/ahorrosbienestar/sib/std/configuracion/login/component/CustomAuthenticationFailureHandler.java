@@ -111,4 +111,5 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		// Redirigir internamente a la página de inicio de sesión
 		response.sendRedirect(request.getContextPath() + "/login");
 	}
+	
 }
