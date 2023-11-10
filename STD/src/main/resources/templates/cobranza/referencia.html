@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<div class="container" id="paginaId" style="display: block;">
+			<div class="row">
+				<!-- Columna principal -->
+				<div class="col-md-12">
+					<!-- Card principal -->
+					<div class="card card-primary">
+						<div class="card-header">
+							<h2 style="color: black; text-align: center;">Referencia de Pagos</h2>
+						</div>
+						<div class="card-body" style="padding-top: 20px">
+							<!--Buscador-->
+							<div class="row">
+								<div class="col-sm-12">
+									<form class="formulario" id="formBuscarID">
+										<div class="row">
+											<div class="col-sm-3">
+												<label for="inputEmail5" class="form-label">Tipo de Busqueda</label>
+												<code>(*)</code>
+											</div>
+											<div class="col-sm-4">
+												<label for="inputEmail5" class="form-label">Buscar cliente</label>
+												<code>(*)</code>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-3">
+												<select style="width: 150px; height: 40px; border-radius: 5px;"
+													id="opcionesId">
+													<option value="" disabled selected>Buscar por</option>
+												</select>
+											</div>
+											<div class="col-sm-4">
+												<input type="text" placeholder="Cliente" class="form-control"
+													id="buscadorId">
+											</div>
+											<div class="col-sm-3" style="text-align: right;">
+												<button type="button" onclick="validarInformacion(buscadorId.value)"
+													class="btn btn-primary">Buscar</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<!--Fin Buscador-->
+
+							<!--Datos del cliente-->
+							<div class="row" style="padding-top: 50px; display: none;" id="mostrarDatosId">
+								<div class="col-sm-12">
+									<div class="row">
+										<div class="col-sm-2">
+											<label for="inputEmail5" class="form-label">Núm Cliente</label>
+										</div>
+										<div class="col-sm-4">
+											<label for="inputEmail5" class="form-label">Nombre Cliente</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-2">
+											<input style="color: dimgray;" type="text" class="form-control"
+												id="numClienteId" disabled="false">
+										</div>
+										<div class="col-sm-4">
+											<input style="color: dimgray;" type="text" class="form-control"
+												id="nomClienteId" disabled="false">
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--Fin Datos del cliente-->
+
+							<!--Cuenta Principal-->
+							<div class="row" style="padding-top: 50px; display: none;" id="mostrarCtaPrincipalId">
+								<div class="col-sm-12">
+									<div class="row">
+										<div class="col-sm-3">
+											<label for="inputEmail5" class="form-label">Cuenta Principal</label>
+										</div>
+										<div class="col-sm-9" style="text-align: right; display: none;" id="exportar">
+											<button type="button" onclick="exportarBusqueda()"
+												class="btn btn-danger">Exportar</button>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col_sm-12" style="padding-top: 10px;">
+											<div class="table-responsive">
+												<table class="table table-bordered" id="ctaPrincipalId">
+													<thead>
+														<tr style="background: #0d6efd; color: white;">
+															<th style="font-size: 11px;">Núm Cuenta Principal</th>
+															<th style="font-size: 11px;">Referencia 1</th>
+															<th style="font-size: 11px;">Referencia 2</th>
+															<th style="font-size: 11px;">Banco</th>
+														</tr>
+													</thead>
+													<tbody></tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Fin Cuenta Principal-->
+
+							<!--Crédito-->
+							<div class="row" style="padding-top: 50px; display: none;" id="mostrarCreditoId">
+								<div class="col-sm-12">
+									<div class="row">
+										<div class="col-sm-3">
+											<label for="inputEmail5" class="form-label">Crédito</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-bordered" id="creditoId">
+													<thead>
+														<tr style="background: #0d6efd; color: white;">
+															<th style="font-size: 11px;">Núm Crédito</th>
+															<th style="font-size: 11px;">Nombre Producto</th>
+															<th style="font-size: 11px;">Referencia</th>
+															<th style="font-size: 11px;">Banco</th>
+														</tr>
+													</thead>
+													<tbody></tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--Fin Crédito-->
+
+							<!-- Historial -->
+							<div class="row" style="padding-top: 50px; display: none;" id="verHrlId">
+								<div class="col-sm-12">
+									<div class="row">
+										<div class="col-sm-3">
+											<label for="inputEmail5" class="form-label">Historial de busquedas</label>
+										</div>
+										<div class="col-sm-9" style="text-align: right; display: none;" id="reporte">
+											<button type="button" onclick="generarReporteHrl()"
+												class="btn btn-success">Reporte</button>
+										</div>
+									</div>
+									<div class="col_sm-12" style="padding-top: 10px;">
+										<div class="table-responsive">
+											<table class="table table-bordered" id="historialId">
+												<thead>
+													<tr style="background: #0d6efd; color: white;">
+														<th style="font-size: 11px;">N°</th>
+														<th style="font-size: 11px;">Nombre de usuario</th>
+														<th style="font-size: 11px;">Fecha de consulta</th>
+														<th style="font-size: 11px;">Tipo de busqueda</th>
+														<th style="font-size: 11px;">Parametros de busqueda</th>
+														<th style="font-size: 11px;">Núm de Cliente</th>
+														<th style="font-size: 11px;">Nombre de cliente</th>
+														<th style="font-size: 11px;">Ref cuenta principal 1</th>
+														<th style="font-size: 11px;">Ref cuenta principal 2</th>
+														<th style="font-size: 11px;">Núm de crédito</th>
+														<th style="font-size: 11px;">Producto crédito</th>
+														<th style="font-size: 11px;">Referencia crédito</th>
+														<th style="font-size: 11px;">Banco crédito</th>
+													</tr>
+												</thead>
+												<tbody></tbody>
+											</table>
+										</div>
+										<div style="text-align: right; padding-top: 10px;" id="paginadoId"></div>
+									</div>
+								</div>
+								<!-- Fin Historial -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="container" id="spinnerId" style="display: none;">
+				<div class="row">
+					<!-- Columna principal -->
+					<div class="col-md-12">
+						<!-- Card principal -->
+						<div class="card card-primary">
+							<div class="card-header">
+								<h2 style="color: black; text-align: center;">Referencia de Pagos</h2>
+							</div>
+							<div class="card-body" style="padding-top: 20px; text-align: center;">
+
+								<div class="row" style="margin: 20%;">
+									<div class="col-sm-12">
+										<div class="spinner-border"
+											style="color: cornflowerblue; width: 200px; height: 200px;"></div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<!--JavaScript-->
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/cobranza/referencia.js}"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+	</th:block>
+</body>
+
+
+</html>
