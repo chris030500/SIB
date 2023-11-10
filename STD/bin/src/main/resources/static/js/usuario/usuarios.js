@@ -618,7 +618,9 @@ function cambiarContrasenia() {
 
 
 function reactivarEstatusUsuario(usuario) {
-
+	
+	console.log(usuario)
+	
 	$.ajax({
 		url: urlBase + "reactivar_usuario_sesion/" + usuario,
 		type: "POST",

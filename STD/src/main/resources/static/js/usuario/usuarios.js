@@ -633,4 +633,5 @@ function reactivarEstatusUsuario(usuario) {
 			});
 		}
 	});
+	
 }

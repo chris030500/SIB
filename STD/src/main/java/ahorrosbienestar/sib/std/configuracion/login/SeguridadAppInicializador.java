@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.configuracion.login;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -13,14 +15,22 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import ahorrosbienestar.sib.std.configuracion.login.component.CustomAuthenticationFailureHandler;
+import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.core_bancario.dto.MenuGeneral;
 import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
+import ahorrosbienestar.sib.std.index.model.Acceso;
+import ahorrosbienestar.sib.std.index.service.AccesoService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 
 
 @Configuration
 @EnableWebSecurity
 public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
+	
+	@Autowired
+	private UsuarioService usuarioService;
 
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
@@ -30,6 +40,9 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;
+	
+	@Autowired
+	private AccesoService accesoService;
 	
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
@@ -55,6 +68,24 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 			.formLogin().successHandler((request, response, authentication) -> {
 					// Obtiene el nombre de usuario
 					String username = authentication.getName();
+					// Obteniendo  informacion del usuario con una consulta por por username
+					Usuario usuario = usuarioService.findByNombre(username);
+					int estatus = usuario.getPk_id_usuario();
+					// Setenado valores al modelo Acceso
+					Acceso acceso = new Acceso();
+					acceso.setDt_fecha_registro(new Date());
+					acceso.setI_cod_accion(1);
+					acceso.setI_id_usuario(estatus);
+					acceso.setVc_descripci("Ingreso");
+					LocalDateTime locaDate = LocalDateTime.now();
+					acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
+					acceso.setVc_host_remoto(request.getRemoteHost());
+					acceso.setVc_ip_remoto(request.getRemoteAddr());
+					acceso.setVc_nom_servidor(request.getServerName());
+					acceso.setVc_usuario(username);
+					//Guardanto los valores de acceso en la base de datos
+					accesoService.save(acceso);
+					System.out.println("Acceso registrado en bitacora correctamente");
 
 					// Almacena el nombre de usuario en la sesión
 					request.getSession().setAttribute("username", username);
@@ -110,4 +141,5 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
 	}
 
+	
 }
