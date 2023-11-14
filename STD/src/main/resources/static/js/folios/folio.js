@@ -516,9 +516,9 @@ function tblObservacionesLoad() {
 			var urlServicio = getAbsolutePath() + altaObservaciones + document.getElementById("idAreaAtencion").value;
 			urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
 			urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-			urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+			urlServicio = urlServicio + "&desObservacion=" + encodeURIComponent(document.getElementById("idObservacion").value);
 			urlServicio = urlServicio + "&folioID=" + folioID;
-			urlServicio = urlServicio + "&obsOficio=" + document.getElementById("obsOficio").value;
+			urlServicio = urlServicio + "&obsOficio=" + encodeURIComponent(document.getElementById("obsOficio").value);
 			peticionPost(urlServicio, 2, folioID);
 		} else {
 			swal({
@@ -604,9 +604,9 @@ function modificarObs() {
 			urlServicio = urlServicio + "&idAreaAtencion=" + document.getElementById("idAreaAtencion").value;
 			urlServicio = urlServicio + "&idResponsableAtencion=" + document.getElementById("idResponsableAtencion").value;
 			urlServicio = urlServicio + "&idFechaVencimiento=" + document.getElementById("idFechaVencimiento").value;
-			urlServicio = urlServicio + "&desObservacion=" + document.getElementById("idObservacion").value;
+			urlServicio = urlServicio + "&desObservacion=" + encodeURIComponent(document.getElementById("idObservacion").value);
 			urlServicio = urlServicio + asignacion;
-			urlServicio = urlServicio + "&obsOficio=" + document.getElementById("obsOficio").value;
+			urlServicio = urlServicio + "&obsOficio=" + encodeURIComponent(document.getElementById("obsOficio").value);
 
 			peticionPost(urlServicio, 2, folioID);
 		} else {
@@ -654,7 +654,7 @@ function guardarFolio(proceso) {
 	}
 	urlServicio = urlServicio + document.getElementById("noficio").value;
 	urlServicio = urlServicio + "&dt_recepcion=" + document.getElementById("idRecepcion").value;
-	urlServicio = urlServicio + "&vc_asunto=" + document.getElementById("idAsunto").value;
+	urlServicio = urlServicio + "&vc_asunto=" + encodeURIComponent(document.getElementById("idAsunto").value);
 	urlServicio = urlServicio + "&i_dirigido=" + document.getElementById("idDirigido").value;
 	urlServicio = urlServicio + "&vc_puesto=" + document.getElementById("iPuesto").value;
 	urlServicio = urlServicio + "&i_tipo_oficio=" + document.getElementById("idTipoOficio").value;

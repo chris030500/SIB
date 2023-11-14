@@ -27,7 +27,7 @@ public class PlanAccion {
 	@Column(name = "I_OBSERVACION", columnDefinition = "INT")
 	private int i_observacion;
 	
-	@Column(name = "VC_DESC_ACTIVIDAD", columnDefinition = "VARCHAR(400)")
+	@Column(name = "VC_DESC_ACTIVIDAD", columnDefinition = "LONGTEXT")
 	private String vc_desc_actividad;
 		
 	@Column(name = "I_RESPONSABLE", columnDefinition = "INT")
