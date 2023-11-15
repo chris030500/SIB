@@ -26,7 +26,6 @@ var paginaCarga = document.getElementById("spinnerId");
 window.onload = function() {
 	role();
 	tipoDeBusqueda();
-	datosHistorial();
 }
 /**
  * Fin
@@ -357,7 +356,6 @@ function mandarConsulta(datos) {
 					icon: "warning",
 				});
 			}
-			datosHistorial();
 		}, error: function(error) {
 			swal("Se identifico un error", {
 				closeOnClickOutside: false,
@@ -371,160 +369,24 @@ function mandarConsulta(datos) {
  */
 
 
-/**
- * Historial de Busqueda
- */
-var mostarHrl = document.getElementById("verHrlId");
-var tablaHrl = document.getElementById("historialId");
-var tbodyHrl = tablaHrl.querySelector("tbody");
-var dtoHrl;
-const resultadoHrl = 5;
-let actualHrl = 1;
-
-function datosHistorial() {
-	$.ajax({
-		url: newUrlBase + "historial",
-		type: "GET",
-		dataType: "JSON",
-		success: function(resp) {
-			if (resp.length > 0) {
-				mostarHrl.style.display = "block";
-				dtoHrl = resp;
-				inicioHrl();
-			}
-		},
-		error: function(error) {
-			// console.log(error);
-			swal("Hubo un error", {
-				closeOnClickOutside: false,
-				icon: "warning",
-			});
-		}
-	});
-}
-
-function inicioHrl() {
-	tbodyHrl.innerHTML = ""; // Limpiar la tabla antes de mostrar los nuevos datos
-	const inicio = (actualHrl - 1) * resultadoHrl;
-	const fin = inicio + resultadoHrl;
-	const datos = dtoHrl.slice(inicio, fin);
-	datos.forEach(function(element) {
-		var rows = document.createElement("tr");
-
-		var cell1 = document.createElement("td");
-		cell1.textContent = element.pk_id_consulta_rp;
-		//cell1.style.textAlign = "justify";
-		cell1.style.fontSize = "11px";
-		rows.appendChild(cell1);
-
-		var cell2 = document.createElement("td");
-		cell2.textContent = element.vc_nombre_usuario;
-		cell2.style.fontSize = "11px";
-		rows.appendChild(cell2);
-
-		var cell3 = document.createElement("td");
-		cell3.textContent = element.dt_fecha_registro;
-		cell3.style.fontSize = "11px";
-		rows.appendChild(cell3);
-
-		var cell4 = document.createElement("td");
-		cell4.textContent = element.vc_parametro_busqueda;
-		cell4.style.fontSize = "11px";
-		rows.appendChild(cell4);
-
-		var cell5 = document.createElement("td");
-		cell5.textContent = element.vc_valor_parametro;
-		//cell5.style.textAlign = "justify";
-		cell5.style.fontSize = "11px";
-		rows.appendChild(cell5);
-
-		var cell6 = document.createElement("td");
-		cell6.textContent = element.i_numero_cliente;
-		cell6.style.fontSize = "11px";
-		rows.appendChild(cell6);
-
-		var cell7 = document.createElement("td");
-		cell7.textContent = element.vc_nombre_cliente;
-		cell7.style.fontSize = "11px";
-		rows.appendChild(cell7);
-
-		var cell8 = document.createElement("td");
-		cell8.textContent = element.i_numero_cuenta_principal_1;
-		cell8.style.fontSize = "11px";
-		rows.appendChild(cell8);
-
-		var cell14 = document.createElement("td");
-		cell14.textContent = element.i_numero_cuenta_principal_2;
-		cell14.style.fontSize = "11px";
-		rows.appendChild(cell14);
-
-		var cell10 = document.createElement("td");
-		cell10.textContent = element.i_numero_credito;
-		cell10.style.fontSize = "11px";
-		rows.appendChild(cell10);
-
-		var cell11 = document.createElement("td");
-		cell11.textContent = element.vc_producto_credito;
-		cell11.style.fontSize = "11px";
-		rows.appendChild(cell11);
-
-		var cell12 = document.createElement("td");
-		cell12.textContent = element.i_referencia_banco_credito;
-		cell12.style.fontSize = "11px";
-		rows.appendChild(cell12);
-
-		var cell13 = document.createElement("td");
-		var contenido = element.vc_nombre_banco_credito;
-		var textoRecortado = contenido.substring(0, 13);
-		cell13.textContent = textoRecortado;
-		cell13.style.fontSize = "11px";
-		rows.appendChild(cell13);
-
-		tbodyHrl.appendChild(rows);
-	});
-	botonesHrl();
-}
-
-// Botones del Paginado
-function botonesHrl() {
-	const paginationContainer = document.getElementById("paginadoId");
-	paginationContainer.innerHTML = ""; // Limpiar los botones de paginación
-	const totalPages = Math.ceil(dtoHrl.length / resultadoHrl);
-	for (let i = 1; i <= totalPages; i++) {
-		const button = document.createElement("button");
-		button.textContent = i;
-		// Establecer los estilos en línea usando la propiedad style
-		button.style.backgroundColor = "#85929E";
-		button.style.border = "none";
-		button.style.color = "white";
-		button.style.padding = "8px 16px";
-		button.style.margin = "2px";
-		// Aplicar estilos al botón activo
-		if (i === actualHrl) {
-			button.style.backgroundColor = "#007bff";
-		}
-		// Agrega más estilos si es necesario
-		button.addEventListener("click", function() {
-			actualHrl = i;
-			inicioHrl();
-			botonesHrl();
-		});
-		paginationContainer.appendChild(button);
-	}
-}
-
-/**
- * Fin
- */
-
-
 
 /**
  * Reporte Historial
  */
-function generarReporteHrl() {
+function validarFechas() {
+	if (document.getElementById("dtFechaInicio").value != "" && document.getElementById("dtFechaFin").value != "") {
+		generarReporteHrl(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value);
+	} else {
+		swal({
+			text: "Hay fechas vacias",
+			icon: "warning",
+		});
+	}
+}
+
+function generarReporteHrl(inicio, fin) {
 	$.ajax({
-		url: newUrlBase + "reporte_historial",
+		url: newUrlBase + "reporte_historial?inicio=" + inicio + "&fin=" + fin,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
@@ -536,7 +398,7 @@ function generarReporteHrl() {
 		success: function(respuesta) {
 
 			// var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/")+4) + respuesta[0];
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
 
 			window.open(urlReporte);
 			window.focus();
@@ -550,6 +412,7 @@ function generarReporteHrl() {
 		}
 	});
 }
+
 /**
  * Fin
  */
@@ -573,7 +436,7 @@ function exportarBusqueda() {
 		success: function(respuesta) {
 
 			// var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/")+4) + respuesta[0];
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
 
 			window.open(urlReporte);
 			window.focus();

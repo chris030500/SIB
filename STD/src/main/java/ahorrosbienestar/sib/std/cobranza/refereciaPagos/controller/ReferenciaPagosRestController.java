@@ -2,9 +2,6 @@ package ahorrosbienestar.sib.std.cobranza.refereciaPagos.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.relation.Role;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,20 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import ahorrosbienestar.sib.std.catalogos.dto.EmpleadosCE;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.bitacora.controller.BitacoraRestController;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.consulta.controller.ConsultaRestController;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.consulta.dto.ConsultaDTO;
-import ahorrosbienestar.sib.std.cobranza.refereciaPagos.consulta.dto.DatosConsultaDTO;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.consulta.model.ConsultaModel;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.cuentasCliente.model.CuentasClienteModel;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.cuentasCliente.service.CuentasClienteService;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.hisotrial.dto.HistorialDTO;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.hisotrial.model.HistorialModel;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.hisotrial.service.HistorialService;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -64,6 +62,12 @@ public class ReferenciaPagosRestController {
 
 	@Autowired
 	CatalogosCEService catalogosCEService;
+	
+	@Autowired
+	ConfigService configService;
+	
+	// Leyenda
+	private static final String leyenda = "LeyendaRP";
 
 	// Logger
 	private static final Logger logger = Logger.getLogger(ReferenciaPagosRestController.class);
@@ -153,17 +157,29 @@ public class ReferenciaPagosRestController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/reporte_historial" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteHistorial() {
+	public ResponseEntity<?> reporteHistorial(@RequestParam("inicio") String inicio, @RequestParam("fin") String fin) {
 
 		ArrayList<String> respuesta = new ArrayList<String>();
 
 		try {
-
+			
+			// authentication
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			logger.info("Se encontró la autenticación");
+			// usuario
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			logger.info("Usuario que realizó la busqueda: " + usuario.getVc_nombre_usuario());
+			// empleado 
+			List<EmpleadosCE> listaCes = catalogosCEService.nombreCompletoEmpleado(usuario.getI_id_empleado());
+			logger.info("Empleado: " + listaCes.get(0).nombreCompleto);
+            
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 
-			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
-					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + "~FechaFin=" + "&tipoDocumento="
-					+ datosReporte.getVc_extension() + "&identificadorDoc=OA";
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte) + datosReporte.getPk_id_reporte() + "&parametros=?empleado="
+			+ listaCes.get(0).nombreCompleto
+			+ "~FechaInicio=" + inicio 
+			+ "~FechaFin=" + fin 
+			+ "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=OA";
 
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
@@ -187,11 +203,27 @@ public class ReferenciaPagosRestController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 
 		try {
+			
+			// authentication
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			logger.info("Se encontró la autenticación");
+			// usuario
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			logger.info("Usuario que realizó la busqueda: " + usuario.getVc_nombre_usuario());
+			// empleado 
+			List<EmpleadosCE> listaCes = catalogosCEService.nombreCompletoEmpleado(usuario.getI_id_empleado());
+			logger.info("Empleado: " + listaCes.get(0).nombreCompleto);
+			// leyenda
+			Configuracion configuracion = configService.valorPropiedad(leyenda);
+			logger.info("Nombre propiedad: " + configuracion.getVc_nom_propiedad());
 
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreExportar);
 
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
-					+ datosReporte.getPk_id_reporte() + "&parametros=?id=" + clienteId + "~FechaInicio=" + "~FechaFin="
+					+ datosReporte.getPk_id_reporte() + "&parametros=?id=" + clienteId 
+					+ "~empleado=" + listaCes.get(0).nombreCompleto
+					+ "~leyenda=" + configuracion.getVc_valor_propiedad()
+					+ "~FechaInicio=" + "~FechaFin="
 					+ "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=OA";
 
 			respuesta.add(reporteURL);
