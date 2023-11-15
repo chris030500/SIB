@@ -9,11 +9,16 @@ function pintarMenuxRol() {
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {
 			  var menu = document.getElementById(''+opt.pk_id_menu+'');
-			  menu.style.display = "block";
+			  if(menu != null){
+				  menu.style.display = "block";
+			  }
+			  
 			  
 			for(var i=0; i < opt.opcMenu.length; i++){
 				 var opcion = document.getElementById('M_O'+opt.opcMenu[i].pk_id_opcion);
-				 opcion.style.display = "block";
+				 if(opcion != null){
+					 opcion.style.display = "block";
+				 }
 			}
 		});
 		document.querySelectorAll("#sidebar [style='display:none;']").forEach(function(checkElement) {			
