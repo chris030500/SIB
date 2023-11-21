@@ -190,7 +190,7 @@
 								<br>
 								<!--<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}" disabled />-->
 								<label>Mensaje Default Campaña</label>
-								<textarea type="text-Area" class="form-control" id="msnCampania"
+								<textarea type="text-Area" disabled class="form-control" id="msnCampania"
 								maxlength="200" rows="4" th:text="${mensajeCampana}" th:value="${mensajeCampana}"></textarea>
 								<!--<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
 									th:title="'Mensaje Configurado: '+ ${mensajeCampana}">
@@ -462,5 +462,6 @@
 		<script th:src="@{/js/ofertasAutomaticas/ofertasAutomaticas.js}"></script>
 	</th:block>
 </body>
+
 
 </html>

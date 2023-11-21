@@ -119,6 +119,7 @@ public class indexOfertasAutoController {
 	 try {
 		if(validarAcceso()== 1){
 			logger.info("Ejecutando ofertasAutomaticas");
+			logger.info("Ejecutando ofertasAutomaticas");
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
