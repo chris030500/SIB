@@ -199,7 +199,7 @@ function calcularPlazo(opcion, fechaI, fechaF) {
 	switch (opcion) {
 		case 1:
 			var dia = 0;
-			while (Date.parse(fechaI) <= Date.parse(fechaF)) {
+			while (Date.parse(fechaI) < Date.parse(fechaF)) {
 				switch (fechaI.getDay()) {
 					case 0:
 						fechaI.setUTCDate(fechaI.getUTCDate() + 1);
