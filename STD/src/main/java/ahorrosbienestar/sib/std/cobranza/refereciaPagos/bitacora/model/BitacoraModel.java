@@ -33,7 +33,7 @@ public class BitacoraModel {
 	private String vc_producto_credito;
 
 	@Column(name = "I_REFERENCIA_BANCO_CREDITO")
-	private BigInteger i_referencia_banco_credito;
+	private String i_referencia_banco_credito;
 
 	@Column(name = "VC_NOMBRE_BANCO_CREDITO")
 	private String vc_nombre_banco_credito;
@@ -70,11 +70,11 @@ public class BitacoraModel {
 		this.vc_producto_credito = vc_producto_credito;
 	}
 
-	public BigInteger getI_referencia_banco_credito() {
+	public String getI_referencia_banco_credito() {
 		return i_referencia_banco_credito;
 	}
 
-	public void setI_referencia_banco_credito(BigInteger i_referencia_banco_credito) {
+	public void setI_referencia_banco_credito(String i_referencia_banco_credito) {
 		this.i_referencia_banco_credito = i_referencia_banco_credito;
 	}
 

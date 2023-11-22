@@ -45,10 +45,10 @@ public class ConsultaModel {
 	private String vc_nombre_cliente;
 
 	@Column(name = "I_NUMERO_CUENTA_PRINCIPAL_1")
-	private BigInteger i_numero_cuenta_principal_1;
+	private String i_numero_cuenta_principal_1;
 
 	@Column(name = "I_NUMERO_CUENTA_PRINCIPAL_2")
-	private BigInteger i_numero_cuenta_principal_2;
+	private String i_numero_cuenta_principal_2;
 
 	public int getPk_id_consulta_rp() {
 		return pk_id_consulta_rp;
@@ -106,19 +106,19 @@ public class ConsultaModel {
 		this.vc_nombre_cliente = vc_nombre_cliente;
 	}
 
-	public BigInteger getI_numero_cuenta_principal_1() {
+	public String getI_numero_cuenta_principal_1() {
 		return i_numero_cuenta_principal_1;
 	}
 
-	public void setI_numero_cuenta_principal_1(BigInteger i_numero_cuenta_principal_1) {
+	public void setI_numero_cuenta_principal_1(String i_numero_cuenta_principal_1) {
 		this.i_numero_cuenta_principal_1 = i_numero_cuenta_principal_1;
 	}
 
-	public BigInteger getI_numero_cuenta_principal_2() {
+	public String getI_numero_cuenta_principal_2() {
 		return i_numero_cuenta_principal_2;
 	}
 
-	public void setI_numero_cuenta_principal_2(BigInteger i_numero_cuenta_principal_2) {
+	public void setI_numero_cuenta_principal_2(String i_numero_cuenta_principal_2) {
 		this.i_numero_cuenta_principal_2 = i_numero_cuenta_principal_2;
 	}
 
