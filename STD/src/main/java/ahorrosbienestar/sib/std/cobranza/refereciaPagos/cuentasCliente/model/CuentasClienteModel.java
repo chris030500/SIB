@@ -41,16 +41,16 @@ public class CuentasClienteModel {
 	private String vc_estatus_credito;
 
 	@Column(name = "I_REFERENCIA_CREDITO")
-	private BigInteger i_referencia_credito;
+	private String i_referencia_credito;
 
 	@Column(name = "I_CUENTA_AHO_ID")
 	private BigInteger i_cuenta_aho_id;
 
 	@Column(name = "I_REFERENCIA_CTA_PRINCIPAL_1")
-	private BigInteger i_referencia_cta_principal_1;
+	private String i_referencia_cta_principal_1;
 
 	@Column(name = "I_REFERENCIA_CTA_PRINCIPAL_2")
-	private BigInteger i_referencia_cta_principal_2;
+	private String i_referencia_cta_principal_2;
 
 	@Column(name = "I_INSTITUCION_ID")
 	private int i_institucion_id;
@@ -117,11 +117,11 @@ public class CuentasClienteModel {
 		this.vc_estatus_credito = vc_estatus_credito;
 	}
 
-	public BigInteger getI_referencia_credito() {
+	public String getI_referencia_credito() {
 		return i_referencia_credito;
 	}
 
-	public void setI_referencia_credito(BigInteger i_referencia_credito) {
+	public void setI_referencia_credito(String i_referencia_credito) {
 		this.i_referencia_credito = i_referencia_credito;
 	}
 
@@ -133,19 +133,19 @@ public class CuentasClienteModel {
 		this.i_cuenta_aho_id = i_cuenta_aho_id;
 	}
 
-	public BigInteger getI_referencia_cta_principal_1() {
+	public String getI_referencia_cta_principal_1() {
 		return i_referencia_cta_principal_1;
 	}
 
-	public void setI_referencia_cta_principal_1(BigInteger i_referencia_cta_principal_1) {
+	public void setI_referencia_cta_principal_1(String i_referencia_cta_principal_1) {
 		this.i_referencia_cta_principal_1 = i_referencia_cta_principal_1;
 	}
 
-	public BigInteger getI_referencia_cta_principal_2() {
+	public String getI_referencia_cta_principal_2() {
 		return i_referencia_cta_principal_2;
 	}
 
-	public void setI_referencia_cta_principal_2(BigInteger i_referencia_cta_principal_2) {
+	public void setI_referencia_cta_principal_2(String i_referencia_cta_principal_2) {
 		this.i_referencia_cta_principal_2 = i_referencia_cta_principal_2;
 	}
 
