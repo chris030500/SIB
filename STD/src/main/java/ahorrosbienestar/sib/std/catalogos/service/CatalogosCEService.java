@@ -764,4 +764,28 @@ public class CatalogosCEService {
 		}
 		
 		
+		// Obtener empleado por empleadoId
+        public List<EmpleadosCE> nombreCompletoEmpleado(int i_id_empleado) {
+            logger.info("Ejecutando listaEmpleados: ");
+            try {
+                String sql = "SELECT EmpleadoID, CONCAT_WS(' ',PrimerNombre,SegundoNombre,ApellidoPat, ApellidoMat) as nombreEmpleado"
+                        + " FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?";
+                List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {i_id_empleado}, new RowMapper<EmpleadosCE>() {
+                    public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
+                        EmpleadosCE e = new EmpleadosCE();
+                        e.setEmpleadoID(rs.getInt(1));
+                        e.setNombreCompleto(rs.getString(2));
+                    
+                        return e;
+                    }
+                });
+                logger.info(ls.get(0).getNombreCompleto());
+                return ls;
+            } catch (Exception e) {
+                System.out.println("e"+e.getMessage());
+            }
+            return null;
+        }
+		
+		
 }
