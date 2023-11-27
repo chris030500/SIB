@@ -202,12 +202,12 @@ function eventosBotones() {
 			if (document.getElementById("idActividad").value > 0) {
 				if (obsId == 0) {
 					var urlServicio = getAbsolutePath() + seguimientoAlta + document.getElementById("idActividad").value;
-					urlServicio = urlServicio + "&desc_seguimiento=" + document.getElementById("idtxtSeguimiento").value;
+					urlServicio = urlServicio + "&desc_seguimiento=" + encodeURIComponent(document.getElementById("idtxtSeguimiento").value);
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
 				} else {
 					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId + "&idActividad="+document.getElementById("idActividad").value;
-					urlServicio = urlServicio + "&desc_seguimiento=" + document.getElementById("idtxtSeguimiento").value;
+					urlServicio = urlServicio + "&desc_seguimiento=" + encodeURIComponent(document.getElementById("idtxtSeguimiento").value);
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
 				}

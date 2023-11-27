@@ -136,7 +136,7 @@ public class FoliosController {
 
 			return rutaDireccion;
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("Error:"+e.getMessage());
 		}
 		return null;
 	}
@@ -152,7 +152,7 @@ public class FoliosController {
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtFolios());
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -168,7 +168,7 @@ public class FoliosController {
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtenerPuesto(empleadoID));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -184,7 +184,7 @@ public class FoliosController {
 			List<EmpleadosCE> listaResponsables = catalogosCEService.busquedaxArea(areaID);
 			return ResponseEntity.ok((listaResponsables != null)?listaResponsables:0);
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error:"+e.getMessage());
 			return null;
 		}
 	
@@ -239,7 +239,7 @@ public class FoliosController {
 					
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
-					System.out.println(""+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 				}
 				return null;
 			}
@@ -274,7 +274,7 @@ public class FoliosController {
 					
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
-					System.out.println(""+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return null;
 				}
 			}
@@ -292,7 +292,7 @@ public class FoliosController {
 					logger.info("/buscarObservaciones"+"dtos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.obtObservaciones(idFolio));
 				} catch (Exception e) {
-					System.out.print("--" + e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return null;
 				}
 			}
@@ -354,7 +354,7 @@ public class FoliosController {
 					correoCSOService.registrarCorreo(altaObs.getPk_id_observacion(),1);
 					logger.info("Registro Correo:"+altaObs.getPk_id_observacion());
 				} catch (Exception e) {
-					System.out.println("--"+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 				} 
 			}
 			
@@ -418,7 +418,7 @@ public class FoliosController {
 				try {
 					return iObservacionRepository.findById(id);
 				} catch (Exception e) {
-					System.out.println(""+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return null;
 				}
 				
@@ -466,7 +466,7 @@ public class FoliosController {
 					respuesta.add(mensaje);
 					return ResponseEntity.ok(respuesta);
 				} catch (Exception e) {
-					System.out.println("--"+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					mensaje = e.getMessage();
 					respuesta.add(mensaje);
 					return ResponseEntity.ok(respuesta);
@@ -509,7 +509,7 @@ public class FoliosController {
 					}
 					return respuesta;
 				} catch (Exception e) {
-					System.out.println("--"+e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return 0;
 				}
 			}
@@ -527,7 +527,7 @@ public class FoliosController {
 					logger.info("/buscarArchivos:"+idFolio);
 					return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 				} catch (Exception e) {
-					System.out.print("--" + e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return null;
 				}
 			}
@@ -557,7 +557,7 @@ public class FoliosController {
 	    				    .headers(h2).body(new ByteArrayResource(bytesPDF));
 					
 				} catch (Exception e) {
-					System.out.print("--" + e.getMessage());
+					logger.error("Error:"+e.getMessage());
 					return null;
 				}
 			}
