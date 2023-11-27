@@ -8,11 +8,10 @@ function pintarMenuxRol() {
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {
-			  var menu = document.getElementById(''+opt.pk_id_menu+'');
-			  if(menu != null){
-				  menu.style.display = "block";
-			  }
-			  
+			var menu = document.getElementById(''+opt.pk_id_menu+'');
+			if(menu != null){
+			   menu.style.display = "block";
+			}
 			  
 			for(var i=0; i < opt.opcMenu.length; i++){
 				 var opcion = document.getElementById('M_O'+opt.opcMenu[i].pk_id_opcion);

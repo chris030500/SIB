@@ -46,22 +46,24 @@
 
 											<form id="edit-form" th:method="post" th:object="${usuario}">
 												<div class="col-12">
-                                                    <label for="idUsuario" class="form-label">Id usuario</label>
-                                                    <input type="text" class="form-control" id="idUsuario"
-                                                        th:field="*{pk_id_usuario}" readonly>
-                                                    <label for="nombre" class="form-label">Nombre de usuario</label>
-                                                    <input type="text" class="form-control" id="nombre"
-                                                        th:field="*{vc_nombre_usuario}">
-                                                    <label for="nombre" class="form-label">Rol</label>
-                                                    <select class="form-select" id="rol"
-                                                        th:field="*{rol_idRol.pk_id_rol}">
-                                                        <option th:each="rol : ${roles}" th:value="${rol.pk_id_rol}"
-                                                            th:text="${rol.vc_nombre_rol}"></option>
-                                                    </select>
-                                                </div>
+
+													<label for="idUsuario" class="form-label">Id usuario</label>
+													<input type="text" class="form-control" id="idUsuario"
+														th:field="*{pk_id_usuario}" readonly>
+													<label for="nombre" class="form-label">Nombre de usuario</label>
+													<input type="text" class="form-control" id="nombre"
+														th:field="*{vc_nombre_usuario}">
+													<label for="nombre" class="form-label">Rol</label>
+													<select class="form-select" id="rol"
+														th:field="*{rol_idRol.pk_id_rol}">
+														<option th:each="rol : ${roles}" th:value="${rol.pk_id_rol}"
+															th:text="${rol.vc_nombre_rol}"></option>
+													</select>
+												</div>
+
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
-														data-bs-dismiss="modal">Close</button>
+														data-bs-dismiss="modal">Cerrar</button>
 													<button type="button" onclick="editarUsuario()"
 														class="btn btn-primary">Guardar</button>
 												</div>
@@ -92,11 +94,13 @@
 													<label for="idUsuario" class="form-label">Id
 														usuario</label>
 													<input type="text" class="form-control" id="idUsuario1"
-														 th:field="*{usr_historico_contrasena_id.pk_id_usuario}" readonly>
+														th:field="*{usr_historico_contrasena_id.pk_id_usuario}"
+														readonly>
 													<label for="nombre" class="form-label">Nombre de
 														usuario</label>
 													<input type="text" class="form-control" id="nombre1"
-														th:field="*{usr_historico_contrasena_id.vc_nombre_usuario}" readonly>
+														th:field="*{usr_historico_contrasena_id.vc_nombre_usuario}"
+														readonly>
 													<label for="password" class="form-label">Contraseña nueva</label>
 													<input type="password" class="form-control" id="password">
 												</div>
