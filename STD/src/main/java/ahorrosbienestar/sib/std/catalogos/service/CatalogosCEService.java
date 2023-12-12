@@ -4,8 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,14 +19,13 @@ import ahorrosbienestar.sib.std.catalogos.dto.ListaFolios;
 import ahorrosbienestar.sib.std.catalogos.dto.ListaPuestos;
 import ahorrosbienestar.sib.std.catalogos.dto.ObservacionesxFolio;
 import ahorrosbienestar.sib.std.catalogos.dto.SeguimientoActividadPA;
-import ahorrosbienestar.sib.std.core_bancario.dto.ObtenerDoctoAsociadoProdDto;
 import ahorrosbienestar.sib.std.correoCSO.model.CorreoCSO;
 
 @Service
 public class CatalogosCEService {
 
+	private static final Logger logger = Logger.getLogger(CatalogosCEService.class);
 	private JdbcTemplate jdbcTemplate;
-	protected final Log logger = LogFactory.getLog(this.getClass());
 	
 	@Autowired
 	public CatalogosCEService(JdbcTemplate jdbcTemplate) {
@@ -54,7 +52,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getNombreCompleto());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -79,7 +77,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -102,7 +100,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -121,7 +119,7 @@ public class CatalogosCEService {
 						+ " inner join CE.TBL_MICROFIN_EMPLEADOS emp on emp.ClavePuestoID = p.ClavePuestoID and emp.Estatus = 'A'"
 						+ " where a.pk_id_area = ? and a.i_id_estatus = 1"
 						+ " order by emp.JerarquiaID desc;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {areaID}, new RowMapper<EmpleadosCE>() {
 					public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						EmpleadosCE e = new EmpleadosCE();
@@ -134,7 +132,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getNombreCompleto());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -149,7 +147,7 @@ public class CatalogosCEService {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " where t1.I_RESPONSABLE = ? and t1.I_CONFIRMA IN (1,0) and t1.I_ESTATUS = ?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -162,7 +160,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getFolio());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -178,7 +176,7 @@ public class CatalogosCEService {
 				String sql = "SELECT distinct t2.VC_FOLIO, t2.PK_ID_FOLIO FROM SIB.TBL_OBSERVACIONESXFOLIO t1 "
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " where t1.I_CONFIRMA IN (1,0) and t1.I_ESTATUS = ?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -191,7 +189,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getFolio());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -214,7 +212,7 @@ public class CatalogosCEService {
 						+" where t1.EmpleadoID = ?) t3 on t3.areaID =  a.pk_id_area "
 						+" where a.i_id_estatus = 1 "
 						+" order by emp.JerarquiaID desc;";*/
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {empleadoID}, new RowMapper<EmpleadosCE>() {
 					public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						EmpleadosCE e = new EmpleadosCE();
@@ -227,7 +225,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getNombreCompleto());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 			
@@ -253,7 +251,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t1.I_ESTATUS = t4.I_OPCION and t4.I_ID_GRUPO = 6 "
 						+ "where t2.I_FOLIO = ? and t1.I_RESPONSABLE = ? and t1.I_ESTATUS = ? "
 						+ "order by t1.DT_FECHA_INICIO asc; ";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_folio,empleadoID,estatus}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
@@ -270,7 +268,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		
@@ -296,7 +294,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t1.I_ESTATUS = t4.I_OPCION and t4.I_ID_GRUPO = 6 "
 						+ "where t2.I_FOLIO = ? and t1.I_ESTATUS = ? "
 						+ "order by t1.DT_FECHA_INICIO asc; ";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_folio,estatus}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
@@ -313,7 +311,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		
@@ -339,7 +337,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMACION_RESPONSABLE and t5.I_ID_GRUPO = 8 "
 						+ "where t1.I_OBSERVACION = ?;";
 						
-				System.out.println("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {i_observacion}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
@@ -360,7 +358,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		
@@ -384,7 +382,7 @@ public class CatalogosCEService {
 						+ "FROM SIB.TBL_PLAN_ACCION t1 "
 						+ "inner join SIB.TBL_SEGUIMIENTO t2 on t1.PK_ID_PLANACCION = t2.I_PLANACCION "
 						+ "WHERE t1.PK_ID_PLANACCION = ?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<SeguimientoActividadPA> ls = jdbcTemplate.query(sql, new Object[] {i_actividad}, new RowMapper<SeguimientoActividadPA>() {
 					public SeguimientoActividadPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						SeguimientoActividadPA e = new SeguimientoActividadPA();
@@ -400,7 +398,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		
@@ -421,7 +419,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t2 on t2.I_OPCION = t1.I_ESTATUS and t2.I_ID_GRUPO = 6 "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t3 on t3.I_OPCION = t1.I_TIPO_OFICIO and t3.I_ID_GRUPO = 4 "
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t4.I_OPCION = t1.I_ORGANO_EMITE and t4.I_ID_GRUPO = 5";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolios> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ListaFolios>() {
 					public ListaFolios mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolios e = new ListaFolios();
@@ -441,7 +439,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		
@@ -467,7 +465,7 @@ public class CatalogosCEService {
 						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
 						+ "where t1.I_FOLIO = ? and t1.i_usuario_elimino = 0 "
 						+ "order by 1;";
-				System.out.println("sql--"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio}, new RowMapper<ObservacionesxFolio>() {
 					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ObservacionesxFolio e = new ObservacionesxFolio();
@@ -488,7 +486,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		}
@@ -512,7 +510,7 @@ public class CatalogosCEService {
 						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
 						+ "where t1.I_FOLIO = ? and I_RESPONSABLE = ? AND t1.I_CONFIRMA in (0,1) and t1.I_ESTATUS= ? "
 						+ "order by 1;";
-				System.out.println("sql--"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio,idempleado,estatus}, new RowMapper<ObservacionesxFolio>() {
 					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ObservacionesxFolio e = new ObservacionesxFolio();
@@ -532,7 +530,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		}
@@ -556,7 +554,7 @@ public class CatalogosCEService {
 						+ "left join SIB.TBL_OPC_BUSQUEDA t5 on t5.I_OPCION = t1.I_CONFIRMA and t5.I_ID_GRUPO = 7 "
 						+ "where t1.I_FOLIO = ? AND t1.I_CONFIRMA in (0,1) and t1.I_ESTATUS= ? "
 						+ "order by 1;";
-				System.out.println("sql--"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ObservacionesxFolio> ls = jdbcTemplate.query(sql, new Object[] {idFolio,estatus}, new RowMapper<ObservacionesxFolio>() {
 					public ObservacionesxFolio mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ObservacionesxFolio e = new ObservacionesxFolio();
@@ -576,7 +574,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		}
@@ -607,7 +605,6 @@ public class CatalogosCEService {
 
 		public void actEstatus(Integer folioID, Integer opcion, Integer estatus) {
 			
-			//System.out.println("Ejecutando spActivarSesion");
 			jdbcTemplate.update("CALL SIB.SP_ACTUALIZAR_ESTATUS (?,?,?)", folioID,opcion,estatus);
 			
 		}
@@ -625,7 +622,7 @@ public class CatalogosCEService {
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
 						+ " where t3.I_RESPONSABLE = ? and t3.I_ESTATUS=?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {idEmpleado,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -638,7 +635,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getFolio());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -656,7 +653,7 @@ public class CatalogosCEService {
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
 						+ " where t3.I_ESTATUS=?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -669,7 +666,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getFolio());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -689,7 +686,7 @@ public class CatalogosCEService {
 						+ " inner join SIB.TBL_FOLIOS t2 on t2.PK_ID_FOLIO = t1.I_FOLIO "
 						+ " inner join SIB.TBL_PLAN_ACCION t3 on t3.I_OBSERVACION = t1.pk_id_observacion "
 						+ " where (t3.I_RESPONSABLE = ? or t3.I_USUARIO_REGISTRO = ?) and t3.I_ESTATUS = ?;";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ListaFolioXEmpleado> ls = jdbcTemplate.query(sql, new Object[] {i_id_empleado,pk_id_usuario,estatus}, new RowMapper<ListaFolioXEmpleado>() {
 					public ListaFolioXEmpleado mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ListaFolioXEmpleado e = new ListaFolioXEmpleado();
@@ -702,7 +699,7 @@ public class CatalogosCEService {
 				logger.info(ls.get(0).getFolio());
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 			}
 			return null;
 		}
@@ -723,7 +720,7 @@ public class CatalogosCEService {
 						+ "inner join SIB.TBL_OPC_BUSQUEDA t4 on t1.I_ESTATUS = t4.I_OPCION and t4.I_ID_GRUPO = 6 "
 						+ "where (t2.I_FOLIO = ? and t1.I_ESTATUS = ?) and (t1.I_RESPONSABLE = ? or t1.I_USUARIO_REGISTRO = ?) "
 						+ "order by t1.DT_FECHA_INICIO asc; ";
-				System.out.print("sql"+sql);
+				logger.info("consulta BD:"+sql);
 				List<ActividadesPA> ls = jdbcTemplate.query(sql, new Object[] {idFolio,estatus,i_id_empleado,pk_id_usuario}, new RowMapper<ActividadesPA>() {
 					public ActividadesPA mapRow(ResultSet rs, final int rowNum) throws SQLException {
 						ActividadesPA e = new ActividadesPA();
@@ -740,7 +737,7 @@ public class CatalogosCEService {
 				});
 				return ls;
 			} catch (Exception e) {
-				System.out.println("e"+e.getMessage());
+				logger.error("Error:"+e.getMessage());
 				return null;
 			}
 		}
@@ -762,6 +759,30 @@ public class CatalogosCEService {
 			
 			return ls;
 		}
+		
+		
+		// Obtener empleado por empleadoId
+        public List<EmpleadosCE> nombreCompletoEmpleado(int i_id_empleado) {
+            logger.info("Ejecutando listaEmpleados: ");
+            try {
+                String sql = "SELECT EmpleadoID, CONCAT_WS(' ',PrimerNombre,SegundoNombre,ApellidoPat, ApellidoMat) as nombreEmpleado"
+                        + " FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?";
+                List<EmpleadosCE> ls = jdbcTemplate.query(sql, new Object[] {i_id_empleado}, new RowMapper<EmpleadosCE>() {
+                    public EmpleadosCE mapRow(ResultSet rs, final int rowNum) throws SQLException {
+                        EmpleadosCE e = new EmpleadosCE();
+                        e.setEmpleadoID(rs.getInt(1));
+                        e.setNombreCompleto(rs.getString(2));
+                    
+                        return e;
+                    }
+                });
+                logger.info(ls.get(0).getNombreCompleto());
+                return ls;
+            } catch (Exception e) {
+                System.out.println("e"+e.getMessage());
+            }
+            return null;
+        }
 		
 		
 }

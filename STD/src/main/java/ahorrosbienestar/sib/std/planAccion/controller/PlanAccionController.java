@@ -137,7 +137,7 @@ public class PlanAccionController {
 		
 			return rutaDireccion;
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 		
@@ -165,7 +165,7 @@ public class PlanAccionController {
 				
 			
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 		}
@@ -196,7 +196,7 @@ public class PlanAccionController {
 			logger.info(respuesta);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			logger.info(respuesta);
@@ -220,7 +220,7 @@ public class PlanAccionController {
 			return (this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo))?catalogosCEService.obtObservaciones(idFolio,estatus):catalogosCEService.obtObservacionesxEmpleado(this.usuario.get(0).getI_id_empleado(), idFolio,estatus);
 			
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 		
@@ -236,7 +236,7 @@ public class PlanAccionController {
 		try {
 			return ResponseEntity.ok(iFolioRepository.findById(idFolio));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	
@@ -255,7 +255,7 @@ public class PlanAccionController {
 					
 					
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -305,7 +305,7 @@ public class PlanAccionController {
 			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -318,7 +318,7 @@ public class PlanAccionController {
 		try {
 			return iPlanAccionRepository.findById(idActividad);
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 		
@@ -370,7 +370,7 @@ public class PlanAccionController {
 		try {
 			return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -399,7 +399,7 @@ public class PlanAccionController {
 				    .headers(h2).body(new ByteArrayResource(bytesPDF));
 			
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -452,7 +452,7 @@ public class PlanAccionController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -488,7 +488,7 @@ public class PlanAccionController {
 			}
 			return respuesta;
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return 0;
 		}
 	}
@@ -513,7 +513,7 @@ public class PlanAccionController {
 			
 			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	

@@ -16,5 +16,11 @@ public class DomiciliadoController {
 	public String FiltradoQEQ() {
 		return "cobranza/domiciliado";
 	}
+	
+	// Método para mostrar la pantalla de Referencia de Pagos
+	@GetMapping("/referencia")
+	public String ReferenciaPagos() {
+		return "cobranza/referencia";
+	}
 
 }
