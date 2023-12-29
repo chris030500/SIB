@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center; padding-top: 10px; padding-bottom: 10px;">Parametros de
+								Configuración</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row" style="padding: 20px;">
+				<div class="col-sm-12">
+					<div class="container">
+						<ul class="nav nav-pills nav-justified">
+							<li class="nav-item">
+								<a class="nav-link active" onclick="cambiarContenido('telefonos', this)">Teléfonos
+									(Sucursales y Call Center)</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" onclick="cambiarContenido('codigos', this)">Códigos de Acción y
+									Resultado</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Teléfonos -->
+			<div class="container" id="telefonos" style="padding: 20px; display: block;">
+				<div class="col-sm-12">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Teléfonos para Sucursales y Call Center</legend>
+						<div class="row" style="text-align: right;">
+							<div class="col-sm-12">
+								<button class="btn btn-primary" type="button" data-toggle="modal"
+									data-target="#telefonoModal">Registrar
+									teléfono</button>
+							</div>
+						</div>
+						<div class="row" style="padding: 20px;">
+							<div class="col-sm-12">
+								<div class="table-responsive">
+									<table class="table table-sm" style="width: 100%;" id="tablaTel">
+										<thead style="text-align: center;">
+											<tr>
+												<th>N°</th>
+												<th>Sucursal</th>
+												<th>Dirección Sucursal</th>
+												<th>Teléfono</th>
+												<th>Extensión</th>
+												<th>Comentarios</th>
+												<th>Vigente</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody style="text-align: center;">
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+
+			<!-- Códigos -->
+			<div class="container" id="codigos" style="padding: 20px; display: none;">
+				<!-- Acción -->
+				<div class="col-sm-12">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Códigos de Acción</legend>
+						<div class="row" style="text-align: right;">
+							<div class="col-sm-12">
+								<button class="btn btn-primary" type="button">Registrar código de acción</button>
+							</div>
+						</div>
+						<div class="row" style="padding: 20px;">
+							<div class="col-sm-12">
+								<div class="table-responsive">
+									<table class="table table-sm" style="width: 100%;">
+										<thead>
+											<tr>
+												<th>N°</th>
+												<th>Código de Acción</th>
+												<th>Descripción</th>
+												<th>Estatus</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<!-- Resultado -->
+				<div class="col-sm-12" style="padding-top: 20px;">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Códigos de Resultado</legend>
+						<div class="row" style="text-align: right;">
+							<div class="col-sm-12">
+								<button class="btn btn-primary" type="button">Registrar código de resultado</button>
+							</div>
+						</div>
+						<div class="row" style="padding: 20px;">
+							<div class="col-sm-12">
+								<div class="table-responsive">
+									<table class="table table-sm" style="width: 100%;">
+										<thead>
+											<tr>
+												<th>N°</th>
+												<th>Código de Resultado</th>
+												<th>Descripción</th>
+												<th>Estatus</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<!-- Relación -->
+				<div class="col-sm-12" style="padding-top: 20px;">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Relación entre códigos</legend>
+						<div class="row" style="text-align: right;">
+							<div class="col-sm-12">
+								<button class="btn btn-primary" type="button">Registrar relación</button>
+							</div>
+						</div>
+						<div class="row" style="padding: 20px;">
+							<div class="col-sm-12">
+								<div class="table-responsive">
+									<table class="table table-sm" style="width: 100%;">
+										<thead>
+											<tr>
+												<th>N°</th>
+												<th>Código de Acción</th>
+												<th>Código de Resultado</th>
+												<th>Acción a Realizar</th>
+												<th>Regla de Reasignación a Usuario por última Gestión Vigente</th>
+												<th>Bloqueo en Listas Negras</th>
+												<th>Estatus</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+
+
+
+
+			<!-- Modal agregar telefonos -->
+			<div class="modal fade" id="telefonoModal" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"><strong>Teléfonos para Sucursales y Call Center</strong></h5>
+							<button type="button" class="btn-close" onclick="limpiarFormTelefonos()"
+								data-dismiss="modal" aria-label="Close"></button>
+						</div>
+
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-sm-12">
+									<form name="formulario" id="formTelefono">
+										<div class="row">
+											<div class="col-sm-12">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="searchInput"
+													list="opciones" autocomplete="off" placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opciones">
+													<!-- Las opciones se agregarán dinámicamente aquí -->
+												</datalist>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 10px;">
+											<div class="col-sm-6">
+												<div class="form-group">
+													<label>Teléfono</label>
+													<input type="text" class="form-control" id="telefono" required>
+												</div>
+											</div>
+											<div class="col-sm-6">
+												<div class="form-group">
+													<label>Extensión</label>
+													<input type="text" class="form-control" id="extension" required>
+												</div>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 10px;">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<label>Comentarios</label>
+													<textarea class="form-control" id="comentarios"></textarea>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" onclick="validarFormTelefonos()"
+								class="btn btn-primary">Guardar</button>
+							<button type="button" onclick="limpiarFormTelefonos()" data-dismiss="modal"
+								class="btn btn-light">Salir</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<!-- Fin Modal agregar telefonos -->
+
+			<!-- Modal editar telefonos -->
+			<div class="modal fade" id="editarTelModal" tabindex="-1">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title"><strong>Teléfonos para Sucursales y Call Center</strong></h5>
+							<button type="button" class="btn-close" onclick="cerrarModal()" data-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-sm-12">
+									<form name="editarTel" id="editarTel">
+										<div class="row">
+											<div class="col-sm-6">
+												<label>Sucursal</label>
+												<input type="text" class="form-control" id="sucursalE" disabled>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-sm-12">
+												<label>Dirección</label>
+												<textarea type="text" class="form-control" id="direccionE" disabled></textarea>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 10px;">
+											<div class="col-sm-6">
+												<div class="form-group">
+													<label>Teléfono</label>
+													<input type="text" class="form-control" id="telefonoE" required>
+												</div>
+											</div>
+											<div class="col-sm-6">
+												<div class="form-group">
+													<label>Extensión</label>
+													<input type="text" class="form-control" id="extensionE" required>
+												</div>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 10px;">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<label>Comentarios</label>
+													<textarea class="form-control" id="comentariosE"></textarea>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" onclick="validarEditarTel(idTel)"
+								class="btn btn-primary">Guardar</button>
+							<button type="button" onclick="cerrarModal()" class="btn btn-light">Salir</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<!-- Fin Modal editar telefonos -->
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/operaciones/configuracion.js}"></script>
+		<script th:src="@{/js/operaciones/tablas/tablaTelefonos.js}"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+	</th:block>
+</body>
+
+
+</html>
