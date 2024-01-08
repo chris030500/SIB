@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Metodos a ejecutar en la pantalla de Ofertas Automaticas.
  */
@@ -8,6 +9,7 @@ $(document).ready(function() {
 	eventcontNomClas();
 	//eventcontAbrevia();
 	eventmensajeClasificacion();
+	cargatblProcesoG();
 	iniciaTblParametros();
 	iniciaTblClasificacion();
 });
@@ -358,6 +360,7 @@ var url = "";
 function btnsModal(){
  	$("#btnCancelar").click(function() {
    		basesID = 0;
+   		procesoGestionID = 0;
 		limpiarParametros();
 		$("#modalParametros").modal("hide");
 	});
@@ -370,20 +373,41 @@ function btnsModal(){
 	
 	
 	$("#btnActualizarParams").click(function() {
-  		url = "actualizarParametro?idBase="+basesID;
-  		if(validarDatosParams() == 0){
-     		if(validarFechas() && validarHoras()){
-        		console.log(getAbsolutePath()+url);
-        		$("#modalParametros").modal("hide");
-        		peticionPost(1,getAbsolutePath()+url);
-       		}
-    	}else{
-      		swal({
-				title: "Error, ",
-				text: "Existen campos vacíos, favor de validar.",
-				icon: "warning",
-			});
-     	}
+		
+		if(basesID > 0){
+			url = "actualizarParametro?idBase="+basesID;
+  			if(validarDatosParams() == 0){
+     			if(validarFechas() && validarHoras()){
+        			console.log(getAbsolutePath()+url);
+        			$("#modalParametros").modal("hide");
+        			peticionPost(1,getAbsolutePath()+url);
+       			}
+    		}else{
+      			swal({
+					title: "Error, ",
+					text: "Existen campos vacíos, favor de validar.",
+					icon: "warning",
+					});
+     		}
+		}else if( procesoGestionID> 0){
+			url = "actualizarParametroGestion?procesoGestionID="+procesoGestionID;
+			if(validarDatosParams() == 0){
+     			if(validarFechas() && validarHoras()){
+        			console.log(getAbsolutePath()+url);
+        			$("#modalParametros").modal("hide");
+        			peticionPost(4,getAbsolutePath()+url);
+       			}
+    		}else{
+      			swal({
+					title: "Error, ",
+					text: "Existen campos vacíos, favor de validar.",
+					icon: "warning",
+					});
+     		}
+		}
+		
+		
+  		
  	});
  	
  	$("#btnRegistrarClasif").click(function() {
@@ -573,9 +597,11 @@ function peticionPost(metodo,metodoUrl){
 					iniciaTblClasificacion();
 					limpiarDatosClasificacion();
 				}else if(metodo == 3){
-					console.log("--");
+					//proceso manual Bases de ofertas automaticas. 
+				}else if(metodo == 4){
+					cargatblProcesoG();
+					limpiarParametros();	
 				}
-				setTimeout($.unblockUI, 300);
 			});
 
 
@@ -864,5 +890,91 @@ function mostrarMensajeMod(){
 		document.getElementById("contenidoCheckbox").style.display = "none";
 	}
 	
+}
+
+/***
+ * Cambios fase 2
+ */
+
+var cargatblProcesoGestion = "obtProceso";
+function cargatblProcesoG(){
+ 	url = getAbsolutePath() + cargatblProcesoGestion;
+ 	$.getJSON(url, {}, function(data) {
+   	tblProcesoGestion.clear().draw();
+   		$.each(data, function(idx, opt) {
+			   
+			
+				var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+				+ " onclick='editarDatosProceso("
+				+ opt.pk_id_gestion
+				+ ")' id="
+				+ opt.pk_id_gestion
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-tools'></i></button>";
+				
+				var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
+				+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+				+ " onclick='ejecutarDatosProceso("
+				+ opt.pk_id_gestion
+				+ ")' id="
+				+ opt.pk_id_gestion
+				+ " data-tooltip='Add'>"
+				+ " <i class='bi bi-file-play-fill'></i></button>";
+
+      		tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar,btnEjecutar]).draw(false);
+	
+		
+   		});
+  	}); 	
+}
+
+
+var obtDatosProceso = "obtDatosProceso?idBase=";
+function editarDatosProceso(idBase){
+ limpiarParametros();
+ url = getAbsolutePath() + obtDatosProceso + idBase;
+ peticionDatosProceso(url);
+}
+
+function peticionDatosProceso(url){
+ 	$.getJSON(url, {}, function(data) {
+		modalGestion(data);
+	});
+}
+
+
+var procesoGestionID = 0;
+function modalGestion(data) {
+ 	console.log(data);
+ 	procesoGestionID = data.pk_id_gestion;
+ 	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
+ 	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
+ 	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
+ 	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
+ 	document.getElementById("mPeriodoEjecucion").value =  data.vc_periodo_ejecucion_proceso;
+ 	document.getElementById('rutaArchivo').value = "";
+ 	document.getElementById('lblRuta').style.display = 'none';
+    document.getElementById('rutaArchivo').style.display = 'none';
+ 	
+    $("#modalParametros").modal("show");
+ }
+
+
+function ejecutarDatosProceso(idProceso){
+	
+	Swal.fire({
+		title: "¿Esta seguro de ejecutar el proceso manual?",
+		showCancelButton: true,
+		confirmButtonText: "Acepto",
+		cancelButtonText: "Cancelar",
+	}).then(resultado => {
+			if (resultado.value) {
+					url= "";
+					url = "ejecutarDatosProceso?idProceso="+idProceso;
+					peticionPost(3,getAbsolutePath()+url);
+			}
+	});
+
 }
 
