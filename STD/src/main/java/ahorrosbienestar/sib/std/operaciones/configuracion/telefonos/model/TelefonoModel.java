@@ -8,10 +8,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ahorrosbienestar.sib.std.sucursales.model.SucursalesModel;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
 @Table(name = "TBL_TELEFONOS_SUCURSAL_OA")
@@ -47,6 +49,10 @@ public class TelefonoModel {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_MODIFICACION")
 	private LocalDate dt_fecha_modificacion;
+
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REGISTRO")
+	private Usuario usuario;
 
 	public int getPk_id_telefono() {
 		return pk_id_telefono;
@@ -110,6 +116,14 @@ public class TelefonoModel {
 
 	public void setDt_fecha_modificacion(LocalDate dt_fecha_modificacion) {
 		this.dt_fecha_modificacion = dt_fecha_modificacion;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 }

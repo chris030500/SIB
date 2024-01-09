@@ -16,6 +16,9 @@ var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
 window.onload = function() {
 	listaTelefonos();
+	listaCodigosAccion();
+	listaCodigosResultado();
+	listaDeRelaciones();
 }
 /**
  * Fin
@@ -48,7 +51,7 @@ function cambiarContenido(opcion, elemento) {
 		tabCod.style.display = "none"
 	} else if (opcion === 'codigos') {
 		tabTel.style.display = "none";
-		tabCod.style.display = "block"
+		tabCod.style.display = "block";
 	}
 }
 
@@ -61,55 +64,131 @@ function cambiarContenido(opcion, elemento) {
 /**
  * Formulario telefonos
  */
-// Función para validar el formulario
+var formTelefono = document.getElementById("telefono");
+var formExtension = document.getElementById("extension");
+var formComentarios = document.getElementById("comentarios");
+var formSucursal = document.getElementById("searchInput");
+//
+var errorTelefono = document.getElementById("errorTelefono");
+var soloTelefono = document.getElementById("soloTelefono");
+var errorExtension = document.getElementById("errorExtension");
+var soloExtension = document.getElementById("soloExtension");
+var errorComentarios = document.getElementById("errorComentarios");
+var errorSucursal = document.getElementById("errorSucursal");
+
+
+// Agrega un evento de entrada al campo de texto
+formTelefono.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	errorTelefono.style.display = "none";
+	soloTelefono.style.display = "none";
+});
+formExtension.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	errorExtension.style.display = "none";
+	soloExtension.style.display = "none";
+});
+formComentarios.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	errorComentarios.style.display = "none";
+});
+formSucursal.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	errorSucursal.style.display = "none";
+});
+
 function validarFormTelefonos() {
 	// Asignamos los valores a las variables
 	var telefono = $('#telefono').val();
 	var extension = $('#extension').val();
 	var comentarios = $('#comentarios').val();
+	var sucursal = $('#searchInput').val();
+	// Asignamos las validaciones
+	var pattern = /^[0-9]*$/;
+
+	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
+	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
+	comentarios == "" ? errorComentarios.style.display = "block" : errorComentarios.style.display = "none";
+	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
+	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
+	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "" && idSucursal != "") {
-		// Se llena el DTO
-		const dto = {
-			telefono: telefono,
-			extension: extension,
-			comentarios: comentarios,
-			nombreSucursal: idSucursal
-		};
-
-		agregarTelefono(dto);
-
-		// Si los valores estan vacios
-	} else {
-		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
-			icon: "warning"
-		});
+	if (telefono != "" && extension != "" && comentarios != "" && sucursal != "") {
+		if (pattern.test(telefono) && telefono.length === 10) {
+			if (pattern.test(extension) && extension.length === 3) {
+				// Se llena el DTO
+				const dto = {
+					telefono: telefono,
+					extension: extension,
+					comentarios: comentarios,
+					nombreSucursal: idSucursal
+				};
+				agregarTelefono(dto);
+			}
+		}
 	}
 }
+
+
+
+var formTelefonoE = document.getElementById("telefonoE");
+var formExtensionE = document.getElementById("extensionE");
+var formComentariosE = document.getElementById("comentariosE");
+//
+var alertaTel = document.getElementById("alertaTel");
+var alertaTel1 = document.getElementById("alertaTel1");
+var alertaExt = document.getElementById("alertaExt");
+var alertaExt1 = document.getElementById("alertaExt1");
+var alertaCom = document.getElementById("alertaCom");
+
+// Agrega un evento de entrada al campo de texto
+formTelefonoE.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	alertaTel.style.display = "none";
+	alertaTel1.style.display = "none";
+});
+formExtensionE.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	alertaExt.style.display = "none";
+	alertaExt1.style.display = "none";
+});
+formComentariosE.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	alertaCom.style.display = "none";
+});
 
 function validarEditarTel(id) {
 	// Asignamos los valores a las variables
 	var telefono = $('#telefonoE').val();
 	var extension = $('#extensionE').val();
 	var comentarios = $('#comentariosE').val();
+	// Asignamos las validaciones
+	var pattern = /^[0-9]*$/;
+
+	console.log(alertaTel.style.display, alertaTel1.style.display);
+	console.log(alertaExt.style.display, alertaExt1.style.display);
+
+	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
+	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
+	comentarios == "" ? alertaCom.style.display = "block" : alertaCom.style.display = "none";
+	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
+	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+
 	// Si los valores son diferentes de vacio
 	if (telefono != "" && extension != "" && comentarios != "") {
-		// Se llena el DTO
-		const dto = {
-			telefono: telefono,
-			extension: extension,
-			comentarios: comentarios
-		};
-
-		editarTelefono(id, dto);
-
-		// Si los valores estan vacios
-	} else {
-		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
-			icon: "warning"
-		});
+		if (pattern.test(telefono) && telefono.length === 10) {
+			if (pattern.test(extension) && extension.length === 3) {
+				// Se llena el DTO
+				const dto = {
+					telefono: telefono,
+					extension: extension,
+					comentarios: comentarios
+				};
+				editarTelefono(id, dto);
+				// Si los valores estan vacios
+			}
+		}
 	}
 }
 
@@ -118,6 +197,12 @@ function limpiarFormTelefonos() {
 	document.getElementById('extension').value = '';
 	document.getElementById('comentarios').value = '';
 	document.getElementById('searchInput').value = '';
+	errorTelefono.style.display = "none";
+	errorExtension.style.display = "none";
+	errorComentarios.style.display = "none";
+	errorSucursal.style.display = "none";
+	soloTelefono.style.display = "none";
+	soloExtension.style.display = "none";
 }
 
 // Agregar evento al documento para detectar clics
@@ -174,18 +259,14 @@ searchInput.addEventListener('input', function() {
 /**
  * Lista de telefonos
  */
-var telefonos = [];
-
 function listaTelefonos() {
 	$.ajax({
 		url: newUrlBase + "lista_telefonos",
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			telefonos = respuesta.telefonos;
-
 			vistaTablaTel.clear().draw();
-			$.each(telefonos, function(idx, opt) {
+			$.each(respuesta.telefonos, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
@@ -205,8 +286,8 @@ function listaTelefonos() {
 					+ opt.pk_id_telefono
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-unlock'></i></button></div></div>";
-					
-					var vigente = opt.i_estatus == 1 ? "Si" : "No";
+
+				var vigente = opt.i_estatus == 1 ? "Si" : "No";
 
 				vistaTablaTel.row.add([
 					opt.pk_id_telefono,
@@ -225,7 +306,7 @@ function listaTelefonos() {
 		error: function(error) {
 			// console.log(error);
 		}
-	})
+	});
 }
 /**
  * Fin
@@ -274,7 +355,25 @@ function agregarTelefono(dto) {
 // Función para cerrar el modal
 function cerrarModal() {
 	$('#editarTelModal').modal('hide');
+	limpiarAlertas();
 }
+
+function limpiarAlertas() {
+	alertaTel.style.display = "none";
+	alertaTel1.style.display = "none";
+	alertaExt.style.display = "none";
+	alertaExt1.style.display = "none";
+	alertaCom.style.display = "none";
+}
+
+document.addEventListener('click', function(event) {
+	var modal = document.getElementById('editarTelModal'); // Reemplaza 'miModal' con el ID de tu modal
+
+	// Verificar si el clic no está dentro de la modal
+	if (modal && !modal.contains(event.target)) {
+		limpiarAlertas();
+	}
+});
 /**
  * Fin
  */
@@ -383,6 +482,1117 @@ function vigenciaTelefono(id, vigente) {
 function cambiarEstatusTelefono(id, estatus) {
 	$.ajax({
 		url: newUrlBase + "vigencia_telefono?idTelefono=" + id + "&estatus=" + estatus,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de actualizar los datos",
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+// ******************************************************************************************** //
+/**
+ * Lista de códigos de acción
+ */
+function listaCodigosAccion() {
+	$.ajax({
+		url: newUrlBase + "lista_codigosAccion",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			vistaTablaCA.clear().draw();
+			$.each(respuesta.lista, function(idx, opt) {
+
+				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
+					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='abrirAccion("
+					+ opt.pk_id_codigo_accion
+					+ ")' id="
+					+ opt.pk_id_codigo_accion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-pencil'></i></button></div>";
+
+				var btnEstatus = "<div class='col-sm-4'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='estatusAccion("
+					+ opt.pk_id_codigo_accion + ', ' + opt.i_estatus
+					+ ")' id="
+					+ opt.pk_id_codigo_accion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
+
+				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+
+				vistaTablaCA.row.add([
+					opt.pk_id_codigo_accion,
+					opt.vc_codigo,
+					opt.vc_descripcion,
+					estatus,
+					btnEditar + btnEstatus
+				]).draw(false);
+			});
+
+			//console.log(telefonos);
+		},
+		error: function(error) {
+			// console.log(error);
+		}
+	})
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Formulario código accion
+ */
+function limpiarFormAccion() {
+	document.getElementById('nombreAccion').value = '';
+	document.getElementById('descripcionAccion').value = '';
+}
+
+// Función para validar el formulario
+function validarFormAccion() {
+	// Asignamos los valores a las variables
+	var nombreAccion = $('#nombreAccion').val();
+	var descripcionAccion = $('#descripcionAccion').val();
+	// Si los valores son diferentes de vacio
+	if (nombreAccion != "" && descripcionAccion != "") {
+		// Se llena el DTO
+		const dto = {
+			codigo: nombreAccion,
+			descripcion: descripcionAccion
+		};
+		agregarAccion(dto);
+		// Si los valores estan vacios
+	} else {
+		// Se ejecuta la validacion
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
+	}
+}
+
+function agregarAccion(dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "registro_codigosAccion",
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modal-codigoAccion').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de guardar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function cerrarModalAccion() {
+	$('#modalEditar-codigoAccion').modal('hide');
+}
+
+function validarEditarAccion(id) {
+	// Asignamos los valores a las variables
+	var nombreAccionE = $('#nombreAccionE').val();
+	var descripcionAccionE = $('#descripcionAccionE').val();
+	// Si los valores son diferentes de vacio
+	if (nombreAccionE != "" && descripcionAccionE != "") {
+		// Se llena el DTO
+		const dto = {
+			codigo: nombreAccionE,
+			descripcion: descripcionAccionE
+		};
+
+		editarAccion(id, dto);
+
+		// Si los valores estan vacios
+	} else {
+		// Se ejecuta la validacion
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
+	}
+}
+
+function editarAccion(id, dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "editar_codigoAccion?idCodigoAccion=" + id,
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modalEditar-codigoAccion').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			// console.log(error);
+			swal("Hubo un error al momento de actualizar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+
+var idAccion;
+
+function abrirAccion(id) {
+	var nombreAccionE = document.getElementById('nombreAccionE');
+	var descripcionAccionE = document.getElementById('descripcionAccionE');
+	idAccion = id;
+
+	$.ajax({
+		url: newUrlBase + "buscar_codigoAccion?idCodigoAccion=" + id,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			// Mostrar el modal de editar
+			$('#modalEditar-codigoAccion').modal('show');
+
+			nombreAccionE.value = respuesta.codigoAccion.vc_codigo;
+			descripcionAccionE.value = respuesta.codigoAccion.vc_descripcion;
+
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de mostrar la información", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Cambiar estatus código de acción
+ */
+// Función para avisar sobre la actualización del estatus
+function estatusAccion(id, valor) {
+	var estatus = null;
+	//console.log(id);
+	estatus = valor == 1 ? 0 : 1;
+	//console.log(estatus);
+	swal({
+		text: '¿Cambiar el estatus del código de acción?',
+		closeOnClickOutside: false,
+		icon: "warning",
+		buttons: ["Salir", "Aceptar"],
+		confirmButtonColor: '#3498DB',
+	})
+		.then((willDelete) => {
+			if (willDelete) {
+				cambiarEstatusAccion(id, estatus);
+			} else { }
+		});
+}
+
+function cambiarEstatusAccion(id, estatus) {
+	$.ajax({
+		url: newUrlBase + "estatus_codigoAccion?idCodigoAccion=" + id + "&estatus=" + estatus,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de actualizar los datos",
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+
+// ******************************************************************************************** //
+/**
+ * Lista de códigos de resultado
+ */
+function listaCodigosResultado() {
+	$.ajax({
+		url: newUrlBase + "lista_codigosResultado",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			vistaTablaCR.clear().draw();
+			$.each(respuesta.lista, function(idx, opt) {
+
+				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
+					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='abrirResultado("
+					+ opt.pk_id_codigo_resultado
+					+ ")' id="
+					+ opt.pk_id_codigo_resultado
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-pencil'></i></button></div>";
+
+				var btnEstatus = "<div class='col-sm-4'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='estatusResultado("
+					+ opt.pk_id_codigo_resultado + ', ' + opt.i_estatus
+					+ ")' id="
+					+ opt.pk_id_codigo_resultado
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
+
+				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+
+				vistaTablaCR.row.add([
+					opt.pk_id_codigo_resultado,
+					opt.vc_codigo,
+					opt.vc_descripcion,
+					estatus,
+					btnEditar + btnEstatus
+				]).draw(false);
+			});
+
+			// console.log(respuesta.lista);
+		},
+		error: function(error) {
+			// console.log(error);
+		}
+	})
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Formulario código resultado
+ */
+function limpiarFormResultado() {
+	document.getElementById('nombreResultado').value = '';
+	document.getElementById('descripcionResultado').value = '';
+}
+
+// Función para validar el formulario
+function validarFormResultado() {
+	// Asignamos los valores a las variables
+	var nombreResultado = $('#nombreResultado').val();
+	var descripcionResultado = $('#descripcionResultado').val();
+	// Si los valores son diferentes de vacio
+	if (nombreResultado != "" && descripcionResultado != "") {
+		// Se llena el DTO
+		const dto = {
+			codigo: nombreResultado,
+			descripcion: descripcionResultado
+		};
+		agregarResultado(dto);
+		// Si los valores estan vacios
+	} else {
+		// Se ejecuta la validacion
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
+	}
+}
+
+function agregarResultado(dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "registro_codigoResultado",
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modal-codigoResultado').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de guardar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function cerrarModalResultado() {
+	$('#modalEditar-codigoResultado').modal('hide');
+}
+
+function validarEditarResultado(id) {
+	// Asignamos los valores a las variables
+	var nombreResultadoE = $('#nombreResultadoE').val();
+	var descripcionResultadoE = $('#descripcionResultadoE').val();
+	// Si los valores son diferentes de vacio
+	if (nombreResultadoE != "" && descripcionResultadoE != "") {
+		// Se llena el DTO
+		const dto = {
+			codigo: nombreResultadoE,
+			descripcion: descripcionResultadoE
+		};
+
+		editarResultado(id, dto);
+
+		// Si los valores estan vacios
+	} else {
+		// Se ejecuta la validacion
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
+	}
+}
+
+function editarResultado(id, dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "editar_codigoResultado?idCodigoResultado=" + id,
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modalEditar-codigoResultado').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			// console.log(error);
+			swal("Hubo un error al momento de actualizar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+
+var idResultado;
+
+function abrirResultado(id) {
+	var nombreResultadoE = document.getElementById('nombreResultadoE');
+	var descripcionResultadoE = document.getElementById('descripcionResultadoE');
+	idResultado = id;
+
+	$.ajax({
+		url: newUrlBase + "buscar_codigoResultado?idCodigoResultado=" + id,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			// Mostrar el modal de editar
+			$('#modalEditar-codigoResultado').modal('show');
+
+			nombreResultadoE.value = respuesta.codigoResultado.vc_codigo;
+			descripcionResultadoE.value = respuesta.codigoResultado.vc_descripcion;
+
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de mostrar la información", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Cambiar estatus código resultado
+ */
+// Función para avisar sobre la actualización del estatus
+function estatusResultado(id, valor) {
+	var estatus = null;
+	//console.log(id);
+	estatus = valor == 1 ? 0 : 1;
+	//console.log(estatus);
+	swal({
+		text: '¿Cambiar el estatus del código de resultado?',
+		closeOnClickOutside: false,
+		icon: "warning",
+		buttons: ["Salir", "Aceptar"],
+		confirmButtonColor: '#3498DB',
+	})
+		.then((willDelete) => {
+			if (willDelete) {
+				cambiarEstatusResultado(id, estatus);
+			} else { }
+		});
+}
+
+function cambiarEstatusResultado(id, estatus) {
+	$.ajax({
+		url: newUrlBase + "estatus_codigoResultado?idCodigoResultado=" + id + "&estatus=" + estatus,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de actualizar los datos",
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+// ******************************************************************************************** //
+
+/**
+ * Modal para agregar relación
+ */
+// Función para abrir el modal y ejecutar el método automático
+function abrirModalRelacion() {
+	$('#modal-agregarRelacion').modal('show');
+	catalogoCodigoA();
+	catalogoCodigoR();
+	catalogoAccionRealizar();
+	catalogoBloqueo();
+	catalogoGestion();
+}
+
+function cerrarModalRelacionA(elemento) {
+	$('#modal-agregarRelacion').modal('hide');
+}
+
+function cerrarModalRelacionB(elemento) {
+	idRelacion = "";
+	$('#modal-editarRelacion').modal('hide');
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Catálogos
+ */
+function catalogoCodigoA() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("selectAccion").innerHTML = '';
+	document.getElementById("selectAccion").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_codigosA_activos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("selectAccion");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_codigo_accion;
+				opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorCodigoA = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoCodigoR() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("selectResultado").innerHTML = '';
+	document.getElementById("selectResultado").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_codigosR_activos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("selectResultado");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_codigo_resultado;
+				opcion.text = opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorCodigoR = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoAccionRealizar() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("selectRealizar").innerHTML = '';
+	document.getElementById("selectRealizar").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_accionRealizar",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("selectRealizar");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
+				opcion.text = respuesta.lista[i].vc_nombre;
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorAccionR = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoBloqueo() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("selectBloqueo").innerHTML = '';
+	document.getElementById("selectBloqueo").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_bloqueo",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("selectBloqueo");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
+				opcion.text = respuesta.lista[i].vc_nombre;
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorBloqueo = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+
+function catalogoGestion() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("selectGestion").innerHTML = '';
+	document.getElementById("selectGestion").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_gestionVigente",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("selectGestion");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorAccionR = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Registrar relación
+ */
+function validarFormRelacion() {
+	var formulario = document.getElementById("formRelacion");
+	var valorCodigoA = formulario.querySelector("#selectAccion").value;
+	var valorCodigoR = formulario.querySelector("#selectResultado").value;
+	var valorAccionR = formulario.querySelector("#selectRealizar").value;
+	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
+	var valorGestion = formulario.querySelector("#selectGestion").value;
+	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorAccionR != "Elige una opción" && valorBloqueo != "Elige una opción" && valorGestion != "Elige una opción") {
+		console.log("entró");
+		const dto = {
+			idCodigoAccion: valorCodigoA,
+			idCodigoResultado: valorCodigoR,
+			idAccionRealizar: valorAccionR,
+			ultimaGestion: valorGestion,
+			idBloqueo: valorBloqueo
+		}
+		// console.log(dto);
+		agregarRelacion(dto);
+	} else {
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
+	}
+}
+
+function agregarRelacion(dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "agregar_relacionCodigo",
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modal-agregarRelacion').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de guardar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Lista de relaciones
+ */
+function listaDeRelaciones() {
+	$.ajax({
+		url: newUrlBase + "lista_relacionCodigos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			vistaTablaRel.clear().draw();
+			$.each(respuesta.lista, function(idx, opt) {
+
+				var btnEditar = "<div class='row'><div class='col-sm-6'>"
+					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='abrirRelacion("
+					+ opt.pk_id_relacion_codigo
+					+ ")' id="
+					+ opt.pk_id_relacion_codigo
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-pencil'></i></button></div>";
+
+				var btnEstatus = "<div class='col-sm-6'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='vigenciaRelacion("
+					+ opt.pk_id_relacion_codigo + ', ' + opt.i_estatus
+					+ ")' id="
+					+ opt.pk_id_relacion_codigo
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-unlock'></i></button></div></div>";
+
+				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+
+				vistaTablaRel.row.add([
+					opt.pk_id_relacion_codigo,
+					opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
+					opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")",
+					opt.accionRealizarModel.vc_nombre,
+					opt.opcBusquedaModel.v_valor,
+					opt.bloqueoListasNegrasModel.vc_nombre,
+					vigente,
+					btnEditar + btnEstatus
+				]).draw(false);
+			});
+		},
+		error: function(error) {
+			console.log(error);
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Abrir relación para editar
+ */
+var idRelacion;
+
+function abrirRelacion(id) {
+	idRelacion = id;
+	var selectCodigoA = document.getElementById("selectAccionE");
+	var selectCodigoR = document.getElementById("selectResultadoE");
+	var selectAccionR = document.getElementById("selectRealizarE");
+	var selectGestion = document.getElementById("selectGestionE");
+	var selectBloqueo = document.getElementById("selectBloqueoE");
+	$.ajax({
+		url: newUrlBase + "buscar_relacionCodigo?idRelacion=" + id,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			$('#modal-editarRelacion').modal('show');
+			// console.log(respuesta.relacion);
+			var relacion = respuesta.relacion;
+			catalogoCodigoAe(selectCodigoA, relacion);
+			catalogoCodigoRe(selectCodigoR, relacion);
+			catalogoRealizarE(selectAccionR, relacion);
+			catalogoGestionE(selectGestion, relacion);
+			catalogoBloqueoE(selectBloqueo, relacion);
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de mostrar la información", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoCodigoAe(select, relacion) {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_codigosA_activos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_codigo_accion;
+				opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (respuesta.lista[i].pk_id_codigo_accion === relacion.codigoAccionModel.pk_id_codigo_accion) {
+					opcion.selected = true;
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoCodigoRe(select, relacion) {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_codigosR_activos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_codigo_resultado;
+				opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (respuesta.lista[i].pk_id_codigo_resultado === relacion.codigoResultadoModel.pk_id_codigo_resultado) {
+					opcion.selected = true;
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoRealizarE(select, relacion) {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_accionRealizar",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
+				opcion.text = respuesta.lista[i].vc_nombre;
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (respuesta.lista[i].pk_id_accion_realizar === relacion.accionRealizarModel.pk_id_accion_realizar) {
+					opcion.selected = true;
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoGestionE(select, relacion) {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_gestionVigente",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (respuesta.lista[i].pk_id === relacion.opcBusquedaModel.pk_id) {
+					opcion.selected = true;
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+function catalogoBloqueoE(select, relacion) {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_bloqueo",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
+				opcion.text = respuesta.lista[i].vc_nombre;
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (respuesta.lista[i].pk_id_bloqueo_listas_negras === relacion.bloqueoListasNegrasModel.pk_id_bloqueo_listas_negras) {
+					opcion.selected = true;
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+/**
+ * Fin
+ */
+
+/**
+ * Editar relación
+ */
+function validarFormRelacionE() {
+	var formulario = document.getElementById("formEditarRelacion");
+	var valorCodigoA = formulario.querySelector("#selectAccionE").value;
+	var valorCodigoR = formulario.querySelector("#selectResultadoE").value;
+	var valorAccionR = formulario.querySelector("#selectRealizarE").value;
+	var valorBloqueo = formulario.querySelector("#selectBloqueoE").value;
+	var valorGestion = formulario.querySelector("#selectGestionE").value;
+
+	const dto = {
+		idCodigoAccion: valorCodigoA,
+		idCodigoResultado: valorCodigoR,
+		idAccionRealizar: valorAccionR,
+		ultimaGestion: valorGestion,
+		idBloqueo: valorBloqueo
+	}
+
+	// console.log(dto);
+	editarRelacion(dto);
+}
+
+function editarRelacion(dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "editar_relacionCodigo?idRelacion=" + idRelacion,
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			document.getElementById('modal-editarRelacion').style.display = 'none';
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					window.location.reload();
+				});
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de guardar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Cambiar estatus teléfono
+ */
+function vigenciaRelacion(id, vigente) {
+	var estatus = null;
+	estatus = vigente == 1 ? 0 : 1;
+	swal({
+		text: '¿Cambiar el estatus de la relación?',
+		closeOnClickOutside: false,
+		icon: "warning",
+		buttons: ["Salir", "Aceptar"],
+		confirmButtonColor: '#3498DB',
+	})
+		.then((willDelete) => {
+			if (willDelete) {
+				cambiarEstatusRelacion(id, estatus);
+			} else { }
+		});
+}
+
+function cambiarEstatusRelacion(id, estatus) {
+	$.ajax({
+		url: newUrlBase + "estatus_Relacion?idRleacion=" + id + "&estatus=" + estatus,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
