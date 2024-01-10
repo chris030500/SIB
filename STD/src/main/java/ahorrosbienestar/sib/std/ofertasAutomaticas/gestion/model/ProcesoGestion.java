@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name="TBL_PROCESO_GESTION_OA")
+@Table(name="TBL_GESTION_OA")
 public class ProcesoGestion {
 	@Column(name = "PK_ID_GESTION")
 	@Id

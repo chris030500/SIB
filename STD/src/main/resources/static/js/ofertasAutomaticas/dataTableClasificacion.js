@@ -3,6 +3,8 @@
  */
 var tblConfiguracion;
 var tblclasificacionBaseTable;
+var tblAdjuntos;
+var tblProcesoGestion;
 $(document).ready(function() {
 	
 	tblConfiguracion = $("#tblConfiguracion").DataTable({

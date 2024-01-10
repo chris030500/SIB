@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2 card">
+
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Ofertas Automaticas</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros Generales</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="reglas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="plantillas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes SMS</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="sms-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="bloqueados-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
+          			</li>
+        		</ul>
+			</div>
+			
+			<div id="pant-tabs">
+			<div id="params-tab1" class="container" style="display: block;" for="1">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Parametros Generales</legend>
+					<div class="row" style="margin-top : 15px ">
+						
+					</div>
+				</fieldset>
+			</div>
+			<div id="reglas-tab1" class="container" style="display:none;" for="2">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
+					<div class="row" style="margin-top : 15px ">
+							<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 100%;" id="tblReglasAsignacion">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Regla de Asignacion</th>
+										<th>Estatus</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						
+					</div>
+				</fieldset>
+			</div>
+			<div id="plantillas-tab1" class="container" style="display:none;" for="3">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
+					
+				</fieldset>
+			</div>
+			<div id="sms-tab1" class="container" style="display:none;" for="4">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Administracion SMS</legend>
+					
+				</fieldset>
+			</div>
+			<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Cliente Bloqueante</legend>
+					
+				</fieldset>
+			</div>
+			</div>
+			
+			
+			<!--Modal Parametros Liquidados - renovados-->
+			<div class="modal fade" id="modalParams" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Asignacion Liquidado y Renovado.</legend>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="slAsignar">Asignar a:</label>
+								<select class="form-control" id="slAsignar">
+									<option value="0">Seleccione</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="lblPorcentaje">% Registros:</label>
+								<input type="number" class="form-control" id="porcRegistros">
+							</div>
+							<div class="form-group">
+								<label for="lblTipoCliente">Tipo de Cliente:</label>
+								<select class="form-control" id="tipoCliente">
+									<option value="0">Seleccione</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="lblTipoCartera">Tipo de Cartera:</label>
+								<input type="time" class="form-control" id="tipoCartera">
+							</div>
+							<div class="form-group">
+								<label for="lblPrioridad">Prioridad:</label>
+								<select class="form-control" id="tipoPrioridad">
+									<option value="0">Seleccione</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="lblEstatus" id="lblRuta">Estatus</label>
+								<select class="form-control" id="tipoEstatus">
+									<option value="0">Seleccione</option>
+								</select>
+							</div>
+							
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal"  id="btnCancelar">Cerrar</button>
+							<button type="button" id="btnActualizarParams"  class="btn btn-primary">Guardar Cambios</button> <!--onclick="guardarParametrosFidelidad()"-->
+						</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--Modal Parametros Liquidados - renovados-->
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
+		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
+		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
+		
+	</th:block>
+</body>
+
+
+</html>
