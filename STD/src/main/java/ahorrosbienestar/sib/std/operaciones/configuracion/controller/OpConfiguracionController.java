@@ -10,8 +10,19 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RequestMapping("operaciones")
 public class OpConfiguracionController {
+
 	@GetMapping("/configuracion")
 	public String ModuloOperacion() {
 		return "operaciones/configuracion";
+	}
+	
+	@GetMapping("/seguimientoGestion")
+	public String ModuloSeguimientoGestion() {
+		return "operaciones/seguimientoGestion";
+	}
+
+	@GetMapping("/reportes")
+	public String ModuloReportes() {
+		return "operaciones/reportes";
 	}
 }

@@ -68,6 +68,7 @@ var formTelefono = document.getElementById("telefono");
 var formExtension = document.getElementById("extension");
 var formComentarios = document.getElementById("comentarios");
 var formSucursal = document.getElementById("searchInput");
+var formCorreo = document.getElementById("correoElectronico");
 //
 var errorTelefono = document.getElementById("errorTelefono");
 var soloTelefono = document.getElementById("soloTelefono");
@@ -75,7 +76,8 @@ var errorExtension = document.getElementById("errorExtension");
 var soloExtension = document.getElementById("soloExtension");
 var errorComentarios = document.getElementById("errorComentarios");
 var errorSucursal = document.getElementById("errorSucursal");
-
+var errorCorreo = document.getElementById("errorCorreo");
+var errorTipoCor = document.getElementById("errorTipoCor");
 
 // Agrega un evento de entrada al campo de texto
 formTelefono.addEventListener("input", function() {
@@ -87,6 +89,11 @@ formExtension.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	errorExtension.style.display = "none";
 	soloExtension.style.display = "none";
+});
+formCorreo.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	errorCorreo.style.display = "none";
+	errorTipoCor.style.display = "none";
 });
 formComentarios.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -101,30 +108,37 @@ function validarFormTelefonos() {
 	// Asignamos los valores a las variables
 	var telefono = $('#telefono').val();
 	var extension = $('#extension').val();
+	var correo = $('#correoElectronico').val();
 	var comentarios = $('#comentarios').val();
 	var sucursal = $('#searchInput').val();
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
+	var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
 	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
+	correo == "" ? errorCorreo.style.display = "block" : errorCorreo.style.display = "none";
 	comentarios == "" ? errorComentarios.style.display = "block" : errorComentarios.style.display = "none";
 	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+	errorTipoCor.style.display = regexCorreo.test(correo) ? "none" : "block";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "" && sucursal != "") {
+	if (telefono != "" && extension != "" && correo != "" && comentarios != "" && sucursal != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
-				// Se llena el DTO
-				const dto = {
-					telefono: telefono,
-					extension: extension,
-					comentarios: comentarios,
-					nombreSucursal: idSucursal
-				};
-				agregarTelefono(dto);
+				if (regexCorreo.test(correo)) {
+					// Se llena el DTO
+					const dto = {
+						telefono: telefono,
+						extension: extension,
+						correoElectronico: correo,
+						comentarios: comentarios,
+						nombreSucursal: idSucursal
+					};
+					agregarTelefono(dto);
+				}
 			}
 		}
 	}
@@ -135,12 +149,15 @@ function validarFormTelefonos() {
 var formTelefonoE = document.getElementById("telefonoE");
 var formExtensionE = document.getElementById("extensionE");
 var formComentariosE = document.getElementById("comentariosE");
+var formCorreoE = document.getElementById("correoElectronicoE");
 //
 var alertaTel = document.getElementById("alertaTel");
 var alertaTel1 = document.getElementById("alertaTel1");
 var alertaExt = document.getElementById("alertaExt");
 var alertaExt1 = document.getElementById("alertaExt1");
 var alertaCom = document.getElementById("alertaCom");
+var alertaCor = document.getElementById("alertaCor");
+var alertaTipoCor = document.getElementById("alertaTipoCor");
 
 // Agrega un evento de entrada al campo de texto
 formTelefonoE.addEventListener("input", function() {
@@ -153,6 +170,11 @@ formExtensionE.addEventListener("input", function() {
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
 });
+formCorreoE.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	alertaCor.style.display = "none";
+	alertaTipoCor.style.display = "none";
+});
 formComentariosE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	alertaCom.style.display = "none";
@@ -163,30 +185,34 @@ function validarEditarTel(id) {
 	var telefono = $('#telefonoE').val();
 	var extension = $('#extensionE').val();
 	var comentarios = $('#comentariosE').val();
+	var correo = $('#correoElectronicoE').val();
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
-
-	console.log(alertaTel.style.display, alertaTel1.style.display);
-	console.log(alertaExt.style.display, alertaExt1.style.display);
+	var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
+	correo == "" ? alertaCor.style.display = "block" : alertaCor.style.display = "none";
 	comentarios == "" ? alertaCom.style.display = "block" : alertaCom.style.display = "none";
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+	alertaTipoCor.style.display = regexCorreo.test(correo) ? "none" : "block";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "") {
+	if (telefono != "" && extension != "" && correo != "" && comentarios != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
-				// Se llena el DTO
-				const dto = {
-					telefono: telefono,
-					extension: extension,
-					comentarios: comentarios
-				};
-				editarTelefono(id, dto);
-				// Si los valores estan vacios
+				if (regexCorreo.test(correo)) {
+					// Se llena el DTO
+					const dto = {
+						telefono: telefono,
+						extension: extension,
+						correoElectronico: correo,
+						comentarios: comentarios
+					};
+					editarTelefono(id, dto);
+					// Si los valores estan vacios	
+				}
 			}
 		}
 	}
@@ -195,14 +221,17 @@ function validarEditarTel(id) {
 function limpiarFormTelefonos() {
 	document.getElementById('telefono').value = '';
 	document.getElementById('extension').value = '';
-	document.getElementById('comentarios').value = '';
 	document.getElementById('searchInput').value = '';
+	document.getElementById('comentarios').value = '';
+	document.getElementById('correoElectronico').value = '';
 	errorTelefono.style.display = "none";
 	errorExtension.style.display = "none";
+	errorCorreo.style.display = "none";
 	errorComentarios.style.display = "none";
 	errorSucursal.style.display = "none";
 	soloTelefono.style.display = "none";
 	soloExtension.style.display = "none";
+	errorTipoCor.style.dislpay = "none";
 }
 
 // Agregar evento al documento para detectar clics
@@ -269,7 +298,7 @@ function listaTelefonos() {
 			$.each(respuesta.telefonos, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
-					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='abrirTelefono("
 					+ opt.pk_id_telefono
@@ -278,7 +307,7 @@ function listaTelefonos() {
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-6'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Vigencia' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='vigenciaTelefono("
 					+ opt.pk_id_telefono + ', ' + opt.i_estatus
@@ -295,6 +324,7 @@ function listaTelefonos() {
 					opt.fk_id_sucursal.vc_direccioncompleta,
 					opt.vc_telefono,
 					opt.vc_extension,
+					opt.vc_correo_electronico,
 					opt.vc_comentarios,
 					vigente,
 					btnEditar + btnEstatus
@@ -363,6 +393,8 @@ function limpiarAlertas() {
 	alertaTel1.style.display = "none";
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
+	alertaCor.style.display = "none";
+	alertaTipoCor.style.display = "none";
 	alertaCom.style.display = "none";
 }
 
@@ -425,6 +457,7 @@ function abrirTelefono(id) {
 	var direccion = document.getElementById('direccionE');
 	var telefono = document.getElementById('telefonoE');
 	var extension = document.getElementById('extensionE');
+	var correo = document.getElementById('correoElectronicoE');
 	var comentarios = document.getElementById('comentariosE');
 	idTel = id;
 
@@ -440,6 +473,7 @@ function abrirTelefono(id) {
 			direccion.value = respuesta.telefono.fk_id_sucursal.vc_direccioncompleta;
 			telefono.value = respuesta.telefono.vc_telefono;
 			extension.value = respuesta.telefono.vc_extension;
+			correo.value = respuesta.telefono.vc_correo_electronico;
 			comentarios.value = respuesta.telefono.vc_comentarios;
 
 		}, error: function(error) {
@@ -520,7 +554,7 @@ function listaCodigosAccion() {
 			$.each(respuesta.lista, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
-					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='abrirAccion("
 					+ opt.pk_id_codigo_accion
@@ -529,7 +563,7 @@ function listaCodigosAccion() {
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-4'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				var btnEstatus = "<div class='col-sm-4'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='estatusAccion("
 					+ opt.pk_id_codigo_accion + ', ' + opt.i_estatus
@@ -770,7 +804,7 @@ function listaCodigosResultado() {
 			$.each(respuesta.lista, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
-					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='abrirResultado("
 					+ opt.pk_id_codigo_resultado
@@ -779,7 +813,7 @@ function listaCodigosResultado() {
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-4'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				var btnEstatus = "<div class='col-sm-4'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='estatusResultado("
 					+ opt.pk_id_codigo_resultado + ', ' + opt.i_estatus
@@ -1275,7 +1309,7 @@ function listaDeRelaciones() {
 			$.each(respuesta.lista, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
-					+ "<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='abrirRelacion("
 					+ opt.pk_id_relacion_codigo
@@ -1284,7 +1318,7 @@ function listaDeRelaciones() {
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-6'><button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='vigenciaRelacion("
 					+ opt.pk_id_relacion_codigo + ', ' + opt.i_estatus
@@ -1300,7 +1334,7 @@ function listaDeRelaciones() {
 					opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
 					opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")",
 					opt.accionRealizarModel.vc_nombre,
-					opt.opcBusquedaModel.v_valor,
+					opt.catalogo.v_valor,
 					opt.bloqueoListasNegrasModel.vc_nombre,
 					vigente,
 					btnEditar + btnEstatus
@@ -1466,7 +1500,7 @@ function catalogoGestionE(select, relacion) {
 				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id === relacion.opcBusquedaModel.pk_id) {
+				if (respuesta.lista[i].pk_id === relacion.catalogo.pk_id) {
 					opcion.selected = true;
 				}
 			}

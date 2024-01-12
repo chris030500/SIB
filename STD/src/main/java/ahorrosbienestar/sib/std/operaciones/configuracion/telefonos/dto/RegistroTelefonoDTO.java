@@ -5,6 +5,7 @@ public class RegistroTelefonoDTO {
 	private String nombreSucursal;
 	private String telefono;
 	private String extension;
+	private String correoElectronico;
 	private String comentarios;
 
 	public String getNombreSucursal() {
@@ -29,6 +30,14 @@ public class RegistroTelefonoDTO {
 
 	public void setExtension(String extension) {
 		this.extension = extension;
+	}
+
+	public String getCorreoElectronico() {
+		return correoElectronico;
+	}
+
+	public void setCorreoElectronico(String correoElectronico) {
+		this.correoElectronico = correoElectronico;
 	}
 
 	public String getComentarios() {

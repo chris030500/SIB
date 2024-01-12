@@ -34,6 +34,9 @@ public class TelefonoModel {
 	@Column(name = "VC_EXTENSION")
 	private String vc_extension;
 
+	@Column(name = "VC_CORREO_ELECTRONICO")
+	private String vc_correo_electronico;
+
 	@Column(name = "VC_COMENTARIOS")
 	private String vc_comentarios;
 
@@ -80,6 +83,14 @@ public class TelefonoModel {
 
 	public String getVc_extension() {
 		return vc_extension;
+	}
+
+	public String getVc_correo_electronico() {
+		return vc_correo_electronico;
+	}
+
+	public void setVc_correo_electronico(String vc_correo_electronico) {
+		this.vc_correo_electronico = vc_correo_electronico;
 	}
 
 	public void setVc_extension(String vc_extension) {

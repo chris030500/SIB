@@ -21,8 +21,8 @@ import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.model.AccionRealiz
 import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.service.AccionRealizarService;
 import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.model.BloqueoListasNegrasModel;
 import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.service.BloqueoListasNegrasService;
-import ahorrosbienestar.sib.std.cat_catalogos.opc_busqueda.model.OpcBusquedaModel;
-import ahorrosbienestar.sib.std.cat_catalogos.opc_busqueda.service.OpcBusquedaService;
+import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
+import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.dto.CodigoAccionDTO;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.model.CodigoAccionModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.service.CodigoAccionService;
@@ -66,7 +66,7 @@ public class RestOpConfiguracionController {
 	private BloqueoListasNegrasService bloqueoListasNegrasService;
 
 	@Autowired
-	private OpcBusquedaService opcBusquedaService;
+	private CatalogoService catalogoService;;
 
 	@Autowired
 	private UsuarioService usuarioService;
@@ -154,12 +154,13 @@ public class RestOpConfiguracionController {
 			model.setFk_id_sucursal(sucursal);
 			model.setVc_telefono(dto.getTelefono());
 			model.setVc_extension(dto.getExtension());
+			model.setVc_correo_electronico(dto.getCorreoElectronico());
 			model.setVc_comentarios(dto.getComentarios());
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setUsuario(usuario);
-			//telefonoService.save(model);
+			telefonoService.save(model);
 			respuesta.put("mensaje", "Teléfono registrado");
 			return ResponseEntity.ok(respuesta);
 
@@ -229,6 +230,7 @@ public class RestOpConfiguracionController {
 
 			model.setVc_telefono(dto.getTelefono() != model.getVc_telefono() ? dto.getTelefono() : model.getVc_telefono());
 			model.setVc_extension(dto.getExtension() != model.getVc_extension() ? dto.getExtension() : model.getVc_extension());
+			model.setVc_correo_electronico(dto.getCorreoElectronico() != model.getVc_correo_electronico() ? dto.getCorreoElectronico() : model.getVc_correo_electronico());
 			model.setVc_comentarios(dto.getComentarios() != model.getVc_comentarios() ? dto.getComentarios() : model.getVc_comentarios());
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
@@ -671,9 +673,9 @@ public class RestOpConfiguracionController {
 	public ResponseEntity<Map<String, Object>> listaGestionVigente() {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
-		List<OpcBusquedaModel> lista = new ArrayList<OpcBusquedaModel>();
+		List<Catalogo> lista = new ArrayList<Catalogo>();
 		try {
-			lista = opcBusquedaService.busquedaPorGrupo(idGrupo);
+			lista = catalogoService.generarOpciones(idGrupo);
 			logger.info("Se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);
@@ -763,12 +765,12 @@ public class RestOpConfiguracionController {
 			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
 			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
 			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			OpcBusquedaModel opcBusquedaModel = opcBusquedaService.buscarPorId(dto.getUltimaGestion());
+			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
 			model.setCodigoAccionModel(codigoAccion);
 			model.setCodigoResultadoModel(codigoResultado);
 			model.setAccionRealizarModel(accionRealizar);
-			model.setOpcBusquedaModel(opcBusquedaModel);
+			model.setCatalogo(catalogo);
 			model.setBloqueoListasNegrasModel(bloqueo);
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
@@ -820,12 +822,12 @@ public class RestOpConfiguracionController {
 			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
 			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
 			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			OpcBusquedaModel opcBusquedaModel = opcBusquedaService.buscarPorId(dto.getUltimaGestion());
+			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
 			model.setCodigoAccionModel(model.getCodigoAccionModel() != codigoAccion ? codigoAccion : model.getCodigoAccionModel());
 			model.setCodigoResultadoModel(model.getCodigoResultadoModel() != codigoResultado ? codigoResultado : model.getCodigoResultadoModel());
 			model.setAccionRealizarModel(model.getAccionRealizarModel() != accionRealizar ? accionRealizar : model.getAccionRealizarModel());
-			model.setOpcBusquedaModel(opcBusquedaModel != model.getOpcBusquedaModel() ? opcBusquedaModel : model.getOpcBusquedaModel());
+			model.setCatalogo(catalogo != model.getCatalogo() ? catalogo : model.getCatalogo());
 			model.setBloqueoListasNegrasModel(model.getBloqueoListasNegrasModel() != bloqueo ? bloqueo : model.getBloqueoListasNegrasModel());
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="row">
+			<div class="col-sm-12">
+
+				<!-- Titulo y Tabs -->
+				<div class="container border p-2 card">
+					<div class="bg-info text-white">
+						<div class="row no-gutters">
+							<div class="col-md-2"></div>
+							<div class="col-md-8">
+								<div>
+									<h2 style="text-align:center; padding-top: 10px; padding-bottom: 10px;">Seguimiento
+										de Gestiones
+									</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Filtro busqueda -->
+				<div>
+					<div class="container border p-2 card">
+						<div class="container">
+							<div class="col-sm-12">
+								<fieldset class="border p-2">
+									<legend class="float-none w-auto p-2">Filtro busqueda</legend>
+									<!-- Campos del filtro -->
+									<div class="row">
+										<div class="col-sm-12">
+											<form name="formFiltro" id="formFiltro">
+												<div class="row">
+													<div class="col-sm-6">
+														<label for="buscarCliente">Buscar cliente:</label>
+														<input type="search" class="form-control" id="buscarCliente"
+															list="opciones" autocomplete="off"
+															placeholder="Ingresa el núm o el nombre del cliente">
+														<datalist id="opciones"></datalist>
+													</div>
+												</div>
+												<div class="row" style="padding-top: 20px;">
+													<div class="col-sm-3">
+														<label>Teléfono Celular</label>
+														<select id="selectTelefono"
+															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
+															<option value="" disabled selected>Teléfono Celular</option>
+														</select>
+													</div>
+													<div class="col-sm-3">
+														<label>No. Referencia</label>
+														<select id="selectReferencia"
+															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
+															<option value="" disabled selected>No. Referencia</option>
+														</select>
+													</div>
+													<div class="col-sm-3">
+														<label>No. Oferta</label>
+														<select id="selectOferta"
+															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
+															<option value="" disabled selected>No. Oferta</option>
+														</select>
+													</div>
+													<div class="col-sm-3" style="text-align: right; padding-top: 25px;">
+														<button type="button"
+															style="background: #0dcaf0; border-color: #0dcaf0;"
+															class="btn btn-primary">Buscar</button>
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+									<!-- Tabla filtro de busqueda -->
+									<div class="row" style="padding-top: 50px;">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="vistaFiltro">
+													<thead style="text-align: center;">
+														<tr>
+															<th>No. Cliente</th>
+															<th>Nombre Cliente</th>
+															<th>No. Oferta</th>
+															<th>No. Referencia</th>
+															<th>Estatus Cliente</th>
+															<th>Fecha Inicio</th>
+															<th>Fecha Fin</th>
+															<th>Estatus Oferta</th>
+															<th>Sucursal Asignada</th>
+															<th>Usuario Asignado</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody style="text-align: center;">
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/operaciones/seguimientoGestion.js}"></script>
+		<script th:src="@{/js/operaciones/tablas/seguimientoGestionTablas.js}"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+	</th:block>
+</body>
+
+
+</html>

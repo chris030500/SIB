@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.model;
 
 import java.time.LocalDate;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,14 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.model.AccionRealizarModel;
 import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.model.BloqueoListasNegrasModel;
-import ahorrosbienestar.sib.std.cat_catalogos.opc_busqueda.model.OpcBusquedaModel;
+import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.model.CodigoAccionModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.resultado.model.CodigoResultadoModel;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -45,7 +41,7 @@ public class RelacionCodigosModel {
 
 	@OneToOne
 	@JoinColumn(name = "I_ULTIMA_GESTION_VIGENTE")
-	private OpcBusquedaModel opcBusquedaModel;
+	private Catalogo catalogo;
 
 	@OneToOne
 	@JoinColumn(name = "FK_ID_BLOQUEO_LISTAS_NEGRAS")
@@ -100,12 +96,12 @@ public class RelacionCodigosModel {
 		this.accionRealizarModel = accionRealizarModel;
 	}
 
-	public OpcBusquedaModel getOpcBusquedaModel() {
-		return opcBusquedaModel;
+	public Catalogo getCatalogo() {
+		return catalogo;
 	}
 
-	public void setOpcBusquedaModel(OpcBusquedaModel opcBusquedaModel) {
-		this.opcBusquedaModel = opcBusquedaModel;
+	public void setCatalogo(Catalogo catalogo) {
+		this.catalogo = catalogo;
 	}
 
 	public BloqueoListasNegrasModel getBloqueoListasNegrasModel() {
