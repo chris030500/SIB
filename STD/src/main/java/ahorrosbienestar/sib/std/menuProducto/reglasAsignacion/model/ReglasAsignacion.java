@@ -11,6 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 @Entity
 @Table(name="TBL_REGLAS_ASIGNACION")
@@ -18,6 +20,7 @@ public class ReglasAsignacion {
 	
 	@Column(name = "PK_ID_REGLA")
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pk_id_regla;
 	
 	@Column(name = "VC_NOMBRE_REGLA", columnDefinition = "VARCHAR(100)")
@@ -33,6 +36,9 @@ public class ReglasAsignacion {
 	
 	@Column(name = "I_USUARIO_MOD", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_usuario_mod;
+	
+	@Column(name = "I_DIAS_VIGENCIA", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	private int i_dias_vigencia;
 
 	public int getPk_id_regla() {
 		return pk_id_regla;
@@ -73,6 +79,15 @@ public class ReglasAsignacion {
 	public void setI_usuario_mod(int i_usuario_mod) {
 		this.i_usuario_mod = i_usuario_mod;
 	}
+
+	public int getI_dias_vigencia() {
+		return i_dias_vigencia;
+	}
+
+	public void setI_dias_vigencia(int i_dias_vigencia) {
+		this.i_dias_vigencia = i_dias_vigencia;
+	}
+	
 	
 	
 }

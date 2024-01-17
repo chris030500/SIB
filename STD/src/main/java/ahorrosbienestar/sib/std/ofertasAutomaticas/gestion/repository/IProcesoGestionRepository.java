@@ -14,12 +14,12 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface IProcesoGestionRepository extends JpaRepository<ProcesoGestion, Integer>{
 	
-	@Query(value = "SELECT * FROM SIB.TBL_PROCESO_GESTION_OA", nativeQuery = true)
+	@Query(value = "SELECT * FROM SIB.TBL_GESTION_OA", nativeQuery = true)
 	public List<ProcesoGestion> obtProcesoGestion();
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE SIB.TBL_PROCESO_GESTION_OA "
+	@Query(value = "UPDATE SIB.TBL_GESTION_OA "
 			+ "SET VC_DIA_INICIO_PROCESO =:dComienzoProceso "
 			+ ",VC_DIA_FIN_PROCESO=:dFinalProceso "
 			+ ",VC_HORA_INICIO_PROCESO =:hComienzoProceso "

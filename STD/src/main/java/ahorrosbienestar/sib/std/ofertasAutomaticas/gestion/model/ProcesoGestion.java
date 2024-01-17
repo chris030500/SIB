@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class ProcesoGestion {
 	@Column(name = "PK_ID_GESTION")
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pk_id_gestion;
 	
 	@Column(name = "VC_NOMBRE_PROCESO", columnDefinition = "VARCHAR(100)")

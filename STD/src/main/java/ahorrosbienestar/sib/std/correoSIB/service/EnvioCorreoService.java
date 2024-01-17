@@ -13,8 +13,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
+import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
+
+import javax.mail.util.ByteArrayDataSource;
+import javax.activation.DataSource;
+
 
 @Service
 public class EnvioCorreoService {
@@ -26,14 +30,18 @@ public class EnvioCorreoService {
 	private final JavaMailSender mailSender;
 	
 	@Autowired
+	private final JasperReportController jasperReportController;
+	
+	@Autowired
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
 	@Autowired
 	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
 	
 	@Autowired
-	public EnvioCorreoService(JavaMailSender mailSender, EnvioCorreoContenidoService envioCorreoContenidoService) {
+	public EnvioCorreoService(JavaMailSender mailSender, EnvioCorreoContenidoService envioCorreoContenidoService, JasperReportController jasperReportController) {
 	     this.mailSender = mailSender;
 	     this.envioCorreoContenidoService = envioCorreoContenidoService;
+	     this.jasperReportController = jasperReportController;
 	}
 	
 	public void prepararCorreo(int tipoMns,String errores) {
@@ -51,7 +59,7 @@ public class EnvioCorreoService {
 			logger.error("Error:"+e.getMessage());
 		}
 	}
-	
+		
 	public void enviarCorreo(String destinatario, String asunto, String mensaje) {
 		try {
 			SimpleMailMessage correo = new SimpleMailMessage();
@@ -85,5 +93,53 @@ public class EnvioCorreoService {
 		}
 		
 	}
+	
+	public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName, byte[] fileBytes) {
+       
+
+        try {
+        	MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(remitente);
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(contenidoHtml, true);
+
+            DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
+            // Attach the file from byte array
+            helper.addAttachment(fileName, dataSource);
+            
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+    }
+	
+	public void preparCorreoAdjunto(int tipoCorreo) {
+		try {
+			Integer idReporte = 7;
+			String parametros = "?IDSUCURSAL=";
+			
+			
+			List<Integer> listaSucRegistros = envioCorreoContenidoService.registrosXsucursal();
+			for(Integer idSuc:listaSucRegistros) {
+				String fileName="registros_asignados_suc"+idSuc+".xls";
+	        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(idReporte,parametros+idSuc);
+				List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoCorreo,String.valueOf(idSuc));
+				for(ContenidoCorreo correoContenido : listaCorreos) {
+					String[] listDireccion = correoContenido.getVc_destinatarios().split(";");
+					for(String correo : listDireccion) {
+						InternetAddress direccion = new InternetAddress(correo);
+						sendEmailWithAttachment(direccion.getAddress(),correoContenido.getVc_asunto(),correoContenido.getVc_html(),fileName,fileBytes);
+					}
+					
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+		}
+	}
+	
+	
 	
 }

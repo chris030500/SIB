@@ -50,4 +50,24 @@ public class EnvioCorreoContenidoService {
 			return null;
 		}
 	}
+	@SuppressWarnings("deprecation")
+	public List<Integer> registrosXsucursal(){
+		try {
+			logger.info("sucursal");
+			String sql = "CALL SIB.SP_REGXSUCURSAL();";
+			List<Integer> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<Integer>() {
+				public Integer mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				        				 
+				return rs.getInt(1);
+				    }
+				});
+			return ls;
+			
+			
+		} catch (Exception e) {
+			logger.error("error"+e.getMessage());
+			return null;
+		}
+	}
+	
 }

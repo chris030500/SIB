@@ -20,7 +20,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,9 +33,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -47,9 +46,10 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.Ca
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GeneracionSMSConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.procesoBases.model.ProcesoBase;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -118,6 +118,13 @@ public class indexOfertasAutoController {
 		
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private GestionAsignacionConfiguracion gestionAsignacionConfiguracion;
+	
+	@Autowired
+	private GeneracionSMSConfiguracion generacionSMSConfiguracion;
+	
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -786,11 +793,13 @@ public class indexOfertasAutoController {
 			if(procesoGestionService.actParams(procesoGestionID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion) == 1) {
 				switch(procesoGestionID){
 					case 1:
-						System.out.println();
+						
+						gestionAsignacionConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
 						//nominaTareaConfiguracion.actualizarExpresionCronNomina();
 						break;
 					case 2:
-						System.out.println();
+					
+						generacionSMSConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
 						//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
 						break;
 				}
@@ -825,9 +834,9 @@ public class indexOfertasAutoController {
 			case 1:
 				try {
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
-					
+					gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
 					//nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Base Nomina");
+					respuesta.add("Se proceso Asignacion Gestiones");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
 					System.out.println("Error"+e.getMessage());
@@ -837,8 +846,8 @@ public class indexOfertasAutoController {
 			case 2:
 				try {
 					logger.debug("Ejecutar proceso Generacion SMS.");
-					//fidelidadTareaConfiguracion.ejecutarFidelidad();			
-					respuesta.add("Se proceso Base Fidelidad");
+					generacionSMSConfiguracion.procesarSMS(idProceso);
+					respuesta.add("Se Generacion SMS");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
 					System.out.println("Error"+e.getMessage());
