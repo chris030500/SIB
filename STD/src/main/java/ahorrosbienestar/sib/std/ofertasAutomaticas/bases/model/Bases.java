@@ -63,6 +63,14 @@ public class Bases {
 	@Column(name = "I_SUBIR_ARCHIVO", 
 	columnDefinition = "INT DEFAULT 0")
 	private int i_subir_archivo;
+	
+	@Column(name = "I_BOTON_HISTORICO", 
+	columnDefinition = "INT DEFAULT 0")
+	private int i_boton_historico;
+	
+	@Column(name = "VC_PERIODO_VIGENCIA", columnDefinition = "VARCHAR(5) DEFAULT NULL")
+	private String vc_periodo_vigencia;
+	
 
 	public int getI_subir_archivo() {
 		return i_subir_archivo;
@@ -168,7 +176,20 @@ public class Bases {
 		this.dt_fecha_baja = dt_fecha_baja;
 	}
 
-	
+	public int getI_boton_historico() {
+		return i_boton_historico;
+	}
 
+	public void setI_boton_historico(int i_boton_historico) {
+		this.i_boton_historico = i_boton_historico;
+	}
+
+	public String getVc_periodo_vigencia() {
+		return vc_periodo_vigencia;
+	}
+
+	public void setVc_periodo_vigencia(String vc_periodo_vigencia) {
+		this.vc_periodo_vigencia = vc_periodo_vigencia;
+	}
 
 }

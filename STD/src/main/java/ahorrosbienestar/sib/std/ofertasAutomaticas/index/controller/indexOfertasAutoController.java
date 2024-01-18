@@ -46,6 +46,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.Ca
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.DetalleCampania;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.service.DetalleCampaniaService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -84,6 +86,9 @@ public class indexOfertasAutoController {
 
 	@Autowired
 	private BasesService basesService;
+	
+	@Autowired
+	private DetalleCampaniaService detalleCampaniaService;
 
 	@Autowired
 	private ClasificacionBasesService clasificacionBasesService;
@@ -245,7 +250,7 @@ public class indexOfertasAutoController {
 					clasificacionBases.setI_vigencia_clasificacion(vigenciaClasificacion);
 					clasificacionBases.setI_configuracion_mensaje(integerValue);
 					clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-					clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+					clasificacionBases.setFk_id_base(tipoBase.orElseThrow(null));
 
 					clasificacionBasesService.actualizarClasificacion(clasificacionBases);
 
@@ -265,7 +270,7 @@ public class indexOfertasAutoController {
 				clasificacionBases.setI_configuracion_mensaje(integerValue);
 				clasificacionBases.setI_estatus_clasificacion(1);
 				clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-				clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+				clasificacionBases.setFk_id_base(tipoBase.orElseThrow(null));
 
 				clasificacionBasesService.save(clasificacionBases);
 
@@ -296,6 +301,51 @@ public class indexOfertasAutoController {
 		
 	}
 	
+	@GetMapping("/consultaTabla")
+	public ResponseEntity<?> consultaTabla(@RequestParam(name = "idBase") Integer idBase){		
+		try {
+			System.out.println(idBase);
+			logger.info("/consultaTabla"+idBase);
+			List<DetalleCampania> detalleCampania = new ArrayList<>();
+			switch (idBase) {
+            case 3:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleVIP(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 4:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetallePros(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 5:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleFidNom(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 6:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleFidRen(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+        }
+			return ResponseEntity.ok(detalleCampania);
+			
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
 	@PostMapping("/actualizarParametro")
 	public ResponseEntity<?> actualizarParametro(
 			@RequestParam(name = "idBase") Integer basesID, 
@@ -304,13 +354,15 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "hComienzoProceso") String hComienzoProceso,
 			@RequestParam(name = "hFinalProceso") String hFinalProceso,
 			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion,
-			@RequestParam(name = "rutaArchivo") String rutaArchivo
+			@RequestParam(name = "rutaArchivo") String rutaArchivo,
+			@RequestParam(name = "tempVigencia") String tempVigencia
 			){
+		System.out.println(tempVigencia);
 		logger.info("/actualizarParametro");
 		String mensaje ="Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
+			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo,tempVigencia) == 1) {
 				switch(basesID){
 					case 1:
 						nominaTareaConfiguracion.actualizarExpresionCronNomina();
@@ -319,7 +371,14 @@ public class indexOfertasAutoController {
 						break;
 					case 3:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampanias();
-						break;					
+						break;	
+					case 5:
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidNom();
+						break;
+					case 6:
+						System.out.println("Cambiar expresion cron fidelizacion renovado");
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidRen();
+						break;
 				}
 				
 				respuesta.add(mensaje);
@@ -536,9 +595,7 @@ public class indexOfertasAutoController {
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-		
-			
-			
+			System.out.println(idBase);
 			switch(idBase) {
 			case 1:
 				try {
@@ -565,6 +622,26 @@ public class indexOfertasAutoController {
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
 					respuesta.add("Se proceso Base Campañas VIP");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
+			case 5:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
+					respuesta.add("Se proceso Base Fidelizacion Nomina");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
+			case 6:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
+					respuesta.add("Se proceso Base Fidelizacion Renovado");
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
 					System.out.println("Error"+e.getMessage());
