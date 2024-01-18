@@ -26,9 +26,10 @@ public interface IBasesRepository extends JpaRepository<Bases, Integer>{
 			+ ",VC_HORA_FIN_PROCESO=:hFinalProceso "
 			+ ",VC_PERIODO_EJECUCION_PROCESO=:mPeriodoEjecucion "
 			+ ",VC_RUTA_PROCESO=:rutaArchivo "
+			+ ",VC_PERIODO_VIGENCIA=:tempVigencia "
 			+ " WHERE PK_ID_BASE=:basesID ", nativeQuery = true)
 	public int actParams(@Param("basesID") Integer basesID,@Param("dComienzoProceso") String dComienzoProceso,@Param("dFinalProceso") String dFinalProceso,@Param("hComienzoProceso") String hComienzoProceso,
-			@Param("hFinalProceso") String hFinalProceso, @Param("mPeriodoEjecucion") String mPeriodoEjecucion, @Param("rutaArchivo") String rutaArchivo);
+			@Param("hFinalProceso") String hFinalProceso, @Param("mPeriodoEjecucion") String mPeriodoEjecucion, @Param("rutaArchivo") String rutaArchivo, @Param("tempVigencia") String tempVigencia);
 
 	@Query(value = "SELECT * FROM SIB.TBL_BASES_OA WHERE PK_ID_BASE = :id", nativeQuery = true)
 	public Bases obtBase(@Param("id") Integer id);
