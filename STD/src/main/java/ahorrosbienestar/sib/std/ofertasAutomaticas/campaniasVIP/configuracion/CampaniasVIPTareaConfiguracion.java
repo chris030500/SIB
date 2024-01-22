@@ -59,6 +59,9 @@ public class CampaniasVIPTareaConfiguracion {
 	private String expresionCron;
 	private String expresionCronFidRen = "0 */5 8-20 1,30 * ?";
 	private String expresionCronFidNom = "0 */5 8-20 1,30 * ?";
+	private static final String ERROR_MESSAGE_PREFIX = "Error:";
+	private static final String HORA_MINUTOS_FORMATO = "HH:mm";
+	private static final String EJECUTA_SP_MENSAJE = "Ejecuta los SP";
 
 	@PostConstruct
 	public void init() {
@@ -92,7 +95,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 			}
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 
 		}
 	}
@@ -105,7 +108,7 @@ public class CampaniasVIPTareaConfiguracion {
 			LocalTime horaActual = LocalTime.now();
 
 			// Crear un formateador para mostrar solo horas y minutos
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(HORA_MINUTOS_FORMATO);
 
 			// Formatear la hora actual y mostrarla
 			String horaYMinutos = horaActual.format(formatter);
@@ -145,7 +148,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 			}
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 
 		}
 	}
@@ -158,7 +161,7 @@ public class CampaniasVIPTareaConfiguracion {
 			LocalTime horaActual = LocalTime.now();
 
 			// Crear un formateador para mostrar solo horas y minutos
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(HORA_MINUTOS_FORMATO);
 
 			// Formatear la hora actual y mostrarla
 			String horaYMinutos = horaActual.format(formatter);
@@ -197,7 +200,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 			}
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 
 		}
 	}
@@ -212,7 +215,7 @@ public class CampaniasVIPTareaConfiguracion {
 			LocalTime horaActual = LocalTime.now();
 
 			// Crear un formateador para mostrar solo horas y minutos
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(HORA_MINUTOS_FORMATO);
 
 			// Formatear la hora actual y mostrarla
 			String horaYMinutos = horaActual.format(formatter);
@@ -232,40 +235,40 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public synchronized void procesarCampaniasVIP() {
 		try {
-			logger.info("Ejecuta los SP");
+			logger.info(EJECUTA_SP_MENSAJE);
 			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(3)");
 			indexOfertasAutomaticasService.generarArchivoOA();
 			int tipoCorreo = 6;
 			logger.info("REGISTROS DE CAMPANIAS VIP");
 			envioCorreoService.prepararCorreo(tipoCorreo, "");
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
 	}
 
 	public synchronized void procesarCampaniasFidNom() {
 		try {
-			logger.info("Ejecuta los SP");
+			logger.info(EJECUTA_SP_MENSAJE);
 			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(5)");
 			indexOfertasAutomaticasService.generarArchivoOA();
 			int tipoCorreo = 7;
 			logger.info("REGISTROS DE CAMPANIAS FIDELIZACION NOMINA");
 			envioCorreoService.prepararCorreo(tipoCorreo, "");
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
 	}
 
 	public synchronized void procesarCampaniasFidRen() {
 		try {
-			logger.info("Ejecuta los SP");
+			logger.info(EJECUTA_SP_MENSAJE);
 			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(6)");
 			indexOfertasAutomaticasService.generarArchivoOA();
 			int tipoCorreo = 8;
 			logger.info("REGISTROS DE CAMPANIAS FIDELIZACION RENOVADO");
 			envioCorreoService.prepararCorreo(tipoCorreo, "");
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
 	}
 

@@ -68,9 +68,6 @@ public class Bases {
 	columnDefinition = "INT DEFAULT 0")
 	private int i_boton_historico;
 	
-	@Column(name = "VC_PERIODO_VIGENCIA", columnDefinition = "VARCHAR(5) DEFAULT NULL")
-	private String vc_periodo_vigencia;
-	
 
 	public int getI_subir_archivo() {
 		return i_subir_archivo;
@@ -182,14 +179,6 @@ public class Bases {
 
 	public void setI_boton_historico(int i_boton_historico) {
 		this.i_boton_historico = i_boton_historico;
-	}
-
-	public String getVc_periodo_vigencia() {
-		return vc_periodo_vigencia;
-	}
-
-	public void setVc_periodo_vigencia(String vc_periodo_vigencia) {
-		this.vc_periodo_vigencia = vc_periodo_vigencia;
 	}
 
 }

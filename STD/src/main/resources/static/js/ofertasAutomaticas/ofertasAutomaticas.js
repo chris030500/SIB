@@ -95,7 +95,7 @@ function iniciaTblParametros() {
 				}
 
 
-				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, opt.vc_periodo_vigencia, opt.vc_ruta_proceso, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
+				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, opt.vc_ruta_proceso, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
 
 			} else {
 
@@ -140,7 +140,7 @@ function iniciaTblParametros() {
 						+ " <i class='bi bi-archive-fill'></i></button>";
 				}
 
-				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, opt.vc_periodo_vigencia, btnsArchivo, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
+				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, btnsArchivo, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
 
 			}
 
@@ -385,7 +385,7 @@ function modalParametros(data) {
 	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
 	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
 	document.getElementById("mPeriodoEjecucion").value = data.vc_periodo_ejecucion_proceso;
-	document.getElementById("tempVigencia").value = data.vc_periodo_vigencia;
+
 
 	if (data.pk_id_base == idBaseFidelidad) {
 		document.getElementById('lblRuta').style.display = 'block';
@@ -405,7 +405,7 @@ function limpiarParametros() {
 	document.getElementById("hFinalProceso").value = "";
 	document.getElementById("mPeriodoEjecucion").value = "";
 	document.getElementById("rutaArchivo").value = "";
-	document.getElementById("tempVigencia").value = "";
+	
 }
 var url = "";
 function btnsModal() {
@@ -532,15 +532,6 @@ function validarDatosParams() {
 		correcto = correcto + 0;
 	} else {
 		document.getElementById("mPeriodoEjecucion").style.borderColor = "#F70707";
-		correcto = correcto + 1;
-	}
-	
-	if (document.getElementById("tempVigencia").value.length > 0 && document.getElementById("tempVigencia").value > 0) {
-		url = url + "&tempVigencia=" + encodeURIComponent(document.getElementById('tempVigencia').value);
-		document.getElementById("tempVigencia").style.borderColor = "";
-		correcto = correcto + 0;
-	} else {
-		document.getElementById("tempVigencia").style.borderColor = "#F70707";
 		correcto = correcto + 1;
 	}
 

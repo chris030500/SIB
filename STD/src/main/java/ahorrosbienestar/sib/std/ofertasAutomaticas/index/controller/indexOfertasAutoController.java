@@ -77,6 +77,7 @@ public class indexOfertasAutoController {
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
 	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
+	private static final String MENSAJE_DE_ERROR = "Error";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -336,6 +337,9 @@ public class indexOfertasAutoController {
 					// TODO: handle exception
 				}
                 break;
+            default:
+            	logger.info("En el metodo consultaTabla al entrar al switch no se encontro ninguna coinsidencia");
+                break;
         }
 			return ResponseEntity.ok(detalleCampania);
 			
@@ -354,15 +358,14 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "hComienzoProceso") String hComienzoProceso,
 			@RequestParam(name = "hFinalProceso") String hFinalProceso,
 			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion,
-			@RequestParam(name = "rutaArchivo") String rutaArchivo,
-			@RequestParam(name = "tempVigencia") String tempVigencia
+			@RequestParam(name = "rutaArchivo") String rutaArchivo
 			){
-		System.out.println(tempVigencia);
+		
 		logger.info("/actualizarParametro");
 		String mensaje ="Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo,tempVigencia) == 1) {
+			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
 				switch(basesID){
 					case 1:
 						nominaTareaConfiguracion.actualizarExpresionCronNomina();
@@ -376,9 +379,11 @@ public class indexOfertasAutoController {
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidNom();
 						break;
 					case 6:
-						System.out.println("Cambiar expresion cron fidelizacion renovado");
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidRen();
 						break;
+					default:
+		            	logger.info("En el metodo actualizarParametro al entrar al switch no se encontro ninguna coinsidencia");
+		                break;
 				}
 				
 				respuesta.add(mensaje);
@@ -604,7 +609,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Nomina");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -614,7 +619,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Fidelidad");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -624,7 +629,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Campañas VIP");
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -634,7 +639,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Fidelizacion Nomina");
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -644,7 +649,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Fidelizacion Renovado");
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
