@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.conf.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -30,9 +34,18 @@ public class ParametrosConfigController {
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private BasesService basesService;
+	
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
+	
+	private int catTipoEstatus = 16;
+	private int catTipoComodines = 17;
 	
 	private static final String nombrePantalla = "Parametros de Configuracion";
 	private static final String rutaError = "errores/error_403";
@@ -41,7 +54,7 @@ public class ParametrosConfigController {
 	
 	
 	@GetMapping("/configuracion")
-	public String paramsConfiguracion() {
+	public String paramsConfiguracion(Model model)  throws IOException {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -50,6 +63,10 @@ public class ParametrosConfigController {
 			}
 			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			if(validarAcceso() == 1) {
+				List<Bases> bases = basesService.findAll();
+				model.addAttribute("cat_tipo_estatus", iCatalogoRepository.generarOpciones(catTipoEstatus));
+				model.addAttribute("cat_tipo_comodines", iCatalogoRepository.generarOpciones(catTipoComodines));
+				model.addAttribute("bases", bases);
 				
 				rutaDireccion = "menuProductos/inicioParametros";
 			}else {

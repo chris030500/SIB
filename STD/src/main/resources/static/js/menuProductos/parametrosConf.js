@@ -15,7 +15,11 @@ function ocultarMostrar(divEl){
       break;
     case "2":
       obtTblReglas();
-      console.log("Reglas de Asignacion");
+
+      break;
+    case "3":
+      obtTblPlantillas();
+     
       break;
     default:
       break;
