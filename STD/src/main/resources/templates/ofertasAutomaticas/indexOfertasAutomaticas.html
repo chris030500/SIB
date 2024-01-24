@@ -24,7 +24,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div id="divConfiguracion" class="container" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Configuracion de Ejecución de proceso.</legend>
@@ -42,6 +42,7 @@
 										<th>Ruta Archivo</th>
 										<th>Actualizar</th>
 										<th>Ejecutar</th>
+										<th>Historico</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -49,7 +50,7 @@
 							</table>
 						</div>
 					</div>
-				 
+
 				</fieldset>
 			</div>
 			<div id="divClasificacion" class="container" style="margin-top : 15px ">
@@ -57,10 +58,9 @@
 					<legend class="float-none w-auto p-2">Configuracion Clasificacion Bases Ofertas</legend>
 					<div class="row" style="margin-top : 5px ">
 						<div class="col-lg-4">
-							<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal"
-								title="Agregar" data-bs-target="#modalClasificacion"
-								aria-controls="table-datatable" type="button" data-tooltip="Add"
-								th:onclick="'limpiarDatosClasificacion()'">
+							<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal" title="Agregar"
+								data-bs-target="#modalClasificacion" aria-controls="table-datatable" type="button"
+								data-tooltip="Add" th:onclick="'limpiarDatosClasificacion()'">
 								<i class="fas fa-plus"></i>Agregar Clasificación.
 							</button>
 						</div>
@@ -88,46 +88,48 @@
 					</div>
 				</fieldset>
 			</div>
-			
+
 
 			<!--Modal Parametros-->
 			<div class="modal fade" id="modalParametros" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 					<div class="modal-content">
 						<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Actualizar Parametros Proceso</legend>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="dCominzoProceso">Agregar día que comienza el proceso</label>
-								<input type="number" class="form-control" id="dComienzoProceso">
+							<legend class="float-none w-auto p-2">Actualizar Parametros Proceso</legend>
+							<div class="modal-body">
+								<div class="form-group">
+									<label for="dCominzoProceso">Agregar día que comienza el proceso</label>
+									<input type="number" class="form-control" id="dComienzoProceso">
+								</div>
+								<div class="form-group">
+									<label for="dFinalProceso">Agregar día que termina el proceso</label>
+									<input type="number" class="form-control" id="dFinalProceso">
+								</div>
+								<div class="form-group">
+									<label for="hComienzoProceso">Agregar hora inicial del proceso</label>
+									<input type="time" class="form-control" id="hComienzoProceso">
+								</div>
+								<div class="form-group">
+									<label for="hFinalProceso">Agregar hora final del proceso</label>
+									<input type="time" class="form-control" id="hFinalProceso">
+								</div>
+								<div class="form-group">
+									<label for="mPeriodoEjecucion">Agregar tiempo (minutos) de periodos de
+										ejecución</label>
+									<input type="number" class="form-control" id="mPeriodoEjecucion">
+								</div>
+								<div class="form-group">
+									<label for="rutaArchivo" id="lblRuta">Agregar la ruta del archivo</label>
+									<input type="text" class="form-control" id="rutaArchivo" th:value="${rutaArchivo}">
+								</div>
+
 							</div>
-							<div class="form-group">
-								<label for="dFinalProceso">Agregar día que termina el proceso</label>
-								<input type="number" class="form-control" id="dFinalProceso">
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal"
+									id="btnCancelar">Cerrar</button>
+								<button type="button" id="btnActualizarParams" class="btn btn-primary">Guardar
+									Cambios</button> <!--onclick="guardarParametrosFidelidad()"-->
 							</div>
-							<div class="form-group">
-								<label for="hComienzoProceso">Agregar hora inicial del proceso</label>
-								<input type="time" class="form-control" id="hComienzoProceso">
-							</div>
-							<div class="form-group">
-								<label for="hFinalProceso">Agregar hora final del proceso</label>
-								<input type="time" class="form-control" id="hFinalProceso">
-							</div>
-							<div class="form-group">
-								<label for="mPeriodoEjecucion">Agregar tiempo (minutos) de periodos de
-									ejecución</label>
-								<input type="number" class="form-control" id="mPeriodoEjecucion">
-							</div>
-							<div class="form-group">
-								<label for="rutaArchivo" id="lblRuta">Agregar la ruta del archivo</label>
-								<input type="text" class="form-control" id="rutaArchivo" th:value="${rutaArchivo}">
-							</div>
-							
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal"  id="btnCancelar">Cerrar</button>
-							<button type="button" id="btnActualizarParams"  class="btn btn-primary">Guardar Cambios</button> <!--onclick="guardarParametrosFidelidad()"-->
-						</div>
 						</fieldset>
 					</div>
 				</div>
@@ -138,78 +140,87 @@
 				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 					<div class="modal-content">
 						<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Configurar Clasificación</legend>
-						<div class="modal-body">
-							<div class="form-group row">
-								<label for="base">Agregar base a la que pertenece: </label>
-								<input id="mnsCampaña" th:value="${mensajeCampana}" type="hidden">
-								<select class="form-control" id="base" onchange="mostrarMensaje(this)">
-									<option value="0">Seleccione una base</option>
-									<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
-										th:text="${base.vc_nombre_base}" th:for="${base.i_mensaje_proceso}">
-									</option>
-								</select>
-								<!--<input type="number" class="form-control" id="base" th:value="${base}">-->
-							</div>
-							<div class="form-group">
-								<label for="dFinalCampana">Nombre de la clasificación: </label>
-								<input type="text" class="form-control" id="nomClasificacion" maxlength="100" placeholder="Nombre de la clasificación" onkeyup="mayusculas(this);">
-								<div id="contNomClas">0/100</div>
-							</div>
-							<div class="form-group">
-								<label for="abrevacion">Abreviación de la clasificación: </label>
-								<select class="form-control" id="abrevacion" onchange="mostrarCodigo(this)">
-									<option value="0">Seleccione una base</option>
-									<option th:each="tipoCampania : ${cat_tipo_campanias}" th:value="${tipoCampania.i_opcion}"
-										th:text="${tipoCampania.v_pantalla}" th:for="${tipoCampania.v_valor}">
-									</option>
-								</select>
-								<!--<input type="text" class="form-control" id="abrevacion" maxlength="100" placeholder="Abreviación de la clasificación." onkeyup="mayusculas(this);">-->
-								<!--<div id="contAbrevia">0/100</div>-->
-							</div>
-							<div class="form-group">
-								<label for="codigoClasificacion">Agregar codigo de clasificación: </label>
-								<input type="text" class="form-control" id="codigoClasificacion" maxlength="2" placeholder="Agregar codigo de clasificación." onkeyup="mayusculas(this);" th:disabled="true">
-							</div>
-							<div class="form-group">
-								<label for="vigenciaClasificacion">Vigencia en días
-									ejecución: </label>
-								<input type="number" class="form-control" id="vigenciaClasificacion" min="1" placeholder="Vigencia en días">
-							</div>
-							<div id="contenidoCheckbox" style="display:none;">
-								<div class="form-group">
-									<br>
-									<!--<input type="checkbox" id="confMensaje" onclick="checkMns()" />-->
-									<label for="confMensaje">Configurar mensaje</label>
-									<textarea type="text-Area" class="form-control" id="mensajeClasificacion"
-												placeholder="Ingresar Mensaje" maxlength="200" rows="4" onkeyup="mayusculas(this);"></textarea>
-									<div id="contMns">0/200</div>
+							<legend class="float-none w-auto p-2">Configurar Clasificación</legend>
+							<div class="modal-body">
+								<div class="form-group row">
+									<label for="base">Agregar base a la que pertenece: </label>
+									<input id="mnsCampaña" th:value="${mensajeCampana}" type="hidden">
+									<select class="form-control" id="base" onchange="mostrarMensaje(this)">
+										<option value="0">Seleccione una base</option>
+										<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
+											th:text="${base.vc_nombre_base}" th:for="${base.i_mensaje_proceso}">
+										</option>
+									</select>
+									<!--<input type="number" class="form-control" id="base" th:value="${base}">-->
 								</div>
-							</div>
-							<div class="form-group" id="mnsCampania" style="display:none;">
-								<br>
-								<!--<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}" disabled />-->
-								<label>Mensaje Default Campaña</label>
-								<textarea type="text-Area" disabled class="form-control" id="msnCampania"
-								maxlength="200" rows="4" th:text="${mensajeCampana}" th:value="${mensajeCampana}"></textarea>
-								<!--<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
+								<div class="form-group">
+									<label for="dFinalCampana">Nombre de la clasificación: </label>
+									<input type="text" class="form-control" id="nomClasificacion" maxlength="100"
+										placeholder="Nombre de la clasificación" onkeyup="mayusculas(this);">
+									<div id="contNomClas">0/100</div>
+								</div>
+								<div class="form-group">
+									<label for="abrevacion">Abreviación de la clasificación: </label>
+									<select class="form-control" id="abrevacion" onchange="mostrarCodigo(this)">
+										<option value="0">Seleccione una base</option>
+										<option th:each="tipoCampania : ${cat_tipo_campanias}"
+											th:value="${tipoCampania.i_opcion}" th:text="${tipoCampania.v_pantalla}"
+											th:for="${tipoCampania.v_valor}">
+										</option>
+									</select>
+									<!--<input type="text" class="form-control" id="abrevacion" maxlength="100" placeholder="Abreviación de la clasificación." onkeyup="mayusculas(this);">-->
+									<!--<div id="contAbrevia">0/100</div>-->
+								</div>
+								<div class="form-group">
+									<label for="codigoClasificacion">Agregar codigo de clasificación: </label>
+									<input type="text" class="form-control" id="codigoClasificacion" maxlength="2"
+										placeholder="Agregar codigo de clasificación." onkeyup="mayusculas(this);"
+										th:disabled="true">
+								</div>
+								<div class="form-group">
+									<label for="vigenciaClasificacion">Vigencia en días
+										ejecución: </label>
+									<input type="number" class="form-control" id="vigenciaClasificacion" min="1"
+										placeholder="Vigencia en días">
+								</div>
+								<div id="contenidoCheckbox" style="display:none;">
+									<div class="form-group">
+										<br>
+										<!--<input type="checkbox" id="confMensaje" onclick="checkMns()" />-->
+										<label for="confMensaje">Configurar mensaje</label>
+										<textarea type="text-Area" class="form-control" id="mensajeClasificacion"
+											placeholder="Ingresar Mensaje" maxlength="200" rows="4"
+											onkeyup="mayusculas(this);"></textarea>
+										<div id="contMns">0/200</div>
+									</div>
+								</div>
+								<div class="form-group" id="mnsCampania" style="display:none;">
+									<br>
+									<!--<input type="checkbox" id="mensajeCampana" th:checked="${habilitarMensajeCampana}" disabled />-->
+									<label>Mensaje Default Campaña</label>
+									<textarea type="text-Area" disabled class="form-control" id="msnCampania"
+										maxlength="200" rows="4" th:text="${mensajeCampana}"
+										th:value="${mensajeCampana}"></textarea>
+									<!--<button type="button" class="btn btn-info" data-toggle="tooltip" data-placement="right"
 									th:title="'Mensaje Configurado: '+ ${mensajeCampana}">
 								</button>-->
+								</div>
+
 							</div>
-							
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal"  id="btnCerrar">Cerrar</button>
-							<button type="button" id="btnRegistrarClasif"  class="btn btn-primary">Guardar Cambios</button>
-						</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal"
+									id="btnCerrar">Cerrar</button>
+								<button type="button" id="btnRegistrarClasif" class="btn btn-primary">Guardar
+									Cambios</button>
+							</div>
 						</fieldset>
 					</div>
 				</div>
 			</div>
-			
+
 			<!--Inicio Modal Clasificacion -->
-			
-			
+
+
 			<!--Fin Modal Clasificacion -->
 			<!-- Modal Fidelidad-->
 			<!--
@@ -334,7 +345,7 @@
 						<div class="modal-body">
 							<div class="form-group row">
 								<label for="base">Agregar base a la que pertenece: </label>
-								<select class="form-control" id="base2" >
+								<select class="form-control" id="base2">
 									<option value="0">Seleccione una base</option>
 									<option th:each="base2 : ${bases}" th:value="${base2.pk_id_base}"
 										th:text="${base2.vc_nombre_base}">
@@ -372,7 +383,7 @@
 							<div id="contenidoCheckbox">
 								<div class="form-group">
 									<br>
-									<input type="checkbox" id="confMensaje2"/>
+									<input type="checkbox" id="confMensaje2" />
 									<label for="confMensaje2">¿Se requiere configurar mensaje?</label>
 									<input type="text" class="form-control" id="mensajeClasificacion2"
 										th:value="${mensajeClasificacion}">
@@ -390,8 +401,46 @@
 			</div>
 
 			<!-- Fin Modal Editar Clasificacion -->
+			<!--Modal Detalle Campaña-->
+			<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<div class="modal-body">
+								<div id="divConfiguracion" class="container" style="margin-top : 15px ">
+									<fieldset class="border p-2">
+										<legend class="float-none w-auto p-2">Detalles Campañas
+										</legend>
+										<div class="row" style="margin-top : 15px ">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;"
+													id="tblDetalle">
+													<thead>
+														<tr>
+															<th>ID de Campaña</th>
+															<th>Tipo de Campaña</th>
+															<th>Fecha de Registro</th>
+															<th>Fecha Autorización</th>
+															<th>Fecha de Cancelación</th>
+														</tr>
+													</thead>
+													<tbody>
+													</tbody>
+												</table>
+											</div>
+										</div>
+
+									</fieldset>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--Fin Modal Detalle Campaña-->
 			<!-- Inicio Ajuntos -->
-			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false" role="dialog">
+			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false"
+				role="dialog">
 				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
@@ -400,24 +449,26 @@
 								<div class="row" style="margin-top : 15px ">
 									<div class="col-md-4">
 										<label class="col-form-label"> Tipo de Archivo:</label>
-											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
-												<option value="0">Seleccione</option>
-												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
-													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
-													th:id="${opcionTipo.v_pantalla}">
-												</option>
-											</select>
+										<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+											<option value="0">Seleccione</option>
+											<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+												th:id="${opcionTipo.v_pantalla}">
+											</option>
+										</select>
 									</div>
 									<div class="col-md-8">
 										<form id="adjuntoArchivoOficio">
 											<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-											<input class="form-control" type="file" id="file" name="file" accept="" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
+											<input class="form-control" type="file" id="file" name="file" accept=""
+												onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
 										</form>
 									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
+										<table class="table table-bordered table-striped" style="width: 100%;"
+											id="tblAdjuntos">
 											<thead>
 												<tr>
 													<th>Nombre</th>
@@ -435,7 +486,8 @@
 								</div>
 							</div>
 							<div class="modal-footer">
-								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;" id="lblCargaAdjunto"></h1>
+								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;"
+									id="lblCargaAdjunto"></h1>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnGuardarFile">Guardar</button>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
