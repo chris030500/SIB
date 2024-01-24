@@ -166,16 +166,18 @@ formComentariosE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	alertaCom.style.display = "none";
 });
+formCorreoE.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	minimoUnoE.style.display = "none";
+});
 
 function validarEditarTel(id) {
 	// Asignamos los valores a las variables
 	var telefono = $('#telefonoE').val();
 	var extension = $('#extensionE').val();
 	var comentarios = $('#comentariosE').val();
-	var correo = $('#correoElectronicoE').val();
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
-	var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
@@ -183,21 +185,21 @@ function validarEditarTel(id) {
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
 
+	datosChipsE == "" ? minimoUnoE.style.display = "block" : minimoUnoE.style.display = "none";
+
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && correo != "" && comentarios != "") {
+	if (telefono != "" && extension != "" && comentarios != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
-				if (regexCorreo.test(correo)) {
-					// Se llena el DTO
-					const dto = {
-						telefono: telefono,
-						extension: extension,
-						correoElectronico: correo,
-						comentarios: comentarios
-					};
-					editarTelefono(id, dto);
-					// Si los valores estan vacios    
-				}
+				// Se llena el DTO
+				const dto = {
+					telefono: telefono,
+					extension: extension,
+					correoElectronico: datosChipsE,
+					comentarios: comentarios
+				};
+				editarTelefono(id, dto);
+				// Si los valores estan vacios    
 			}
 		}
 	}
@@ -322,7 +324,7 @@ function listaTelefonos() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 		}
 	});
 }
@@ -350,7 +352,7 @@ function agregarTelefono(dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaTelefonos();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -382,6 +384,9 @@ function limpiarAlertas() {
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
 	alertaCom.style.display = "none";
+	document.getElementById('correoElectronicoE').value = '';
+	document.getElementById('minimoUnoE').style.display = "none";
+	document.getElementById('soloCorreosE').style.display = "none";
 }
 
 document.addEventListener('click', function(event) {
@@ -416,10 +421,10 @@ function editarTelefono(id, dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaTelefonos();
 				});
 		}, error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -439,6 +444,7 @@ function editarTelefono(id, dto) {
 var idTel;
 
 function abrirTelefono(id) {
+	contenedorChipsE.innerHTML = "";
 	var sucursal = document.getElementById('sucursalE');
 	var direccion = document.getElementById('direccionE');
 	var telefono = document.getElementById('telefonoE');
@@ -511,7 +517,7 @@ function cambiarEstatusTelefono(id, estatus) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaTelefonos();
 				});
 		}, error: function(error) {
 			swal({
@@ -573,7 +579,7 @@ function listaCodigosAccion() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 		}
 	})
 }
@@ -628,7 +634,7 @@ function agregarAccion(dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosAccion();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -682,10 +688,10 @@ function editarAccion(id, dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosAccion();
 				});
 		}, error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -760,7 +766,7 @@ function cambiarEstatusAccion(id, estatus) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosAccion();
 				});
 		}, error: function(error) {
 			swal({
@@ -820,10 +826,10 @@ function listaCodigosResultado() {
 				]).draw(false);
 			});
 
-			// console.log(respuesta.lista);
+			// //console.log(respuesta.lista);
 		},
 		error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 		}
 	})
 }
@@ -878,7 +884,7 @@ function agregarResultado(dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosResultado();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -932,10 +938,10 @@ function editarResultado(id, dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosResultado();
 				});
 		}, error: function(error) {
-			// console.log(error);
+			// //console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -1010,7 +1016,7 @@ function cambiarEstatusResultado(id, estatus) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaCodigosResultado();
 				});
 		}, error: function(error) {
 			swal({
@@ -1235,7 +1241,7 @@ function validarFormRelacion() {
 	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
 	var valorGestion = formulario.querySelector("#selectGestion").value;
 	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorAccionR != "Elige una opción" && valorBloqueo != "Elige una opción" && valorGestion != "Elige una opción") {
-		console.log("entró");
+		//console.log("entró");
 		const dto = {
 			idCodigoAccion: valorCodigoA,
 			idCodigoResultado: valorCodigoR,
@@ -1243,7 +1249,7 @@ function validarFormRelacion() {
 			ultimaGestion: valorGestion,
 			idBloqueo: valorBloqueo
 		}
-		// console.log(dto);
+		// //console.log(dto);
 		agregarRelacion(dto);
 	} else {
 		swal("Falta información por llenar", {
@@ -1267,7 +1273,7 @@ function agregarRelacion(dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaDeRelaciones();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -1329,7 +1335,7 @@ function listaDeRelaciones() {
 			});
 		},
 		error: function(error) {
-			console.log(error);
+			//console.log(error);
 		}
 	});
 }
@@ -1356,7 +1362,7 @@ function abrirRelacion(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			$('#modal-editarRelacion').modal('show');
-			// console.log(respuesta.relacion);
+			// //console.log(respuesta.relacion);
 			var relacion = respuesta.relacion;
 			catalogoCodigoAe(selectCodigoA, relacion);
 			catalogoCodigoRe(selectCodigoR, relacion);
@@ -1556,7 +1562,7 @@ function validarFormRelacionE() {
 		idBloqueo: valorBloqueo
 	}
 
-	// console.log(dto);
+	// //console.log(dto);
 	editarRelacion(dto);
 }
 
@@ -1575,7 +1581,7 @@ function editarRelacion(dto) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaDeRelaciones();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -1622,7 +1628,7 @@ function cambiarEstatusRelacion(id, estatus) {
 				icon: "success",
 			})
 				.then((value) => {
-					window.location.reload();
+					listaDeRelaciones();
 				});
 		}, error: function(error) {
 			swal({
@@ -1671,8 +1677,8 @@ function agregarChip() {
 	totalChips = contenedorChips.childElementCount;
 
 	// Imprimir el total de chips en la consola o hacer lo que desees con este valor
-	console.log("Total de chips: " + totalChips);
-	console.log(datosChips);
+	//console.log("Total de chips: " + totalChips);
+	//console.log(datosChips);
 
 	// Deshabilitar el botón después de agregar un chip
 	document.getElementById('agregarCorreo').disabled = true;
@@ -1688,7 +1694,7 @@ function eliminarChip(button) {
 
 	// Habilitar el botón después de eliminar un chip si el campo de entrada no está vacío
 	verificarInput();
-	console.log(datosChips);
+	//console.log(datosChips);
 }
 
 function actualizarDatosChips() {
@@ -1737,10 +1743,96 @@ function validateEmail(email) {
 /**
  * Editar correos del telefono
  */
-var contenedorChipsE = document.getElementById('chipsContainerEditar');
+var contenedorChipsE = document.getElementById('chipsContainerE');
 var totalChipsE = 0;
 var datosChipsE = "";
 
+function agregarChipE() {
+	// Obtener el valor del primer input
+	var texto = document.getElementById('correoElectronicoE').value;
+
+	// Crear un nuevo elemento chip
+	var nuevoChip = document.createElement('span');
+	nuevoChip.className = 'badge badge-primary mr-2';
+	nuevoChip.innerHTML = `
+        ${texto}
+        <button type="button" class="btn-close" aria-label="Close" onclick="eliminarChipE(this)">
+            <span aria-hidden="true">&times;</span>
+        </button>`;
+	nuevoChip.style.color = 'black';
+
+	// Agregar el chip al contenedor
+	contenedorChipsE.appendChild(nuevoChip);
+
+	// Actualizar la variable de cadena
+	actualizarDatosChipsE();
+
+	// Limpiar el input
+	document.getElementById('correoElectronicoE').value = "";
+
+	// Obtener el total de chips en el contenedor
+	totalChipsE = contenedorChipsE.childElementCount;
+
+	// Imprimir el total de chips en la consola o hacer lo que desees con este valor
+	//console.log("Total de chips: " + totalChips);
+	//console.log(datosChips);
+
+	// Deshabilitar el botón después de agregar un chip
+	document.getElementById('agregarCorreoE').disabled = true;
+
+	console.log(datosChipsE);
+	console.log(totalChipsE);
+}
+
+function eliminarChipE(button) {
+	// Obtener el elemento del chip y eliminarlo
+	var chip = button.closest('.badge');
+	chip.remove();
+
+	// Actualizar la variable de cadena
+	actualizarDatosChipsE();
+
+	// Habilitar el botón después de eliminar un chip si el campo de entrada no está vacío
+	verificarInputE();
+
+	totalChipsE = contenedorChipsE.childElementCount;
+
+	//console.log(datosChips);
+	console.log(datosChipsE);
+	console.log(totalChipsE);
+}
+
+function actualizarDatosChipsE() {
+	// Inicializar la variable de cadena
+	datosChipsE = "";
+	// Obtener todos los chips
+	var chips = contenedorChipsE.getElementsByClassName('badge');
+	// Recorrer los chips y agregar sus textos a la variable de cadena
+	for (var i = 0; i < chips.length; i++) {
+		// Obtener el texto del chip, quitar caracteres no deseados y espacios en blanco
+		var chipText = chips[i].textContent.trim().replace(/[×;\s]/g, '');
+		datosChipsE += chipText;
+		if (i < chips.length - 1) {
+			datosChipsE += ";";
+		}
+	}
+}
+
+
+function verificarInputE() {
+	var inputValue = document.getElementById('correoElectronicoE').value;
+	var agregarCorreoButton = document.getElementById('agregarCorreoE');
+	var soloCorreosMessage = document.getElementById('soloCorreosE');
+
+	// Verificar si el valor ingresado no es un correo electrónico válido
+	if (inputValue.trim() !== "" && !validateEmail(inputValue)) {
+		soloCorreosMessage.style.display = 'block';
+		agregarCorreoButton.disabled = true;
+	} else {
+		soloCorreosMessage.style.display = 'none';
+		agregarCorreoButton.disabled = inputValue.trim() === "";
+	}
+}
 function vistaDeCorreos(lista) {
 	// Usar el método split para dividir la cadena en un array
 	var arrayDeRegistros = lista.split(";");
@@ -1757,34 +1849,12 @@ function vistaDeCorreos(lista) {
 		nuevoChip.style.color = 'black';
 		// Agregar el chip al contenedor
 		contenedorChipsE.appendChild(nuevoChip);
-		console.log(datosChipsE);
-		console.log(totalChipsE);
+
+		totalChipsE = contenedorChipsE.childElementCount;
+
+		// Actualizar la variable de cadena
+		actualizarDatosChipsE();
 	});
-}
-
-function eliminarChipE(button) {
-	// Obtener el elemento del chip y eliminarlo
-	var chip = button.closest('.badge');
-	chip.remove();
-	//
-	console.log(datosChipsE);
-	console.log(totalChipsE);
-}
-
-function actualizarDatosChipsE() {
-	// Inicializar la variable de cadena
-	datosChipsE = "";
-	// Obtener todos los chips
-	var chips = contenedorChips.getElementsByClassName('badge');
-	// Recorrer los chips y agregar sus textos a la variable de cadena
-	for (var i = 0; i < chips.length; i++) {
-		// Obtener el texto del chip, quitar caracteres no deseados y espacios en blanco
-		var chipText = chips[i].textContent.trim().replace(/[×;\s]/g, '');
-		datosChipsE += chipText;
-		if (i < chips.length - 1) {
-			datosChipsE += ";";
-		}
-	}
 }
 /**
  * Fin
