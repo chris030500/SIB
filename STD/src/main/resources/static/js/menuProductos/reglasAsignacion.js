@@ -55,6 +55,9 @@ function peticionPostRegla(urlServicio, servicio) {
 				if (servicio == 1) {
 					obtTblReglas();
 				}
+				if (servicio == 2) {
+					obtTblParamsAsig(idReglaParams);
+				}
 				setTimeout($.unblockUI, 100);
 			});
 
@@ -65,7 +68,7 @@ function peticionPostRegla(urlServicio, servicio) {
 	});
 }
 
-var obtTblParams="reglas/obtRegistrosReglas?idRegla=";
+var obtTblParams="reglas/obtRegistrosParams?idRegla=";
 var idReglaParams = 0;
 function obtTblParamsAsig(regla){
 	 idReglaParams = regla;
@@ -84,7 +87,7 @@ function cerrarModalParams() {
 		idReglaParams=0;
 		$("#altaLiqRenovados").modal("hide");
 }
-var obtTblParams="reglas/registroParams?idRegla=";
+
 function guardarModalParams() {
 		if(guardarVacioParams() == 0){
 			console.log("registrar datos");
@@ -97,7 +100,7 @@ function guardarModalParams() {
 				showConfirmButton: false
 		  }).then((result) => {
 			  if (result.dismiss === Swal.DismissReason.timer) {
-				  
+				  servicioParams(2);//alta de registro 
 			  }
 			
 		  });
@@ -107,6 +110,28 @@ function guardarModalParams() {
 			swal("!Alerta¡", "Registrar datos obligatorios","error");
 		}
 		
+}
+var registroParams="reglas/registroParams?idRegla=";
+function servicioParams(opcPeticion){
+	
+	switch(opcPeticion){
+		case 2:
+			url = getAbsolutePath()+registroParams+idReglaParams;
+			url= url + "&slAsignar="+$("#slAsignar").val();
+			url= url + "&porcRegistros="+$("#porcRegistros").val();
+			url= url + "&tipoCliente="+$("#tipoCliente").val();
+			url= url + "&slcTipoCartera="+$("#slcTipoCartera").val();
+			url= url + "&tipoPrioridad="+$("#tipoPrioridad").val();
+			url= url + "&slEstatus="+$("#slEstatus").val();
+			break;
+		case 3:
+			break;
+		default:
+			break;
+	}
+	peticionPostRegla(url,opcPeticion);
+	
+
 }
 
 function guardarVacioParams(){

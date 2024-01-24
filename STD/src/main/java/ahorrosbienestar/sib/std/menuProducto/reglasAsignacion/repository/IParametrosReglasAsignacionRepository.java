@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
 
 @Repository
-public interface IParametrosReglasAsignacion extends JpaRepository<ParametrosReglasAsignacion, Integer>{
+public interface IParametrosReglasAsignacionRepository extends JpaRepository<ParametrosReglasAsignacion, Integer>{
 
 	@Query(value = "SELECT * FROM TBL_PARAMS_REGLAS_ASIGNACION WHERE FK_ID_REGLA=:idRegla", nativeQuery = true)
 	public List<ParametrosReglasAsignacion> obtRegParams(@Param("idRegla") Integer idRegla);
-
+		
 }

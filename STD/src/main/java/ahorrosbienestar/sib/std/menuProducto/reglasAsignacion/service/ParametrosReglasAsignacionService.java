@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.repository.IParametrosReglasAsignacion;
+import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.repository.IParametrosReglasAsignacionRepository;
 
 @Service
 public class ParametrosReglasAsignacionService {
 	private static final Logger logger = Logger.getLogger(ParametrosReglasAsignacionService.class);
-	private IParametrosReglasAsignacion iParametrosReglasAsignacion;
+	private IParametrosReglasAsignacionRepository iParametrosReglasAsignacion;
 	
 	@Autowired
-	public ParametrosReglasAsignacionService(IParametrosReglasAsignacion iParametrosReglasAsignacion) {
+	public ParametrosReglasAsignacionService(IParametrosReglasAsignacionRepository iParametrosReglasAsignacion) {
 		this.iParametrosReglasAsignacion = iParametrosReglasAsignacion;
 	}
 
@@ -26,7 +26,16 @@ public class ParametrosReglasAsignacionService {
 			return null;
 		}
 	}
-	
+		
+	public ParametrosReglasAsignacion save(ParametrosReglasAsignacion parametrosReglasAsignacion) {
+		try {
+			return iParametrosReglasAsignacion.save(parametrosReglasAsignacion);
+
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
 
 	
 }

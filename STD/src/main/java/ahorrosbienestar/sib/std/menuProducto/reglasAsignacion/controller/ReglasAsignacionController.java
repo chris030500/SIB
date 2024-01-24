@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglas;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ReglasAsignacion;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ParametrosReglasAsignacionService;
+import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ParametrosReglasService;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ReglasAsignacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -34,9 +36,14 @@ public class ReglasAsignacionController {
 	private ReglasAsignacionService reglasAsignacionService;
 	
 	@Autowired
+	private ParametrosReglasAsignacionService parametrosReglasAsignacionService;
+	
+	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
-	@Autowired ParametrosReglasAsignacionService parametrosReglasAsignacionService;
+	@Autowired
+	private ParametrosReglasService  parametrosReglasService;
+	
 	
 	@GetMapping("/obtDatosReglasAsignacion")
 	public ResponseEntity<List<ReglasAsignacion>> obtDatosReglasAsignacion(Model model) {
@@ -83,15 +90,63 @@ public class ReglasAsignacionController {
 		}
 	}
 	
-	@GetMapping("/obtRegistrosReglas")
-	public ResponseEntity<List<ParametrosReglasAsignacion>> obtPlantillas(Model model,@RequestParam(name = "idRegla") Integer idRegla) {
+	@GetMapping("/obtRegistrosParams")
+	public ResponseEntity<List<ParametrosReglas>> obtRegistrosParams(Model model,@RequestParam(name = "idRegla") Integer idRegla) {
 		 logger.info("/obtRegistrosReglas");
 		try {
-			return ResponseEntity.ok(parametrosReglasAsignacionService.obtRegParams(idRegla));
+			
+			return ResponseEntity.ok(parametrosReglasService.obtRegistroParametros(idRegla));
 		} catch (Exception e) {
 			logger.error("--" + e.getMessage());
 			return null;
 		}
 	}
+	
+	@PostMapping("/registroParams")
+	public ResponseEntity<?> registroParams(
+			@RequestParam(name = "idRegla") Integer idRegla,
+			@RequestParam(name = "slAsignar") Integer slAsignar,
+			@RequestParam(name = "porcRegistros") Integer porcRegistros,
+			@RequestParam(name = "tipoCliente") Integer tipoCliente,
+			@RequestParam(name = "slcTipoCartera") Integer slcTipoCartera,
+			@RequestParam(name = "tipoPrioridad") Integer tipoPrioridad,
+			@RequestParam(name = "slEstatus") Integer slEstatus
+			){
+		logger.info("/registroParams");
+		String mensaje ="Activo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+			LocalDate fecha = LocalDate.now();
+						
+			Optional<ReglasAsignacion> reglasAsignacion = reglasAsignacionService.findById(idRegla);
+			ParametrosReglasAsignacion parametrosReglasAsignacion = new ParametrosReglasAsignacion();
+			
+			parametrosReglasAsignacion.setFk_id_regla(reglasAsignacion.get());
+			parametrosReglasAsignacion.setI_tipo_asignado(slAsignar);
+			parametrosReglasAsignacion.setI_porcentaje(porcRegistros);
+			parametrosReglasAsignacion.setI_tipo_cliente(tipoCliente);
+			parametrosReglasAsignacion.setI_tipo_cartera(slcTipoCartera);
+			parametrosReglasAsignacion.setI_prioridad(tipoPrioridad);
+			parametrosReglasAsignacion.setI_estatus(slEstatus);
+			parametrosReglasAsignacion.setDt_fecha_registro(fecha);
+			parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
+			
+			parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
+
+			respuesta.add(mensaje);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
 
 }
