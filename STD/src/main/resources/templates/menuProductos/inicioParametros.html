@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2 card">
+
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Parametro de Configuración</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros Generales</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="reglas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="plantillas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes SMS</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="sms-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
+          			</li>
+          			<li class="nav-item" role="presentation">
+            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="bloqueados-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
+          			</li>
+        		</ul>
+			</div>
+			
+			<div id="pant-tabs">
+			<div id="params-tab1" class="container" style="display: block;" for="1">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Parametros Generales</legend>
+					<div class="row" style="margin-top : 15px ">
+						
+					</div>
+				</fieldset>
+			</div>
+			<div id="reglas-tab1" class="container" style="display:none;" for="2">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
+					<div class="row" style="margin-top : 15px ">
+							<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblReglasAsignacion">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Regla de Asignacion</th>
+										<th>Vigencia</th>
+										<th>Estatus</th>
+										<th>Usuario Modifico</th>
+										<th>Fecha Modificación</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+						
+					</div>
+				</fieldset>
+			</div>
+			<div id="plantillas-tab1" class="container" style="display:none;" for="3">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-lg-4">
+							<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
+								title="Agregar" data-bs-target="#altaPlantilla"
+								aria-controls="table-datatable" type="button" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
+								<i class="fa fa-plus-circle"></i> Alta Plantilla.
+							</button>
+						</div>
+						<div class="col-lg-4"></div>
+						<div class="col-lg-4"></div>
+					</div>
+					<div class="row" style="margin-top : 15px ">
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlantillasSMS">
+								<thead>
+									<tr>
+										<th>Nombre Plantilla</th>
+										<th>Descripcion</th>
+										<th>Tipo Campaña</th>
+										<th>Clasificacion</th>
+										<th>Usuario Registro</th>
+										<th>Fecha de Registro   </th>
+										<th>Usuario Modifico</th>
+										<th>Fecha de Modificación</th>
+										<th>Estatus</th>
+										<th style="text-align: center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div id="sms-tab1" class="container" style="display:none;" for="4">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Administracion SMS</legend>
+					
+				</fieldset>
+			</div>
+			<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Cliente Bloqueante</legend>
+					
+				</fieldset>
+			</div>
+			</div>
+
+			<!--Modal Alta Plantilla SMS-->
+			<div class="modal" id="altaPlantilla">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Alta Plantillas de SMS</legend>
+							<div class="modal-body">
+								<form id="edit-form" ><!--th:method="post" th:object="${folios}">-->
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblNombrePlantilla">Nombre de la Plantilla:</label>
+											<input type="text" class="form-control" id="inpNombrePlantilla" maxlength="50" placeholder="Nombre de la Plantilla"><!-- onkeyup="mayusculas(this);"-->
+											<div id="contNomPlant">0/50</div>
+										</div>
+										<div class="col-md-4">
+											<label for="base">Tipo de Campaña: </label>
+											<select class="form-control" id="slcCampania" onchange="obtDatosClass(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
+													th:text="${base.vc_nombre_base}">
+												</option>
+											</select>
+										</div>
+										<div class="col-md-4">
+											<label for="base">Clasificación de Campaña: </label>
+											<select class="form-control" id="slcClasificacion"><!--onchange="mostrarMensaje(this)"-->
+												<option value="0">Seleccione</option>
+												
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-8">
+												<label class="col-form-label"> Contenido SMS:</label>
+													<textarea type="text-Area" class="form-control" id="txtContenido"
+														placeholder="Contenido SMS" maxlength="200" rows="4">
+													</textarea>
+												<div id="contador">0/200</div>
+										</div>
+										<div class="col-md-4">
+											<label class="col-form-label"> Referencias a Utilizar (Comodines): </label>
+											<select multiple class="form-control" id="slcComodines" disabled>
+												
+												<option th:each="opcionTipo : ${cat_tipo_comodines}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label class="col-form-label"> Estatus:</label>
+											<select class="form-control" id="slcEstatus">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_estatus}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
+										</div>
+										<div class="col-md-4"></div>
+										<div class="col-md-4"></div>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnRegistrar" th:onclick="'eventoGuardar()'">Registrar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelar" th:onclick="'eventoCerrar()'">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--FIN Alta Plantilla SMS-->
+			
+			<!--Modal Asignacion liquidados y renovados-->
+			<div class="modal" id="altaLiqRenovados">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
+							<div class="modal-body">
+								<form id="edit-form" ><!--th:method="post" th:object="${folios}">-->
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="slAsignar">Asignar a:</label>
+											<select class="form-control" id="slAsignar">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_asignacion}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
+										</div>
+										<div class="col-md-4">
+											<label for="lblPorcentaje">% Registros:</label>
+											<input type="number" class="form-control" id="porcRegistros" min="1" max="100" maxlength="3" minlength="1" value="1">
+										</div>
+										<div class="col-md-4">
+											<label for="lblTipoCliente">Tipo de Cliente:</label>
+											<select class="form-control" id="tipoCliente">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_cliente}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+												<label for="lblTipoCartera">Tipo de Cartera:</label>
+												<select class="form-control" id="slcTipoCartera">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_cartera}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+										<div class="col-md-4">
+											<label for="lblPrioridad">Prioridad:</label>
+												<select class="form-control" id="tipoPrioridad">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_prioridad}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+										<div class="col-md-4">
+											<label id="lblEstatus">Estatus</label>											
+												<select class="form-control" id="slEstatus">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_estatus}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+											<div class="col-md-8"></div>
+											<div class="col-md-2"></div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-primary" data-dismiss="modal"
+													id="btnRegistrarAsig" th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
+											</div>
+									</div>
+								</form>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+									  <table class="table table-bordered table-striped" style="width: 120%;" id="tblParamsAsig">
+										<thead>
+										<tr>
+											<th>Tipo Asignación     </th>
+											<th>Tipo de Cliente     </th>
+											<th>Tipo de Cartera     </th>
+											<th>Prioridad</th>
+											<th>Usuario Registro    </th>
+											<th>Fecha de Registro   </th>
+											<th>Usuario Modifico    </th>
+											<th>Fecha de Modificación  </th>
+											<th>Estatus</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									  </table>
+									</div>
+								</div>
+								</div>
+							<div class="modal-footer">
+								
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelarAsig" th:onclick="'cerrarModalParams()'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--FIN Alta Plantilla SMS-->
+			
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
+		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
+		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
+		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
+		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
+		<!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
+	</th:block>
+</body>
+
+
+</html>

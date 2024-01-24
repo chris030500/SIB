@@ -20,7 +20,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,9 +33,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -41,11 +40,16 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.prospector.configuracion.ProspectorTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GeneracionSMSConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -97,6 +101,8 @@ public class indexOfertasAutoController {
 	@Autowired
 	private BasesService baseService;
 	
+	@Autowired
+	private ProcesoGestionService procesoGestionService;
 	
 	@Autowired
 	private FidelidadTareaConfiguracion fidelidadTareaConfiguracion;
@@ -106,9 +112,19 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private CampaniasVIPTareaConfiguracion campaniasVIPTareaConfiguracion;
+	
+	@Autowired
+	private ProspectorTareaConfiguracion prospectorTareaConfiguracion;
 		
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private GestionAsignacionConfiguracion gestionAsignacionConfiguracion;
+	
+	@Autowired
+	private GeneracionSMSConfiguracion generacionSMSConfiguracion;
+	
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -118,8 +134,6 @@ public class indexOfertasAutoController {
 	public String indexOfertasAuto(Model model) throws IOException {
 	 try {
 		if(validarAcceso()== 1){
-			logger.info("Ejecutando ofertasAutomaticas");
-			logger.info("Ejecutando ofertasAutomaticas");
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
@@ -319,7 +333,11 @@ public class indexOfertasAutoController {
 						break;
 					case 3:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampanias();
-						break;					
+						break;
+					case 4:
+						prospectorTareaConfiguracion.actualizarExpresionCronProspector();
+						break;
+					
 				}
 				
 				respuesta.add(mensaje);
@@ -571,6 +589,16 @@ public class indexOfertasAutoController {
 				}
 				
 				break;
+			case 4:
+				try {
+					prospectorTareaConfiguracion.procesarProspector();
+					respuesta.add("Se proceso Base Prospector");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
 			}
 			
 			return ResponseEntity.ok(respuesta);
@@ -696,5 +724,145 @@ public class indexOfertasAutoController {
 		
 		
 	}
+	
+	
+	/**
+	 * Nuevos procesos Fase 2 Ofertas Automaticas.
+	 */
+	
+	
+	/***
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtProceso")
+	public ResponseEntity<List<ProcesoGestion>> obtenerProcesoGestion(Model model) {
+		 logger.info("/obtParametros:");
+		try {
+			return ResponseEntity.ok(procesoGestionService.findAll());
+		} catch (Exception e) {
+			logger.error("--" + e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Obtener los valores de programacion de la ejecucion de gestion
+	 * @param idBase
+	 * @return
+	 */
+	
+	@GetMapping("/obtDatosProceso")
+	public ResponseEntity<?> obtDatosProceso(@RequestParam(name = "idBase") Integer idBase){		
+		try {
+			logger.info("/obtDatosProceso:"+idBase);
+			return ResponseEntity.ok(procesoGestionService.findById(idBase));
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	/**
+	 * 
+	 * @param basesID
+	 * @param dComienzoProceso
+	 * @param dFinalProceso
+	 * @param hComienzoProceso
+	 * @param hFinalProceso
+	 * @param mPeriodoEjecucion
+	 * @param rutaArchivo
+	 * @return
+	 */
+	
+	@PostMapping("/actualizarParametroGestion")
+	public ResponseEntity<?> actualizarParametroGestion(
+			@RequestParam(name = "procesoGestionID") Integer procesoGestionID, 
+			@RequestParam(name = "dComienzoProceso") String dComienzoProceso, 
+			@RequestParam(name = "dFinalProceso") String dFinalProceso,
+			@RequestParam(name = "hComienzoProceso") String hComienzoProceso,
+			@RequestParam(name = "hFinalProceso") String hFinalProceso,
+			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion
+			){
+		logger.info("/actualizarParametro");
+		String mensaje ="Actualizo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			if(procesoGestionService.actParams(procesoGestionID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion) == 1) {
+				switch(procesoGestionID){
+					case 1:
+						
+						gestionAsignacionConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
+						//nominaTareaConfiguracion.actualizarExpresionCronNomina();
+						break;
+					case 2:
+					
+						generacionSMSConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
+						//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+						break;
+				}
+				
+				respuesta.add(mensaje);
+			}else {
+				respuesta.add("No fue posible actualizar. Intente mas tarde.");
+			}
+			
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error(""+e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	/***
+	 * 
+	 * @return
+	 */
+	@PostMapping("/ejecutarDatosProceso")
+	public ResponseEntity<?> ejecutarDatosProceso(
+			@RequestParam(name = "idProceso") Integer idProceso
+			){
+	
+		logger.info("/ejecutarDatosProceso");
+		String mensaje ="El proceso ha terminado.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			switch(idProceso) {
+			case 1:
+				try {
+					logger.debug("Ejecutar proceso Asignacion Gestiones.");
+					gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
+					//nominaTareaConfiguracion.procesarNomina();
+					respuesta.add("Se proceso Asignacion Gestiones");
+				} catch (Exception e) {
+					respuesta.add("Error:"+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
+			case 2:
+				try {
+					logger.debug("Ejecutar proceso Generacion SMS.");
+					generacionSMSConfiguracion.procesarSMS(idProceso);
+					respuesta.add("Se Generacion SMS");
+				} catch (Exception e) {
+					respuesta.add("Error:"+e.getMessage());
+					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
+			}
+			
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
 
 }

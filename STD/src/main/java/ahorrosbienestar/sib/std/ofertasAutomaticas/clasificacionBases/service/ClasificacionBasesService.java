@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.folios.repository.IFolioRepository;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.repository.IClasificacionBasesRepository;
 
@@ -77,6 +75,11 @@ public class ClasificacionBasesService {
 
 	public int existeCodigoMod(String codigoClasificacion, Integer idClass) {
 		return iClasificacionBasesRepository.existeCodigoMod(codigoClasificacion,idClass);
+	}
+
+	public List<ClasificacionBases> clasificacionXBase(Integer idBase) {
+		
+		return iClasificacionBasesRepository.clasificacionXBase(idBase);
 	}
 
 }
