@@ -59,12 +59,15 @@
 					<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
 					<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="tblReglasAsignacion">
+							<table class="table table-bordered table-striped" style="width: 120%;" id="tblReglasAsignacion">
 								<thead>
 									<tr>
 										<th>ID</th>
 										<th>Regla de Asignacion</th>
+										<th>Vigencia</th>
 										<th>Estatus</th>
+										<th>Usuario Modifico</th>
+										<th>Fecha Modificación</th>
 										<th>Acciones</th>
 									</tr>
 								</thead>
@@ -126,59 +129,7 @@
 				</fieldset>
 			</div>
 			</div>
-			
-			
-			<!--Modal Parametros Liquidados - renovados-->
-			<div class="modal fade" id="modalParams" tabindex="-1" role="dialog">
-				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-					<div class="modal-content">
-						<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Asignacion Liquidado y Renovado.</legend>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="slAsignar">Asignar a:</label>
-								<select class="form-control" id="slAsignar">
-									<option value="0">Seleccione</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="lblPorcentaje">% Registros:</label>
-								<input type="number" class="form-control" id="porcRegistros">
-							</div>
-							<div class="form-group">
-								<label for="lblTipoCliente">Tipo de Cliente:</label>
-								<select class="form-control" id="tipoCliente">
-									<option value="0">Seleccione</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="lblTipoCartera">Tipo de Cartera:</label>
-								<input type="time" class="form-control" id="tipoCartera">
-							</div>
-							<div class="form-group">
-								<label for="lblPrioridad">Prioridad:</label>
-								<select class="form-control" id="tipoPrioridad">
-									<option value="0">Seleccione</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="lblEstatus" id="lblRuta">Estatus</label>
-								<select class="form-control" id="tipoEstatus">
-									<option value="0">Seleccione</option>
-								</select>
-							</div>
-							
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal"  id="btnCancelar">Cerrar</button>
-							<button type="button" id="btnActualizarParams"  class="btn btn-primary">Guardar Cambios</button> <!--onclick="guardarParametrosFidelidad()"-->
-						</div>
-						</fieldset>
-					</div>
-				</div>
-			</div>
-			<!--Modal Parametros Liquidados - renovados-->
-			
+
 			<!--Modal Alta Plantilla SMS-->
 			<div class="modal" id="altaPlantilla">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
@@ -255,6 +206,110 @@
 			</div>
 			<!--FIN Alta Plantilla SMS-->
 			
+			<!--Modal Asignacion liquidados y renovados-->
+			<div class="modal" id="altaLiqRenovados">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
+							<div class="modal-body">
+								<form id="edit-form" ><!--th:method="post" th:object="${folios}">-->
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="slAsignar">Asignar a:</label>
+											<select class="form-control" id="slAsignar">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_asignacion}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
+										</div>
+										<div class="col-md-4">
+											<label for="lblPorcentaje">% Registros:</label>
+											<input type="number" class="form-control" id="porcRegistros" min="1" max="100" maxlength="3" minlength="1" value="1">
+										</div>
+										<div class="col-md-4">
+											<label for="lblTipoCliente">Tipo de Cliente:</label>
+											<select class="form-control" id="tipoCliente">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_cliente}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+												<label for="lblTipoCartera">Tipo de Cartera:</label>
+												<select class="form-control" id="slcTipoCartera">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_cartera}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+										<div class="col-md-4">
+											<label for="lblPrioridad">Prioridad:</label>
+												<select class="form-control" id="tipoPrioridad">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_prioridad}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+										<div class="col-md-4">
+											<label id="lblEstatus">Estatus</label>											
+												<select class="form-control" id="slEstatus">
+													<option value="0">Seleccione</option>
+													<option th:each="opcionTipo : ${cat_tipo_estatus}"
+														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													</option>
+												</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+											<div class="col-md-8"></div>
+											<div class="col-md-2"></div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-primary" data-dismiss="modal"
+													id="btnRegistrarAsig" th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
+											</div>
+									</div>
+								</form>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+									  <table class="table table-bordered table-striped" style="width: 120%;" id="tblParamsAsig">
+										<thead>
+										<tr>
+											<th>Tipo Asignación     </th>
+											<th>Tipo de Cliente     </th>
+											<th>Tipo de Cartera     </th>
+											<th>Prioridad</th>
+											<th>Usuario Registro    </th>
+											<th>Fecha de Registro   </th>
+											<th>Usuario Modifico    </th>
+											<th>Fecha de Modificación  </th>
+											<th>Estatus</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									  </table>
+									</div>
+								</div>
+								</div>
+							<div class="modal-footer">
+								
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelarAsig" th:onclick="'cerrarModalParams()'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--FIN Alta Plantilla SMS-->
+			
 
 		</div>
 	</section>
@@ -270,6 +325,7 @@
 		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
 		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
 		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
+		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
 		<!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
 	</th:block>
 </body>

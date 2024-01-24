@@ -4,11 +4,15 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,14 +35,27 @@ public class ReglasAsignacion {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "DT_FECHA_REGISTRO", columnDefinition = "DATETIME(6) DEFAULT NULL")
+	private LocalDate dt_fecha_registro;
+	
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REGISTRO", updatable = true)
+	private Usuario i_usuario_registro;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_MOD", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_mod;
 	
-	@Column(name = "I_USUARIO_MOD", columnDefinition = "TINYINT(1) DEFAULT 0")
-	private int i_usuario_mod;
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_MOD", updatable = true)
+	private Usuario i_usuario_mod;
 	
-	@Column(name = "I_DIAS_VIGENCIA", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	@Column(name = "I_DIAS_VIGENCIA", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_dias_vigencia;
+	
+	@Column(name = "I_PARAMS", columnDefinition = "TINYINT(1) DEFAULT 0")
+	private int i_params;
 
 	public int getPk_id_regla() {
 		return pk_id_regla;
@@ -72,14 +89,6 @@ public class ReglasAsignacion {
 		this.dt_fecha_mod = dt_fecha_mod;
 	}
 
-	public int getI_usuario_mod() {
-		return i_usuario_mod;
-	}
-
-	public void setI_usuario_mod(int i_usuario_mod) {
-		this.i_usuario_mod = i_usuario_mod;
-	}
-
 	public int getI_dias_vigencia() {
 		return i_dias_vigencia;
 	}
@@ -87,7 +96,21 @@ public class ReglasAsignacion {
 	public void setI_dias_vigencia(int i_dias_vigencia) {
 		this.i_dias_vigencia = i_dias_vigencia;
 	}
-	
-	
+
+	public int getI_params() {
+		return i_params;
+	}
+
+	public void setI_params(int i_params) {
+		this.i_params = i_params;
+	}
+
+	public Usuario getI_usuario_mod() {
+		return i_usuario_mod;
+	}
+
+	public void setI_usuario_mod(Usuario i_usuario_mod) {
+		this.i_usuario_mod = i_usuario_mod;
+	}
 	
 }

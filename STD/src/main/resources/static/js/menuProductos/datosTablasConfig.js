@@ -19,30 +19,31 @@ var url = "";
 		 tblReglasAsignacion.clear().draw();
 		 $.each(data, function(idx, opt) {
 		 var botones = "";
-			 	var btnEstatus = " <button class='btn btn-success' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Actualizar Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='actualizarEstatus("
+			 	var btnEstatus = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus' type='button'"
+					+ " onclick='updateEstatusRegla("
 					+ opt.pk_id_regla
 					+ ")' id="
 					+ opt.pk_id_regla
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-arrow-repeat'></i></button>";
+					+ ((opt.i_estatus == 1)?"<i class='fa-solid fa-toggle-on fa-lg'></i></button>":"<i class='fa-solid fa-toggle-off fa-lg'></i></button>")
+					+ "&nbsp;";
 				
 			 	botones = botones + btnEstatus;
-			 	if(opt.pk_id_regla != 1){
-					var btnEditarParams = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Actualizar Parametros' data-bs-target='#modalParams' aria-controls='table-datatable' type='button'"
-					+ " onclick='actualizarParams("
+			 	if(opt.i_params == 1){
+					var btnEditarParams = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#altaLiqRenovados' aria-controls='table-datatable' type='button'"
+					+ " onclick='obtTblParamsAsig("
 					+ opt.pk_id_regla
 					+ ")' id="
 					+ opt.pk_id_regla
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-pencil-square'></i></button>";
+					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
 					
 					botones = botones+btnEditarParams;
 				
 				}
-			 tblReglasAsignacion.row.add([opt.pk_id_regla,opt.vc_nombre_regla,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+			 tblReglasAsignacion.row.add([opt.pk_id_regla,opt.vc_nombre_regla,opt.i_dias_vigencia,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
 		 });
 	 }); 
  }

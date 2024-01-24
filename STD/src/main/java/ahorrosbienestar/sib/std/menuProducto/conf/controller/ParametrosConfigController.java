@@ -46,6 +46,10 @@ public class ParametrosConfigController {
 	
 	private int catTipoEstatus = 16;
 	private int catTipoComodines = 17;
+	private int catTipoAsignacion = 15;
+	private int catTipoCliente = 18;
+	private int catTipoCartera = 19;
+	private int catTipoPrioridad = 20;
 	
 	private static final String nombrePantalla = "Parametros de Configuracion";
 	private static final String rutaError = "errores/error_403";
@@ -66,6 +70,10 @@ public class ParametrosConfigController {
 				List<Bases> bases = basesService.findAll();
 				model.addAttribute("cat_tipo_estatus", iCatalogoRepository.generarOpciones(catTipoEstatus));
 				model.addAttribute("cat_tipo_comodines", iCatalogoRepository.generarOpciones(catTipoComodines));
+				model.addAttribute("cat_tipo_asignacion", iCatalogoRepository.generarOpciones(catTipoAsignacion));
+				model.addAttribute("cat_tipo_cliente", iCatalogoRepository.generarOpciones(catTipoCliente));
+				model.addAttribute("cat_tipo_cartera", iCatalogoRepository.generarOpciones(catTipoCartera));
+				model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
 				model.addAttribute("bases", bases);
 				
 				rutaDireccion = "menuProductos/inicioParametros";

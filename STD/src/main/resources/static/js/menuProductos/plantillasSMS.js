@@ -19,7 +19,7 @@ function eventoGuardar(){
 	 * validar datos. 
 	 */
 	
-	if(guardarVacio() == 0){
+	if(guardarVacioPlantilla() == 0){
 		//servicio registro plantilla
 		
 		Swal.fire({
@@ -43,11 +43,7 @@ function eventoGuardar(){
 		
 		
 	}else{
-		swal({
-						title: "Atención",
-						text: "Registrar datos obligatorios",
-						icon: "warning",
-					});
+		swal("!Alerta¡", "Registrar datos obligatorios","error");
 	}
 	
 }
@@ -98,15 +94,10 @@ function peticionPost(urlServicio, servicio) {
 			setTimeout($.unblockUI, 100);
 		},
 		success: function(respuesta) {
-			swal({
-				title: "",
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+			swal("",respuesta[0],"success").then(resp => {
 
 				if (servicio == 1) {
-					limpiarDatosPlantilla();
+					//limpiarDatosPlantilla();
 					obtTblPlantillas();
 				
 				}
@@ -197,7 +188,7 @@ function eventosContenido() {
 }
 
 
-function guardarVacio() {
+function guardarVacioPlantilla() {
 	var validacion = 0;
 	
 	if(document.getElementById("inpNombrePlantilla").value.length == 0){
