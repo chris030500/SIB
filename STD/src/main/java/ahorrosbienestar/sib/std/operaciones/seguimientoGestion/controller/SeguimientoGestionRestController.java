@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.AsignacionOfertas;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.AsignacionOfertasService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.model.RelacionCodigosModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.service.RelacionCodigosService;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.ListaSeguimientoModel;
@@ -44,6 +45,9 @@ public class SeguimientoGestionRestController {
 	
 	@Autowired
 	private RelacionCodigosService relacionCodigosService;
+	
+	@Autowired
+	private AsignacionOfertasService asignacionOfertasService;
 
 	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
 
@@ -100,6 +104,10 @@ public class SeguimientoGestionRestController {
 			RelacionCodigosModel relacionCodigosModel = relacionCodigosService.buscarRelacionPorId(dto.getRelacionCodigos());
 			logger.info("se encontró la relación");
 			//
+			AsignacionOfertas asignacionOfertas = asignacionOfertasService.findById(dto.getAsignacionOfertas());
+			logger.info("Se encontró la asignacion");
+			//
+			model.setAsignacionOfertas(asignacionOfertas);
 			model.setRelacionCodigosModel(relacionCodigosModel);
 			model.setVc_descripcion(dto.getDescripcion());
 			model.setI_estatus(1);

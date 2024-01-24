@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.AsignacionOfertas;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.model.RelacionCodigosModel;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
@@ -23,7 +24,7 @@ public class SeguimientoGestionOaModel {
 
 	@OneToOne
 	@JoinColumn(name = "FK_ID_ASIGNACION_OFERTAS")
-	private int fk_id_asignacion_ofertas;
+	private AsignacionOfertas asignacionOfertas;
 
 	@OneToOne
 	@JoinColumn(name = "FK_ID_RELACION_CODIGOS")
@@ -61,12 +62,12 @@ public class SeguimientoGestionOaModel {
 		this.pk_id_seguimiento_gestion = pk_id_seguimiento_gestion;
 	}
 
-	public int getFk_id_asignacion_ofertas() {
-		return fk_id_asignacion_ofertas;
+	public AsignacionOfertas getAsignacionOfertas() {
+		return asignacionOfertas;
 	}
 
-	public void setFk_id_asignacion_ofertas(int fk_id_asignacion_ofertas) {
-		this.fk_id_asignacion_ofertas = fk_id_asignacion_ofertas;
+	public void setAsignacionOfertas(AsignacionOfertas asignacionOfertas) {
+		this.asignacionOfertas = asignacionOfertas;
 	}
 
 	public RelacionCodigosModel getRelacionCodigosModel() {

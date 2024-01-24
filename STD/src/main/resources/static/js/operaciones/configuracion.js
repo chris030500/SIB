@@ -150,8 +150,6 @@ var alertaTel1 = document.getElementById("alertaTel1");
 var alertaExt = document.getElementById("alertaExt");
 var alertaExt1 = document.getElementById("alertaExt1");
 var alertaCom = document.getElementById("alertaCom");
-var alertaCor = document.getElementById("alertaCor");
-var alertaTipoCor = document.getElementById("alertaTipoCor");
 
 // Agrega un evento de entrada al campo de texto
 formTelefonoE.addEventListener("input", function() {
@@ -163,11 +161,6 @@ formExtensionE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-});
-formCorreoE.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	alertaCor.style.display = "none";
-	alertaTipoCor.style.display = "none";
 });
 formComentariosE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -186,11 +179,9 @@ function validarEditarTel(id) {
 
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
-	correo == "" ? alertaCor.style.display = "block" : alertaCor.style.display = "none";
 	comentarios == "" ? alertaCom.style.display = "block" : alertaCom.style.display = "none";
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
-	alertaTipoCor.style.display = regexCorreo.test(correo) ? "none" : "block";
 
 	// Si los valores son diferentes de vacio
 	if (telefono != "" && extension != "" && correo != "" && comentarios != "") {
@@ -390,8 +381,6 @@ function limpiarAlertas() {
 	alertaTel1.style.display = "none";
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-	alertaCor.style.display = "none";
-	alertaTipoCor.style.display = "none";
 	alertaCom.style.display = "none";
 }
 
@@ -454,7 +443,7 @@ function abrirTelefono(id) {
 	var direccion = document.getElementById('direccionE');
 	var telefono = document.getElementById('telefonoE');
 	var extension = document.getElementById('extensionE');
-	var correo = document.getElementById('correoElectronicoE');
+	// var correo = document.getElementById('correoElectronicoE');
 	var comentarios = document.getElementById('comentariosE');
 	idTel = id;
 
@@ -470,7 +459,8 @@ function abrirTelefono(id) {
 			direccion.value = respuesta.telefono.fk_id_sucursal.vc_direccioncompleta;
 			telefono.value = respuesta.telefono.vc_telefono;
 			extension.value = respuesta.telefono.vc_extension;
-			correo.value = respuesta.telefono.vc_correo_electronico;
+			// correo.value = respuesta.telefono.vc_correo_electronico;
+			vistaDeCorreos(respuesta.telefono.vc_correo_electronico);
 			comentarios.value = respuesta.telefono.vc_comentarios;
 
 		}, error: function(error) {
@@ -1739,6 +1729,63 @@ function validateEmail(email) {
 	return emailRegex.test(email);
 }
 
+/**
+ * Fin
+ */
+
+
+/**
+ * Editar correos del telefono
+ */
+var contenedorChipsE = document.getElementById('chipsContainerEditar');
+var totalChipsE = 0;
+var datosChipsE = "";
+
+function vistaDeCorreos(lista) {
+	// Usar el método split para dividir la cadena en un array
+	var arrayDeRegistros = lista.split(";");
+	// Itera sobre el array y crea un chip para cada registro
+	arrayDeRegistros.forEach(function(registro) {
+		// Crear un nuevo elemento chip
+		var nuevoChip = document.createElement('span');
+		nuevoChip.className = 'badge badge-primary mr-2';
+		nuevoChip.innerHTML = `
+        ${registro}
+        <button type="button" class="btn-close" aria-label="Close" onclick="eliminarChipE(this)">
+            <span aria-hidden="true">&times;</span>
+        </button>`;
+		nuevoChip.style.color = 'black';
+		// Agregar el chip al contenedor
+		contenedorChipsE.appendChild(nuevoChip);
+		console.log(datosChipsE);
+		console.log(totalChipsE);
+	});
+}
+
+function eliminarChipE(button) {
+	// Obtener el elemento del chip y eliminarlo
+	var chip = button.closest('.badge');
+	chip.remove();
+	//
+	console.log(datosChipsE);
+	console.log(totalChipsE);
+}
+
+function actualizarDatosChipsE() {
+	// Inicializar la variable de cadena
+	datosChipsE = "";
+	// Obtener todos los chips
+	var chips = contenedorChips.getElementsByClassName('badge');
+	// Recorrer los chips y agregar sus textos a la variable de cadena
+	for (var i = 0; i < chips.length; i++) {
+		// Obtener el texto del chip, quitar caracteres no deseados y espacios en blanco
+		var chipText = chips[i].textContent.trim().replace(/[×;\s]/g, '');
+		datosChipsE += chipText;
+		if (i < chips.length - 1) {
+			datosChipsE += ";";
+		}
+	}
+}
 /**
  * Fin
  */
