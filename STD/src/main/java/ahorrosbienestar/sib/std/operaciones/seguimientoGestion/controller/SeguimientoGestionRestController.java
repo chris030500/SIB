@@ -1,0 +1,69 @@
+package ahorrosbienestar.sib.std.operaciones.seguimientoGestion.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.ListaSeguimientoModel;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.service.ListaSeguimientoService;
+import lombok.AllArgsConstructor;
+
+@RestController
+@AllArgsConstructor
+public class SeguimientoGestionRestController {
+
+	@Autowired
+	private ListaSeguimientoService listaSeguimientoService;
+
+	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
+
+	@RequestMapping(value = {"/lista_seguimiento"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion() {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
+		try {
+			listaSeguimiento = listaSeguimientoService.listaSeguimiento();
+			logger.info("se llenó la lista");
+			respuesta.put("lista", listaSeguimiento);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
+	
+	@RequestMapping(value = {"/parametros_seguimiento"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("nombre") String nombre, 
+																		@RequestParam("oferta") String oferta, 
+																		@RequestParam("referencia") String referencia) {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
+		try {
+			listaSeguimiento = listaSeguimientoService.busquedaPorSeguimiento(nombre, oferta, referencia);
+			logger.info("se llenó la lista");
+			respuesta.put("lista", listaSeguimiento);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+
+}

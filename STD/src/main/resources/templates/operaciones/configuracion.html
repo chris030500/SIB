@@ -276,21 +276,29 @@
 													</div>
 												</div>
 											</div>
-											<div class="row">
-												<div class="col-sm-12">
-													<label>Correo electrónico:</label>
-													<input type="email" class="form-control" id="correoElectronico"
-														required>
-													<p id="errorCorreo"
-														style="color: red;display: none; font-size: small; padding-left: 5px;">
-														<i><b>campo requerido</b></i>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-8">
+													<label>Correos electrónicos:</label>
+													<input type="text" class="form-control" id="correoElectronico"
+														required oninput="verificarInput()">
+													<p id="minimoUno"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>agregar mínimo un correo</b></i>
 													</p>
-													<p id="errorTipoCor"
-														style="color: red;display: none; font-size: small; padding-left: 5px;">
-														<i><b>solo correo electrónico</b></i>
+													<p id="soloCorreos"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>ingrese un correo electrónico válido</b></i>
 													</p>
 												</div>
+												<div class="col-sm-4" style="padding-top: 24px;">
+													<button id="agregarCorreo" onmousedown="agregarChip()"
+														style='background: rgb(0, 128, 0); border-color: rgb(0, 128, 0);'
+														type="button" class="btn btn-primary" disabled>Agregar</button>
+												</div>
+												<!-- Contenedor para los chips -->
+												<div id="chipsContainer" class="mt-2"></div>
 											</div>
+
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
 													<div class="form-group">

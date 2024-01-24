@@ -44,41 +44,39 @@
 											<form name="formFiltro" id="formFiltro">
 												<div class="row">
 													<div class="col-sm-6">
-														<label for="buscarCliente">Buscar cliente:</label>
+														<label>Buscar cliente</label>
 														<input type="search" class="form-control" id="buscarCliente"
-															list="opciones" autocomplete="off"
-															placeholder="Ingresa el núm o el nombre del cliente">
-														<datalist id="opciones"></datalist>
+															list="opcionCliente" autocomplete="off"
+															placeholder="Buscar cliente" disabled>
+														<datalist id="opcionCliente"></datalist>
 													</div>
-												</div>
-												<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-3">
-														<label>Teléfono Celular</label>
-														<select id="selectTelefono"
-															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
-															<option value="" disabled selected>Teléfono Celular</option>
-														</select>
+													<div id="spinnerClientes" class="col-sm-6" style="margin: 0px; padding: 0px; padding-top: 25px;">
+														<div class="spinner-border" style="color: #0dcaf0;">
+														</div>
 													</div>
-													<div class="col-sm-3">
-														<label>No. Referencia</label>
-														<select id="selectReferencia"
-															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
-															<option value="" disabled selected>No. Referencia</option>
-														</select>
+													<div class="row" style="padding-top: 20px;">
+														<div class="col-sm-3">
+															<label>Teléfono Celular</label>
+															<input type="text" pattern="[0-9]*" maxlength="10"
+																class="form-control" id="inputTelefono" required>
+														</div>
+														<div class="col-sm-3">
+															<label>No. Referencia</label>
+															<input type="text" class="form-control" id="inputReferencia"
+																required>
+														</div>
+														<div class="col-sm-3">
+															<label>No. Oferta</label>
+															<input type="text" class="form-control" id="inputOferta"
+																required>
+														</div>
+														<div class="col-sm-3"
+															style="text-align: right; padding-top: 25px;">
+															<button type="button" onclick="validarBusqueda()"
+																style="background: #0dcaf0; border-color: #0dcaf0;"
+																class="btn btn-primary">Buscar</button>
+														</div>
 													</div>
-													<div class="col-sm-3">
-														<label>No. Oferta</label>
-														<select id="selectOferta"
-															style="width: 200px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
-															<option value="" disabled selected>No. Oferta</option>
-														</select>
-													</div>
-													<div class="col-sm-3" style="text-align: right; padding-top: 25px;">
-														<button type="button"
-															style="background: #0dcaf0; border-color: #0dcaf0;"
-															class="btn btn-primary">Buscar</button>
-													</div>
-												</div>
 											</form>
 										</div>
 									</div>

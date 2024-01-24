@@ -76,8 +76,7 @@ var errorExtension = document.getElementById("errorExtension");
 var soloExtension = document.getElementById("soloExtension");
 var errorComentarios = document.getElementById("errorComentarios");
 var errorSucursal = document.getElementById("errorSucursal");
-var errorCorreo = document.getElementById("errorCorreo");
-var errorTipoCor = document.getElementById("errorTipoCor");
+var minimoUno = document.getElementById("minimoUno");
 
 // Agrega un evento de entrada al campo de texto
 formTelefono.addEventListener("input", function() {
@@ -90,11 +89,6 @@ formExtension.addEventListener("input", function() {
 	errorExtension.style.display = "none";
 	soloExtension.style.display = "none";
 });
-formCorreo.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorCorreo.style.display = "none";
-	errorTipoCor.style.display = "none";
-});
 formComentarios.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	errorComentarios.style.display = "none";
@@ -103,42 +97,42 @@ formSucursal.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	errorSucursal.style.display = "none";
 });
+formCorreo.addEventListener("input", function() {
+	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
+	minimoUno.style.display = "none";
+});
 
 function validarFormTelefonos() {
 	// Asignamos los valores a las variables
 	var telefono = $('#telefono').val();
 	var extension = $('#extension').val();
-	var correo = $('#correoElectronico').val();
 	var comentarios = $('#comentarios').val();
 	var sucursal = $('#searchInput').val();
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
-	var regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
 	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
-	correo == "" ? errorCorreo.style.display = "block" : errorCorreo.style.display = "none";
 	comentarios == "" ? errorComentarios.style.display = "block" : errorComentarios.style.display = "none";
 	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
-	errorTipoCor.style.display = regexCorreo.test(correo) ? "none" : "block";
+
+	datosChips == "" ? minimoUno.style.display = "block" : minimoUno.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && correo != "" && comentarios != "" && sucursal != "") {
+	if (telefono != "" && extension != "" && comentarios != "" && sucursal != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
-				if (regexCorreo.test(correo)) {
-					// Se llena el DTO
-					const dto = {
-						telefono: telefono,
-						extension: extension,
-						correoElectronico: correo,
-						comentarios: comentarios,
-						nombreSucursal: idSucursal
-					};
-					agregarTelefono(dto);
-				}
+				// Se llena el DTO
+				const dto = {
+					telefono: telefono,
+					extension: extension,
+					correoElectronico: datosChips,
+					comentarios: comentarios,
+					nombreSucursal: idSucursal
+				};
+				agregarTelefono(dto);
 			}
 		}
 	}
@@ -211,7 +205,7 @@ function validarEditarTel(id) {
 						comentarios: comentarios
 					};
 					editarTelefono(id, dto);
-					// Si los valores estan vacios	
+					// Si los valores estan vacios    
 				}
 			}
 		}
@@ -226,12 +220,12 @@ function limpiarFormTelefonos() {
 	document.getElementById('correoElectronico').value = '';
 	errorTelefono.style.display = "none";
 	errorExtension.style.display = "none";
-	errorCorreo.style.display = "none";
 	errorComentarios.style.display = "none";
 	errorSucursal.style.display = "none";
 	soloTelefono.style.display = "none";
 	soloExtension.style.display = "none";
-	errorTipoCor.style.dislpay = "none";
+	document.getElementById('minimoUno').style.display = "none";
+	document.getElementById('soloCorreos').style.display = "none";
 }
 
 // Agregar evento al documento para detectar clics
@@ -318,13 +312,16 @@ function listaTelefonos() {
 
 				var vigente = opt.i_estatus == 1 ? "Si" : "No";
 
+				var validarCorreo = opt.vc_correo_electronico.length > 30 ? opt.vc_correo_electronico.substring(0, 30) + '...' : opt.vc_correo_electronico;
+				var validarDireccion = opt.fk_id_sucursal.vc_direccioncompleta.length > 30 ? opt.fk_id_sucursal.vc_direccioncompleta.substring(0, 30) + '...' : opt.fk_id_sucursal.vc_direccioncompleta;
+
 				vistaTablaTel.row.add([
 					opt.pk_id_telefono,
 					opt.fk_id_sucursal.vc_nombresucursal,
-					opt.fk_id_sucursal.vc_direccioncompleta,
+					validarDireccion,
 					opt.vc_telefono,
 					opt.vc_extension,
-					opt.vc_correo_electronico,
+					validarCorreo,
 					opt.vc_comentarios,
 					vigente,
 					btnEditar + btnEstatus
@@ -1646,6 +1643,102 @@ function cambiarEstatusRelacion(id, estatus) {
 		}
 	});
 }
+/**
+ * Fin
+ */
+
+/**
+ * Agregar correos
+ */
+var contenedorChips = document.getElementById('chipsContainer');
+var totalChips = 0;
+var datosChips = "";
+
+function agregarChip() {
+	// Obtener el valor del primer input
+	var texto = document.getElementById('correoElectronico').value;
+
+	// Crear un nuevo elemento chip
+	var nuevoChip = document.createElement('span');
+	nuevoChip.className = 'badge badge-primary mr-2';
+	nuevoChip.innerHTML = `
+        ${texto}
+        <button type="button" class="btn-close" aria-label="Close" onclick="eliminarChip(this)">
+            <span aria-hidden="true">&times;</span>
+        </button>`;
+	nuevoChip.style.color = 'black';
+
+	// Agregar el chip al contenedor
+	contenedorChips.appendChild(nuevoChip);
+
+	// Actualizar la variable de cadena
+	actualizarDatosChips();
+
+	// Limpiar el input
+	document.getElementById('correoElectronico').value = "";
+
+	// Obtener el total de chips en el contenedor
+	totalChips = contenedorChips.childElementCount;
+
+	// Imprimir el total de chips en la consola o hacer lo que desees con este valor
+	console.log("Total de chips: " + totalChips);
+	console.log(datosChips);
+
+	// Deshabilitar el botón después de agregar un chip
+	document.getElementById('agregarCorreo').disabled = true;
+}
+
+function eliminarChip(button) {
+	// Obtener el elemento del chip y eliminarlo
+	var chip = button.closest('.badge');
+	chip.remove();
+
+	// Actualizar la variable de cadena
+	actualizarDatosChips();
+
+	// Habilitar el botón después de eliminar un chip si el campo de entrada no está vacío
+	verificarInput();
+	console.log(datosChips);
+}
+
+function actualizarDatosChips() {
+	// Inicializar la variable de cadena
+	datosChips = "";
+	// Obtener todos los chips
+	var chips = contenedorChips.getElementsByClassName('badge');
+	// Recorrer los chips y agregar sus textos a la variable de cadena
+	for (var i = 0; i < chips.length; i++) {
+		// Obtener el texto del chip, quitar caracteres no deseados y espacios en blanco
+		var chipText = chips[i].textContent.trim().replace(/[×;\s]/g, '');
+		datosChips += chipText;
+		if (i < chips.length - 1) {
+			datosChips += ";";
+		}
+	}
+}
+
+
+function verificarInput() {
+	var inputValue = document.getElementById('correoElectronico').value;
+	var agregarCorreoButton = document.getElementById('agregarCorreo');
+	var soloCorreosMessage = document.getElementById('soloCorreos');
+
+	// Verificar si el valor ingresado no es un correo electrónico válido
+	if (inputValue.trim() !== "" && !validateEmail(inputValue)) {
+		soloCorreosMessage.style.display = 'block';
+		agregarCorreoButton.disabled = true;
+	} else {
+		soloCorreosMessage.style.display = 'none';
+		agregarCorreoButton.disabled = inputValue.trim() === "";
+	}
+}
+
+function validateEmail(email) {
+	// Utiliza una expresión regular para verificar el formato del correo electrónico
+	var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	return emailRegex.test(email);
+}
+
 /**
  * Fin
  */

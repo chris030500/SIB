@@ -51,19 +51,26 @@
 											</div>
 											<form name="formReporte" id="formReporte" style="display: none;">
 												<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-6" id="verSucursal" style="display: none; visibility: hidden;">
+													<div class="col-sm-6" id="verSucursal"
+														style="display: none; visibility: hidden;">
 														<label>Sucursal</label>
 														<input type="search" class="form-control" id="buscarSucursal"
 															list="opcionSucursal" autocomplete="off"
 															placeholder="Buscar sucursal">
 														<datalist id="opcionSucursal"></datalist>
 													</div>
-													<div class="col-sm-6" id="verCliente" style="display: none; visibility: hidden;">
+													<div class="col-sm-6" id="verCliente"
+														style="display: none; visibility: hidden;">
 														<label>Cliente</label>
 														<input type="search" class="form-control" id="buscarCliente"
 															list="opcionCliente" autocomplete="off"
-															placeholder="Buscar cliente">
+															placeholder="Buscar cliente" disabled>
 														<datalist id="opcionCliente"></datalist>
+													</div>
+													<div id="spinnerClientes" class="col-sm-1"
+														style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
+														<div class="spinner-border" style="color: #0dcaf0;">
+														</div>
 													</div>
 													<div class="col-sm-4">
 														<label>Estatus de gestión</label>
@@ -79,14 +86,17 @@
 														<label>Fecha inicio</label>
 														<input class="form-control" type="date" id="fechaInicio">
 													</div>
+
 													<div class="col-sm-5">
 														<label>Fecha fin</label>
 														<input class="form-control" type="date" id="fechaFin">
+														<p class="error-message" id="errorFecha"></p>
 													</div>
 													<div class="col-sm-2" style="text-align: right; padding-top: 25px;">
 														<button class="btn btn-success" title="Generar Reporte"
-															data-bs-target="#" onclick="obtenerDatos()" aria-controls="table-datatable"
-															type="button" data-tooltip="Add">
+															data-bs-target="#" onclick="obtenerDatos()"
+															aria-controls="table-datatable" type="button"
+															data-tooltip="Add">
 															<i class="bi bi-filetype-exe"></i>
 														</button>
 													</div>
