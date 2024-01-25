@@ -23,9 +23,10 @@ function eventoGuardar(){
 		//servicio registro plantilla
 		
 		Swal.fire({
-				title: 'Procesando.....',
+				title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Procesando Información.',
 				html: '<span class="spinner-border"></span>',
-				timer: 1000, // tiempo en milisegundos
+				timer: 1000, // tiempo en milisegundos,
+				icon: 'info',
 				timerProgressBar: true,
 				showConfirmButton: false
 		}).then((result) => {
@@ -115,11 +116,7 @@ function peticionPost(urlServicio, servicio) {
 
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
-			});
+			swal("Error","Se presento un error, intente mas tarde.", "error");
 		}
 	});
 }
@@ -245,9 +242,10 @@ function editarPlantilla(idEditar){
 function obtPlantilla(urlObt){
 	
 		Swal.fire({
-				title: 'Procesando.....',
+				title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Consultando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos
+				icon: 'info',
 				timerProgressBar: true,
 				showConfirmButton: false
 		}).then((result) => {

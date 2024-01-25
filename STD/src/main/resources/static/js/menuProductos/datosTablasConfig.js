@@ -58,7 +58,7 @@ var url = "";
 		 tblPlantillasSMS.clear().draw();
 		 $.each(data, function(idx, opt) {
 		 var botonesActivar = "";
-			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-white btn-xs' tabindex='0' "
+			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
 					+ " title='Actualizar Estatus'  type='button'"
 					+ " onclick='actualizarEstatus("
 					+ opt.pk_id_plantilla
@@ -68,7 +68,7 @@ var url = "";
 					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
 					+ "&nbsp;";*/
 		 var botonesEditar = "";
-			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-white btn-xs' tabindex='0' data-bs-toggle='modal'"
+			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
 					+ " onclick='editarPlantilla("
 					+ opt.pk_id_plantilla

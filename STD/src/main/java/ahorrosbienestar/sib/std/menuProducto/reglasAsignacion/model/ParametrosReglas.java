@@ -18,11 +18,11 @@ public class ParametrosReglas {
 	
 	
 	@Id
-	@Column(name = "PK_ID")
-	private int pk_id;
+	@Column(name = "PK_PARMS_REGLA")
+	private int pk_parms_regla;
 	
-	@Column(name = "FK_PARAMS_REGLA")
-	private int fk_params_regla;
+	@Column(name = "FK_ID_REGLA")
+	private int fk_id_regla;
 	
 	@Column(name = "VC_DESC_CARTERA")
 	private String vc_desc_cartera;
@@ -54,21 +54,24 @@ public class ParametrosReglas {
 	
 	@Column(name = "VC_ESTATUS")
 	private String vc_estatus;
+	
+	@Column(name = "I_PORCENTAJE")
+	private int i_porcentaje;
 
-	public int getPk_id() {
-		return pk_id;
+	public int getPk_parms_regla() {
+		return pk_parms_regla;
 	}
 
-	public void setPk_id(int pk_id) {
-		this.pk_id = pk_id;
+	public void setPk_parms_regla(int pk_parms_regla) {
+		this.pk_parms_regla = pk_parms_regla;
 	}
 
-	public int getFk_params_regla() {
-		return fk_params_regla;
+	public int getFk_id_regla() {
+		return fk_id_regla;
 	}
 
-	public void setFk_params_regla(int fk_params_regla) {
-		this.fk_params_regla = fk_params_regla;
+	public void setFk_id_regla(int fk_id_regla) {
+		this.fk_id_regla = fk_id_regla;
 	}
 
 	public String getVc_desc_cartera() {
@@ -142,5 +145,13 @@ public class ParametrosReglas {
 	public void setVc_estatus(String vc_estatus) {
 		this.vc_estatus = vc_estatus;
 	}
-	
+
+	public int getI_porcentaje() {
+		return i_porcentaje;
+	}
+
+	public void setI_porcentaje(int i_porcentaje) {
+		this.i_porcentaje = i_porcentaje;
+	}
+
 }

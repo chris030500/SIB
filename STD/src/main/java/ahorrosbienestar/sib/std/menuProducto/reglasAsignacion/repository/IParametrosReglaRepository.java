@@ -14,8 +14,8 @@ import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosRe
 public interface IParametrosReglaRepository extends JpaRepository<ParametrosReglas, Integer> {
 
 	
-	@Query(value = "SELECT ra.PK_PARMS_REGLA,ra.FK_ID_REGLA,p.v_valor as tipoCartera,tc.v_valor as tipoCliente,ag.v_valor as asignadoA "
-			+ ",ra.I_PRIORIDAD,ur.VC_NOMBRE_USUARIO,ra.dt_fecha_registro,ur2.VC_NOMBRE_USUARIO,ra.DT_FECHA_MOD,e.v_valor as estatus "
+	@Query(value = "SELECT ra.PK_PARMS_REGLA,ra.FK_ID_REGLA,p.v_valor as VC_DESC_CARTERA,tc.v_valor as VC_DESC_CLIENTE,ag.v_valor as VC_DESC_ASIGNADO "
+			+ ",ra.I_PRIORIDAD,ur.VC_NOMBRE_USUARIO as VC_USUARIO_REGISTRO,ra.dt_fecha_registro as DT_FECHA_REGISTRO,ur2.VC_NOMBRE_USUARIO as VC_USUARIO_MOD,ra.DT_FECHA_MOD,e.v_valor as VC_ESTATUS,ra.I_PORCENTAJE "
 			+ "FROM SIB.TBL_PARAMS_REGLAS_ASIGNACION ra "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS ur on ur.PK_ID_USUARIO = ra.I_USUARIO_REGISTRO "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS ur2 on ur2.PK_ID_USUARIO = ra.I_USUARIO_MOD "

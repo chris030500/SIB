@@ -113,7 +113,7 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "slEstatus") Integer slEstatus
 			){
 		logger.info("/registroParams");
-		String mensaje ="Activo Correctamente.";
+		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -138,6 +138,61 @@ public class ReglasAsignacionController {
 			parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
 			
 			parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
+
+			respuesta.add(mensaje);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	@GetMapping("/obtParametro")
+	public ResponseEntity<Optional<ParametrosReglasAsignacion>> obtParametro(Model model,@RequestParam(name = "idParametros") Integer idParametros) {
+		 logger.info("/obtParametro");
+		try {
+			return ResponseEntity.ok(parametrosReglasAsignacionService.findById(idParametros));
+		} catch (Exception e) {
+			logger.error("--" + e.getMessage());
+			return null;
+		}
+	}
+	
+	@PostMapping("/actualizaParams")
+	public ResponseEntity<?> actualizaParams(
+			@RequestParam(name = "idParams") Integer idParams,
+			@RequestParam(name = "slAsignar") Integer slAsignar,
+			@RequestParam(name = "porcRegistros") Integer porcRegistros,
+			@RequestParam(name = "tipoCliente") Integer tipoCliente,
+			@RequestParam(name = "slcTipoCartera") Integer slcTipoCartera,
+			@RequestParam(name = "tipoPrioridad") Integer tipoPrioridad,
+			@RequestParam(name = "slEstatus") Integer slEstatus
+			){
+		logger.info("/actualizaParams");
+		String mensaje ="Actualizo Correctamente.";
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+			LocalDate fecha = LocalDate.now();
+
+			Optional<ParametrosReglasAsignacion> parametrosReglasAsignacion = parametrosReglasAsignacionService.findById(idParams);
+			
+			parametrosReglasAsignacion.get().setI_tipo_asignado(slAsignar);
+			parametrosReglasAsignacion.get().setI_porcentaje(porcRegistros);
+			parametrosReglasAsignacion.get().setI_tipo_cliente(tipoCliente);
+			parametrosReglasAsignacion.get().setI_tipo_cartera(slcTipoCartera);
+			parametrosReglasAsignacion.get().setI_prioridad(tipoPrioridad);
+			parametrosReglasAsignacion.get().setI_estatus(slEstatus);
+			parametrosReglasAsignacion.get().setDt_fecha_mod(fecha);
+			parametrosReglasAsignacion.get().setI_usuario_mod(usuario.get(0));
+			
+			parametrosReglasAsignacionService.save(parametrosReglasAsignacion.get());
 
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

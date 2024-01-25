@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,15 @@ public class ParametrosReglasAsignacionService {
 		try {
 			return iParametrosReglasAsignacion.save(parametrosReglasAsignacion);
 
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+
+	public Optional<ParametrosReglasAsignacion> findById(Integer idParametros) {
+		try {
+			return iParametrosReglasAsignacion.findById(idParametros);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return null;
