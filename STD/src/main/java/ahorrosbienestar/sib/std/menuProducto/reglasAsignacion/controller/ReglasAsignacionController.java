@@ -116,28 +116,36 @@ public class ReglasAsignacionController {
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			
+			if(parametrosReglasAsignacionService.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla) == 0) {
+
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				LocalDate fecha = LocalDate.now();
+							
+				Optional<ReglasAsignacion> reglasAsignacion = reglasAsignacionService.findById(idRegla);
+				ParametrosReglasAsignacion parametrosReglasAsignacion = new ParametrosReglasAsignacion();
+				
+				parametrosReglasAsignacion.setFk_id_regla(reglasAsignacion.get());
+				parametrosReglasAsignacion.setI_tipo_asignado(slAsignar);
+				parametrosReglasAsignacion.setI_porcentaje(porcRegistros);
+				parametrosReglasAsignacion.setI_tipo_cliente(tipoCliente);
+				parametrosReglasAsignacion.setI_tipo_cartera(slcTipoCartera);
+				parametrosReglasAsignacion.setI_prioridad(tipoPrioridad);
+				parametrosReglasAsignacion.setI_estatus(slEstatus);
+				parametrosReglasAsignacion.setDt_fecha_registro(fecha);
+				parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
+				
+				parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
+			}else {
+				mensaje = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
-			LocalDate fecha = LocalDate.now();
-						
-			Optional<ReglasAsignacion> reglasAsignacion = reglasAsignacionService.findById(idRegla);
-			ParametrosReglasAsignacion parametrosReglasAsignacion = new ParametrosReglasAsignacion();
 			
-			parametrosReglasAsignacion.setFk_id_regla(reglasAsignacion.get());
-			parametrosReglasAsignacion.setI_tipo_asignado(slAsignar);
-			parametrosReglasAsignacion.setI_porcentaje(porcRegistros);
-			parametrosReglasAsignacion.setI_tipo_cliente(tipoCliente);
-			parametrosReglasAsignacion.setI_tipo_cartera(slcTipoCartera);
-			parametrosReglasAsignacion.setI_prioridad(tipoPrioridad);
-			parametrosReglasAsignacion.setI_estatus(slEstatus);
-			parametrosReglasAsignacion.setDt_fecha_registro(fecha);
-			parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
 			
-			parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
 
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

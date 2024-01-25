@@ -8,11 +8,11 @@ function getAbsolutePath() {
 	return window.location.href.substring(0,window.location.href.indexOf("STD/")+4);
 }
 
-function eventos(){
+/*function eventos(){
 	$("input").keydown(function() {
  		 return false
 	});
-}
+}*/
 
 function updateEstatusRegla(idRegla){
 	Swal.fire({

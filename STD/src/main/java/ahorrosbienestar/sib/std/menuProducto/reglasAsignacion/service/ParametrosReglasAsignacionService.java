@@ -47,5 +47,14 @@ public class ParametrosReglasAsignacionService {
 		}
 	}
 
+	public int existeRegistro(Integer slAsignar, Integer tipoCliente, Integer slcTipoCartera,Integer idRegla) {
+		try {
+			return iParametrosReglasAsignacion.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return 1;
+		}
+	}
+
 	
 }

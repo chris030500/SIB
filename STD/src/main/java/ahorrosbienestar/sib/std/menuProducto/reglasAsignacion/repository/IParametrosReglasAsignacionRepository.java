@@ -12,7 +12,10 @@ import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosRe
 @Repository
 public interface IParametrosReglasAsignacionRepository extends JpaRepository<ParametrosReglasAsignacion, Integer>{
 
-	@Query(value = "SELECT * FROM TBL_PARAMS_REGLAS_ASIGNACION WHERE FK_ID_REGLA=:idRegla", nativeQuery = true)
+	@Query(value = "SELECT * FROM SIB.TBL_PARAMS_REGLAS_ASIGNACION WHERE FK_ID_REGLA=:idRegla", nativeQuery = true)
 	public List<ParametrosReglasAsignacion> obtRegParams(@Param("idRegla") Integer idRegla);
+
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_PARAMS_REGLAS_ASIGNACION WHERE FK_ID_REGLA=:idRegla AND I_TIPO_ASIGNADO=:slAsignar AND I_TIPO_CLIENTE=:tipoCliente AND I_TIPO_CARTERA=:slcTipoCartera", nativeQuery = true)
+	public int existeRegistro(Integer slAsignar, Integer tipoCliente, Integer slcTipoCartera, Integer idRegla);
 		
 }
