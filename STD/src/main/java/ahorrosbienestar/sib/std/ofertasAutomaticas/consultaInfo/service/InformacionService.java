@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ProcesosBD;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 
 @Service
@@ -41,5 +40,25 @@ public class InformacionService {
 		
 		return ls;
 	}
+	
+	public List<ValidarEjecutarCronBase> obtInfoCronAsignacion(Integer tipoProceso) {
+		String sql = "CALL SIB.SP_VALIDARCRONGESTION(?);";
+		
+		@SuppressWarnings("deprecation")
+		List<ValidarEjecutarCronBase> ls = jdbcTemplate.query(sql, new Object[] {tipoProceso},
+				new RowMapper<ValidarEjecutarCronBase>() {
+					public ValidarEjecutarCronBase mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ValidarEjecutarCronBase dtosCron = new ValidarEjecutarCronBase();
+						
+						dtosCron.setI_ejecutar(rs.getInt(1));
+						dtosCron.setExpresionCron(rs.getString(2));
+						
+						return dtosCron;
+					}
+				});
+		
+		return ls;
+	}
+	
 	
 }
