@@ -58,6 +58,9 @@ public class AsignacionOfertas {
 	
 	@Column(name = "I_ACTIVO", columnDefinition = "TINYINT(1) DEFAULT 1")
 	private int i_activo;
+	
+	@Column(name = "VC_DESCRIPCION_SMS", columnDefinition = "LONGTEXT")
+	private String vc_descripcion_sms;
 
 	public int getPk_id_asignacion_oa() {
 		return pk_id_asignacion_oa;
@@ -145,6 +148,22 @@ public class AsignacionOfertas {
 
 	public void setI_proceso_asignacion(int i_proceso_asignacion) {
 		this.i_proceso_asignacion = i_proceso_asignacion;
+	}
+
+	public int getI_activo() {
+		return i_activo;
+	}
+
+	public void setI_activo(int i_activo) {
+		this.i_activo = i_activo;
+	}
+
+	public String getVc_descripcion_sms() {
+		return vc_descripcion_sms;
+	}
+
+	public void setVc_descripcion_sms(String vc_descripcion_sms) {
+		this.vc_descripcion_sms = vc_descripcion_sms;
 	}
 
 }
