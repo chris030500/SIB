@@ -8,11 +8,26 @@ function getAbsolutePath() {
 	return window.location.href.substring(0,window.location.href.indexOf("STD/")+4);
 }
 
-/*function eventos(){
-	$("input").keydown(function() {
- 		 return false
-	});
-}*/
+function eventos(){
+	/*
+	// Lista de valores posibles
+    const valoresPosibles = ["#MONTO", "#TEL_SUC", "#COD_REFERENCIA"];
+
+    // Obtén el textarea
+    const textarea = document.getElementById("txtContenido");
+
+	
+	textarea.addEventListener("input", function() {
+      // Obtén el valor actual del textarea
+      const valorActual = textarea.value.toLowerCase();
+
+      // Filtra los valores posibles que coincidan con la entrada del usuario
+      const valoresFiltrados = valoresPosibles.filter(valor => valor.toLowerCase().includes(valorActual));
+
+      // Muestra la lista de valores en el textarea
+      textarea.value = textarea.value +valoresFiltrados.join("\n");
+    });*/
+}
 
 function updateEstatusRegla(idRegla){
 	Swal.fire({
@@ -124,7 +139,7 @@ function guardarModalParams() {
 			console.log("registrar datos");
 			
 		  Swal.fire({
-			  	title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Procesando Información.',
+			  	title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i>Procesando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos,
 				icon: 'info',
@@ -260,7 +275,7 @@ function editarParametro(id){
 function obtParams(urlObt){
 	
 		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Consultando Información.',
+				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Consultando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos,
 				icon: 'info',
