@@ -259,7 +259,7 @@ public class indexOfertasAutoController {
 					clasificacionBases.setI_vigencia_clasificacion(vigenciaClasificacion);
 					clasificacionBases.setI_configuracion_mensaje(integerValue);
 					clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-					clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+					clasificacionBases.setFk_id_base(tipoBase.get());
 
 					clasificacionBasesService.actualizarClasificacion(clasificacionBases);
 
@@ -279,7 +279,7 @@ public class indexOfertasAutoController {
 				clasificacionBases.setI_configuracion_mensaje(integerValue);
 				clasificacionBases.setI_estatus_clasificacion(1);
 				clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-				clasificacionBases.setFk_id_base(tipoBase.orElseThrow());
+				clasificacionBases.setFk_id_base(tipoBase.get());
 
 				clasificacionBasesService.save(clasificacionBases);
 
