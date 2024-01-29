@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.Deta
 @Repository
 public interface IDetalleCampaniaRepository extends JpaRepository<DetalleCampania, Integer>{
 	
-	@Query(value = "SELECT * FROM SIB.TBL_DETALLE_CAMPANIA WHERE I_TIPO_CAMPANIA_ID = 1 OR I_TIPO_CAMPANIA_ID = 2", nativeQuery = true)
+	@Query(value = "SELECT * FROM SIB.TBL_DETALLE_CAMPANIA WHERE I_TIPO_CAMPANIA_ID = 1 OR I_TIPO_CAMPANIA_ID = 2 OR I_TIPO_CAMPANIA_ID = 5", nativeQuery = true)
 	List<DetalleCampania> obtDetalleVIP();
 	
 	@Query(value = "SELECT * FROM SIB.TBL_DETALLE_CAMPANIA WHERE I_TIPO_CAMPANIA_ID = 5", nativeQuery = true)
