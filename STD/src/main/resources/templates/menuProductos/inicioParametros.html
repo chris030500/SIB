@@ -58,7 +58,7 @@
 						<legend class="float-none w-auto p-2">Parametros Generales</legend>
 						<div class="row">
 							<div class="container mt-4">
-								<form action="#" method="post">
+								<form th:action="@{/configuraciones/guardar-configuracion}" method="post">
 									<h2 class="mb-4">Configuración del Sistema</h2>
 
 									<div class="table-responsive">
@@ -66,59 +66,139 @@
 											<tbody>
 												<tr>
 													<td>Vigencia de una gestión (días):</td>
-													<td><input type="number" class="form-control" name="vigencia"
-															required></td>
+													<td>
+														<input type="number" class="form-control"
+															th:name="vigenciaGestion" th:value="${param_1}"
+															th:required="true">
+													</td>
 												</tr>
 												<tr>
 													<td>Días por Vencer:</td>
-													<td><input type="number" class="form-control" name="diasPorVencer"
-															required></td>
+													<td>
+														<input type="number" class="form-control" th:name="diasVencer"
+															th:value="${param_2}" th:required="true">
+													</td>
 												</tr>
 												<tr>
 													<td>Tipo de Días:</td>
 													<td>
 														<select class="form-control" name="tipoDias">
-															<option value="naturales">Tipo Naturales</option>
-															<option value="habiles">Tipo Días Hábiles</option>
+															<option value="1" th:selected="${param_3 == '1'}">Tipo
+																Naturales</option>
+															<option value="2" th:selected="${param_3 == '2'}">Tipo Días
+																Hábiles</option>
 														</select>
 													</td>
-												</tr>
-												<tr>
-													<td>Excluir Días No Hábiles:</td>
-													<td><input type="checkbox" name="excluirDiasHabiles"></td>
 												</tr>
 												<tr>
 													<td>Asignación por Última Gestión:</td>
 													<td>
 														<select class="form-control" name="asignacionUltimaGestion">
-															<option value="si">SI</option>
-															<option value="no">NO</option>
+															<option value="1" th:selected="${param_4 == '1'}">SI
+															</option>
+															<option value="2" th:selected="${param_4 == '2'}">NO
+															</option>
 														</select>
 													</td>
 												</tr>
 												<tr>
 													<td>Usuario Desbloqueo Clientes:</td>
-													<td><input type="text" class="form-control"
-															name="usuarioDesbloqueoClientes"></td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioDesbloqueo" th:value="${param_5}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
 												</tr>
 												<tr>
 													<td>Usuario SMS Calixta:</td>
-													<td><input type="text" class="form-control"
-															name="usuarioSMSCalixta"></td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioSMS" th:value="${param_6}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
 												</tr>
 												<tr>
 													<td>Usuarios Administradores Ofertas Automáticas:</td>
-													<td><input type="text" class="form-control"
-															name="usuariosAdminOfertas"></td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioAdmin" th:value="${param_7}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
 												</tr>
 												<tr>
 													<td>Usuario Gestor:</td>
-													<td><input type="text" class="form-control" name="usuarioGestor">
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioGestor" th:value="${param_8}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
 													</td>
 												</tr>
 												<tr>
 													<td>Usuario Consulta:</td>
-													<td><input type="text" class="form-control" name="usuarioConsulta">
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioConsulta" th:value="${param_9}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
 													</td>
 												</tr>
 											</tbody>
@@ -131,16 +211,36 @@
 										<table class="table table-bordered">
 											<tr>
 												<td>Usuario Calixta:</td>
-												<td><input type="text" class="form-control" name="usuarioCalixta"></td>
+												<td>
+													<div class="col-sm-12">
+														<input type="search" class="form-control" id="searchInput"
+															list="opciones" autocomplete="off" placeholder="Usuario"
+															th:name="usuarioCalix" th:value="${param_10}"
+															th:required="true">
+														<!-- Lista de opciones para el datalist -->
+														<datalist id="opciones">
+															<option th:each="usuario : ${usuarios}"
+																th:value="${usuario.vc_nombre_usuario}"></option>
+														</datalist>
+														<p id="errorSucursal"
+															style="color: red; display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</td>
 											</tr>
 											<tr>
 												<td>Contraseña Calixta:</td>
-												<td><input type="password" class="form-control"
-														name="contrasenaCalixta"></td>
+												<td>
+													<input type="password" class="form-control" th:name="passCalix"
+														th:value="${param_11}" th:required="true">
+												</td>
 											</tr>
 											<tr>
 												<td>Servicio WS Calixta:</td>
-												<td><input type="text" class="form-control" name="servicioWSCalixta">
+												<td>
+													<input type="text" class="form-control" th:name="serviWS"
+														th:value="${param_12}" th:required="true">
 												</td>
 											</tr>
 										</table>
@@ -220,7 +320,104 @@
 				<div id="sms-tab1" class="container" style="display:none;" for="4">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Administracion SMS</legend>
+						<div class="container mt-4">
+							<!-- Filtro por Sucursal -->
+							<form id="smsFilterForm">
+								<div class="row">
+									<div class="col-md-4 mb-3">
+										<label for="filterType">Filtrar por:</label>
+										<select class="form-control" id="filterType" name="filterType"
+											onchange="toggleSearchFields()">
+											<option value="client">Cliente</option>
+											<option value="branch">Sucursal</option>
+										</select>
+									</div>
 
+									<div class="col-md-4 mb-3">
+										<label for="process">Proceso:</label>
+										<select class="form-control" id="process" name="process">
+											<!-- Aquí se cargarán dinámicamente los procesos desde el backend -->
+										</select>
+									</div>
+
+									<div class="col-md-4 mb-3" id="clientSearchField">
+										<label for="clientSearchInput">Buscar Cliente:</label>
+										<input type="text" class="form-control" id="clientSearchInput"
+											name="clientSearchInput" placeholder="Nombre del cliente">
+									</div>
+
+									<div class="col-md-4 mb-3" id="branchSearchField" style="display: none;">
+										<label for="branchSearchInput">Buscar Sucursal:</label>
+										<input type="text" class="form-control" id="branchSearchInput"
+											name="branchSearchInput" placeholder="Nombre de la sucursal">
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-12">
+										<button type="button" class="btn btn-primary" onclick="applyFilters()">Aplicar
+											Filtros</button>
+										<button type="button" class="btn btn-secondary"
+											onclick="downloadReport()">Descargar Reporte</button>
+									</div>
+								</div>
+							</form>
+
+							<!-- Botón Enviar Masivo -->
+							<button type="button" class="btn btn-success mt-4" onclick="enviarMasivo()">Enviar
+								Masivo</button>
+
+							<!-- Tabla con SMS Generados -->
+							<h4 class="mt-4">SMS Generados</h4>
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Seleccionar</th>
+										<th>Cliente</th>
+										<th>Nombre de cliente</th>
+										<th>Tipo Campaña</th>
+										<th>Clasificación de Campañas</th>
+										<th>Numero Celular</th>
+										<th>Descripción de SMS</th>
+										<th>Estatus SMS</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<!-- Aquí cargarías dinámicamente los SMS desde tu backend -->
+									<tr>
+										<td><input type="checkbox"></td>
+										<td>Cliente 1</td>
+										<td>Nombre Cliente 1</td>
+										<td>Tipo Campaña 1</td>
+										<td>Clasificación 1</td>
+										<td>123456789</td>
+										<td>Descripción SMS 1</td>
+										<td>Enviado</td>
+										<td>
+											<button type="button" class="btn btn-info btn-sm">Editar</button>
+											<button type="button" class="btn btn-success btn-sm">Enviar SMS</button>
+											<button type="button" class="btn btn-danger btn-sm">Eliminar</button>
+										</td>
+									</tr>
+									<tr>
+										<td><input type="checkbox"></td>
+										<td>Cliente 2</td>
+										<td>Nombre Cliente 2</td>
+										<td>Tipo Campaña 2</td>
+										<td>Clasificación 2</td>
+										<td>987654321</td>
+										<td>Descripción SMS 2</td>
+										<td>Pendiente</td>
+										<td>
+											<button type="button" class="btn btn-info btn-sm">Editar</button>
+											<button type="button" class="btn btn-success btn-sm">Enviar SMS</button>
+											<button type="button" class="btn btn-danger btn-sm">Eliminar</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</fieldset>
 				</div>
 				<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
@@ -456,6 +653,7 @@
 		<script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
 		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
 		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
+		<script th:src="@{/js/menuProductos/administracionSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
 		<!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
