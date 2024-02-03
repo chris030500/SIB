@@ -10,9 +10,11 @@ import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.
 @Repository
 public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimientoModel, Integer> {
 
-	@Query(value = "select tB.I_CLIENTEID,tB.nombreCompleto,tB.VC_CODIGO_OFERTA,tB.VC_COD_REFERENCIA,tB.FECHAINICIO, tB.FECHAFIN,tB.i_estatus,ctE.V_VALOR,tB.FK_ID_SUCURSAL,suc.VC_NOMBRESUCURSAL"
+	@Query(value = "select tB.I_CLIENTEID,tB.PK_ID_ASIGNACION_OA,tB.I_BLOQUEO,tB.nombreCompleto,cA.C_Estatus,tB.VC_CODIGO_OFERTA,tB.VC_COD_REFERENCIA,tB.FECHAINICIO, tB.FECHAFIN,tB.i_estatus,ctE.V_VALOR,tB.FK_ID_SUCURSAL,suc.VC_NOMBRESUCURSAL"
 			+ " from("
 			+ " select tblCampanias.I_CLIENTEID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblCampanias.VC_NombreCompleto as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -27,6 +29,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A'  and aoa.I_ACTIVO=1"
 			+ " union all "
 			+ " select tblFide.I_CLIENTE_ID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblFide.VC_NOMBRE_COMPLETO_CLIENTE as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -41,6 +45,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A'  and aoa.I_ACTIVO=1"
 			+ " union all "
 			+ " select tblsL.I_CLIENTEID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblsL.VC_NOMBRECOMPLETO as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -56,6 +62,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " union all"
 			+ " select "
 			+ " tblsNL.I_CLIENTE_ID"
+			+ " ,aoa.I_BLOQUEO"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
 			+ " ,tblsNL.VC_NOMBRE_COMPLETO as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -68,16 +76,18 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " INNER JOIN SIB.TBL_NOMINA_NLIQUIDADOS tblsNL on tblsNL.I_CLIENTE_ID = tblOA.I_CLIENTEID AND tblOA.ID_REG_BASE = tblsNL.PK_ID_NLIQUIDADOS"
 			+ " INNER JOIN SIB.TBL_CLASIFICACION_BASES_OA tblsClass on tblsClass.PK_ID_CLASIFICACION = tblOA.I_COD_CLASIFICACION"
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A' and aoa.I_ACTIVO=1)tB"
-			+ " INNER JOIN SIB.TBL_CLIENTES_ACTIVOS cA on cA.I_ClienteID= tB.I_CLIENTEID and cA.C_ESTATUS = 'A'"
-			+ " inner join SIB.TBL_SUCURSALES suc on suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
-			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE on ctE.I_OPCION = tB.i_estatus and ctE.I_ID_GRUPO = 14"
-			+ " LIMIT 100", nativeQuery = true)
+			+ " INNER JOIN SIB.TBL_CLIENTES_ACTIVOS cA ON cA.I_ClienteID = tB.I_CLIENTEID AND cA.C_ESTATUS = 'A'"
+			+ " INNER JOIN SIB.TBL_SUCURSALES suc ON suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
+			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE ON ctE.I_OPCION = tB.i_estatus AND ctE.I_ID_GRUPO = 14"
+			+ " LIMIT 10", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimiento();
 	
 	
-	@Query(value = "select tB.I_CLIENTEID,tB.nombreCompleto,tB.VC_CODIGO_OFERTA,tB.VC_COD_REFERENCIA,tB.FECHAINICIO, tB.FECHAFIN,tB.i_estatus,ctE.V_VALOR,tB.FK_ID_SUCURSAL,suc.VC_NOMBRESUCURSAL"
+	@Query(value = "select tB.I_CLIENTEID,tB.PK_ID_ASIGNACION_OA,tB.I_BLOQUEO,tB.nombreCompleto,cA.C_Estatus,tB.VC_CODIGO_OFERTA,tB.VC_COD_REFERENCIA,tB.FECHAINICIO, tB.FECHAFIN,tB.i_estatus,ctE.V_VALOR,tB.FK_ID_SUCURSAL,suc.VC_NOMBRESUCURSAL"
 			+ " from("
 			+ " select tblCampanias.I_CLIENTEID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblCampanias.VC_NombreCompleto as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -92,6 +102,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A'  and aoa.I_ACTIVO=1"
 			+ " union all "
 			+ " select tblFide.I_CLIENTE_ID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblFide.VC_NOMBRE_COMPLETO_CLIENTE as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -106,6 +118,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A'  and aoa.I_ACTIVO=1"
 			+ " union all "
 			+ " select tblsL.I_CLIENTEID"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
+			+ " ,aoa.I_BLOQUEO"
 			+ " ,tblsL.VC_NOMBRECOMPLETO as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -121,6 +135,8 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " union all"
 			+ " select "
 			+ " tblsNL.I_CLIENTE_ID"
+			+ " ,aoa.I_BLOQUEO"
+			+ " ,aoa.PK_ID_ASIGNACION_OA"
 			+ " ,tblsNL.VC_NOMBRE_COMPLETO as nombreCompleto"
 			+ " ,tblOA.VC_CODIGO_OFERTA"
 			+ " ,aoa.VC_COD_REFERENCIA"
@@ -133,12 +149,16 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " INNER JOIN SIB.TBL_NOMINA_NLIQUIDADOS tblsNL on tblsNL.I_CLIENTE_ID = tblOA.I_CLIENTEID AND tblOA.ID_REG_BASE = tblsNL.PK_ID_NLIQUIDADOS"
 			+ " INNER JOIN SIB.TBL_CLASIFICACION_BASES_OA tblsClass on tblsClass.PK_ID_CLASIFICACION = tblOA.I_COD_CLASIFICACION"
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A' and aoa.I_ACTIVO=1)tB"
-			+ " INNER JOIN SIB.TBL_CLIENTES_ACTIVOS cA on cA.I_ClienteID= tB.I_CLIENTEID and cA.C_ESTATUS = 'A'"
-			+ " inner join SIB.TBL_SUCURSALES suc on suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
-			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE on ctE.I_OPCION = tB.i_estatus and ctE.I_ID_GRUPO = 14"
+			+ " INNER JOIN SIB.TBL_CLIENTES_ACTIVOS cA ON cA.I_ClienteID = tB.I_CLIENTEID AND cA.C_ESTATUS = 'A'"
+			+ " INNER JOIN SIB.TBL_SUCURSALES suc ON suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
+			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE ON ctE.I_OPCION = tB.i_estatus AND ctE.I_ID_GRUPO = 14"
 			+ " WHERE tB.nombreCompleto = :nombre"
 			+ " OR tB.VC_CODIGO_OFERTA = :oferta"
-			+ " OR tB.VC_COD_REFERENCIA = :referencia", nativeQuery = true)
-	public List<ListaSeguimientoModel> busquedaPorSeguimiento(@Param("nombre") String nombre, @Param("oferta") String oferta, @Param("referencia") String referencia);
+			+ " OR tB.VC_COD_REFERENCIA = :referencia"
+			+ " OR tB.I_CLIENTEID = :cliente", nativeQuery = true)
+	public List<ListaSeguimientoModel> busquedaPorSeguimiento(@Param("nombre") String nombre, 
+			@Param("oferta") String oferta, 
+			@Param("referencia") String referencia, 
+			@Param("cliente") String cliente);
 	
 }

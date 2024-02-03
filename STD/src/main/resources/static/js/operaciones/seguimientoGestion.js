@@ -21,6 +21,40 @@ window.onload = function() {
 * Fin
 */
 
+
+/**
+ * Validación de las fechas
+ */
+document.addEventListener("DOMContentLoaded", function() {
+	const fechaInicioInput = document.getElementById("fecha-gestion");
+	const fechaFinInput = document.getElementById("fecha-cita");
+	const errorFecha = document.getElementById("validar-segFecha");
+
+	fechaInicioInput.addEventListener("change", function() {
+		// Limpiar el mensaje de error cuando cambia la fecha de inicio
+		errorFecha.textContent = "";
+
+		// Actualizar el atributo min del input fechaFin para no permitir fechas anteriores a la de inicio
+		fechaFinInput.min = fechaInicioInput.value;
+	});
+
+	fechaFinInput.addEventListener("change", function() {
+		const fechaInicio = new Date(fechaInicioInput.value);
+		const fechaFin = new Date(fechaFinInput.value);
+
+		if (fechaFin < fechaInicio) {
+			errorFecha.textContent = "La fecha fin no puede ser anterior a la fecha de inicio";
+			fechaFinInput.value = ""; // Limpiar el valor si es inválido
+		} else {
+			errorFecha.textContent = "";
+		}
+	});
+});
+/**
+ * Fin
+ */
+
+
 /**
  * Lista clientes
  */
@@ -71,6 +105,7 @@ buscarCliente.addEventListener('input', function() {
  * Llenar tabla de seguimiento
  */
 var servicioURL;
+var idOferta;
 
 function llenarTablaSeguimiento(condicion) {
 
@@ -91,41 +126,34 @@ function llenarTablaSeguimiento(condicion) {
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='modalEditar("
-					+ opt.i_clienteid
+					+ " onclick='mostrarGestion("
+					+ opt.i_clienteid + ", " + opt.pk_id_asignacion_oa
 					+ ")' id="
 					+ opt.i_clienteid
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Vigencia' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='estatusGestion("
-					+ opt.i_clienteid + ', ' + opt.i_estatus
-					+ ")' id="
-					+ opt.i_clienteid
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-unlock'></i></button></div></div>";
-
-				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+				var cliente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+				var asignacion = opt.i_bloqueo == 0 ? "Activo" : "Inactivo";
 
 				tablaFiltro.row.add([
 					opt.i_clienteid,
 					opt.nombreCompleto,
+					cliente,
 					opt.vc_codigo_oferta,
 					opt.vc_cod_referencia,
-					vigente,
+					asignacion,
 					opt.fechainicio,
 					opt.fechafin,
 					opt.v_valor,
 					opt.vc_nombresucursal,
-					"usuario",
-					btnEditar + btnEstatus
+					"",
+					btnEditar
 				]).draw(false);
 			});
 		},
 		error: function(error) {
-			console.log(error.error);
+			//console.log(error.error);
 		}
 	});
 }
@@ -150,6 +178,300 @@ function validarBusqueda() {
 	parametroOferta = oferta;
 	parametroReferencia = referencia;
 	llenarTablaSeguimiento(true);
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Validar la gestión
+ */
+let inputReferencia = document.getElementById("referencia");
+let inputRelacion = document.getElementById("buscar-relacion");
+let inputDescripcion = document.getElementById("descripcion-gestion");
+let inputFechaCita = document.getElementById("fecha-cita");
+let inputFechaGestion = document.getElementById("fecha-gestion");
+let inputAccionRealizar = document.getElementById("accionRealizar");
+
+let validarRelacion = document.getElementById("validar-relacion");
+let validarDescripcion = document.getElementById("validar-descripcion");
+let validarFechaCita = document.getElementById("validar-fechaCita");
+let validarFechaGestion = document.getElementById("validar-fechaGestion");
+
+
+inputRelacion.addEventListener("input", function() {
+	validarRelacion.style.display = "none";
+});
+inputDescripcion.addEventListener("input", function() {
+	validarDescripcion.style.display = "none";
+});
+inputFechaCita.addEventListener("input", function() {
+	validarFechaCita.style.display = "none";
+});
+inputFechaGestion.addEventListener("input", function() {
+	validarFechaGestion.style.display = "none";
+});
+
+function validarGestion() {
+	if (datosRelacion && datosRelacion.v_valor == "MOSTRAR CALENDARIO") {
+		inputRelacion.value == '' ? validarRelacion.style.display = 'block' : validarRelacion.style.display = 'none';
+		inputDescripcion.value == '' ? validarDescripcion.style.display = 'block' : validarDescripcion.style.display = 'none';
+		inputFechaCita.value == '' ? validarFechaCita.style.display = 'block' : validarFechaCita.style.display = 'none';
+		inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
+
+		if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '') {
+			const dto = {
+				asignacionOfertas: idOferta,
+				referencia: inputReferencia.value,
+				relacionCodigos: datosRelacion.pk_id_relacion_codigo,
+				descripcion: inputDescripcion.value,
+				fechaCita: inputFechaCita.value,
+				fechaGestion: inputFechaGestion.value
+			};
+			//console.log(dto);
+			registrarGestion(dto);
+		}
+	} else {
+		inputRelacion.value == '' ? validarRelacion.style.display = 'block' : validarRelacion.style.display = 'none';
+		inputDescripcion.value == '' ? validarDescripcion.style.display = 'block' : validarDescripcion.style.display = 'none';
+		inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
+
+		if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '') {
+			const dto = {
+				asignacionOfertas: idOferta,
+				referencia: inputReferencia.value,
+				relacionCodigos: datosRelacion.pk_id_relacion_codigo,
+				descripcion: inputDescripcion.value,
+				fechaGestion: inputFechaGestion.value
+			};
+			//console.log(dto);
+			registrarGestion(dto);
+		}
+	}
+}
+
+let gestionesPorAsig;
+
+function listaDeGestiones() {
+	$.ajax({
+		url: newUrlBase + "lista_gestiones_por_oferta?asignacion=" + idOferta,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			llenarTablaDeGestiones(respuesta.lista);
+		}, error: function(error) {
+			//console.log(error);
+		}
+	});
+}
+
+function datosDeCliente(id) {
+	$.ajax({
+		url: newUrlBase + "ver_cliente?cliente=" + id,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			//console.log(respuesta);
+			inputReferencia.value = respuesta.cliente[0].vc_cod_referencia;
+		}, error: function(error) {
+			//console.log(error);
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Registrar gestion
+ */
+function registrarGestion(dto) {
+	var enviar = JSON.stringify(dto);
+	$.ajax({
+		url: newUrlBase + "registro_seguimiento",
+		data: enviar,
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		success: function(respuesta) {
+			swal(respuesta.mensaje, {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					listaDeGestiones();
+					limpiarVariablesModal();
+				});
+		}, error: function(error) {
+			//console.log(error);
+			swal("Hubo un error al momento de guardar los datos", {
+				closeOnClickOutside: false,
+				icon: "warning",
+			});
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * funciones del modal
+ */
+function mostrarGestion(id, asignacion) {
+	idOferta = asignacion;
+	$('#modal-seguimiento').modal('show');
+	listaDeGestiones();
+	datosDeCliente(id);
+	buscarRelacion();
+}
+
+
+function cerrarModal(valor) {
+	$('#modal-' + valor).modal('hide');
+	limpiarVariablesModal();
+}
+
+function limpiarVariablesModal() {
+	const campos = ['buscar-relacion', 'descripcion-gestion', 'fecha-cita', 'fecha-gestion', 'accionRealizar'];
+	const alertas = ['validar-relacion', 'validar-descripcion', 'validar-fechaCita', 'validar-fechaGestion'];
+	campos.forEach(campo => {
+		document.getElementById(`${campo}`).value = '';
+	});
+	alertas.forEach(alerta => {
+		document.getElementById(`${alerta}`).style.display = 'none';
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Evento click para vaciar
+ */
+document.addEventListener('click', function(event) {
+	var modal = document.getElementById('modal-seguimiento');
+	// Verificar si el clic no está dentro de la modal
+	if (modal && !modal.contains(event.target)) {
+		limpiarVariablesModal();
+	}
+});
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Buscar relación de códigos
+ */
+let datosRelacion;
+let almacen;
+
+function buscarRelacion() {
+	let searchTerm = document.getElementById('buscar-relacion').value;
+	$.ajax({
+		url: newUrlBase + "listaRelaciones_activas?valor=" + searchTerm,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			almacen = respuesta;
+			const opcionesDatalist = document.getElementById('opciones-relacion');
+			opcionesDatalist.innerHTML = '';
+			respuesta.listaRelaciones.forEach(function(valor) {
+				const option = document.createElement('option');
+				option.value = valor.relacion_codigos;
+				opcionesDatalist.appendChild(option);
+			});
+		}
+	});
+}
+
+var searchInput = document.getElementById('buscar-relacion');
+searchInput.addEventListener('input', buscarRelacion);
+
+searchInput.addEventListener('change', function() {
+	let selectedValue = searchInput.value;
+	if (almacen.listaRelaciones && almacen.listaRelaciones.length > 0) {
+		//
+		datosRelacion = almacen.listaRelaciones.find(item => item.relacion_codigos == selectedValue);
+		console.log(datosRelacion);
+		if (datosRelacion != undefined) {
+			inputAccionRealizar.value = datosRelacion.v_valor;
+		} else {
+			inputAccionRealizar.value = '';
+		}
+		//
+		if (datosRelacion && datosRelacion.v_valor == "MOSTRAR CALENDARIO") {
+			document.getElementById('fecha-cita').disabled = false;
+			document.getElementById('validar-fechaCita').style.display = 'none';
+		} else {
+			document.getElementById('fecha-cita').disabled = true;
+			document.getElementById('validar-fechaCita').style.display = 'none';
+			inputFechaCita.value = '';
+		}
+	} else {
+		document.getElementById('fecha-cita').disabled = false;
+		document.getElementById('validar-fechaCita').style.display = 'none';
+	}
+});
+/**
+ * Fin
+ */
+
+
+/**
+ * seguimiento de gestiones por asignacion de oferta auto.
+ */
+function llenarTablaDeGestiones(datos) {
+	tablaGestion.clear().draw();
+	$.each(datos, function(idx, opt) {
+
+		var btnEditar = "<div class='row'><div class='col-sm-6'>"
+			+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+			+ " title='Editar' type='button'"
+			+ " onclick='edtiarSegGestion("
+			+ opt.pk_id_seguimiento_gestion
+			+ ")' id="
+			+ opt.pk_id_seguimiento_gestion
+			+ " data-tooltip='Add'>"
+			+ " <i class='bi bi-pencil'></i></button></div>";
+
+		tablaGestion.row.add([
+			opt.relacionCodigosModel.accionRealizar.v_valor,
+			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
+			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
+			opt.vc_descripcion,
+			opt.dt_fecha_registro,
+			opt.dt_fecha_gestion_realizada,
+			btnEditar
+		]).draw(false);
+	});
+}
+/**
+ * Fin
+ */
+
+
+/**
+ * Mostrar datos de la gestión para poder editar
+ */
+function edtiarSegGestion(id) {
+	$.ajax({
+		url: newUrlBase + "datos_gestion?idGestion=" + id,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log(respuesta.model);
+			/*inputDescripcion.value = respuesta.model.vc_descripcion;
+			inputFechaCita.value = respuesta.model.dt_fecha_cita;
+			inputFechaGestion.value = respuesta.model.dt_fecha_gestion_realizada;*/
+		}
+	});
 }
 /**
  * Fin

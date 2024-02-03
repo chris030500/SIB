@@ -4,15 +4,22 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
+@Table(indexes = { @Index(name = "idx_nombreCompleto", columnList = "nombreCompleto") })
 public class ListaSeguimientoModel {
 
 	@Id
 	@Column(name = "I_CLIENTEID")
 	private int i_clienteid;
+
+	@Column(name = "PK_ID_ASIGNACION_OA")
+	private int pk_id_asignacion_oa;
 
 	@Column(name = "nombreCompleto")
 	private String nombreCompleto;
@@ -51,6 +58,14 @@ public class ListaSeguimientoModel {
 
 	public void setI_clienteid(int i_clienteid) {
 		this.i_clienteid = i_clienteid;
+	}
+
+	public int getPk_id_asignacion_oa() {
+		return pk_id_asignacion_oa;
+	}
+
+	public void setPk_id_asignacion_oa(int pk_id_asignacion_oa) {
+		this.pk_id_asignacion_oa = pk_id_asignacion_oa;
 	}
 
 	public String getNombreCompleto() {

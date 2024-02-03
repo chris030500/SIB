@@ -8,8 +8,5 @@ import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.model
 
 @Repository
 public interface RelacionCodigosRepository extends JpaRepository<RelacionCodigosModel, Integer> {
-	
-	@Query(value = "SELECT * FROM SIB.TBL_RELACION_CODIGOS_OA WHERE PK_ID_RELACION_CODIGO = :id", nativeQuery = true)
-	public RelacionCodigosModel buscarRelacionPorId(@Param("id") int id);
 
 }

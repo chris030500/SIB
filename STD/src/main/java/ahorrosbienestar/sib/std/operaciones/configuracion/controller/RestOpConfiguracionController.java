@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.model.AccionRealizarModel;
-import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.service.AccionRealizarService;
-import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.model.BloqueoListasNegrasModel;
-import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.service.BloqueoListasNegrasService;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.dto.CodigoAccionDTO;
@@ -38,6 +34,7 @@ import ahorrosbienestar.sib.std.sucursales.model.SucursalesModel;
 import ahorrosbienestar.sib.std.sucursales.service.SucursalesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -60,12 +57,6 @@ public class RestOpConfiguracionController {
 	private RelacionCodigosService relacionCodigosService;
 
 	@Autowired
-	private AccionRealizarService accionRealizarService;
-
-	@Autowired
-	private BloqueoListasNegrasService bloqueoListasNegrasService;
-
-	@Autowired
 	private CatalogoService catalogoService;;
 
 	@Autowired
@@ -74,6 +65,10 @@ public class RestOpConfiguracionController {
 	private static final Logger logger = Logger.getLogger(RestOpConfiguracionController.class);
 
 	private static final int idGrupo = 13;
+	
+	private static final int grupoAccion = 23;
+	
+	private static final int grupoBloqueo = 24;
 
 	/**
 	 * Buscar sucursal por caracter
@@ -390,7 +385,8 @@ public class RestOpConfiguracionController {
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
+			model.setI_usuario_modificacion(usuario);
 			codigoAccionService.save(model);
 			respuesta.put("mensaje", "Código registrado");
 			return ResponseEntity.ok(respuesta);
@@ -457,7 +453,7 @@ public class RestOpConfiguracionController {
 			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
 			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion() : model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			codigoAccionService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -581,7 +577,7 @@ public class RestOpConfiguracionController {
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
 			codigoResultadoService.save(model);
 			respuesta.put("mensaje", "Código registrado");
 			return ResponseEntity.ok(respuesta);
@@ -649,7 +645,7 @@ public class RestOpConfiguracionController {
 			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
 			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion() : model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			codigoResultadoService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -749,9 +745,9 @@ public class RestOpConfiguracionController {
 		RelacionCodigosModel model = new RelacionCodigosModel();
 		CodigoAccionModel codigoAccion = new CodigoAccionModel();
 		CodigoResultadoModel codigoResultado = new CodigoResultadoModel();
-		AccionRealizarModel accionRealizar = new AccionRealizarModel();
-		BloqueoListasNegrasModel bloqueo = new BloqueoListasNegrasModel();
-		// fecha
+		Catalogo accionRealizar = new Catalogo();
+		Catalogo bloqueListas = new Catalogo();
+		Catalogo ultimaGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -761,21 +757,22 @@ public class RestOpConfiguracionController {
 			logger.info("código Acción: " + codigoAccion.getVc_descripcion());
 			codigoResultado = codigoResultadoService.buscarCodigoResultado(dto.getIdCodigoResultado());
 			logger.info("código Resultado: " + codigoResultado.getVc_descripcion());
-			accionRealizar = accionRealizarService.buscarAccionRealizarId(dto.getIdAccionRealizar());
-			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
-			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
-			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
+			accionRealizar = catalogoService.buscarPorId(dto.getIdAccionRealizar());
+			logger.info("acción realizar: " + accionRealizar.getV_valor());
+			bloqueListas = catalogoService.buscarPorId(dto.getIdBloqueo());
+			logger.info("bloqueo: " + bloqueListas.getV_valor());
+			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
 			model.setCodigoAccionModel(codigoAccion);
 			model.setCodigoResultadoModel(codigoResultado);
-			model.setAccionRealizarModel(accionRealizar);
-			model.setCatalogo(catalogo);
-			model.setBloqueoListasNegrasModel(bloqueo);
+			model.setAccionRealizar(accionRealizar);
+			model.setUltimaGestion(ultimaGestion);
+			model.setBloqueoListas(bloqueListas);
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
+			model.setI_usuario_modificacion(usuario);
 			relacionCodigosService.save(model);
 			respuesta.put("mensaje", "Relación registrada");
 			return ResponseEntity.ok(respuesta);
@@ -799,16 +796,19 @@ public class RestOpConfiguracionController {
 	public ResponseEntity<Map<String, Object>> editarRelacion(
 			@RequestBody RelacionDTO dto,
 			@RequestParam("idRelacion") int idRelacion) {
+		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		RelacionCodigosModel model = new RelacionCodigosModel();
 		CodigoAccionModel codigoAccion = new CodigoAccionModel();
 		CodigoResultadoModel codigoResultado = new CodigoResultadoModel();
-		AccionRealizarModel accionRealizar = new AccionRealizarModel();
-		BloqueoListasNegrasModel bloqueo = new BloqueoListasNegrasModel();
-		// fecha
+		Catalogo accionRealizar = new Catalogo();
+		Catalogo bloqueListas = new Catalogo();
+		Catalogo ultimaGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
+		
 		try {
+			
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
 			logger.info("se encotró el usuario");
@@ -818,19 +818,20 @@ public class RestOpConfiguracionController {
 			logger.info("código Acción: " + codigoAccion.getVc_descripcion());
 			codigoResultado = codigoResultadoService.buscarCodigoResultado(dto.getIdCodigoResultado());
 			logger.info("código Resultado: " + codigoResultado.getVc_descripcion());
-			accionRealizar = accionRealizarService.buscarAccionRealizarId(dto.getIdAccionRealizar());
-			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
-			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
-			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
+			accionRealizar = catalogoService.buscarPorId(dto.getIdAccionRealizar());
+			logger.info("acción realizar: " + accionRealizar.getV_valor());
+			bloqueListas = catalogoService.buscarPorId(dto.getIdBloqueo());
+			logger.info("bloqueo: " + bloqueListas.getV_valor());
+			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
+			
 			model.setCodigoAccionModel(model.getCodigoAccionModel() != codigoAccion ? codigoAccion : model.getCodigoAccionModel());
 			model.setCodigoResultadoModel(model.getCodigoResultadoModel() != codigoResultado ? codigoResultado : model.getCodigoResultadoModel());
-			model.setAccionRealizarModel(model.getAccionRealizarModel() != accionRealizar ? accionRealizar : model.getAccionRealizarModel());
-			model.setCatalogo(catalogo != model.getCatalogo() ? catalogo : model.getCatalogo());
-			model.setBloqueoListasNegrasModel(model.getBloqueoListasNegrasModel() != bloqueo ? bloqueo : model.getBloqueoListasNegrasModel());
+			model.setAccionRealizar(model.getAccionRealizar() != accionRealizar ? accionRealizar : model.getAccionRealizar());
+			model.setUltimaGestion(ultimaGestion != model.getUltimaGestion() ? ultimaGestion : model.getUltimaGestion());
+			model.setBloqueoListas(model.getBloqueoListas() != bloqueListas ? bloqueListas : model.getBloqueoListas());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			relacionCodigosService.save(model);
 			respuesta.put("mensaje", "Relación actualizada");
 			return ResponseEntity.ok(respuesta);

@@ -629,6 +629,7 @@ function agregarAccion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-codigoAccion').style.display = 'none';
+			$('#modal-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -683,6 +684,7 @@ function editarAccion(id, dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoAccion').style.display = 'none';
+			$('#modalEditar-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -879,6 +881,7 @@ function agregarResultado(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-codigoResultado').style.display = 'none';
+			$('#modal-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -933,6 +936,7 @@ function editarResultado(id, dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoResultado').style.display = 'none';
+			$('#modalEditar-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1143,8 +1147,8 @@ function catalogoAccionRealizar() {
 			var opcionBusqueda = document.getElementById("selectRealizar");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
 			opcionBusqueda.addEventListener("change", function() {
@@ -1175,8 +1179,8 @@ function catalogoBloqueo() {
 			var opcionBusqueda = document.getElementById("selectBloqueo");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
 			opcionBusqueda.addEventListener("change", function() {
@@ -1268,6 +1272,7 @@ function agregarRelacion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-agregarRelacion').style.display = 'none';
+			$('#modal-agregarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1326,9 +1331,9 @@ function listaDeRelaciones() {
 					opt.pk_id_relacion_codigo,
 					opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
 					opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")",
-					opt.accionRealizarModel.vc_nombre,
-					opt.catalogo.v_valor,
-					opt.bloqueoListasNegrasModel.vc_nombre,
+					opt.accionRealizar.v_valor,
+					opt.ultimaGestion.v_valor,
+					opt.bloqueoListas.v_valor,
 					vigente,
 					btnEditar + btnEstatus
 				]).draw(false);
@@ -1457,11 +1462,11 @@ function catalogoRealizarE(select, relacion) {
 		success: function(respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id_accion_realizar === relacion.accionRealizarModel.pk_id_accion_realizar) {
+				if (respuesta.lista[i].pk_id === relacion.accionRealizar.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1493,7 +1498,7 @@ function catalogoGestionE(select, relacion) {
 				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id === relacion.catalogo.pk_id) {
+				if (respuesta.lista[i].pk_id === relacion.ultimaGestion.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1521,11 +1526,11 @@ function catalogoBloqueoE(select, relacion) {
 		success: function(respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id_bloqueo_listas_negras === relacion.bloqueoListasNegrasModel.pk_id_bloqueo_listas_negras) {
+				if (respuesta.lista[i].pk_id === relacion.bloqueoListas.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1576,6 +1581,7 @@ function editarRelacion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-editarRelacion').style.display = 'none';
+			$('#modal-editarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
