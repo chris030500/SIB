@@ -14,53 +14,53 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name="TBL_ASIGNACION_OFERTAS")
+@Table(name = "TBL_ASIGNACION_OFERTAS")
 public class AsignacionOfertas {
-	
+
 	@Column(name = "PK_ID_ASIGNACION_OA")
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pk_id_asignacion_oa;
-	
+
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1) DEFAULT 1")
 	private int i_estatus;
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_ASIGNACION", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_asignacion;
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_VIGENCIA", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_vigencia;
-	
+
 	@Column(name = "FK_ID_OFERTAS_AUTOMATICAS", columnDefinition = "INT DEFAULT NULL")
 	private int fk_id_ofertas_automaticas;
-	
+
 	@Column(name = "FK_ID_SUCURSAL", columnDefinition = "INT DEFAULT NULL")
 	private int fk_id_sucursal;
-	
+
 	@Column(name = "VC_COD_REFERENCIA", columnDefinition = "VARCHAR(15)")
 	private String vc_cod_referencia;
 
 	@Column(name = "FK_ID_PROCESO", columnDefinition = "INT DEFAULT 0")
 	private int fk_id_proceso;
-	
+
 	@Column(name = "I_ASIGNADO", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_asignado;
-	
+
 	@Column(name = "I_SMS", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_sms;
-	
+
 	@Column(name = "I_PROCESO_ASIGNACION", columnDefinition = "INT DEFAULT 0")
 	private int i_proceso_asignacion;
-	
+
 	@Column(name = "I_ACTIVO", columnDefinition = "TINYINT(1) DEFAULT 1")
 	private int i_activo;
-	
-	@Column(name = "VC_DESCRIPCION_SMS", columnDefinition = "LONGTEXT")
-	private String vc_descripcion_sms;
+
+	@Column(name = "I_BLOQUEO")
+	private int i_bloqueo;
 
 	public int getPk_id_asignacion_oa() {
 		return pk_id_asignacion_oa;
@@ -158,12 +158,12 @@ public class AsignacionOfertas {
 		this.i_activo = i_activo;
 	}
 
-	public String getVc_descripcion_sms() {
-		return vc_descripcion_sms;
+	public int getI_bloqueo() {
+		return i_bloqueo;
 	}
 
-	public void setVc_descripcion_sms(String vc_descripcion_sms) {
-		this.vc_descripcion_sms = vc_descripcion_sms;
+	public void setI_bloqueo(int i_bloqueo) {
+		this.i_bloqueo = i_bloqueo;
 	}
 
 }

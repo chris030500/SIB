@@ -17,4 +17,8 @@ public class AsignacionOfertasService {
 		return repository.findById(id).orElse(null);
 	}
 
+	public AsignacionOfertas save(AsignacionOfertas model) {
+		return repository.save(model);
+	}
+
 }

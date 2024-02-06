@@ -10,19 +10,20 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class RelacionCodigosService {
-	
+
 	@Autowired
 	private RelacionCodigosRepository repository;
 
 	public RelacionCodigosModel save(RelacionCodigosModel model) {
 		return repository.save(model);
 	}
-	
+
 	public RelacionCodigosModel buscarRelacionPorId(int id) {
-		return repository.buscarRelacionPorId(id);
+		return repository.findById(id).orElse(null);
 	}
-	
+
 	public List<RelacionCodigosModel> listaRelaciones() {
 		return repository.findAll();
 	}
+
 }

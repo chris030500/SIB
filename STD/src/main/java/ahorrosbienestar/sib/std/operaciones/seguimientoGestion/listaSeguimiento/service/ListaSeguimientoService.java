@@ -20,8 +20,8 @@ public class ListaSeguimientoService {
 		return repository.listaSeguimiento();
 	}
 	
-	public List<ListaSeguimientoModel> busquedaPorSeguimiento(@Param("nombre") String nombre, @Param("oferta") String oferta, @Param("referencia") String referencia) {
-		return repository.busquedaPorSeguimiento(nombre, oferta, referencia);
+	public List<ListaSeguimientoModel> busquedaPorSeguimiento(String nombre, String oferta, String referencia, String cliente) {
+		return repository.busquedaPorSeguimiento(nombre, oferta, referencia, cliente);
 	}
 
 }

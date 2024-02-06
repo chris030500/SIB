@@ -11,7 +11,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
@@ -44,7 +43,11 @@ public class CodigoAccionModel {
 
 	@OneToOne
 	@JoinColumn(name = "I_USUARIO_REGISTRO")
-	private Usuario usuario;
+	private Usuario i_usuario_registro;
+
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_MODIFICACION")
+	private Usuario i_usuario_modificacion;
 
 	public int getPk_id_codigo_accion() {
 		return pk_id_codigo_accion;
@@ -94,12 +97,20 @@ public class CodigoAccionModel {
 		this.dt_fecha_modificacion = dt_fecha_modificacion;
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
+	public Usuario getI_usuario_registro() {
+		return i_usuario_registro;
 	}
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+	public void setI_usuario_registro(Usuario i_usuario_registro) {
+		this.i_usuario_registro = i_usuario_registro;
+	}
+
+	public Usuario getI_usuario_modificacion() {
+		return i_usuario_modificacion;
+	}
+
+	public void setI_usuario_modificacion(Usuario i_usuario_modificacion) {
+		this.i_usuario_modificacion = i_usuario_modificacion;
 	}
 
 }

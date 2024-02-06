@@ -3,10 +3,11 @@ package ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TBL_CLIENTES_ACTIVOS")
+@Table(name = "TBL_CLIENTES_ACTIVOS", indexes = {@Index(name = "idx_nombrecompleto", columnList = "VC_NombreCompleto")})
 public class ClientesActivosModel {
 
 	@Id
