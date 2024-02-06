@@ -122,16 +122,22 @@
 									data-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
-								<!-- Ajusta la altura según tus necesidades -->
 								<div class="row">
+									<div class="col-sm-4">
+										<label>No. de cliente:</label>
+										<input type="text" class="form-control" id="numCliente" disabled>
+									</div>
+									<div class="col-sm-4">
+										<label>No. de referencia:</label>
+										<input type="text" class="form-control" id="referencia" disabled>
+									</div>
+								</div>
+
+								<!-- Ajusta la altura según tus necesidades -->
+								<div class="row" style="padding-top: 20px;" id="form-registro">
 									<div class="col-sm-12">
 										<form name="formulario" id="formSeguimientoGestion">
 											<div class="row">
-												<div class="col-sm-4">
-													<label>No. de referencia:</label>
-													<input type="text" class="form-control" id="referencia"
-														placeholder="No. de referencia" disabled>
-												</div>
 												<div class="col-sm-4">
 													<label for="buscar-relacion">Código de acción - Código de
 														resultados:</label>
@@ -149,8 +155,6 @@
 													<input type="text" class="form-control" id="accionRealizar"
 														disabled>
 												</div>
-											</div>
-											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Descripción de la gestión:</label>
@@ -162,6 +166,8 @@
 														</p>
 													</div>
 												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Fecha de gestión realizada</label>
@@ -186,9 +192,7 @@
 														</p>
 													</div>
 												</div>
-											</div>
-											<div class="row" style="padding-top: 10px;">
-												<div class="col-sm-12" style="text-align: right;">
+												<div class="col-sm-4" style="text-align: right; padding-top: 24px;">
 													<button style='background: #0dcaf0; border-color: #0dcaf0;'
 														type="button" onclick="validarGestion()" data-dismiss="modal"
 														class="btn btn-primary">Registrar</button>
@@ -196,10 +200,9 @@
 											</div>
 										</form>
 									</div>
-								</div>
-
-								<div style="padding-top: 20px;">
-									<hr>
+									<div style="padding-top: 20px;">
+										<hr>
+									</div>
 								</div>
 
 								<!-- Agrega más contenido si es necesario -->

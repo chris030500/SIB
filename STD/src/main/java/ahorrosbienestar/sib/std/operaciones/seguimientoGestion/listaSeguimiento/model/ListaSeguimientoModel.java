@@ -52,6 +52,17 @@ public class ListaSeguimientoModel {
 	@Column(name = "VC_NOMBRESUCURSAL")
 	private String vc_nombresucursal;
 
+	@Column(name = "I_BLOQUEO")
+	private int i_bloqueo;
+
+	public int getI_bloqueo() {
+		return i_bloqueo;
+	}
+
+	public void setI_bloqueo(int i_bloqueo) {
+		this.i_bloqueo = i_bloqueo;
+	}
+
 	public int getI_clienteid() {
 		return i_clienteid;
 	}

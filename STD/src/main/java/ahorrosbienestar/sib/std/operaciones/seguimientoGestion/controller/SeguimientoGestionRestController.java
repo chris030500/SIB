@@ -148,10 +148,10 @@ public class SeguimientoGestionRestController {
 			model.setI_usuario_modificacion(usuario);
 			seguimientoGestionOaService.save(model);
 			//
-			actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
+			int bloqueo = actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
 			//
 			logger.info("se registró el seguimiento");
-			respuesta.put("mensaje", "Gestión registrada");
+			respuesta.put("valor", bloqueo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -205,10 +205,10 @@ public class SeguimientoGestionRestController {
 			model.setI_usuario_modificacion(usuario);
 			seguimientoGestionOaService.save(model);
 			//
-			actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
+			int bloqueo = actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
 			//
 			logger.info("se actualizó el seguimiento");
-			respuesta.put("mensaje", "Gestión actualizada");
+			respuesta.put("valor", bloqueo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -311,7 +311,7 @@ public class SeguimientoGestionRestController {
 	}
 	
 	
-	public void actualizarAsignacion(int idRelacion, int idAsignacion) {
+	public int actualizarAsignacion(int idRelacion, int idAsignacion) {
 		AsignacionOfertas asignacion = asignacionOfertasService.findById(idAsignacion);
 		logger.info("Se encontró la asignación");
 		//
@@ -319,9 +319,10 @@ public class SeguimientoGestionRestController {
 		logger.info("Se encnotró la relación");
 		//
 		if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
-			asignacion.setI_bloqueo(1);
+			asignacion.setI_bloqueo(2);
 			asignacionOfertasService.save(asignacion);
 		}
+		return asignacion.getI_bloqueo();
 	}
 
 }

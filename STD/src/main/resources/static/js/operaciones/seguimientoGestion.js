@@ -127,14 +127,14 @@ function llenarTablaSeguimiento(condicion) {
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='mostrarGestion("
-					+ opt.i_clienteid + ", " + opt.pk_id_asignacion_oa
+					+ opt.i_clienteid + ", " + opt.pk_id_asignacion_oa + ", " + opt.i_bloqueo
 					+ ")' id="
 					+ opt.i_clienteid
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pencil'></i></button></div>";
 
 				var cliente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
-				var asignacion = opt.i_bloqueo == 0 ? "Activo" : "Inactivo";
+				var asignacion = opt.i_bloqueo == 1 ? "Activo" : "Inactivo";
 
 				tablaFiltro.row.add([
 					opt.i_clienteid,
@@ -296,11 +296,12 @@ function registrarGestion(dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			swal(respuesta.mensaje, {
+			swal("Se registró la gestión", {
 				closeOnClickOutside: false,
 				icon: "success",
 			})
 				.then((value) => {
+					validarBotonRegistro(respuesta.valor);
 					listaDeGestiones();
 					limpiarVariablesModal();
 				});
@@ -321,17 +322,22 @@ function registrarGestion(dto) {
 /**
  * funciones del modal
  */
-function mostrarGestion(id, asignacion) {
+let bloqueoAsignacion;
+
+function mostrarGestion(id, asignacion, bloqueo) {
+	document.getElementById("numCliente").value = id;
 	idOferta = asignacion;
 	$('#modal-seguimiento').modal('show');
 	listaDeGestiones();
 	datosDeCliente(id);
 	buscarRelacion();
+	validarBotonRegistro(bloqueo);
 }
 
 
 function cerrarModal(valor) {
 	$('#modal-' + valor).modal('hide');
+	llenarTablaSeguimiento(false);
 	limpiarVariablesModal();
 }
 
@@ -473,6 +479,23 @@ function edtiarSegGestion(id) {
 		}
 	});
 }
+/**
+ * Fin
+ */
+
+
+/**
+ * Bloquear botón de registro
+ */
+
+function validarBotonRegistro(bloqueo) {
+	if (bloqueo === 2) {
+		document.getElementById("form-registro").style.display = 'none';
+	} else if (bloqueo === 1) {
+		document.getElementById("form-registro").style.display = 'block';
+	}
+}
+
 /**
  * Fin
  */
