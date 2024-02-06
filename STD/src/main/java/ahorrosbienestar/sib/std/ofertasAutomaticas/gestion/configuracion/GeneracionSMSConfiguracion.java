@@ -61,8 +61,8 @@ public class GeneracionSMSConfiguracion {
 		public void actualizarExpresionCronProceso(Integer procesoGestionID) {
 			try {
 				
-				logger.info("Procesos.");
-				List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronAsignacion(idProceso);
+				logger.info("Procesos SMS ");
+				List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronGestion(idProceso);
 				
 				for(ValidarEjecutarCronBase valBase : validacionCron) {
 					if(!valBase.getExpresionCron().equals(expresionCron)) {
@@ -71,7 +71,7 @@ public class GeneracionSMSConfiguracion {
 			            CronTrigger trigger = new CronTrigger(expresionCron);
 			            // Reemplaza el trigger existente con el nuevo trigger
 			            tareaProcesoSMS.schedule(() -> procesarCron(procesoGestionID), trigger);
-			            logger.info("Se actualizo cron Nomina");
+			            logger.info("Se actualizo cron SMS");
 			        	
 					}else {
 						logger.info("No se actualizo Nomina");
@@ -85,8 +85,8 @@ public class GeneracionSMSConfiguracion {
 		}
 		
 		public void procesarCron(Integer procesoGestionID) {
-			logger.info("Proceso de Nomina");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronAsignacion(idProceso);
+			logger.info("Proceso de SMS");
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronGestion(idProceso);
 			
 			try {
 				LocalTime horaActual = LocalTime.now();
@@ -99,28 +99,24 @@ public class GeneracionSMSConfiguracion {
 				for(ValidarEjecutarCronBase valBase : validacionCron) {
 					if(valBase.getI_ejecutar() == 1) {
 						procesarSMS(procesoGestionID);
-						logger.info("Se ejecuto proceso Nomina:"+horaYMinutos);
+						logger.info("Se ejecuto proceso SMS:"+horaYMinutos);
 					}else {
-						logger.info("No es tiempo de ejecutar proceso Nomina:"+horaYMinutos);
+						logger.info("No es tiempo de ejecutar proceso SMS:"+horaYMinutos);
 					}
 				}			
 				
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
-				logger.info("el proceso de Nomina no se ejecuto");
+				logger.info("el proceso de SMS no se ejecuto");
 			}
 		}
 
 	    
 		public synchronized void procesarSMS(Integer idProceso){
 	    	try {
-	    		logger.info("Ejecuta los SP nomina");
-	        	jdbcTemplate.update("CALL SIB.SP_ASIGNACIONXBASE_1_1_1()");
+	    		logger.info("Generar SMS");
+	        	jdbcTemplate.update("CALL SIB.SP_GENERAR_SMS()");
 	        	
-	        	
-	        	// int tipoCorreo = 5;
-	        	// "REGISTROS DE NOMINA";
-				//envioCorreoService.prepararCorreo(tipoCorreo,"");
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
 			}

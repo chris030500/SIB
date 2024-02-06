@@ -201,12 +201,7 @@ function addArchivos(data) {
 			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
 		success: function(data) {
-			swal({
-				title: "",
-				text: data[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+			swal("", data[0],"success").then(resp => {
 				adjuntarFiles(2);
 			});
 		},
@@ -575,19 +570,26 @@ function peticionPost(metodo,metodoUrl){
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
+			//$.blockUI({ message: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i>Procesando Información.' });
+			$.blockUI({
+      message: '<h4>Procesando Información...</h4><div class="spinner-border" style="width: 3rem; height: 3rem;" role="status"></div> ',
+      css: {
+        border: 'none',
+        padding: '15px',
+        backgroundColor: '#fff',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .8,
+        color: '#000'
+      }
+    });
 		},
 		complete: function() {
 			setTimeout($.unblockUI, 300);
 		},
 		success: function(respuesta) {
    			url = "";
-			Swal.fire({
-				title: '',
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+			Swal.fire("",respuesta[0],"success").then(resp => {
 
 				if (metodo == 1) {
      				iniciaTblParametros();
@@ -606,11 +608,7 @@ function peticionPost(metodo,metodoUrl){
 
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
-			});
+			swal("Error","Se presento un error, intente mas tarde.", "error");
 		}
 	});
 }
@@ -903,26 +901,28 @@ function cargatblProcesoG(){
    	tblProcesoGestion.clear().draw();
    		$.each(data, function(idx, opt) {
 			   
-			
-				var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
-				+ " onclick='editarDatosProceso("
-				+ opt.pk_id_gestion
-				+ ")' id="
-				+ opt.pk_id_gestion
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-tools'></i></button>";
+				if(opt.i_visible == 1){
+					var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarDatosProceso("
+					+ opt.pk_id_gestion
+					+ ")' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
 				
-				var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
-				+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
-				+ " onclick='ejecutarDatosProceso("
-				+ opt.pk_id_gestion
-				+ ")' id="
-				+ opt.pk_id_gestion
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-file-play-fill'></i></button>";
+					var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='ejecutarDatosProceso("
+					+ opt.pk_id_gestion
+					+ ")' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
 
-      		tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar,btnEjecutar]).draw(false);
+      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar,btnEjecutar]).draw(false);
+	
+				}
 	
 		
    		});
