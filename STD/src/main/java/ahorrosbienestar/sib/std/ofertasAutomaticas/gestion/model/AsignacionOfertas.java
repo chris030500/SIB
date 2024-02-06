@@ -41,23 +41,37 @@ public class AsignacionOfertas {
 	@Column(name = "FK_ID_SUCURSAL", columnDefinition = "INT DEFAULT NULL")
 	private int fk_id_sucursal;
 
-	@Column(name = "VC_COD_REFERENCIA", columnDefinition = "VARCHAR(15)")
-	private String vc_cod_referencia;
-
 	@Column(name = "FK_ID_PROCESO", columnDefinition = "INT DEFAULT 0")
 	private int fk_id_proceso;
 
 	@Column(name = "I_ASIGNADO", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_asignado;
-
-	@Column(name = "I_SMS", columnDefinition = "TINYINT(1) DEFAULT 0")
-	private int i_sms;
+	
+	@Column(name = "I_ACTIVO", columnDefinition = "TINYINT(1) DEFAULT 1")
+	private int i_activo;
 
 	@Column(name = "I_PROCESO_ASIGNACION", columnDefinition = "INT DEFAULT 0")
 	private int i_proceso_asignacion;
-
-	@Column(name = "I_ACTIVO", columnDefinition = "TINYINT(1) DEFAULT 1")
-	private int i_activo;
+	
+	@Column(name = "I_SMS", columnDefinition = "TINYINT(1) DEFAULT 0")
+	private int i_sms;
+	
+	@Column(name = "VC_COD_REFERENCIA", columnDefinition = "VARCHAR(15)")
+	private String vc_cod_referencia;
+	
+	@Column(name = "I_SUC_CREDITO", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	private int i_suc_credito;
+	
+	@Column(name = "I_REASIGNAR", columnDefinition = "TINYINT(1) DEFAULT 0")
+	private int i_reasignar;
+	
+	@Column(name = "I_ANTERIOR_SUC", columnDefinition = "TINYINT(1) DEFAULT 0")
+	private int i_anterior_suc;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "DT_FECHA_REASIGNACION_NO_SEGUIMIENTO", columnDefinition = "DATETIME(6) DEFAULT NULL")
+	private LocalDate dt_fecha_reasignacion_n_seg;
 
 	@Column(name = "I_BLOQUEO")
 	private int i_bloqueo;
@@ -110,14 +124,6 @@ public class AsignacionOfertas {
 		this.fk_id_sucursal = fk_id_sucursal;
 	}
 
-	public String getVc_cod_referencia() {
-		return vc_cod_referencia;
-	}
-
-	public void setVc_cod_referencia(String vc_cod_referencia) {
-		this.vc_cod_referencia = vc_cod_referencia;
-	}
-
 	public int getFk_id_proceso() {
 		return fk_id_proceso;
 	}
@@ -134,12 +140,12 @@ public class AsignacionOfertas {
 		this.i_asignado = i_asignado;
 	}
 
-	public int getI_sms() {
-		return i_sms;
+	public int getI_activo() {
+		return i_activo;
 	}
 
-	public void setI_sms(int i_sms) {
-		this.i_sms = i_sms;
+	public void setI_activo(int i_activo) {
+		this.i_activo = i_activo;
 	}
 
 	public int getI_proceso_asignacion() {
@@ -150,12 +156,52 @@ public class AsignacionOfertas {
 		this.i_proceso_asignacion = i_proceso_asignacion;
 	}
 
-	public int getI_activo() {
-		return i_activo;
+	public int getI_sms() {
+		return i_sms;
 	}
 
-	public void setI_activo(int i_activo) {
-		this.i_activo = i_activo;
+	public void setI_sms(int i_sms) {
+		this.i_sms = i_sms;
+	}
+
+	public String getVc_cod_referencia() {
+		return vc_cod_referencia;
+	}
+
+	public void setVc_cod_referencia(String vc_cod_referencia) {
+		this.vc_cod_referencia = vc_cod_referencia;
+	}
+
+	public int getI_suc_credito() {
+		return i_suc_credito;
+	}
+
+	public void setI_suc_credito(int i_suc_credito) {
+		this.i_suc_credito = i_suc_credito;
+	}
+
+	public int getI_reasignar() {
+		return i_reasignar;
+	}
+
+	public void setI_reasignar(int i_reasignar) {
+		this.i_reasignar = i_reasignar;
+	}
+
+	public int getI_anterior_suc() {
+		return i_anterior_suc;
+	}
+
+	public void setI_anterior_suc(int i_anterior_suc) {
+		this.i_anterior_suc = i_anterior_suc;
+	}
+
+	public LocalDate getDt_fecha_reasignacion_n_seg() {
+		return dt_fecha_reasignacion_n_seg;
+	}
+
+	public void setDt_fecha_reasignacion_n_seg(LocalDate dt_fecha_reasignacion_n_seg) {
+		this.dt_fecha_reasignacion_n_seg = dt_fecha_reasignacion_n_seg;
 	}
 
 	public int getI_bloqueo() {
@@ -166,4 +212,5 @@ public class AsignacionOfertas {
 		this.i_bloqueo = i_bloqueo;
 	}
 
+	
 }
