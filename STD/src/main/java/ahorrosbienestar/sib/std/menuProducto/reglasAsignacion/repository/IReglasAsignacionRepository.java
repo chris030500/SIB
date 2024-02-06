@@ -14,4 +14,7 @@ public interface IReglasAsignacionRepository extends JpaRepository<ReglasAsignac
 
 	@Query(value = "SELECT * FROM SIB.TBL_REGLAS_ASIGNACION", nativeQuery = true)
 	public List<ReglasAsignacion> obtReglasAsignacion();
+
+	@Query(value = "SELECT count(*) as NUMERO FROM SIB.TBL_REGLAS_ASIGNACION WHERE I_ESTATUS = 1", nativeQuery = true)
+	public int existeActivo();
 }
