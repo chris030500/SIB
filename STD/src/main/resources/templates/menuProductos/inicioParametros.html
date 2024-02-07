@@ -124,8 +124,30 @@
 			</div>
 			<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
 				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Cliente Bloqueante</legend>
-					
+					<legend class="float-none w-auto p-2">Clientes Bloqueados</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 200%;" id="tblClienteBloqueados">
+								<thead>
+									<tr>
+										<th># Cliente</th>
+										<th>Nombre Cliente</th>
+										<th>F. Bloqueo</th>
+										<th>Motivo de Bloqueo</th>
+										<th>Usuario Bloqueo</th>
+										<th>F. Vencimiento</th>
+										<th>Motivo de Desbloqueo</th>
+										<th>F. Desbloqueo</th>
+										<th>Usuario Desbloqueo</th>
+										<th>Estatus</th>
+										<th style="text-align: center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</fieldset>
 			</div>
 			</div>
@@ -349,6 +371,7 @@
 		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
 		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
+		<script th:src="@{/js/menuProductos/clientesBloqueados.js}"></script>
 		<!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
 	</th:block>
 </body>
