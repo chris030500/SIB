@@ -74,14 +74,28 @@
 														<button type="button" onclick="validarBusqueda()"
 															style="background: #0dcaf0; border-color: #0dcaf0;"
 															class="btn btn-primary">Buscar</button>
+														<button type="button" onclick="mostrarAlerta()"
+															style="background: rgb(255, 128, 64); border-color: rgb(255, 128, 64);"
+															class="btn btn-primary">Ver detalles</button>
 													</div>
 												</div>
 											</div>
 										</form>
 									</div>
 								</div>
+
+								<!-- Spinner de carga -->
+								<div class="row" id="ver-cargaSeguimiento"
+									style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
+									<div class="col-sm-12">
+										<div class="spinner-border"
+											style="color: #0dcaf0; height: 100px; width: 100px;">
+										</div>
+									</div>
+								</div>
+
 								<!-- Tabla filtro de busqueda -->
-								<div class="row" style="padding-top: 50px;">
+								<div class="row" id="ver-listaSeguimiento" style="padding-top: 50px; display: none;">
 									<div class="col-sm-12">
 										<div class="table-responsive">
 											<table class="table table-sm" style="width: 100%;" id="vistaFiltro">
@@ -218,7 +232,7 @@
 														<th>Descripción de la gestión</th>
 														<th>Fecha de registro</th>
 														<th>Fecha de gestión realizada</th>
-														<th>Acciones</th>
+														<!--<th id="th-acciones">Acciones</th>-->
 													</tr>
 												</thead>
 												<tbody style="text-align: center;">
@@ -231,6 +245,31 @@
 							<div class="modal-footer">
 								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
 									onclick="cerrarModal('seguimiento')" data-dismiss="modal"
+									class="btn btn-primary">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal de alerta -->
+				<div class="modal fade" id="modal-alerta" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Seguimiento gestiones</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalAlertas('alerta')"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="row" style="text-align: center;">
+									<div class="col-sm-12">
+										<canvas id="myChart" width="100" height="100"></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="cerrarModalAlertas('alerta')" data-dismiss="modal"
 									class="btn btn-primary">Salir</button>
 							</div>
 						</div>
@@ -250,6 +289,7 @@
 		<script th:src="@{/js/operaciones/tablas/seguimientoGestionTablas.js}"></script>
 		<script th:src="@{/css/estilos/responsivo.css}"></script>
 		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</th:block>
 </body>
 

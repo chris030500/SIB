@@ -14,8 +14,9 @@ var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
 window.onload = function() {
+	mostrarAlerta();
 	listaClientes();
-	llenarTablaSeguimiento(false);
+	// llenarTablaSeguimiento(false);
 }
 /**
 * Fin
@@ -120,6 +121,8 @@ function llenarTablaSeguimiento(condicion) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			document.getElementById("ver-cargaSeguimiento").style.display = "none";
+			document.getElementById("ver-listaSeguimiento").style.display = "block";
 			tablaFiltro.clear().draw();
 			$.each(respuesta.lista, function(idx, opt) {
 
@@ -170,6 +173,8 @@ var parametroOferta;
 var parametroReferencia;
 
 function validarBusqueda() {
+	document.getElementById("ver-cargaSeguimiento").style.display = "block";
+	document.getElementById("ver-listaSeguimiento").style.display = "none";
 	var cliente = $("#buscarCliente").val();
 	var referencia = $("#inputReferencia").val();
 	var oferta = $("#inputOferta").val();
@@ -301,6 +306,7 @@ function registrarGestion(dto) {
 				icon: "success",
 			})
 				.then((value) => {
+					bloqueoAsignacion = respuesta.valor;
 					validarBotonRegistro(respuesta.valor);
 					listaDeGestiones();
 					limpiarVariablesModal();
@@ -325,6 +331,7 @@ function registrarGestion(dto) {
 let bloqueoAsignacion;
 
 function mostrarGestion(id, asignacion, bloqueo) {
+	bloqueoAsignacion = bloqueo;
 	document.getElementById("numCliente").value = id;
 	idOferta = asignacion;
 	$('#modal-seguimiento').modal('show');
@@ -337,7 +344,7 @@ function mostrarGestion(id, asignacion, bloqueo) {
 
 function cerrarModal(valor) {
 	$('#modal-' + valor).modal('hide');
-	llenarTablaSeguimiento(false);
+	llenarTablaSeguimiento(true);
 	limpiarVariablesModal();
 }
 
@@ -454,8 +461,9 @@ function llenarTablaDeGestiones(datos) {
 			opt.vc_descripcion,
 			opt.dt_fecha_registro,
 			opt.dt_fecha_gestion_realizada,
-			btnEditar
+			//btnEditar
 		]).draw(false);
+
 	});
 }
 /**
@@ -496,6 +504,96 @@ function validarBotonRegistro(bloqueo) {
 	}
 }
 
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Estatus de las gestiones
+ */
+var listaDeEstatus = [];
+var listaDeTotales = [];
+
+function todosLosEstatus() {
+	$.ajax({
+		url: newUrlBase + "todos_los_estatus",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log(respuesta.lista);
+			respuesta.lista.forEach(function(elemento) {
+				listaDeEstatus.push(elemento.v_valor);
+				listaDeTotales.push(elemento.total_registros);
+			});
+
+			// Llamar a la función para crear la gráfica después de obtener los datos
+			createChart();
+		}
+	});
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Gráfica
+ */
+function createChart() {
+	console.log(listaDeEstatus);
+	console.log(listaDeTotales);
+
+	// Datos de ejemplo para la gráfica
+	var data = {
+		labels: listaDeEstatus,
+		datasets: [{
+			label: 'Estatus',
+			backgroundColor: 'rgba(75, 192, 192, 0.2)',
+			borderColor: 'rgba(75, 192, 192, 1)',
+			borderWidth: 1,
+			data: listaDeTotales
+		}]
+	};
+
+	// Configuración de la gráfica
+	var options = {
+		scales: {
+			y: {
+				beginAtZero: true
+			}
+		}
+	};
+
+	// Crear la instancia de la gráfica de barras
+	var ctx = document.getElementById('myChart').getContext('2d');
+	var myChart = new Chart(ctx, {
+		type: 'bar',
+		data: data,
+		options: options
+	});
+}
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Modal de alertas
+ */
+function cerrarModalAlertas(valor) {
+	$('#modal-' + valor).modal('hide');
+	listaDeEstatus = [];
+	listaDeTotales = [];
+}
+
+function mostrarAlerta() {
+	$('#modal-alerta').modal('show');
+	todosLosEstatus();
+}
 /**
  * Fin
  */

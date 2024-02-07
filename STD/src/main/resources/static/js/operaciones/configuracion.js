@@ -324,7 +324,7 @@ function listaTelefonos() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	});
 }
@@ -424,7 +424,7 @@ function editarTelefono(id, dto) {
 					listaTelefonos();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -579,7 +579,7 @@ function listaCodigosAccion() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	})
 }
@@ -693,7 +693,7 @@ function editarAccion(id, dto) {
 					listaCodigosAccion();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -828,10 +828,10 @@ function listaCodigosResultado() {
 				]).draw(false);
 			});
 
-			// //console.log(respuesta.lista);
+			//console.log(respuesta.lista);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	})
 }
@@ -945,7 +945,7 @@ function editarResultado(id, dto) {
 					listaCodigosResultado();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -1135,7 +1135,6 @@ function catalogoCodigoR() {
 function catalogoAccionRealizar() {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	document.getElementById("selectRealizar").innerHTML = '';
 	document.getElementById("selectRealizar").add(opcion);
@@ -1167,7 +1166,6 @@ function catalogoAccionRealizar() {
 function catalogoBloqueo() {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	document.getElementById("selectBloqueo").innerHTML = '';
 	document.getElementById("selectBloqueo").add(opcion);
@@ -1244,7 +1242,11 @@ function validarFormRelacion() {
 	var valorAccionR = formulario.querySelector("#selectRealizar").value;
 	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
 	var valorGestion = formulario.querySelector("#selectGestion").value;
-	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorAccionR != "Elige una opción" && valorBloqueo != "Elige una opción" && valorGestion != "Elige una opción") {
+
+	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
+	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
+
+	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorGestion != "Elige una opción") {
 		//console.log("entró");
 		const dto = {
 			idCodigoAccion: valorCodigoA,
@@ -1253,7 +1255,7 @@ function validarFormRelacion() {
 			ultimaGestion: valorGestion,
 			idBloqueo: valorBloqueo
 		}
-		// //console.log(dto);
+		// console.log(dto);
 		agregarRelacion(dto);
 	} else {
 		swal("Falta información por llenar", {
@@ -1327,13 +1329,16 @@ function listaDeRelaciones() {
 
 				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 
+				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "-";
+				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "-";
+
 				vistaTablaRel.row.add([
 					opt.pk_id_relacion_codigo,
 					opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
 					opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")",
-					opt.accionRealizar.v_valor,
+					accionR,
 					opt.ultimaGestion.v_valor,
-					opt.bloqueoListas.v_valor,
+					listaB,
 					vigente,
 					btnEditar + btnEstatus
 				]).draw(false);
@@ -1367,7 +1372,7 @@ function abrirRelacion(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			$('#modal-editarRelacion').modal('show');
-			// //console.log(respuesta.relacion);
+			//console.log(respuesta.relacion);
 			var relacion = respuesta.relacion;
 			catalogoCodigoAe(selectCodigoA, relacion);
 			catalogoCodigoRe(selectCodigoR, relacion);
@@ -1451,7 +1456,6 @@ function catalogoCodigoRe(select, relacion) {
 function catalogoRealizarE(select, relacion) {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	select.innerHTML = '';
 	select.add(opcion);
@@ -1515,7 +1519,6 @@ function catalogoGestionE(select, relacion) {
 function catalogoBloqueoE(select, relacion) {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	select.innerHTML = '';
 	select.add(opcion);
@@ -1559,6 +1562,9 @@ function validarFormRelacionE() {
 	var valorBloqueo = formulario.querySelector("#selectBloqueoE").value;
 	var valorGestion = formulario.querySelector("#selectGestionE").value;
 
+	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
+	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
+
 	const dto = {
 		idCodigoAccion: valorCodigoA,
 		idCodigoResultado: valorCodigoR,
@@ -1567,7 +1573,7 @@ function validarFormRelacionE() {
 		idBloqueo: valorBloqueo
 	}
 
-	// //console.log(dto);
+	// console.log(dto);
 	editarRelacion(dto);
 }
 

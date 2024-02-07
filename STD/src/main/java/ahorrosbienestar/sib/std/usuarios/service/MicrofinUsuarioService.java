@@ -1,0 +1,62 @@
+package ahorrosbienestar.sib.std.usuarios.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+import ahorrosbienestar.sib.std.usuarios.dto.MicrofinUsuarioDTO;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.throwsSpec_return;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import org.apache.log4j.Logger;
+
+@Service
+public class MicrofinUsuarioService {
+
+	private JdbcTemplate jdbcTemplate;
+
+	private static final Logger logger = Logger.getLogger(MicrofinUsuarioService.class);
+
+	@Autowired
+	public MicrofinUsuarioService(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	// Obtener el usuario
+	public List<MicrofinUsuarioDTO> obtenerUsuario(int empleadoId) {
+		logger.info("Ejecutando obtenerUsuario: " + empleadoId);
+		try {
+			String sql = "SELECT UsuarioId, EmpleadoID, ClavePuestoID, Nombre, ApPaterno, ApMaterno, NombreCompleto, Clave, Estatus, Correo, SucursalUsuario, Semilla, RFC FROM microfin.USUARIOS WHERE EmpleadoID = ?";
+			@SuppressWarnings("deprecation")
+			List<MicrofinUsuarioDTO> ls = jdbcTemplate.query(sql, new Object[] { empleadoId }, new RowMapper<MicrofinUsuarioDTO>() {
+						public MicrofinUsuarioDTO mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							MicrofinUsuarioDTO e = new MicrofinUsuarioDTO();
+							e.setUsuarioId(rs.getInt(1));
+							e.setEmpleadoID(rs.getInt(2));
+							e.setClavePuestoID(rs.getString(3));
+							e.setNombre(rs.getString(4));
+							e.setApPaterno(rs.getString(5));
+							e.setApMaterno(rs.getString(6));
+							e.setNombreCompleto(rs.getString(7));
+							e.setClave(rs.getString(8));
+							e.setEstatus(rs.getInt(9));
+							e.setCorreo(rs.getString(10));
+							e.setSucursalUsuario(rs.getInt(11));
+							e.setSemilla(rs.getString(12));
+							e.setRfc(rs.getString(13));
+							return e;
+						}
+					});
+			//logger.info(ls.get(0).getNombreCompleto());
+			return ls;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}

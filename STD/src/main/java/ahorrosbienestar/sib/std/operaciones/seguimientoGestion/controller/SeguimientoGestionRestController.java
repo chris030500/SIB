@@ -23,12 +23,16 @@ import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.consu
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.consultarRelaciones.service.ConsultarRelacionesService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.model.RelacionCodigosModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.service.RelacionCodigosService;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.EstatusSeguimientoModel;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.ListaSeguimientoModel;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.service.EstatusSeguimientoService;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.service.ListaSeguimientoService;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.registroSeguimiento.dto.RegistroSeguimientoDTO;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.registroSeguimiento.model.SeguimientoGestionOaModel;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.registroSeguimiento.service.SeguimientoGestionOaService;
+import ahorrosbienestar.sib.std.usuarios.dto.MicrofinUsuarioDTO;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.service.MicrofinUsuarioService;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import lombok.AllArgsConstructor;
 
@@ -52,7 +56,13 @@ public class SeguimientoGestionRestController {
 	private AsignacionOfertasService asignacionOfertasService;
 	
 	@Autowired
-	ConsultarRelacionesService consultarRelacionesService;
+	private ConsultarRelacionesService consultarRelacionesService;
+	
+	@Autowired
+	private MicrofinUsuarioService microfinUsuarioService;
+	
+	@Autowired
+	private EstatusSeguimientoService estatusSeguimientoService;
 
 	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
 
@@ -324,5 +334,50 @@ public class SeguimientoGestionRestController {
 		}
 		return asignacion.getI_bloqueo();
 	}
-
+	
+	
+	@RequestMapping(value = {"/obtener_sucursal_empleado"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> sucursalPorEmpleado() {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
+		try {
+			//
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			logger.info("se encotró el usuario");
+			//
+			lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
+			logger.info("se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
+	
+	@RequestMapping(value = {"/todos_los_estatus"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones() {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
+		try {
+			lista = estatusSeguimientoService.listaDeEstatus();
+			logger.info("se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
 }
