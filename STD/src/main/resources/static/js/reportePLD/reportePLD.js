@@ -7,6 +7,7 @@ var rptOA = "reporteHistoricoPLD?idReporte="
   var url="";
   var mensajeError = "Datos incorrectos, favor de validar.";
   function valVacio(fecha1,fecha2){
+    url = "";
    	var result = false;
    	var fechaInicio = Date.parse(fecha1);
 	var fechaFin = Date.parse(fecha2);
@@ -38,8 +39,20 @@ var rptOA = "reporteHistoricoPLD?idReporte="
      	mensajeError = "Debe seleccionar un reporte.";
      	document.getElementById("idReportePLD").style.borderColor = "#F70707";
      	result = true;
-    }  
-
+    }
+    
+    // @ts-ignore
+    if(document.getElementById("extReportePLD").value > 0){
+       	document.getElementById("extReportePLD").style.borderColor = "";
+       	// @ts-ignore
+       	//url = url + rptOA+document.getElementById("extReportePLD").value;
+       	result = false;
+    }else{
+     	mensajeError = "Debe seleccionar la extension del reporte.";
+     	document.getElementById("extReportePLD").style.borderColor = "#F70707";
+     	result = true;
+    }
+    
 	if (result == true) {
 		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
 		document.getElementById("dtFechaFin").style.borderColor = "#F70707";
@@ -47,7 +60,7 @@ var rptOA = "reporteHistoricoPLD?idReporte="
 		document.getElementById("dtFechaInicio").style.borderColor = "";
 		document.getElementById("dtFechaFin").style.borderColor = "";
 		// @ts-ignore
-		url = url + "&dtFechaInicio="+document.getElementById("dtFechaInicio").value+"&dtFechaFin="+document.getElementById("dtFechaFin").value+"&nombreReporteSelect="+document.getElementById("idReportePLD").value;
+		url = url + "&dtFechaInicio="+document.getElementById("dtFechaInicio").value+"&dtFechaFin="+document.getElementById("dtFechaFin").value+"&nombreReporteSelect="+document.getElementById("idReportePLD").value+"&extension="+document.getElementById("extReportePLD").value;
 	}
    	return result;
   }
@@ -71,7 +84,7 @@ function generarReporte(){
   
   
   function peticionPost(urlServicio) {
-    
+    //alert(urlServicio);
 	$.ajax({
 		url: urlServicio,
 		type: "POST",

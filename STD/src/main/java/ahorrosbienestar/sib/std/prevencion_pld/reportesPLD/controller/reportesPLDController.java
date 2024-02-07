@@ -54,8 +54,10 @@ public class reportesPLDController {
 	private static final Logger logger = Logger.getLogger(ReportesProductosConstroller.class);
 	
 	private static String nombreReporte = "";
+	private static String extensionReporte = "";
 	private static final String controllerReporte = "generarReporte";
 	private static final int opcBusquedaGrupo = 22;
+	private static final int opcBusquedaGrupo2 = 25;
 	private static final String nombrePantalla = "Reportes PLD";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
@@ -66,6 +68,7 @@ public class reportesPLDController {
 			
 			if(validarAcceso() == 1) {
 				model.addAttribute("cat_reportes_pld", iCatalogoRepository.generarOpciones(opcBusquedaGrupo));
+				model.addAttribute("cat_reportes_pld_ext", iCatalogoRepository.generarOpciones(opcBusquedaGrupo2));
 				//rutaDireccion = "reportesProductos/reportesProducto";
 				rutaDireccion = "reportesPLD/reportePLD";
 			}else {
@@ -83,7 +86,8 @@ public class reportesPLDController {
 			@RequestParam("idReporte") Integer idReporte
 			,@RequestParam("dtFechaInicio") String dtFechaInicio
 			,@RequestParam("dtFechaFin") String dtFechaFin
-			,@RequestParam("nombreReporteSelect") Integer nombreReporteSelect){
+			,@RequestParam("nombreReporteSelect") Integer nombreReporteSelect
+			,@RequestParam("extension") Integer extension){
 		
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
@@ -100,8 +104,20 @@ public class reportesPLDController {
 			
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			
+			if(extension == 2) {
+				
+				extensionReporte = ".pdf";
+				
+			}else if(extension == 1 ) {
+				
+				extensionReporte = ".xls";
+			}
+			
+			//String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
+					//+dtFechaInicio+"~FechaFin="+dtFechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OA";
+			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
-					+dtFechaInicio+"~FechaFin="+dtFechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OA";
+					+dtFechaInicio+"~FechaFin="+dtFechaFin+"&tipoDocumento="+extensionReporte+"&identificadorDoc=OA";
 					
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);

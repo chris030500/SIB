@@ -29,7 +29,7 @@
 					<legend class="float-none w-auto p-2">Generar Reporte</legend>
 					<div id="divTodos" class="container">
 							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<label class="col-form-label">Reporte</label>
 									<select class="form-control" id="idReportePLD">
 										<option value="0">Seleccione</option>
@@ -37,11 +37,19 @@
 											th:text="${listaReportes.v_valor}"></option>
 										</select>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
+									<label class="col-form-label">Extensión</label>
+									<select class="form-control" id="extReportePLD">
+										<option value="0">Seleccione</option>
+											<option th:each="listaReportes : ${cat_reportes_pld_ext}" th:value="${listaReportes.i_opcion}"
+											th:text="${listaReportes.v_valor}"></option>
+										</select>
+								</div>
+								<div class="col-md-3">
 									<label class="col-form-label"> Fecha de inicio</label>
 									<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<label class="col-form-label"> Fecha de fin</label>
 									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
 								</div>
