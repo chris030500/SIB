@@ -83,7 +83,7 @@
 					<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 					<div class="row" style="margin-top : 5px ">
 						<div class="col-lg-4">
-							<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
+							<button class="btn btn-secundary bg-info text-black" tabindex="0" data-bs-toggle="modal"
 								title="Agregar" data-bs-target="#altaPlantilla"
 								aria-controls="table-datatable" type="button" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
 								<i class="fa fa-plus-circle"></i> Alta Plantilla.
@@ -124,14 +124,36 @@
 			</div>
 			<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
 				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Cliente Bloqueante</legend>
-					
+					<legend class="float-none w-auto p-2">Clientes Bloqueados</legend>
+					<div class="row" style="margin-top : 15px ">
+						<div class="table-responsive">
+							<table class="table table-bordered table-striped" style="width: 200%;" id="tblClienteBloqueados">
+								<thead>
+									<tr>
+										<th># Cliente</th>
+										<th>Nombre Cliente</th>
+										<th>F. Bloqueo</th>
+										<th>Motivo de Bloqueo</th>
+										<th>Usuario Bloqueo</th>
+										<th>F. Vencimiento</th>
+										<th>Motivo de Desbloqueo</th>
+										<th>F. Desbloqueo</th>
+										<th>Usuario Desbloqueo</th>
+										<th>Estatus</th>
+										<th style="text-align: center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</fieldset>
 			</div>
 			</div>
 
 			<!--Modal Alta Plantilla SMS-->
-			<div class="modal" id="altaPlantilla">
+			<div class="modal fade" id="altaPlantilla" data-bs-backdrop="static" data-bs-keyboard="false">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
@@ -165,7 +187,7 @@
 										<div class="col-md-8">
 												<label class="col-form-label"> Contenido SMS:</label>
 													<textarea type="text-Area" class="form-control" id="txtContenido"
-														placeholder="Contenido SMS" maxlength="200" rows="4">
+														placeholder="Contenido SMS" maxlength="200" rows="4" selectionStart="0" selectionEnd="0" value="">
 													</textarea>
 												<div id="contador">0/200</div>
 										</div>
@@ -207,8 +229,60 @@
 			<!--FIN Alta Plantilla SMS-->
 			
 			<!--Modal Asignacion liquidados y renovados-->
-			<div class="modal" id="altaLiqRenovados">
+			<div class="modal fade" id="altaLiqRenovados" data-bs-backdrop="static" data-bs-keyboard="false">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
+							<div class="modal-body">
+								<div class="row" style="margin-top : 5px ">
+								<div class="col-lg-4">
+										<button class="btn btn-secundary bg-info text-white" tabindex="1" data-bs-toggle=""
+											title="Agregar" data-bs-target=""
+											aria-controls="table-datatable" type="button" th:onclick="'mostrarFormularioParams(0)'" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
+											<i class="fa fa-plus-circle"></i> Alta Parametro
+										</button>
+								</div>
+								<div class="col-lg-4"></div>
+								<div class="col-lg-4"></div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+									  <table class="table table-bordered table-striped" style="width: 120%;" id="tblParamsAsig">
+										<thead>
+										<tr>
+											<th>Tipo Asignación     </th>
+											<th>Tipo de Cliente     </th>
+											<th>Tipo de Cartera     </th>
+											<th>Prioridad</th>
+											<th>Usuario Registro    </th>
+											<th>Fecha de Registro   </th>
+											<th>Usuario Modifico    </th>
+											<th>Fecha de Modificación  </th>
+											<th>Porcentaje (%)  </th>
+											<th>Estatus</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									  </table>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelarAsig" th:onclick="'cerrarModalParams(1)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--FIN Modal Asignacion liquidados y renovados-->
+			<!--Registro parametros-->
+			<div class="modal fade" id="regParams" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+				<div class="modal-dialog modal-lg modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
@@ -267,48 +341,19 @@
 												</select>
 										</div>
 									</div>
-									<div class="row" style="margin-top : 15px ">
-											<div class="col-md-8"></div>
-											<div class="col-md-2"></div>
-											<div class="col-md-2">
-												<button type="button" class="btn btn-primary" data-dismiss="modal"
-													id="btnRegistrarAsig" th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
-											</div>
-									</div>
 								</form>
-								<div class="row" style="margin-top : 15px ">
-									<div class="table-responsive">
-									  <table class="table table-bordered table-striped" style="width: 120%;" id="tblParamsAsig">
-										<thead>
-										<tr>
-											<th>Tipo Asignación     </th>
-											<th>Tipo de Cliente     </th>
-											<th>Tipo de Cartera     </th>
-											<th>Prioridad</th>
-											<th>Usuario Registro    </th>
-											<th>Fecha de Registro   </th>
-											<th>Usuario Modifico    </th>
-											<th>Fecha de Modificación  </th>
-											<th>Estatus</th>
-											<th style="text-align: center;">Acciones</th>
-										</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									  </table>
-									</div>
-								</div>
-								</div>
+							</div>
 							<div class="modal-footer">
-								
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCancelarAsig" th:onclick="'cerrarModalParams()'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+													id="btnRegistrarAsig" th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCancelarReg" th:onclick="'cerrarModalParams(2)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
 							</div>
 						</fieldset>
 					</div>
 				</div>
 			</div>
-			<!--FIN Alta Plantilla SMS-->
+			<!--Registro parametros-->
 			
 
 		</div>
@@ -326,6 +371,7 @@
 		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
 		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
+		<script th:src="@{/js/menuProductos/clientesBloqueados.js}"></script>
 		<!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
 	</th:block>
 </body>

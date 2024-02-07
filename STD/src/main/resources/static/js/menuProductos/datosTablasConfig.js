@@ -58,7 +58,7 @@ var url = "";
 		 tblPlantillasSMS.clear().draw();
 		 $.each(data, function(idx, opt) {
 		 var botonesActivar = "";
-			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-white btn-xs' tabindex='0' "
+			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
 					+ " title='Actualizar Estatus'  type='button'"
 					+ " onclick='actualizarEstatus("
 					+ opt.pk_id_plantilla
@@ -68,7 +68,7 @@ var url = "";
 					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
 					+ "&nbsp;";*/
 		 var botonesEditar = "";
-			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-white btn-xs' tabindex='0' data-bs-toggle='modal'"
+			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
 					+ " onclick='editarPlantilla("
 					+ opt.pk_id_plantilla
@@ -81,6 +81,35 @@ var url = "";
 			 	
 			 tblPlantillasSMS.row.add([opt.vc_nombre_plantilla,opt.vc_contenido,opt.fk_ID_CLASIFICACION.fk_id_base.vc_nombre_base,opt.fk_ID_CLASIFICACION.vc_abreviacion_clasificacion,opt.i_usuario_registro.vc_nombre_usuario,opt.dt_fecha_registro,
 			 (opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),(opt.i_activo == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+		 });
+	 }); 
+ }
+ 
+
+/**
+ * Cargar tabla reglas de asignacion
+ */
+ var obtDatosClienteB = "clientes/obtClientes";
+ function obtTblClienteB(){
+	 url = getAbsolutePath()+obtDatosClienteB;
+	 $.getJSON(url, {}, function(data) {
+		 tblClienteBloqueados.clear().draw();
+		 $.each(data, function(idx, opt) {
+			var botonesActivar = "";
+			 		 botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='cambiarEstatusCliente(this)' id="
+					+ opt.pk_id_bloqueo
+					+ " for="
+					+ opt.i_estatus
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-unlock'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";
+
+			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento = null?'--/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'--':opt.vc_motivo_desbloqueo)
+			 ,(opt.dt_fecha_desbloqueo == null?'--/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
+			 
 		 });
 	 }); 
  }

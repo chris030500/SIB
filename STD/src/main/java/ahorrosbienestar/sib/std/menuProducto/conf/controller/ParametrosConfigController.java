@@ -46,7 +46,7 @@ public class ParametrosConfigController {
 	
 	private int catTipoEstatus = 16;
 	private int catTipoComodines = 17;
-	private int catTipoAsignacion = 15;
+	private int catTipoAsignacion = 21;
 	private int catTipoCliente = 18;
 	private int catTipoCartera = 19;
 	private int catTipoPrioridad = 20;
