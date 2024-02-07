@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.model.ClientesBloqueados;
 import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.repository.IClientesBloqueadosRepository;
@@ -30,5 +31,23 @@ public class ClientesBloqueadosService {
 			return null;
 		}
 		
+	}
+	
+	public Optional<ClientesBloqueados> findById(Integer idBloqueo){
+		try {
+			return iClientesBloqueadosRepository.findById(idBloqueo);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+	
+	public ClientesBloqueados save(ClientesBloqueados clientesBloqueados) {
+		try {
+			return iClientesBloqueadosRepository.save(clientesBloqueados);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
 	}
 }
