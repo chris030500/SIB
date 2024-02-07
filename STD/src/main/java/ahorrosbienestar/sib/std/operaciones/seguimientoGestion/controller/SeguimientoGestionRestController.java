@@ -330,6 +330,7 @@ public class SeguimientoGestionRestController {
 		//
 		if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
 			asignacion.setI_bloqueo(2);
+			asignacion.setI_estatus(2);
 			asignacionOfertasService.save(asignacion);
 		}
 		return asignacion.getI_bloqueo();
