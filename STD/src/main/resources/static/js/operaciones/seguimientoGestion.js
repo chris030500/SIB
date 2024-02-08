@@ -16,6 +16,7 @@ var newUrlBase = urlPrincipal.replace("/operaciones", "");
 window.onload = function() {
 	mostrarAlerta();
 	listaClientes();
+	obtenerSucursal();
 	// llenarTablaSeguimiento(false);
 }
 /**
@@ -60,11 +61,11 @@ document.addEventListener("DOMContentLoaded", function() {
  * Lista clientes
  */
 var buscarCliente = document.getElementById('buscarCliente');
-var spinner = document.getElementById("spinnerClientes");
+// var spinner = document.getElementById("spinnerClientes");
 var clienteValue;
 
 function listaClientes() {
-	spinner.style.display = "block";
+	// spinner.style.display = "block";
 	var buscar = buscarCliente.value;
 	$.ajax({
 		url: newUrlBase + "buscar_cliente_activo?valor=" + buscar,
@@ -83,7 +84,7 @@ function listaClientes() {
 			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
 			actualizarValorSeleccionado();
 			buscarCliente.disabled = false;
-			spinner.style.display = "none";
+			// spinner.style.display = "none";
 		}
 	});
 }
@@ -228,7 +229,7 @@ function validarGestion() {
 		if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '') {
 			const dto = {
 				asignacionOfertas: idOferta,
-				referencia: inputReferencia.value,
+				referencia: inputReferencia.textContent,
 				relacionCodigos: datosRelacion.pk_id_relacion_codigo,
 				descripcion: inputDescripcion.value,
 				fechaCita: inputFechaCita.value,
@@ -245,7 +246,7 @@ function validarGestion() {
 		if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '') {
 			const dto = {
 				asignacionOfertas: idOferta,
-				referencia: inputReferencia.value,
+				referencia: inputReferencia.textContent,
 				relacionCodigos: datosRelacion.pk_id_relacion_codigo,
 				descripcion: inputDescripcion.value,
 				fechaGestion: inputFechaGestion.value
@@ -278,7 +279,7 @@ function datosDeCliente(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			//console.log(respuesta);
-			inputReferencia.value = respuesta.cliente[0].vc_cod_referencia;
+			inputReferencia.textContent = respuesta.cliente[0].vc_cod_referencia;
 		}, error: function(error) {
 			//console.log(error);
 		}
@@ -332,7 +333,7 @@ let bloqueoAsignacion;
 
 function mostrarGestion(id, asignacion, bloqueo) {
 	bloqueoAsignacion = bloqueo;
-	document.getElementById("numCliente").value = id;
+	document.getElementById("numCliente").textContent = id;
 	idOferta = asignacion;
 	$('#modal-seguimiento').modal('show');
 	listaDeGestiones();
@@ -357,6 +358,8 @@ function limpiarVariablesModal() {
 	alertas.forEach(alerta => {
 		document.getElementById(`${alerta}`).style.display = 'none';
 	});
+	document.getElementById("vistaAccionRealizar").style.display = "none";
+	document.getElementById("accionRealizar").textContent = '';
 }
 /**
  * Fin
@@ -412,11 +415,13 @@ searchInput.addEventListener('change', function() {
 	if (almacen.listaRelaciones && almacen.listaRelaciones.length > 0) {
 		//
 		datosRelacion = almacen.listaRelaciones.find(item => item.relacion_codigos == selectedValue);
-		console.log(datosRelacion);
+		//console.log(datosRelacion);
 		if (datosRelacion != undefined) {
-			inputAccionRealizar.value = datosRelacion.v_valor;
+			document.getElementById("vistaAccionRealizar").style.display = "block";
+			inputAccionRealizar.textContent = datosRelacion.v_valor;
 		} else {
-			inputAccionRealizar.value = '';
+			document.getElementById("vistaAccionRealizar").style.display = "none";
+			inputAccionRealizar.textContent = '';
 		}
 		//
 		if (datosRelacion && datosRelacion.v_valor == "MOSTRAR CALENDARIO") {
@@ -480,7 +485,7 @@ function edtiarSegGestion(id) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log(respuesta.model);
+			//console.log(respuesta.model);
 			/*inputDescripcion.value = respuesta.model.vc_descripcion;
 			inputFechaCita.value = respuesta.model.dt_fecha_cita;
 			inputFechaGestion.value = respuesta.model.dt_fecha_gestion_realizada;*/
@@ -522,7 +527,7 @@ function todosLosEstatus() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log(respuesta.lista);
+			//console.log(respuesta.lista);
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
@@ -542,15 +547,17 @@ function todosLosEstatus() {
 /**
  * Gráfica
  */
+var myChart;
+
 function createChart() {
-	console.log(listaDeEstatus);
-	console.log(listaDeTotales);
+	//console.log(listaDeEstatus);
+	//console.log(listaDeTotales);
 
 	// Datos de ejemplo para la gráfica
 	var data = {
 		labels: listaDeEstatus,
 		datasets: [{
-			label: 'Estatus',
+			label: 'Total',
 			backgroundColor: 'rgba(75, 192, 192, 0.2)',
 			borderColor: 'rgba(75, 192, 192, 1)',
 			borderWidth: 1,
@@ -569,7 +576,7 @@ function createChart() {
 
 	// Crear la instancia de la gráfica de barras
 	var ctx = document.getElementById('myChart').getContext('2d');
-	var myChart = new Chart(ctx, {
+	myChart = new Chart(ctx, {
 		type: 'bar',
 		data: data,
 		options: options
@@ -586,13 +593,58 @@ function createChart() {
  */
 function cerrarModalAlertas(valor) {
 	$('#modal-' + valor).modal('hide');
+	// Limpiar datos de la gráfica
 	listaDeEstatus = [];
 	listaDeTotales = [];
+	// Destruir la instancia de la gráfica
+	if (myChart) {
+		myChart.destroy();
+	}
 }
 
 function mostrarAlerta() {
 	$('#modal-alerta').modal('show');
 	todosLosEstatus();
+}
+
+document.addEventListener('click', function(event) {
+	var modal = document.getElementById('modal-alerta');
+	// Verificar si el clic no está dentro de la modal
+	if (modal && !modal.contains(event.target)) {
+		// Limpiar datos de la gráfica
+		listaDeEstatus = [];
+		listaDeTotales = [];
+		// Destruir la instancia de la gráfica
+		if (myChart) {
+			myChart.destroy();
+		}
+	}
+});
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Obtener la sucursal del usuario logueado
+ */
+function obtenerSucursal() {
+	$.ajax({
+		url: newUrlBase + "obtener_sucursal_empleado",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			//console.log(respuesta.lista);
+			respuesta.lista.forEach(function(elemento) {
+				listaDeEstatus.push(elemento.v_valor);
+				listaDeTotales.push(elemento.total_registros);
+			});
+
+			// Llamar a la función para crear la gráfica después de obtener los datos
+			createChart();
+		}
+	});
 }
 /**
  * Fin

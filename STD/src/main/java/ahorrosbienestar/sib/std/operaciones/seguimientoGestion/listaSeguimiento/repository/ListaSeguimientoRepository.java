@@ -78,8 +78,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A' and aoa.I_ACTIVO=1)tB"
 			+ " INNER JOIN SIB.TBL_CLIENTES_ACTIVOS cA ON cA.I_ClienteID = tB.I_CLIENTEID AND cA.C_ESTATUS = 'A'"
 			+ " INNER JOIN SIB.TBL_SUCURSALES suc ON suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
-			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE ON ctE.I_OPCION = tB.i_estatus AND ctE.I_ID_GRUPO = 14"
-			+ " LIMIT 10", nativeQuery = true)
+			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE ON ctE.I_OPCION = tB.i_estatus AND ctE.I_ID_GRUPO = 14", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimiento();
 	
 	

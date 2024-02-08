@@ -2,33 +2,33 @@ package ahorrosbienestar.sib.std.usuarios.dto;
 
 public class MicrofinUsuarioDTO {
 
-	private int usuarioId;
-	private int empleadoID;
+	private String usuarioId;
+	private String empleadoID;
 	private String clavePuestoID;
 	private String nombre;
 	private String apPaterno;
 	private String apMaterno;
 	private String nombreCompleto;
 	private String clave;
-	private int estatus;
+	private String estatus;
 	private String correo;
-	private int sucursalUsuario;
+	private String sucursalUsuario;
 	private String semilla;
 	private String rfc;
 
-	public int getUsuarioId() {
+	public String getUsuarioId() {
 		return usuarioId;
 	}
 
-	public void setUsuarioId(int usuarioId) {
+	public void setUsuarioId(String usuarioId) {
 		this.usuarioId = usuarioId;
 	}
 
-	public int getEmpleadoID() {
+	public String getEmpleadoID() {
 		return empleadoID;
 	}
 
-	public void setEmpleadoID(int empleadoID) {
+	public void setEmpleadoID(String empleadoID) {
 		this.empleadoID = empleadoID;
 	}
 
@@ -80,11 +80,11 @@ public class MicrofinUsuarioDTO {
 		this.clave = clave;
 	}
 
-	public int getEstatus() {
+	public String getEstatus() {
 		return estatus;
 	}
 
-	public void setEstatus(int estatus) {
+	public void setEstatus(String estatus) {
 		this.estatus = estatus;
 	}
 
@@ -96,11 +96,11 @@ public class MicrofinUsuarioDTO {
 		this.correo = correo;
 	}
 
-	public int getSucursalUsuario() {
+	public String getSucursalUsuario() {
 		return sucursalUsuario;
 	}
 
-	public void setSucursalUsuario(int sucursalUsuario) {
+	public void setSucursalUsuario(String sucursalUsuario) {
 		this.sucursalUsuario = sucursalUsuario;
 	}
 
