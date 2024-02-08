@@ -85,6 +85,41 @@ var url = "";
 	 }); 
  }
  
+ var obtDatosMensajeSMS = "mensajes/obtSMS";
+ function listaMensajes(){
+	 url = getAbsolutePath()+obtDatosMensajeSMS;
+	 $.getJSON(url, {}, function(data) {
+		 tblMensajesGenerados.clear().draw();
+		 $.each(data, function(idx, opt) {
+			 console.log(opt);
+		 var botonesActivar = "";
+			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='actualizarEstatus("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";*/
+		 var botonesEditar = "";
+			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarPlantilla("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
+				
+			 	botones = botonesActivar+botonesEditar;
+			 	
+			 tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+		 });
+	 }); 
+ }
+ 
+ 
 
 /**
  * Cargar tabla reglas de asignacion

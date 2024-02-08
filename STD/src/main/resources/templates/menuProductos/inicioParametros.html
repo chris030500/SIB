@@ -24,94 +24,296 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="p-4 border rounded-3 mb-4">
 				<ul class="nav nav-pills" id="pntConf" role="tablist">
-          			<li class="nav-item" role="presentation">
-            			<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros Generales</button>
-          			</li>
-          			<li class="nav-item" role="presentation">
-            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="reglas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
-          			</li>
-          			<li class="nav-item" role="presentation">
-            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="plantillas-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes SMS</button>
-          			</li>
-          			<li class="nav-item" role="presentation">
-            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="sms-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
-          			</li>
-          			<li class="nav-item" role="presentation">
-            			<button onclick="ocultarMostrar(this)"  class="nav-link" id="bloqueados-tab" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
-          			</li>
-        		</ul>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros
+							Generales</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="reglas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes
+							SMS</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="sms-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="bloqueados-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
+					</li>
+				</ul>
 			</div>
-			
+
 			<div id="pant-tabs">
-			<div id="params-tab1" class="container" style="display: block;" for="1">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Parametros Generales</legend>
-					<div class="row" style="margin-top : 15px ">
-						
-					</div>
-				</fieldset>
-			</div>
-			<div id="reglas-tab1" class="container" style="display:none;" for="2">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
-					<div class="row" style="margin-top : 15px ">
+				<div id="params-tab1" class="container" style="display: block;" for="1">
+					<fieldset class="border p-3">
+						<legend class="float-none w-auto p-2">Parametros Generales</legend>
+						<div class="row">
+							<div class="container mt-4">
+								<form th:action="@{/configuraciones/guardar-configuracion}" method="post">
+									<h2 class="mb-4">Configuración del Sistema</h2>
+
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<tbody>
+												<tr>
+													<td>Vigencia de una gestión (días):</td>
+													<td>
+														<input type="number" class="form-control"
+															th:name="vigenciaGestion" th:value="${param_1}"
+															th:required="true">
+													</td>
+												</tr>
+												<tr>
+													<td>Días por Vencer:</td>
+													<td>
+														<input type="number" class="form-control" th:name="diasVencer"
+															th:value="${param_2}" th:required="true">
+													</td>
+												</tr>
+												<tr>
+													<td>Tipo de Días:</td>
+													<td>
+														<select class="form-control" name="tipoDias">
+															<option value="1" th:selected="${param_3 == '1'}">Tipo
+																Naturales</option>
+															<option value="2" th:selected="${param_3 == '2'}">Tipo Días
+																Hábiles</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td>Asignación por Última Gestión:</td>
+													<td>
+														<select class="form-control" name="asignacionUltimaGestion">
+															<option value="1" th:selected="${param_4 == '1'}">SI
+															</option>
+															<option value="2" th:selected="${param_4 == '2'}">NO
+															</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
+													<td>Usuario Desbloqueo Clientes:</td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioDesbloqueo" th:value="${param_5}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td>Usuario SMS Calixta:</td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioSMS" th:value="${param_6}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td>Usuarios Administradores Ofertas Automáticas:</td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioAdmin" th:value="${param_7}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td>Usuario Gestor:</td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioGestor" th:value="${param_8}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<td>Usuario Consulta:</td>
+													<td>
+														<div class="col-sm-12">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="usuarioConsulta" th:value="${param_9}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h3 class="mt-4">Datos conexión al servicio de Calixta</h3>
+
+									<div class="table-responsive">
+										<table class="table table-bordered">
+											<tr>
+												<td>Usuario Calixta:</td>
+												<td>
+													<div class="col-sm-12">
+														<input type="search" class="form-control" id="searchInput"
+															list="opciones" autocomplete="off" placeholder="Usuario"
+															th:name="usuarioCalix" th:value="${param_10}"
+															th:required="true">
+														<!-- Lista de opciones para el datalist -->
+														<datalist id="opciones">
+															<option th:each="usuario : ${usuarios}"
+																th:value="${usuario.vc_nombre_usuario}"></option>
+														</datalist>
+														<p id="errorSucursal"
+															style="color: red; display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>Contraseña Calixta:</td>
+												<td>
+													<input type="password" class="form-control" th:name="passCalix"
+														th:value="${param_11}" th:required="true">
+												</td>
+											</tr>
+											<tr>
+												<td>Servicio WS Calixta:</td>
+												<td>
+													<input type="text" class="form-control" th:name="serviWS"
+														th:value="${param_12}" th:required="true">
+												</td>
+											</tr>
+										</table>
+									</div>
+
+									<!-- Botón de Enviar -->
+									<button type="submit" class="btn btn-primary mt-4">Guardar Configuración</button>
+								</form>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<div id="reglas-tab1" class="container" style="display:none;" for="2">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
+						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 120%;" id="tblReglasAsignacion">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Regla de Asignacion</th>
-										<th>Vigencia</th>
-										<th>Estatus</th>
-										<th>Usuario Modifico</th>
-										<th>Fecha Modificación</th>
-										<th>Acciones</th>
-									</tr>
-								</thead>
-								<tbody></tbody>
-							</table>
+								<table class="table table-bordered table-striped" style="width: 120%;"
+									id="tblReglasAsignacion">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Regla de Asignacion</th>
+											<th>Vigencia</th>
+											<th>Estatus</th>
+											<th>Usuario Modifico</th>
+											<th>Fecha Modificación</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+
 						</div>
-						
-					</div>
-				</fieldset>
-			</div>
-			<div id="plantillas-tab1" class="container" style="display:none;" for="3">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
-					<div class="row" style="margin-top : 5px ">
-						<div class="col-lg-4">
-							<button class="btn btn-secundary bg-info text-black" tabindex="0" data-bs-toggle="modal"
-								title="Agregar" data-bs-target="#altaPlantilla"
-								aria-controls="table-datatable" type="button" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
-								<i class="fa fa-plus-circle"></i> Alta Plantilla.
-							</button>
+					</fieldset>
+				</div>
+				<div id="plantillas-tab1" class="container" style="display:none;" for="3">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-lg-4">
+								<button class="btn btn-secundary bg-info text-black" tabindex="0" data-bs-toggle="modal"
+									title="Agregar" data-bs-target="#altaPlantilla" aria-controls="table-datatable"
+									type="button" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
+									<i class="fa fa-plus-circle"></i> Alta Plantilla.
+								</button>
+							</div>
+							<div class="col-lg-4"></div>
+							<div class="col-lg-4"></div>
 						</div>
-						<div class="col-lg-4"></div>
-						<div class="col-lg-4"></div>
-					</div>
-					<div class="row" style="margin-top : 15px ">
-						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlantillasSMS">
-								<thead>
-									<tr>
-										<th>Nombre Plantilla</th>
-										<th>Descripcion</th>
-										<th>Tipo Campaña</th>
-										<th>Clasificacion</th>
-										<th>Usuario Registro</th>
-										<th>Fecha de Registro   </th>
-										<th>Usuario Modifico</th>
-										<th>Fecha de Modificación</th>
-										<th>Estatus</th>
-										<th style="text-align: center;">Acciones</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
+						<div class="row" style="margin-top : 15px ">
+							<div class="table-responsive">
+								<table class="table table-bordered table-striped" style="width: 120%;"
+									id="tblPlantillasSMS">
+									<thead>
+										<tr>
+											<th>Nombre Plantilla</th>
+											<th>Descripcion</th>
+											<th>Tipo Campaña</th>
+											<th>Clasificacion</th>
+											<th>Usuario Registro</th>
+											<th>Fecha de Registro </th>
+											<th>Usuario Modifico</th>
+											<th>Fecha de Modificación</th>
+											<th>Estatus</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</fieldset>
@@ -159,16 +361,19 @@
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Alta Plantillas de SMS</legend>
 							<div class="modal-body">
-								<form id="edit-form" ><!--th:method="post" th:object="${folios}">-->
+								<form id="edit-form"><!--th:method="post" th:object="${folios}">-->
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
 											<label for="lblNombrePlantilla">Nombre de la Plantilla:</label>
-											<input type="text" class="form-control" id="inpNombrePlantilla" maxlength="50" placeholder="Nombre de la Plantilla"><!-- onkeyup="mayusculas(this);"-->
+											<input type="text" class="form-control" id="inpNombrePlantilla"
+												maxlength="50"
+												placeholder="Nombre de la Plantilla"><!-- onkeyup="mayusculas(this);"-->
 											<div id="contNomPlant">0/50</div>
 										</div>
 										<div class="col-md-4">
 											<label for="base">Tipo de Campaña: </label>
-											<select class="form-control" id="slcCampania" onchange="obtDatosClass(this)">
+											<select class="form-control" id="slcCampania"
+												onchange="obtDatosClass(this)">
 												<option value="0">Seleccione</option>
 												<option th:each="base : ${bases}" th:value="${base.pk_id_base}"
 													th:text="${base.vc_nombre_base}">
@@ -177,9 +382,10 @@
 										</div>
 										<div class="col-md-4">
 											<label for="base">Clasificación de Campaña: </label>
-											<select class="form-control" id="slcClasificacion"><!--onchange="mostrarMensaje(this)"-->
+											<select class="form-control"
+												id="slcClasificacion"><!--onchange="mostrarMensaje(this)"-->
 												<option value="0">Seleccione</option>
-												
+
 											</select>
 										</div>
 									</div>
@@ -189,12 +395,12 @@
 													<textarea type="text-Area" class="form-control" id="txtContenido"
 														placeholder="Contenido SMS" maxlength="200" rows="4" selectionStart="0" selectionEnd="0" value="">
 													</textarea>
-												<div id="contador">0/200</div>
+											<div id="contador">0/200</div>
 										</div>
 										<div class="col-md-4">
 											<label class="col-form-label"> Referencias a Utilizar (Comodines): </label>
 											<select multiple class="form-control" id="slcComodines" disabled>
-												
+
 												<option th:each="opcionTipo : ${cat_tipo_comodines}"
 													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
 												</option>
@@ -217,17 +423,17 @@
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnRegistrar" th:onclick="'eventoGuardar()'">Registrar</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCancelar" th:onclick="'eventoCerrar()'">Cerrar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrar"
+									th:onclick="'eventoGuardar()'">Registrar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelar"
+									th:onclick="'eventoCerrar()'">Cerrar</button>
 							</div>
 						</fieldset>
 					</div>
 				</div>
 			</div>
 			<!--FIN Alta Plantilla SMS-->
-			
+
 			<!--Modal Asignacion liquidados y renovados-->
 			<div class="modal fade" id="altaLiqRenovados" data-bs-backdrop="static" data-bs-keyboard="false">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
@@ -236,44 +442,47 @@
 							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
 							<div class="modal-body">
 								<div class="row" style="margin-top : 5px ">
-								<div class="col-lg-4">
-										<button class="btn btn-secundary bg-info text-white" tabindex="1" data-bs-toggle=""
-											title="Agregar" data-bs-target=""
-											aria-controls="table-datatable" type="button" th:onclick="'mostrarFormularioParams(0)'" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
+									<div class="col-lg-4">
+										<button class="btn btn-secundary bg-info text-white" tabindex="1"
+											data-bs-toggle="" title="Agregar" data-bs-target=""
+											aria-controls="table-datatable" type="button"
+											th:onclick="'mostrarFormularioParams(0)'"
+											data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
 											<i class="fa fa-plus-circle"></i> Alta Parametro
 										</button>
-								</div>
-								<div class="col-lg-4"></div>
-								<div class="col-lg-4"></div>
+									</div>
+									<div class="col-lg-4"></div>
+									<div class="col-lg-4"></div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-									  <table class="table table-bordered table-striped" style="width: 120%;" id="tblParamsAsig">
-										<thead>
-										<tr>
-											<th>Tipo Asignación     </th>
-											<th>Tipo de Cliente     </th>
-											<th>Tipo de Cartera     </th>
-											<th>Prioridad</th>
-											<th>Usuario Registro    </th>
-											<th>Fecha de Registro   </th>
-											<th>Usuario Modifico    </th>
-											<th>Fecha de Modificación  </th>
-											<th>Porcentaje (%)  </th>
-											<th>Estatus</th>
-											<th style="text-align: center;">Acciones</th>
-										</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									  </table>
+										<table class="table table-bordered table-striped" style="width: 120%;"
+											id="tblParamsAsig">
+											<thead>
+												<tr>
+													<th>Tipo Asignación </th>
+													<th>Tipo de Cliente </th>
+													<th>Tipo de Cartera </th>
+													<th>Prioridad</th>
+													<th>Usuario Registro </th>
+													<th>Fecha de Registro </th>
+													<th>Usuario Modifico </th>
+													<th>Fecha de Modificación </th>
+													<th>Porcentaje (%) </th>
+													<th>Estatus</th>
+													<th style="text-align: center;">Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
 									</div>
 								</div>
 							</div>
 							<div class="modal-footer">
-								
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCancelarAsig" th:onclick="'cerrarModalParams(1)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+
+								<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarAsig"
+									th:onclick="'cerrarModalParams(1)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
 							</div>
 						</fieldset>
 					</div>
@@ -287,74 +496,75 @@
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
 							<div class="modal-body">
-								<form id="edit-form" ><!--th:method="post" th:object="${folios}">-->
+								<form id="edit-form"><!--th:method="post" th:object="${folios}">-->
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
 											<label for="slAsignar">Asignar a:</label>
 											<select class="form-control" id="slAsignar">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_asignacion}"
-														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
 												</option>
 											</select>
 										</div>
 										<div class="col-md-4">
 											<label for="lblPorcentaje">% Registros:</label>
-											<input type="number" class="form-control" id="porcRegistros" min="1" max="100" maxlength="3" minlength="1" value="1">
+											<input type="number" class="form-control" id="porcRegistros" min="1"
+												max="100" maxlength="3" minlength="1" value="1">
 										</div>
 										<div class="col-md-4">
 											<label for="lblTipoCliente">Tipo de Cliente:</label>
 											<select class="form-control" id="tipoCliente">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_cliente}"
-														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-													</option>
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
 											</select>
 										</div>
 									</div>
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
-												<label for="lblTipoCartera">Tipo de Cartera:</label>
-												<select class="form-control" id="slcTipoCartera">
-													<option value="0">Seleccione</option>
-													<option th:each="opcionTipo : ${cat_tipo_cartera}"
-														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-													</option>
-												</select>
+											<label for="lblTipoCartera">Tipo de Cartera:</label>
+											<select class="form-control" id="slcTipoCartera">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_cartera}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
 										</div>
 										<div class="col-md-4">
 											<label for="lblPrioridad">Prioridad:</label>
-												<select class="form-control" id="tipoPrioridad">
-													<option value="0">Seleccione</option>
-													<option th:each="opcionTipo : ${cat_tipo_prioridad}"
-														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-													</option>
-												</select>
+											<select class="form-control" id="tipoPrioridad">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_prioridad}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
 										</div>
 										<div class="col-md-4">
-											<label id="lblEstatus">Estatus</label>											
-												<select class="form-control" id="slEstatus">
-													<option value="0">Seleccione</option>
-													<option th:each="opcionTipo : ${cat_tipo_estatus}"
-														th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-													</option>
-												</select>
+											<label id="lblEstatus">Estatus</label>
+											<select class="form-control" id="slEstatus">
+												<option value="0">Seleccione</option>
+												<option th:each="opcionTipo : ${cat_tipo_estatus}"
+													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+												</option>
+											</select>
 										</div>
 									</div>
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-													id="btnRegistrarAsig" th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCancelarReg" th:onclick="'cerrarModalParams(2)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+								<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrarAsig"
+									th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
+								<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarReg"
+									th:onclick="'cerrarModalParams(2)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
 							</div>
 						</fieldset>
 					</div>
 				</div>
 			</div>
 			<!--Registro parametros-->
-			
+
 
 		</div>
 	</section>
@@ -369,6 +579,7 @@
 		<script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
 		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
 		<script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
+		<script th:src="@{/js/menuProductos/administracionSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
 		<script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
 		<script th:src="@{/js/menuProductos/clientesBloqueados.js}"></script>

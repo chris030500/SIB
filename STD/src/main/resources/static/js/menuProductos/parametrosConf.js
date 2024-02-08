@@ -10,12 +10,18 @@ function ocultarMostrar(divEl){
   idDiv = id+1;
   opcion = "#pant-tabs"+" #"+idDiv;
   switch ($(opcion).attr("for")){
+    case "1":
+      console.log("Parametros");
+      break;
     case "2":
       obtTblReglas();
+
       break;
     case "3":
       obtTblPlantillas();
       break;
+ 	case "4":
+      listaMensajes();
      case "5":
       obtTblClienteB();
       break;
