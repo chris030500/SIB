@@ -341,15 +341,37 @@
 									</div>
 
 									<div class="col-md-4 mb-3" id="clientSearchField">
-										<label for="clientSearchInput">Buscar Cliente:</label>
-										<input type="text" class="form-control" id="clientSearchInput"
-											name="clientSearchInput" placeholder="Nombre del cliente">
+										<div class="row">
+											<div class="col-md-10">
+												<label for="clientSearchInput">Buscar Cliente:</label>
+												<input type="search" class="form-control" id="buscarCliente"
+													list="opcionCliente" autocomplete="off" placeholder="Buscar cliente"
+													disabled>
+												<datalist id="opcionCliente"></datalist>
+											</div>
+											<div class="col-md-2">
+												<div id="spinnerClientes" style="padding-top: 25px; display: none;">
+													<div class="spinner-border" style="color: #0dcaf0;"></div>
+												</div>
+											</div>
+										</div>
 									</div>
 
 									<div class="col-md-4 mb-3" id="branchSearchField" style="display: none;">
-										<label for="branchSearchInput">Buscar Sucursal:</label>
-										<input type="text" class="form-control" id="branchSearchInput"
-											name="branchSearchInput" placeholder="Nombre de la sucursal">
+										<div class="row">
+											<div class="col-md-10">
+												<label for="branchSearchInput">Buscar Sucursal:</label>
+												<input type="search" class="form-control" id="buscarSucursal"
+													list="opcionSucursal" autocomplete="off"
+													placeholder="Buscar sucursal" disabled>
+												<datalist id="opcionSucursal"></datalist>
+											</div>
+											<div class="col-md-2">
+												<div id="spinnerClientes" style="padding-top: 25px; display: none;">
+													<div class="spinner-border" style="color: #0dcaf0;"></div>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 
@@ -369,54 +391,27 @@
 
 							<!-- Tabla con SMS Generados -->
 							<h4 class="mt-4">SMS Generados</h4>
-							<table class="table">
-								<thead>
-									<tr>
-										<th>Seleccionar</th>
-										<th>Cliente</th>
-										<th>Nombre de cliente</th>
-										<th>Tipo Campaña</th>
-										<th>Clasificación de Campañas</th>
-										<th>Numero Celular</th>
-										<th>Descripción de SMS</th>
-										<th>Estatus SMS</th>
-										<th>Acciones</th>
-									</tr>
-								</thead>
-								<tbody>
-									<!-- Aquí cargarías dinámicamente los SMS desde tu backend -->
-									<tr>
-										<td><input type="checkbox"></td>
-										<td>Cliente 1</td>
-										<td>Nombre Cliente 1</td>
-										<td>Tipo Campaña 1</td>
-										<td>Clasificación 1</td>
-										<td>123456789</td>
-										<td>Descripción SMS 1</td>
-										<td>Enviado</td>
-										<td>
-											<button type="button" class="btn btn-info btn-sm">Editar</button>
-											<button type="button" class="btn btn-success btn-sm">Enviar SMS</button>
-											<button type="button" class="btn btn-danger btn-sm">Eliminar</button>
-										</td>
-									</tr>
-									<tr>
-										<td><input type="checkbox"></td>
-										<td>Cliente 2</td>
-										<td>Nombre Cliente 2</td>
-										<td>Tipo Campaña 2</td>
-										<td>Clasificación 2</td>
-										<td>987654321</td>
-										<td>Descripción SMS 2</td>
-										<td>Pendiente</td>
-										<td>
-											<button type="button" class="btn btn-info btn-sm">Editar</button>
-											<button type="button" class="btn btn-success btn-sm">Enviar SMS</button>
-											<button type="button" class="btn btn-danger btn-sm">Eliminar</button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+							<div class="row" style="margin-top : 15px ">
+								<div class="table-responsive">
+									<table class="table table-bordered table-striped" style="width: 120%;"
+										id="tblMensajesGenerados">
+										<thead>
+											<tr>
+												<th>Cliente</th>
+												<th>Nombre de cliente</th>
+												<th>Tipo Campaña</th>
+												<th>Clasificación de Campañas</th>
+												<th>Numero Celular</th>
+												<th>Descripción de SMS</th>
+												<th>Estatus SMS</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
 						</div>
 					</fieldset>
 				</div>

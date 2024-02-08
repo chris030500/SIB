@@ -49,7 +49,7 @@ public class ParametrosConfigController {
 	
 	@Autowired
 	private UsuarioService usuarioService;
-
+	
 	private int catTipoEstatus = 16;
 	private int catTipoComodines = 17;
 	private int catTipoAsignacion = 21;

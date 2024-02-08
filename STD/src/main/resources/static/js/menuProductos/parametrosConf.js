@@ -19,6 +19,9 @@ function ocultarMostrar(divEl){
       break;
     case "3":
       obtTblPlantillas();
+      
+    case "4":
+      listaMensajes();
      
       break;
     default:

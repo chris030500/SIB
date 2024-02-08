@@ -4,6 +4,7 @@
 var tblReglasAsignacion;
 var tblPlantillasSMS;
 var tblParamsAsig;
+var tblMensajesGenerados;
 $(document).ready(function() {
 	
 	tblReglasAsignacion = $("#tblReglasAsignacion").DataTable({
@@ -26,6 +27,15 @@ $(document).ready(function() {
 		}]
 	});
 	tblParamsAsig = $("#tblParamsAsig").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	tblMensajesGenerados = $("#tblMensajesGenerados").DataTable({
 		"language": {
 			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},
