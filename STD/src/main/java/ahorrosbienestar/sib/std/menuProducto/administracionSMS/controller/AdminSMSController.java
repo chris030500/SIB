@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsignacion;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoAsignacionService;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.adminSMSService;
@@ -44,12 +45,9 @@ public class AdminSMSController {
 	public ResponseEntity<?> obtProcesos() {
 		try {
 			logger.info("/obtProcesos");
-			System.out.println("Entra a controlador");
-			List<Integer> procesos = procesoService.procesosId();
-			System.out.println(procesos);
+			List<ProcesoAsignacion> procesos = procesoService.procesosId();
 			return ResponseEntity.ok((procesos != null) ? procesos : Collections.emptyList());
 		} catch (Exception e) {
-			System.out.println("Error:" + e.getMessage());
 			logger.error("Error:" + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en el servidor");
 		}

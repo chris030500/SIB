@@ -74,7 +74,6 @@ var errorTelefono = document.getElementById("errorTelefono");
 var soloTelefono = document.getElementById("soloTelefono");
 var errorExtension = document.getElementById("errorExtension");
 var soloExtension = document.getElementById("soloExtension");
-var errorComentarios = document.getElementById("errorComentarios");
 var errorSucursal = document.getElementById("errorSucursal");
 var minimoUno = document.getElementById("minimoUno");
 
@@ -88,10 +87,6 @@ formExtension.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	errorExtension.style.display = "none";
 	soloExtension.style.display = "none";
-});
-formComentarios.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorComentarios.style.display = "none";
 });
 formSucursal.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -113,7 +108,6 @@ function validarFormTelefonos() {
 
 	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
 	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
-	comentarios == "" ? errorComentarios.style.display = "block" : errorComentarios.style.display = "none";
 	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
@@ -121,7 +115,7 @@ function validarFormTelefonos() {
 	datosChips == "" ? minimoUno.style.display = "block" : minimoUno.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "" && sucursal != "") {
+	if (telefono != "" && extension != "" && sucursal != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
 				// Se llena el DTO
@@ -149,7 +143,6 @@ var alertaTel = document.getElementById("alertaTel");
 var alertaTel1 = document.getElementById("alertaTel1");
 var alertaExt = document.getElementById("alertaExt");
 var alertaExt1 = document.getElementById("alertaExt1");
-var alertaCom = document.getElementById("alertaCom");
 
 // Agrega un evento de entrada al campo de texto
 formTelefonoE.addEventListener("input", function() {
@@ -161,10 +154,6 @@ formExtensionE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-});
-formComentariosE.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	alertaCom.style.display = "none";
 });
 formCorreoE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -181,14 +170,13 @@ function validarEditarTel(id) {
 
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
-	comentarios == "" ? alertaCom.style.display = "block" : alertaCom.style.display = "none";
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
 
 	datosChipsE == "" ? minimoUnoE.style.display = "block" : minimoUnoE.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "") {
+	if (telefono != "" && extension != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
 				// Se llena el DTO
@@ -213,7 +201,6 @@ function limpiarFormTelefonos() {
 	document.getElementById('correoElectronico').value = '';
 	errorTelefono.style.display = "none";
 	errorExtension.style.display = "none";
-	errorComentarios.style.display = "none";
 	errorSucursal.style.display = "none";
 	soloTelefono.style.display = "none";
 	soloExtension.style.display = "none";
@@ -383,7 +370,6 @@ function limpiarAlertas() {
 	alertaTel1.style.display = "none";
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-	alertaCom.style.display = "none";
 	document.getElementById('correoElectronicoE').value = '';
 	document.getElementById('minimoUnoE').style.display = "none";
 	document.getElementById('soloCorreosE').style.display = "none";
@@ -1329,8 +1315,8 @@ function listaDeRelaciones() {
 
 				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 
-				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "-";
-				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "-";
+				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "";
+				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "";
 
 				vistaTablaRel.row.add([
 					opt.pk_id_relacion_codigo,

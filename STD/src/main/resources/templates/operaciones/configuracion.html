@@ -229,7 +229,8 @@
 										<form name="formulario" id="formTelefono">
 											<div class="row">
 												<div class="col-sm-12">
-													<label for="searchInput">Buscar sucursal:</label>
+													<label for="searchInput">Buscar sucursal:</label><span
+														style="color: red;">*</span>
 													<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
 													<input type="search" class="form-control" id="searchInput"
 														list="opciones" autocomplete="off"
@@ -247,7 +248,7 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-6">
 													<div class="form-group">
-														<label>Teléfono:</label>
+														<label>Teléfono:</label><span style="color: red;">*</span>
 														<input type="text" pattern="[0-9]*" maxlength="10"
 															class="form-control" id="telefono" required>
 														<p id="errorTelefono"
@@ -262,8 +263,8 @@
 												</div>
 												<div class="col-sm-6">
 													<div class="form-group">
-														<label>Extensión:</label>
-														<input type="text" pattern="[0-9]*" maxlength="3"
+														<label>Extensión:</label><span style="color: red;">*</span>
+														<input type="text" pattern="[0-9]*" maxlength="5"
 															class="form-control" id="extension" required>
 														<p id="errorExtension"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
@@ -271,14 +272,15 @@
 														</p>
 														<p id="soloExtension"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
-															<i><b>solo números, 3 carácteres</b></i>
+															<i><b>solo números, 5 carácteres</b></i>
 														</p>
 													</div>
 												</div>
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-8">
-													<label>Correos electrónicos:</label>
+													<label>Correos electrónicos:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="correoElectronico"
 														required oninput="verificarInput()">
 													<p id="minimoUno"
@@ -357,7 +359,7 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-6">
 													<div class="form-group">
-														<label>Teléfono:</label>
+														<label>Teléfono:</label><span style="color: red;">*</span>
 														<input type="text" pattern="[0-9]*" maxlength="10"
 															class="form-control" id="telefonoE" required>
 														<p id="alertaTel"
@@ -372,23 +374,24 @@
 												</div>
 												<div class="col-sm-6">
 													<div class="form-group">
-														<label>Extensión:</label>
+														<label>Extensión:</label><span style="color: red;">*</span>
 														<input type="text" class="form-control" id="extensionE"
-															pattern="[0-9]*" maxlength="3" required>
+															pattern="[0-9]*" maxlength="5" required>
 														<p id="alertaExt"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
 															<i><b>campo requerido</b></i>
 														</p>
 														<p id="alertaExt1"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
-															<i><b>solo números, 3 carácteres</b></i>
+															<i><b>solo números, 5 carácteres</b></i>
 														</p>
 													</div>
 												</div>
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-8">
-													<label>Correos electrónicos:</label>
+													<label>Correos electrónicos:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="correoElectronicoE"
 														required oninput="verificarInputE()">
 													<p id="minimoUnoE"
@@ -413,10 +416,6 @@
 													<div class="form-group">
 														<label>Comentarios:</label>
 														<textarea class="form-control" id="comentariosE"></textarea>
-														<p id="alertaCom"
-															style="color: red;display: none; font-size: small; padding-left: 5px;">
-															<i><b>campo requerido</b></i>
-														</p>
 													</div>
 												</div>
 											</div>
@@ -451,7 +450,8 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
 													<div class="form-group">
-														<label>Código:</label>
+														<label>Código:</label><span
+														style="color: red;">*</span>
 														<input type="text" class="form-control" id="nombreAccion"
 															required>
 													</div>
@@ -460,7 +460,8 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
 													<div class="form-group">
-														<label>Descripción:</label>
+														<label>Descripción:</label><span
+														style="color: red;">*</span>
 														<input type="text" class="form-control" id="descripcionAccion"
 															required>
 													</div>
@@ -496,13 +497,15 @@
 										<form name="editarCodigoAccion" id="editarCodigoAccion">
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Sucursal:</label>
+													<label>Código:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="nombreAccionE" required>
 												</div>
 											</div>
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Descripción:</label>
+													<label>Descripción:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="descripcionAccionE"
 														required>
 												</div>
@@ -536,7 +539,8 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
 													<div class="form-group">
-														<label>Código:</label>
+														<label>Código:</label><span
+														style="color: red;">*</span>
 														<input type="text" class="form-control" id="nombreResultado"
 															required>
 													</div>
@@ -545,7 +549,8 @@
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
 													<div class="form-group">
-														<label>Descripción:</label>
+														<label>Descripción:</label><span
+														style="color: red;">*</span>
 														<input type="text" class="form-control"
 															id="descripcionResultado" required>
 													</div>
@@ -581,14 +586,16 @@
 										<form name="editarCodigoResultado" id="editarCodigoResultado">
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Sucursal:</label>
+													<label>Código:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="nombreResultadoE"
 														required>
 												</div>
 											</div>
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Descripción:</label>
+													<label>Descripción:</label><span
+														style="color: red;">*</span>
 													<input type="text" class="form-control" id="descripcionResultadoE"
 														required>
 												</div>
@@ -625,7 +632,8 @@
 										<form name="formulario" id="formRelacion">
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Código acción:</label>
+													<label>Código acción:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectAccion">
 														<option value="" disabled selected>Elige una opción</option>
@@ -634,7 +642,8 @@
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
-													<label>Código resultado:</label>
+													<label>Código resultado:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectResultado">
 														<option value="" disabled selected>Elige una opción</option>
@@ -652,7 +661,8 @@
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
-													<label>Última gestión vigente:</label>
+													<label>Última gestión vigente:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectGestion">
 														<option value="" disabled selected>Elige una opción</option>
@@ -700,7 +710,8 @@
 										<form name="formulario" id="formEditarRelacion">
 											<div class="row">
 												<div class="col-sm-12">
-													<label>Código acción:</label>
+													<label>Código acción:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectAccionE">
 														<option value="" disabled selected>Elige una opción</option>
@@ -709,7 +720,8 @@
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
-													<label>Código resultado:</label>
+													<label>Código resultado:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectResultadoE">
 														<option value="" disabled selected>Elige una opción</option>
@@ -727,7 +739,8 @@
 											</div>
 											<div class="row" style="padding-top: 10px;">
 												<div class="col-sm-12">
-													<label>Última gestión vigente:</label>
+													<label>Última gestión vigente:</label><span
+														style="color: red;">*</span>
 													<select style="width: 470px; height: 40px; border-radius: 5px;"
 														id="selectGestionE">
 														<option value="" disabled selected>Elige una opción</option>

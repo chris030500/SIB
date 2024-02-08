@@ -22,7 +22,7 @@ function ocultarMostrar(divEl){
  	case "4":
       listaMensajes();
       break;
-     case "5":
+ 	case "5":
       obtTblClienteB();
       break;
     default:

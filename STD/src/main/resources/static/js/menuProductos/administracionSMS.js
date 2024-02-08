@@ -6,6 +6,7 @@ function getAbsolutePath() {
 
 window.onload = function() {
 	listaProcesos();
+	listaClientes();
 }
 
 // Variables | validacion de la liga absoluta
@@ -67,12 +68,12 @@ function toggleSearchFields() {
 document.getElementById("filterType").addEventListener("change", toggleSearchFields);
 
 var buscarCliente = document.getElementById('buscarCliente');
-var spinner = document.getElementById("spinnerClientes");
+var spinnerClie = document.getElementById("spinnerClientes");
 var clienteValue;
 
 function listaClientes() {
 	buscarCliente.disabled = true;
-	spinner.style.display = "block";
+	spinnerClie.style.display = "block";
 	var buscar = buscarCliente.value = '';
 	$.ajax({
 		url: urlPrincipal.replace("/operaciones", "") + "buscar_cliente_activo?valor=" + buscar,
@@ -91,25 +92,78 @@ function listaClientes() {
 			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
 			actualizarValorSeleccionado();
 			buscarCliente.disabled = false;
-			spinner.style.display = "none";
+			spinnerClie.style.display = "none";
+		}
+	});
+}
+
+var buscarSucursal = document.getElementById('buscarSucursal');
+var sucursalValue;
+
+function listaSucursales() {
+	var buscar = buscarSucursal.value;
+	$.ajax({
+		url: urlPrincipal.replace("/operaciones", "") + "buscar_sucursal?sucursal=" + buscar,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opciones = document.getElementById('opcionSucursal');
+			opciones.innerHTML = '';
+			respuesta.sucursal.forEach(function(sucursal) {
+				var option = document.createElement('option');
+				option.setAttribute('data-value', sucursal.pk_id_sucursal);
+				option.value = sucursal.vc_nombresucursal;
+				opciones.appendChild(option);
+			});
+
+			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
+			actualizarValorSucursal();
+			buscarSucursal.disabled = false;
 		}
 	});
 }
 
 var obtDatosProcesos = "mensajes/obtProcesos"
 function listaProcesos() {
-	console.log("iNICIA fUNCION")
-	url = getAbsolutePath()+obtDatosProcesos;
-	console.log(url)
-	 $.getJSON(url, {}, function(data) {
-		 console.log(data)
-	 }); 
+    url = getAbsolutePath() + obtDatosProcesos;
+    $.getJSON(url, {}, function(data) {
+        var select = $('#process'); // Seleccionar el elemento select por su ID
+
+        // Limpiar opciones existentes
+        select.empty();
+
+        // Agregar opción predeterminada
+        select.append('<option value="">Seleccionar proceso</option>');
+
+        // Iterar sobre los datos recibidos y agregar opciones al select
+        $.each(data, function(index, proceso) {
+            // Crear una nueva opción con el nombre del proceso y su ID
+            var option = $('<option>', {
+                value: proceso.procesoID, // Suponiendo que el ID del proceso está en la propiedad "id"
+                text: proceso.tipoBase // Suponiendo que el nombre del proceso está en la propiedad "nombre"
+            });
+
+            // Agregar la opción al select
+            select.append(option);
+        });
+    });
 }
+
 
 function actualizarValorSeleccionado() {
 	var opcionSeleccionada = document.querySelector('option[value="' + buscarCliente.value + '"]');
 	clienteValue = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
 }
+
+function actualizarValorSucursal() {
+	var opcionSeleccionada = document.querySelector('option[value="' + buscarSucursal.value + '"]');
+	sucursalValue = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
+}
+
+buscarSucursal.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	actualizarValorSucursal();
+});
 
 buscarCliente.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
