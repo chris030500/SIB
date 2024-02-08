@@ -11,8 +11,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.model.AccionRealizarModel;
-import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.model.BloqueoListasNegrasModel;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.model.CodigoAccionModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.resultado.model.CodigoResultadoModel;
@@ -36,16 +34,16 @@ public class RelacionCodigosModel {
 	private CodigoResultadoModel codigoResultadoModel;
 
 	@OneToOne
-	@JoinColumn(name = "FK_ID_ACCION_REALIZAR")
-	private AccionRealizarModel accionRealizarModel;
+	@JoinColumn(name = "I_ACCION_REALIZAR")
+	private Catalogo accionRealizar;
 
 	@OneToOne
 	@JoinColumn(name = "I_ULTIMA_GESTION_VIGENTE")
-	private Catalogo catalogo;
+	private Catalogo ultimaGestion;
 
 	@OneToOne
-	@JoinColumn(name = "FK_ID_BLOQUEO_LISTAS_NEGRAS")
-	private BloqueoListasNegrasModel bloqueoListasNegrasModel;
+	@JoinColumn(name = "I_BLOQUEO_LISTAS_NEGRAS")
+	private Catalogo bloqueoListas;
 
 	@Column(name = "I_ESTATUS")
 	private int i_estatus;
@@ -62,7 +60,11 @@ public class RelacionCodigosModel {
 
 	@OneToOne
 	@JoinColumn(name = "I_USUARIO_REGISTRO")
-	private Usuario usuario;
+	private Usuario i_usuario_registro;
+
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_MODIFICACION")
+	private Usuario i_usuario_modificacion;
 
 	public int getPk_id_relacion_codigo() {
 		return pk_id_relacion_codigo;
@@ -88,28 +90,28 @@ public class RelacionCodigosModel {
 		this.codigoResultadoModel = codigoResultadoModel;
 	}
 
-	public AccionRealizarModel getAccionRealizarModel() {
-		return accionRealizarModel;
+	public Catalogo getAccionRealizar() {
+		return accionRealizar;
 	}
 
-	public void setAccionRealizarModel(AccionRealizarModel accionRealizarModel) {
-		this.accionRealizarModel = accionRealizarModel;
+	public void setAccionRealizar(Catalogo accionRealizar) {
+		this.accionRealizar = accionRealizar;
 	}
 
-	public Catalogo getCatalogo() {
-		return catalogo;
+	public Catalogo getUltimaGestion() {
+		return ultimaGestion;
 	}
 
-	public void setCatalogo(Catalogo catalogo) {
-		this.catalogo = catalogo;
+	public void setUltimaGestion(Catalogo ultimaGestion) {
+		this.ultimaGestion = ultimaGestion;
 	}
 
-	public BloqueoListasNegrasModel getBloqueoListasNegrasModel() {
-		return bloqueoListasNegrasModel;
+	public Catalogo getBloqueoListas() {
+		return bloqueoListas;
 	}
 
-	public void setBloqueoListasNegrasModel(BloqueoListasNegrasModel bloqueoListasNegrasModel) {
-		this.bloqueoListasNegrasModel = bloqueoListasNegrasModel;
+	public void setBloqueoListas(Catalogo bloqueoListas) {
+		this.bloqueoListas = bloqueoListas;
 	}
 
 	public int getI_estatus() {
@@ -136,12 +138,20 @@ public class RelacionCodigosModel {
 		this.dt_fecha_modificacion = dt_fecha_modificacion;
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
+	public Usuario getI_usuario_registro() {
+		return i_usuario_registro;
 	}
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+	public void setI_usuario_registro(Usuario i_usuario_registro) {
+		this.i_usuario_registro = i_usuario_registro;
+	}
+
+	public Usuario getI_usuario_modificacion() {
+		return i_usuario_modificacion;
+	}
+
+	public void setI_usuario_modificacion(Usuario i_usuario_modificacion) {
+		this.i_usuario_modificacion = i_usuario_modificacion;
 	}
 
 }

@@ -48,6 +48,10 @@ public class ProcesoGestion {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_EJECUCION", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_ejecucion;
+	
+	@Column(name = "I_VISIBLE", 
+			columnDefinition = "TINYINT(1) DEFAULT NULL")
+	private int i_visible;
 
 	public int getPk_id_gestion() {
 		return pk_id_gestion;
@@ -119,6 +123,14 @@ public class ProcesoGestion {
 
 	public void setDt_fecha_ejecucion(LocalDate dt_fecha_ejecucion) {
 		this.dt_fecha_ejecucion = dt_fecha_ejecucion;
+	}
+
+	public int getI_visible() {
+		return i_visible;
+	}
+
+	public void setI_visible(int i_visible) {
+		this.i_visible = i_visible;
 	}
 
 }

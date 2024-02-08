@@ -74,7 +74,6 @@ var errorTelefono = document.getElementById("errorTelefono");
 var soloTelefono = document.getElementById("soloTelefono");
 var errorExtension = document.getElementById("errorExtension");
 var soloExtension = document.getElementById("soloExtension");
-var errorComentarios = document.getElementById("errorComentarios");
 var errorSucursal = document.getElementById("errorSucursal");
 var minimoUno = document.getElementById("minimoUno");
 
@@ -88,10 +87,6 @@ formExtension.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	errorExtension.style.display = "none";
 	soloExtension.style.display = "none";
-});
-formComentarios.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorComentarios.style.display = "none";
 });
 formSucursal.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -113,7 +108,6 @@ function validarFormTelefonos() {
 
 	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
 	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
-	comentarios == "" ? errorComentarios.style.display = "block" : errorComentarios.style.display = "none";
 	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
@@ -121,7 +115,7 @@ function validarFormTelefonos() {
 	datosChips == "" ? minimoUno.style.display = "block" : minimoUno.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "" && sucursal != "") {
+	if (telefono != "" && extension != "" && sucursal != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
 				// Se llena el DTO
@@ -149,7 +143,6 @@ var alertaTel = document.getElementById("alertaTel");
 var alertaTel1 = document.getElementById("alertaTel1");
 var alertaExt = document.getElementById("alertaExt");
 var alertaExt1 = document.getElementById("alertaExt1");
-var alertaCom = document.getElementById("alertaCom");
 
 // Agrega un evento de entrada al campo de texto
 formTelefonoE.addEventListener("input", function() {
@@ -161,10 +154,6 @@ formExtensionE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-});
-formComentariosE.addEventListener("input", function() {
-	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	alertaCom.style.display = "none";
 });
 formCorreoE.addEventListener("input", function() {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
@@ -181,14 +170,13 @@ function validarEditarTel(id) {
 
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
-	comentarios == "" ? alertaCom.style.display = "block" : alertaCom.style.display = "none";
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
 
 	datosChipsE == "" ? minimoUnoE.style.display = "block" : minimoUnoE.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && comentarios != "") {
+	if (telefono != "" && extension != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
 			if (pattern.test(extension) && extension.length === 3) {
 				// Se llena el DTO
@@ -213,7 +201,6 @@ function limpiarFormTelefonos() {
 	document.getElementById('correoElectronico').value = '';
 	errorTelefono.style.display = "none";
 	errorExtension.style.display = "none";
-	errorComentarios.style.display = "none";
 	errorSucursal.style.display = "none";
 	soloTelefono.style.display = "none";
 	soloExtension.style.display = "none";
@@ -324,7 +311,7 @@ function listaTelefonos() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	});
 }
@@ -383,7 +370,6 @@ function limpiarAlertas() {
 	alertaTel1.style.display = "none";
 	alertaExt.style.display = "none";
 	alertaExt1.style.display = "none";
-	alertaCom.style.display = "none";
 	document.getElementById('correoElectronicoE').value = '';
 	document.getElementById('minimoUnoE').style.display = "none";
 	document.getElementById('soloCorreosE').style.display = "none";
@@ -424,7 +410,7 @@ function editarTelefono(id, dto) {
 					listaTelefonos();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -579,7 +565,7 @@ function listaCodigosAccion() {
 			//console.log(telefonos);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	})
 }
@@ -629,6 +615,7 @@ function agregarAccion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-codigoAccion').style.display = 'none';
+			$('#modal-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -683,6 +670,7 @@ function editarAccion(id, dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoAccion').style.display = 'none';
+			$('#modalEditar-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -691,7 +679,7 @@ function editarAccion(id, dto) {
 					listaCodigosAccion();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -826,10 +814,10 @@ function listaCodigosResultado() {
 				]).draw(false);
 			});
 
-			// //console.log(respuesta.lista);
+			//console.log(respuesta.lista);
 		},
 		error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 		}
 	})
 }
@@ -879,6 +867,7 @@ function agregarResultado(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-codigoResultado').style.display = 'none';
+			$('#modal-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -933,6 +922,7 @@ function editarResultado(id, dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoResultado').style.display = 'none';
+			$('#modalEditar-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -941,7 +931,7 @@ function editarResultado(id, dto) {
 					listaCodigosResultado();
 				});
 		}, error: function(error) {
-			// //console.log(error);
+			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
@@ -1131,7 +1121,6 @@ function catalogoCodigoR() {
 function catalogoAccionRealizar() {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	document.getElementById("selectRealizar").innerHTML = '';
 	document.getElementById("selectRealizar").add(opcion);
@@ -1143,8 +1132,8 @@ function catalogoAccionRealizar() {
 			var opcionBusqueda = document.getElementById("selectRealizar");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
 			opcionBusqueda.addEventListener("change", function() {
@@ -1163,7 +1152,6 @@ function catalogoAccionRealizar() {
 function catalogoBloqueo() {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	document.getElementById("selectBloqueo").innerHTML = '';
 	document.getElementById("selectBloqueo").add(opcion);
@@ -1175,8 +1163,8 @@ function catalogoBloqueo() {
 			var opcionBusqueda = document.getElementById("selectBloqueo");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
 			opcionBusqueda.addEventListener("change", function() {
@@ -1240,7 +1228,11 @@ function validarFormRelacion() {
 	var valorAccionR = formulario.querySelector("#selectRealizar").value;
 	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
 	var valorGestion = formulario.querySelector("#selectGestion").value;
-	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorAccionR != "Elige una opción" && valorBloqueo != "Elige una opción" && valorGestion != "Elige una opción") {
+
+	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
+	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
+
+	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorGestion != "Elige una opción") {
 		//console.log("entró");
 		const dto = {
 			idCodigoAccion: valorCodigoA,
@@ -1249,7 +1241,7 @@ function validarFormRelacion() {
 			ultimaGestion: valorGestion,
 			idBloqueo: valorBloqueo
 		}
-		// //console.log(dto);
+		// console.log(dto);
 		agregarRelacion(dto);
 	} else {
 		swal("Falta información por llenar", {
@@ -1268,6 +1260,7 @@ function agregarRelacion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-agregarRelacion').style.display = 'none';
+			$('#modal-agregarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1322,13 +1315,16 @@ function listaDeRelaciones() {
 
 				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 
+				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "";
+				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "";
+
 				vistaTablaRel.row.add([
 					opt.pk_id_relacion_codigo,
 					opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
 					opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")",
-					opt.accionRealizarModel.vc_nombre,
-					opt.catalogo.v_valor,
-					opt.bloqueoListasNegrasModel.vc_nombre,
+					accionR,
+					opt.ultimaGestion.v_valor,
+					listaB,
 					vigente,
 					btnEditar + btnEstatus
 				]).draw(false);
@@ -1362,7 +1358,7 @@ function abrirRelacion(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			$('#modal-editarRelacion').modal('show');
-			// //console.log(respuesta.relacion);
+			//console.log(respuesta.relacion);
 			var relacion = respuesta.relacion;
 			catalogoCodigoAe(selectCodigoA, relacion);
 			catalogoCodigoRe(selectCodigoR, relacion);
@@ -1446,7 +1442,6 @@ function catalogoCodigoRe(select, relacion) {
 function catalogoRealizarE(select, relacion) {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	select.innerHTML = '';
 	select.add(opcion);
@@ -1457,11 +1452,11 @@ function catalogoRealizarE(select, relacion) {
 		success: function(respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_accion_realizar;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id_accion_realizar === relacion.accionRealizarModel.pk_id_accion_realizar) {
+				if (respuesta.lista[i].pk_id === relacion.accionRealizar.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1493,7 +1488,7 @@ function catalogoGestionE(select, relacion) {
 				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id === relacion.catalogo.pk_id) {
+				if (respuesta.lista[i].pk_id === relacion.ultimaGestion.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1510,7 +1505,6 @@ function catalogoGestionE(select, relacion) {
 function catalogoBloqueoE(select, relacion) {
 	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
-	opcion.disabled = true;
 	opcion.selected = true;
 	select.innerHTML = '';
 	select.add(opcion);
@@ -1521,11 +1515,11 @@ function catalogoBloqueoE(select, relacion) {
 		success: function(respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
-				opcion.value = respuesta.lista[i].pk_id_bloqueo_listas_negras;
-				opcion.text = respuesta.lista[i].vc_nombre;
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id_bloqueo_listas_negras === relacion.bloqueoListasNegrasModel.pk_id_bloqueo_listas_negras) {
+				if (respuesta.lista[i].pk_id === relacion.bloqueoListas.pk_id) {
 					opcion.selected = true;
 				}
 			}
@@ -1554,6 +1548,9 @@ function validarFormRelacionE() {
 	var valorBloqueo = formulario.querySelector("#selectBloqueoE").value;
 	var valorGestion = formulario.querySelector("#selectGestionE").value;
 
+	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
+	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
+
 	const dto = {
 		idCodigoAccion: valorCodigoA,
 		idCodigoResultado: valorCodigoR,
@@ -1562,7 +1559,7 @@ function validarFormRelacionE() {
 		idBloqueo: valorBloqueo
 	}
 
-	// //console.log(dto);
+	// console.log(dto);
 	editarRelacion(dto);
 }
 
@@ -1576,6 +1573,7 @@ function editarRelacion(dto) {
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
 			document.getElementById('modal-editarRelacion').style.display = 'none';
+			$('#modal-editarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",

@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.model.AccionRealizarModel;
-import ahorrosbienestar.sib.std.cat_catalogos.accion_realizar.service.AccionRealizarService;
-import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.model.BloqueoListasNegrasModel;
-import ahorrosbienestar.sib.std.cat_catalogos.bloqueo_listas_negras.service.BloqueoListasNegrasService;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.dto.CodigoAccionDTO;
@@ -38,6 +34,7 @@ import ahorrosbienestar.sib.std.sucursales.model.SucursalesModel;
 import ahorrosbienestar.sib.std.sucursales.service.SucursalesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -60,12 +57,6 @@ public class RestOpConfiguracionController {
 	private RelacionCodigosService relacionCodigosService;
 
 	@Autowired
-	private AccionRealizarService accionRealizarService;
-
-	@Autowired
-	private BloqueoListasNegrasService bloqueoListasNegrasService;
-
-	@Autowired
 	private CatalogoService catalogoService;;
 
 	@Autowired
@@ -74,6 +65,10 @@ public class RestOpConfiguracionController {
 	private static final Logger logger = Logger.getLogger(RestOpConfiguracionController.class);
 
 	private static final int idGrupo = 13;
+
+	private static final int grupoAccion = 23;
+
+	private static final int grupoBloqueo = 24;
 
 	/**
 	 * Buscar sucursal por caracter
@@ -134,7 +129,8 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/registrar_telefono" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/registrar_telefono" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> agregarTelefono(@RequestBody RegistroTelefonoDTO dto) {
 
 		Map<String, Object> respuesta = new HashMap<>();
@@ -209,9 +205,9 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/editar_telefono" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, Object>> editarTelefono(
-			@RequestParam("idTelefono") int idTelefono,
+	@RequestMapping(value = {
+			"/editar_telefono" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, Object>> editarTelefono(@RequestParam("idTelefono") int idTelefono,
 			@RequestBody RegistroTelefonoDTO dto) {
 
 		Map<String, Object> respuesta = new HashMap<>();
@@ -228,10 +224,15 @@ public class RestOpConfiguracionController {
 			model = telefonoService.buscarTelefonoPorId(idTelefono);
 			logger.info("se encontró el telefono: " + idTelefono);
 
-			model.setVc_telefono(dto.getTelefono() != model.getVc_telefono() ? dto.getTelefono() : model.getVc_telefono());
-			model.setVc_extension(dto.getExtension() != model.getVc_extension() ? dto.getExtension() : model.getVc_extension());
-			model.setVc_correo_electronico(dto.getCorreoElectronico() != model.getVc_correo_electronico() ? dto.getCorreoElectronico() : model.getVc_correo_electronico());
-			model.setVc_comentarios(dto.getComentarios() != model.getVc_comentarios() ? dto.getComentarios() : model.getVc_comentarios());
+			model.setVc_telefono(
+					dto.getTelefono() != model.getVc_telefono() ? dto.getTelefono() : model.getVc_telefono());
+			model.setVc_extension(
+					dto.getExtension() != model.getVc_extension() ? dto.getExtension() : model.getVc_extension());
+			model.setVc_correo_electronico(
+					dto.getCorreoElectronico() != model.getVc_correo_electronico() ? dto.getCorreoElectronico()
+							: model.getVc_correo_electronico());
+			model.setVc_comentarios(dto.getComentarios() != model.getVc_comentarios() ? dto.getComentarios()
+					: model.getVc_comentarios());
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
 			telefonoService.save(model);
@@ -255,8 +256,7 @@ public class RestOpConfiguracionController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/vigencia_telefono" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> vigenciaTelefono(
-			@RequestParam("idTelefono") int idTelefono,
+	public ResponseEntity<Map<String, Object>> vigenciaTelefono(@RequestParam("idTelefono") int idTelefono,
 			@RequestParam("estatus") int estatus) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -317,8 +317,7 @@ public class RestOpConfiguracionController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/estatus_codigoAccion" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> estatusCodigoAccion(
-			@RequestParam("idCodigoAccion") int idCodigoAccion,
+	public ResponseEntity<Map<String, Object>> estatusCodigoAccion(@RequestParam("idCodigoAccion") int idCodigoAccion,
 			@RequestParam("estatus") int estatus) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -374,7 +373,8 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/registro_codigosAccion" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/registro_codigosAccion" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registrarCodigoAccion(@RequestBody CodigoAccionDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -390,7 +390,8 @@ public class RestOpConfiguracionController {
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
+			model.setI_usuario_modificacion(usuario);
 			codigoAccionService.save(model);
 			respuesta.put("mensaje", "Código registrado");
 			return ResponseEntity.ok(respuesta);
@@ -439,9 +440,9 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/editar_codigoAccion" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, Object>> editarCodigoAccion(
-			@RequestParam("idCodigoAccion") int idCodigoAccion,
+	@RequestMapping(value = {
+			"/editar_codigoAccion" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, Object>> editarCodigoAccion(@RequestParam("idCodigoAccion") int idCodigoAccion,
 			@RequestBody CodigoAccionDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -455,9 +456,11 @@ public class RestOpConfiguracionController {
 			model = codigoAccionService.buscarCodigoAccion(idCodigoAccion);
 			logger.info("se encontró el código: " + model.getVc_descripcion());
 			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion() : model.getVc_descripcion());
+			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+					: model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(
+					usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			codigoAccionService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -475,6 +478,7 @@ public class RestOpConfiguracionController {
 
 	/**
 	 * Lista de los codigos de acceso activos
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = { "/lista_codigosR_activos" }, method = RequestMethod.GET)
@@ -509,8 +513,7 @@ public class RestOpConfiguracionController {
 	 */
 	@RequestMapping(value = { "/estatus_codigoResultado" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> estatusCodigoResultado(
-			@RequestParam("idCodigoResultado") int idCodigoResultado, 
-			@RequestParam("estatus") int estatus) {
+			@RequestParam("idCodigoResultado") int idCodigoResultado, @RequestParam("estatus") int estatus) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		CodigoResultadoModel model = new CodigoResultadoModel();
@@ -565,7 +568,8 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/registro_codigoResultado" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/registro_codigoResultado" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registrarCodigoResultado(@RequestBody CodigoAccionDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -581,7 +585,7 @@ public class RestOpConfiguracionController {
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
 			codigoResultadoService.save(model);
 			respuesta.put("mensaje", "Código registrado");
 			return ResponseEntity.ok(respuesta);
@@ -631,10 +635,10 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/editar_codigoResultado" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/editar_codigoResultado" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> editarCodigoResultado(
-			@RequestParam("idCodigoResultado") int idCodigoResultado, 
-			@RequestBody CodigoAccionDTO dto) {
+			@RequestParam("idCodigoResultado") int idCodigoResultado, @RequestBody CodigoAccionDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		CodigoResultadoModel model = new CodigoResultadoModel();
@@ -647,9 +651,11 @@ public class RestOpConfiguracionController {
 			model = codigoResultadoService.buscarCodigoResultado(idCodigoResultado);
 			logger.info("se encontró el código: " + model.getVc_descripcion());
 			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion() : model.getVc_descripcion());
+			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+					: model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(
+					usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			codigoResultadoService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -667,6 +673,7 @@ public class RestOpConfiguracionController {
 
 	/**
 	 * Lista de los valores de la ultima gestion vigente
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = { "/lista_gestionVigente" }, method = RequestMethod.GET)
@@ -742,16 +749,17 @@ public class RestOpConfiguracionController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/agregar_relacionCodigo" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/agregar_relacionCodigo" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> agregarRelacion(@RequestBody RelacionDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		RelacionCodigosModel model = new RelacionCodigosModel();
 		CodigoAccionModel codigoAccion = new CodigoAccionModel();
 		CodigoResultadoModel codigoResultado = new CodigoResultadoModel();
-		AccionRealizarModel accionRealizar = new AccionRealizarModel();
-		BloqueoListasNegrasModel bloqueo = new BloqueoListasNegrasModel();
-		// fecha
+		Catalogo accionRealizar = new Catalogo();
+		Catalogo bloqueListas = new Catalogo();
+		Catalogo ultimaGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -761,21 +769,30 @@ public class RestOpConfiguracionController {
 			logger.info("código Acción: " + codigoAccion.getVc_descripcion());
 			codigoResultado = codigoResultadoService.buscarCodigoResultado(dto.getIdCodigoResultado());
 			logger.info("código Resultado: " + codigoResultado.getVc_descripcion());
-			accionRealizar = accionRealizarService.buscarAccionRealizarId(dto.getIdAccionRealizar());
-			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
-			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
-			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
+
+			if (dto.getIdAccionRealizar() != 0) {
+				accionRealizar = catalogoService.buscarPorId(dto.getIdAccionRealizar());
+				logger.info("acción realizar: " + accionRealizar.getV_valor());
+				model.setAccionRealizar(accionRealizar);
+			}
+
+			if (dto.getIdBloqueo() != 0) {
+				bloqueListas = catalogoService.buscarPorId(dto.getIdBloqueo());
+				logger.info("bloqueo: " + bloqueListas.getV_valor());
+				model.setBloqueoListas(bloqueListas);
+			}
+
+			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
+
 			model.setCodigoAccionModel(codigoAccion);
 			model.setCodigoResultadoModel(codigoResultado);
-			model.setAccionRealizarModel(accionRealizar);
-			model.setCatalogo(catalogo);
-			model.setBloqueoListasNegrasModel(bloqueo);
+			model.setUltimaGestion(ultimaGestion);
 			model.setI_estatus(1);
 			model.setDt_fecha_registro(fechaLocal);
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario);
+			model.setI_usuario_registro(usuario);
+			model.setI_usuario_modificacion(usuario);
 			relacionCodigosService.save(model);
 			respuesta.put("mensaje", "Relación registrada");
 			return ResponseEntity.ok(respuesta);
@@ -799,16 +816,19 @@ public class RestOpConfiguracionController {
 	public ResponseEntity<Map<String, Object>> editarRelacion(
 			@RequestBody RelacionDTO dto,
 			@RequestParam("idRelacion") int idRelacion) {
+		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		RelacionCodigosModel model = new RelacionCodigosModel();
 		CodigoAccionModel codigoAccion = new CodigoAccionModel();
 		CodigoResultadoModel codigoResultado = new CodigoResultadoModel();
-		AccionRealizarModel accionRealizar = new AccionRealizarModel();
-		BloqueoListasNegrasModel bloqueo = new BloqueoListasNegrasModel();
-		// fecha
+		Catalogo accionRealizar = new Catalogo();
+		Catalogo bloqueListas = new Catalogo();
+		Catalogo ultimaGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
+		
 		try {
+			
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
 			logger.info("se encotró el usuario");
@@ -818,19 +838,31 @@ public class RestOpConfiguracionController {
 			logger.info("código Acción: " + codigoAccion.getVc_descripcion());
 			codigoResultado = codigoResultadoService.buscarCodigoResultado(dto.getIdCodigoResultado());
 			logger.info("código Resultado: " + codigoResultado.getVc_descripcion());
-			accionRealizar = accionRealizarService.buscarAccionRealizarId(dto.getIdAccionRealizar());
-			logger.info("acción realizar: " + accionRealizar.getVc_nombre());
-			bloqueo = bloqueoListasNegrasService.buscarBloqueoPorId(dto.getIdBloqueo());
-			logger.info("bloqueo: " + bloqueo.getVc_nombre());
-			Catalogo catalogo = catalogoService.buscarPorId(dto.getUltimaGestion());
+			
+			if (dto.getIdAccionRealizar() != 0) {
+				accionRealizar = catalogoService.buscarPorId(dto.getIdAccionRealizar());
+				logger.info("acción realizar: " + accionRealizar.getV_valor());	
+				model.setAccionRealizar(model.getAccionRealizar() != accionRealizar ? accionRealizar : model.getAccionRealizar());
+			} else if (dto.getIdAccionRealizar() == 0) {
+				model.setAccionRealizar(null);
+			}
+			
+			if (dto.getIdBloqueo() != 0) {
+				bloqueListas = catalogoService.buscarPorId(dto.getIdBloqueo());
+				logger.info("bloqueo: " + bloqueListas.getV_valor());
+				model.setBloqueoListas(model.getBloqueoListas() != bloqueListas ? bloqueListas : model.getBloqueoListas());
+			} else if (dto.getIdBloqueo() == 0) {
+				model.setBloqueoListas(null);
+			}
+			
+			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
 			logger.info("ultima gestión encontrada");
+			
 			model.setCodigoAccionModel(model.getCodigoAccionModel() != codigoAccion ? codigoAccion : model.getCodigoAccionModel());
 			model.setCodigoResultadoModel(model.getCodigoResultadoModel() != codigoResultado ? codigoResultado : model.getCodigoResultadoModel());
-			model.setAccionRealizarModel(model.getAccionRealizarModel() != accionRealizar ? accionRealizar : model.getAccionRealizarModel());
-			model.setCatalogo(catalogo != model.getCatalogo() ? catalogo : model.getCatalogo());
-			model.setBloqueoListasNegrasModel(model.getBloqueoListasNegrasModel() != bloqueo ? bloqueo : model.getBloqueoListasNegrasModel());
+			model.setUltimaGestion(ultimaGestion != model.getUltimaGestion() ? ultimaGestion : model.getUltimaGestion());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setI_usuario_modificacion(usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
 			relacionCodigosService.save(model);
 			respuesta.put("mensaje", "Relación actualizada");
 			return ResponseEntity.ok(respuesta);
@@ -842,17 +874,16 @@ public class RestOpConfiguracionController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-	
-	
+
 	/**
 	 * Actualizar el estatus de una relación
+	 * 
 	 * @param idRleacion
 	 * @param estatus
 	 * @return
 	 */
 	@RequestMapping(value = { "/estatus_Relacion" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> estatusRelacion(
-			@RequestParam("idRleacion") int idRleacion, 
+	public ResponseEntity<Map<String, Object>> estatusRelacion(@RequestParam("idRleacion") int idRleacion,
 			@RequestParam("estatus") int estatus) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;

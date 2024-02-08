@@ -62,25 +62,46 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "estatus") Integer estatus
 			){
 		logger.info("/cambiarEstatusRegla");
-		String mensaje ="Activo Correctamente.";
+		String mensaje ="Actualizo Estatus Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
-			LocalDate fecha = LocalDate.now();
 			
-			Optional<ReglasAsignacion> editarRegla = reglasAsignacionService.findById(idRegla);
-			
-			editarRegla.get().setDt_fecha_mod(fecha);
-			editarRegla.get().setI_usuario_mod(usuario.get(0));
-			editarRegla.get().setI_estatus(estatus);
-			
-			reglasAsignacionService.save(editarRegla.get());
-		
+			if((estatus == 1) && (reglasAsignacionService.existeActivo() == 0)) {
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				LocalDate fecha = LocalDate.now();
+				
+				Optional<ReglasAsignacion> editarRegla = reglasAsignacionService.findById(idRegla);
+				
+				editarRegla.get().setDt_fecha_mod(fecha);
+				editarRegla.get().setI_usuario_mod(usuario.get(0));
+				editarRegla.get().setI_estatus(estatus);
+				
+				reglasAsignacionService.save(editarRegla.get());
+			}else if(estatus == 2){
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				LocalDate fecha = LocalDate.now();
+				
+				Optional<ReglasAsignacion> editarRegla = reglasAsignacionService.findById(idRegla);
+				
+				editarRegla.get().setDt_fecha_mod(fecha);
+				editarRegla.get().setI_usuario_mod(usuario.get(0));
+				editarRegla.get().setI_estatus(estatus);
+				
+				reglasAsignacionService.save(editarRegla.get());
+			}else {
+				mensaje = "Cuenta con un proceso de Asignacion Activo.";
+			} 
+				
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {

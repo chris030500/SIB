@@ -4,6 +4,7 @@ var modPlantilla="plantillas/modPlantilla?idPlantilla=";
 var buscarPlantilla="plantillas/obtPlantilla?idPlantilla=";
 var url="";
 $(document).ready(function() {
+	limpiarDatosPlantilla();
 	eventosConNombre();
 	eventosContenido();
 });
@@ -23,7 +24,7 @@ function eventoGuardar(){
 		//servicio registro plantilla
 		
 		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Procesando Información.',
+				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Procesando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos,
 				icon: 'info',
@@ -242,7 +243,7 @@ function editarPlantilla(idEditar){
 function obtPlantilla(urlObt){
 	
 		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fas fa-cogs"></i> Consultando Información.',
+				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Consultando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos
 				icon: 'info',

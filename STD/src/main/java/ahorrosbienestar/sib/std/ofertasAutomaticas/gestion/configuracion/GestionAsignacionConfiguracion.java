@@ -15,7 +15,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
-import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
@@ -65,7 +64,7 @@ public class GestionAsignacionConfiguracion {
 		try {
 			
 			logger.info("Procesos.");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronAsignacion(idProceso);
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronGestion(idProceso);
 			
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(!valBase.getExpresionCron().equals(expresionCron)) {
@@ -74,10 +73,10 @@ public class GestionAsignacionConfiguracion {
 		            CronTrigger trigger = new CronTrigger(expresionCron);
 		            // Reemplaza el trigger existente con el nuevo trigger
 		            tareProcesoAsignacion.schedule(() -> procesarCron(idProceso), trigger);
-		            logger.info("Se actualizo cron Nomina");
+		            logger.info("Se actualizo cron Asignacion");
 		        	
 				}else {
-					logger.info("No se actualizo Nomina");
+					logger.info("No se actualizo Asignacion");
 		        	
 		        }
 				
@@ -88,8 +87,8 @@ public class GestionAsignacionConfiguracion {
 	}
 	
 	public void procesarCron(Integer idProceso) {
-		logger.info("Proceso de Nomina");
-		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronAsignacion(idProceso);
+		logger.info("Proceso de Asignacion");
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCronGestion(idProceso);
 		
 		try {
 			LocalTime horaActual = LocalTime.now();
@@ -102,9 +101,9 @@ public class GestionAsignacionConfiguracion {
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(valBase.getI_ejecutar() == 1) {
 					procesarAsignacion(idProceso);
-					logger.info("Se ejecuto proceso Nomina:"+horaYMinutos);
+					logger.info("Se ejecuto proceso Asignacion:"+horaYMinutos);
 				}else {
-					logger.info("No es tiempo de ejecutar proceso Nomina:"+horaYMinutos);
+					logger.info("No es tiempo de ejecutar proceso Asignacion:"+horaYMinutos);
 				}
 			}			
 			
@@ -117,16 +116,13 @@ public class GestionAsignacionConfiguracion {
 
 	public synchronized void procesarAsignacion(Integer idProceso) {
 		try {
-    		logger.info("Ejecuta los SP nomina");
+    		logger.info("Ejecuta los SP Asignacion");
         	jdbcTemplate.update("CALL SIB.SP_ASIGNACIONXBASE_1_1()");
         	
         	int tipoCorreo = 9;
         	// registrso de asignacion
         	envioCorreoService.preparCorreoAdjunto(tipoCorreo);
         	
-        	// int tipoCorreo = 5;
-        	// "REGISTROS DE NOMINA";
-			//envioCorreoService.prepararCorreo(tipoCorreo,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}

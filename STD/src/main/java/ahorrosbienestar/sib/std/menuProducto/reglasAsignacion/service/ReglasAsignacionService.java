@@ -41,5 +41,9 @@ public class ReglasAsignacionService {
 		}
 		
 	 }
+
+	public int existeActivo() {
+		return iReglasAsignacionRepository.existeActivo();
+	}
 	
 }

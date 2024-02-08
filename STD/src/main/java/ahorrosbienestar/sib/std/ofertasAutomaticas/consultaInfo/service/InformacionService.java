@@ -41,7 +41,7 @@ public class InformacionService {
 		return ls;
 	}
 	
-	public List<ValidarEjecutarCronBase> obtInfoCronAsignacion(Integer tipoProceso) {
+	public List<ValidarEjecutarCronBase> obtInfoCronGestion(Integer tipoProceso) {
 		String sql = "CALL SIB.SP_VALIDARCRONGESTION(?);";
 		
 		@SuppressWarnings("deprecation")

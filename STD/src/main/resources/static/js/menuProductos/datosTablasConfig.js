@@ -85,6 +85,7 @@ var url = "";
 	 }); 
  }
  
+
  var obtDatosMensajeSMS = "mensajes/obtSMS";
  function listaMensajes(){
 	 url = getAbsolutePath()+obtDatosMensajeSMS;
@@ -115,6 +116,32 @@ var url = "";
 			 	botones = botonesActivar+botonesEditar;
 			 	
 			 tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+=======
+
+/**
+ * Cargar tabla reglas de asignacion
+ */
+ var obtDatosClienteB = "clientes/obtClientes";
+ function obtTblClienteB(){
+	 url = getAbsolutePath()+obtDatosClienteB;
+	 $.getJSON(url, {}, function(data) {
+		 tblClienteBloqueados.clear().draw();
+		 $.each(data, function(idx, opt) {
+			var botonesActivar = "";
+			 		 botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='cambiarEstatusCliente(this)' id="
+					+ opt.pk_id_bloqueo
+					+ " for="
+					+ opt.i_estatus
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-unlock'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";
+
+			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento = null?'--/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'--':opt.vc_motivo_desbloqueo)
+			 ,(opt.dt_fecha_desbloqueo == null?'--/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
+			 
 		 });
 	 }); 
  }
