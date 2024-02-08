@@ -4,6 +4,7 @@
 var tblReglasAsignacion;
 var tblPlantillasSMS;
 var tblParamsAsig;
+var tblClienteBloqueados;
 $(document).ready(function() {
 	
 	tblReglasAsignacion = $("#tblReglasAsignacion").DataTable({

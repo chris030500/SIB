@@ -1,4 +1,4 @@
-/**
+	/**
  * 
  */
 var botones="";
@@ -85,7 +85,6 @@ var url = "";
 	 }); 
  }
  
-
  var obtDatosMensajeSMS = "mensajes/obtSMS";
  function listaMensajes(){
 	 url = getAbsolutePath()+obtDatosMensajeSMS;
@@ -116,7 +115,11 @@ var url = "";
 			 	botones = botonesActivar+botonesEditar;
 			 	
 			 tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
-=======
+		 });
+	 }); 
+ }
+ 
+ 
 
 /**
  * Cargar tabla reglas de asignacion
