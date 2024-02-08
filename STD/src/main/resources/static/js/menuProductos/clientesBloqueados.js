@@ -5,11 +5,11 @@ var urlCliente="";
 var actualizarClienteB = "clientes/cambiarEstatus?idBloqueo=";
 function cambiarEstatusCliente(idEstatus){
 	console.log("proceso"+idEstatus);
-	let estatus = $(idEstatus).attr("for");
-	let idB = $(idEstatus).attr("id");
+	var estatus = $(idEstatus).attr("for");
+	var idB = $(idEstatus).attr("id");
 	
 	console.log(""+$(idEstatus).attr("id"));
-	if(idEstatus = 2){
+	if(idEstatus == 2){
 		Swal.fire({
 		title: "Motivo de Desbloqueo.",
 		input: "textarea",

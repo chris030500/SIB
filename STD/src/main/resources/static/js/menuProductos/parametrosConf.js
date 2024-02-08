@@ -15,13 +15,13 @@ function ocultarMostrar(divEl){
       break;
     case "2":
       obtTblReglas();
-
       break;
     case "3":
       obtTblPlantillas();
       break;
  	case "4":
       listaMensajes();
+      break;
      case "5":
       obtTblClienteB();
       break;
