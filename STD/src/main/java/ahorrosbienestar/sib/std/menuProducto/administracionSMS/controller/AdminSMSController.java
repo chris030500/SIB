@@ -45,8 +45,6 @@ public class AdminSMSController {
 	    try {
 	        List<adminSMS> mensajes = mensajesService.busquedaPorSeguimiento(cliente, sucur, proce);
 	        
-	        System.out.println(mensajes);
-	        
 	        // Verificar si la lista de mensajes es nula o vacía
 	        if (mensajes != null && !mensajes.isEmpty()) {
 	            respuesta.put("lista", mensajes);
