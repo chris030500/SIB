@@ -20,7 +20,7 @@ function ocultarMostrar(divEl){
       obtTblPlantillas();
       break;
  	case "4":
-      listaMensajes();
+      //listaMensajes();
       break;
  	case "5":
       obtTblClienteB();

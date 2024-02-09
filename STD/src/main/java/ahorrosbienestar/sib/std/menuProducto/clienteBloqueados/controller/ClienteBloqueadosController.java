@@ -73,12 +73,14 @@ public class ClienteBloqueadosController {
 			
 			Optional<ClientesBloqueados> actualizarEstatus = clientesBloqueadosService.findById(idRegla);
 			
+			actualizarEstatus.get().setI_estatus((estatus==2)?1:2);
 			if(estatus == 2) {
 				actualizarEstatus.get().setDt_fecha_desbloqueo(fecha);
 				actualizarEstatus.get().setI_usuario_desbloqueo(usuario.get(0));
 				actualizarEstatus.get().setVc_motivo_desbloqueo(motivoBloqueo);
-				actualizarEstatus.get().setI_estatus((estatus==2)?1:2);
 				actualizarEstatus.get().setDt_fecha_vencimiento(null);
+			}else {
+				
 			}
 			clientesBloqueadosService.save(actualizarEstatus.get());
 			respuesta.add(mensaje);

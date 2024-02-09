@@ -12,7 +12,7 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container border p-2 card">
+		<div class="border p-2 card">
 
 			<div class="bg-info text-white">
 				<div class="row no-gutters">
@@ -53,7 +53,7 @@
 			</div>
 
 			<div id="pant-tabs">
-				<div id="params-tab1" class="container" style="display: block;" for="1">
+				<div id="params-tab1" class="" style="display: block;" for="1">
 					<fieldset class="border p-3">
 						<legend class="float-none w-auto p-2">Parametros Generales</legend>
 						<div class="row">
@@ -253,16 +253,15 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="reglas-tab1" class="container" style="display:none;" for="2">
+				<div id="reglas-tab1" class="" style="display:none;" for="2">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
 						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-								<table class="table table-bordered table-striped" style="width: 120%;"
+								<table class="table table-sm" style="width: 100%;"
 									id="tblReglasAsignacion">
 									<thead>
 										<tr>
-											<th>ID</th>
 											<th>Regla de Asignacion</th>
 											<th>Vigencia</th>
 											<th>Estatus</th>
@@ -278,7 +277,7 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="plantillas-tab1" class="container" style="display:none;" for="3">
+				<div id="plantillas-tab1" class="" style="display:none;" for="3">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 5px ">
@@ -294,7 +293,7 @@
 						</div>
 						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-								<table class="table table-bordered table-striped" style="width: 120%;"
+								<table class="table table-sm" style="width: 100%;"
 									id="tblPlantillasSMS">
 									<thead>
 										<tr>
@@ -317,10 +316,10 @@
 						</div>
 				</fieldset>
 			</div>
-			<div id="sms-tab1" class="container" style="display:none;" for="4">
+			<div id="sms-tab1" class="" style="display:none;" for="4">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Administracion SMS</legend>
-					<div class="container mt-4">
+					<div class="mt-4">
 							<!-- Filtro por Sucursal -->
 							<form id="smsFilterForm">
 								<div class="row">
@@ -416,12 +415,12 @@
 						</div>
 				</fieldset>
 			</div>
-			<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
+			<div id="bloqueados-tab1" class="" style="display:none;" for="5">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Clientes Bloqueados</legend>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 200%;" id="tblClienteBloqueados">
+							<table class="table table-sm" style="width: 100%;" id="tblClienteBloqueados">
 								<thead>
 									<tr>
 										<th># Cliente</th>
@@ -548,10 +547,11 @@
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 120%;"
+										<table class="table table-bordered table-striped" style="width: 100%;"
 											id="tblParamsAsig">
 											<thead>
 												<tr>
+													
 													<th>Tipo Asignación </th>
 													<th>Tipo de Cliente </th>
 													<th>Tipo de Cartera </th>
@@ -563,6 +563,7 @@
 													<th>Porcentaje (%) </th>
 													<th>Estatus</th>
 													<th style="text-align: center;">Acciones</th>
+													
 												</tr>
 											</thead>
 											<tbody>

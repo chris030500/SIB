@@ -245,7 +245,7 @@ function obtPlantilla(urlObt){
 		Swal.fire({
 				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Consultando Información.',
 				html: '<span class="spinner-border"></span>',
-				timer: 1000, // tiempo en milisegundos
+				timer: 600, // tiempo en milisegundos
 				icon: 'info',
 				timerProgressBar: true,
 				showConfirmButton: false

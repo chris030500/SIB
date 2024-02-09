@@ -8,10 +8,8 @@ function cambiarEstatusCliente(idEstatus){
 	var estatus = $(idEstatus).attr("for");
 	var idB = $(idEstatus).attr("id");
 	
-	console.log(""+$(idEstatus).attr("id"));
-	if(idEstatus == 2){
 		Swal.fire({
-		title: "Motivo de Desbloqueo.",
+		title: (estatus == 1)?"Motivo de Bloqueo.":"Motivo de Desbloqueo.",
 		input: "textarea",
 		showCancelButton: true,
 		confirmButtonText: "Guardar",
@@ -19,7 +17,7 @@ function cambiarEstatusCliente(idEstatus){
 		inputValidator: descripcion => {
 			// Si el valor es válido, debes regresar undefined. Si no, una cadena
 			if (!descripcion) {
-				return "Por favor escribe el motivo para rechazar";
+				return (estatus == 1)?"Por favor escribe el motivo de Bloqueo":"Por favor escribe el motivo de Desbloqueo";
 			} else {
 				return undefined;
 			}
@@ -35,13 +33,6 @@ function cambiarEstatusCliente(idEstatus){
 				peticionPostCliente(1,urlCliente);
 			}
 		});
-	}else{
-		urlCliente = getAbsolutePath()+actualizarClienteB+idB;
-		urlCliente = urlCliente+"&motivoBloqueo="+"NA";
-		urlCliente = urlCliente+"&estatus="+estatus;
-				
-		peticionPostCliente(1,urlCliente);
-	}
 	
 }
 
@@ -51,6 +42,7 @@ function peticionPostCliente(metodo,metodoUrl){
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
+			/*
 			//$.blockUI({ message: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i>Procesando Información.' });
 			$.blockUI({
       message: '<h4>Procesando Información...</h4><div class="spinner-border" style="width: 3rem; height: 3rem;" role="status"></div> ',
@@ -63,7 +55,16 @@ function peticionPostCliente(metodo,metodoUrl){
         opacity: .8,
         color: '#000'
       }
-    });
+    });*/
+    		Swal.fire({
+				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Procesando Información.',
+				html: '<span class="spinner-border"></span>',
+				timer: 500, // tiempo en milisegundos,
+				icon: 'info',
+				timerProgressBar: true,
+				showConfirmButton: false
+		});
+    
 		},
 		complete: function() {
 			setTimeout($.unblockUI, 300);

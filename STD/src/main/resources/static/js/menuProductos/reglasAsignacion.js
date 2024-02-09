@@ -31,35 +31,42 @@ function eventos(){
 
 function updateEstatusRegla(idRegla){
 	Swal.fire({
-		title: '<span style="color: #007BFF;"><i class="fas fa-question-circle"></i>Actualizar Estatus.',
-		input: 'select',
-      	inputOptions: {
-        '1': 'ACTIVO',
-        '2': 'INACTIVO'
-        },
-        inputPlaceholder: 'Seleccione Estatus',
-		showCancelButton: true,
-		confirmButtonText: "Acepto",
-		cancelButtonText: "Cancelar",
+		 title: '<span style="color: #007BFF;"><i class="fas fa-question-circle"></i> Actualizar Estatus.</span>',
+  		 html: '<div id="swal-input-container" class="form-group"><select class="form-control" id="swal-select" placeholder="Seleccione Estatus"><option value="1">ACTIVO</option><option value="2">INACTIVO</option></select></div>',
+  		 showCancelButton: true,
+  confirmButtonText: "Acepto",
+  cancelButtonText: "Cancelar",
+  preConfirm: () => {
+    const selectedValue = document.getElementById('swal-select').value;
+    if (!selectedValue) {
+      Swal.showValidationMessage("Seleccione una opción válida.");
+    } else {
+      return selectedValue;
+    }
+  }
 		}).then(resultado => {
 			
 			if (resultado.value) {				
        			url = getAbsolutePath()+cambiarEstatusRegla+idRegla+"&estatus="+resultado.value;
 				peticionPostRegla(url,1);
-      		}else{
-				   Swal.fire("!Alerta¡","Se requiere seleccionar una opcion valida", "error");
-			}
+      		}
 	});
 }
 
 function peticionPostRegla(urlServicio, servicio) {
 	$.ajax({
-		async: false,
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-			$.blockUI({ message: '<span class="spinner-border"></span>' });
+		Swal.fire({
+				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Procesando Información.',
+				html: '<span class="spinner-border"></span>',
+				timer: 500, // tiempo en milisegundos,
+				icon: 'info',
+				timerProgressBar: true,
+				showConfirmButton: false
+		});
 		},
 		complete: function() {
 			setTimeout($.unblockUI, 100);
