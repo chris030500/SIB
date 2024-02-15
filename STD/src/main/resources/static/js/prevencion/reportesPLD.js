@@ -145,6 +145,7 @@ var spinner = document.getElementById("spinnerClientes");
 var clienteValue;
 var timerId;
 
+
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
 	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
@@ -176,6 +177,10 @@ function listaClientes() {
 
 buscarCliente.addEventListener('input', debouncedListaClientes);
 
+buscarCliente.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	listaClientes();
+});
 /**
  * Fin
  */
