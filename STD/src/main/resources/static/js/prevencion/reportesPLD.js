@@ -145,8 +145,8 @@ var spinner = document.getElementById("spinnerClientes");
 var clienteValue;
 
 function listaClientes() {
-	//buscarCliente.disabled = true;
-	//spinner.style.display = "block";
+	buscarCliente.disabled = true;
+	spinner.style.display = "block";
 	var buscar = buscarCliente.value = '';
 	$.ajax({
 		url: newUrlBase + "listaClientesActivos?valor=" + buscar,
@@ -157,7 +157,7 @@ function listaClientes() {
 			opciones.innerHTML = '';
 			respuesta.lista.forEach(function(cliente) {
 				var option = document.createElement('option');
-				
+				option.setAttribute('data-value', cliente.i_clienteid);
 				option.value = cliente.vc_nombrecompleto;
 				opciones.appendChild(option);
 			});
@@ -166,8 +166,8 @@ function listaClientes() {
 				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
 			}
 
-			//buscarCliente.disabled = false;
-			//spinner.style.display = "none";
+			buscarCliente.disabled = false;
+			spinner.style.display = "none";
 		}
 	});
 }

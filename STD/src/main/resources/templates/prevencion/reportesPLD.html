@@ -4,14 +4,12 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 <!-- DES-24-0002 Historico de Operaciones -->
 <!-- viviana.zamudio -->
-
 <head th:replace="layouts/base-layout :: head">
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
-
 <body>
 	<section class="content" layout:fragment="page-content">
 		<div class="container border p-2">
@@ -29,59 +27,59 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Generar Reporte</legend>
 					<div id="divTodos" class="container">
-						<div class="row" style="margin-top : 15px ">
-							<div class="col-md-3">
-								<label class="col-form-label">Reporte</label>
-								<select class="form-control" id="idReportePLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label">Extensión</label>
-								<select class="form-control" id="extReportePLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld_ext}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de inicio</label>
-								<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de fin</label>
-								<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label">Tipo Busqueda</label>
-								<select class="form-control" id="tipoBusquedaPLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld_ext}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
-							<div class="col-sm-3">
-								<label>Cliente</label>
-								<input type="search" class="form-control" id="buscarCliente" list="opcionCliente"
-									autocomplete="off" placeholder="Buscar cliente">
-								<datalist id="opcionCliente"></datalist>
-							</div>
-							<div id="spinnerClientes" class="col-sm-1"
-								style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
-								<div class="spinner-border" style="color: #0dcaf0;">
+							<div class="row" style="margin-top : 15px ">
+								<div class="col-md-3">
+									<label class="col-form-label">Reporte</label>
+									<select class="form-control" id="idReportePLD">
+										<option value="0">Seleccione</option>
+											<option th:each="listaReportes : ${cat_reportes_pld}" th:value="${listaReportes.i_opcion}"
+											th:text="${listaReportes.v_valor}"></option>
+										</select>
 								</div>
+								<div class="col-md-3">
+									<label class="col-form-label">Extensión</label>
+									<select class="form-control" id="extReportePLD">
+										<option value="0">Seleccione</option>
+											<option th:each="listaReportes : ${cat_reportes_pld_ext}" th:value="${listaReportes.i_opcion}"
+											th:text="${listaReportes.v_valor}"></option>
+										</select>
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label"> Fecha de inicio</label>
+									<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label"> Fecha de fin</label>
+									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label">Tipo Busqueda</label>
+									<select class="form-control" id="tipoBusquedaPLD">
+										<option value="0">Seleccione</option>
+											<option th:each="listaReportes : ${cat_reportes_pld_ext}" th:value="${listaReportes.i_opcion}"
+											th:text="${listaReportes.v_valor}"></option>
+										</select>
+								</div>
+								<div class="col-sm-3" 
+														style="display: none; visibility: hidden;">
+														<label>Cliente</label>
+														<input type="search" class="form-control" id="buscarCliente"
+															list="opcionCliente" autocomplete="off"
+															placeholder="Buscar cliente" disabled>
+														<datalist id="opcionCliente"></datalist>
+													</div>
+													<div id="spinnerClientes" class="col-sm-1"
+														style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
+														<div class="spinner-border" style="color: #0dcaf0;">
+														</div>
+													</div>
 							</div>
-						</div>
 					</div>
 					<div class="row" style="margin-top : 15px; text-align: center;">
 						<div class="col-md-8"></div>
 						<div class="col-md-4">
-							<button class="btn btn-primary" title="Generar Reporte" data-bs-target="#"
+							<button class="btn btn-primary"  
+								title="Generar Reporte" data-bs-target="#"
 								aria-controls="table-datatable" type="button" data-tooltip="Add"
 								onclick="generarReporte()">
 								<i class="bi bi-filetype-exe"></i>
@@ -89,7 +87,7 @@
 						</div>
 					</div>
 				</fieldset>
-
+			
 			</div>
 		</div>
 	</section>
