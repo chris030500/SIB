@@ -3,7 +3,6 @@ package ahorrosbienestar.sib.std.prevencion_pld.pld.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -19,7 +18,7 @@ public class PldController {
 	}
 	
 	@GetMapping("/reportesPLD")
-	public String reportesPLD() {
+	public String reportes() {
 		return "prevencion/reportesPLD";
 	}
 	

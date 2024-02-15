@@ -12,6 +12,9 @@ function getAbsolutePath() {
 // Variables | validacion de la liga absoluta
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/reportesPLD", "");
+/**
+ * Fin
+ */
 
 var rptOA = "reporteHistoricoPLD?idReporte="
 /* revisar la ruta rptOA porque a esta ruta se va para ejecutar */
