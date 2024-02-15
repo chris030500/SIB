@@ -143,11 +143,16 @@ function peticionPost(urlServicio) {
 var buscarCliente = document.getElementById('buscarCliente');
 var spinner = document.getElementById("spinnerClientes");
 var clienteValue;
+var timerId;
+
+// Función para realizar la llamada al servicio después de un retraso
+function debouncedListaClientes() {
+	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
+	timerId = setTimeout(listaClientes, 500); // Establecer un nuevo temporizador
+}
 
 function listaClientes() {
-	buscarCliente.disabled = true;
-	spinner.style.display = "block";
-	var buscar = buscarCliente.value = '';
+	var buscar = buscarCliente.value;
 	$.ajax({
 		url: newUrlBase + "listaClientesActivos?valor=" + buscar,
 		type: "GET",
@@ -161,21 +166,16 @@ function listaClientes() {
 				option.value = cliente.vc_nombrecompleto;
 				opciones.appendChild(option);
 			});
-			//
 			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
 			}
-
-			buscarCliente.disabled = false;
-			spinner.style.display = "none";
+			console.log(clienteValue);
 		}
 	});
 }
 
-buscarCliente.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	listaClientes();
-});
+buscarCliente.addEventListener('input', debouncedListaClientes);
+
 /**
  * Fin
  */
