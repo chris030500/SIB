@@ -112,6 +112,7 @@ public class reportesPLDController {
 		}
 	}
 	
+	
 	//@PostMapping("/reporteHistoricoPLD")
 	public ResponseEntity<?> reporteHistoricoPLD(
 			@RequestParam("idReporte") Integer idReporte
