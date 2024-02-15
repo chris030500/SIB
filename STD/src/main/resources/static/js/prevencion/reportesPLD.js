@@ -167,7 +167,7 @@ function listaClientes() {
 				opciones.appendChild(option);
 			});
 			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
+				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
 			}
 			console.log(clienteValue);
 		}

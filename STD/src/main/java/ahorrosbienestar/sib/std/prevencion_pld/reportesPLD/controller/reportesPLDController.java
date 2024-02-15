@@ -54,7 +54,8 @@ public class reportesPLDController {
 	private static String extensionReporte = "";
 	private static final String controllerReporte = "generarReporte";
 
-	@GetMapping("/listaClientesActivos")
+	//@GetMapping("/listaClientesActivos")
+	@RequestMapping(value = { "/listaClientesActivos" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> listaClientesOfertasAutomaticas(@RequestParam("valor") String valor) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
