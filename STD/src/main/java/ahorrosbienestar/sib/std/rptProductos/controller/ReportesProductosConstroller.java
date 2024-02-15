@@ -1,6 +1,5 @@
 package ahorrosbienestar.sib.std.rptProductos.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +54,9 @@ public class ReportesProductosConstroller {
 	
 	private static final String nombreReporte = "rpt_ofertas_automaticas";
 	private static final String controllerReporte = "generarReporte";
-	private static final String nombrePantalla = "Reportes";
+	//private static final String nombrePantalla = "Reportes";
 	private static final String rutaError = "errores/error_403";
-	private String rutaDireccion="";
+	private String rutaDireccion="reportesProductos/reportesProducto";
 	
 	@GetMapping("/reportes")
 	public String inicioReportes(Model model) {
@@ -65,7 +64,6 @@ public class ReportesProductosConstroller {
 			
 			if(validarAcceso() == 1) {
 				model.addAttribute("cat_reportes_produtos", iCatalogoRepository.generarOpciones(catReportesProductos));
-				rutaDireccion = "reportesProductos/reportesProducto";
 			}else {
 				rutaDireccion = rutaError;
 			}
@@ -87,7 +85,7 @@ public class ReportesProductosConstroller {
 		
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			LocalDate fecha = LocalDate.now();
+		
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
@@ -121,16 +119,14 @@ public class ReportesProductosConstroller {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(rutaDireccion));
 			
 			
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 			return 0;
 		}
-		
 	
-		
 	}
 
 }
