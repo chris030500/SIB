@@ -16,7 +16,7 @@ var newUrlBase = urlPrincipal.replace("/operaciones", "");
 window.onload = function() {
 	mostrarAlerta();
 	listaClientes();
-	obtenerSucursal();
+	// obtenerSucursal();
 	// llenarTablaSeguimiento(false);
 }
 /**
@@ -183,7 +183,17 @@ function validarBusqueda() {
 	parametroNombre = cliente;
 	parametroOferta = oferta;
 	parametroReferencia = referencia;
-	llenarTablaSeguimiento(true);
+
+	if (parametroNombre != '' || parametroOferta != '' || parametroReferencia != '') {
+		llenarTablaSeguimiento(true);
+	} else {
+		document.getElementById("ver-cargaSeguimiento").style.display = "none";
+		swal("Llenar mínimo un campo para realizar la busqueda", {
+			closeOnClickOutside: false,
+			icon: "warning",
+		});
+	}
+
 }
 /**
  * Fin
@@ -360,6 +370,7 @@ function limpiarVariablesModal() {
 	});
 	document.getElementById("vistaAccionRealizar").style.display = "none";
 	document.getElementById("accionRealizar").textContent = '';
+	searchSucursal.value = '';
 }
 /**
  * Fin
@@ -520,21 +531,22 @@ function validarBotonRegistro(bloqueo) {
  */
 var listaDeEstatus = [];
 var listaDeTotales = [];
+var sucursalActual = document.getElementById("nombreSucursal");
 
-function todosLosEstatus() {
+function todosLosEstatus(id) {
 	$.ajax({
-		url: newUrlBase + "todos_los_estatus",
+		url: newUrlBase + "todos_los_estatus?idSucursal=" + id,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//console.log(respuesta.lista);
+			sucursalActual.textContent = respuesta.lista[0].vc_nombresucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
 			});
 
 			// Llamar a la función para crear la gráfica después de obtener los datos
-			createChart();
+			createChart(listaDeEstatus, listaDeTotales);
 		}
 	});
 }
@@ -549,19 +561,16 @@ function todosLosEstatus() {
  */
 var myChart;
 
-function createChart() {
-	//console.log(listaDeEstatus);
-	//console.log(listaDeTotales);
-
+function createChart(labels, data) {
 	// Datos de ejemplo para la gráfica
 	var data = {
-		labels: listaDeEstatus,
+		labels: labels,
 		datasets: [{
-			label: 'Total',
+			label: labels,
 			backgroundColor: 'rgba(75, 192, 192, 0.2)',
 			borderColor: 'rgba(75, 192, 192, 1)',
 			borderWidth: 1,
-			data: listaDeTotales
+			data: data
 		}]
 	};
 
@@ -604,7 +613,7 @@ function cerrarModalAlertas(valor) {
 
 function mostrarAlerta() {
 	$('#modal-alerta').modal('show');
-	todosLosEstatus();
+	todosLosEstatus("");
 }
 
 document.addEventListener('click', function(event) {
@@ -635,7 +644,7 @@ function obtenerSucursal() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//console.log(respuesta.lista);
+			console.log(respuesta.lista);
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
@@ -646,6 +655,56 @@ function obtenerSucursal() {
 		}
 	});
 }
+/**
+ * Fin
+ */
+
+
+
+/**
+ * Buscar sucursal
+ */
+var idSucursal; // Variable para almacenar el valor del campo de búsqueda
+
+function buscarSucursales() {
+	// Limpiar datos de la gráfica
+	listaDeEstatus = [];
+	listaDeTotales = [];
+	// Destruir la instancia de la gráfica
+	if (myChart) {
+		myChart.destroy();
+	}
+	var searchSucursal = document.getElementById('buscarSucursal').value;
+	$.ajax({
+		url: newUrlBase + "buscar_sucursal?sucursal=" + searchSucursal,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionSucursal = document.getElementById('opcionSucursal');
+			opcionSucursal.innerHTML = '';
+			respuesta.sucursal.forEach(function(sucursal) {
+				var option = document.createElement('option');
+				option.value = sucursal.vc_nombresucursal;
+				opcionSucursal.appendChild(option);
+				console.log(sucursal.pk_id_sucursal);
+				console.log(sucursal.vc_nombresucursal);
+			});
+
+			if (respuesta.sucursal[0]) {
+				idSucursal = respuesta.sucursal[0].pk_id_sucursal; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
+			}
+
+			// Llamar a la función todosLosEstatus con idSucursal
+			todosLosEstatus(idSucursal);
+		}
+	});
+}
+
+var searchSucursal = document.getElementById('buscarSucursal');
+searchSucursal.addEventListener('input', function() {
+	buscarSucursales(); // Llamar a la función buscarSucursales cada vez que se ingrese un nuevo valor en el input de búsqueda
+});
+
 /**
  * Fin
  */

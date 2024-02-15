@@ -13,6 +13,7 @@ public interface EstatusSeguimientoRepository extends JpaRepository<EstatusSegui
 	@Query(value = "SELECT "
 			+ "     ctE.PK_ID,"
 			+ "     ctE.V_VALOR,"
+			+ "     suc.VC_NOMBRESUCURSAL,"
 			+ "     COUNT(*) AS TOTAL_REGISTROS"
 			+ " FROM ("
 			+ " select tblCampanias.I_CLIENTEID"
