@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.rptProductos.controller;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -63,10 +62,10 @@ public class ReportesProductosConstroller {
 	@GetMapping("/reportes")
 	public String inicioReportes(Model model) {
 		try {
-			
+			rutaDireccion = "reportesProductos/reportesProducto";
 			if(validarAcceso() == 1) {
 				model.addAttribute("cat_reportes_produtos", iCatalogoRepository.generarOpciones(catReportesProductos));
-				rutaDireccion = "reportesProductos/reportesProducto";
+				
 			}else {
 				rutaDireccion = rutaError;
 			}
@@ -88,7 +87,6 @@ public class ReportesProductosConstroller {
 		
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			LocalDate fecha = LocalDate.now();
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
