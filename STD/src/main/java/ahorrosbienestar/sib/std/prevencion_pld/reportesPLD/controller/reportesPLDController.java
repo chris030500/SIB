@@ -12,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
@@ -68,7 +72,7 @@ public class reportesPLDController {
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
 	
-	//@GetMapping("/historicoOperaciones")
+	/*@GetMapping("/reportesPLD")
 	public String inicioReportes(Model model) {
 		try {
 			
@@ -76,7 +80,7 @@ public class reportesPLDController {
 				model.addAttribute("cat_reportes_pld", iCatalogoRepository.generarOpciones(opcBusquedaGrupo));
 				model.addAttribute("cat_reportes_pld_ext", iCatalogoRepository.generarOpciones(opcBusquedaGrupo2));
 				//rutaDireccion = "reportesProductos/reportesProducto";
-				rutaDireccion = "reportesPLD/reportePLD";
+				rutaDireccion = "prevencion/reportesPLD";
 			}else {
 				rutaDireccion = rutaError;
 			}
@@ -85,9 +89,9 @@ public class reportesPLDController {
 			logger.error("Error:"+e.getMessage());
 			return null;
 		}	
-	}
+	}*/
 	
-	//@GetMapping("/listaClientesActivos")
+	@GetMapping("/listaClientesActivos")
 	public ResponseEntity<Map<String, Object>> listaClientesOfertasAutomaticas(@RequestParam("valor") String valor) {
 		Map<String, Object> respuesta =  new HashMap<>();
 		String mensajeError = null;
@@ -108,6 +112,7 @@ public class reportesPLDController {
 	
 	
 	//@PostMapping("/reporteHistoricoPLD")
+	@RequestMapping(value = {"/reporteHistoricoPLD"},method = RequestMethod.POST)
 	public ResponseEntity<?> reporteHistoricoPLD(
 			@RequestParam("idReporte") Integer idReporte
 			,@RequestParam("dtFechaInicio") String dtFechaInicio

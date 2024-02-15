@@ -17,7 +17,7 @@ var newUrlBase = urlPrincipal.replace("/reportesPLD", "");
  * Fin
  */
 
-var rptOA = "reporteHistoricoPLD?idReporte="
+var rptOA = newUrlBase + "reporteHistoricoPLD?idReporte="
 /* revisar la ruta rptOA porque a esta ruta se va para ejecutar */
   var url="";
   var mensajeError = "Datos incorrectos, favor de validar.";
@@ -48,7 +48,7 @@ var rptOA = "reporteHistoricoPLD?idReporte="
     if(document.getElementById("idReportePLD").value > 0){
        	document.getElementById("idReportePLD").style.borderColor = "";
        	// @ts-ignore
-       	url = url + rptOA+document.getElementById("idReportePLD").value;
+       	url = rptOA+document.getElementById("idReportePLD").value;
        	result = false;
     }else{
      	mensajeError = "Debe seleccionar un reporte.";
@@ -101,7 +101,7 @@ function generarReporte(){
   function peticionPost(urlServicio) {
     //alert(urlServicio);
 	$.ajax({
-		url: newUrlBase + urlServicio,
+		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
@@ -112,7 +112,8 @@ function generarReporte(){
 		},
 		success: function(respuesta) {
 
-				var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+				//var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+				var urlReporte = window.location.href.substring(0,22)+opcMenu;
 				
 				console.log(urlReporte);
 				//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
