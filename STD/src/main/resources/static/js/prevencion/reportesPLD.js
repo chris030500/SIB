@@ -2,6 +2,7 @@
  ////////////////----DES-24-0002 Historico de Operaciones----////////////////
 ////////////////----viviana.zamudio-------------------------////////////////
  */
+
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
 	var loc = window.location;
