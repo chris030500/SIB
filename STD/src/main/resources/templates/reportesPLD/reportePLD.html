@@ -53,8 +53,28 @@
 									<label class="col-form-label"> Fecha de fin</label>
 									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
 								</div>
+								<div class="col-md-3">
+									<label class="col-form-label">Tipo Busqueda</label>
+									<select class="form-control" id="tipoBusquedaPLD">
+										<option value="0">Seleccione</option>
+											<option th:each="listaReportes : ${cat_reportes_pld_ext}" th:value="${listaReportes.i_opcion}"
+											th:text="${listaReportes.v_valor}"></option>
+										</select>
+								</div>
+								<div class="col-sm-3" 
+														style="display: none; visibility: hidden;">
+														<label>Cliente</label>
+														<input type="search" class="form-control" id="buscarCliente"
+															list="opcionCliente" autocomplete="off"
+															placeholder="Buscar cliente" disabled>
+														<datalist id="opcionCliente"></datalist>
+													</div>
+													<div id="spinnerClientes" class="col-sm-1"
+														style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
+														<div class="spinner-border" style="color: #0dcaf0;">
+														</div>
+													</div>
 							</div>
-						
 					</div>
 					<div class="row" style="margin-top : 15px; text-align: center;">
 						<div class="col-md-8"></div>
@@ -78,7 +98,7 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/reportePLD/reportePLD.js}"></script>
+		<script th:src="@{/js/prevencion/reportesPLD.js}"></script>
 	</th:block>
 </body>
 

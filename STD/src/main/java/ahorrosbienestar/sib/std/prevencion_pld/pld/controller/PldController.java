@@ -18,4 +18,9 @@ public class PldController {
 		return "prevencion/pld";
 	}
 	
+	@GetMapping("/reportesPLD")
+	public String reportesPLD() {
+		return "prevencion/reportesPLD";
+	}
+	
 }

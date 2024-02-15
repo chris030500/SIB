@@ -2,6 +2,17 @@
  ////////////////----DES-24-0002 Historico de Operaciones----////////////////
 ////////////////----viviana.zamudio-------------------------////////////////
  */
+// Funcion para obtener la liga absoluta
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+ 
+// Variables | validacion de la liga absoluta
+var urlPrincipal = getAbsolutePath();
+var newUrlBase = urlPrincipal.replace("/reportesPLD", "");
+
 var rptOA = "reporteHistoricoPLD?idReporte="
 /* revisar la ruta rptOA porque a esta ruta se va para ejecutar */
   var url="";
@@ -86,7 +97,7 @@ function generarReporte(){
   function peticionPost(urlServicio) {
     //alert(urlServicio);
 	$.ajax({
-		url: urlServicio,
+		url: newUrlBase + urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
@@ -113,3 +124,46 @@ function generarReporte(){
 		}
 	});
 }
+
+ /**
+ * Lista clientes
+ */
+var buscarCliente = document.getElementById('buscarCliente');
+var spinner = document.getElementById("spinnerClientes");
+var clienteValue;
+ 
+function listaClientes() {
+    buscarCliente.disabled = true;
+    spinner.style.display = "block";
+    var buscar = buscarCliente.value = '';
+    $.ajax({
+        url: newUrlBase + "listaClientesActivos?valor=" + buscar,
+        type: "GET",
+        dataType: "JSON",
+        success: function(respuesta) {
+            var opciones = document.getElementById('opcionCliente');
+            opciones.innerHTML = '';
+            respuesta.lista.forEach(function(cliente) {
+                var option = document.createElement('option');
+                option.setAttribute('data-value', cliente.i_clienteid);
+                option.value = cliente.vc_nombrecompleto;
+                opciones.appendChild(option);
+            });
+            //
+            if (respuesta.lista[0]) {
+                clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+            }
+ 
+            buscarCliente.disabled = false;
+            spinner.style.display = "none";
+        }
+    });
+}
+ 
+buscarCliente.addEventListener('input', function() {
+    // Actualiza el valor seleccionado cada vez que se ingresa texto
+    listaClientes();
+});
+/**
+ * Fin
+ */
