@@ -12,7 +12,7 @@ function getAbsolutePath() {
  
 // Variables | validacion de la liga absoluta
 var urlPrincipal = getAbsolutePath();
-var newUrlBase = urlPrincipal.replace("/reportesPLD", "");
+var newUrlBase = urlPrincipal.replace("/prevencion", "");
 /**
  * Fin
  */
