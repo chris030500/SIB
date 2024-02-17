@@ -69,6 +69,8 @@ public class SeguimientoGestionRestController {
 	private static final String accionRealizar = "MOSTRAR CALENDARIO";
 	
 	private static final String excluir = "EXCLUIR CARGA";
+	private static final String bloqueo1 = "INDEFINIDO";
+	private static final String bloqueo2 = "90 DIAS";
 
 	/**
 	 * Lista de las ofertas
@@ -328,27 +330,35 @@ public class SeguimientoGestionRestController {
 		RelacionCodigosModel relacion = relacionCodigosService.buscarRelacionPorId(idRelacion);
 		logger.info("Se encnotró la relación");
 		//
-		if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
-			asignacion.setI_bloqueo(2);
-			asignacion.setI_estatus(2);
-			asignacionOfertasService.save(asignacion);
+		if (relacion.getBloqueoListas() != null) {
+			if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
+				if (relacion.getBloqueoListas().getV_valor().equals(bloqueo1) || relacion.getBloqueoListas().getV_valor().equals(bloqueo2)) {
+					asignacion.setI_bloqueo(2);
+					asignacion.setI_estatus(2);
+					asignacionOfertasService.save(asignacion);
+				}
+			}
 		}
+
 		return asignacion.getI_bloqueo();
 	}
 	
 	
-	@RequestMapping(value = {"/obtener_sucursal_empleado"}, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> sucursalPorEmpleado() {
+	
+	@RequestMapping(value = {"/todos_los_estatus"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") String idSucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
-		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
+		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
+		String sucursal;
 		try {
-			//
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			Usuario usuario = usuarioService.findByNombre(auth.getName());
-			logger.info("se encotró el usuario");
-			//
-			lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
+			
+			if (idSucursal.equals(""))
+				sucursal = sucursalPorEmpleado();
+			else
+				sucursal = idSucursal;
+			
+			lista = estatusSeguimientoService.listaDeEstatus(Integer.parseInt(sucursal));
 			logger.info("se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);
@@ -362,23 +372,17 @@ public class SeguimientoGestionRestController {
 	}
 	
 	
-	@RequestMapping(value = {"/todos_los_estatus"}, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones() {
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
-		try {
-			lista = estatusSeguimientoService.listaDeEstatus();
-			logger.info("se llenó la lista");
-			respuesta.put("lista", lista);
-			return ResponseEntity.ok(respuesta);
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
+	
+	public String sucursalPorEmpleado() {
+		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
+		//
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Usuario usuario = usuarioService.findByNombre(auth.getName());
+		logger.info("se encotró el usuario");
+		//
+		lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
+		logger.info("se llenó la lista");
+		return lista.get(0).getSucursalUsuario();
 	}
 	
 }

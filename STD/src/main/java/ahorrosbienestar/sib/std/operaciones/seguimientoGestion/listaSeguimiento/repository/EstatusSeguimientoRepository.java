@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.EstatusSeguimientoModel;
 
@@ -12,6 +13,7 @@ public interface EstatusSeguimientoRepository extends JpaRepository<EstatusSegui
 	@Query(value = "SELECT "
 			+ "     ctE.PK_ID,"
 			+ "     ctE.V_VALOR,"
+			+ "     suc.VC_NOMBRESUCURSAL,"
 			+ "     COUNT(*) AS TOTAL_REGISTROS"
 			+ " FROM ("
 			+ " select tblCampanias.I_CLIENTEID"
@@ -78,8 +80,10 @@ public interface EstatusSeguimientoRepository extends JpaRepository<EstatusSegui
 			+ " INNER JOIN SIB.TBL_NOMINA_NLIQUIDADOS tblsNL on tblsNL.I_CLIENTE_ID = tblOA.I_CLIENTEID AND tblOA.ID_REG_BASE = tblsNL.PK_ID_NLIQUIDADOS"
 			+ " INNER JOIN SIB.TBL_CLASIFICACION_BASES_OA tblsClass on tblsClass.PK_ID_CLASIFICACION = tblOA.I_COD_CLASIFICACION"
 			+ " WHERE tblOA.C_ESTATUS_OFERTA = 'A' and aoa.I_ACTIVO=1) tB"
+			+ " INNER JOIN SIB.TBL_SUCURSALES suc ON suc.PK_ID_SUCURSAL = tB.FK_ID_SUCURSAL"
 			+ " INNER JOIN SIB.TBL_OPC_BUSQUEDA ctE ON ctE.I_OPCION = tB.i_estatus AND ctE.I_ID_GRUPO = '14'"
-			+ " GROUP BY ctE.PK_ID;", nativeQuery = true)
-	public List<EstatusSeguimientoModel> listaDeEstatus();
+			+ " WHERE suc.PK_ID_SUCURSAL = :sucursal"
+			+ " GROUP BY ctE.PK_ID", nativeQuery = true)
+	public List<EstatusSeguimientoModel> listaDeEstatus(@Param("sucursal") int sucursal);
 
 }

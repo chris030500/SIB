@@ -49,13 +49,14 @@ function listaDeBusqueda() {
 					document.getElementById("verCliente").style.visibility = "hidden";
 					listaSucursales();
 				} else {
-					listaClientes();
 					document.getElementById("verCliente").style.display = "block";
 					document.getElementById("verCliente").style.visibility = "visible";
 					document.getElementById("verSucursal").style.display = "none";
 					document.getElementById("verSucursal").style.visibility = "hidden";
+					listaClientes();
 				}
-
+				listaValores = [];
+				destruirListGroup('general');
 			});
 		}, error: function(error) {
 			swal({
@@ -67,8 +68,14 @@ function listaDeBusqueda() {
 	});
 }
 
+
+/**
+ * Select de los estatus
+ */
+
 var estatusGestion;
 
+// Función para cargar la lista de gestiones desde el servidor
 function listaDeGestiones() {
 	var busqueda = document.getElementById("selectGestion");
 	$.ajax({
@@ -82,10 +89,16 @@ function listaDeGestiones() {
 				opcion.text = respuesta.lista[i].v_valor;
 				busqueda.add(opcion);
 			}
+
+			// Evento change para el select de gestiones
 			busqueda.addEventListener("change", function() {
-				estatusGestion = busqueda.value;
+				// Al seleccionar un estatus, llenar el list-group
+				// console.log(busqueda);
+				llenarGroupEstatus(busqueda, 'estatus');
 			});
-		}, error: function(error) {
+
+		},
+		error: function(error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -99,6 +112,90 @@ function listaDeGestiones() {
  */
 
 
+
+/**
+ * Llenar group de los estatus
+ */
+let listaEstatus = [];
+
+function llenarGroupEstatus(valor, identificador) {
+	var opcionSeleccionada = valor.options[valor.selectedIndex]; // Obtener la opción seleccionada del select
+	var valorBuscador = opcionSeleccionada.value; // Valor de la opción seleccionada
+	var textoOpcion = opcionSeleccionada.text; // Texto de la opción seleccionada
+
+	// Verificar si el valor ya está en la lista
+	var valorIgual = listaEstatus.some(function(elemento) {
+		return elemento.id === valorBuscador;
+	});
+
+	if (!valorIgual) {
+		// Agregar el nuevo elemento a la listaEstatus
+		listaEstatus.push({ id: valorBuscador, nombre: textoOpcion });
+		// Llamar a la función para renderizar el list-group
+		renderizarGroupEstatus(identificador);
+	} else {
+		swal({
+			text: "Ya se agregó " + textoOpcion,
+			icon: "warning",
+		});
+	}
+
+	// console.log(listaEstatus);
+}
+
+
+// Función para renderizar la lista de sucursales
+function renderizarGroupEstatus(identificador) {
+	var contenedorGroup = document.getElementById('group-' + `${identificador}`);
+
+	// Limpiar el contenido del contenedor antes de agregar nuevos elementos
+	contenedorGroup.innerHTML = '';
+
+	// Iterar sobre cada objeto en el arreglo
+	listaEstatus.forEach(function(elemento) {
+		// Crear un nuevo elemento <a> para cada sucursal
+		var nuevoElemento = document.createElement('a');
+		nuevoElemento.classList.add('list-group-item');
+		nuevoElemento.style.background = '#e0e0e0';
+
+		// Crear el contenido del elemento
+		nuevoElemento.innerHTML = `
+            <div style="display: flex; justify-content: space-between;">
+                <div>${elemento.nombre}</div>
+                <button class="btn btn-danger btn-sm eliminar-${identificador}" style="background: none; border: none; color: gray;" data-id="${elemento.id}">x</button>
+            </div>
+        `;
+
+		// Agregar el elemento al contenedor
+		contenedorGroup.appendChild(nuevoElemento);
+	});
+
+	// Agregar controladores de eventos para los botones de eliminar
+	var botonesEliminar = document.querySelectorAll('.eliminar-' + `${identificador}`);
+	botonesEliminar.forEach(function(boton) {
+		boton.addEventListener('click', function(event) {
+			var idElemento = event.target.dataset.id;
+			// Eliminar la sucursal tanto del list-group como de la variable listaValores
+			listaEstatus = listaEstatus.filter(function(elemento) {
+				return elemento.id !== idElemento;
+			});
+			// Volver a renderizar la lista
+			renderizarGroupEstatus(identificador);
+		});
+	});
+}
+
+// Función para destruir el list-group
+function destruirListEstatus(identificador) {
+	var contenedorSucursales = document.getElementById('group-' + `${identificador}`);
+	contenedorSucursales.innerHTML = ''; // Eliminar todos los elementos dentro del contenedor
+}
+/**
+* Fin
+*/
+
+
+
 /**
  * Generar reporte
  */
@@ -106,40 +203,26 @@ function obtenerDatos() {
 	var fechaInicio = $('#fechaInicio').val();
 	var fechaFin = $('#fechaFin').val();
 
-	if (document.getElementById("selectBusqueda").value == 53) {
-		if (sucursalValue != '' && sucursalValue != null && fechaInicio != '' && fechaFin != '' && estatusGestion != undefined) {
-			const dto = {
-				gestion: tipoBusqueda,
-				sucursal: sucursalValue,
-				estatusGestion: estatusGestion,
-				fechaInicio: fechaInicio,
-				fechaFin: fechaFin
-			}
-			// console.log(dto);
-			generarReporte(dto);
-		} else {
-			// Se ejecuta la validacion
-			swal("Falta información por llenar", {
-				icon: "warning"
-			});
+	console.log(listaValores.length + ', ' + fechaInicio + ', ' + fechaFin + ', ' + listaEstatus.length);
+
+	if (listaValores.length > 0 && fechaInicio != '' && fechaFin != '' && listaEstatus.length > 0) {
+
+		const dto = {
+			estatusGestion: listaEstatus,
+			valores: listaValores,
+			fechaInicio: fechaInicio,
+			fechaFin: fechaFin,
+			busqueda: tipoBusqueda,
 		}
+
+		// console.log(dto);
+		generarReporte(dto);
+
 	} else {
-		if (clienteValue != "" && clienteValue != null && fechaInicio != '' && fechaFin != '' && estatusGestion != undefined) {
-			const dto = {
-				tipoBusqueda: tipoBusqueda,
-				cliente: clienteValue,
-				estatusGestion: estatusGestion,
-				fechaInicio: fechaInicio,
-				fechaFin: fechaFin
-			}
-			//console.log(dto);
-			generarReporte(dto);
-		} else {
-			// Se ejecuta la validacion
-			swal("Falta información por llenar", {
-				icon: "warning"
-			});
-		}
+		// Se ejecuta la validacion
+		swal("Falta información por llenar", {
+			icon: "warning"
+		});
 	}
 }
 /**
@@ -168,21 +251,15 @@ function listaSucursales() {
 				option.value = sucursal.vc_nombresucursal;
 				opciones.appendChild(option);
 			});
-
-			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
-			actualizarValorSucursal();
+			//
+			llenarGroupBuscador(buscarSucursal.value, 'general');
 		}
 	});
 }
 
-function actualizarValorSucursal() {
-	var opcionSeleccionada = document.querySelector('option[value="' + buscarSucursal.value + '"]');
-	sucursalValue = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
-}
-
 buscarSucursal.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	actualizarValorSucursal();
+	llenarGroupBuscador(buscarSucursal.value, 'general');
 });
 /**
  * Fin
@@ -213,23 +290,18 @@ function listaClientes() {
 				option.value = cliente.vc_nombrecompleto;
 				opciones.appendChild(option);
 			});
+			//
+			llenarGroupBuscador(buscarCliente.value, 'general');
 
-			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
-			actualizarValorSeleccionado();
 			buscarCliente.disabled = false;
 			spinner.style.display = "none";
 		}
 	});
 }
 
-function actualizarValorSeleccionado() {
-	var opcionSeleccionada = document.querySelector('option[value="' + buscarCliente.value + '"]');
-	clienteValue = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
-}
-
 buscarCliente.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	actualizarValorSeleccionado();
+	llenarGroupBuscador(buscarCliente.value, 'general');
 });
 /**
  * Fin
@@ -273,14 +345,13 @@ document.addEventListener("DOMContentLoaded", function() {
  * Generar reporte de gestión
  */
 function generarReporte(dto) {
+	var enviar = JSON.stringify(dto);
 	$.ajax({
-		url: newUrlBase + "reporte_gestion?gestion=" + dto.estatusGestion
-			+ "&sucursal=" + dto.sucursal
-			+ "&cliente=" + dto.cliente
-			+ "&fechaInicio=" + dto.fechaInicio
-			+ "&fechaFin=" + dto.fechaFin,
+		url: newUrlBase + "reporte_gestion",
+		data: enviar,
 		type: "POST",
 		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
 		beforeSend: function() {
 			$.blockUI({ message: 'Espere un momento...' });
 		},
@@ -304,3 +375,87 @@ function generarReporte(dto) {
 /**
  * Fin
  */
+
+
+
+/**
+ * Llenar group de los buscadores
+ */
+let listaValores = [];
+
+function llenarGroupBuscador(valor, identificador) {
+	var valorIgual = false;
+	var opcionSeleccionada = document.querySelector('option[value="' + valor + '"]');
+	var valorBuscador = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
+
+	if (valorBuscador) {
+		listaValores.forEach(function(elemento) {
+			if (valorBuscador === elemento.id) {
+				valorIgual = true;
+				swal({
+					text: "Ya se agregó " + opcionSeleccionada.value,
+					icon: "warning",
+				});
+			}
+		});
+
+		if (!valorIgual) {
+			listaValores.push({ id: valorBuscador, nombre: opcionSeleccionada.value });
+			// Agregar la sucursal al contenedor
+			renderizarGroupBuscador(identificador);
+		}
+
+		// console.log(listaValores);
+	}
+}
+
+
+// Función para renderizar la lista de sucursales
+function renderizarGroupBuscador(identificador) {
+	var contenedorGroup = document.getElementById('group-' + `${identificador}`);
+
+	// Limpiar el contenido del contenedor antes de agregar nuevos elementos
+	contenedorGroup.innerHTML = '';
+
+	// Iterar sobre cada objeto en el arreglo
+	listaValores.forEach(function(elemento) {
+		// Crear un nuevo elemento <a> para cada sucursal
+		var nuevoElemento = document.createElement('a');
+		nuevoElemento.classList.add('list-group-item');
+		nuevoElemento.style.background = '#e0e0e0';
+
+		// Crear el contenido del elemento
+		nuevoElemento.innerHTML = `
+            <div style="display: flex; justify-content: space-between;">
+                <div>${elemento.nombre}</div>
+                <button class="btn btn-danger btn-sm eliminar-${identificador}" style="background: none; border: none; color: gray;" data-id="${elemento.id}">x</button>
+            </div>
+        `;
+
+		// Agregar el elemento al contenedor
+		contenedorGroup.appendChild(nuevoElemento);
+	});
+
+	// Agregar controladores de eventos para los botones de eliminar
+	var botonesEliminar = document.querySelectorAll('.eliminar-' + `${identificador}`);
+	botonesEliminar.forEach(function(boton) {
+		boton.addEventListener('click', function(event) {
+			var idElemento = event.target.dataset.id;
+			// Eliminar la sucursal tanto del list-group como de la variable listaValores
+			listaValores = listaValores.filter(function(elemento) {
+				return elemento.id !== idElemento;
+			});
+			// Volver a renderizar la lista
+			renderizarGroupBuscador(identificador);
+		});
+	});
+}
+
+// Función para destruir el list-group
+function destruirListGroup(identificador) {
+	var contenedorSucursales = document.getElementById('group-' + `${identificador}`);
+	contenedorSucursales.innerHTML = ''; // Eliminar todos los elementos dentro del contenedor
+}
+ /**
+* Fin
+*/

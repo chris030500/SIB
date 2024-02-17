@@ -17,6 +17,9 @@ public class EstatusSeguimientoModel {
 	@Column(name = "TOTAL_REGISTROS")
 	private int total_registros;
 
+	@Column(name = "VC_NOMBRESUCURSAL")
+	private String vc_nombresucursal;
+
 	public int getPk_id() {
 		return pk_id;
 	}
@@ -39,6 +42,14 @@ public class EstatusSeguimientoModel {
 
 	public void setTotal_registros(int total_registros) {
 		this.total_registros = total_registros;
+	}
+
+	public String getVc_nombresucursal() {
+		return vc_nombresucursal;
+	}
+
+	public void setVc_nombresucursal(String vc_nombresucursal) {
+		this.vc_nombresucursal = vc_nombresucursal;
 	}
 
 }
