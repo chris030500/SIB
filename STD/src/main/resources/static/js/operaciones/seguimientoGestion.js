@@ -544,7 +544,6 @@ function todosLosEstatus(id) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
 			});
-
 			// Llamar a la función para crear la gráfica después de obtener los datos
 			createChart(listaDeEstatus, listaDeTotales);
 		}
