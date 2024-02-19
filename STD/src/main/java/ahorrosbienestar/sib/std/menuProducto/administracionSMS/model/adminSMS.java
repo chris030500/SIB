@@ -3,13 +3,14 @@ package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
-@Table(name= "VW_ASIGNACION_OFERTAS")
 public class adminSMS {
 	
 	@Id
+	@Column(name = "PK_ID_MENSAJE")
+    private int mensajeID;
+	
     @Column(name = "I_CLIENTEID")
     private int clienteID;
 
@@ -28,7 +29,7 @@ public class adminSMS {
     @Column(name = "VC_DESC_MENSAJE")
     private String descMensaje;
 
-    @Column(name = "i_estatus")
+    @Column(name = "I_ESTATUS_SMS")
     private String estMensaje;
 
 	@Override
@@ -41,6 +42,14 @@ public class adminSMS {
 				+ getTelefonoCelular() + ", getDescMensaje()=" + getDescMensaje() + ", getEstMensaje()="
 				+ getEstMensaje() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
 				+ super.toString() + "]";
+	}
+
+	public int getMensajeID() {
+		return mensajeID;
+	}
+
+	public void setMensajeID(int mensajeID) {
+		this.mensajeID = mensajeID;
 	}
 
 	public int getClienteID() {

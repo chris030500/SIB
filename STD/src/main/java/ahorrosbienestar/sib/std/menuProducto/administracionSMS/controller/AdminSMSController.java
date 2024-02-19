@@ -8,17 +8,26 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.Parametros;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsignacion;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.MensajeSMSService;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoAsignacionService;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.adminSMSService;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 
 @Controller
 @RequestMapping("mensajes")
@@ -29,38 +38,40 @@ public class AdminSMSController {
 
 	@Autowired
 	private ProcesoAsignacionService procesoService;
+	
+	@Autowired
+	private MensajeSMSService mensajeService;
+	
+	@Autowired
+	private ConfiguracionSistemaService configuracionService;
 
 	private static final Logger logger = Logger.getLogger(AdminSMSController.class);
-	
-	@RequestMapping(value = {"/obtSMS"}, method = RequestMethod.GET)
+
+	@RequestMapping(value = { "/obtSMS" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("cliente") String cliente,
-	        @RequestParam("sucur") String sucur, @RequestParam("proce") String proce) {
+			@RequestParam("sucur") String sucur, @RequestParam("proce") String proce) {
 
-	    System.out.println(cliente);
-	    System.out.println(sucur);
-	    System.out.println(proce);
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		try {
+			List<adminSMS> mensajes = mensajesService.busquedaPorSeguimiento(cliente, sucur, proce);
 
-	    Map<String, Object> respuesta = new HashMap<>();
-	    String mensajeError = null;
-	    try {
-	        List<adminSMS> mensajes = mensajesService.busquedaPorSeguimiento(cliente, sucur, proce);
-	        
-	        // Verificar si la lista de mensajes es nula o vacía
-	        if (mensajes != null && !mensajes.isEmpty()) {
-	            respuesta.put("lista", mensajes);
-	            return ResponseEntity.ok(respuesta);
-	        } else {
-	            // Devolver una lista vacía si no hay mensajes encontrados
-	            respuesta.put("lista", Collections.emptyList());
-	            return ResponseEntity.ok(respuesta);
-	        }
-	    } catch (Exception e) {
-	        // TODO: handle exception
-	        logger.error("Error: " + e.getMessage());
-	        mensajeError = "Error: " + e.getMessage();
-	        respuesta.put("error", mensajeError);
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-	    }
+			// Verificar si la lista de mensajes es nula o vacía
+			if (mensajes != null && !mensajes.isEmpty()) {
+				respuesta.put("lista", mensajes);
+				return ResponseEntity.ok(respuesta);
+			} else {
+				// Devolver una lista vacía si no hay mensajes encontrados
+				respuesta.put("lista", Collections.emptyList());
+				return ResponseEntity.ok(respuesta);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
 	}
 
 	@GetMapping("/obtProcesos")
@@ -75,4 +86,80 @@ public class AdminSMSController {
 		}
 
 	}
+
+	@RequestMapping(value = "/editSMS", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> editarMensaje(@RequestParam("id") int id, @RequestParam("mensaje") String mensaje) {
+
+        MensajeSMS mensajeActualizado = mensajeService.editarMensaje(id, mensaje);
+        if (mensajeActualizado != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", mensajeActualizado);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+        }
+    }
+	
+	@RequestMapping(value = "/inactivarSMS", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> inactivarMensaje(@RequestParam("id") int id, @RequestParam("estatus") int estatus) {
+		
+        MensajeSMS mensajeActualizado = mensajeService.inactivarMensaje(id, estatus);
+        if (mensajeActualizado != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", mensajeActualizado);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+        }
+    }
+	
+	@RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
+    public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje, @RequestParam("telefono") String telefono) {
+		
+		RestTemplate restTemplate = new RestTemplate();
+		
+		String mensajeError = null;
+		String server = "";
+		
+		try {
+			List<ConfiguracionSistema> credenciales = configuracionService.obtenerConfiguraciones();
+			
+			ConfiguracionSistema conf9 = credenciales.get(9);
+		    ConfiguracionSistema conf10 = credenciales.get(10);
+		    ConfiguracionSistema conf11 = credenciales.get(11);
+		    ConfiguracionSistema conf12 = credenciales.get(12);
+		    
+		    server = conf11.getConfiguracion();
+		    
+		    Parametros parametros = new Parametros();
+		    parametros.setMail(conf9.getConfiguracion());
+		    parametros.setPassword(conf10.getConfiguracion());
+		    parametros.setId(conf12.getConfiguracion());
+		    parametros.setMensaje(mensaje);
+		    parametros.setTelefono(telefono);
+
+		    // Configurar encabezados
+		    HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+	        
+	        // Configurar la entidad de la solicitud con los parámetros como JSON
+	        HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
+	        
+	        // Realizar la solicitud HTTP POST
+	        ResponseEntity<String> response = restTemplate.postForEntity(server, requestEntity, String.class);
+	        
+	        // Procesar la respuesta si es necesario
+	        String responseBody = response.getBody();
+	        System.out.println("Respuesta del servidor: " + responseBody);
+	        return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+		
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+		}
+		
+        
+    }
 }
