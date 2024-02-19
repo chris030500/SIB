@@ -1,6 +1,3 @@
-/**
- * 
- */
 var tblReglasAsignacion;
 var tblPlantillasSMS;
 var tblParamsAsig;

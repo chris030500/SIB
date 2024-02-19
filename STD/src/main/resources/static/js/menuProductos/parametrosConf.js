@@ -1,7 +1,7 @@
 /**
- * 
- */
-
+*
+*/
+ 
 var id="";
 var idDiv="";
 var opcion = "";
@@ -19,10 +19,7 @@ function ocultarMostrar(divEl){
     case "3":
       obtTblPlantillas();
       break;
- 	case "4":
-      //listaMensajes();
-      break;
- 	case "5":
+    case "5":
       obtTblClienteB();
       break;
     default:
@@ -31,9 +28,9 @@ function ocultarMostrar(divEl){
   
   mostrarOcultarDiv(idDiv);
 }
-
+ 
 function mostrarOcultarDiv(divA){
- 	  var opcion = document.getElementById(divA);
+	  var opcion = document.getElementById(divA);
 	  if(opcion != null){
 		 opcion.style.display = "block";
 	  }

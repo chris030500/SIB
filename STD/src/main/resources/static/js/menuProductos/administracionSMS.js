@@ -52,11 +52,12 @@ function toggleSearchFields() {
     if (filterType === "client") {
         document.getElementById("clientSearchField").style.display = "block";
         document.getElementById("branchSearchField").style.display = "none";
+        document.getElementById("buscarSucursal").value = "";
         listaClientes();
-        listaProcesos()
     } else if (filterType === "branch") {
         document.getElementById("clientSearchField").style.display = "none";
         document.getElementById("branchSearchField").style.display = "block";
+        document.getElementById("buscarCliente").value = "";
         listaSucursales();
     } else {
         document.getElementById("clientSearchField").style.display = "none";
@@ -169,3 +170,65 @@ buscarCliente.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	actualizarValorSeleccionado();
 });
+
+var parametroCliente;
+var parametroSucu;
+var parametroProce;
+
+var cliente = "";
+var sucu = "";
+function validarBusqueda() {
+	document.getElementById("ver-cargaSeguimiento").style.display = "block";
+	document.getElementById("ver-listaSeguimiento").style.display = "none";
+	var cliente = $("#buscarCliente").val();
+	var sucu = $("#buscarSucursal").val();
+	var proce = $("#process").val();
+	parametroCliente = cliente;
+	parametroSucu = sucu;
+	parametroProce = proce;
+	llenarTablaSeguimiento();
+}
+
+function llenarTablaSeguimiento() {
+
+	servicioURL = "mensajes/obtSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce
+
+	$.ajax({
+		url: getAbsolutePath()+servicioURL,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			document.getElementById("ver-cargaSeguimiento").style.display = "none";
+			document.getElementById("ver-listaSeguimiento").style.display = "block";
+			tblMensajesGenerados.clear().draw();;
+			$.each(respuesta.lista, function(idx, opt) {
+		 var botonesActivar = "";
+			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='actualizarEstatus("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";*/
+		 var botonesEditar = "";
+			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarPlantilla("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
+				
+			 	botones = botonesActivar+botonesEditar;
+			 	
+			 tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+		 });
+		},
+		error: function(error) {
+			//console.log(error.error);
+		}
+	});
+}
