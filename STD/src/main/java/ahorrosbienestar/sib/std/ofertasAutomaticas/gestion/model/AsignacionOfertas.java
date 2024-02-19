@@ -59,13 +59,13 @@ public class AsignacionOfertas {
 	@Column(name = "VC_COD_REFERENCIA", columnDefinition = "VARCHAR(15)")
 	private String vc_cod_referencia;
 	
-	@Column(name = "I_SUC_CREDITO", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	@Column(name = "I_SUC_CREDITO", columnDefinition = "INT DEFAULT NULL")
 	private int i_suc_credito;
 	
 	@Column(name = "I_REASIGNAR", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_reasignar;
 	
-	@Column(name = "I_ANTERIOR_SUC", columnDefinition = "TINYINT(1) DEFAULT 0")
+	@Column(name = "I_ANTERIOR_SUC", columnDefinition = "INT DEFAULT 0")
 	private int i_anterior_suc;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
