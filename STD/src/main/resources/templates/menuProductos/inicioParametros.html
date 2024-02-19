@@ -8,6 +8,8 @@
 	<title>Insert title here</title>
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw==" crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet"/>
+
 </head>
 
 <body>
@@ -212,21 +214,8 @@
 											<tr>
 												<td>Usuario Calixta:</td>
 												<td>
-													<div class="col-sm-12">
-														<input type="search" class="form-control" id="searchInput"
-															list="opciones" autocomplete="off" placeholder="Usuario"
-															th:name="usuarioCalix" th:value="${param_10}"
-															th:required="true">
-														<!-- Lista de opciones para el datalist -->
-														<datalist id="opciones">
-															<option th:each="usuario : ${usuarios}"
-																th:value="${usuario.vc_nombre_usuario}"></option>
-														</datalist>
-														<p id="errorSucursal"
-															style="color: red; display: none; font-size: small; padding-left: 5px;">
-															<i><b>campo requerido</b></i>
-														</p>
-													</div>
+													<input type="text" class="form-control" th:name="usuarioCalix"
+														th:value="${param_10}" th:required="true">
 												</td>
 											</tr>
 											<tr>
@@ -241,6 +230,13 @@
 												<td>
 													<input type="text" class="form-control" th:name="serviWS"
 														th:value="${param_12}" th:required="true">
+												</td>
+											</tr>
+											<tr>
+												<td>Id Cliente Calixta:</td>
+												<td>
+													<input type="text" class="form-control" th:name="idCalix"
+														th:value="${param_13}" th:required="true">
 												</td>
 											</tr>
 										</table>
@@ -377,39 +373,52 @@
 
 								<div class="row">
 									<div class="col-md-12">
-										<button type="button" class="btn btn-primary" onclick="applyFilters()">Aplicar
-											Filtros</button>
-										<button type="button" class="btn btn-secondary"
-											onclick="downloadReport()">Descargar Reporte</button>
+										<button type="button" class="btn btn-primary"
+											onclick="validarBusqueda()">Buscar</button>
+										<button type="button" class="btn btn-success" onclick="downloadReport()">
+											<i class="bi bi-file-earmark-text"></i>
+										</button>
 									</div>
 								</div>
 							</form>
 
 							<!-- Botón Enviar Masivo -->
-							<button type="button" class="btn btn-success mt-4" onclick="enviarMasivo()">Enviar
-								Masivo</button>
+
 
 							<!-- Tabla con SMS Generados -->
-							<h4 class="mt-4">SMS Generados</h4>
-							<div class="row" style="margin-top : 15px ">
-								<div class="table-responsive">
-									<table class="table table-bordered table-striped" style="width: 120%;"
-										id="tblMensajesGenerados">
-										<thead>
-											<tr>
-												<th>Cliente</th>
-												<th>Nombre de cliente</th>
-												<th>Tipo Campaña</th>
-												<th>Clasificación de Campañas</th>
-												<th>Numero Celular</th>
-												<th>Descripción de SMS</th>
-												<th>Estatus SMS</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
+							<div id="ver-listaSeguimiento" style="display: none;">
+								<button type="button" class="btn btn-info mt-4" onclick="enviarMasivo()">
+									<i class="bi bi-paper-plane"></i> Envio Masivo
+								</button>
+								<h4 class="mt-4">SMS Generados</h4>
+								<div class="row" style="margin-top : 15px ">
+									<div class="table-responsive">
+										<table class="table table-bordered table-striped" style="width: 120%;"
+											id="tblMensajesGenerados">
+											<thead>
+												<tr>
+													<th>Cliente</th>
+													<th>Nombre de cliente</th>
+													<th>Tipo Campaña</th>
+													<th>Clasificación de Campañas</th>
+													<th>Numero Celular</th>
+													<th>Descripción de SMS</th>
+													<th>Estatus SMS</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+							<!-- Spinner de carga -->
+							<div class="row" id="ver-cargaSeguimiento"
+								style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
+								<div class="col-sm-12">
+									<div class="spinner-border" style="color: #0dcaf0; height: 100px; width: 100px;">
+									</div>
 								</div>
 							</div>
 						</div>
@@ -655,6 +664,32 @@
 				</div>
 			</div>
 			<!--Registro parametros-->
+			<!-- Modal para editar mensaje -->
+			<div class="modal fade" id="editarMensajeModal" tabindex="-1" role="dialog"
+				aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Editar Mensaje</h5>
+						</div>
+						<div class="modal-body">
+							<form id="editarMensajeForm">
+								<div class="form-group">
+									<label for="nombreCompleto">Mensaje:</label>
+									<textarea class="form-control" id="descMensaje" name="descMensaje"></textarea>
+								</div>
+								<input type="hidden" id="mensajeID" name="mensajeID" value="valor">
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" onclick="cerrarMensaje()">Cerrar</button>
+							<button type="button" class="btn btn-primary" onclick="guardarCambios()">Guardar
+								Cambios</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 
 
 		</div>
@@ -665,7 +700,7 @@
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
 		<script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
