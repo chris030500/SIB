@@ -47,9 +47,18 @@ public class ParametrosReglasAsignacionService {
 		}
 	}
 
-	public int existeRegistro(Integer slAsignar, Integer tipoCliente, Integer slcTipoCartera,Integer idRegla) {
+	public int existeRegistro(Integer slAsignar, Integer tipoCliente, Integer slcTipoCartera,Integer idRegla, Integer tipoPrioridad) {
 		try {
-			return iParametrosReglasAsignacion.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla);
+			return iParametrosReglasAsignacion.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla,tipoPrioridad);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return 1;
+		}
+	}
+
+	public int existeRegistroAct(Integer slAsignar, Integer tipoCliente, Integer slcTipoCartera, Integer tipoPrioridad) {
+		try {
+			return iParametrosReglasAsignacion.existeRegistroAct(slAsignar,tipoCliente,slcTipoCartera,tipoPrioridad);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return 1;

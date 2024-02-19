@@ -262,7 +262,7 @@ function iniciaTblClasificacion(){
 	 $.getJSON(url, {}, function(data) {
    		tblclasificacionBaseTable.clear().draw();
    		$.each(data, function(idx, opt) {
-			var btnsEditar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+			var btnsEditar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
 				+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 				+ " onclick='editarClasificacion("
 				+ opt.pk_id_clasificacion
@@ -271,7 +271,7 @@ function iniciaTblClasificacion(){
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-pencil-square'></i></button>";
 				
-			var btnsActivar = " <button class='btn btn-success' tabindex='0' data-bs-toggle='tooltip'"
+			var btnsActivar = " <button class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Activar Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
 				+ " onclick='activarClasificacion(this)' id="
 				+ opt.pk_id_clasificacion
@@ -281,7 +281,7 @@ function iniciaTblClasificacion(){
 				+ " <i class='bi bi-check2-circle'></i></button>";
 			
 			
-			var btnBaja= " <button class='btn btn-warning' tabindex='0' data-bs-toggle='tooltip'"
+			var btnBaja= " <button class='btn btn-warning btn-sm' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Baja Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
 				+ " onclick='bajaClasificacion(this)' id="
 				+ opt.pk_id_clasificacion

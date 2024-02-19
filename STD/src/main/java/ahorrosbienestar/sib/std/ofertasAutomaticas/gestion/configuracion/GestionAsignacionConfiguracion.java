@@ -116,8 +116,8 @@ public class GestionAsignacionConfiguracion {
 
 	public synchronized void procesarAsignacion(Integer idProceso) {
 		try {
-    		logger.info("Ejecuta los SP Asignacion");
-        	jdbcTemplate.update("CALL SIB.SP_ASIGNACIONXBASE_1_1()");
+    		String sql = "CALL SIB.SP_PROCESOS_ASIGNACION()";
+        	jdbcTemplate.update(sql);
         	
         	int tipoCorreo = 9;
         	// registrso de asignacion
