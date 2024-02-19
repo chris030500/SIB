@@ -155,7 +155,7 @@ function debouncedListaClientes() {
 function listaClientes() {
 	var buscar = buscarCliente.value;
 	$.ajax({
-		url: newUrlBase + "listaClientesActivos?valor=" + buscar,
+		url: newUrlBase + "lista_numero_cliente?valor=" + buscar,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -164,7 +164,7 @@ function listaClientes() {
 			respuesta.lista.forEach(function(cliente) {
 				var option = document.createElement('option');
 				option.setAttribute('data-value', cliente.i_clienteid);
-				option.value = cliente.vc_nombrecompleto;
+				option.value = cliente.clienteinfo;
 				opciones.appendChild(option);
 			});
 			if (respuesta.lista[0]) {
