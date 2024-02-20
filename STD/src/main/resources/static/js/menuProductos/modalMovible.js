@@ -1,3 +1,4 @@
+ // @ts-nocheck
  $(document).ready(function(){
     // Obtén la modal por su ID
     var modal = $("#altaPlantilla");
