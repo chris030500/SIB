@@ -45,9 +45,7 @@ function listaMensajes() {
 
 			botones = botonesActivar + botonesEditar;
 
-			// Agregar el telefono y el mensaje a los arrays correspondientes
-			telefonos.push(opt.telefonoCelular);
-			mensajes.push(opt.descMensaje);
+
 
 			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
 		});
@@ -222,6 +220,11 @@ function llenarTablaSeguimiento() {
 				if (opt.estMensaje == 0) {
 					botones = botonesEditar + " " + botonesActivar;
 				}
+
+				// Agregar el telefono y el mensaje a los arrays correspondientes
+				telefonos.push(opt.telefonoCelular);
+				mensajes.push(opt.descMensaje);
+
 				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : 'ACTIVO'), botones]).draw(false);
 			});
 		},
@@ -350,6 +353,7 @@ function enviarSMS(telefono, mensaje) {
 }
 
 function enviarMasivo() {
+	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar todos los mensajes?</div>";
 	var textoAlerta = "¡Los mensajes se enviarán de manera masiva y no será posible cancelar el envío!";
 	var confirmButton = "Enviar";
@@ -364,13 +368,29 @@ function enviarMasivo() {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
-			console.log("Telefonos:", telefonos);
-			console.log("Mensajes:", mensajes);
-			swal(
-				"¡Enviados!",
-				"Los mensajes han sido enviados.",
-				"success"
-			)
+			console.log(telefonos)
+			console.log(mensajes)
+			$.ajax({
+				url: getAbsolutePath() + servicioURL,
+				type: "POST",
+				contentType: "application/json", 
+				data: JSON.stringify({
+					telefonos: telefonos,
+					mensajes: mensajes
+				}),
+				success: function(response) {
+					swal(
+						"¡Enviado!",
+						"El mensaje ha sido enviado.",
+						"success"
+					)
+					llenarTablaSeguimiento();
+				},
+				error: function(xhr, status, error) {
+					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
+					console.error("Error al enviar los datos: " + error);
+				}
+			});
 		}
 	})
 }

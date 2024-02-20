@@ -14,11 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.EnvioMensajes;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.Parametros;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsignacion;
@@ -159,7 +162,17 @@ public class AdminSMSController {
 			mensajeError = "Error: " + e.getMessage();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
 		}
-		
+    }
+	
+	@PostMapping("/sendSMSMasivo")
+    public void manejarDatosDesdeFrontend(@RequestBody EnvioMensajes mensaje) {
+        // Aquí puedes procesar los datos recibidos desde el frontend
+        String telefonos = mensaje.getTelefonos();
+        String mensajes = mensaje.getMensajes();
         
+        System.out.println("Teléfonos: " + telefonos);
+        System.out.println("Mensajes: " + mensajes);
+        
+        // Haz lo que necesites con los datos (guardarlos en la base de datos, procesarlos, etc.)
     }
 }
