@@ -13,6 +13,9 @@ window.onload = function() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/menuProductos", "");
 
+var telefonos = [];
+var mensajes = [];
+
 var obtDatosMensajeSMS = "mensajes/obtSMS";
 function listaMensajes() {
 	url = getAbsolutePath() + obtDatosMensajeSMS;
@@ -41,6 +44,10 @@ function listaMensajes() {
 				+ " <i class='fa-solid fa-pen-to-square'></i></button>";
 
 			botones = botonesActivar + botonesEditar;
+
+			// Agregar el telefono y el mensaje a los arrays correspondientes
+			telefonos.push(opt.telefonoCelular);
+			mensajes.push(opt.descMensaje);
 
 			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
 		});
@@ -275,7 +282,7 @@ function inactivarSMS(mensajeID, estatus) {
 		textoAlerta = "¡El mensaje se activará y sera tomado encuenta para el envio masivo!";
 		confirmButton = "Activar";
 	}
-	
+
 	swal({
 		title: tituloAlerta,
 		text: textoAlerta,
@@ -357,6 +364,8 @@ function enviarMasivo() {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
+			console.log("Telefonos:", telefonos);
+			console.log("Mensajes:", mensajes);
 			swal(
 				"¡Enviados!",
 				"Los mensajes han sido enviados.",
