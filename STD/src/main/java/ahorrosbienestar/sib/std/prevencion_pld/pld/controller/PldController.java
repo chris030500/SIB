@@ -37,7 +37,7 @@ public class PldController {
 	private static final int opcBusquedaGrupo2 = 25;
 	private static final String nombrePantalla = "Reportes PLD";
 	private static final String rutaError = "errores/error_403";
-	private String rutaDireccion = "";
+	private static String rutaDireccion = "";
 
 	private static final Logger logger = Logger.getLogger(PldController.class);
 
