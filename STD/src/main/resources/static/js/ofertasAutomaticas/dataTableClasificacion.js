@@ -3,6 +3,7 @@
  */
 var tblConfiguracion;
 var tblclasificacionBaseTable;
+var tblDetalle;
 $(document).ready(function() {
 	
 	tblConfiguracion = $("#tblConfiguracion").DataTable({
@@ -26,6 +27,16 @@ $(document).ready(function() {
 	});
 	
 	tblAdjuntos = $("#tblAdjuntos").DataTable({
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	tblDetalle = $("#tblDetalle").DataTable({
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
         },
