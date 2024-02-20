@@ -5,10 +5,7 @@ var tblReglasAsignacion;
 var tblPlantillasSMS;
 var tblParamsAsig;
 var tblClienteBloqueados;
-<<<<<<< HEAD
 var tblMensajesGenerados;
-=======
->>>>>>> refs/remotes/origin/DES_23_0018_CSP_DESARROLLO
 $(document).ready(function() {
 	
 	tblReglasAsignacion = $("#tblReglasAsignacion").DataTable({
