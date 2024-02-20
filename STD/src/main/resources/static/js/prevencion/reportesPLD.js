@@ -79,7 +79,7 @@ function valVacio(fecha1, fecha2) {
 		document.getElementById("dtFechaInicio").style.borderColor = "";
 		document.getElementById("dtFechaFin").style.borderColor = "";
 		// @ts-ignore
-		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value;
+		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
 		//console.log(url);
 	}
 	return result;
@@ -119,8 +119,8 @@ function peticionPost(urlServicio) {
 		},
 		success: function(respuesta) {
 
-			//var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-			var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
 
 			//console.log(urlReporte);
 			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
@@ -142,7 +142,7 @@ function peticionPost(urlServicio) {
 */
 var buscarCliente = document.getElementById('buscarCliente');
 var spinner = document.getElementById("spinnerClientes");
-var clienteValue;
+var clienteValue = 0;
 var timerId;
 
 

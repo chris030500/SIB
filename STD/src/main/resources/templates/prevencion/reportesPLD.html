@@ -58,15 +58,6 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-md-3">
-								<label class="col-form-label">Tipo Busqueda</label>
-								<select class="form-control" id="tipoBusquedaPLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld_ext}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
 							<div class="col-md-6">
 								<label class="col-form-label">Cliente</label>
 								<input type="search" class="form-control" id="buscarCliente" list="opcionCliente"

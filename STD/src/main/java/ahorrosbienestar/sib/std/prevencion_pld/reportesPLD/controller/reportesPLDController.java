@@ -52,6 +52,7 @@ public class reportesPLDController {
 
 	private static String nombreReporte = "";
 	private static String extensionReporte = "";
+	private static String reporteCliente = "";
 	private static final String controllerReporte = "generarReporte";
 
 	//@GetMapping("/listaClientesActivos")
@@ -79,19 +80,36 @@ public class reportesPLDController {
 	public ResponseEntity<?> reporteHistoricoPLD(@RequestParam("idReporte") Integer idReporte,
 			@RequestParam("dtFechaInicio") String dtFechaInicio, @RequestParam("dtFechaFin") String dtFechaFin,
 			@RequestParam("nombreReporteSelect") Integer nombreReporteSelect,
-			@RequestParam("extension") Integer extension) {
+			@RequestParam("extension") Integer extension,
+			@RequestParam("noCliente") Integer noCliente) {
 
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			LocalDate fecha = LocalDate.now();
 
 			if (nombreReporteSelect == 1) {
-
-				nombreReporte = "rpt_historico_operaciones_inusuales";
+				
+				if (noCliente > 0) {
+					
+					nombreReporte = "rpt_historico_operaciones_inusuales_clientes";
+					reporteCliente = "~NoCliente="+noCliente;
+					
+				}else {
+					
+					nombreReporte = "rpt_historico_operaciones_inusuales";
+				}
 
 			} else if (nombreReporteSelect == 2) {
 
-				nombreReporte = "rpt_historico_operaciones_relevantes";
+				if (noCliente > 0) {
+					
+					nombreReporte = "rpt_historico_operaciones_relevantes_clientes";
+					reporteCliente = "~NoCliente="+noCliente;
+					
+				}else {
+					
+					nombreReporte = "rpt_historico_operaciones_relevantes";
+				}
 			}
 
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
@@ -104,6 +122,8 @@ public class reportesPLDController {
 
 				extensionReporte = ".xls";
 			}
+			
+			//agregar un caso para ver si trae algo en noCliente
 
 			// String reporteURL =
 			// iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
@@ -111,7 +131,7 @@ public class reportesPLDController {
 
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
 					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + dtFechaInicio + "~FechaFin="
-					+ dtFechaFin + "&tipoDocumento=" + extensionReporte + "&identificadorDoc=OA";
+					+ dtFechaFin + reporteCliente + "&tipoDocumento=" + extensionReporte + "&identificadorDoc=OA";
 
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
