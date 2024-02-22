@@ -13,8 +13,8 @@ window.onload = function() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/menuProductos", "");
 
-var telefonos = [];
-var mensajes = [];
+var sms = [];
+var mens = [];
 
 var obtDatosMensajeSMS = "mensajes/obtSMS";
 function listaMensajes() {
@@ -222,8 +222,12 @@ function llenarTablaSeguimiento() {
 				}
 
 				// Agregar el telefono y el mensaje a los arrays correspondientes
-				telefonos.push(opt.telefonoCelular);
-				mensajes.push(opt.descMensaje);
+				var mensaje = {
+					telefono: opt.telefonoCelular,
+					mensaje: opt.descMensaje
+				};
+
+				sms.push(mensaje);
 
 				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : 'ACTIVO'), botones]).draw(false);
 			});
@@ -317,10 +321,17 @@ function inactivarSMS(mensajeID, estatus) {
 }
 
 function enviarSMS(telefono, mensaje) {
-	servicioURL = "mensajes/sendSMS?mensaje=" + mensaje + "&telefono=" + telefono;
+	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar el mensaje?</div>";
 	var textoAlerta = "¡El mensaje se enviará y no será posible cancelar el envío!";
 	var confirmButton = "Enviar";
+
+	var mensaje = {
+		telefono: telefono,
+		mensaje: mensaje
+	};
+
+	mens.push(mensaje);
 
 	swal({
 		title: tituloAlerta,
@@ -332,9 +343,12 @@ function enviarSMS(telefono, mensaje) {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
+			console.log(mens)
 			$.ajax({
 				url: getAbsolutePath() + servicioURL,
-				type: "GET",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(mens),
 				success: function(response) {
 					swal(
 						"¡Enviado!",
@@ -368,16 +382,12 @@ function enviarMasivo() {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
-			console.log(telefonos)
-			console.log(mensajes)
+			console.log(sms)
 			$.ajax({
 				url: getAbsolutePath() + servicioURL,
 				type: "POST",
-				contentType: "application/json", 
-				data: JSON.stringify({
-					telefonos: telefonos,
-					mensajes: mensajes
-				}),
+				contentType: "application/json",
+				data: JSON.stringify(sms),
 				success: function(response) {
 					swal(
 						"¡Enviado!",

@@ -41,10 +41,10 @@ public class AdminSMSController {
 
 	@Autowired
 	private ProcesoAsignacionService procesoService;
-	
+
 	@Autowired
 	private MensajeSMSService mensajeService;
-	
+
 	@Autowired
 	private ConfiguracionSistemaService configuracionService;
 
@@ -91,88 +91,126 @@ public class AdminSMSController {
 	}
 
 	@RequestMapping(value = "/editSMS", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> editarMensaje(@RequestParam("id") int id, @RequestParam("mensaje") String mensaje) {
+	public ResponseEntity<Map<String, Object>> editarMensaje(@RequestParam("id") int id,
+			@RequestParam("mensaje") String mensaje) {
 
-        MensajeSMS mensajeActualizado = mensajeService.editarMensaje(id, mensaje);
-        if (mensajeActualizado != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", mensajeActualizado);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
-        }
-    }
-	
+		MensajeSMS mensajeActualizado = mensajeService.editarMensaje(id, mensaje);
+		if (mensajeActualizado != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("mensaje", mensajeActualizado);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
 	@RequestMapping(value = "/inactivarSMS", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> inactivarMensaje(@RequestParam("id") int id, @RequestParam("estatus") int estatus) {
-		
-        MensajeSMS mensajeActualizado = mensajeService.inactivarMensaje(id, estatus);
-        if (mensajeActualizado != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", mensajeActualizado);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
-        }
-    }
-	
+	public ResponseEntity<Map<String, Object>> inactivarMensaje(@RequestParam("id") int id,
+			@RequestParam("estatus") int estatus) {
+
+		MensajeSMS mensajeActualizado = mensajeService.inactivarMensaje(id, estatus);
+		if (mensajeActualizado != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("mensaje", mensajeActualizado);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
 	@RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
-    public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje, @RequestParam("telefono") String telefono) {
-		
+	public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje,
+			@RequestParam("telefono") String telefono) {
+
 		RestTemplate restTemplate = new RestTemplate();
-		
+
 		String mensajeError = null;
 		String server = "";
-		
+
 		try {
 			List<ConfiguracionSistema> credenciales = configuracionService.obtenerConfiguraciones();
-			
-			ConfiguracionSistema conf9 = credenciales.get(9);
-		    ConfiguracionSistema conf10 = credenciales.get(10);
-		    ConfiguracionSistema conf11 = credenciales.get(11);
-		    ConfiguracionSistema conf12 = credenciales.get(12);
-		    
-		    server = conf11.getConfiguracion();
-		    
-		    Parametros parametros = new Parametros();
-		    parametros.setMail(conf9.getConfiguracion());
-		    parametros.setPassword(conf10.getConfiguracion());
-		    parametros.setId(conf12.getConfiguracion());
-		    parametros.setMensaje(mensaje);
-		    parametros.setTelefono(telefono);
 
-		    // Configurar encabezados
-		    HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_JSON);
-	        
-	        // Configurar la entidad de la solicitud con los parámetros como JSON
-	        HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
-	        
-	        // Realizar la solicitud HTTP POST
-	        ResponseEntity<String> response = restTemplate.postForEntity(server, requestEntity, String.class);
-	        
-	        // Procesar la respuesta si es necesario
-	        String responseBody = response.getBody();
-	        System.out.println("Respuesta del servidor: " + responseBody);
-	        return ResponseEntity.status(response.getStatusCode()).body(responseBody);
-		
+			ConfiguracionSistema conf9 = credenciales.get(9);
+			ConfiguracionSistema conf10 = credenciales.get(10);
+			ConfiguracionSistema conf11 = credenciales.get(11);
+			ConfiguracionSistema conf12 = credenciales.get(12);
+
+			server = conf11.getConfiguracion();
+
+			Parametros parametros = new Parametros();
+			parametros.setMail(conf9.getConfiguracion());
+			parametros.setPassword(conf10.getConfiguracion());
+			parametros.setId(conf12.getConfiguracion());
+
+			// Configurar encabezados
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			// Configurar la entidad de la solicitud con los parámetros como JSON
+			HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
+
+			// Realizar la solicitud HTTP POST
+			ResponseEntity<String> response = restTemplate.postForEntity(server, requestEntity, String.class);
+
+			// Procesar la respuesta si es necesario
+			String responseBody = response.getBody();
+			System.out.println("Respuesta del servidor: " + responseBody);
+			return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("Error: " + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
 		}
-    }
-	
+	}
+
 	@PostMapping("/sendSMSMasivo")
-    public void manejarDatosDesdeFrontend(@RequestBody EnvioMensajes mensaje) {
-        // Aquí puedes procesar los datos recibidos desde el frontend
-        String telefonos = mensaje.getTelefonos();
-        String mensajes = mensaje.getMensajes();
-        
-        System.out.println("Teléfonos: " + telefonos);
-        System.out.println("Mensajes: " + mensajes);
-        
-        // Haz lo que necesites con los datos (guardarlos en la base de datos, procesarlos, etc.)
-    }
+	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes) {
+		System.out.println("Cuerpo de la solicitud recibido:");
+		System.out.println(envioMensajes);
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		String mensajeError = null;
+		String server = "";
+
+		try {
+			List<ConfiguracionSistema> credenciales = configuracionService.obtenerConfiguraciones();
+
+			ConfiguracionSistema conf9 = credenciales.get(9);
+			ConfiguracionSistema conf10 = credenciales.get(10);
+			ConfiguracionSistema conf11 = credenciales.get(11);
+			ConfiguracionSistema conf12 = credenciales.get(12);
+
+			server = conf11.getConfiguracion();
+
+			Parametros parametros = new Parametros();
+			parametros.setMail(conf9.getConfiguracion());
+			parametros.setPassword(conf10.getConfiguracion());
+			parametros.setId(conf12.getConfiguracion());
+			parametros.setMensajes(envioMensajes);
+
+			// Configurar encabezados
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			// Configurar la entidad de la solicitud con los parámetros como JSON
+			HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
+
+			// Realizar la solicitud HTTP POST
+			ResponseEntity<String> response = restTemplate.postForEntity(server, requestEntity, String.class);
+
+			// Procesar la respuesta si es necesario
+			String responseBody = response.getBody();
+			System.out.println("Respuesta del servidor: " + responseBody);
+			return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+		}
+	}
 }

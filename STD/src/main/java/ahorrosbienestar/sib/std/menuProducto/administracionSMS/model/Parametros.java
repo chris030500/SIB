@@ -1,28 +1,13 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
 
+import java.util.List;
+
 public class Parametros {
-	private String mensaje;
-    private String telefono;
     private String mail;
     private String password;
     private String server;
     private String id;
-    
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
+    private List<EnvioMensajes> mensajes;
 
     public String getMail() {
         return mail;
@@ -55,4 +40,13 @@ public class Parametros {
     public void setId(String id) {
         this.id = id;
     }
+
+	public List<EnvioMensajes> getMensajes() {
+		return mensajes;
+	}
+
+	public void setMensajes(List<EnvioMensajes> mensajes) {
+		this.mensajes = mensajes;
+	}
+    
 }
