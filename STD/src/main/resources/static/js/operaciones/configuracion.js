@@ -1456,8 +1456,10 @@ function catalogoRealizarE(select, relacion) {
 				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id === relacion.accionRealizar.pk_id) {
-					opcion.selected = true;
+				if (relacion.accionRealizar != null) {
+					if (respuesta.lista[i].pk_id === relacion.accionRealizar.pk_id) {
+						opcion.selected = true;
+					}
 				}
 			}
 		}, error: function(error) {
@@ -1519,8 +1521,10 @@ function catalogoBloqueoE(select, relacion) {
 				opcion.text = respuesta.lista[i].v_valor;
 				select.add(opcion);
 				// Selecciona la sucursal actual
-				if (respuesta.lista[i].pk_id === relacion.bloqueoListas.pk_id) {
-					opcion.selected = true;
+				if (relacion.bloqueoListas != null) {
+					if (respuesta.lista[i].pk_id === relacion.bloqueoListas.pk_id) {
+						opcion.selected = true;
+					}
 				}
 			}
 		}, error: function(error) {

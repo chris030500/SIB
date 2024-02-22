@@ -42,43 +42,34 @@
 									<div class="col-sm-12">
 										<form name="formFiltro" id="formFiltro">
 											<div class="row">
-												<div class="col-sm-6">
+												<div class="col-sm-3">
 													<label>Buscar cliente</label>
 													<input type="search" class="form-control" id="buscarCliente"
 														list="opcionCliente" autocomplete="off"
 														placeholder="Buscar cliente" disabled>
 													<datalist id="opcionCliente"></datalist>
 												</div>
-												<div id="spinnerClientes" class="col-sm-6"
+												<!--<div class="col-sm-1" id="spinnerClientes"
 													style="margin: 0px; padding: 0px; padding-top: 25px;">
-													<div class="spinner-border" style="color: #0dcaf0;">
-													</div>
+													<div class="spinner-border"
+														style="color: #0dcaf0;"></div>
+												</div>-->
+												<div class="col-sm-3">
+													<label>No. Referencia</label>
+													<input type="text" class="form-control" id="inputReferencia"
+														required>
 												</div>
-												<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-3" style="display: none;">
-														<label>Teléfono Celular</label>
-														<input type="text" pattern="[0-9]*" maxlength="10"
-															class="form-control" id="inputTelefono" required>
-													</div>
-													<div class="col-sm-3">
-														<label>No. Referencia</label>
-														<input type="text" class="form-control" id="inputReferencia"
-															required>
-													</div>
-													<div class="col-sm-3">
-														<label>No. Oferta</label>
-														<input type="text" class="form-control" id="inputOferta"
-															required>
-													</div>
-													<div class="col-sm-3"></div>
-													<div class="col-sm-3" style="text-align: right; padding-top: 25px;">
-														<button type="button" onclick="validarBusqueda()"
-															style="background: #0dcaf0; border-color: #0dcaf0;"
-															class="btn btn-primary">Buscar</button>
-														<button type="button" onclick="mostrarAlerta()"
-															style="background: rgb(255, 128, 64); border-color: rgb(255, 128, 64);"
-															class="btn btn-primary">Ver detalles</button>
-													</div>
+												<div class="col-sm-3">
+													<label>No. Oferta</label>
+													<input type="text" class="form-control" id="inputOferta" required>
+												</div>
+												<div class="col-sm-3" style="text-align: right; padding-top: 25px;">
+													<button type="button" id="boton-buscar" onclick="validarBusqueda()"
+														style="background: #0dcaf0; border-color: #0dcaf0;"
+														class="btn btn-primary">Buscar</button>
+													<button type="button" onclick="mostrarAlerta()"
+														style="background: rgb(255, 128, 64); border-color: rgb(255, 128, 64);"
+														class="btn btn-primary">Ver detalles</button>
 												</div>
 											</div>
 										</form>
@@ -138,24 +129,28 @@
 							</div>
 							<div class="modal-body">
 								<div class="row">
-									<div class="col-sm-4">
+									<div class="col-sm-2">
 										<label>No. de cliente:</label>
-										<input type="text" class="form-control" id="numCliente" disabled>
+										<b>
+											<p id="numCliente"></p>
+										</b>
 									</div>
-									<div class="col-sm-4">
+									<div class="col-sm-2">
 										<label>No. de referencia:</label>
-										<input type="text" class="form-control" id="referencia" disabled>
+										<b>
+											<p id="referencia"></p>
+										</b>
 									</div>
 								</div>
 
 								<!-- Ajusta la altura según tus necesidades -->
-								<div class="row" style="padding-top: 20px;" id="form-registro">
+								<div class="row" id="form-registro">
 									<div class="col-sm-12">
 										<form name="formulario" id="formSeguimientoGestion">
-											<div class="row">
+											<div class="row" style="padding-top: 20px;">
 												<div class="col-sm-4">
 													<label for="buscar-relacion">Código de acción - Código de
-														resultados:</label>
+														resultados:</label><span style="color: red;">*</span>
 													<input type="search" class="form-control" id="buscar-relacion"
 														list="opciones-relacion" autocomplete="off"
 														placeholder="Relación entre códigos">
@@ -165,27 +160,18 @@
 														<i><b>campo requerido</b></i>
 													</p>
 												</div>
-												<div class="col-sm-4" id="vistaAccionRealizar">
-													<label>Accion a realizar:</label>
-													<input type="text" class="form-control" id="accionRealizar"
-														disabled>
-												</div>
-												<div class="col-sm-4">
-													<div class="form-group">
-														<label>Descripción de la gestión:</label>
-														<textarea class="form-control"
-															id="descripcion-gestion"></textarea>
-														<p id="validar-descripcion"
-															style="color: red;display: none; font-size: small; padding-left: 5px;">
-															<i><b>campo requerido</b></i>
-														</p>
-													</div>
+												<div class="col-sm-4" id="vistaAccionRealizar" style="display: none;">
+													<label>Accion a realizar</label>
+													<b>
+														<p id="accionRealizar"></p>
+													</b>
 												</div>
 											</div>
-											<div class="row" style="padding-top: 10px;">
-												<div class="col-sm-4">
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-3">
 													<div class="form-group">
-														<label>Fecha de gestión realizada</label>
+														<label>Fecha de gestión realizada:</label><span
+															style="color: red;">*</span>
 														<input class="form-control" type="date" id="fecha-gestion">
 														<p id="validar-fechaGestion"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
@@ -193,9 +179,9 @@
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-4">
+												<div class="col-sm-3">
 													<div class="form-group">
-														<label>Fecha de cita</label>
+														<label>Fecha de cita:</label><span style="color: red;">*</span>
 														<input class="form-control" type="date" id="fecha-cita"
 															disabled>
 														<p id="validar-segFecha"
@@ -207,7 +193,19 @@
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-4" style="text-align: right; padding-top: 24px;">
+												<div class="col-sm-3">
+													<div class="form-group">
+														<label>Descripción de la gestión:</label><span
+															style="color: red;">*</span>
+														<textarea class="form-control"
+															id="descripcion-gestion"></textarea>
+														<p id="validar-descripcion"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-3" style="text-align: right; padding-top: 24px;">
 													<button style='background: #0dcaf0; border-color: #0dcaf0;'
 														type="button" onclick="validarGestion()" data-dismiss="modal"
 														class="btn btn-primary">Registrar</button>
@@ -215,7 +213,7 @@
 											</div>
 										</form>
 									</div>
-									<div style="padding-top: 20px;">
+									<div style="padding-top: 10px;">
 										<hr>
 									</div>
 								</div>
@@ -262,7 +260,25 @@
 									data-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
-								<div class="row" style="text-align: center;">
+								<div class="row">
+									<div class="col-sm-6">
+										<label for="searchInput">Buscar sucursal:</label>
+										<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+										<input type="search" class="form-control" id="buscarSucursal"
+											list="opcionSucursal" autocomplete="off" placeholder="Nombre sucursal">
+										<!-- Lista de opciones para el datalist -->
+										<datalist id="opcionSucursal">
+											<!-- Las opciones se agregarán dinámicamente aquí -->
+										</datalist>
+									</div>
+									<div class="col-sm-6">
+										<label>Sucursal:</label>
+										<b>
+											<p id="nombreSucursal"></p>
+										</b>
+									</div>
+								</div>
+								<div class="row" style="padding-top: 30px; text-align: center;">
 									<div class="col-sm-12">
 										<canvas id="myChart" width="100" height="100"></canvas>
 									</div>

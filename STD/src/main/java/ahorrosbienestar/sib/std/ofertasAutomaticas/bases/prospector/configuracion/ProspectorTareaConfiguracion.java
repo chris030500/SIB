@@ -121,9 +121,9 @@ public class ProspectorTareaConfiguracion {
 	    		logger.info("Ejecuta los SP");
 	        	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(4)");
 	        	indexOfertasAutomaticasService.generarArchivoOA();
-	        	//int tipoCorreo = 6;
+	        	int tipoCorreo = 11;
 	        	logger.info("REGISTROS DE PROSPECTOR");
-				//envioCorreoService.prepararCorreo(tipoCorreo,"");
+				envioCorreoService.prepararCorreo(tipoCorreo,"");
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
 			}

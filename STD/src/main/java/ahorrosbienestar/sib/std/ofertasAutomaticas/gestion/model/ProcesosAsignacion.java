@@ -43,7 +43,13 @@ public class ProcesosAsignacion {
 	
 	@Column(name = "I_TIPO_ASIGNACION", columnDefinition = "INT DEFAULT 0")
 	private int i_tipo_asignacion;
+	
+	@Column(name = "I_TIPO_CLIENTE", columnDefinition = "INT DEFAULT 0")
+	private int i_tipo_cliente;
 
+	@Column(name = "I_TIPO_CARTERA", columnDefinition = "INT DEFAULT 0")
+	private int i_tipo_cartera;
+	
 	public int getPk_id_proceso() {
 		return pk_id_proceso;
 	}
@@ -99,5 +105,21 @@ public class ProcesosAsignacion {
 	public void setI_tipo_asignacion(int i_tipo_asignacion) {
 		this.i_tipo_asignacion = i_tipo_asignacion;
 	}
-	
+
+	public int getI_tipo_cliente() {
+		return i_tipo_cliente;
+	}
+
+	public void setI_tipo_cliente(int i_tipo_cliente) {
+		this.i_tipo_cliente = i_tipo_cliente;
+	}
+
+	public int getI_tipo_cartera() {
+		return i_tipo_cartera;
+	}
+
+	public void setI_tipo_cartera(int i_tipo_cartera) {
+		this.i_tipo_cartera = i_tipo_cartera;
+	}
+
 }

@@ -1,7 +1,7 @@
 /**
- * 
- */
-
+*
+*/
+ 
 var id="";
 var idDiv="";
 var opcion = "";
@@ -28,9 +28,9 @@ function ocultarMostrar(divEl){
   
   mostrarOcultarDiv(idDiv);
 }
-
+ 
 function mostrarOcultarDiv(divA){
- 	  var opcion = document.getElementById(divA);
+	  var opcion = document.getElementById(divA);
 	  if(opcion != null){
 		 opcion.style.display = "block";
 	  }

@@ -138,7 +138,7 @@ public class ReglasAsignacionController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			
-			if(parametrosReglasAsignacionService.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla) == 0) {
+			if(parametrosReglasAsignacionService.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla,tipoPrioridad) == 0) {
 
 				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 				UserDetails userDetails = null;
@@ -202,26 +202,33 @@ public class ReglasAsignacionController {
 		String mensaje ="Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
-			LocalDate fecha = LocalDate.now();
+			
+			
+			//if(parametrosReglasAsignacionService.existeRegistroAct(slAsignar,tipoCliente,slcTipoCartera,tipoPrioridad) == 0) {
 
-			Optional<ParametrosReglasAsignacion> parametrosReglasAsignacion = parametrosReglasAsignacionService.findById(idParams);
-			
-			parametrosReglasAsignacion.get().setI_tipo_asignado(slAsignar);
-			parametrosReglasAsignacion.get().setI_porcentaje(porcRegistros);
-			parametrosReglasAsignacion.get().setI_tipo_cliente(tipoCliente);
-			parametrosReglasAsignacion.get().setI_tipo_cartera(slcTipoCartera);
-			parametrosReglasAsignacion.get().setI_prioridad(tipoPrioridad);
-			parametrosReglasAsignacion.get().setI_estatus(slEstatus);
-			parametrosReglasAsignacion.get().setDt_fecha_mod(fecha);
-			parametrosReglasAsignacion.get().setI_usuario_mod(usuario.get(0));
-			
-			parametrosReglasAsignacionService.save(parametrosReglasAsignacion.get());
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				UserDetails userDetails = null;
+				if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+				}
+				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				LocalDate fecha = LocalDate.now();
+
+				Optional<ParametrosReglasAsignacion> parametrosReglasAsignacion = parametrosReglasAsignacionService.findById(idParams);
+				
+				parametrosReglasAsignacion.get().setI_tipo_asignado(slAsignar);
+				parametrosReglasAsignacion.get().setI_porcentaje(porcRegistros);
+				parametrosReglasAsignacion.get().setI_tipo_cliente(tipoCliente);
+				parametrosReglasAsignacion.get().setI_tipo_cartera(slcTipoCartera);
+				parametrosReglasAsignacion.get().setI_prioridad(tipoPrioridad);
+				parametrosReglasAsignacion.get().setI_estatus(slEstatus);
+				parametrosReglasAsignacion.get().setDt_fecha_mod(fecha);
+				parametrosReglasAsignacion.get().setI_usuario_mod(usuario.get(0));
+				
+				parametrosReglasAsignacionService.save(parametrosReglasAsignacion.get());
+			//}else {
+				//mensaje = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
+			//}
 
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

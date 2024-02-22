@@ -33,17 +33,17 @@ public class MicrofinUsuarioService {
 			List<MicrofinUsuarioDTO> ls = jdbcTemplate.query(sql, new Object[] { empleadoId }, new RowMapper<MicrofinUsuarioDTO>() {
 						public MicrofinUsuarioDTO mapRow(ResultSet rs, final int rowNum) throws SQLException {
 							MicrofinUsuarioDTO e = new MicrofinUsuarioDTO();
-							e.setUsuarioId(rs.getInt(1));
-							e.setEmpleadoID(rs.getInt(2));
+							e.setUsuarioId(rs.getString(1));
+							e.setEmpleadoID(rs.getString(2));
 							e.setClavePuestoID(rs.getString(3));
 							e.setNombre(rs.getString(4));
 							e.setApPaterno(rs.getString(5));
 							e.setApMaterno(rs.getString(6));
 							e.setNombreCompleto(rs.getString(7));
 							e.setClave(rs.getString(8));
-							e.setEstatus(rs.getInt(9));
+							e.setEstatus(rs.getString(9));
 							e.setCorreo(rs.getString(10));
-							e.setSucursalUsuario(rs.getInt(11));
+							e.setSucursalUsuario(rs.getString(11));
 							e.setSemilla(rs.getString(12));
 							e.setRfc(rs.getString(13));
 							return e;

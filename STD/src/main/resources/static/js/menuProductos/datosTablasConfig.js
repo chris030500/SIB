@@ -43,7 +43,7 @@ var url = "";
 					botones = botones+btnEditarParams;
 				
 				}
-			 tblReglasAsignacion.row.add([opt.pk_id_regla,opt.vc_nombre_regla,opt.i_dias_vigencia,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
+			 tblReglasAsignacion.row.add([opt.vc_nombre_regla,opt.i_dias_vigencia,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
 		 });
 	 }); 
  }
@@ -141,9 +141,9 @@ var url = "";
 					+ ((opt.i_estatus == 1)?"<i class='bi bi-unlock'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
 					+ "&nbsp;";
 
-			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
-			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento = null?'--/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'--':opt.vc_motivo_desbloqueo)
-			 ,(opt.dt_fecha_desbloqueo == null?'--/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
+			 tblClienteBloqueados.row.add([(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento == null?'----/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'----':opt.vc_motivo_desbloqueo)
+			 ,(opt.dt_fecha_desbloqueo == null?'----/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),botonesActivar]).draw(false);
 			 
 		 });
 	 }); 

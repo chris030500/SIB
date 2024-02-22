@@ -14,8 +14,8 @@ public class EstatusSeguimientoService {
 	@Autowired
 	private EstatusSeguimientoRepository repository;
 
-	public List<EstatusSeguimientoModel> listaDeEstatus() {
-		return repository.listaDeEstatus();
+	public List<EstatusSeguimientoModel> listaDeEstatus(int sucursal) {
+		return repository.listaDeEstatus(sucursal);
 	}
 
 }
