@@ -83,7 +83,7 @@ function iniciaTblParametros(){
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-file-play-fill'></i></button>";
 
-      		tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,opt.vc_ruta_proceso, btnsActualizar,btnEjecutar]).draw(false);
+      		tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,opt.vc_ruta_proceso, btnsActualizar+btnEjecutar]).draw(false);
 
 			}else{
 			
@@ -115,7 +115,7 @@ function iniciaTblParametros(){
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-file-play-fill'></i></button>";
       		
-      			tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,btnsArchivo, btnsActualizar,btnEjecutar]).draw(false);
+      			tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,btnsArchivo, btnsActualizar+btnEjecutar]).draw(false);
 
 			}
 			
@@ -134,7 +134,15 @@ function adjuntarFiles(idBase){
 }
 
 function obtListadoArchivos(ulrServicio){
-	$.blockUI({ message: 'Espere un momento...' });
+	// Mostrar SweetAlert con spinner
+    Swal.fire({
+      title: 'Espere un momento por Favor...',
+      allowOutsideClick: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      }
+    });
+	
 	$.getJSON(url, {}, function(data) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
@@ -145,7 +153,8 @@ function obtListadoArchivos(ulrServicio){
 				+ " <i class='bi bi-download'></i></button>";
 			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion,opt.fechaModifacion,opt.rutaArchivo, botones]).draw(false);
 		});
-		setTimeout($.unblockUI, 100);
+		Swal.close();
+		//setTimeout($.unblockUI, 100);
 		//tblAdjuntos.column(4).visible(false);
 	});
 }
@@ -440,12 +449,13 @@ function btnsModal(){
 			});
 
 		} else {
-			swal({
-				title: "Informacion.",
-				text: "Es necesario seleccionar un Archivo.",
-				icon: "Warning",
-				confirmButtonText: 'Aceptar'
-			});
+			Swal.fire({
+     		 title:'Es necesario seleccionar un Archivo.',
+      		 html: '<i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3em;"></i>',
+      		 icon:null,
+      		 showConfirmButton: true
+    		});
+			
 		}
 
 	});
@@ -526,7 +536,8 @@ function validarFechas() {
 			title: "Error, ",
 			text: "El día que comienza el proceso debe ser menor al día que termina el proceso.",
 			icon: "warning",
-		});
+		});		
+		
 		return false;
 	}
 	return true;
@@ -920,7 +931,7 @@ function cargatblProcesoG(){
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-file-play-fill'></i></button>";
 
-      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar,btnEjecutar]).draw(false);
+      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar+btnEjecutar]).draw(false);
 	
 				}
 	
