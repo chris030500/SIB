@@ -54,16 +54,17 @@ public class ReportesProductosConstroller {
 	
 	private static final String nombreReporte = "rpt_ofertas_automaticas";
 	private static final String controllerReporte = "generarReporte";
-	//private static final String nombrePantalla = "Reportes";
+	private static final String nombrePantalla = "Reportes";
 	private static final String rutaError = "errores/error_403";
-	private String rutaDireccion="reportesProductos/reportesProducto";
+	private String rutaDireccion="";
 	
 	@GetMapping("/reportes")
 	public String inicioReportes(Model model) {
 		try {
-			
+			rutaDireccion = "reportesProductos/reportesProducto";
 			if(validarAcceso() == 1) {
 				model.addAttribute("cat_reportes_produtos", iCatalogoRepository.generarOpciones(catReportesProductos));
+				
 			}else {
 				rutaDireccion = rutaError;
 			}
@@ -85,7 +86,6 @@ public class ReportesProductosConstroller {
 		
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-		
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
@@ -126,7 +126,9 @@ public class ReportesProductosConstroller {
 			logger.error("Error:"+e.getMessage());
 			return 0;
 		}
+		
 	
+		
 	}
 
 }

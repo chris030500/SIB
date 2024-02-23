@@ -26,9 +26,9 @@ public class OpcionesMenuService {
 		return iOpcionesMenuRepository.buscarRelacion(nombrepantalla);
 	}
 	
-	public int buscarRelacionController(String nombreController) {
-
-		return iOpcionesMenuRepository.buscarRelacionController(nombreController);
-	}
+    public int buscarRelacionController(String nombreController) {
+   	 
+        return iOpcionesMenuRepository.buscarRelacionController(nombreController);
+    }
 
 }
