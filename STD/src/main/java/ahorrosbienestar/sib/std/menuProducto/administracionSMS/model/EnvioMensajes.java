@@ -4,14 +4,16 @@ public class EnvioMensajes {
 
     private String telefono;
     private String mensaje;
+    private int idMensaje;
 
     public EnvioMensajes() {
         // Constructor vacío necesario para la deserialización JSON
     }
 
-    public EnvioMensajes(String telefono, String mensaje) {
+    public EnvioMensajes(String telefono, String mensaje, int idMensaje) {
         this.telefono = telefono;
         this.mensaje = mensaje;
+        this.idMensaje =  idMensaje;
     }
 
     // Getters y setters
@@ -31,8 +33,16 @@ public class EnvioMensajes {
         this.mensaje = mensaje;
     }
 
-    @Override
+	public int getIdMensaje() {
+		return idMensaje;
+	}
+
+	public void setIdMensaje(int idMensaje) {
+		this.idMensaje = idMensaje;
+	}
+
+	@Override
     public String toString() {
-        return "EnvioMensajes [telefono=" + telefono + ", mensaje=" + mensaje + "]";
+        return "EnvioMensajes [telefono=" + telefono + ", mensaje=" + mensaje + ", id=" + idMensaje +"]";
     }
 }

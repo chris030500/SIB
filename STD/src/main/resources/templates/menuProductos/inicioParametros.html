@@ -8,13 +8,15 @@
 	<title>Insert title here</title>
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw==" crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet"/>
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
 
 </head>
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container border p-2 card">
+		<div class="border p-2 card">
 
 			<div class="bg-info text-white">
 				<div class="row no-gutters">
@@ -55,11 +57,11 @@
 			</div>
 
 			<div id="pant-tabs">
-				<div id="params-tab1" class="container" style="display: block;" for="1">
+				<div id="params-tab1" style="display: block;" for="1">
 					<fieldset class="border p-3">
 						<legend class="float-none w-auto p-2">Parametros Generales</legend>
 						<div class="row">
-							<div class="container mt-4">
+							<div class="mt-4">
 								<form th:action="@{/configuraciones/guardar-configuracion}" method="post">
 									<h2 class="mb-4">Configuración del Sistema</h2>
 
@@ -249,13 +251,12 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="reglas-tab1" class="container" style="display:none;" for="2">
+				<div id="reglas-tab1" style="display:none;" for="2">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
 						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-								<table class="table table-bordered table-striped" style="width: 120%;"
-									id="tblReglasAsignacion">
+								<table class="table table-sm" style="width: 100%;" id="tblReglasAsignacion">
 									<thead>
 										<tr>
 											<th>ID</th>
@@ -274,7 +275,7 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="plantillas-tab1" class="container" style="display:none;" for="3">
+				<div id="plantillas-tab1" style="display:none;" for="3">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 5px ">
@@ -290,8 +291,7 @@
 						</div>
 						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-								<table class="table table-bordered table-striped" style="width: 120%;"
-									id="tblPlantillasSMS">
+								<table class="table table-sm" style="width: 100%;" id="tblPlantillasSMS">
 									<thead>
 										<tr>
 											<th>Nombre Plantilla</th>
@@ -313,10 +313,10 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="sms-tab1" class="container" style="display:none;" for="4">
+				<div id="sms-tab1" style="display:none;" for="4">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Administracion SMS</legend>
-						<div class="container mt-4">
+						<div class="mt-4">
 							<!-- Filtro por Sucursal -->
 							<form id="smsFilterForm">
 								<div class="row">
@@ -376,9 +376,6 @@
 									<div class="col-md-12">
 										<button type="button" class="btn btn-primary"
 											onclick="validarBusqueda()">Buscar</button>
-										<button type="button" class="btn btn-success" onclick="downloadReport()">
-											<i class="bi bi-file-earmark-text"></i>
-										</button>
 									</div>
 								</div>
 							</form>
@@ -388,14 +385,24 @@
 
 							<!-- Tabla con SMS Generados -->
 							<div id="ver-listaSeguimiento" style="display: none;">
-								<button type="button" class="btn btn-info mt-4" onclick="enviarMasivo()">
-									<i class="bi bi-paper-plane"></i> Envio Masivo
-								</button>
 								<h4 class="mt-4">SMS Generados</h4>
+								<div class="row align-items-center">
+									<div class="col-auto">
+										<button type="button" class="btn btn-info" onclick="enviarMasivo()">
+											<i class="bi bi-paper-plane"></i> Envio Masivo
+										</button>
+									</div>
+									<div class="col-auto">
+										<button type="button" class="btn btn-success" onclick="downloadReport()">
+											<i class="bi bi-file-earmark-text"></i>
+										</button>
+									</div>
+								</div>
+
+
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 120%;"
-											id="tblMensajesGenerados">
+										<table class="table table-sm" style="width: 100%;" id="tblMensajesGenerados">
 											<thead>
 												<tr>
 													<th>Cliente</th>
@@ -425,13 +432,12 @@
 						</div>
 					</fieldset>
 				</div>
-				<div id="bloqueados-tab1" class="container" style="display:none;" for="5">
+				<div id="bloqueados-tab1" style="display:none;" for="5">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Clientes Bloqueados</legend>
 						<div class="row" style="margin-top : 15px ">
 							<div class="table-responsive">
-								<table class="table table-bordered table-striped" style="width: 200%;"
-									id="tblClienteBloqueados">
+								<table class="table table-sm" style="width: 200%;" id="tblClienteBloqueados">
 									<thead>
 										<tr>
 											<th># Cliente</th>
@@ -558,8 +564,7 @@
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 120%;"
-											id="tblParamsAsig">
+										<table class="table table-sm" style="width: 100%;" id="tblParamsAsig">
 											<thead>
 												<tr>
 													<th>Tipo Asignación </th>

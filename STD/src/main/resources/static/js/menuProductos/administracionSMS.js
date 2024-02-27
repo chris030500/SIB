@@ -208,8 +208,9 @@ function llenarTablaSeguimiento() {
 			document.getElementById("ver-listaSeguimiento").style.display = "block";
 			tblMensajesGenerados.clear().draw();;
 			$.each(respuesta.lista, function(idx, opt) {
+				console.log(opt);
 				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
-				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\")'><i class='fas fa-paper-plane'></i></button>";
+				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + ", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
 				var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
 				var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
 				var botones = "";
@@ -220,16 +221,20 @@ function llenarTablaSeguimiento() {
 				if (opt.estMensaje == 0) {
 					botones = botonesEditar + " " + botonesActivar;
 				}
+				if (opt.estMensaje == 2) {
+					botones = "El mensaje ya se envio";
+				}
 
 				// Agregar el telefono y el mensaje a los arrays correspondientes
 				var mensaje = {
 					telefono: opt.telefonoCelular,
-					mensaje: opt.descMensaje
+					mensaje: opt.descMensaje,
+					idMensaje: opt.mensajeID
 				};
 
 				sms.push(mensaje);
 
-				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : 'ACTIVO'), botones]).draw(false);
+				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'), botones]).draw(false);
 			});
 		},
 		error: function(error) {
@@ -320,7 +325,7 @@ function inactivarSMS(mensajeID, estatus) {
 	})
 }
 
-function enviarSMS(telefono, mensaje) {
+function enviarSMS(telefono, mensaje, mensajeID) {
 	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar el mensaje?</div>";
 	var textoAlerta = "¡El mensaje se enviará y no será posible cancelar el envío!";
@@ -328,7 +333,8 @@ function enviarSMS(telefono, mensaje) {
 
 	var mensaje = {
 		telefono: telefono,
-		mensaje: mensaje
+		mensaje: mensaje,
+		idMensaje: mensajeID
 	};
 
 	mens.push(mensaje);
@@ -405,6 +411,36 @@ function enviarMasivo() {
 	})
 }
 
+function downloadReport() {
+	
+	servicioURL = "mensajes/reporteSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce
+	
+	$.ajax({
+		url: getAbsolutePath() + servicioURL,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+}
 
 
 

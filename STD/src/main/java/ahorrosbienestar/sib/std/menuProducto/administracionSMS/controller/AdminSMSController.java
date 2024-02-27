@@ -1,9 +1,11 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.EnvioMensajes;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.Parametros;
@@ -31,6 +34,8 @@ import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoAs
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.adminSMSService;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 
 @Controller
 @RequestMapping("mensajes")
@@ -47,8 +52,16 @@ public class AdminSMSController {
 
 	@Autowired
 	private ConfiguracionSistemaService configuracionService;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
 
 	private static final Logger logger = Logger.getLogger(AdminSMSController.class);
+	private static final String nombreReporte = "rpt_sms";
+	private static final String controllerReporte = "generarReporte";
 
 	@RequestMapping(value = { "/obtSMS" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("cliente") String cliente,
@@ -204,6 +217,21 @@ public class AdminSMSController {
 			// Procesar la respuesta si es necesario
 			String responseBody = response.getBody();
 			System.out.println("Respuesta del servidor: " + responseBody);
+			
+			if (response.getStatusCode().is2xxSuccessful()) {
+	            // Realizar otra acción aquí
+				 // Actualizar el estado de los mensajes
+                List<Integer> idsMensajes = envioMensajes.stream()
+                        .map(EnvioMensajes::getIdMensaje)
+                        .collect(Collectors.toList());
+
+                // Llamar al servicio para actualizar los mensajes con los IDs obtenidos
+                mensajeService.actualizarEstadoMensajes(idsMensajes);
+                
+                System.out.println("La respuesta fue exitosa, los mensajes han sido actualizados...");
+            
+	        }
+			
 			return ResponseEntity.status(response.getStatusCode()).body(responseBody);
 
 		} catch (Exception e) {
@@ -211,6 +239,27 @@ public class AdminSMSController {
 			logger.error("Error: " + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+		}
+	}
+	
+	@RequestMapping(value = { "/reporteSMS" }, method = RequestMethod.GET)
+	public ResponseEntity<?> parametrosReporte(@RequestParam("cliente") String cliente,
+			@RequestParam("sucur") String sucur, @RequestParam("proce") String proce) {
+
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
+			
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?cliente="
+					+cliente+"~sucur="+sucur+"~proce="+proce+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=SMS";
+					
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
 		}
 	}
 }

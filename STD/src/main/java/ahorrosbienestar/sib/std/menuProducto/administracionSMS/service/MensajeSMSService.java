@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,4 +34,15 @@ public class MensajeSMSService {
         }
         return null; // Devolver null si no se encuentra el mensaje con el ID dado
     }
+    
+    public void actualizarEstadoMensajes(List<Integer> idsMensajes) {
+    	for (int id : idsMensajes) {
+	    	MensajeSMS mensajeExistente = mensajeSMSRepository.findById(id).orElse(null);
+	        if (mensajeExistente != null) {
+	            mensajeExistente.setEstatus(2); // Actualizar el campo de mensaje
+	            mensajeSMSRepository.save(mensajeExistente); // Guardar el mensaje actualizado en la base de datos
+	        }
+    	}
+    }
+
 }
