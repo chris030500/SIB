@@ -58,106 +58,142 @@ function getAbsolutePath() {
 }
 
 var cargatblParametros = "obtParametros";
-function iniciaTblParametros(){
- 	url = getAbsolutePath() + cargatblParametros;
- 	$.getJSON(url, {}, function(data) {
-   	tblConfiguracion.clear().draw();
-   		$.each(data, function(idx, opt) {
-			   
-			if(opt.i_subir_archivo == 0){
-					var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
-				+ " onclick='editarParametros("
-				+ opt.pk_id_base
-				+ ")' id="
-				+ opt.pk_id_base
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-tools'></i></button>";
-				
-			var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
-				+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
-				+ " onclick='ejecutarProceso("
-				+ opt.pk_id_base
-				+ ")' id="
-				+ opt.pk_id_base
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-file-play-fill'></i></button>";
+function iniciaTblParametros() {
+	url = getAbsolutePath() + cargatblParametros;
+	$.getJSON(url, {}, function(data) {
+		tblConfiguracion.clear().draw();
+		$.each(data, function(idx, opt) {
 
-      		tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,opt.vc_ruta_proceso, btnsActualizar,btnEjecutar]).draw(false);
+			if (opt.i_subir_archivo == 0) {
+				var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarParametros("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
 
-			}else{
-			
-			var btnsArchivo = "<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
-				+ " title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'"
-				+ " onclick='adjuntarFiles("
-				+ opt.pk_id_base
-				+ ")' id="
-				+ opt.pk_id_base
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-files'></i></button>";
-			
-			   
-      		var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-				+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
-				+ " onclick='editarParametros("
-				+ opt.pk_id_base
-				+ ")' id="
-				+ opt.pk_id_base
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-tools'></i></button>";
-				
-			var btnEjecutar= " <button class='btn btn-success' tabindex='0' "
-				+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
-				+ " onclick='ejecutarProceso("
-				+ opt.pk_id_base
-				+ ")' id="
-				+ opt.pk_id_base
-				+ " data-tooltip='Add'>"
-				+ " <i class='bi bi-file-play-fill'></i></button>";
-      		
-      			tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso,btnsArchivo, btnsActualizar,btnEjecutar]).draw(false);
+				var btnEjecutar = " <button class='btn btn-success' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='ejecutarProceso("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+
+				if (opt.i_boton_historico == 0) {
+					var btnHistorico = "";
+				} else {
+					var btnHistorico = " <button class='btn btn-warning' tabindex='0' "
+						+ " title='Mostrar Detalle' aria-controls='table-datatable' type='button'"
+						+ " onclick='obtenerTabla("
+						+ opt.pk_id_base
+						+ ")' id="
+						+ opt.pk_id_base
+						+ " data-tooltip='Add'>"
+						+ " <i class='bi bi-archive-fill'></i></button>";
+				}
+
+
+				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, opt.vc_ruta_proceso, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
+
+			} else {
+
+				var btnsArchivo = "<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'"
+					+ " onclick='adjuntarFiles("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-files'></i></button>";
+
+
+				var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarParametros("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+
+				var btnEjecutar = " <button class='btn btn-success' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='ejecutarProceso("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+
+				if (opt.i_boton_historico == 0) {
+					var btnHistorico = "";
+				} else {
+					var btnHistorico = " <button class='btn btn-warning' tabindex='0' "
+						+ " title='Mostrar Detalle' aria-controls='table-datatable' type='button'"
+						+ " onclick='obtenerTabla("
+						+ opt.pk_id_base
+						+ ")' id="
+						+ opt.pk_id_base
+						+ " data-tooltip='Add'>"
+						+ " <i class='bi bi-archive-fill'></i></button>";
+				}
+
+				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, btnsArchivo, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
 
 			}
-			
-		
-   		});
-  	});
- 	
+
+
+		});
+	});
+
 }
 
 var listarArchivos = "listaArchivos?idBase=";
-function adjuntarFiles(idBase){
+function adjuntarFiles(idBase) {
 	url = "";
-	url = getAbsolutePath()+listarArchivos+idBase;
+	url = getAbsolutePath() + listarArchivos + idBase;
 	obtListadoArchivos(url);
 	document.getElementById("file").value = "";
 }
 
 function obtListadoArchivos(ulrServicio){
-	$.blockUI({ message: 'Espere un momento...' });
+	// Mostrar SweetAlert con spinner
+    Swal.fire({
+      title: 'Espere un momento por Favor...',
+      allowOutsideClick: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      }
+    });
+	
 	$.getJSON(url, {}, function(data) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
-			
+
 			var botones = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Ver Archivo' type='button'"
 				+ " onclick='verArchivo(this)'>"
 				+ " <i class='bi bi-download'></i></button>";
-			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion,opt.fechaModifacion,opt.rutaArchivo, botones]).draw(false);
+			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion, opt.fechaModifacion, opt.rutaArchivo, botones]).draw(false);
 		});
-		setTimeout($.unblockUI, 100);
+		Swal.close();
+		//setTimeout($.unblockUI, 100);
 		//tblAdjuntos.column(4).visible(false);
 	});
 }
 
 var abrirArchivo = "verArchivo?ruta=";
-function verArchivo(dtosArchivo){
+function verArchivo(dtosArchivo) {
 	$(dtosArchivo).parents("tr").find("td").eq(4).html();
 	url = "";
-	url = getAbsolutePath()+abrirArchivo+encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(4).html())+"&nombre="+encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(0).html());
+	url = getAbsolutePath() + abrirArchivo + encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(4).html()) + "&nombre=" + encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(0).html());
 	window.open(url);
 	window.focus();
-	
+
 }
 
 function asignarArchivo(archivo) {
@@ -239,19 +275,19 @@ function tamFile() {
 
 
 
-function ejecutarProceso(idBaseEjecutar){
-	
+function ejecutarProceso(idBaseEjecutar) {
+
 	Swal.fire({
 		title: "¿Esta seguro de ejecutar el proceso manual?",
 		showCancelButton: true,
 		confirmButtonText: "Acepto",
 		cancelButtonText: "Cancelar",
 	}).then(resultado => {
-			if (resultado.value) {
-					url= "";
-					url = "ejecutarProceso?idBase="+idBaseEjecutar;
-					peticionPost(3,getAbsolutePath()+url);
-			}
+		if (resultado.value) {
+			url = "";
+			url = "ejecutarProceso?idBase=" + idBaseEjecutar;
+			peticionPost(3, getAbsolutePath() + url);
+		}
 	});
 
 }
@@ -289,67 +325,93 @@ function iniciaTblClasificacion(){
 				+ opt.i_estatus_clasificacion
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-x-circle'></i></button>";
-				
-			var todosBtns = "<div class='dt-buttons' style='text-align: center;'>"
-			+ btnsEditar
-			+ btnsActivar
-			+ btnBaja
-			+ "</div>" 		
-				
-				
-				tblclasificacionBaseTable.row.add([opt.fk_id_base.vc_nombre_base,opt.vc_nombre_clasificacion ,opt.vc_abreviacion_clasificacion
-				,opt.vc_codigo_clasificacion,opt.i_vigencia_clasificacion,(opt.i_estatus_clasificacion==1)?'ACTIVO':'INACTIVO', todosBtns]).draw(false);
 
-				   
+			var todosBtns = "<div class='dt-buttons' style='text-align: center;'>"
+				+ btnsEditar
+				+ btnsActivar
+				+ btnBaja
+				+ "</div>"
+
+
+			tblclasificacionBaseTable.row.add([opt.fk_id_base.vc_nombre_base, opt.vc_nombre_clasificacion, opt.vc_abreviacion_clasificacion
+				, opt.vc_codigo_clasificacion, opt.i_vigencia_clasificacion, (opt.i_estatus_clasificacion == 1) ? 'ACTIVO' : 'INACTIVO', todosBtns]).draw(false);
+
+
 		});
-   	 });
+	});
 }
 
 
-
+var obtTabla = "consultaTabla?idBase=";
+function obtenerTabla(idBase) {
+	url = getAbsolutePath() + obtTabla + idBase;
+	peticionHistorico(url);
+}
 
 var obtParametros = "consultaParametros?idBase=";
-function editarParametros(idBase){
- limpiarParametros();
- url = getAbsolutePath() + obtParametros + idBase;
- peticionParametros(url);
+function editarParametros(idBase) {
+	limpiarParametros();
+	url = getAbsolutePath() + obtParametros + idBase;
+	peticionParametros(url);
 }
 
-function peticionParametros(url){
- 	$.getJSON(url, {}, function(data) {
+function peticionHistorico(url) {
+	$.getJSON(url, {}, function(data) {
+		modalHistorico(data);
+	});
+}
+
+function peticionParametros(url) {
+	$.getJSON(url, {}, function(data) {
 		modalParametros(data);
 	});
+}
+
+function modalHistorico(data) {
+	tblDetalle.clear().draw();
+	$.each(data, function(idx, opt) {
+		if (opt.fechaCancelacion == '1900-01-01') {
+			var cancelacion = 'No se encuentra cancelada';
+		} else {
+			var cancelacion = opt.fechaCancelacion;
+		}
+		tblDetalle.row.add([opt.tipoCampaniaId, opt.tipoCampania, opt.fechaRegistro, opt.fechaAutorizacion, cancelacion]).draw(false);
+	});
+
+	$("#modalDetalles").modal("show");
 }
 
 var idBaseFidelidad = 2;
 var basesID = 0;
 function modalParametros(data) {
- 	console.log(data);
- 	basesID = data.pk_id_base;
- 	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
- 	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
- 	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
- 	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
- 	document.getElementById("mPeriodoEjecucion").value =  data.vc_periodo_ejecucion_proceso;
- 	
- 	if(data.pk_id_base == idBaseFidelidad){
-  		document.getElementById('lblRuta').style.display = 'block';
-   		document.getElementById('rutaArchivo').style.display = 'block';
-   		document.getElementById("rutaArchivo").value =  data.vc_ruta_proceso;
-  	}else{
-    	document.getElementById('lblRuta').style.display = 'none';
-    	document.getElementById('rutaArchivo').style.display = 'none';
-   }
-   $("#modalParametros").modal("show");
- }
+	console.log(data);
+	basesID = data.pk_id_base;
+	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
+	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
+	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
+	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
+	document.getElementById("mPeriodoEjecucion").value = data.vc_periodo_ejecucion_proceso;
 
-function limpiarParametros(){
- 	document.getElementById("dComienzoProceso").value = "";
- 	document.getElementById("dFinalProceso").value = "";
- 	document.getElementById("hComienzoProceso").value = "";
- 	document.getElementById("hFinalProceso").value = "";
- 	document.getElementById("mPeriodoEjecucion").value =  "";
- 	document.getElementById("rutaArchivo").value =  "";
+
+	if (data.pk_id_base == idBaseFidelidad) {
+		document.getElementById('lblRuta').style.display = 'block';
+		document.getElementById('rutaArchivo').style.display = 'block';
+		document.getElementById("rutaArchivo").value = data.vc_ruta_proceso;
+	} else {
+		document.getElementById('lblRuta').style.display = 'none';
+		document.getElementById('rutaArchivo').style.display = 'none';
+	}
+	$("#modalParametros").modal("show");
+}
+
+function limpiarParametros() {
+	document.getElementById("dComienzoProceso").value = "";
+	document.getElementById("dFinalProceso").value = "";
+	document.getElementById("hComienzoProceso").value = "";
+	document.getElementById("hFinalProceso").value = "";
+	document.getElementById("mPeriodoEjecucion").value = "";
+	document.getElementById("rutaArchivo").value = "";
+	
 }
 var url = "";
 function btnsModal(){
@@ -359,11 +421,11 @@ function btnsModal(){
 		limpiarParametros();
 		$("#modalParametros").modal("hide");
 	});
-	
+
 	$("#btnCerrar").click(function() {
 		idClasificacion = 0;
-   		limpiarDatosClasificacion();
-   		$("#modalClasificacion").modal("hide");
+		limpiarDatosClasificacion();
+		$("#modalClasificacion").modal("hide");
 	});
 	
 	
@@ -400,27 +462,24 @@ function btnsModal(){
 					});
      		}
 		}
-		
-		
-  		
- 	});
- 	
- 	$("#btnRegistrarClasif").click(function() {
-		 
-		 switch(procesoModificacion){
-			 case 1:
-				 idClasificacion = 0;
-				 dtosClasificacion();
-				 procesoModificacion = 0;
-				 break;
-			case 2:
-				 dtosClasificacion();
-				 procesoModificacion = 0;
+	});
+
+	$("#btnRegistrarClasif").click(function() {
+
+		switch (procesoModificacion) {
+			case 1:
+				idClasificacion = 0;
+				dtosClasificacion();
+				procesoModificacion = 0;
 				break;
-		 }	
- 	});
- 	
- 	$("#btnGuardarFile").click(function() {
+			case 2:
+				dtosClasificacion();
+				procesoModificacion = 0;
+				break;
+		}
+	});
+
+	$("#btnGuardarFile").click(function() {
 
 
 		if (document.getElementById("file").value.length > 0) {
@@ -440,81 +499,82 @@ function btnsModal(){
 			});
 
 		} else {
-			swal({
-				title: "Informacion.",
-				text: "Es necesario seleccionar un Archivo.",
-				icon: "Warning",
-				confirmButtonText: 'Aceptar'
-			});
+			Swal.fire({
+     		 title:'Es necesario seleccionar un Archivo.',
+      		 html: '<i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3em;"></i>',
+      		 icon:null,
+      		 showConfirmButton: true
+    		});
+			
 		}
 
 	});
-	
+
 	$("#btnCerrarAdjunto").click(function() {
 		$("#modalAdjuntos").modal("hide");
 		tblAdjuntos.clear().draw();
 	});
 
- 	
-}
-function validarDatosParams(){
-   var correcto = 0;
 
-   if(document.getElementById("dComienzoProceso").value.length > 0 && document.getElementById("dComienzoProceso").value > 0){
-   		url = url + "&dComienzoProceso="+ encodeURIComponent(document.getElementById('dComienzoProceso').value);
-   		document.getElementById("dComienzoProceso").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("dComienzoProceso").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("dFinalProceso").value.length > 0 && document.getElementById("dFinalProceso").value > 0){
-   		url = url + "&dFinalProceso="+ encodeURIComponent(document.getElementById('dFinalProceso').value);
-   		document.getElementById("dFinalProceso").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("dFinalProceso").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("hComienzoProceso").value.length > 0){
-   		url = url + "&hComienzoProceso="+ document.getElementById('hComienzoProceso').value;
-   		document.getElementById("hComienzoProceso").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("hComienzoProceso").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("hFinalProceso").value.length > 0 ){
-   		url = url + "&hFinalProceso="+ document.getElementById('hFinalProceso').value;
-   		document.getElementById("hFinalProceso").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("hFinalProceso").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("mPeriodoEjecucion").value.length > 0 && document.getElementById("mPeriodoEjecucion").value > 0){
-   		url = url + "&mPeriodoEjecucion="+ encodeURIComponent(document.getElementById('mPeriodoEjecucion').value);
-   		document.getElementById("mPeriodoEjecucion").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("mPeriodoEjecucion").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   
-   if(basesID == idBaseFidelidad){
-    	if(document.getElementById("rutaArchivo").value.length > 0){
-   			url = url + "&rutaArchivo="+ encodeURIComponent(document.getElementById('rutaArchivo').value);
-   			document.getElementById("rutaArchivo").style.borderColor = "";
-   			correcto = correcto + 0;
-   		}else{
-    		document.getElementById("rutaArchivo").style.borderColor = "#F70707";
-    		correcto = correcto + 1;
-   		}
-   }else{
-    	url = url + "&rutaArchivo="+ encodeURIComponent(document.getElementById('rutaArchivo').value);
-   }
-	
-   return correcto;
+}
+function validarDatosParams() {
+	var correcto = 0;
+
+	if (document.getElementById("dComienzoProceso").value.length > 0 && document.getElementById("dComienzoProceso").value > 0) {
+		url = url + "&dComienzoProceso=" + encodeURIComponent(document.getElementById('dComienzoProceso').value);
+		document.getElementById("dComienzoProceso").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("dComienzoProceso").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("dFinalProceso").value.length > 0 && document.getElementById("dFinalProceso").value > 0) {
+		url = url + "&dFinalProceso=" + encodeURIComponent(document.getElementById('dFinalProceso').value);
+		document.getElementById("dFinalProceso").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("dFinalProceso").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("hComienzoProceso").value.length > 0) {
+		url = url + "&hComienzoProceso=" + document.getElementById('hComienzoProceso').value;
+		document.getElementById("hComienzoProceso").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("hComienzoProceso").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("hFinalProceso").value.length > 0) {
+		url = url + "&hFinalProceso=" + document.getElementById('hFinalProceso').value;
+		document.getElementById("hFinalProceso").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("hFinalProceso").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("mPeriodoEjecucion").value.length > 0 && document.getElementById("mPeriodoEjecucion").value > 0) {
+		url = url + "&mPeriodoEjecucion=" + encodeURIComponent(document.getElementById('mPeriodoEjecucion').value);
+		document.getElementById("mPeriodoEjecucion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("mPeriodoEjecucion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+
+	if (basesID == idBaseFidelidad) {
+		if (document.getElementById("rutaArchivo").value.length > 0) {
+			url = url + "&rutaArchivo=" + encodeURIComponent(document.getElementById('rutaArchivo').value);
+			document.getElementById("rutaArchivo").style.borderColor = "";
+			correcto = correcto + 0;
+		} else {
+			document.getElementById("rutaArchivo").style.borderColor = "#F70707";
+			correcto = correcto + 1;
+		}
+	} else {
+		url = url + "&rutaArchivo=" + encodeURIComponent(document.getElementById('rutaArchivo').value);
+	}
+
+	return correcto;
 }
 
 function validarFechas() {
@@ -526,7 +586,8 @@ function validarFechas() {
 			title: "Error, ",
 			text: "El día que comienza el proceso debe ser menor al día que termina el proceso.",
 			icon: "warning",
-		});
+		});		
+		
 		return false;
 	}
 	return true;
@@ -564,8 +625,8 @@ function validarHoras() {
 }
 //enviar actualizacion
 
-function peticionPost(metodo,metodoUrl){
- 		$.ajax({
+function peticionPost(metodo, metodoUrl) {
+	$.ajax({
 		url: metodoUrl,
 		type: "POST",
 		dataType: "JSON",
@@ -592,10 +653,10 @@ function peticionPost(metodo,metodoUrl){
 			Swal.fire("",respuesta[0],"success").then(resp => {
 
 				if (metodo == 1) {
-     				iniciaTblParametros();
-     				limpiarParametros();
-		
-				}else if(metodo == 2){
+					iniciaTblParametros();
+					limpiarParametros();
+
+				} else if (metodo == 2) {
 					iniciaTblClasificacion();
 					limpiarDatosClasificacion();
 				}else if(metodo == 3){
@@ -615,7 +676,7 @@ function peticionPost(metodo,metodoUrl){
 
 //clasificacion 
 
-function limpiarDatosClasificacion(){
+function limpiarDatosClasificacion() {
 	procesoModificacion = 1;
 	document.getElementById("base").value = 0;
 	document.getElementById("nomClasificacion").value = '';
@@ -627,211 +688,211 @@ function limpiarDatosClasificacion(){
 	//document.getElementById("contMns").style.display = "none";
 	//$("#confMensaje").prop('checked', false);
 
-	
+
 }
 
-function checkMns(){
+function checkMns() {
 
-	if( $('#confMensaje').prop('checked') ) {
-			eventmensajeClasificacion(); 
-			document.getElementById("mensajeClasificacion").value = '';
-			document.getElementById("mensajeClasificacion").style.display = "block";
-			document.getElementById("contMns").style.display = "block";
-	}else{
-			eventmensajeClasificacion();
-			document.getElementById("mensajeClasificacion").value = '';
-			document.getElementById("mensajeClasificacion").style.display = "none";
-			document.getElementById("contMns").style.display = "none";
+	if ($('#confMensaje').prop('checked')) {
+		eventmensajeClasificacion();
+		document.getElementById("mensajeClasificacion").value = '';
+		document.getElementById("mensajeClasificacion").style.display = "block";
+		document.getElementById("contMns").style.display = "block";
+	} else {
+		eventmensajeClasificacion();
+		document.getElementById("mensajeClasificacion").value = '';
+		document.getElementById("mensajeClasificacion").style.display = "none";
+		document.getElementById("contMns").style.display = "none";
 	}
 }
 
 //altaClasificacion
-function validarVacioClasificacion(){
+function validarVacioClasificacion() {
 	var correcto = 0;
 	url = "";
-	if(document.getElementById("base").value > 0){
-		if(idClasificacion > 0){
+	if (document.getElementById("base").value > 0) {
+		if (idClasificacion > 0) {
 			url = "modClasificacion?idClass=" + encodeURIComponent(idClasificacion);
-			url = url +"&idBase="+ encodeURIComponent(document.getElementById("base").value);
-		}else{
+			url = url + "&idBase=" + encodeURIComponent(document.getElementById("base").value);
+		} else {
 			url = "altaClasificacion?idBase=" + encodeURIComponent(document.getElementById("base").value);
 		}
 
-   		document.getElementById("base").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("base").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   
-   if(document.getElementById("nomClasificacion").value.length > 0 ){
-   		url = url + "&nomClasificacion="+ encodeURIComponent(document.getElementById("nomClasificacion").value);
-   		document.getElementById("nomClasificacion").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("nomClasificacion").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("abrevacion").value > 0 ){
-   		url = url + "&abrevacion="+ encodeURIComponent(datoAbrevacion());
-   		document.getElementById("abrevacion").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("abrevacion").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("codigoClasificacion").value.length > 0 ){
-   		url = url + "&codigoClasificacion="+ encodeURIComponent(document.getElementById("codigoClasificacion").value);
-   		document.getElementById("codigoClasificacion").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("codigoClasificacion").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   if(document.getElementById("vigenciaClasificacion").value > 0 ){
-   		url = url + "&vigenciaClasificacion="+ encodeURIComponent(document.getElementById("vigenciaClasificacion").value);
-   		document.getElementById("vigenciaClasificacion").style.borderColor = "";
-   		correcto = correcto + 0;
-   }else{
-    	document.getElementById("vigenciaClasificacion").style.borderColor = "#F70707";
-    	correcto = correcto + 1;
-   }
-   
-   if( iMensaje == 2 ) {
-	   
-	   if(document.getElementById("mensajeClasificacion").value.length > 0){
-		   	url = url + "&mensajeClasificacion="+ encodeURIComponent(document.getElementById("mensajeClasificacion").value);
-   			document.getElementById("mensajeClasificacion").style.borderColor = "";
-   			correcto = correcto + 0;
-	   }else{
-		   	document.getElementById("mensajeClasificacion").style.borderColor = "#F70707";
-    		correcto = correcto + 1;  
-	   }
-   }else{
-		url = url + "&mensajeClasificacion="+ encodeURIComponent(document.getElementById("msnCampania").value);
-   		document.getElementById("mensajeClasificacion").style.borderColor = "";
-   		correcto = correcto + 0;   
-   }
-   	
-   return correcto;
-	
+		document.getElementById("base").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("base").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+
+	if (document.getElementById("nomClasificacion").value.length > 0) {
+		url = url + "&nomClasificacion=" + encodeURIComponent(document.getElementById("nomClasificacion").value);
+		document.getElementById("nomClasificacion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("nomClasificacion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("abrevacion").value > 0) {
+		url = url + "&abrevacion=" + encodeURIComponent(datoAbrevacion());
+		document.getElementById("abrevacion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("abrevacion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("codigoClasificacion").value.length > 0) {
+		url = url + "&codigoClasificacion=" + encodeURIComponent(document.getElementById("codigoClasificacion").value);
+		document.getElementById("codigoClasificacion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("codigoClasificacion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+	if (document.getElementById("vigenciaClasificacion").value > 0) {
+		url = url + "&vigenciaClasificacion=" + encodeURIComponent(document.getElementById("vigenciaClasificacion").value);
+		document.getElementById("vigenciaClasificacion").style.borderColor = "";
+		correcto = correcto + 0;
+	} else {
+		document.getElementById("vigenciaClasificacion").style.borderColor = "#F70707";
+		correcto = correcto + 1;
+	}
+
+	if (iMensaje == 2) {
+
+		if (document.getElementById("mensajeClasificacion").value.length > 0) {
+			url = url + "&mensajeClasificacion=" + encodeURIComponent(document.getElementById("mensajeClasificacion").value);
+			document.getElementById("mensajeClasificacion").style.borderColor = "";
+			correcto = correcto + 0;
+		} else {
+			document.getElementById("mensajeClasificacion").style.borderColor = "#F70707";
+			correcto = correcto + 1;
+		}
+	} else {
+		url = url + "&mensajeClasificacion=" + encodeURIComponent(document.getElementById("msnCampania").value);
+		document.getElementById("mensajeClasificacion").style.borderColor = "";
+		correcto = correcto + 0;
+	}
+
+	return correcto;
+
 }
 
-function datoAbrevacion(){
+function datoAbrevacion() {
 	var textoAbrevacion = "";
 	var select = document.getElementById("abrevacion");
 	var textoAbrevacion = select.options[select.selectedIndex].text;
-	
-	console.log(""+textoAbrevacion);
+
+	console.log("" + textoAbrevacion);
 	return textoAbrevacion;
 }
 
-function dtosClasificacion(){
-	
-	if(validarVacioClasificacion() == 0){
-		console.log(getAbsolutePath()+url);
+function dtosClasificacion() {
+
+	if (validarVacioClasificacion() == 0) {
+		console.log(getAbsolutePath() + url);
 		$("#modalClasificacion").modal("hide");
-		peticionPost(2,getAbsolutePath()+url);
-	}else{
+		peticionPost(2, getAbsolutePath() + url);
+	} else {
 		swal({
-				title: "Error, ",
-				text: "Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.",
-				icon: "warning",
-			});
+			title: "Error, ",
+			text: "Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.",
+			icon: "warning",
+		});
 	}
 }
 
 /**
  * Mayusculas
  */
-function mayusculas(comp){
+function mayusculas(comp) {
 	comp.value = comp.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-	
+
 }
 
 
-function editarClasificacion(idClasi){
-	
+function editarClasificacion(idClasi) {
+
 	var obtClasificacion = "consultaClasificacion?idClass=";
 	limpiarDatosClasificacion();
-	url="";
+	url = "";
 	url = getAbsolutePath() + obtClasificacion + idClasi;
 	peticionClasificacion(url);
 	procesoModificacion = 2;
 }
 
-function peticionClasificacion(ruta){
-	 $.getJSON(url, {}, function(data) {
+function peticionClasificacion(ruta) {
+	$.getJSON(url, {}, function(data) {
 		modalClass(data);
 	});
 }
-var idClasificacion=0;
-function modalClass(data){
-				   
+var idClasificacion = 0;
+function modalClass(data) {
+
 	document.getElementById("base").value = data.fk_id_base.pk_id_base;
 	document.getElementById("nomClasificacion").value = data.vc_nombre_clasificacion;
 	document.getElementById("codigoClasificacion").value = data.vc_codigo_clasificacion;
 	document.getElementById("vigenciaClasificacion").value = data.i_vigencia_clasificacion;
 	document.getElementById("mensajeClasificacion").value = data.vc_mensaje_clasificacion;
-	opcionSelect(document.getElementById("abrevacion"),data.vc_abreviacion_clasificacion);
+	opcionSelect(document.getElementById("abrevacion"), data.vc_abreviacion_clasificacion);
 	mostrarMensajeMod();
-	idClasificacion=data.pk_id_clasificacion;
+	idClasificacion = data.pk_id_clasificacion;
 	$("#modalClasificacion").modal("show");
 }
 
-function opcionSelect(idSelect,datoBuscar){
-	
+function opcionSelect(idSelect, datoBuscar) {
+
 	for (var i = 0; i < idSelect.options.length; i++) {
-		console.log("texto"+idSelect.options[i].text);
-  		if (idSelect.options[i].text == datoBuscar) {
-    	// Asigna el valor de la opción correspondiente al <select>
-   		 idSelect.value = idSelect.options[i].value;
-   		 break; // Puedes detener la iteración una vez que se ha encontrado la coincidencia.
-  	}
-}
+		console.log("texto" + idSelect.options[i].text);
+		if (idSelect.options[i].text == datoBuscar) {
+			// Asigna el valor de la opción correspondiente al <select>
+			idSelect.value = idSelect.options[i].value;
+			break; // Puedes detener la iteración una vez que se ha encontrado la coincidencia.
+		}
+	}
 }
 
-function activarClasificacion(idClass){
-	
+function activarClasificacion(idClass) {
+
 	var estatus = $(idClass).attr('for');
-	if(estatus == 0){
+	if (estatus == 0) {
 		Swal.fire({
-		title: "¿Se activara la Clasificación?",
-		showCancelButton: true,
-		confirmButtonText: "Acepto",
-		cancelButtonText: "Cancelar",
+			title: "¿Se activara la Clasificación?",
+			showCancelButton: true,
+			confirmButtonText: "Acepto",
+			cancelButtonText: "Cancelar",
 		}).then(resultado => {
 			if (resultado.value) {
-					url= "";
-					url = "activarClasificacion?idClass="+$(idClass).attr('id');
-					peticionPost(2,getAbsolutePath()+url);
+				url = "";
+				url = "activarClasificacion?idClass=" + $(idClass).attr('id');
+				peticionPost(2, getAbsolutePath() + url);
 			}
 		});
-	}else{
+	} else {
 		swal({
 			title: "Alerta",
 			text: "La Clasificación esta Activa.",
 			icon: "warning",
-			});
+		});
 	}
 }
 
-function bajaClasificacion(idClass){
+function bajaClasificacion(idClass) {
 	var estatus = $(idClass).attr('for');
-	if(estatus == 1){
+	if (estatus == 1) {
 		Swal.fire({
 			title: "¿Se inactivara la Clasificación?",
 			showCancelButton: true,
 			confirmButtonText: "Acepto",
 			cancelButtonText: "Cancelar",
 		}).then(resultado => {
-			if (resultado.value) {				
-					url= "";
-					url = "bajaClasificacion?idClass="+$(idClass).attr('id');
-					peticionPost(2,getAbsolutePath()+url);
+			if (resultado.value) {
+				url = "";
+				url = "bajaClasificacion?idClass=" + $(idClass).attr('id');
+				peticionPost(2, getAbsolutePath() + url);
 			}
 		});
-	}else{
+	} else {
 		swal({
 			title: "Alerta ",
 			text: "La Clasificación esta inactiva.",
@@ -841,53 +902,53 @@ function bajaClasificacion(idClass){
 
 }
 var iMensaje = 0;
-function mostrarMensaje(idB){
-	
+function mostrarMensaje(idB) {
+
 	var idSelect = document.getElementById($(idB).attr('id'));
 	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
 	iMensaje = opcionSeleccionada.getAttribute("for");
-	
-	if(iMensaje == 1){
+
+	if (iMensaje == 1) {
 		document.getElementById("mnsCampania").style.display = "block";
-	}else{
+	} else {
 		document.getElementById("mnsCampania").style.display = "none";
 	}
-	
-	if(iMensaje == 2){
+
+	if (iMensaje == 2) {
 		document.getElementById("contenidoCheckbox").style.display = "block";
-	}else{
+	} else {
 		document.getElementById("contenidoCheckbox").style.display = "none";
 	}
-	
+
 }
 
-function mostrarCodigo(idCodigo){
+function mostrarCodigo(idCodigo) {
 	var idSelect = document.getElementById($(idCodigo).attr('id'));
 	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
 	var codigo = opcionSeleccionada.getAttribute("for");
-	
+
 	document.getElementById("codigoClasificacion").value = codigo;
-	console.log(""+codigo);
+	console.log("" + codigo);
 }
 
-function mostrarMensajeMod(){
-	
+function mostrarMensajeMod() {
+
 	var idSelect = document.getElementById($(document.getElementById("base")).attr('id'));
 	var opcionSeleccionada = idSelect.options[idSelect.selectedIndex];
 	iMensaje = opcionSeleccionada.getAttribute("for");
-	
-	if(iMensaje == 1){
+
+	if (iMensaje == 1) {
 		document.getElementById("mnsCampania").style.display = "block";
-	}else{
+	} else {
 		document.getElementById("mnsCampania").style.display = "none";
 	}
-	
-	if(iMensaje == 2){
+
+	if (iMensaje == 2) {
 		document.getElementById("contenidoCheckbox").style.display = "block";
-	}else{
+	} else {
 		document.getElementById("contenidoCheckbox").style.display = "none";
 	}
-	
+
 }
 
 /***
@@ -920,7 +981,7 @@ function cargatblProcesoG(){
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-file-play-fill'></i></button>";
 
-      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar,btnEjecutar]).draw(false);
+      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar+btnEjecutar]).draw(false);
 	
 				}
 	

@@ -59,13 +59,13 @@ public class AsignacionOfertas {
 	@Column(name = "VC_COD_REFERENCIA", columnDefinition = "VARCHAR(15)")
 	private String vc_cod_referencia;
 	
-	@Column(name = "I_SUC_CREDITO", columnDefinition = "TINYINT(1) DEFAULT NULL")
+	@Column(name = "I_SUC_CREDITO", columnDefinition = "INT DEFAULT NULL")
 	private int i_suc_credito;
 	
 	@Column(name = "I_REASIGNAR", columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_reasignar;
 	
-	@Column(name = "I_ANTERIOR_SUC", columnDefinition = "TINYINT(1) DEFAULT 0")
+	@Column(name = "I_ANTERIOR_SUC", columnDefinition = "INT DEFAULT 0")
 	private int i_anterior_suc;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
@@ -73,7 +73,7 @@ public class AsignacionOfertas {
 	@Column(name = "DT_FECHA_REASIGNACION_NO_SEGUIMIENTO", columnDefinition = "DATETIME(6) DEFAULT NULL")
 	private LocalDate dt_fecha_reasignacion_n_seg;
 
-	@Column(name = "I_BLOQUEO")
+	@Column(name = "I_BLOQUEO", columnDefinition = "INT DEFAULT 0")
 	private int i_bloqueo;
 
 	public int getPk_id_asignacion_oa() {

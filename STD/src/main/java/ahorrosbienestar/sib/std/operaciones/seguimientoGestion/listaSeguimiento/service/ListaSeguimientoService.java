@@ -3,7 +3,6 @@ package ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.model.ListaSeguimientoModel;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.repository.ListaSeguimientoRepository;

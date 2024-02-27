@@ -359,8 +359,8 @@ function generarReporte(dto) {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-			var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-			// var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
 			window.open(urlReporte);
 			window.focus();
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {

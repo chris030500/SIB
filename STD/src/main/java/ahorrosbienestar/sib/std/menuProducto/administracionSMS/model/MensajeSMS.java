@@ -20,7 +20,7 @@ public class MensajeSMS {
     @Column(name = "FK_ID_ASIGNACION")
     private Integer idAsignacion;
 
-    @Column(name = "I_ESTATUS")
+    @Column(name = "I_ESTATUS", columnDefinition = "INT DEFAULT 1")
     private Integer estatus;
 
     @Column(name = "VC_DESC_MENSAJE", columnDefinition = "LONGTEXT")

@@ -20,9 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +31,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -46,6 +47,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.Ca
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.DetalleCampania;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.service.DetalleCampaniaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GeneracionSMSConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
@@ -79,6 +82,7 @@ public class indexOfertasAutoController {
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
 	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
+	private static final String MENSAJE_DE_ERROR = "Error";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -88,6 +92,9 @@ public class indexOfertasAutoController {
 
 	@Autowired
 	private BasesService basesService;
+	
+	@Autowired
+	private DetalleCampaniaService detalleCampaniaService;
 
 	@Autowired
 	private ClasificacionBasesService clasificacionBasesService;
@@ -310,6 +317,54 @@ public class indexOfertasAutoController {
 		
 	}
 	
+	@GetMapping("/consultaTabla")
+	public ResponseEntity<?> consultaTabla(@RequestParam(name = "idBase") Integer idBase){		
+		try {
+			System.out.println(idBase);
+			logger.info("/consultaTabla"+idBase);
+			List<DetalleCampania> detalleCampania = new ArrayList<>();
+			switch (idBase) {
+            case 3:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleVIP(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 4:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetallePros(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 5:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleFidNom(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            case 6:
+            	try {
+            		detalleCampania = detalleCampaniaService.findDetalleFidRen(idBase);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+                break;
+            default:
+            	logger.info("En el metodo consultaTabla al entrar al switch no se encontro ninguna coinsidencia");
+                break;
+        }
+			return ResponseEntity.ok(detalleCampania);
+			
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
 	@PostMapping("/actualizarParametro")
 	public ResponseEntity<?> actualizarParametro(
 			@RequestParam(name = "idBase") Integer basesID, 
@@ -320,6 +375,7 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion,
 			@RequestParam(name = "rutaArchivo") String rutaArchivo
 			){
+		
 		logger.info("/actualizarParametro");
 		String mensaje ="Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
@@ -333,11 +389,19 @@ public class indexOfertasAutoController {
 						break;
 					case 3:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampanias();
-						break;
+						break;	
 					case 4:
 						prospectorTareaConfiguracion.actualizarExpresionCronProspector();
 						break;
-					
+					case 5:
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidNom();
+						break;
+					case 6:
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidRen();
+						break;
+					default:
+		            	logger.info("En el metodo actualizarParametro al entrar al switch no se encontro ninguna coinsidencia");
+		                break;
 				}
 				
 				respuesta.add(mensaje);
@@ -554,9 +618,7 @@ public class indexOfertasAutoController {
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-		
-			
-			
+			System.out.println(idBase);
 			switch(idBase) {
 			case 1:
 				try {
@@ -565,7 +627,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Nomina");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -575,17 +637,7 @@ public class indexOfertasAutoController {
 					respuesta.add("Se proceso Base Fidelidad");
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
-				}
-				
-				break;
-			case 3:
-				try {
-					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
-					respuesta.add("Se proceso Base Campañas VIP");
-				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -596,6 +648,36 @@ public class indexOfertasAutoController {
 				} catch (Exception e) {
 					respuesta.add(""+e.getMessage());
 					System.out.println("Error"+e.getMessage());
+				}
+				
+				break;
+			case 3:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
+					respuesta.add("Se proceso Base Campañas VIP");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+				}
+				
+				break;
+			case 5:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
+					respuesta.add("Se proceso Base Fidelizacion Nomina");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+				}
+				
+				break;
+			case 6:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
+					respuesta.add("Se proceso Base Fidelizacion Renovado");
+				} catch (Exception e) {
+					respuesta.add(""+e.getMessage());
+					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;

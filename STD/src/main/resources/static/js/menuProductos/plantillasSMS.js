@@ -1,3 +1,4 @@
+// @ts-nocheck
 var buscarClasificacion="plantillas/obtClasificacion?idBase=";
 var registrarPlantilla="plantillas/registrarPlantillas?nombrePlantilla=";
 var modPlantilla="plantillas/modPlantilla?idPlantilla=";

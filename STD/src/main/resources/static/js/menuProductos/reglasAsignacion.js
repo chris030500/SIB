@@ -1,3 +1,4 @@
+// @ts-nocheck
 var cambiarEstatusRegla="reglas/cambiarEstatusRegla?idRegla=";
 var url="";
 $(document).ready(function() {

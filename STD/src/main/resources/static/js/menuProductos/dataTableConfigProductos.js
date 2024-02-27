@@ -1,3 +1,7 @@
+// @ts-nocheck
+/**
+ * 
+ */
 var tblReglasAsignacion;
 var tblPlantillasSMS;
 var tblParamsAsig;
