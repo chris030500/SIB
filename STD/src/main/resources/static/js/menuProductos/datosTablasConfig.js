@@ -44,7 +44,7 @@ var url = "";
 					botones = botones+btnEditarParams;
 				
 				}
-			 tblReglasAsignacion.row.add([opt.vc_nombre_regla,opt.i_dias_vigencia,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
+			 tblReglasAsignacion.row.add([opt.vc_nombre_regla,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
 		 });
 	 }); 
  }

@@ -28,6 +28,22 @@
 			<div id="divConfiguracion" class="" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Configuracion de Ejecución de proceso.</legend>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-lg-10">
+						</div>
+						<div class="col-lg-2">
+							<label>Ver Documentos</label>					
+							<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'
+								title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'
+								onclick='adjuntarFiles(2)' 
+					 			data-tooltip='Add'>
+								<i class='bi bi-files'></i>
+							</button>
+							
+						</div>
+						
+						
+					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
 							<table class="table table-sm" style="width: 100%;" id="tblConfiguracion">
@@ -39,7 +55,7 @@
 										<th>Hora Inicia</th>
 										<th>Hora Fin</th>
 										<th>Periodo Ejecución (Minutos)</th>
-										<th>Ruta Archivo</th>
+										<!--<th>Ruta Archivo</th>-->
 										<th>Acciones</th>
 										<!--<th>Actualizar</th>
 										<th>Ejecutar</th>-->
@@ -466,10 +482,15 @@
 			<!-- Inicio Ajuntos -->
 			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false"
 				role="dialog">
-				<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Proceso de Ofertas Automaticas.</legend>
+							<!--<legend class="float-none w-auto p-2">Proceso de Ofertas Automaticas.</legend>-->
+							 <!-- Cabecera del Modal -->
+      						<div class="modal-header">
+       							<h5 class="modal-title">Documentos de Ofertas Automaticas</h5>
+        						<!--<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>-->
+      						</div>
 							<div class="modal-body">
 								<div class="row" style="margin-top : 15px ">
 									<div class="col-md-4">
@@ -492,16 +513,16 @@
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 100%;"
+										<table class="table table-sm" style="width: 100%;"
 											id="tblAdjuntos">
 											<thead>
 												<tr>
 													<th>Nombre</th>
-													<th>Peso de archivo</th>
-													<th>Fecha de Creacion</th>
-													<th>Fecha de Modificacion</th>
-													<th>Ruta Archivo</th>
-													<th>Ver archivo</th>
+													<th>Peso de archivo  </th>
+													<th>Fecha de Creacion   </th>
+													<th>Fecha de Modificacion   </th>
+													<th>Ruta Archivo  </th>
+													<th>Ver archivo  </th>
 												</tr>
 											</thead>
 											<tbody>
@@ -531,7 +552,7 @@
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
 		<script th:src="@{/js/ofertasAutomaticas/parametrosFidelidad.js}"></script>
