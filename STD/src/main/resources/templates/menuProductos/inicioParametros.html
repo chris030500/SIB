@@ -62,54 +62,30 @@
 							<div class="container mt-4">
 								<form th:action="@{/configuraciones/guardar-configuracion}" method="post">
 									<h2 class="mb-4">Configuración del Sistema</h2>
-
 									<div class="table-responsive">
 										<table class="table table-bordered">
 											<tbody>
-												<tr>
-													<td>Vigencia de una gestión (días):</td>
+												<tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 1}">
+													<td th:text="${parametros.descripcionParametro}"></td>
 													<td>
-														<input type="number" class="form-control"
-															th:name="vigenciaGestion" th:value="${param_1}"
-															th:required="true">
-													</td>
-												</tr>
-												<tr>
-													<td>Días por Vencer:</td>
-													<td>
-														<input type="number" class="form-control" th:name="diasVencer"
-															th:value="${param_2}" th:required="true">
-													</td>
-												</tr>
-												<tr>
-													<td>Tipo de Días:</td>
-													<td>
-														<select class="form-control" name="tipoDias">
-															<option value="1" th:selected="${param_3 == '1'}">Tipo
-																Naturales</option>
-															<option value="2" th:selected="${param_3 == '2'}">Tipo Días
+														<input th:if="${parametros.vc_des_tipo == 'number' or parametros.vc_des_tipo == 'text' or parametros.vc_des_tipo == 'password'}" th:type="${parametros.vc_des_tipo}" class="form-control" th:name="${parametros.vc_nombre_campo}"
+														th:value="${parametros.configuracion}" th:required="true">
+														
+														<select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 3}" class="form-control" th:name="${parametros.vc_nombre_campo}">
+        													<option value="1" th:selected="${parametros.configuracion == '1'}">Tipo Naturales</option>
+															<option value="2" th:selected="${parametros.configuracion == '2'}">Tipo Días
 																Hábiles</option>
-														</select>
-													</td>
-												</tr>
-												<tr>
-													<td>Asignación por Última Gestión:</td>
-													<td>
-														<select class="form-control" name="asignacionUltimaGestion">
-															<option value="1" th:selected="${param_4 == '1'}">SI
-															</option>
-															<option value="2" th:selected="${param_4 == '2'}">NO
-															</option>
-														</select>
-													</td>
-												</tr>
-												<tr>
-													<td>Usuario Desbloqueo Clientes:</td>
-													<td>
-														<div class="col-sm-12">
+    													</select>
+    													
+    													<select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 4}" class="form-control" th:name="${parametros.vc_nombre_campo}">
+															<option value="1" th:selected="${parametros.configuracion == '1'}">SI</option>
+															<option value="2" th:selected="${parametros.configuracion == '2'}">NO</option>
+    													</select>
+    													
+    													<div class="col-sm-12" th:if="${parametros.vc_des_tipo == 'search'}" >
 															<input type="search" class="form-control" id="searchInput"
 																list="opciones" autocomplete="off" placeholder="Usuario"
-																th:name="usuarioDesbloqueo" th:value="${param_5}"
+																th:name="${parametros.vc_nombre_campo}" th:value="${parametros.configuracion}"
 																th:required="true">
 															<!-- Lista de opciones para el datalist -->
 															<datalist id="opciones">
@@ -121,127 +97,54 @@
 																<i><b>campo requerido</b></i>
 															</p>
 														</div>
+														
 													</td>
 												</tr>
-												<tr>
-													<td>Usuario SMS Calixta:</td>
-													<td>
-														<div class="col-sm-12">
-															<input type="search" class="form-control" id="searchInput"
-																list="opciones" autocomplete="off" placeholder="Usuario"
-																th:name="usuarioSMS" th:value="${param_6}"
-																th:required="true">
-															<!-- Lista de opciones para el datalist -->
-															<datalist id="opciones">
-																<option th:each="usuario : ${usuarios}"
-																	th:value="${usuario.vc_nombre_usuario}"></option>
-															</datalist>
-															<p id="errorSucursal"
-																style="color: red; display: none; font-size: small; padding-left: 5px;">
-																<i><b>campo requerido</b></i>
-															</p>
-														</div>
-													</td>
-												</tr>
-												<tr>
-													<td>Usuarios Administradores Ofertas Automáticas:</td>
-													<td>
-														<div class="col-sm-12">
-															<input type="search" class="form-control" id="searchInput"
-																list="opciones" autocomplete="off" placeholder="Usuario"
-																th:name="usuarioAdmin" th:value="${param_7}"
-																th:required="true">
-															<!-- Lista de opciones para el datalist -->
-															<datalist id="opciones">
-																<option th:each="usuario : ${usuarios}"
-																	th:value="${usuario.vc_nombre_usuario}"></option>
-															</datalist>
-															<p id="errorSucursal"
-																style="color: red; display: none; font-size: small; padding-left: 5px;">
-																<i><b>campo requerido</b></i>
-															</p>
-														</div>
-													</td>
-												</tr>
-												<tr>
-													<td>Usuario Gestor:</td>
-													<td>
-														<div class="col-sm-12">
-															<input type="search" class="form-control" id="searchInput"
-																list="opciones" autocomplete="off" placeholder="Usuario"
-																th:name="usuarioGestor" th:value="${param_8}"
-																th:required="true">
-															<!-- Lista de opciones para el datalist -->
-															<datalist id="opciones">
-																<option th:each="usuario : ${usuarios}"
-																	th:value="${usuario.vc_nombre_usuario}"></option>
-															</datalist>
-															<p id="errorSucursal"
-																style="color: red; display: none; font-size: small; padding-left: 5px;">
-																<i><b>campo requerido</b></i>
-															</p>
-														</div>
-													</td>
-												</tr>
-												<tr>
-													<td>Usuario Consulta:</td>
-													<td>
-														<div class="col-sm-12">
-															<input type="search" class="form-control" id="searchInput"
-																list="opciones" autocomplete="off" placeholder="Usuario"
-																th:name="usuarioConsulta" th:value="${param_9}"
-																th:required="true">
-															<!-- Lista de opciones para el datalist -->
-															<datalist id="opciones">
-																<option th:each="usuario : ${usuarios}"
-																	th:value="${usuario.vc_nombre_usuario}"></option>
-															</datalist>
-															<p id="errorSucursal"
-																style="color: red; display: none; font-size: small; padding-left: 5px;">
-																<i><b>campo requerido</b></i>
-															</p>
-														</div>
-													</td>
-												</tr>
-											</tbody>
+											</tbody>	
 										</table>
 									</div>
-
-									<h3 class="mt-4">Datos conexión al servicio de Calixta</h3>
-
+									<h2 class="mb-4">Datos conexión al servicio de Calixta</h2>
 									<div class="table-responsive">
 										<table class="table table-bordered">
-											<tr>
-												<td>Usuario Calixta:</td>
-												<td>
-													<input type="text" class="form-control" th:name="usuarioCalix"
-														th:value="${param_10}" th:required="true">
-												</td>
-											</tr>
-											<tr>
-												<td>Contraseña Calixta:</td>
-												<td>
-													<input type="password" class="form-control" th:name="passCalix"
-														th:value="${param_11}" th:required="true">
-												</td>
-											</tr>
-											<tr>
-												<td>Servicio WS Calixta:</td>
-												<td>
-													<input type="text" class="form-control" th:name="serviWS"
-														th:value="${param_12}" th:required="true">
-												</td>
-											</tr>
-											<tr>
-												<td>Id Cliente Calixta:</td>
-												<td>
-													<input type="text" class="form-control" th:name="idCalix"
-														th:value="${param_13}" th:required="true">
-												</td>
-											</tr>
+											<tbody>
+												<tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 2}">
+													<td th:text="${parametros.descripcionParametro}"></td>
+													<td>
+														<input th:if="${parametros.vc_des_tipo == 'number' or parametros.vc_des_tipo == 'text' or parametros.vc_des_tipo == 'password'}" th:type="${parametros.vc_des_tipo}" class="form-control" th:name="${parametros.vc_nombre_campo}"
+														th:value="${parametros.configuracion}" th:required="true">
+														
+														<select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 3}" class="form-control" th:name="${parametros.vc_nombre_campo}">
+        													<option value="1" th:selected="${parametros.configuracion == '1'}">Tipo Naturales</option>
+															<option value="2" th:selected="${parametros.configuracion == '2'}">Tipo Días
+																Hábiles</option>
+    													</select>
+    													
+    													<select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 4}" class="form-control" th:name="${parametros.vc_nombre_campo}">
+															<option value="1" th:selected="${parametros.configuracion == '1'}">SI</option>
+															<option value="2" th:selected="${parametros.configuracion == '2'}">NO</option>
+    													</select>
+    													
+    													<div class="col-sm-12" th:if="${parametros.vc_des_tipo == 'search'}">
+															<input type="search" class="form-control" id="searchInput"
+																list="opciones" autocomplete="off" placeholder="Usuario"
+																th:name="${parametros.vc_nombre_campo}" th:value="${parametros.configuracion}"
+																th:required="true">
+															<!-- Lista de opciones para el datalist -->
+															<datalist id="opciones">
+																<option th:each="usuario : ${usuarios}"
+																	th:value="${usuario.vc_nombre_usuario}"></option>
+															</datalist>
+															<p id="errorSucursal"
+																style="color: red; display: none; font-size: small; padding-left: 5px;">
+																<i><b>campo requerido</b></i>
+															</p>
+														</div>
+														
+													</td>
+												</tr>
+											</tbody>	
 										</table>
 									</div>
-
 									<!-- Botón de Enviar -->
 									<button type="submit" class="btn btn-primary mt-4">Guardar Configuración</button>
 								</form>
@@ -259,7 +162,7 @@
 									<thead>
 										<tr>
 											<th>Regla de Asignacion</th>
-											<th>Vigencia</th>
+											<!--<th>Vigencia</th>-->
 											<th>Estatus</th>
 											<th>Usuario Modifico</th>
 											<th>Fecha Modificación</th>
@@ -461,7 +364,7 @@
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Alta Plantillas de SMS</legend>
 							<div class="modal-body">
-								<form id="edit-form"><!--th:method="post" th:object="${folios}">-->
+								<form id="edit-form2">
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
 											<label for="lblNombrePlantilla">Nombre de la Plantilla:</label>
@@ -596,10 +499,10 @@
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Asignación Liquidados y Renovados</legend>
 							<div class="modal-body">
-								<form id="edit-form"><!--th:method="post" th:object="${folios}">-->
+								<form id="edit-form1">
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
-											<label for="slAsignar">Asignar a:</label>
+											<label for="slAsignar">Asignar a (*):</label>
 											<select class="form-control" id="slAsignar">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_asignacion}"
@@ -608,12 +511,13 @@
 											</select>
 										</div>
 										<div class="col-md-4">
-											<label for="lblPorcentaje">% Registros:</label>
+											<label for="lblPorcentaje">% Registros (*):</label>
 											<input type="number" class="form-control" id="porcRegistros" min="1"
-												max="100" maxlength="3" minlength="1" value="1">
+												max="100" maxlength="3" minlength="1" value="1" th:required="true">
+																						
 										</div>
 										<div class="col-md-4">
-											<label for="lblTipoCliente">Tipo de Cliente:</label>
+											<label for="lblTipoCliente">Tipo de Cliente(*):</label>
 											<select class="form-control" id="tipoCliente">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_cliente}"
@@ -624,7 +528,7 @@
 									</div>
 									<div class="row" style="margin-top : 15px ">
 										<div class="col-md-4">
-											<label for="lblTipoCartera">Tipo de Cartera:</label>
+											<label for="lblTipoCartera">Tipo de Cartera(*):</label>
 											<select class="form-control" id="slcTipoCartera">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_cartera}"
@@ -633,7 +537,7 @@
 											</select>
 										</div>
 										<div class="col-md-4">
-											<label for="lblPrioridad">Prioridad:</label>
+											<label for="lblPrioridad">Prioridad(*):</label>
 											<select class="form-control" id="tipoPrioridad">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_prioridad}"
@@ -642,7 +546,7 @@
 											</select>
 										</div>
 										<div class="col-md-4">
-											<label id="lblEstatus">Estatus</label>
+											<label id="lblEstatus">Estatus(*):</label>
 											<select class="form-control" id="slEstatus">
 												<option value="0">Seleccione</option>
 												<option th:each="opcionTipo : ${cat_tipo_estatus}"

@@ -83,11 +83,14 @@ public class ParametrosConfigController {
 				model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
 				model.addAttribute("bases", bases);
 				model.addAttribute("usuarios", usuarios);
-				int i = 1;
-				for (ConfiguracionSistema configuracion : configuraciones) {
-					model.addAttribute("param_" + i, configuracion.getConfiguracion());
-					i++;
-				}
+				
+				model.addAttribute("lista_param_conf",configuraciones);
+				
+				//int i = 1;
+				//for (ConfiguracionSistema configuracion : configuraciones) {
+					//model.addAttribute("param_" + i, configuracion.getConfiguracion());
+					//i++;
+				//}
 
 				rutaDireccion = "menuProductos/inicioParametros";
 			} else {
