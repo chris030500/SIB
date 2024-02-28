@@ -1459,6 +1459,14 @@ function catalogoRealizarE(select, relacion) {
 				if (relacion.accionRealizar != null) {
 					if (respuesta.lista[i].pk_id === relacion.accionRealizar.pk_id) {
 						opcion.selected = true;
+
+						// Aquí obtenemos el valor seleccionado
+						var valorSeleccionado = respuesta.lista[i].pk_id;
+
+						if (valorSeleccionado == '78' || valorSeleccionado == '72') {
+							document.getElementById('selectBloqueoE').value = "79";
+							document.getElementById('selectBloqueoE').disabled = true; // CORRECCIÓN AQUÍ
+						}
 					}
 				}
 			}
@@ -1858,6 +1866,25 @@ function vistaDeCorreos(lista) {
 		actualizarDatosChipsE();
 	});
 }
+
+// Seleccionar el elemento select por su ID
+const selectElement = document.getElementById('selectRealizarE');
+const selectElement2 = document.getElementById('selectBloqueoE');
+
+// Agregar un evento 'change' al elemento select
+selectElement.addEventListener('change', function(event) {
+	// Obtener el valor seleccionado del select
+	const selectedValue = event.target.value;
+	console.log('Valor seleccionado:', selectedValue);
+
+	if (selectedValue == '78' || selectedValue == '72') {
+		selectElement2.value = "79";
+		selectElement2.disabled = true; // CORRECCIÓN AQUÍ
+	} else {
+		selectElement2.value = "''";
+		selectElement2.disabled = false; // Asegúrate de desbloquearlo si no cumple la condición
+	}
+});
 /**
  * Fin
  */

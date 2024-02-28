@@ -406,6 +406,7 @@ function buscarRelacion() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			console.log(respuesta)
 			almacen = respuesta;
 			const opcionesDatalist = document.getElementById('opciones-relacion');
 			opcionesDatalist.innerHTML = '';

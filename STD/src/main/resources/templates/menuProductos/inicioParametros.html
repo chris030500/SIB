@@ -60,7 +60,7 @@
 						<legend class="float-none w-auto p-2">Parametros Generales</legend>
 						<div class="row">
 							<div class="mt-4">
-								<form th:action="@{/configuraciones/guardar-configuracion}" method="post">
+								<form th:action="@{/configuraciones/guardar-configuracion}" method="post" id="configuracionForm">
 									<h2 class="mb-4">Configuración del Sistema</h2>
 
 									<div class="table-responsive">
@@ -69,7 +69,7 @@
 												<tr>
 													<td>Vigencia de una gestión (días):</td>
 													<td>
-														<input type="number" class="form-control"
+														<input type="number" class="form-control" id="vigenciaGestion"
 															th:name="vigenciaGestion" th:value="${param_1}"
 															th:required="true">
 													</td>
@@ -77,8 +77,9 @@
 												<tr>
 													<td>Días por Vencer:</td>
 													<td>
-														<input type="number" class="form-control" th:name="diasVencer"
-															th:value="${param_2}" th:required="true">
+														<input type="number" class="form-control" id="diasVencer"
+															th:name="diasVencer" th:value="${param_2}" 
+															th:required="true">
 													</td>
 												</tr>
 												<tr>
