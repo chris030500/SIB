@@ -51,23 +51,36 @@ function mostrarOcultarDiv(divA) {
 
 }
 
-const input = document.getElementById('vigenciaGestion');
+const val = document.getElementsByName('diasVencer')[0];
 
-input.addEventListener('input', function() {
-	let value = parseFloat(this.value);
-	if (value < 1) {
-		this.value = 1;
-	}
-});
+if (val) {
+    val.addEventListener('input', function() {
+        let value = parseFloat(this.value);
 
-const val = document.getElementById('diasVencer');
+        // Verificar si el valor es menor que 1 o si está vacío
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        }
+    });
+} else {
+    console.error('No se encontró ningún elemento con el nombre "diasVencer"');
+}
 
-val.addEventListener('input', function() {
-	let value = parseFloat(this.value);
-	if (value < 1) {
-		this.value = 1;
-	}
-});
+const value = document.getElementsByName('vigenciaGestion')[0];
+
+if (value) {
+    value.addEventListener('input', function() {
+        let value = parseFloat(this.value);
+
+        // Verificar si el valor es menor que 1 o si está vacío
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        }
+    });
+} else {
+    console.error('No se encontró ningún elemento con el nombre "vigenciaGestion"');
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
 	const form = document.getElementById('configuracionForm');
