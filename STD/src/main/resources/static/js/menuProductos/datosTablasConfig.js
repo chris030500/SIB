@@ -20,19 +20,20 @@ var url = "";
 		 tblReglasAsignacion.clear().draw();
 		 $.each(data, function(idx, opt) {
 		 var botones = "";
-			 	var btnEstatus = " <button class='btn btn-warning btn-sm' tabindex='0' "
+			 	var btnEstatus = " <button class='btn btn-warning btn-xs' tabindex='0' "
 					+ " title='Actualizar Estatus' type='button'"
 					+ " onclick='updateEstatusRegla("
 					+ opt.pk_id_regla
 					+ ")' id="
 					+ opt.pk_id_regla
 					+ " data-tooltip='Add'>"
-					+ ((opt.i_estatus == 1)?"<i class='bi bi-check2-circle'></i></button>":"<i class='bi bi-x-circle'></i></button>")
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-toggle2-on'></i></button>":"<i class='bi bi-toggle2-off'></i></button>")
 					+ "&nbsp;";
+				
 				
 			 	botones = botones + btnEstatus;
 			 	if(opt.i_params == 1){
-					var btnEditarParams = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					var btnEditarParams = " <button class='btn btn-primary btn-xs' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Actualizar Parametros' data-bs-target='#altaLiqRenovados' aria-controls='table-datatable' type='button'"
 					+ " onclick='obtTblParamsAsig("
 					+ opt.pk_id_regla
@@ -137,14 +138,14 @@ var url = "";
 		 tblClienteBloqueados.clear().draw();
 		 $.each(data, function(idx, opt) {
 			var botonesActivar = "";
-			 		 botonesActivar = " <button class='btn btn-warning btn-sm' tabindex='0' "
+			 		 botonesActivar = " <button class='btn btn-warning btn-xs' tabindex='0' "
 					+ " title='Actualizar Estatus'  type='button'"
 					+ " onclick='cambiarEstatusCliente(this)' id="
 					+ opt.pk_id_bloqueo
 					+ " for="
 					+ opt.i_estatus
 					+ " data-tooltip='Add'>"
-					+ ((opt.i_estatus == 1)?"<i class='bi bi-check2-circle'></i></button>":"<i class='bi bi-x-circle'></i></button>")
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-toggle2-on'></i></button>":"<i class='bi bi-toggle2-off'></i></button>")
 					+ "&nbsp;";
 
 			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
