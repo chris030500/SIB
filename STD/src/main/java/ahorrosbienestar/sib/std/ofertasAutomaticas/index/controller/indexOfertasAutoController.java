@@ -38,6 +38,8 @@ import org.springframework.http.MediaType;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
@@ -83,6 +85,8 @@ public class indexOfertasAutoController {
 	private String rutaDireccion="";
 	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
 	private static final String MENSAJE_DE_ERROR = "Error";
+	
+	private static final String CAMPO_PARAMETRO = "usuarioEjecutaGestion";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -132,6 +136,8 @@ public class indexOfertasAutoController {
 	@Autowired
 	private GeneracionSMSConfiguracion generacionSMSConfiguracion;
 	
+	@Autowired
+	private ConfiguracionSistemaService configuracionSistemaService;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -140,7 +146,13 @@ public class indexOfertasAutoController {
 	@GetMapping("/index")
 	public String indexOfertasAuto(Model model) throws IOException {
 	 try {
-		if(validarAcceso()== 1){
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		
+		if(validarAcceso(userDetails.getUsername())== 1){
 			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
@@ -149,6 +161,8 @@ public class indexOfertasAutoController {
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
 			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+			model.addAttribute("permiso_ejecucion",configuracionSistemaService.buscarConfiguracion(CAMPO_PARAMETRO,userDetails.getUsername()));
+			System.out.println();
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
 			rutaDireccion = rutaError;
@@ -794,14 +808,9 @@ public class indexOfertasAutoController {
 		}
 	}
 		
-	public int validarAcceso() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
+	public int validarAcceso(String usuarioLogin) {
+
+		usuario = iUsuarioRepository.findByNombreUsuario(usuarioLogin);
 		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
 		
 		
