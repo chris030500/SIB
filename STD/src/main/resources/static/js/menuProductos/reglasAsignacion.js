@@ -75,7 +75,7 @@ function peticionPostRegla(urlServicio, servicio) {
 		complete: function() {
 		},
 		success: function(respuesta) {
-			swal("",respuesta[0],"success").then(resp => {
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 				if (servicio == 1) {
 					obtTblReglas();
 				}
