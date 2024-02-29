@@ -13,6 +13,9 @@ window.onload = function() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/menuProductos", "");
 
+var sms = [];
+var mens = [];
+
 var obtDatosMensajeSMS = "mensajes/obtSMS";
 function listaMensajes() {
 	url = getAbsolutePath() + obtDatosMensajeSMS;
@@ -41,6 +44,8 @@ function listaMensajes() {
 				+ " <i class='fa-solid fa-pen-to-square'></i></button>";
 
 			botones = botonesActivar + botonesEditar;
+
+
 
 			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
 		});
@@ -204,7 +209,7 @@ function llenarTablaSeguimiento() {
 			tblMensajesGenerados.clear().draw();;
 			$.each(respuesta.lista, function(idx, opt) {
 				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
-				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\")'><i class='fas fa-paper-plane'></i></button>";
+				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + ", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
 				var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
 				var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
 				var botones = "";
@@ -215,7 +220,20 @@ function llenarTablaSeguimiento() {
 				if (opt.estMensaje == 0) {
 					botones = botonesEditar + " " + botonesActivar;
 				}
-				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : 'ACTIVO'), botones]).draw(false);
+				if (opt.estMensaje == 2) {
+					botones = "El mensaje ya se envio";
+				}
+
+				// Agregar el telefono y el mensaje a los arrays correspondientes
+				var mensaje = {
+					telefono: opt.telefonoCelular,
+					mensaje: opt.descMensaje,
+					idMensaje: opt.mensajeID
+				};
+
+				sms.push(mensaje);
+
+				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'), botones]).draw(false);
 			});
 		},
 		error: function(error) {
@@ -275,7 +293,7 @@ function inactivarSMS(mensajeID, estatus) {
 		textoAlerta = "¡El mensaje se activará y sera tomado encuenta para el envio masivo!";
 		confirmButton = "Activar";
 	}
-	
+
 	swal({
 		title: tituloAlerta,
 		text: textoAlerta,
@@ -306,11 +324,19 @@ function inactivarSMS(mensajeID, estatus) {
 	})
 }
 
-function enviarSMS(telefono, mensaje) {
-	servicioURL = "mensajes/sendSMS?mensaje=" + mensaje + "&telefono=" + telefono;
+function enviarSMS(telefono, mensaje, mensajeID) {
+	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar el mensaje?</div>";
 	var textoAlerta = "¡El mensaje se enviará y no será posible cancelar el envío!";
 	var confirmButton = "Enviar";
+
+	var mensaje = {
+		telefono: telefono,
+		mensaje: mensaje,
+		idMensaje: mensajeID
+	};
+
+	mens.push(mensaje);
 
 	swal({
 		title: tituloAlerta,
@@ -322,9 +348,12 @@ function enviarSMS(telefono, mensaje) {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
+			console.log(mens)
 			$.ajax({
 				url: getAbsolutePath() + servicioURL,
-				type: "GET",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(mens),
 				success: function(response) {
 					swal(
 						"¡Enviado!",
@@ -343,6 +372,7 @@ function enviarSMS(telefono, mensaje) {
 }
 
 function enviarMasivo() {
+	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar todos los mensajes?</div>";
 	var textoAlerta = "¡Los mensajes se enviarán de manera masiva y no será posible cancelar el envío!";
 	var confirmButton = "Enviar";
@@ -357,15 +387,59 @@ function enviarMasivo() {
 		confirmButtonText: confirmButton,
 	}).then((result) => {
 		if (result.value) {
-			swal(
-				"¡Enviados!",
-				"Los mensajes han sido enviados.",
-				"success"
-			)
+			console.log(sms)
+			$.ajax({
+				url: getAbsolutePath() + servicioURL,
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(sms),
+				success: function(response) {
+					swal(
+						"¡Enviado!",
+						"El mensaje ha sido enviado.",
+						"success"
+					)
+					llenarTablaSeguimiento();
+				},
+				error: function(xhr, status, error) {
+					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
+					console.error("Error al enviar los datos: " + error);
+				}
+			});
 		}
 	})
 }
 
+function downloadReport() {
+	
+	servicioURL = "mensajes/reporteSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce
+	
+	$.ajax({
+		url: getAbsolutePath() + servicioURL,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+}
 
 
 

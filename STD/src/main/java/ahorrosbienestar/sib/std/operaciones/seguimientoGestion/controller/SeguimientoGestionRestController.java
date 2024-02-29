@@ -287,6 +287,7 @@ public class SeguimientoGestionRestController {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ConsultarRelacionesModel> lista = new ArrayList<ConsultarRelacionesModel>();
+		System.out.println(valor);
 		try {
 			lista = consultarRelacionesService.relacionesActivas(valor);
 			respuesta.put("listaRelaciones", lista);
@@ -326,19 +327,25 @@ public class SeguimientoGestionRestController {
 	public int actualizarAsignacion(int idRelacion, int idAsignacion) {
 		AsignacionOfertas asignacion = asignacionOfertasService.findById(idAsignacion);
 		logger.info("Se encontró la asignación");
+		System.out.println("Se encontró la asignación");
 		//
 		RelacionCodigosModel relacion = relacionCodigosService.buscarRelacionPorId(idRelacion);
 		logger.info("Se encnotró la relación");
+		System.out.println("Se encontró la relación");
 		//
 		if (relacion.getBloqueoListas() != null) {
+			System.out.println("Paso 1");
 			if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
+				System.out.println("Paso 2");
 				if (relacion.getBloqueoListas().getV_valor().equals(bloqueo1) || relacion.getBloqueoListas().getV_valor().equals(bloqueo2)) {
+					System.out.println("SIIIII");
 					asignacion.setI_bloqueo(2);
-					asignacion.setI_estatus(2);
-					asignacionOfertasService.save(asignacion);
 				}
 			}
 		}
+		
+		asignacion.setI_estatus(2);
+		asignacionOfertasService.save(asignacion);
 
 		return asignacion.getI_bloqueo();
 	}

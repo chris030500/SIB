@@ -406,6 +406,7 @@ function buscarRelacion() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			console.log(respuesta)
 			almacen = respuesta;
 			const opcionesDatalist = document.getElementById('opciones-relacion');
 			opcionesDatalist.innerHTML = '';
@@ -544,7 +545,6 @@ function todosLosEstatus(id) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
 			});
-
 			// Llamar a la función para crear la gráfica después de obtener los datos
 			createChart(listaDeEstatus, listaDeTotales);
 		}
