@@ -20,19 +20,19 @@ var url = "";
 		 tblReglasAsignacion.clear().draw();
 		 $.each(data, function(idx, opt) {
 		 var botones = "";
-			 	var btnEstatus = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+			 	var btnEstatus = " <button class='btn btn-warning btn-sm' tabindex='0' "
 					+ " title='Actualizar Estatus' type='button'"
 					+ " onclick='updateEstatusRegla("
 					+ opt.pk_id_regla
 					+ ")' id="
 					+ opt.pk_id_regla
 					+ " data-tooltip='Add'>"
-					+ ((opt.i_estatus == 1)?"<i class='fa-solid fa-toggle-on fa-lg'></i></button>":"<i class='fa-solid fa-toggle-off fa-lg'></i></button>")
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-check2-circle'></i></button>":"<i class='bi bi-x-circle'></i></button>")
 					+ "&nbsp;";
 				
 			 	botones = botones + btnEstatus;
 			 	if(opt.i_params == 1){
-					var btnEditarParams = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+					var btnEditarParams = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Actualizar Parametros' data-bs-target='#altaLiqRenovados' aria-controls='table-datatable' type='button'"
 					+ " onclick='obtTblParamsAsig("
 					+ opt.pk_id_regla
@@ -44,7 +44,12 @@ var url = "";
 					botones = botones+btnEditarParams;
 				
 				}
-			 tblReglasAsignacion.row.add([opt.vc_nombre_regla,(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),botones]).draw(false);
+			 tblReglasAsignacion.row.add([
+				 opt.vc_nombre_regla
+				 ,(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario)
+				 ,(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod)
+				 ,(opt.i_estatus == 1?'ACTIVO':'INACTIVO')
+				 ,botones]).draw(false);
 		 });
 	 }); 
  }
@@ -69,7 +74,7 @@ var url = "";
 					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
 					+ "&nbsp;";*/
 		 var botonesEditar = "";
-			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+			 		var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
 					+ " onclick='editarPlantilla("
 					+ opt.pk_id_plantilla
@@ -94,7 +99,7 @@ var url = "";
 		 $.each(data, function(idx, opt) {
 			 console.log(opt);
 		 var botonesActivar = "";
-			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+			 		/*var botonesActivar = " <button class='btn btn-info bg-info text-black btn-xs' tabindex='0' "
 					+ " title='Actualizar Estatus'  type='button'"
 					+ " onclick='actualizarEstatus("
 					+ opt.pk_id_plantilla
@@ -132,19 +137,19 @@ var url = "";
 		 tblClienteBloqueados.clear().draw();
 		 $.each(data, function(idx, opt) {
 			var botonesActivar = "";
-			 		 botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+			 		 botonesActivar = " <button class='btn btn-warning btn-sm' tabindex='0' "
 					+ " title='Actualizar Estatus'  type='button'"
 					+ " onclick='cambiarEstatusCliente(this)' id="
 					+ opt.pk_id_bloqueo
 					+ " for="
 					+ opt.i_estatus
 					+ " data-tooltip='Add'>"
-					+ ((opt.i_estatus == 1)?"<i class='bi bi-unlock'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-check2-circle'></i></button>":"<i class='bi bi-x-circle'></i></button>")
 					+ "&nbsp;";
 
-			 tblClienteBloqueados.row.add([(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
 			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento == null?'----/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'----':opt.vc_motivo_desbloqueo)
-			 ,(opt.dt_fecha_desbloqueo == null?'----/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),botonesActivar]).draw(false);
+			 ,(opt.dt_fecha_desbloqueo == null?'----/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
 			 
 		 });
 	 }); 

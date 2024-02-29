@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,7 +37,6 @@ import org.springframework.http.MediaType;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
@@ -83,10 +81,11 @@ public class indexOfertasAutoController {
 	private static final String nombrePantalla = "Ofertas Automaticas";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
-	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
+	//private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
 	private static final String MENSAJE_DE_ERROR = "Error";
 	
-	private static final String CAMPO_PARAMETRO = "usuarioEjecutaGestion";
+	private static final String Usuario_EjecutaGestion = "usuarioEjecutaGestion";
+	private static final String Usuario_EjecutaBase = "usuarioGeneraBases";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -161,7 +160,8 @@ public class indexOfertasAutoController {
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
 			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("permiso_ejecucion",configuracionSistemaService.buscarConfiguracion(CAMPO_PARAMETRO,userDetails.getUsername()));
+			model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Usuario_EjecutaGestion,userDetails.getUsername()));
+			model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Usuario_EjecutaBase,userDetails.getUsername()));
 			System.out.println();
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {

@@ -163,9 +163,9 @@
                                         <tr>
                                             <th>Regla de Asignacion</th>
                                             <!--<th>Vigencia</th>-->
-                                            <th>Estatus</th>
                                             <th>Usuario Modifico</th>
                                             <th>Fecha Modificación</th>
+                                            <th>Estatus</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -181,7 +181,7 @@
                         <legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
                         <div class="row" style="margin-top : 5px ">
                             <div class="col-lg-4">
-                                <button class="btn btn-secundary bg-info text-black" tabindex="0" data-bs-toggle="modal"
+                                <button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
                                     title="Agregar" data-bs-target="#altaPlantilla" aria-controls="table-datatable"
                                     type="button" data-tooltip="Add"><!--th:onclick="'limpiarDatosPlantilla()'"-->
                                     <i class="fa fa-plus-circle"></i> Alta Plantilla.
@@ -428,7 +428,7 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrar"
                                     th:onclick="'eventoGuardar()'">Registrar</button>
-                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelar"
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCancelar"
                                     th:onclick="'eventoCerrar()'">Cerrar</button>
                             </div>
                         </fieldset>
@@ -484,8 +484,8 @@
                             </div>
                             <div class="modal-footer">
  
-                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarAsig"
-                                    th:onclick="'cerrarModalParams(1)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCancelarAsig"
+                                    th:onclick="'cerrarModalParams(1)'">Cerrar</button>
                             </div>
                         </fieldset>
                     </div>
@@ -558,10 +558,10 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrarAsig"
-                                    th:onclick="'guardarModalParams()'">Registrar</button><!--th:onclick="'eventoGuardar()'"-->
-                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnCancelarReg"
-                                    th:onclick="'cerrarModalParams(2)'">Cerrar</button><!--th:onclick="'eventoGuardar()'"-->
+                                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRegistrarAsig"
+                                    th:onclick="'guardarModalParams()'">Registrar</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCancelarReg"
+                                    th:onclick="'cerrarModalParams(2)'">Cerrar</button>
                             </div>
                         </fieldset>
                     </div>

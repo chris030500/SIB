@@ -953,7 +953,7 @@ function bajaClasificacion(idClass) {
       		buttons: ["Cancelar", "Confirmar"],
     	 })
 		.then(resultado => {
-			if (resultado.value) {
+			if (resultado) {
 				url = "";
 				url = "bajaClasificacion?idClass=" + $(idClass).attr('id');
 				peticionPost(2, getAbsolutePath() + url);

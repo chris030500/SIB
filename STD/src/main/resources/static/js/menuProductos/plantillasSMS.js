@@ -24,27 +24,13 @@ function eventoGuardar(){
 	if(guardarVacioPlantilla() == 0){
 		//servicio registro plantilla
 		
-		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Procesando Información.',
-				html: '<span class="spinner-border"></span>',
-				timer: 1000, // tiempo en milisegundos,
-				icon: 'info',
-				timerProgressBar: true,
-				showConfirmButton: false
-		}).then((result) => {
-			if (result.dismiss === Swal.DismissReason.timer) {
-				if (idPlantillaMod == 0){
-					serviciosSMS(1);
-				}
-				if(idPlantillaMod >0){
-					serviciosSMS(2);
-					
-				}	
-				
-			}
-		});
-		
-		
+		if (idPlantillaMod == 0){
+			serviciosSMS(1);
+		}
+		if(idPlantillaMod >0){
+			serviciosSMS(2);	
+		}	
+
 	}else{
 		swal("!Alerta¡", "Registrar datos obligatorios","error");
 	}
@@ -85,16 +71,24 @@ function serviciosSMS(servicio){
 }
 
 function peticionPost(urlServicio, servicio) {
+	
+	Swal.fire({
+    		title: 'Procesando..',
+    		html: 'Espere Por Favor...',
+    		allowOutsideClick: false,
+    		showConfirmButton: false,
+    		onBeforeOpen: () => {
+      			Swal.showLoading();
+    		}
+  	});
+	
 	$.ajax({
-		async: false,
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-			$.blockUI({ message: '<span class="spinner-border"></span>' });
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 100);
 		},
 		success: function(respuesta) {
 			swal("",respuesta[0],"success").then(resp => {
@@ -243,22 +237,11 @@ function editarPlantilla(idEditar){
 }
 function obtPlantilla(urlObt){
 	
-		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Consultando Información.',
-				html: '<span class="spinner-border"></span>',
-				timer: 600, // tiempo en milisegundos
-				icon: 'info',
-				timerProgressBar: true,
-				showConfirmButton: false
-		}).then((result) => {
-			if (result.dismiss === Swal.DismissReason.timer) {	
-				$.getJSON(url, {}, function(data) {
+		$.getJSON(url, {}, function(data) {
 					setTimeout($.unblockUI, 1000);
 					cargarDatos(data);
-				});
-			}
 		});
-	
+
 }
 
 function cargarDatos(data) {
