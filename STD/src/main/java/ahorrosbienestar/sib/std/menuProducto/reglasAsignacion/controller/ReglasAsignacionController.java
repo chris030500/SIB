@@ -2,7 +2,9 @@ package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -25,8 +27,6 @@ import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.Parametros
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ReglasAsignacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("reglas")
@@ -42,10 +42,12 @@ public class ReglasAsignacionController {
 	
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-	
+
 	@Autowired
 	private ParametrosReglasService  parametrosReglasService;
 	
+	//@Autowired
+	//private ConstantesParametrosService constantesParametrosService;
 	
 	@GetMapping("/obtDatosReglasAsignacion")
 	public ResponseEntity<List<ReglasAsignacion>> obtDatosReglasAsignacion(Model model) {
@@ -64,8 +66,12 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "estatus") Integer estatus
 			){
 		logger.info("/cambiarEstatusRegla");
+		
+		
 		String mensaje ="Actualizo Estatus Correctamente.";
 		String tipo ="success";
+	
+		
 		Map<String, Object> respuesta = new HashMap<>();
 		try {
 			
@@ -244,6 +250,5 @@ public class ReglasAsignacionController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-	
 
 }
