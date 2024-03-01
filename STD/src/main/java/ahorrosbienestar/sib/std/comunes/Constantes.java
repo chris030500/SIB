@@ -44,6 +44,14 @@ public class Constantes {
     // Ejemplo de constantes para descripcion de Errores
     public static final String DESC_ERROR_ESTATUS_REGLA = "Solo se permite tener una Regla de Asignacion Activa.";
     
+    //PERMISOS DE PANTALLAS
+    public static final String USUARIOS_DESBLOQUEO = "usuarioDesbloqueo";
+    public static final String USUARIOS_ADMIN_OFERTAS = "usuarioAdmin";
+    public static final String USUARIOS_REGLAS_ASIGNACION = "usuarioReglasAsignacion";
+    public static final String USUARIOS_SMS = "usuarioSMS";
+    public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
+    public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
+    
 
     private Constantes() {
         

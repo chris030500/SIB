@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
@@ -84,8 +85,6 @@ public class indexOfertasAutoController {
 	//private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
 	private static final String MENSAJE_DE_ERROR = "Error";
 	
-	private static final String Usuario_EjecutaGestion = "usuarioEjecutaGestion";
-	private static final String Usuario_EjecutaBase = "usuarioGeneraBases";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -152,7 +151,7 @@ public class indexOfertasAutoController {
 		}
 		
 		if(validarAcceso(userDetails.getUsername())== 1){
-			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
+			Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
@@ -160,9 +159,9 @@ public class indexOfertasAutoController {
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
 			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
-			model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Usuario_EjecutaGestion,userDetails.getUsername()));
-			model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Usuario_EjecutaBase,userDetails.getUsername()));
-			System.out.println();
+			model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_GESTION,userDetails.getUsername()));
+			model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_BASE,userDetails.getUsername()));
+			model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
 			rutaDireccion = rutaError;

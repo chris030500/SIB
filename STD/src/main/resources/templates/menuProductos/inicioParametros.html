@@ -29,40 +29,40 @@
  
             <div class="p-4 border rounded-3 mb-4">
                 <ul class="nav nav-pills" id="pntConf" role="tablist">
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                         <button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
                             data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros
                             Generales</button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" th:if="${permiso_reglas == 1 || permiso_admin == 1}">
                         <button onclick="ocultarMostrar(this)" class="nav-link" id="reglas-tab" data-bs-toggle="tab"
                             type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
                         <button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
                             type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes
                             SMS</button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
                         <button onclick="ocultarMostrar(this)" class="nav-link" id="sms-tab" data-bs-toggle="tab"
                             type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" th:if="${permiso_desbloqueo == 1 || permiso_admin == 1}">
                         <button onclick="ocultarMostrar(this)" class="nav-link" id="bloqueados-tab" data-bs-toggle="tab"
                             type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
                     </li>
                 </ul>
             </div>
  
-            <div id="pant-tabs">
-                <div id="params-tab1" class="" style="display: block;" for="1">
+            <div id="pant-tabs" >
+                <div id="params-tab1" class="" style="display: block;" for="1" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                     <fieldset class="border p-3">
                         <legend class="float-none w-auto p-2">Parametros Generales</legend>
                         <div class="row">
-                            <div class="container mt-4">
+                            <div class="container mt-4" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                                 <form th:action="@{/configuraciones/guardar-configuracion}" method="post" id="configuracionForm">
-                                    <h2 class="mb-4">Configuración del Sistema</h2>
-                                    <div class="table-responsive">
+                                    <h2 class="mb-4" th:if="${permiso_admin == 1}">Configuración del Sistema</h2>
+                                    <div class="table-responsive" th:if="${permiso_admin == 1}">
                                         <table class="table table-bordered">
                                             <tbody>
                                                 <tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 1}">
@@ -103,8 +103,8 @@
                                             </tbody>    
                                         </table>
                                     </div>
-                                    <h2 class="mb-4">Datos conexión al servicio de Calixta</h2>
-                                    <div class="table-responsive">
+                                    <h2 class="mb-4" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">Datos conexión al servicio de Calixta</h2>
+                                    <div class="table-responsive" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                                         <table class="table table-bordered">
                                             <tbody>
                                                 <tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 2}">
