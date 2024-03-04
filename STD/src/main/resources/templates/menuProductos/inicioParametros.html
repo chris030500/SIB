@@ -1,105 +1,158 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
- 
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
 <head th:replace="layouts/base-layout :: head">
-    <meta charset="UTF-8">
-    <title>Insert title here</title>
-    <link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-    <link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-    <link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw==" crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet"/>
- 
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
+
 </head>
- 
+
 <body>
-    <section class="content" layout:fragment="page-content">
-        <div class="border p-2 card">
- 
-            <div class="bg-info text-white">
-                <div class="row no-gutters">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-8">
-                        <div>
-                            <h2 style="text-align:center">Parametro de Configuración</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
- 
-            <div class="p-4 border rounded-3 mb-4">
-                <ul class="nav nav-pills" id="pntConf" role="tablist">
-                    <li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
-                        <button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
-                            data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros
-                            Generales</button>
-                    </li>
-                    <li class="nav-item" role="presentation" th:if="${permiso_reglas == 1 || permiso_admin == 1}">
-                        <button onclick="ocultarMostrar(this)" class="nav-link" id="reglas-tab" data-bs-toggle="tab"
-                            type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
-                    </li>
-                    <li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
-                        <button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
-                            type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes
-                            SMS</button>
-                    </li>
-                    <li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
-                        <button onclick="ocultarMostrar(this)" class="nav-link" id="sms-tab" data-bs-toggle="tab"
-                            type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
-                    </li>
-                    <li class="nav-item" role="presentation" th:if="${permiso_desbloqueo == 1 || permiso_admin == 1}">
-                        <button onclick="ocultarMostrar(this)" class="nav-link" id="bloqueados-tab" data-bs-toggle="tab"
-                            type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
-                    </li>
-                </ul>
-            </div>
- 
-            <div id="pant-tabs" >
-                <div id="params-tab1" class="" style="display: block;" for="1" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
-                    <fieldset class="border p-3">
-                        <legend class="float-none w-auto p-2">Parametros Generales</legend>
-                        <div class="row">
-                            <div class="container mt-4" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
-                                <form th:action="@{/configuraciones/guardar-configuracion}" method="post" id="configuracionForm">
-                                    <h2 class="mb-4" th:if="${permiso_admin == 1}">Configuración del Sistema</h2>
-                                    <div class="table-responsive" th:if="${permiso_admin == 1}">
-                                        <table class="table table-bordered">
-                                            <tbody>
-                                                <tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 1}">
-                                                    <td th:text="${parametros.descripcionParametro}"></td>
-                                                    <td>
-                                                        <input th:if="${parametros.vc_des_tipo == 'number' or parametros.vc_des_tipo == 'text' or parametros.vc_des_tipo == 'password'}" th:type="${parametros.vc_des_tipo}" class="form-control" th:name="${parametros.vc_nombre_campo}"
-                                                        th:value="${parametros.configuracion}" th:required="true">
-                                                        
-                                                        <select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 3}" class="form-control" th:name="${parametros.vc_nombre_campo}">
-                                                            <option value="1" th:selected="${parametros.configuracion == '1'}">Tipo Naturales</option>
-                                                            <option value="2" th:selected="${parametros.configuracion == '2'}">Tipo Días
-                                                                Hábiles</option>
-                                                        </select>
-                                                        
-                                                        <select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 4}" class="form-control" th:name="${parametros.vc_nombre_campo}">
-                                                            <option value="1" th:selected="${parametros.configuracion == '1'}">SI</option>
-                                                            <option value="2" th:selected="${parametros.configuracion == '2'}">NO</option>
-                                                        </select>
-                                                        
-                                                        <div class="col-sm-12" th:if="${parametros.vc_des_tipo == 'search'}" >
-                                                            <input type="search" class="form-control" id="searchInput"
-                                                                list="opciones" autocomplete="off" placeholder="Usuario"
-                                                                th:name="${parametros.vc_nombre_campo}" th:value="${parametros.configuracion}"
-                                                                th:required="true">
-                                                            <!-- Lista de opciones para el datalist -->
-                                                            <datalist id="opciones">
-                                                                <option th:each="usuario : ${usuarios}"
-                                                                    th:value="${usuario.vc_nombre_usuario}"></option>
-                                                            </datalist>
-                                                            <p id="errorSucursal"
-                                                                style="color: red; display: none; font-size: small; padding-left: 5px;">
-                                                                <i><b>campo requerido</b></i>
-                                                            </p>
-                                                        </div>
-                                                        
-                                                    </td>
-                                                </tr>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Parametro de Configuración</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros
+							Generales</button>
+					</li>
+					<li class="nav-item" role="presentation" th:if="${permiso_reglas == 1 || permiso_admin == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="reglas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Reglas de Asignacion</button>
+					</li>
+					<li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas Mensajes
+							SMS</button>
+					</li>
+					<li class="nav-item" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="sms-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Administración SMS</button>
+					</li>
+					<li class="nav-item" role="presentation" th:if="${permiso_desbloqueo == 1 || permiso_admin == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="bloqueados-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
+					</li>
+				</ul>
+			</div>
+
+			<div id="pant-tabs">
+				<div id="params-tab1" class="" style="display: block;" for="1" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
+					<fieldset class="border p-3">
+						<legend class="float-none w-auto p-2">Parametros Generales</legend>
+						<div class="row">
+							<div class="container mt-4" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
+								<form th:action="@{/configuraciones/guardar-configuracion}" method="post" id="configuracionForm">
+									<h2 class="mb-4" th:if="${permiso_admin == 1}">Configuración del Sistema</h2>
+									<div class="table-responsive" th:if="${permiso_admin == 1}">
+										<table class="table table-bordered">
+											<tbody>
+												<tr th:each="parametro, parametroStat : ${lista_param_conf}"
+													th:if="${parametro.i_tipo == 1}">
+													<td th:text="${parametro.descripcionParametro}"></td>
+													<td>
+														<div th:switch="${parametro.vc_des_tipo}">
+															<input th:case="'number'" type="number" class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<input th:case="'text'" type="text" class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<input th:case="'password'" type="password"
+																class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<select th:case="'select'" class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																th:name="${parametro.vc_nombre_campo}"
+																th:required="true">
+																<option value="1"
+																	th:selected="${parametro.configuracion == '1'}"
+																	th:if="${parametro.pkParametro == 3}">Tipo Naturales
+																</option>
+																<option value="2"
+																	th:selected="${parametro.configuracion == '2'}"
+																	th:if="${parametro.pkParametro == 3}">Tipo Días
+																	Hábiles</option>
+																<option value="1"
+																	th:selected="${parametro.configuracion == '1'}"
+																	th:if="${parametro.pkParametro == 4}">SI</option>
+																<option value="2"
+																	th:selected="${parametro.configuracion == '2'}"
+																	th:if="${parametro.pkParametro == 4}">NO</option>
+															</select>
+
+															<div th:case="'search'" class="col-sm-12">
+																<input type="search" class="form-control"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	autocomplete="off" placeholder="Buscar Usuario"
+																	th:name="${parametro.vc_nombre_campo}"
+																	th:required="true"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	onchange="handleSearchInput(this)">
+
+																<datalist
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																	<option th:each="usuario : ${usuarios}"
+																		th:value="${usuario.vc_nombre_usuario}"
+																		th:text="${usuario.vc_nombre_usuario}"></option>
+																</datalist>
+
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	class="contenedor-opciones list-group"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																</div>
+
+																<input type="hidden"
+																	th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}" />
+
+																<p th:id="'error-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	style="color: red; display: none; font-size: small; padding-left: 5px;">
+																	<i><b>Campo requerido</b></i>
+																</p>
+															</div>
+														</div>
+													</td>
+												</tr>
                                             </tbody>    
                                         </table>
                                     </div>
@@ -107,51 +160,110 @@
                                     <div class="table-responsive" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                                         <table class="table table-bordered">
                                             <tbody>
-                                                <tr th:each="parametros: ${lista_param_conf}" th:if="${parametros.i_tipo == 2}">
-                                                    <td th:text="${parametros.descripcionParametro}"></td>
-                                                    <td>
-                                                        <input th:if="${parametros.vc_des_tipo == 'number' or parametros.vc_des_tipo == 'text' or parametros.vc_des_tipo == 'password'}" th:type="${parametros.vc_des_tipo}" class="form-control" th:name="${parametros.vc_nombre_campo}"
-                                                        th:value="${parametros.configuracion}" th:required="true">
-                                                        
-                                                        <select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 3}" class="form-control" th:name="${parametros.vc_nombre_campo}">
-                                                            <option value="1" th:selected="${parametros.configuracion == '1'}">Tipo Naturales</option>
-                                                            <option value="2" th:selected="${parametros.configuracion == '2'}">Tipo Días
-                                                                Hábiles</option>
-                                                        </select>
-                                                        
-                                                        <select th:if="${parametros.vc_des_tipo == 'select' and parametros.pkParametro == 4}" class="form-control" th:name="${parametros.vc_nombre_campo}">
-                                                            <option value="1" th:selected="${parametros.configuracion == '1'}">SI</option>
-                                                            <option value="2" th:selected="${parametros.configuracion == '2'}">NO</option>
-                                                        </select>
-                                                        
-                                                        <div class="col-sm-12" th:if="${parametros.vc_des_tipo == 'search'}">
-                                                            <input type="search" class="form-control" id="searchInput"
-                                                                list="opciones" autocomplete="off" placeholder="Usuario"
-                                                                th:name="${parametros.vc_nombre_campo}" th:value="${parametros.configuracion}"
-                                                                th:required="true">
-                                                            <!-- Lista de opciones para el datalist -->
-                                                            <datalist id="opciones">
-                                                                <option th:each="usuario : ${usuarios}"
-                                                                    th:value="${usuario.vc_nombre_usuario}"></option>
-                                                            </datalist>
-                                                            <p id="errorSucursal"
-                                                                style="color: red; display: none; font-size: small; padding-left: 5px;">
-                                                                <i><b>campo requerido</b></i>
-                                                            </p>
-                                                        </div>
-                                                        
-                                                    </td>
-                                                </tr>
-                                            </tbody>    
-                                        </table>
-                                    </div>
-                                    <!-- Botón de Enviar -->
-                                    <button type="submit" class="btn btn-primary mt-4">Guardar Configuración</button>
-                                </form>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
+                                                <tr th:each="parametro, parametroStat : ${lista_param_conf}"
+													th:if="${parametro.i_tipo == 2}">
+													<td th:text="${parametro.descripcionParametro}"></td>
+													<td>
+														<div th:switch="${parametro.vc_des_tipo}">
+															<input th:case="'number'" type="number" class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<input th:case="'text'" type="text" class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<input th:case="'password'" type="password"
+																class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																autocomplete="off" placeholder="Buscar Usuario"
+																th:name="${parametro.vc_nombre_campo}"
+																th:value="${parametro.configuracion}"
+																th:required="true">
+
+															<select th:case="'select' and ${parametro.pkParametro == 3}"
+																class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																th:name="${parametro.vc_nombre_campo}"
+																th:required="true">
+																<option value="1"
+																	th:selected="${parametro.configuracion == '1'}">Tipo
+																	Naturales</option>
+																<option value="2"
+																	th:selected="${parametro.configuracion == '2'}">Tipo
+																	Días Hábiles</option>
+															</select>
+
+															<select th:case="'select' and ${parametro.pkParametro == 4}"
+																class="form-control"
+																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																th:name="${parametro.vc_nombre_campo}"
+																th:required="true">
+																<option value="1"
+																	th:selected="${parametro.configuracion == '1'}">SI
+																</option>
+																<option value="2"
+																	th:selected="${parametro.configuracion == '2'}">NO
+																</option>
+															</select>
+
+															<div th:case="'search'" class="col-sm-12">
+																<input type="search" class="form-control"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	autocomplete="off" placeholder="Buscar Usuario"
+																	th:name="${parametro.vc_nombre_campo}"
+																	th:required="true"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	onchange="handleSearchInput(this)">
+
+																<datalist
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																	<option th:each="usuario : ${usuarios}"
+																		th:value="${usuario.vc_nombre_usuario}"
+																		th:text="${usuario.vc_nombre_usuario}"></option>
+																</datalist>
+
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	class="contenedor-opciones list-group"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																</div>
+
+																<p th:id="'error-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	style="color: red; display: none; font-size: small; padding-left: 5px;">
+																	<i><b>Campo requerido</b></i>
+																</p>
+																<input type="hidden"
+																	th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}" />
+															</div>
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<!-- Botón de Enviar -->
+									<button type="submit" class="btn btn-primary mt-4">Guardar Configuración</button>
+								</form>
+
+							</div>
+						</div>
+					</fieldset>
+				</div>
                 <div id="reglas-tab1" class="" style="display:none;" for="2">
                     <fieldset class="border p-2">
                         <legend class="float-none w-auto p-2">Reglas de Asignacion</legend>
@@ -616,6 +728,6 @@
         <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
- 
- 
+
+
 </html>
