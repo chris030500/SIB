@@ -544,6 +544,48 @@
 				</div>
 			</div>
 			<!-- fin adjuntos-->
+			<!--Modal Detalle de Gestiones-->
+			<div class="modal fade" id="modalRegistroGestiones" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-dialog-centered modal-xl">
+					<div class="modal-content">
+							<div class="modal-body">
+								<div id="divRegistroGestiones" style="margin-top : 15px ">
+									
+										<div class="modal-header">
+											<legend class="float-none w-auto p-2 modal-title">Generales Asignacion de Gestiones</legend>
+											<button type="button" class="btn-close" onclick="cerrarModalAlertas('modalRegistroGestiones')"
+											data-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+										<div class="row" style="margin-top : 15px ">
+											<div class="table-responsive">
+												<table class="table table-sm" id="tblRegistroGestiones">
+													<thead>
+														<tr>
+															<th>Sucursal</th>
+															<th>Registros Asignados</th>
+															<th>Fecha Asignacion</th>
+															<th>Fecha de Vencimiento</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody>
+													</tbody>
+												</table>
+											</div>
+										</div>
+										</div>
+										<div class="modal-footer">
+											<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+											onclick="cerrarModalAlertas('modalRegistroGestiones')" data-dismiss="modal"
+											class="btn btn-secondary">Salir</button>
+										</div>
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+			<!--Modal Detalle de Gestiones-->
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">

@@ -1048,11 +1048,24 @@ function cargatblProcesoG(){
 					+ opt.pk_id_gestion
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-file-play-fill'></i></button>";
+					
+					var btnGestiones= " <button class='btn btn-warning btn-sm' tabindex='0' "
+					+ " title='Ver Asignacion de Gestion.' aria-controls='table-datatable' type='button'"
+					+ " onclick='mostrarGestiones()' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-journals'></i></button>";
 
-      				tblProcesoGestion.row.add([opt.vc_nombre_proceso, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso,opt.vc_hora_inicio_proceso,opt.vc_hora_fin_proceso,opt.vc_periodo_ejecucion_proceso, btnsActualizar+btnEjecutar]).draw(false);
-	
-				}
-	
+
+					
+      				tblProcesoGestion.row.add([opt.vc_nombre_proceso
+      				, opt.vc_dia_inicio_proceso
+      				, opt.vc_dia_fin_proceso
+      				,opt.vc_hora_inicio_proceso
+      				,opt.vc_hora_fin_proceso
+      				,opt.vc_periodo_ejecucion_proceso
+      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones:btnsActualizar+btnEjecutar]).draw(false); 
+      		}
 		
    		});
   	}); 	
@@ -1105,5 +1118,47 @@ function ejecutarDatosProceso(idProceso){
 			}
 	});
 
+}
+
+var obtGeneralesGestion = "obtGeneralesGestion";
+function mostrarGestiones(){
+	 url = getAbsolutePath() + obtGeneralesGestion;
+ 	$.getJSON(url, {}, function(data) {
+   	tblRegistroGestiones.clear().draw();
+   		$.each(data, function(idx, opt) {
+			   
+			   var btnGestiones= " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ver Asignacion de Gestion.' aria-controls='table-datatable' type='button'"
+					+ " onclick='descargarArchivoAsignaciones("
+					+ opt.fk_id_sucursal
+					+ ")' id="
+					+ opt.fk_id_sucursal
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-download'></i></button>";
+			   
+      				tblRegistroGestiones.row.add([(opt.fk_id_sucursal == 100)?'CALL CENTER':opt.vc_nombresucursal
+      				, opt.vc_total
+      				, opt.dt_fechainicio
+      				,opt.dt_fechafin
+      				,btnGestiones]).draw(false); 
+      		
+		
+   		});
+  	});
+	
+	 $("#modalRegistroGestiones").modal("show");
+	
+}
+
+function descargarArchivoAsignaciones(){
+	
+}
+
+
+/**
+ * Modal de alertas
+ */
+function cerrarModalAlertas(valor) {
+	$('#' + valor).modal('hide');
 }
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 
  */
@@ -6,6 +7,7 @@ var tblclasificacionBaseTable;
 var tblDetalle;
 var tblAdjuntos;
 var tblProcesoGestion;
+var tblRegistroGestiones;
 $(document).ready(function() {
 	
 	tblConfiguracion = $("#tblConfiguracion").DataTable({
@@ -56,5 +58,16 @@ $(document).ready(function() {
 			'aTargets': [-1] /* 1st one, start by the right */
 		}]
 	});
+	
+	tblRegistroGestiones = $("#tblRegistroGestiones").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
 	
 });

@@ -54,6 +54,7 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.Generac
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.RegistrosAsignacionService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -136,6 +137,9 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private ConfiguracionSistemaService configuracionSistemaService;
+	
+	@Autowired
+	private RegistrosAsignacionService registrosAsignacionService;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -952,6 +956,18 @@ public class indexOfertasAutoController {
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
+	}
+	
+	@GetMapping("/obtGeneralesGestion")
+	public ResponseEntity<?> obtGeneralesGestion(){		
+		try {
+			
+			return ResponseEntity.ok(registrosAsignacionService.obtRegistroParametros());
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
 	}
 	
 

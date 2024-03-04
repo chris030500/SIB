@@ -50,8 +50,12 @@ public class ProcesoGestion {
 	private LocalDate dt_fecha_ejecucion;
 	
 	@Column(name = "I_VISIBLE", 
-			columnDefinition = "TINYINT(1) DEFAULT NULL")
+			columnDefinition = "TINYINT(1) DEFAULT 0")
 	private int i_visible;
+	
+	@Column(name = "I_REPORTE", 
+			columnDefinition = "TINYINT(1) DEFAULT 0")
+	private int i_reporte;
 
 	public int getPk_id_gestion() {
 		return pk_id_gestion;
@@ -133,4 +137,11 @@ public class ProcesoGestion {
 		this.i_visible = i_visible;
 	}
 
+	public int getI_reporte() {
+		return i_reporte;
+	}
+
+	public void setI_reporte(int i_reporte) {
+		this.i_reporte = i_reporte;
+	}
 }
