@@ -66,23 +66,20 @@
 									<h2 class="mb-4" th:if="${permiso_admin == 1}">Configuración del Sistema</h2>
 									<div class="table-responsive" th:if="${permiso_admin == 1}">
 										<table class="table table-bordered">
-											<tbody>
+											<tbody >
 												<tr th:each="parametro, parametroStat : ${lista_param_conf}"
 													th:if="${parametro.i_tipo == 1}">
 													<td th:text="${parametro.descripcionParametro}"></td>
 													<td>
 														<div th:switch="${parametro.vc_des_tipo}">
 															<input th:case="'number'" type="number" class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
 																th:required="true">
 
 															<input th:case="'text'" type="text" class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+															
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
@@ -90,16 +87,12 @@
 
 															<input th:case="'password'" type="password"
 																class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
 																th:required="true">
 
 															<select th:case="'select'" class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
 																th:name="${parametro.vc_nombre_campo}"
 																th:required="true">
 																<option value="1"
@@ -120,32 +113,37 @@
 
 															<div th:case="'search'" class="col-sm-12">
 																<input type="search" class="form-control"
-																	th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
 																	autocomplete="off" placeholder="Buscar Usuario"
 																	th:name="${parametro.vc_nombre_campo}"
-																	th:required="true"
-																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}"
 																	onchange="handleSearchInput(this)">
 
 																<datalist
-																	th:id="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo}">
 																	<option th:each="usuario : ${usuarios}"
 																		th:value="${usuario.vc_nombre_usuario}"
 																		th:text="${usuario.vc_nombre_usuario}"></option>
 																</datalist>
 
-																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	class="contenedor-opciones list-group"
-																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}" class="contenedor-opciones list-group" 
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+																	 <!-- Iterar sobre las opciones y crear un div para cada una -->
+        															
+        															<div th:if="${parametro.configuracion != null and not #strings.isEmpty(parametro.configuracion)}"  th:each="opcion : ${parametro.configuracion.split(';')}"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+            															<span th:text="${#strings.trim(opcion)}"></span>
+            															<button type="button" class="btn btn-sm btn-danger ms-2" onclick="borrarOpcion(this)">X</button>
+          															  <!-- Puedes agregar estilos, botones de eliminación, etc., según tus necesidades -->
+        															</div>
+        														
 																</div>
 
-																<input type="hidden"
-																	th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}" />
+																<input type="hidden" th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" 
+																th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" th:value="${#strings.trim(parametro.configuracion)}"/>
 
-																<p th:id="'error-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																<p th:id="'error-' + ${parametro.vc_nombre_campo}"
 																	style="color: red; display: none; font-size: small; padding-left: 5px;">
 																	<i><b>Campo requerido</b></i>
 																</p>
@@ -159,23 +157,20 @@
                                     <h2 class="mb-4" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">Datos conexión al servicio de Calixta</h2>
                                     <div class="table-responsive" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
                                         <table class="table table-bordered">
-                                            <tbody>
-                                                <tr th:each="parametro, parametroStat : ${lista_param_conf}"
+                                            <tbody >
+												<tr th:each="parametro, parametroStat : ${lista_param_conf}"
 													th:if="${parametro.i_tipo == 2}">
 													<td th:text="${parametro.descripcionParametro}"></td>
 													<td>
 														<div th:switch="${parametro.vc_des_tipo}">
 															<input th:case="'number'" type="number" class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
 																th:required="true">
 
 															<input th:case="'text'" type="text" class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+															
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
@@ -183,71 +178,66 @@
 
 															<input th:case="'password'" type="password"
 																class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
 																autocomplete="off" placeholder="Buscar Usuario"
 																th:name="${parametro.vc_nombre_campo}"
 																th:value="${parametro.configuracion}"
 																th:required="true">
 
-															<select th:case="'select' and ${parametro.pkParametro == 3}"
-																class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+															<select th:case="'select'" class="form-control"
 																th:name="${parametro.vc_nombre_campo}"
 																th:required="true">
 																<option value="1"
-																	th:selected="${parametro.configuracion == '1'}">Tipo
-																	Naturales</option>
+																	th:selected="${parametro.configuracion == '1'}"
+																	th:if="${parametro.pkParametro == 3}">Tipo Naturales
+																</option>
 																<option value="2"
-																	th:selected="${parametro.configuracion == '2'}">Tipo
-																	Días Hábiles</option>
-															</select>
-
-															<select th:case="'select' and ${parametro.pkParametro == 4}"
-																class="form-control"
-																th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																th:name="${parametro.vc_nombre_campo}"
-																th:required="true">
+																	th:selected="${parametro.configuracion == '2'}"
+																	th:if="${parametro.pkParametro == 3}">Tipo Días
+																	Hábiles</option>
 																<option value="1"
-																	th:selected="${parametro.configuracion == '1'}">SI
-																</option>
+																	th:selected="${parametro.configuracion == '1'}"
+																	th:if="${parametro.pkParametro == 4}">SI</option>
 																<option value="2"
-																	th:selected="${parametro.configuracion == '2'}">NO
-																</option>
+																	th:selected="${parametro.configuracion == '2'}"
+																	th:if="${parametro.pkParametro == 4}">NO</option>
 															</select>
 
 															<div th:case="'search'" class="col-sm-12">
 																<input type="search" class="form-control"
-																	th:id="'searchInput-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:list="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
 																	autocomplete="off" placeholder="Buscar Usuario"
 																	th:name="${parametro.vc_nombre_campo}"
-																	th:required="true"
-																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}"
 																	onchange="handleSearchInput(this)">
 
 																<datalist
-																	th:id="'opciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo}">
 																	<option th:each="usuario : ${usuarios}"
 																		th:value="${usuario.vc_nombre_usuario}"
 																		th:text="${usuario.vc_nombre_usuario}"></option>
 																</datalist>
 
-																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	class="contenedor-opciones list-group"
-																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}">
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}" class="contenedor-opciones list-group" 
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+																	 <!-- Iterar sobre las opciones y crear un div para cada una -->
+        															
+        															<div th:if="${parametro.configuracion != null and not #strings.isEmpty(parametro.configuracion)}" th:each="opcion : ${parametro.configuracion.split(';')}"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+            															<span th:text="${#strings.trim(opcion)}"></span>
+            															<button type="button" class="btn btn-sm btn-danger ms-2" onclick="borrarOpcion(this)">X</button>
+          															  <!-- Puedes agregar estilos, botones de eliminación, etc., según tus necesidades -->
+        															</div>
+        														
 																</div>
 
-																<p th:id="'error-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
+																<input type="hidden" th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" 
+																th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" th:value="${#strings.trim(parametro.configuracion)}"/>
+
+																<p th:id="'error-' + ${parametro.vc_nombre_campo}"
 																	style="color: red; display: none; font-size: small; padding-left: 5px;">
 																	<i><b>Campo requerido</b></i>
 																</p>
-																<input type="hidden"
-																	th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}"
-																	th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo} + '-' + ${parametro.pkParametro} + '-' + ${parametroStat.index}" />
 															</div>
 														</div>
 													</td>
@@ -257,7 +247,7 @@
 									</div>
 
 									<!-- Botón de Enviar -->
-									<button type="submit" class="btn btn-primary mt-4">Guardar Configuración</button>
+									<button type="submit" onclick="previoGuardar(event)" class="btn btn-primary mt-4">Guardar Configuración</button>
 								</form>
 
 							</div>

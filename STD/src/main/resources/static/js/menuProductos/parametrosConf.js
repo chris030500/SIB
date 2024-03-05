@@ -95,6 +95,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		})
 			.then(response => {
 				if (response.ok) {
+					var divPantTabs = document.getElementById('params-tab1');
+					var inputSearch = divPantTabs.querySelectorAll('.table-bordered input[type="search"]');
+
+					// Iterar sobre los elementos input search y establecer el valor a una cadena vacía
+					inputSearch.forEach(function(searchInput) {
+   						 searchInput.value = '';
+					});
 					swal(
 						'¡Guardado exitoso!',
 						"Los datos se han guardado correctamente.",
@@ -104,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					setTimeout(function() {
 						swal.close(); // Cierra el SweetAlert
 					}, 2000);
+					location.reload();
 				} else {
 					swal(
 						'Error!',
@@ -135,6 +143,34 @@ var contenedorId = "";
 var contenedor = "";
 var opcionesSeleccionadasId = "";
 var opcionesSeleccionadas = "";
+var opcionesGuardadas="";
+
+function previoGuardar(event){
+
+	var divPantTabs = document.getElementById('params-tab1');
+	var inputSearch = divPantTabs.querySelectorAll('.table-bordered input[type="search"]');
+	var inputHidden = divPantTabs.querySelectorAll('.table-bordered input[type="hidden"]');
+
+	// Iterar sobre los elementos input search
+	inputSearch.forEach(function(searchInput) {
+    // Obtener el ID del input search
+    var searchInputId = searchInput.getAttribute('data-opciones-id');
+
+    // Encontrar el elemento correspondiente en la lista de input hidden
+    var hiddenInput = Array.from(inputHidden).find(function(hidden) {
+        return hidden.id === searchInputId;
+    });
+
+    // Verificar si se encontró un elemento coincidente
+    if (hiddenInput) {
+        // Realizar la actualización, por ejemplo, asignar el valor del input hidden al input search
+        searchInput.value = hiddenInput.value;
+    }
+});
+	
+}
+
+
 
 function handleSearchInput(input) {
     contenedorId = input.getAttribute('data-contenedor-id');
@@ -168,44 +204,43 @@ function handleSearchInput(input) {
             return;
         }
 
-        var opcionesGuardadas = opcionesSeleccionadas.value.trim();
+        opcionesGuardadas = opcionesSeleccionadas.value.trim();
 
         if (opcionesGuardadas !== '') {
             opcionesGuardadas += '; ';
         }
         opcionesGuardadas += selectedOption;
 
-        opcionesSeleccionadas.value = opcionesGuardadas;
+        opcionesSeleccionadas.value = opcionesGuardadas.replace(/;;/g, ';').replace(/^;/, '');;
 
         console.log(opcionesGuardadas);
     }
 }
 
 function borrarOpcion(elemento) {
-    if (!elemento || !elemento.parentNode) {
-        console.error('Elemento o elemento padre no encontrado');
-        return;
-    }
-
+		
+	borrarCargaInicial(elemento);
     var contenedorId = elemento.parentNode.getAttribute('data-contenedor-id'); // Obtener ID del contenedor desde el padre del botón
-
-    if (!contenedorId) {
-        console.error('ID del contenedor no encontrado');
-        return;
-    }
-
-    var opcionBorrada = elemento.parentNode.textContent.trim().replace('X', ''); // Eliminar la X de la opción
     elemento.parentNode.remove();
-
-    if (!opcionesSeleccionadas) {
-        console.error('Campo oculto no encontrado');
-        return;
-    }
 
     var opciones = document.querySelectorAll(`#${contenedorId} > .list-group-item`);
     var opcionesActualizadas = Array.from(opciones).map(opcion => opcion.textContent.trim().replace('X', '')).join('; ');
 
     opcionesSeleccionadas.value = opcionesActualizadas;
 
-    console.log(opcionesActualizadas);
+}
+
+function borrarCargaInicial(elemento){
+
+		var opcionesId = $(elemento).closest('.col-sm-12').find('input[type="search"]').data('opciones-id');
+		var valorSpan = $(elemento).siblings('span').text();
+		
+		// Obtén las opciones seleccionadas
+		var opciones = document.getElementById(opcionesId).value;
+
+		// Elimina el valor del span de las opciones seleccionadas
+		opciones = opciones.replace(valorSpan, '');
+
+		// Actualiza el valor del input hidden con las opciones modificadas
+		document.getElementById(opcionesId).value = opciones.trim().replace(/;;/g, ';').replace(/^;/, '');
 }
