@@ -106,29 +106,27 @@ public class JasperReportController {
     					byte[] responseBody = response.getBody();
     					
     					//exportar reporte 
-    					String fechaCreacion = null;
+    					//String fechaCreacion = null;
     					StringBuilder stringBuilder = null;
     					ContentDisposition contentDisposition = null;
     					HttpHeaders h2 = new HttpHeaders();
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
     						//fecha de creacion
-        					fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+        					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
         				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
         				    contentDisposition = ContentDisposition.builder("inline")
         				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc).append("_")
-        				    .append(fechaCreacion)
+        				    .append(identificadorDoc)
         				    .append(tipoDocumento)
         				    .toString())
         				    .build();
         				    h2.setContentDisposition(contentDisposition);
     					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
-    						fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+    						//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
         				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
         				    contentDisposition = ContentDisposition.builder("attachment")
         				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc).append("_")
-        				    .append(fechaCreacion)
+        				    .append(identificadorDoc)
         				    .append(tipoDocumento)
         				    .toString())
         				    .build();
@@ -141,7 +139,7 @@ public class JasperReportController {
     					    		
     	
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
     }
@@ -200,16 +198,16 @@ public class JasperReportController {
 	    					archivoOutputStream.write(responseBody);
 	    					
 	    					archivoOutputStream.close();
-	    					System.out.println("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
+	    					logger.error("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
 	    					
 						} catch (Exception e) {
-							System.out.println("Error:"+e.getMessage());
+							logger.error(e.getMessage());
 						}
     				
     					
 
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
     }
@@ -248,7 +246,7 @@ public class JasperReportController {
 			return responseBody;
 			
 		} catch (Exception e) {
-			System.out.println("Error:"+e.getMessage());
+			logger.error(e.getMessage());
 			return null;
 		}
 	}

@@ -724,6 +724,10 @@ function peticionPost(metodo, metodoUrl) {
 				}else if(metodo == 4){
 					cargatblProcesoG();
 					limpiarParametros();	
+				}else if(metodo == 5){
+		
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[1]);
+					window.focus();
 				}
 			});
 
@@ -1149,9 +1153,10 @@ function mostrarGestiones(){
 	 $("#modalRegistroGestiones").modal("show");
 	
 }
-
-function descargarArchivoAsignaciones(){
-	
+ var reporteGestionesAsignadas = "reporteGestionesAsignadas?idSucursal="
+function descargarArchivoAsignaciones(sucursal){
+	url = getAbsolutePath() + reporteGestionesAsignadas+sucursal;
+	peticionPost(5, url);
 }
 
 

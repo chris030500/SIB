@@ -38,6 +38,7 @@ public class Constantes {
     // Ejemplo de constantes para descripcion de Mensajes
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
     public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
+    public static final String PROCESO_OK = "Se realizo el proceso correctamente.";
     
     
     
@@ -51,6 +52,11 @@ public class Constantes {
     public static final String USUARIOS_SMS = "usuarioSMS";
     public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
     public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
+    
+    //PROPIEDAD DEL CONTROLLER DEL REPORTE
+    public static final String CONTROLLER_JASPER_CONF = "generarReporte";
+    //NOMBRES DE REPORTES
+    public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     
 
     private Constantes() {

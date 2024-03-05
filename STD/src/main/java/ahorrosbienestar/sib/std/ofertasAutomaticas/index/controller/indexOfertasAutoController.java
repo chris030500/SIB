@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
@@ -57,6 +58,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestio
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.RegistrosAsignacionService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -83,7 +86,6 @@ public class indexOfertasAutoController {
 	private static final String nombrePantalla = "Ofertas Automaticas";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
-	//private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
 	private static final String MENSAJE_DE_ERROR = "Error";
 	
 
@@ -140,6 +142,12 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private RegistrosAsignacionService registrosAsignacionService;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -967,6 +975,33 @@ public class indexOfertasAutoController {
 			logger.info("--" + e.getMessage());
 			return null;
 		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@PostMapping("/reporteGestionesAsignadas")
+	public ResponseEntity<?> reporteOA(
+			@RequestParam("idSucursal") Integer idSucursal){
+		
+		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		try {
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_ASIGNACION_X_SUCURSAL);
+			
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros=?IDSUCURSAL="
+					+idSucursal+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+idSucursal;
+			respuesta.add(Constantes.PROCESO_OK);
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+				
 		
 	}
 	
