@@ -78,16 +78,11 @@ public class indexOfertasAutoController {
 
 	// Constantes Campañas VIP
 	private final static int CAMPANAS_VIP = 3;
-	private final static String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
 	
 	// Constante Activo
 	private final static int ACTIVO = 1;
 	
-	private static final String nombrePantalla = "Ofertas Automaticas";
-	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
-	private static final String MENSAJE_DE_ERROR = "Error";
-	
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -176,7 +171,7 @@ public class indexOfertasAutoController {
 			model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
-			rutaDireccion = rutaError;
+			rutaDireccion = Constantes.RUTA_ERROR;
 		}
 		return rutaDireccion;
 	 }catch(Exception e) {
@@ -643,66 +638,66 @@ public class indexOfertasAutoController {
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			System.out.println(idBase);
+			logger.info("proceso a ejecutar:"+idBase);
+			
 			switch(idBase) {
 			case 1:
 				try {
-					System.out.print("Base de Nomina");
 					nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Base Nomina");
+					respuesta.add(Constantes.MENSAJE_BASE_NOMINA);
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 2:
 				try {
 					fidelidadTareaConfiguracion.ejecutarFidelidad();			
-					respuesta.add("Se proceso Base Fidelidad");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIDAD);
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 4:
 				try {
-					prospectorTareaConfiguracion.procesarProspector();
-					respuesta.add("Se proceso Base Prospector");
+					prospectorTareaConfiguracion.procesarProspector();					
+					respuesta.add(Constantes.MENSAJE_BASE_PROSPECTOR);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 3:
 				try {
-					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
-					respuesta.add("Se proceso Base Campañas VIP");
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();					
+					respuesta.add(Constantes.MENSAJE_BASE_CAMPANIA_VIP);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 5:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
-					respuesta.add("Se proceso Base Fidelizacion Nomina");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_NOMINA);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 6:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
-					respuesta.add("Se proceso Base Fidelizacion Renovado");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_RENOVADO);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -710,7 +705,7 @@ public class indexOfertasAutoController {
 			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -822,7 +817,7 @@ public class indexOfertasAutoController {
 	public int validarAcceso(String usuarioLogin) {
 
 		usuario = iUsuarioRepository.findByNombreUsuario(usuarioLogin);
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(Constantes.NOMBRE_PANTALLA_OFERTAS));
 		
 		
 	}
@@ -929,7 +924,6 @@ public class indexOfertasAutoController {
 			){
 	
 		logger.info("/ejecutarDatosProceso");
-		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			switch(idProceso) {
@@ -937,11 +931,10 @@ public class indexOfertasAutoController {
 				try {
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
 					gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
-					//nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Asignacion Gestiones");
+					respuesta.add(Constantes.ASIGNACION_OK);
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					logger.error("Error"+e.getMessage());
 				}
 				
 				break;
@@ -949,10 +942,10 @@ public class indexOfertasAutoController {
 				try {
 					logger.debug("Ejecutar proceso Generacion SMS.");
 					generacionSMSConfiguracion.procesarSMS(idProceso);
-					respuesta.add("Se Generacion SMS");
+					respuesta.add(Constantes.SMS_OK);
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					logger.error("Error"+e.getMessage());
 				}
 				
 				break;
@@ -993,7 +986,7 @@ public class indexOfertasAutoController {
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros=?IDSUCURSAL="
 					+idSucursal+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+idSucursal;
-			respuesta.add(Constantes.PROCESO_OK);
+			respuesta.add(Constantes.REPORTE_OK);
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {

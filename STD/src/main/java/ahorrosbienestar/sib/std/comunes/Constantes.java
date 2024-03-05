@@ -38,7 +38,11 @@ public class Constantes {
     // Ejemplo de constantes para descripcion de Mensajes
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
     public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
-    public static final String PROCESO_OK = "Se realizo el proceso correctamente.";
+    public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
+    
+    //Mensajes Bases de Gestion
+    public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
+    public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
     
     
     
@@ -58,7 +62,16 @@ public class Constantes {
     //NOMBRES DE REPORTES
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     
-
+    //NOMBRE DE PANTALLAS
+    public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
+    
+    //MENSAJES DE BASES
+    public static final String MENSAJE_BASE_NOMINA = "Se proceso Base Nomina.";
+    public static final String MENSAJE_BASE_FIDELIDAD = "Se proceso Base Fidelidad.";
+    public static final String MENSAJE_BASE_PROSPECTOR = "Se proceso Base Prospector.";
+    public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
+    public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
+    public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
     private Constantes() {
         
     }
