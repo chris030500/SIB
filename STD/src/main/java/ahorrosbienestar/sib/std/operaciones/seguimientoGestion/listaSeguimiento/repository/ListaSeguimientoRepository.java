@@ -94,6 +94,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " ,FK_ID_SUCURSAL"
 			+ " ,VC_NOMBRESUCURSAL"
 			+ " ,I_BLOQUEO"
+			+ " ,VC_NOMBRE_USUARIO"
 			+ " FROM SIB.VW_ASIGNACION_OFERTAS"
 			+ " WHERE VC_NOMBRECOMPLETO = :nombre"
 			+ " OR VC_CODIGO_OFERTA = :oferta"

@@ -151,7 +151,7 @@ function llenarTablaSeguimiento(condicion) {
 					opt.fechafin,
 					opt.v_valor,
 					opt.vc_nombresucursal,
-					"",
+					opt.vc_usuario,
 					btnEditar
 				]).draw(false);
 			});
