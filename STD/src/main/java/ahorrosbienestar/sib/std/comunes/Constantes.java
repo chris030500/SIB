@@ -1,57 +1,78 @@
 package ahorrosbienestar.sib.std.comunes;
 
 public class Constantes {
-	private static String REPORT_FOLDER= "reports";
-	private static String JASPER = ".jasper";
-	private static String REPORTE_PDF = "PDF";
-	private static String REPORTE_EXCEL = "EXCEL";
-	private static String DB_URL = "http://10.150.102.82:8080/jasperserver";
-	private static String USR_NAME = "juan.trejo";
-	private static String DB_PASS = "Bienestar99";
 	
-
+	//Constantes Rutas de Acceso
+	public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
+	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
+	
+	public static final String RUTA_ERROR = "errores/error_403";
+	
+	//Constantes de usuarios
+	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
+	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
 	
 	
-	public static String getDB_URL() {
-		return DB_URL;
-	}
-	public static void setDB_URL(String dB_URL) {
-		DB_URL = dB_URL;
-	}
-	public static String getUSR_NAME() {
-		return USR_NAME;
-	}
-	public static void setUSR_NAME(String uSR_NAME) {
-		USR_NAME = uSR_NAME;
-	}
-	public static String getDB_PASS() {
-		return DB_PASS;
-	}
-	public static void setDB_PASS(String dB_PASS) {
-		DB_PASS = dB_PASS;
-	}
-	public static String getREPORT_FOLDER() {
-		return REPORT_FOLDER;
-	}
-	public static void setREPORT_FOLDER(String rEPORT_FOLDER) {
-		REPORT_FOLDER = rEPORT_FOLDER;
-	}
-	public static String getJASPER() {
-		return JASPER;
-	}
-	public static void setJASPER(String jASPER) {
-		JASPER = jASPER;
-	}
-	public static String getREPORTE_PDF() {
-		return REPORTE_PDF;
-	}
-	public static void setREPORTE_PDF(String rEPORTE_PDF) {
-		REPORTE_PDF = rEPORTE_PDF;
-	}
-	public static String getREPORTE_EXCEL() {
-		return REPORTE_EXCEL;
-	}
-	public static void setREPORTE_EXCEL(String rEPORTE_EXCEL) {
-		REPORTE_EXCEL = rEPORTE_EXCEL;
-	}
+	//Constantes de estatus
+	public static final int ACTIVO = 1;
+	
+	//Constantes tipo de Base
+	public static final int FIDELIDAD = 2;
+	public static final int CAMPANAS_VIP = 3;
+	
+	//Constante mensajes y propiedades 
+	public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
+	
+	// constantes logger
+	public static final String MENSAJE_DE_ERROR = "Error";
+	
+	// Ejemplo de constantes para tipo de Mensaje
+    public static final String MENSAJE_ERROR = "error";
+    public static final String MENSAJE_OK = "success";
+    
+    //Identificar de mensaje
+    public static final String TEXTO_MNS = "mensaje";
+    public static final String TIPO_MNS = "tipo";
+    
+    
+    // Ejemplo de constantes para descripcion de Mensajes
+    public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
+    public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
+    public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
+    
+    //Mensajes Bases de Gestion
+    public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
+    public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
+    
+    
+    
+    // Ejemplo de constantes para descripcion de Errores
+    public static final String DESC_ERROR_ESTATUS_REGLA = "Solo se permite tener una Regla de Asignacion Activa.";
+    
+    //PERMISOS DE PANTALLAS
+    public static final String USUARIOS_DESBLOQUEO = "usuarioDesbloqueo";
+    public static final String USUARIOS_ADMIN_OFERTAS = "usuarioAdmin";
+    public static final String USUARIOS_REGLAS_ASIGNACION = "usuarioReglasAsignacion";
+    public static final String USUARIOS_SMS = "usuarioSMS";
+    public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
+    public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
+    
+    //PROPIEDAD DEL CONTROLLER DEL REPORTE
+    public static final String CONTROLLER_JASPER_CONF = "generarReporte";
+    //NOMBRES DE REPORTES
+    public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
+    
+    //NOMBRE DE PANTALLAS
+    public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
+    
+    //MENSAJES DE BASES
+    public static final String MENSAJE_BASE_NOMINA = "Se proceso Base Nomina.";
+    public static final String MENSAJE_BASE_FIDELIDAD = "Se proceso Base Fidelidad.";
+    public static final String MENSAJE_BASE_PROSPECTOR = "Se proceso Base Prospector.";
+    public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
+    public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
+    public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
+    private Constantes() {
+        
+    }
 }

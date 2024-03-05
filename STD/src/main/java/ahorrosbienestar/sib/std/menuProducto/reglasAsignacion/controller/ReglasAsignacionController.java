@@ -2,7 +2,9 @@ package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -40,10 +42,12 @@ public class ReglasAsignacionController {
 	
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-	
+
 	@Autowired
 	private ParametrosReglasService  parametrosReglasService;
 	
+	//@Autowired
+	//private ConstantesParametrosService constantesParametrosService;
 	
 	@GetMapping("/obtDatosReglasAsignacion")
 	public ResponseEntity<List<ReglasAsignacion>> obtDatosReglasAsignacion(Model model) {
@@ -62,8 +66,13 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "estatus") Integer estatus
 			){
 		logger.info("/cambiarEstatusRegla");
+		
+		
 		String mensaje ="Actualizo Estatus Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String tipo ="success";
+	
+		
+		Map<String, Object> respuesta = new HashMap<>();
 		try {
 			
 			if((estatus == 1) && (reglasAsignacionService.existeActivo() == 0)) {
@@ -99,14 +108,17 @@ public class ReglasAsignacionController {
 				
 				reglasAsignacionService.save(editarRegla.get());
 			}else {
-				mensaje = "Cuenta con un proceso de Asignacion Activo.";
+				mensaje = "Solo se permite tener una Regla de Asignacion Activa.";
+				tipo ="error";
 			} 
 				
-			respuesta.add(mensaje);
+			respuesta.put("mensaje",mensaje);
+			respuesta.put("tipo",tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put("mensaje",e.getMessage());
+			respuesta.put("tipo","error");
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -238,6 +250,5 @@ public class ReglasAsignacionController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-	
 
 }

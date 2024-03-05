@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
@@ -50,6 +51,10 @@ public class ParametrosConfigController {
 	@Autowired
 	private UsuarioService usuarioService;
 	
+	@Autowired
+	private ConfiguracionSistemaService configuracionSistemaService;
+	
+	
 	private int catTipoEstatus = 16;
 	private int catTipoComodines = 17;
 	private int catTipoAsignacion = 21;
@@ -61,6 +66,7 @@ public class ParametrosConfigController {
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion = "";
 	List<Usuario> usuario = null;
+
 
 	@GetMapping("/configuracion")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -83,15 +89,12 @@ public class ParametrosConfigController {
 				model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
 				model.addAttribute("bases", bases);
 				model.addAttribute("usuarios", usuarios);
-				
+				model.addAttribute("permiso_desbloqueo",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_DESBLOQUEO,userDetails.getUsername()));
+				model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
+				model.addAttribute("permiso_reglas",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_REGLAS_ASIGNACION,userDetails.getUsername()));
+				model.addAttribute("permiso_admin_sms",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_SMS,userDetails.getUsername()));
 				model.addAttribute("lista_param_conf",configuraciones);
 				
-				//int i = 1;
-				//for (ConfiguracionSistema configuracion : configuraciones) {
-					//model.addAttribute("param_" + i, configuracion.getConfiguracion());
-					//i++;
-				//}
-
 				rutaDireccion = "menuProductos/inicioParametros";
 			} else {
 				rutaDireccion = rutaError;

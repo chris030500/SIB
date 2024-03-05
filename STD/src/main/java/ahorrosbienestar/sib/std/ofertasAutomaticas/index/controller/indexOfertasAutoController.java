@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,8 +35,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
@@ -53,8 +55,11 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.Generac
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.RegistrosAsignacionService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -73,16 +78,11 @@ public class indexOfertasAutoController {
 
 	// Constantes Campañas VIP
 	private final static int CAMPANAS_VIP = 3;
-	private final static String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
 	
 	// Constante Activo
 	private final static int ACTIVO = 1;
 	
-	private static final String nombrePantalla = "Ofertas Automaticas";
-	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
-	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
-	private static final String MENSAJE_DE_ERROR = "Error";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -132,6 +132,17 @@ public class indexOfertasAutoController {
 	@Autowired
 	private GeneracionSMSConfiguracion generacionSMSConfiguracion;
 	
+	@Autowired
+	private ConfiguracionSistemaService configuracionSistemaService;
+	
+	@Autowired
+	private RegistrosAsignacionService registrosAsignacionService;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -140,8 +151,14 @@ public class indexOfertasAutoController {
 	@GetMapping("/index")
 	public String indexOfertasAuto(Model model) throws IOException {
 	 try {
-		if(validarAcceso()== 1){
-			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		
+		if(validarAcceso(userDetails.getUsername())== 1){
+			Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
@@ -149,9 +166,12 @@ public class indexOfertasAutoController {
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
 			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+			model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_GESTION,userDetails.getUsername()));
+			model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_BASE,userDetails.getUsername()));
+			model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
-			rutaDireccion = rutaError;
+			rutaDireccion = Constantes.RUTA_ERROR;
 		}
 		return rutaDireccion;
 	 }catch(Exception e) {
@@ -618,66 +638,66 @@ public class indexOfertasAutoController {
 		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			System.out.println(idBase);
+			logger.info("proceso a ejecutar:"+idBase);
+			
 			switch(idBase) {
 			case 1:
 				try {
-					System.out.print("Base de Nomina");
 					nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Base Nomina");
+					respuesta.add(Constantes.MENSAJE_BASE_NOMINA);
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 2:
 				try {
 					fidelidadTareaConfiguracion.ejecutarFidelidad();			
-					respuesta.add("Se proceso Base Fidelidad");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIDAD);
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 4:
 				try {
-					prospectorTareaConfiguracion.procesarProspector();
-					respuesta.add("Se proceso Base Prospector");
+					prospectorTareaConfiguracion.procesarProspector();					
+					respuesta.add(Constantes.MENSAJE_BASE_PROSPECTOR);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 3:
 				try {
-					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
-					respuesta.add("Se proceso Base Campañas VIP");
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();					
+					respuesta.add(Constantes.MENSAJE_BASE_CAMPANIA_VIP);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 5:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
-					respuesta.add("Se proceso Base Fidelizacion Nomina");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_NOMINA);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 6:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
-					respuesta.add("Se proceso Base Fidelizacion Renovado");
+					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_RENOVADO);
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
@@ -685,7 +705,7 @@ public class indexOfertasAutoController {
 			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
@@ -794,15 +814,10 @@ public class indexOfertasAutoController {
 		}
 	}
 		
-	public int validarAcceso() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+	public int validarAcceso(String usuarioLogin) {
+
+		usuario = iUsuarioRepository.findByNombreUsuario(usuarioLogin);
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(Constantes.NOMBRE_PANTALLA_OFERTAS));
 		
 		
 	}
@@ -909,7 +924,6 @@ public class indexOfertasAutoController {
 			){
 	
 		logger.info("/ejecutarDatosProceso");
-		String mensaje ="El proceso ha terminado.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
 			switch(idProceso) {
@@ -917,11 +931,10 @@ public class indexOfertasAutoController {
 				try {
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
 					gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
-					//nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Asignacion Gestiones");
+					respuesta.add(Constantes.ASIGNACION_OK);
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					logger.error("Error"+e.getMessage());
 				}
 				
 				break;
@@ -929,10 +942,10 @@ public class indexOfertasAutoController {
 				try {
 					logger.debug("Ejecutar proceso Generacion SMS.");
 					generacionSMSConfiguracion.procesarSMS(idProceso);
-					respuesta.add("Se Generacion SMS");
+					respuesta.add(Constantes.SMS_OK);
 				} catch (Exception e) {
 					respuesta.add("Error:"+e.getMessage());
-					System.out.println("Error"+e.getMessage());
+					logger.error("Error"+e.getMessage());
 				}
 				
 				break;
@@ -944,6 +957,45 @@ public class indexOfertasAutoController {
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
+	}
+	
+	@GetMapping("/obtGeneralesGestion")
+	public ResponseEntity<?> obtGeneralesGestion(){		
+		try {
+			
+			return ResponseEntity.ok(registrosAsignacionService.obtRegistroParametros());
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@PostMapping("/reporteGestionesAsignadas")
+	public ResponseEntity<?> reporteOA(
+			@RequestParam("idSucursal") Integer idSucursal){
+		
+		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		try {
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_ASIGNACION_X_SUCURSAL);
+			
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros=?IDSUCURSAL="
+					+idSucursal+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+idSucursal;
+			respuesta.add(Constantes.REPORTE_OK);
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+				
+		
 	}
 	
 

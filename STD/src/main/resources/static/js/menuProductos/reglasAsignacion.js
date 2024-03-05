@@ -55,25 +55,27 @@ function updateEstatusRegla(idRegla){
 }
 
 function peticionPostRegla(urlServicio, servicio) {
+	
+	Swal.fire({
+    		title: 'Procesando..',
+    		html: 'Espere Por Favor...',
+    		allowOutsideClick: false,
+    		showConfirmButton: false,
+    		onBeforeOpen: () => {
+      			Swal.showLoading();
+    		}
+  	});
+	
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Procesando Información.',
-				html: '<span class="spinner-border"></span>',
-				timer: 500, // tiempo en milisegundos,
-				icon: 'info',
-				timerProgressBar: true,
-				showConfirmButton: false
-		});
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 100);
 		},
 		success: function(respuesta) {
-			swal("",respuesta[0],"success").then(resp => {
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 				if (servicio == 1) {
 					obtTblReglas();
 				}
@@ -85,8 +87,6 @@ function peticionPostRegla(urlServicio, servicio) {
 				if(servicio == 3){
 					idParametro=0;
 				}
-				
-				setTimeout($.unblockUI, 100);
 			});
 
 
@@ -107,7 +107,7 @@ function obtTblParamsAsig(regla){
 		 $.each(data, function(idx, opt) {
 			var botones = "";
 			console.log("registros tblParamsAsig");
-				var btnEditarParams = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle=''"
+				var btnEditarParams = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle=''"
 					+ " title='Actualizar Parametros' data-bs-target='' aria-controls='table-datatable' type='button'"
 					+ " onclick='mostrarFormularioParams("
 					+ opt.pk_parms_regla
@@ -144,9 +144,14 @@ function cerrarModalParams(tipoModal) {
 
 function guardarModalParams() {
 		if(guardarVacioParams() == 0){
-			console.log("registrar datos");
 			
-		  Swal.fire({
+			if(idParametro == 0){
+					  servicioParams(2);//alta de registro 
+			}else{
+					  servicioParams(3);//actualizacion de registro 
+			}
+			
+		  /*Swal.fire({
 			  	title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i>Procesando Información.',
 				html: '<span class="spinner-border"></span>',
 				timer: 1000, // tiempo en milisegundos,
@@ -162,7 +167,7 @@ function guardarModalParams() {
 				  }
 			  }
 			
-		  });
+		  });*/
 			
 			
 		}else{
@@ -280,23 +285,10 @@ function editarParametro(id){
 	obtParams(url);
 }
 
-function obtParams(urlObt){
-	
-		Swal.fire({
-				title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i> Consultando Información.',
-				html: '<span class="spinner-border"></span>',
-				timer: 1000, // tiempo en milisegundos,
-				icon: 'info',
-				timerProgressBar: true,
-				showConfirmButton: false
-		}).then((result) => {
-			if (result.dismiss === Swal.DismissReason.timer) {	
-				$.getJSON(url, {}, function(data) {
-					setTimeout($.unblockUI, 1000);
+function obtParams(urlObt){		
+		$.getJSON(url, {}, function(data) {
 					cargarDatosParams(data);
 				});
-			}
-		});
 	
 }
 

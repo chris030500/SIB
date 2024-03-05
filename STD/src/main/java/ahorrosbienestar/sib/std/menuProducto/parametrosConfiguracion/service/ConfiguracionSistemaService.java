@@ -21,5 +21,10 @@ public class ConfiguracionSistemaService {
 	public void guardarConfig(List<ConfiguracionSistema> configuracion) {
 	      this.configuracionRepository.saveAll(configuracion);
 	}
+
+	public int buscarConfiguracion(String campoParametro, String usuario) {
+		// TODO Auto-generated method stub
+		return this.configuracionRepository.buscarConfiguracion(campoParametro,usuario);
+	}
 	
 }
