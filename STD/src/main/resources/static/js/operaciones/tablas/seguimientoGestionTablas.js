@@ -1,6 +1,7 @@
 // @ts-nocheck
 var tablaFiltro;
 var tablaGestion;
+var tblAlertas;
 
 $(document).ready(function() {
 	tablaFiltro = $("#vistaFiltro").DataTable({
@@ -14,6 +15,16 @@ $(document).ready(function() {
 	});
 
 	tablaGestion = $("#vista-seguimiento").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	tblAlertas = $("#tblAlertas").DataTable({
 		"language": {
 			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},
