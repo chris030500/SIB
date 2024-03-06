@@ -54,6 +54,9 @@ public class ListaSeguimientoModel {
 
 	@Column(name = "I_BLOQUEO")
 	private int i_bloqueo;
+	
+	@Column(name = "VC_NOMBRE_USUARIO")
+	private String vc_usuario;
 
 	public int getI_bloqueo() {
 		return i_bloqueo;
@@ -149,6 +152,14 @@ public class ListaSeguimientoModel {
 
 	public void setVc_nombresucursal(String vc_nombresucursal) {
 		this.vc_nombresucursal = vc_nombresucursal;
+	}
+
+	public String getVc_usuario() {
+		return vc_usuario;
+	}
+
+	public void setVc_usuario(String vc_usuario) {
+		this.vc_usuario = vc_usuario;
 	}
 
 }
