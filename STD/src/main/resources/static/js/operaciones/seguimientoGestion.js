@@ -744,6 +744,10 @@ searchSucursal.addEventListener('input', function() {
  * Fin
  */
 
+/**
+ * cambios para agregar la tabla de vencidas y citas. 
+ * 
+ */
  
  function mostrarDiv(divId) {
         // Ocultar todos los divs
@@ -751,8 +755,58 @@ searchSucursal.addEventListener('input', function() {
             div.style.display = "none";
             //div.classList.remove('show', 'active');
         });
+		if(divId == 'vencidasCita'){
+			listaconsultarCitaVencidos();
+		}
 
         // Mostrar el div seleccionado
         const selectedDiv = document.getElementById(divId);
         selectedDiv.style.display = "block";
     }
+     
+ function listaconsultarCitaVencidos() {
+
+	$.ajax({
+		url: newUrlBase + "buscar_citas_vencidos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("respuesta"+respuesta);
+			cargarTablaAlertas(respuesta.listaCitasVencidas);
+		}, error: function(error) {
+			//console.log(error);
+		}
+	});
+}
+
+function cargarTablaAlertas(datos) {
+	tblAlertas.clear().draw();
+	$.each(datos, function(idx, opt) {
+
+		var btnConfirmar = "<div class='row'><div class='col-sm-6'>"
+			+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+			+ " title='Editar' type='button'"
+			+ " onclick='edtiarSegGestion("
+			+ opt.i_pk_asignacion
+			+ ")' id="
+			+ opt.i_pk_asignacion
+			+ " data-tooltip='Add'>"
+			+ " <i class='bi bi-pencil'></i></button></div>";
+
+		tblAlertas.row.add([
+			opt.i_cliente,
+			opt.vc_nombre_cliente,
+			opt.vc_campania,
+			opt.vc_clasificacion,
+			opt.vc_tipo_alerta,
+			opt.vc_estatus,
+			opt.vc_descripcion_cita,
+			btnConfirmar
+		]).draw(false);
+
+	});
+}
+
+
+ 
+ 
