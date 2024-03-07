@@ -22,6 +22,7 @@ import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.usuarios.service.MicrofinUsuarioService;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -53,6 +54,9 @@ public class ParametrosConfigController {
 	
 	@Autowired
 	private ConfiguracionSistemaService configuracionSistemaService;
+	
+	@Autowired
+	private MicrofinUsuarioService microfinUsuarioService;
 	
 	
 	private int catTipoEstatus = 16;
@@ -89,6 +93,7 @@ public class ParametrosConfigController {
 				model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
 				model.addAttribute("bases", bases);
 				model.addAttribute("usuarios", usuarios);
+				model.addAttribute("puestos",microfinUsuarioService.obtenerPuestos());
 				model.addAttribute("permiso_desbloqueo",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_DESBLOQUEO,userDetails.getUsername()));
 				model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 				model.addAttribute("permiso_reglas",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_REGLAS_ASIGNACION,userDetails.getUsername()));

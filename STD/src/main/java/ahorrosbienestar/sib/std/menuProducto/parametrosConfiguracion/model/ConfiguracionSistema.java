@@ -16,7 +16,7 @@ public class ConfiguracionSistema {
     @Column(name = "VC_DESCRIPCION_PARAMETRO", length = 200)
     private String descripcionParametro;
 
-    @Column(name = "VC_CONFIGURACION", length = 200)
+    @Column(name = "VC_CONFIGURACION", columnDefinition = "LONGTEXT")
     private String configuracion;
     
 	@Column(name = "I_TIPO", columnDefinition = "TINYINT(1)")

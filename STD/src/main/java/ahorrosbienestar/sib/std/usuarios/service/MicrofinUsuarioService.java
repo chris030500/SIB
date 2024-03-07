@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import ahorrosbienestar.sib.std.usuarios.dto.MicrofinUsuarioDTO;
+import ahorrosbienestar.sib.std.usuarios.dto.PuestosMicrofinDTO;
 import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import groovyjarjarantlr4.v4.parse.ANTLRParser.throwsSpec_return;
 import java.sql.ResultSet;
@@ -28,7 +29,7 @@ public class MicrofinUsuarioService {
 	public List<MicrofinUsuarioDTO> obtenerUsuario(int empleadoId) {
 		logger.info("Ejecutando obtenerUsuario: " + empleadoId);
 		try {
-			String sql = "SELECT UsuarioId, EmpleadoID, ClavePuestoID, Nombre, ApPaterno, ApMaterno, NombreCompleto, Clave, Estatus, Correo, SucursalUsuario, Semilla, RFC FROM microfin.USUARIOS WHERE EmpleadoID = ?";
+			String sql = "SELECT UsuarioId, EmpleadoID, ClavePuestoID, Nombre, ApPaterno, ApMaterno, NombreCompleto, Clave, Estatus, Correo, SucursalUsuario, Semilla, RFC FROM CE.TBL_MICROFIN_USUARIOS WHERE EmpleadoID = ?";
 			@SuppressWarnings("deprecation")
 			List<MicrofinUsuarioDTO> ls = jdbcTemplate.query(sql, new Object[] { empleadoId }, new RowMapper<MicrofinUsuarioDTO>() {
 						public MicrofinUsuarioDTO mapRow(ResultSet rs, final int rowNum) throws SQLException {
@@ -58,5 +59,29 @@ public class MicrofinUsuarioService {
 		}
 		return null;
 	}
+	
+	// Obtener el usuario
+	public List<PuestosMicrofinDTO> obtenerPuestos() {
+			
+			try {
+				String sql = "select ClavePuestoID,Descripcion from CE.TBL_MICROFIN_PUESTOS where Estatus = 'V'";
+				@SuppressWarnings("deprecation")
+				List<PuestosMicrofinDTO> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<PuestosMicrofinDTO>() {
+							public PuestosMicrofinDTO mapRow(ResultSet rs, final int rowNum) throws SQLException {
+								PuestosMicrofinDTO e = new PuestosMicrofinDTO();
+								e.setVc_clavePuestoID(rs.getString(1));
+								e.setVc_descripcionPuesto(rs.getString(2));
+								return e;
+							}
+						});
+				//logger.info(ls.get(0).getNombreCompleto());
+				return ls;
+			} catch (Exception e) {
+				// TODO: handle exception
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+			return null;
+		}
 
 }
