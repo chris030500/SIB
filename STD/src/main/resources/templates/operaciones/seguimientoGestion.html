@@ -231,7 +231,7 @@
 														<th>Descripción de la gestión</th>
 														<th>Fecha de registro</th>
 														<th>Fecha de gestión realizada</th>
-														<!--<th id="th-acciones">Acciones</th>-->
+														<th id="th-acciones">Acciones</th>
 													</tr>
 												</thead>
 												<tbody style="text-align: center;">
@@ -368,6 +368,87 @@
 						</div>
 					</div>
 				</div>
+				<div class="modal fade" id="modal-editar" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong> Editar Seguimiento</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalEditar()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<form name="formulario" id="formSeguimientoGestion">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label for="buscar-relacion-modal">Código de acción - Código de
+													resultados:</label><span style="color: red;">*</span>
+												<input type="search" class="form-control" id="buscar-relacion-modal"
+													list="opciones-relacion" autocomplete="off"
+													placeholder="Relación entre códigos">
+												<datalist id="opciones-relacion"></datalist>
+												<p id="validar-relacion"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+													<i><b>Campo requerido</b></i></p>
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="form-group" id="vistaAccionRealizarModal" style="display: none;">
+												<label>Acción a realizar:</label>
+												<b>
+													<p id="accionRealizarModal"></p>
+												</b>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Fecha de gestión realizada:</label><span
+													style="color: red;">*</span>
+												<input class="form-control" type="date" id="fecha-gestion-modal">
+												<p id="validar-fechaGestion-modal"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Fecha de cita:</label><span style="color: red;">*</span>
+												<input class="form-control" type="date" id="fecha-cita-modal" disabled>
+												<p id="validar-segFecha"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Descripción de la gestión:</label><span
+													style="color: red;">*</span>
+												<textarea class="form-control" id="descripcion-gestion-modal"></textarea>
+												<p id="validar-descripcion-modal"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="editarSegGestionG()" data-dismiss="modal"
+									class="btn btn-primary">Guardar</button>
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="cerrarModalEditar()" data-dismiss="modal"
+									class="btn btn-primary">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -377,6 +458,7 @@
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/operaciones/seguimientoGestion.js}"></script>
 		<script th:src="@{/js/operaciones/tablas/seguimientoGestionTablas.js}"></script>
