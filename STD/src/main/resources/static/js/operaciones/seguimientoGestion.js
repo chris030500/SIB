@@ -305,6 +305,7 @@ function datosDeCliente(id) {
  */
 function registrarGestion(dto) {
 	var enviar = JSON.stringify(dto);
+
 	$.ajax({
 		url: newUrlBase + "registro_seguimiento",
 		data: enviar,
@@ -398,6 +399,7 @@ document.addEventListener('click', function(event) {
  */
 let datosRelacion;
 let almacen;
+let datosRelacionModal;
 
 function buscarRelacion() {
 	let searchTerm = document.getElementById('buscar-relacion').value;
@@ -460,16 +462,21 @@ searchInput.addEventListener('change', function() {
 function llenarTablaDeGestiones(datos) {
 	tablaGestion.clear().draw();
 	$.each(datos, function(idx, opt) {
+		var btnEditar = "<button style='margin-right: 10px; background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary btn-icon btn-editar'"
+			+ " onclick='editarSegGestion("
+			+ opt.pk_id_seguimiento_gestion
+			+ ")' id='btnEditar"
+			+ opt.pk_id_seguimiento_gestion
+			+ "'><i class='bi bi-pencil'></i></button>";
 
-		var btnEditar = "<div class='row'><div class='col-sm-6'>"
-			+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
-			+ " title='Editar' type='button'"
-			+ " onclick='edtiarSegGestion("
+		var btnCancelar = "<button style='margin-right: 10px;' class='btn btn-danger btn-icon btn-cancelar'"
+			+ " onclick='cancelarSegGestion("
 			+ opt.pk_id_seguimiento_gestion
-			+ ")' id="
+			+ ")' id='btnCancelar"
 			+ opt.pk_id_seguimiento_gestion
-			+ " data-tooltip='Add'>"
-			+ " <i class='bi bi-pencil'></i></button></div>";
+			+ "'><i class='bi bi-x'></i></button>";
+
+		var btns = "<div class='btn-group'>" + btnEditar + btnCancelar + "</div>";
 
 		tablaGestion.row.add([
 			opt.relacionCodigosModel.accionRealizar.v_valor,
@@ -478,7 +485,7 @@ function llenarTablaDeGestiones(datos) {
 			opt.vc_descripcion,
 			opt.dt_fecha_registro,
 			opt.dt_fecha_gestion_realizada,
-			//btnEditar
+			btns
 		]).draw(false);
 
 	});
@@ -491,19 +498,47 @@ function llenarTablaDeGestiones(datos) {
 /**
  * Mostrar datos de la gestión para poder editar
  */
-function edtiarSegGestion(id) {
+
+let inputFechaCitaModal = document.getElementById("fecha-cita-modal");
+let inputFechaGestionModal = document.getElementById("fecha-gestion-modal");
+let inputRelacionModal = document.getElementById("buscar-relacion-modal");
+let inputDescripcionModal = document.getElementById("descripcion-gestion-modal");
+let inputAccionRealizarModal = document.getElementById("accionRealizarModal");
+let idGestion;
+
+function editarSegGestion(id) {
+	idGestion = id;
 	$.ajax({
 		url: newUrlBase + "datos_gestion?idGestion=" + id,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			//console.log(respuesta.model);
-			/*inputDescripcion.value = respuesta.model.vc_descripcion;
-			inputFechaCita.value = respuesta.model.dt_fecha_cita;
-			inputFechaGestion.value = respuesta.model.dt_fecha_gestion_realizada;*/
+			$('#modal-editar').modal('show');
+			// Ahora asignamos los valores a los elementos del modal
+			datosRelacionModal = almacen.listaRelaciones.find(item => item.pk_id_relacion_codigo == respuesta.model.relacionCodigosModel.pk_id_relacion_codigo);
+			if (datosRelacionModal != undefined) {
+				document.getElementById("vistaAccionRealizarModal").style.display = "block";
+				inputAccionRealizarModal.textContent = datosRelacionModal.v_valor;
+			} else {
+				document.getElementById("vistaAccionRealizarModal").style.display = "none";
+				inputAccionRealizarModal.textContent = '';
+			}
+			//
+			if (datosRelacionModal && datosRelacionModal.v_valor == "MOSTRAR CALENDARIO") {
+				document.getElementById('fecha-cita-modal').disabled = false;
+			} else {
+				document.getElementById('fecha-cita-modal').disabled = true;
+				inputFechaCitaModal.value = '';
+			}
+			inputRelacionModal.value = datosRelacionModal.relacion_codigos;
+			inputFechaGestionModal.value = respuesta.model.dt_fecha_gestion_realizada;
+			inputFechaCitaModal.value = respuesta.model.dt_fecha_cita;
+			inputDescripcionModal.value = respuesta.model.vc_descripcion
 		}
 	});
 }
+
+
 /**
  * Fin
  */
@@ -611,6 +646,10 @@ function cerrarModalAlertas(valor) {
 	}
 }
 
+function cerrarModalEditar() {
+	$('#modal-editar').modal('hide');
+}
+
 function mostrarAlerta() {
 	$('#modal-alerta').modal('show');
 	todosLosEstatus("");
@@ -708,3 +747,105 @@ searchSucursal.addEventListener('input', function() {
 /**
  * Fin
  */
+
+var searchInputModal = document.getElementById('buscar-relacion-modal');
+searchInputModal.addEventListener('input', buscarRelacion);
+
+searchInputModal.addEventListener('change', function() {
+	let selectedValue = searchInputModal.value;
+	if (almacen.listaRelaciones && almacen.listaRelaciones.length > 0) {
+		//
+		datosRelacionModal = almacen.listaRelaciones.find(item => item.relacion_codigos == selectedValue);
+		console.log(datosRelacionModal);
+		if (datosRelacionModal != undefined) {
+			document.getElementById("vistaAccionRealizarModal").style.display = "block";
+			inputAccionRealizarModal.textContent = datosRelacionModal.v_valor;
+		} else {
+			document.getElementById("vistaAccionRealizarModal").style.display = "none";
+			inputAccionRealizarModal.textContent = '';
+		}
+		//
+		if (datosRelacionModal && datosRelacionModal.v_valor == "MOSTRAR CALENDARIO") {
+			document.getElementById('fecha-cita-modal').disabled = false;
+		} else {
+			document.getElementById('fecha-cita-modal').disabled = true;
+			inputFechaCitaModal.value = '';
+		}
+	} else {
+		document.getElementById('fecha-cita').disabled = false;
+		document.getElementById('validar-fechaCita').style.display = 'none';
+	}
+});
+
+
+function editarSegGestionG() {
+
+	console.log(datosRelacionModal)
+
+	let inputFechaCitaModal = document.getElementById("fecha-cita-modal");
+	let inputFechaGestionModal = document.getElementById("fecha-gestion-modal");
+	let inputRelacionModal = document.getElementById("buscar-relacion-modal");
+	let inputDescripcionModal = document.getElementById("descripcion-gestion-modal");
+	let inputAccionRealizarModal = document.getElementById("accionRealizarModal");
+
+	$.ajax({
+		url: newUrlBase + "guardar_gestion?idGestion=" + idGestion + "&fechaCita=" + inputFechaCitaModal.value + "&fechaGestion=" + inputFechaGestionModal.value + "&codigoRelacion=" + datosRelacionModal.pk_id_relacion_codigo + "&descripcion=" + inputDescripcionModal.value,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			swal("Se edito la gestión", {
+				closeOnClickOutside: false,
+				icon: "success",
+			})
+				.then((value) => {
+					console.log(respuesta)
+					listaDeGestiones()
+					cerrarModalEditar()
+				});
+
+
+		}
+	});
+}
+
+function cancelarSegGestion(gestionID) {
+	var tituloAlerta = "";
+	var textoAlerta = "";
+	var confirmButton = "";
+
+
+	tituloAlerta = "¿Estás seguro de inactivar este seguimiento?";
+	textoAlerta = "¡El seguimiento se inactivará y no sera mostrado en este listado!";
+	confirmButton = "Inactivar";
+
+	console.log(newUrlBase)
+
+	swal({
+		title: tituloAlerta,
+		text: textoAlerta,
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		cancelButtonText: 'Cancelar',
+		confirmButtonText: confirmButton,
+	}).then((result) => {
+		if (result.value) {
+			$.ajax({
+				url: newUrlBase + "inactivar_gestion?idGestion=" + gestionID,
+				type: "GET",
+				success: function(response) {
+					swal(
+						"¡Procesado!",
+						"El seguimiento ha sido inactivado.",
+						"success"
+					)
+					listaDeGestiones();
+				},
+				error: function(xhr, status, error) {
+					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
+					console.error("Error al enviar los datos: " + error);
+				}
+			});
+		}
+	})
+}

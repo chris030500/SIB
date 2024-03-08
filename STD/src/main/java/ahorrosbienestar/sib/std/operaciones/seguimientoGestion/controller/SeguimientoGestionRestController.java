@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.operaciones.seguimientoGestion.controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,20 +55,20 @@ public class SeguimientoGestionRestController {
 
 	@Autowired
 	private AsignacionOfertasService asignacionOfertasService;
-	
+
 	@Autowired
 	private ConsultarRelacionesService consultarRelacionesService;
-	
+
 	@Autowired
 	private MicrofinUsuarioService microfinUsuarioService;
-	
+
 	@Autowired
 	private EstatusSeguimientoService estatusSeguimientoService;
 
 	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
 
 	private static final String accionRealizar = "MOSTRAR CALENDARIO";
-	
+
 	private static final String excluir = "EXCLUIR CARGA";
 	private static final String bloqueo1 = "INDEFINIDO";
 	private static final String bloqueo2 = "90 DIAS";
@@ -77,7 +78,7 @@ public class SeguimientoGestionRestController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping(value = {"/lista_seguimiento"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/lista_seguimiento" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion() {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -104,7 +105,7 @@ public class SeguimientoGestionRestController {
 	 * @param referencia
 	 * @return
 	 */
-	@RequestMapping(value = {"/parametros_seguimiento"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/parametros_seguimiento" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("nombre") String nombre,
 			@RequestParam("oferta") String oferta, @RequestParam("referencia") String referencia) {
 		Map<String, Object> respuesta = new HashMap<>();
@@ -130,7 +131,8 @@ public class SeguimientoGestionRestController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/registro_seguimiento"}, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = {
+			"/registro_seguimiento" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registroSeguimientoGestionOa(@RequestBody RegistroSeguimientoDTO dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -141,7 +143,8 @@ public class SeguimientoGestionRestController {
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
 			logger.info("se encotró el usuario");
 			//
-			RelacionCodigosModel relacionCodigosModel = relacionCodigosService.buscarRelacionPorId(dto.getRelacionCodigos());
+			RelacionCodigosModel relacionCodigosModel = relacionCodigosService
+					.buscarRelacionPorId(dto.getRelacionCodigos());
 			logger.info("se encontró la relación");
 			//
 			AsignacionOfertas asignacionOfertas = asignacionOfertasService.findById(dto.getAsignacionOfertas());
@@ -181,7 +184,7 @@ public class SeguimientoGestionRestController {
 	 * @param dto
 	 * @return
 	 */
-	@RequestMapping(value = {"/editar_seguimiento"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/editar_seguimiento" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> editarSeguimientoGestionOa(@RequestParam("idGestion") int idGestion,
 			@RequestBody RegistroSeguimientoDTO dto) {
 		String mensajeError = null;
@@ -196,7 +199,8 @@ public class SeguimientoGestionRestController {
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
 			logger.info("se encotró el usuario");
 			//
-			RelacionCodigosModel relacionCodigosModel = relacionCodigosService.buscarRelacionPorId(dto.getRelacionCodigos());
+			RelacionCodigosModel relacionCodigosModel = relacionCodigosService
+					.buscarRelacionPorId(dto.getRelacionCodigos());
 			logger.info("se encontró la relación");
 			//
 			AsignacionOfertas asignacionOfertas = asignacionOfertasService.findById(dto.getAsignacionOfertas());
@@ -204,14 +208,23 @@ public class SeguimientoGestionRestController {
 			//
 
 			if (relacionCodigosModel.getAccionRealizar().getV_valor().equals(accionRealizar)) {
-				model.setDt_fecha_cita(model.getDt_fecha_cita() == null || dto.getFechaCita() != model.getDt_fecha_cita() ? dto.getFechaCita() : model.getDt_fecha_cita());
-				model.setDt_fecha_gestion_realizada(model.getDt_fecha_gestion_realizada() == null || dto.getFechaGestion() != model.getDt_fecha_gestion_realizada() ? dto.getFechaGestion() : model.getDt_fecha_gestion_realizada());
+				model.setDt_fecha_cita(
+						model.getDt_fecha_cita() == null || dto.getFechaCita() != model.getDt_fecha_cita()
+								? dto.getFechaCita()
+								: model.getDt_fecha_cita());
+				model.setDt_fecha_gestion_realizada(model.getDt_fecha_gestion_realizada() == null
+						|| dto.getFechaGestion() != model.getDt_fecha_gestion_realizada() ? dto.getFechaGestion()
+								: model.getDt_fecha_gestion_realizada());
 			}
 
-			model.setAsignacionOfertas(asignacionOfertas != model.getAsignacionOfertas() ? asignacionOfertas : model.getAsignacionOfertas());
-			model.setRelacionCodigosModel(relacionCodigosModel != model.getRelacionCodigosModel() ? relacionCodigosModel : model.getRelacionCodigosModel());
-			model.setVc_no_referencia(dto.getReferencia() != model.getVc_no_referencia() ? dto.getReferencia() : model.getVc_no_referencia());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion() : model.getVc_descripcion());
+			model.setAsignacionOfertas(asignacionOfertas != model.getAsignacionOfertas() ? asignacionOfertas
+					: model.getAsignacionOfertas());
+			model.setRelacionCodigosModel(relacionCodigosModel != model.getRelacionCodigosModel() ? relacionCodigosModel
+					: model.getRelacionCodigosModel());
+			model.setVc_no_referencia(dto.getReferencia() != model.getVc_no_referencia() ? dto.getReferencia()
+					: model.getVc_no_referencia());
+			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+					: model.getVc_descripcion());
 			model.setDt_fecha_gestion_realizada(dto.getFechaGestion());
 			model.setDt_fecha_modificacion(localDate);
 			model.setI_usuario_modificacion(usuario);
@@ -236,7 +249,7 @@ public class SeguimientoGestionRestController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping(value = {"/lista_gestiones_por_oferta"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/lista_gestiones_por_oferta" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> buscarGestionPorOferta(@RequestParam("asignacion") int asignacion) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -262,7 +275,7 @@ public class SeguimientoGestionRestController {
 	 * @param cliente
 	 * @return
 	 */
-	@RequestMapping(value = {"/ver_cliente"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/ver_cliente" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> recuperarInfoPorCliente(@RequestParam("cliente") String cliente) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -281,8 +294,7 @@ public class SeguimientoGestionRestController {
 		}
 	}
 
-	
-	@RequestMapping(value = {"/listaRelaciones_activas"}, method = RequestMethod.GET)
+	@RequestMapping(value = { "/listaRelaciones_activas" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> relacionCodigosActivos(@RequestParam("valor") String valor) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
@@ -300,9 +312,8 @@ public class SeguimientoGestionRestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
-	
-	
-	@RequestMapping(value = {"/datos_gestion"}, method = RequestMethod.GET)
+
+	@RequestMapping(value = { "/datos_gestion" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> BuscarUnaGestion(@RequestParam("idGestion") int idGestion) {
 		//
 		Map<String, Object> respuesta = new HashMap<>();
@@ -322,8 +333,7 @@ public class SeguimientoGestionRestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
-	
-	
+
 	public int actualizarAsignacion(int idRelacion, int idAsignacion) {
 		AsignacionOfertas asignacion = asignacionOfertasService.findById(idAsignacion);
 		logger.info("Se encontró la asignación");
@@ -337,34 +347,33 @@ public class SeguimientoGestionRestController {
 			System.out.println("Paso 1");
 			if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
 				System.out.println("Paso 2");
-				if (relacion.getBloqueoListas().getV_valor().equals(bloqueo1) || relacion.getBloqueoListas().getV_valor().equals(bloqueo2)) {
+				if (relacion.getBloqueoListas().getV_valor().equals(bloqueo1)
+						|| relacion.getBloqueoListas().getV_valor().equals(bloqueo2)) {
 					System.out.println("SIIIII");
 					asignacion.setI_bloqueo(2);
 				}
 			}
 		}
-		
+
 		asignacion.setI_estatus(2);
 		asignacionOfertasService.save(asignacion);
 
 		return asignacion.getI_bloqueo();
 	}
-	
-	
-	
-	@RequestMapping(value = {"/todos_los_estatus"}, method = RequestMethod.GET)
+
+	@RequestMapping(value = { "/todos_los_estatus" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") String idSucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
 		String sucursal;
 		try {
-			
+
 			if (idSucursal.equals(""))
 				sucursal = sucursalPorEmpleado();
 			else
 				sucursal = idSucursal;
-			
+
 			lista = estatusSeguimientoService.listaDeEstatus(Integer.parseInt(sucursal));
 			logger.info("se llenó la lista");
 			respuesta.put("lista", lista);
@@ -377,9 +386,7 @@ public class SeguimientoGestionRestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
-	
-	
-	
+
 	public String sucursalPorEmpleado() {
 		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
 		//
@@ -391,5 +398,34 @@ public class SeguimientoGestionRestController {
 		logger.info("se llenó la lista");
 		return lista.get(0).getSucursalUsuario();
 	}
-	
+
+	@RequestMapping(value = { "/guardar_gestion" }, method = RequestMethod.GET)
+	public ResponseEntity<SeguimientoGestionOaModel> EditarUnaGestion(@RequestParam("idGestion") int idGestion,
+			@RequestParam("fechaCita") String fechaCita, @RequestParam("fechaGestion") String fechaGestion,
+			@RequestParam("codigoRelacion") int codigoRelacion, @RequestParam("descripcion") String descripcion) {
+
+		LocalDate fechaCi = null;
+		LocalDate fechaGe = null;
+
+		if (fechaCita != null && !fechaCita.isEmpty()) {
+			fechaCi = LocalDate.parse(fechaCita, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
+
+		if (fechaGestion != null && !fechaGestion.isEmpty()) {
+			fechaGe = LocalDate.parse(fechaGestion, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		}
+
+		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.editarSeguimientoGestion(idGestion, fechaCi,
+				fechaGe, codigoRelacion, descripcion);
+
+		return ResponseEntity.ok(seguimiento);
+	}
+
+	@RequestMapping(value = { "/inactivar_gestion" }, method = RequestMethod.GET)
+	public ResponseEntity<SeguimientoGestionOaModel> InactivarUnaGestion(@RequestParam("idGestion") int idGestion) {
+
+		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.inactivarSeguimientoGestion(idGestion);
+
+		return ResponseEntity.ok(seguimiento);
+	}
 }

@@ -231,8 +231,10 @@ function llenarTablaSeguimiento() {
 					idMensaje: opt.mensajeID
 				};
 
-				sms.push(mensaje);
-
+				if(opc.estMensaje == 1){
+					sms.push(mensaje);
+				}
+				
 				tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'), botones]).draw(false);
 			});
 		},
