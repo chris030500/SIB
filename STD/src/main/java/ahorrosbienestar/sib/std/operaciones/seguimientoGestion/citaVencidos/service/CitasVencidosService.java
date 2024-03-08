@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.dto.CitasVencidos;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.dto.SucursalXEmpleadoSeguimiento;
 @Service
 public class CitasVencidosService {
 	private static final Logger logger = Logger.getLogger(CitasVencidosService.class);
@@ -22,11 +23,12 @@ public class CitasVencidosService {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<CitasVencidos> obtenerCitasVencidos(int tipoConsulta, String usuario){
+	@SuppressWarnings("deprecation")
+	public List<CitasVencidos> obtenerCitasVencidos(int tipoConsulta, int empleadoID,int sucursal){
 		logger.info("Consultar Citas y Vencidos");
 		try {
 			String sql = "CALL SIB.SP_DATOS_CITAS_VIGENTES (?,?);";
-			List<CitasVencidos> ls = jdbcTemplate.query(sql, new Object[] {tipoConsulta,usuario},
+			List<CitasVencidos> ls = jdbcTemplate.query(sql, new Object[] {empleadoID,sucursal},
 					new RowMapper<CitasVencidos>() {
 						public CitasVencidos mapRow(ResultSet rs, final int rowNum) throws SQLException {
 							CitasVencidos regCitasVendos = new CitasVencidos();
@@ -40,6 +42,31 @@ public class CitasVencidosService {
 							regCitasVendos.setVc_descripcion_cita(rs.getString(8));
 						
 							return regCitasVendos;
+						}
+					});
+			
+			return ls;
+			
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return null;
+		}
+		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public List<SucursalXEmpleadoSeguimiento> obtenerSucursales(int empleadoid){
+		logger.info("Consultar Sucursal por empleado");
+		try {
+			String sql = "CALL SIB.SP_SUCURSALES_ACCESO (?);";
+			List<SucursalXEmpleadoSeguimiento> ls = jdbcTemplate.query(sql, new Object[] {empleadoid},
+					new RowMapper<SucursalXEmpleadoSeguimiento>() {
+						public SucursalXEmpleadoSeguimiento mapRow(ResultSet rs, final int rowNum) throws SQLException {
+							SucursalXEmpleadoSeguimiento regSucursal = new SucursalXEmpleadoSeguimiento();
+							regSucursal.setI_sucursal(rs.getInt(1));
+							regSucursal.setVc_nombre_sucursal(rs.getString(2));
+							
+							return regSucursal;
 						}
 					});
 			

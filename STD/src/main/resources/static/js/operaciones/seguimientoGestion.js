@@ -370,7 +370,14 @@ function limpiarVariablesModal() {
 	});
 	document.getElementById("vistaAccionRealizar").style.display = "none";
 	document.getElementById("accionRealizar").textContent = '';
-	searchSucursal.value = '';
+	//searchSucursal.value = '';
+	if(document.getElementById('buscarSucursal')){
+		document.getElementById('buscarSucursal').value = '';
+	}
+	if(document.getElementById('buscarSucursalVencidas')){
+		document.getElementById('buscarSucursalVencidas').value = '';
+	}
+	
 }
 /**
  * Fin
@@ -567,6 +574,9 @@ function validarBotonRegistro(bloqueo) {
 var listaDeEstatus = [];
 var listaDeTotales = [];
 var sucursalActual = document.getElementById("nombreSucursal");
+var sucursalCitaVencidas = document.getElementById("nombreSucursalCitaVencidas");
+
+var idBusquedaInicial = 0;
 
 function todosLosEstatus(id) {
 	$.ajax({
@@ -575,6 +585,8 @@ function todosLosEstatus(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			sucursalActual.textContent = respuesta.lista[0].vc_nombresucursal;
+			sucursalCitaVencidas.textContent = respuesta.lista[0].vc_nombresucursal;
+			idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
@@ -748,7 +760,15 @@ function buscarSucursales() {
 		myChart.destroy();
 	}
 	var searchSucursal = document.getElementById('buscarSucursal').value;
-	$.ajax({
+	
+	 var idSeleccionado = 0;
+
+	
+	// Llamar a la función todosLosEstatus con idSucursal
+	todosLosEstatus(idSeleccionado);
+	
+	
+	/*$.ajax({
 		url: newUrlBase + "buscar_sucursal?sucursal=" + searchSucursal,
 		type: "GET",
 		dataType: "JSON",
@@ -767,16 +787,39 @@ function buscarSucursales() {
 				idSucursal = respuesta.sucursal[0].pk_id_sucursal; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
 			}
 
-			// Llamar a la función todosLosEstatus con idSucursal
+
 			todosLosEstatus(idSucursal);
 		}
-	});
+	});*/
+	
 }
 
 var searchSucursal = document.getElementById('buscarSucursal');
+searchSucursal.addEventListener('change', function () {
+        // Obtener el valor seleccionado del input
+        var valorSeleccionado = $(this).val();
+
+        // Obtener el id asociado al valor seleccionado
+        var idSeleccionado = $('#opcionSucursal option[value="' + valorSeleccionado + '"]').attr('id');
+
+        
+        // Limpiar datos de la gráfica
+		listaDeEstatus = [];
+		listaDeTotales = [];
+		// Destruir la instancia de la gráfica
+		if (myChart) {
+			myChart.destroy();
+		}
+
+		// Llamar a la función todosLosEstatus con idSucursal
+		todosLosEstatus(idSeleccionado);
+});
+
+
+/*var searchSucursal = document.getElementById('buscarSucursal');
 searchSucursal.addEventListener('input', function() {
 	buscarSucursales(); // Llamar a la función buscarSucursales cada vez que se ingrese un nuevo valor en el input de búsqueda
-});
+});*/
 
 /**
  * Fin
@@ -896,30 +939,54 @@ function cancelarSegGestion(gestionID) {
             //div.classList.remove('show', 'active');
         });
 		if(divId == 'vencidasCita'){
-			listaconsultarCitaVencidos();
+			listaconsultarCitaVencidos(idBusquedaInicial);
 		}
 
         // Mostrar el div seleccionado
         const selectedDiv = document.getElementById(divId);
         selectedDiv.style.display = "block";
     }
-     
- function listaconsultarCitaVencidos() {
+    
+var searchSucursalVencidas = document.getElementById('buscarSucursalVencidas');
+searchSucursalVencidas.addEventListener('change', function () {
+        // Obtener el valor seleccionado del input
+        var valorSeleccionado = $(this).val();
+
+        // Obtener el id asociado al valor seleccionado
+        var idSelec = $('#opcionSucursalVencidas option[value="' + valorSeleccionado + '"]').attr('id');
+        
+        sucursalCitaVencidas.textContent = valorSeleccionado;
+
+        listaconsultarCitaVencidos(idSelec);
+      
+});
+
+ function listaconsultarCitaVencidos(idSucursalCitaVencidos) {
+	 
+	 if (idSucursalCitaVencidos){
+		document.getElementById("ver-tbl-buscarCita").style.display = "none";
+		document.getElementById("ver-buscarCita").style.display = "block";
 
 	$.ajax({
-		url: newUrlBase + "buscar_citas_vencidos",
+		url: newUrlBase + "buscar_citas_vencidos?idSucursalCitaVencidos="+idSucursalCitaVencidos,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
 			console.log("respuesta"+respuesta);
 			cargarTablaAlertas(respuesta.listaCitasVencidas);
+			document.getElementById("ver-tbl-buscarCita").style.display = "block";
+			document.getElementById("ver-buscarCita").style.display = "none";
 		}, error: function(error) {
 			//console.log(error);
 		}
 	});
+	 }
+	 
+
 }
 
 function cargarTablaAlertas(datos) {
+
 	tblAlertas.clear().draw();
 	$.each(datos, function(idx, opt) {
 

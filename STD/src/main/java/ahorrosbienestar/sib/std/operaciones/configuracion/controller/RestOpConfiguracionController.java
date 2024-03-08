@@ -920,12 +920,12 @@ public class RestOpConfiguracionController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/buscar_citas_vencidos" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaCitasVencidos() {
+	public ResponseEntity<Map<String, Object>> listaCitasVencidos(@RequestParam("idSucursalCitaVencidos") int idSucursalCitaVencidos) {
 		Map<String, Object> respuesta = new HashMap<>();
 		List<CitasVencidos> listaCitasVencidas = new ArrayList<CitasVencidos>();
 		String mensajeError = null;
 		try {
-			listaCitasVencidas = citasVencidosService.obtenerCitasVencidos(Constantes.BUSQUEDA_POR_USUARIO, obtenerUsuarioLogueado());
+			listaCitasVencidas = citasVencidosService.obtenerCitasVencidos(Constantes.BUSQUEDA_POR_USUARIO, obtenerEmpleadoLogueado(),idSucursalCitaVencidos);
 			logger.info("se encontró la sucusal");
 			respuesta.put("listaCitasVencidas", listaCitasVencidas);
 			return ResponseEntity.ok(respuesta);
@@ -950,6 +950,18 @@ public class RestOpConfiguracionController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			return null;
+		}
+	}
+	
+	public int obtenerEmpleadoLogueado() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			
+			return usuario.getI_id_empleado();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return 0;
 		}
 	}
 
