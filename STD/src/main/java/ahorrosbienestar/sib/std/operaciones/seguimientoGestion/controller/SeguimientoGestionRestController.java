@@ -370,7 +370,7 @@ public class SeguimientoGestionRestController {
 		try {
 
 			if (idSucursal.equals(""))
-				sucursal = sucursalPorEmpleado();
+				sucursal = sucursalPorEmpleado() == null?"100":sucursalPorEmpleado();
 			else
 				sucursal = idSucursal;
 
@@ -396,7 +396,7 @@ public class SeguimientoGestionRestController {
 		//
 		lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
 		logger.info("se llenó la lista");
-		return lista.get(0).getSucursalUsuario();
+		return lista.size()>0?lista.get(0).getSucursalUsuario():null;
 	}
 
 	@RequestMapping(value = { "/guardar_gestion" }, method = RequestMethod.GET)

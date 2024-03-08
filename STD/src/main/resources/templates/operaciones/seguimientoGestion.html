@@ -251,8 +251,8 @@
 				</div>
 
 				<!-- Modal de alerta -->
-				<div class="modal fade" id="modal-alerta" tabindex="-1">
-					<div class="modal-dialog">
+				<div class="modal fade" id="modal-alerta" data-bs-backdrop="static" data-bs-keyboard="false">
+					<div class="modal-dialog modal-xl modal-dialog-centered ">
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title"><strong>Seguimiento de gestiones</strong></h5>
@@ -261,26 +261,70 @@
 							</div>
 							<div class="modal-body">
 								<div class="row">
-									<div class="col-sm-6">
-										<label for="searchInput">Buscar sucursal:</label>
-										<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
-										<input type="search" class="form-control" id="buscarSucursal"
-											list="opcionSucursal" autocomplete="off" placeholder="Nombre sucursal">
-										<!-- Lista de opciones para el datalist -->
-										<datalist id="opcionSucursal">
-											<!-- Las opciones se agregarán dinámicamente aquí -->
-										</datalist>
+
+									<div class="p-4 border rounded-3 mb-4">
+										<ul class="nav nav-pills" id="pntConf" role="tablist">
+											<li class="nav-item border rounded px-3 py-2" role="presentation">
+												<button class="nav-link active" id="grafica-tab" data-bs-toggle="pill"
+													role="tab" aria-selected="true" data-bs-target="#grafica"
+													onclick="mostrarDiv('grafica')">Registros por Grafica.</button>
+											</li>
+
+											<li class="nav-item border rounded px-3 py-2" role="presentation">
+												<button class="nav-link" id="vendosCita-tab" data-bs-toggle="pill"
+													role="tab" aria-selected="true" data-bs-target="#vencidasCita"
+													onclick="mostrarDiv('vencidasCita')">Registros por Grafica.</button>
+											</li>
+											<!-- Otros elementos li ... -->
+										</ul>
 									</div>
-									<div class="col-sm-6">
-										<label>Sucursal:</label>
-										<b>
-											<p id="nombreSucursal"></p>
-										</b>
+									<div id="grafica" class="tab-pane" style="display: block;">
+										<div class="row">
+											<div class="col-sm-6">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursal"
+													list="opcionSucursal" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursal">
+													<!-- Las opciones se agregarán dinámicamente aquí -->
+												</datalist>
+											</div>
+											<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursal"></p>
+												</b>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 30px; text-align: center;">
+											<div class="col-sm-12">
+												<canvas id="myChart"></canvas>
+											</div>
+										</div>
 									</div>
-								</div>
-								<div class="row" style="padding-top: 30px; text-align: center;">
-									<div class="col-sm-12">
-										<canvas id="myChart" width="100" height="100"></canvas>
+									<div id="vencidasCita" class="tab-pane" style="display: none;">
+										<div class="row" style="margin-top : 15px ">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="tblAlertas">
+													<thead>
+														<tr>
+															<th># Cliente</th>
+															<th>Nombre Cliente</th>
+															<th>Tipo Campaña</th>
+															<th>Clasificacion</th>
+															<th>Tipo Alerta</th>
+															<th>Estatus</th>
+															<th>Descripion Seguimiento.</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody>
+													</tbody>
+												</table>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>

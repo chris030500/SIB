@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,13 +13,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.dto.CodigoAccionDTO;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.model.CodigoAccionModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.accion.service.CodigoAccionService;
@@ -30,11 +34,12 @@ import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.resultado.serv
 import ahorrosbienestar.sib.std.operaciones.configuracion.telefonos.dto.RegistroTelefonoDTO;
 import ahorrosbienestar.sib.std.operaciones.configuracion.telefonos.model.TelefonoModel;
 import ahorrosbienestar.sib.std.operaciones.configuracion.telefonos.service.TelefonoService;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.dto.CitasVencidos;
+import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.service.CitasVencidosService;
 import ahorrosbienestar.sib.std.sucursales.model.SucursalesModel;
 import ahorrosbienestar.sib.std.sucursales.service.SucursalesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -61,6 +66,9 @@ public class RestOpConfiguracionController {
 
 	@Autowired
 	private UsuarioService usuarioService;
+	
+	@Autowired
+	private CitasVencidosService citasVencidosService;
 
 	private static final Logger logger = Logger.getLogger(RestOpConfiguracionController.class);
 
@@ -902,6 +910,46 @@ public class RestOpConfiguracionController {
 			mensajeError = e.getMessage();
 			respuesta.put("error", mensajeError);
 			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	/**
+	 * Buscar sucursal por caracter
+	 * 
+	 * @param sucursal
+	 * @return
+	 */
+	@RequestMapping(value = { "/buscar_citas_vencidos" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaCitasVencidos() {
+		Map<String, Object> respuesta = new HashMap<>();
+		List<CitasVencidos> listaCitasVencidas = new ArrayList<CitasVencidos>();
+		String mensajeError = null;
+		try {
+			listaCitasVencidas = citasVencidosService.obtenerCitasVencidos(Constantes.BUSQUEDA_POR_USUARIO, obtenerUsuarioLogueado());
+			logger.info("se encontró la sucusal");
+			respuesta.put("listaCitasVencidas", listaCitasVencidas);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
+	public String obtenerUsuarioLogueado() {
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			
+			return userDetails.getUsername();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return null;
 		}
 	}
 

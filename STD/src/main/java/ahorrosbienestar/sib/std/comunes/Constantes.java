@@ -72,6 +72,12 @@ public class Constantes {
     public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
+    
+    
+    //TIPOS DE BUSQUEDA CITA Y VENCIDOS
+	public static final int BUSQUEDA_POR_USUARIO = 1;
+	
+    
     private Constantes() {
         
     }

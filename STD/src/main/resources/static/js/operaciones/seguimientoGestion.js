@@ -305,7 +305,6 @@ function datosDeCliente(id) {
  */
 function registrarGestion(dto) {
 	var enviar = JSON.stringify(dto);
-
 	$.ajax({
 		url: newUrlBase + "registro_seguimiento",
 		data: enviar,
@@ -588,33 +587,56 @@ function todosLosEstatus(id) {
 /**
  * Fin
  */
-
-
-
 /**
  * Gráfica
  */
 var myChart;
 
 function createChart(labels, data) {
-	// Datos de ejemplo para la gráfica
-	var data = {
-		labels: labels,
-		datasets: [{
-			label: labels,
-			backgroundColor: 'rgba(75, 192, 192, 0.2)',
-			borderColor: 'rgba(75, 192, 192, 1)',
-			borderWidth: 1,
-			data: data
-		}]
-	};
+// Crear arrays para almacenar los labels y data
+var etiquetas = [];
+var datos = [];
 
+// Llenar los arrays con los datos correspondientes
+for (var i = 0; i < data.length; i++) {
+    etiquetas.push(labels[i]);
+    datos.push(data[i]);
+}
+
+// Crear un array de objetos para almacenar los conjuntos de datos
+var datasetsA = [];
+
+// Iterar sobre los datos y crear un conjunto de datos para cada etiqueta
+for (var i = 0; i < etiquetas.length; i++) {
+    var dataset = {
+        label: etiquetas[i], // Etiqueta para el conjunto de datos
+        data: [datos[i]],
+        backgroundColor: getRandomColor(), // Color de fondo aleatorio
+        borderColor: 'rgba(75, 192, 192, 1)', // Color del borde fijo o personalizado
+        borderWidth: 1
+    };
+    datasetsA.push(dataset);
+}
+labels = ["REGISTROS EN GESTION POR SUCURSAL"];
+// Crear el objeto final con la estructura deseada
+var chartData = {
+	labels: labels,
+    datasets: datasetsA
+};
+
+// Definir el ancho de la barra
+var barWidth = 30; // Ajusta el valor según tus necesidades
 	// Configuración de la gráfica
 	var options = {
+		
 		scales: {
-			y: {
-				beginAtZero: true
-			}
+			x: {
+            barThickness: barWidth // Define el ancho de la barra
+        },
+        y: {
+            beginAtZero: true,
+            min:1
+        }
 		}
 	};
 
@@ -622,7 +644,7 @@ function createChart(labels, data) {
 	var ctx = document.getElementById('myChart').getContext('2d');
 	myChart = new Chart(ctx, {
 		type: 'bar',
-		data: data,
+		data: chartData,
 		options: options
 	});
 }
@@ -630,6 +652,18 @@ function createChart(labels, data) {
  * Fin
  */
 
+
+
+
+// Función para obtener colores aleatorios
+function getRandomColor() {
+      var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 
 /**
@@ -848,4 +882,67 @@ function cancelarSegGestion(gestionID) {
 			});
 		}
 	})
+}
+
+/**
+ * cambios para agregar la tabla de vencidas y citas. 
+ * 
+ */
+ 
+ function mostrarDiv(divId) {
+        // Ocultar todos los divs
+        document.querySelectorAll('.tab-pane').forEach(div => {
+            div.style.display = "none";
+            //div.classList.remove('show', 'active');
+        });
+		if(divId == 'vencidasCita'){
+			listaconsultarCitaVencidos();
+		}
+
+        // Mostrar el div seleccionado
+        const selectedDiv = document.getElementById(divId);
+        selectedDiv.style.display = "block";
+    }
+     
+ function listaconsultarCitaVencidos() {
+
+	$.ajax({
+		url: newUrlBase + "buscar_citas_vencidos",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("respuesta"+respuesta);
+			cargarTablaAlertas(respuesta.listaCitasVencidas);
+		}, error: function(error) {
+			//console.log(error);
+		}
+	});
+}
+
+function cargarTablaAlertas(datos) {
+	tblAlertas.clear().draw();
+	$.each(datos, function(idx, opt) {
+
+		var btnConfirmar = "<div class='row'><div class='col-sm-6'>"
+			+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+			+ " title='Editar' type='button'"
+			+ " onclick='edtiarSegGestion("
+			+ opt.i_pk_asignacion
+			+ ")' id="
+			+ opt.i_pk_asignacion
+			+ " data-tooltip='Add'>"
+			+ " <i class='bi bi-pencil'></i></button></div>";
+
+		tblAlertas.row.add([
+			opt.i_cliente,
+			opt.vc_nombre_cliente,
+			opt.vc_campania,
+			opt.vc_clasificacion,
+			opt.vc_tipo_alerta,
+			opt.vc_estatus,
+			opt.vc_descripcion_cita,
+			btnConfirmar
+		]).draw(false);
+
+	});
 }

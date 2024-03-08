@@ -111,7 +111,7 @@
 																	th:if="${parametro.pkParametro == 4}">NO</option>
 															</select>
 
-															<div th:case="'search'" class="col-sm-12">
+															<div th:case="'search-usuario'" class="col-sm-12">
 																<input type="search" class="form-control"
 																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
 																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
@@ -124,8 +124,45 @@
 																<datalist
 																	th:id="'opciones-' + ${parametro.vc_nombre_campo}">
 																	<option th:each="usuario : ${usuarios}"
-																		th:value="${usuario.vc_nombre_usuario}"
-																		th:text="${usuario.vc_nombre_usuario}"></option>
+                                                                        th:value="${usuario.vc_nombre_usuario}"
+                                                                        th:text="${usuario.vc_nombre_usuario}"></option>
+																</datalist>
+
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}" class="contenedor-opciones list-group" 
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+																	 <!-- Iterar sobre las opciones y crear un div para cada una -->
+        															
+        															<div th:if="${parametro.configuracion != null and not #strings.isEmpty(parametro.configuracion)}"  th:each="opcion : ${parametro.configuracion.split(';')}"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+            															<span th:text="${#strings.trim(opcion)}"></span>
+            															<button type="button" class="btn btn-sm btn-danger ms-2" onclick="borrarOpcion(this)">X</button>
+          															  <!-- Puedes agregar estilos, botones de eliminación, etc., según tus necesidades -->
+        															</div>
+        														
+																</div>
+
+																<input type="hidden" th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" 
+																th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" th:value="${#strings.trim(parametro.configuracion)}"/>
+
+																<p th:id="'error-' + ${parametro.vc_nombre_campo}"
+																	style="color: red; display: none; font-size: small; padding-left: 5px;">
+																	<i><b>Campo requerido</b></i>
+																</p>
+															</div>
+															<div th:case="'search-puestos'" class="col-sm-12">
+																<input type="search" class="form-control"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
+																	autocomplete="off" placeholder="Buscar Usuario"
+																	th:name="${parametro.vc_nombre_campo}"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}"
+																	onchange="handleSearchInput(this)">
+
+																<datalist
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo}">
+																	<option th:each="puesto : ${puestos}"
+																		th:value="${puesto.vc_descripcionPuesto}"
+																		th:text="${puesto.vc_descripcionPuesto}"></option>
 																</datalist>
 
 																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}" class="contenedor-opciones list-group" 
@@ -202,7 +239,7 @@
 																	th:if="${parametro.pkParametro == 4}">NO</option>
 															</select>
 
-															<div th:case="'search'" class="col-sm-12">
+															<div th:case="'search-usuario'" class="col-sm-12">
 																<input type="search" class="form-control"
 																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
 																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
@@ -224,6 +261,43 @@
 																	 <!-- Iterar sobre las opciones y crear un div para cada una -->
         															
         															<div th:if="${parametro.configuracion != null and not #strings.isEmpty(parametro.configuracion)}" th:each="opcion : ${parametro.configuracion.split(';')}"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+            															<span th:text="${#strings.trim(opcion)}"></span>
+            															<button type="button" class="btn btn-sm btn-danger ms-2" onclick="borrarOpcion(this)">X</button>
+          															  <!-- Puedes agregar estilos, botones de eliminación, etc., según tus necesidades -->
+        															</div>
+        														
+																</div>
+
+																<input type="hidden" th:id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" 
+																th:name="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}" th:value="${#strings.trim(parametro.configuracion)}"/>
+
+																<p th:id="'error-' + ${parametro.vc_nombre_campo}"
+																	style="color: red; display: none; font-size: small; padding-left: 5px;">
+																	<i><b>Campo requerido</b></i>
+																</p>
+															</div>
+															<div th:case="'search-puestos'" class="col-sm-12">
+																<input type="search" class="form-control"
+																	th:id="'searchInput-' + ${parametro.vc_nombre_campo}"
+																	th:list="'opciones-' + ${parametro.vc_nombre_campo}"
+																	autocomplete="off" placeholder="Buscar Usuario"
+																	th:name="${parametro.vc_nombre_campo}"
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}"
+																	th:data-opciones-id="'opcionesSeleccionadas-' + ${parametro.vc_nombre_campo}"
+																	onchange="handleSearchInput(this)">
+
+																<datalist
+																	th:id="'opciones-' + ${parametro.vc_nombre_campo}">
+																	<option th:each="puesto : ${puestos}"
+																		th:value="${puesto.vc_descripcionPuesto}"
+																		th:text="${puesto.vc_descripcionPuesto}"></option>
+																</datalist>
+
+																<div th:id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}" class="contenedor-opciones list-group" 
+																	th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
+																	 <!-- Iterar sobre las opciones y crear un div para cada una -->
+        															
+        															<div th:if="${parametro.configuracion != null and not #strings.isEmpty(parametro.configuracion)}"  th:each="opcion : ${parametro.configuracion.split(';')}"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" th:data-contenedor-id="'contenedorOpciones-' + ${parametro.vc_nombre_campo}">
             															<span th:text="${#strings.trim(opcion)}"></span>
             															<button type="button" class="btn btn-sm btn-danger ms-2" onclick="borrarOpcion(this)">X</button>
           															  <!-- Puedes agregar estilos, botones de eliminación, etc., según tus necesidades -->
