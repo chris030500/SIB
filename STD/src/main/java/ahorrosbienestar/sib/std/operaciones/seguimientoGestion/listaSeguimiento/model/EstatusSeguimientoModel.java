@@ -19,6 +19,17 @@ public class EstatusSeguimientoModel {
 
 	@Column(name = "VC_NOMBRESUCURSAL")
 	private String vc_nombresucursal;
+	
+	@Column(name = "I_ID_SUCURSAL")
+	private int i_id_sucursal;
+
+	public int getI_id_sucursal() {
+		return i_id_sucursal;
+	}
+
+	public void setI_id_sucursal(int i_id_sucursal) {
+		this.i_id_sucursal = i_id_sucursal;
+	}
 
 	public int getPk_id() {
 		return pk_id;

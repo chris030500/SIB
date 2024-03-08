@@ -264,7 +264,7 @@
 
 									<div class="p-4 border rounded-3 mb-4">
 										<ul class="nav nav-pills" id="pntConf" role="tablist">
-											<li class="nav-item border rounded px-3 py-2" role="presentation">
+											<li class="nav-item border rounded px-3 py-2" role="presentation" th:if="${sucursales != null}">
 												<button class="nav-link active" id="grafica-tab" data-bs-toggle="pill"
 													role="tab" aria-selected="true" data-bs-target="#grafica"
 													onclick="mostrarDiv('grafica')">Registros por Grafica.</button>
@@ -273,14 +273,14 @@
 											<li class="nav-item border rounded px-3 py-2" role="presentation">
 												<button class="nav-link" id="vendosCita-tab" data-bs-toggle="pill"
 													role="tab" aria-selected="true" data-bs-target="#vencidasCita"
-													onclick="mostrarDiv('vencidasCita')">Registros por Grafica.</button>
+													onclick="mostrarDiv('vencidasCita')">Citas y Por Vencer.</button>
 											</li>
 											<!-- Otros elementos li ... -->
 										</ul>
 									</div>
 									<div id="grafica" class="tab-pane" style="display: block;">
-										<div class="row">
-											<div class="col-sm-6">
+										<div class="row" th:if="${sucursales != null}">
+											<div class="col-sm-6" th:if="${sucursales.size() > 1}">
 												<label for="searchInput">Buscar sucursal:</label>
 												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
 												<input type="search" class="form-control" id="buscarSucursal"
@@ -288,7 +288,9 @@
 													placeholder="Nombre sucursal">
 												<!-- Lista de opciones para el datalist -->
 												<datalist id="opcionSucursal">
-													<!-- Las opciones se agregarán dinámicamente aquí -->
+													<option th:each="sucursal : ${sucursales}"
+                                                        th:value="${sucursal.vc_nombre_sucursal}"
+                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
 												</datalist>
 											</div>
 											<div class="col-sm-6">
@@ -305,8 +307,29 @@
 										</div>
 									</div>
 									<div id="vencidasCita" class="tab-pane" style="display: none;">
+										<div class="row" th:if="${sucursales != null}">
+											<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursalVencidas"
+													list="opcionSucursalVencidas" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursalVencidas">
+													<option th:each="sucursal : ${sucursales}"
+                                                        th:value="${sucursal.vc_nombre_sucursal}"
+                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
+												</datalist>
+											</div>
+											<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursalCitaVencidas"></p>
+												</b>
+											</div>
+										</div>
 										<div class="row" style="margin-top : 15px ">
-											<div class="table-responsive">
+											<div class="table-responsive" style="display: block;" id="ver-tbl-buscarCita">
 												<table class="table table-sm" style="width: 100%;" id="tblAlertas">
 													<thead>
 														<tr>
@@ -323,6 +346,15 @@
 													<tbody>
 													</tbody>
 												</table>
+											</div>
+											<!-- Spinner de carga -->
+											<div class="row" id="ver-buscarCita"
+												style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
+												<div class="col-sm-12">
+												<div class="spinner-border"
+												style="color: #0dcaf0; height: 100px; width: 100px;">
+												</div>
+												</div>
 											</div>
 										</div>
 									</div>
