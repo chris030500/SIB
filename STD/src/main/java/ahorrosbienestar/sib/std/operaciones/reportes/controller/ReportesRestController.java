@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.ClientesActivosService;
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.ClientesPorActivosService;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
@@ -22,6 +23,7 @@ import ahorrosbienestar.sib.std.operaciones.reportes.dto.ReporteDTO;
 import ahorrosbienestar.sib.std.operaciones.reportes.dto.ValoresDTO;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesPorSucursal;
 import groovy.transform.Undefined;
 import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import groovyjarjarantlr4.v4.parse.ANTLRParser.id_return;
@@ -36,6 +38,9 @@ public class ReportesRestController {
 	
 	@Autowired
 	private ClientesActivosService clientesActivosService;
+	
+	@Autowired
+	private ClientesPorActivosService clientesPorActivosService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -100,6 +105,25 @@ public class ReportesRestController {
 		List<ClientesActivosModel> lista = new ArrayList<ClientesActivosModel>();
 		try {
 			lista = clientesActivosService.listaClientes(valor);
+			logger.info("Se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
+	@RequestMapping(value = {"/buscar_cliente_activo_sucursal"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaClientesOfertasAutomaticasxSucursal(@RequestParam("idSucursal") int idSucursal) {
+		Map<String, Object> respuesta =  new HashMap<>();
+		String mensajeError = null;
+		List<ClientesPorSucursal> lista = new ArrayList<ClientesPorSucursal>();
+		try {
+			lista = clientesPorActivosService.listaClientesFiltro(idSucursal);
 			logger.info("Se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);

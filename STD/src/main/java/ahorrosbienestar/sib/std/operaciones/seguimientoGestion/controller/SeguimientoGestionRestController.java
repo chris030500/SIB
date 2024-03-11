@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.AsignacionOfertas;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.AsignacionOfertasService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.consultarRelaciones.model.ConsultarRelacionesModel;
@@ -427,5 +429,17 @@ public class SeguimientoGestionRestController {
 		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.inactivarSeguimientoGestion(idGestion);
 
 		return ResponseEntity.ok(seguimiento);
+	}
+	
+	public int obtenerEmpleadoLogueado() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			
+			return usuario.getI_id_empleado();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return 0;
+		}
 	}
 }

@@ -15,7 +15,8 @@ var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
 window.onload = function() {
 	mostrarAlerta();
-	listaClientes();
+
+	
 	// obtenerSucursal();
 	// llenarTablaSeguimiento(false);
 }
@@ -66,9 +67,10 @@ var clienteValue;
 
 function listaClientes() {
 	// spinner.style.display = "block";
-	var buscar = buscarCliente.value;
+	
+	var buscar = sucursalSeleccionadaS.value
 	$.ajax({
-		url: newUrlBase + "buscar_cliente_activo?valor=" + buscar,
+		url: newUrlBase + "buscar_cliente_activo_sucursal?idSucursal=" + buscar,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -575,6 +577,8 @@ var listaDeEstatus = [];
 var listaDeTotales = [];
 var sucursalActual = document.getElementById("nombreSucursal");
 var sucursalCitaVencidas = document.getElementById("nombreSucursalCitaVencidas");
+var nombreSucursalSeguimiento = document.getElementById("nombreSucursalSeguimiento");
+var sucursalSeleccionadaS = document.getElementById("idSucursalInicial");
 
 var idBusquedaInicial = 0;
 
@@ -584,9 +588,12 @@ function todosLosEstatus(id) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			sucursalActual.textContent = respuesta.lista[0].vc_nombresucursal;
-			sucursalCitaVencidas.textContent = respuesta.lista[0].vc_nombresucursal;
-			idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
+			document.getElementById("NombreSucursalS").value = respuesta.lista[0].vc_nombresucursal;
+			sucursalActual.textContent = document.getElementById("NombreSucursalS").value;
+			sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
+			nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
+			sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
+			//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
@@ -595,6 +602,7 @@ function todosLosEstatus(id) {
 			createChart(listaDeEstatus, listaDeTotales);
 		}
 	});
+	
 }
 /**
  * Fin
@@ -690,6 +698,7 @@ function cerrarModalAlertas(valor) {
 	if (myChart) {
 		myChart.destroy();
 	}
+	listaClientes();
 }
 
 function cerrarModalEditar() {
@@ -751,48 +760,7 @@ function obtenerSucursal() {
  */
 var idSucursal; // Variable para almacenar el valor del campo de búsqueda
 
-function buscarSucursales() {
-	// Limpiar datos de la gráfica
-	listaDeEstatus = [];
-	listaDeTotales = [];
-	// Destruir la instancia de la gráfica
-	if (myChart) {
-		myChart.destroy();
-	}
-	var searchSucursal = document.getElementById('buscarSucursal').value;
-	
-	 var idSeleccionado = 0;
 
-	
-	// Llamar a la función todosLosEstatus con idSucursal
-	todosLosEstatus(idSeleccionado);
-	
-	
-	/*$.ajax({
-		url: newUrlBase + "buscar_sucursal?sucursal=" + searchSucursal,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			var opcionSucursal = document.getElementById('opcionSucursal');
-			opcionSucursal.innerHTML = '';
-			respuesta.sucursal.forEach(function(sucursal) {
-				var option = document.createElement('option');
-				option.value = sucursal.vc_nombresucursal;
-				opcionSucursal.appendChild(option);
-				console.log(sucursal.pk_id_sucursal);
-				console.log(sucursal.vc_nombresucursal);
-			});
-
-			if (respuesta.sucursal[0]) {
-				idSucursal = respuesta.sucursal[0].pk_id_sucursal; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
-			}
-
-
-			todosLosEstatus(idSucursal);
-		}
-	});*/
-	
-}
 
 var searchSucursal = document.getElementById('buscarSucursal');
 searchSucursal.addEventListener('change', function () {
@@ -939,7 +907,7 @@ function cancelarSegGestion(gestionID) {
             //div.classList.remove('show', 'active');
         });
 		if(divId == 'vencidasCita'){
-			listaconsultarCitaVencidos(idBusquedaInicial);
+			listaconsultarCitaVencidos(document.getElementById("idSucursalInicial").value);
 		}
 
         // Mostrar el div seleccionado
@@ -958,6 +926,23 @@ searchSucursalVencidas.addEventListener('change', function () {
         sucursalCitaVencidas.textContent = valorSeleccionado;
 
         listaconsultarCitaVencidos(idSelec);
+      
+});
+
+var buscarClientesSucursal = document.getElementById('buscarSucursalSeguimiento');
+buscarClientesSucursal.addEventListener('change', function () {
+        // Obtener el valor seleccionado del input
+        var valorSeleccionado = $(this).val();
+
+        // Obtener el id asociado al valor seleccionado
+        var idSelec = $('#opcionSucursalVencidas option[value="' + valorSeleccionado + '"]').attr('id');
+        
+        nombreSucursalSeguimiento.textContent = valorSeleccionado;
+        
+        sucursalSeleccionadaS.value = idSelec;
+
+        
+        listaClientes();
       
 });
 

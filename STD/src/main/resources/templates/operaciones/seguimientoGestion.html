@@ -36,8 +36,33 @@
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
+								<input type="hidden" id="idSucursalInicial"/>
+								<input type="hidden" id="NombreSucursalS" />
 								<legend class="float-none w-auto p-2">Filtro busqueda</legend>
 								<!-- Campos del filtro -->
+								<div class="row">
+									<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursalSeguimiento"
+													list="opcionSucursalSeguiento" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursalSeguiento">
+													<option th:each="sucursal : ${sucursales}"
+                                                        th:value="${sucursal.vc_nombre_sucursal}"
+                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
+												</datalist>
+									</div>
+									<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursalSeguimiento"></p>
+												</b>
+											
+									</div>
+									
+								</div>
 								<div class="row">
 									<div class="col-sm-12">
 										<form name="formFiltro" id="formFiltro">
