@@ -13,7 +13,6 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 	@Query(value = "select I_CLIENTEID "
 			+ ",PK_ID_ASIGNACION_OA "
 			+ ",VC_NOMBRECOMPLETO as nombreCompleto "
-			+ ",C_Estatus "
 			+ ",VC_CODIGO_OFERTA "
 			+ ",VC_COD_REFERENCIA "
 			+ ",FECHAINICIO "
@@ -22,8 +21,17 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ ",V_VALOR "
 			+ ",FK_ID_SUCURSAL "
 			+ ",VC_NOMBRESUCURSAL "
-			+ "FROM SIB.VW_ASIGNACION_OFERTAS ", nativeQuery = true)
-	public List<ListaSeguimientoModel> listaSeguimiento();
+			+ ",I_BLOQUEO "
+			+ ",VC_NOMBRE_USUARIO "
+			+ "FROM SIB.VW_ASIGNACION_OFERTAS "
+			+ "WHERE FK_ID_SUCURSAL =:idSucursal "
+			+ "order by case WHEN VC_NOMBRE_USUARIO =:usuario THEN 0 "
+			+ "				 ELSE 1 "
+			+ "END, "
+			+ "i_estatus, "
+			+ "VC_NOMBRE_USUARIO ASC "
+			+ "LIMIT 200 ", nativeQuery = true)
+	public List<ListaSeguimientoModel> listaSeguimiento(@Param("idSucursal") int idSucursal, @Param("usuario") String usuario);
 	
 	
 	@Query(value = "SELECT I_CLIENTEID"
@@ -40,13 +48,36 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ " ,I_BLOQUEO"
 			+ " ,VC_NOMBRE_USUARIO"
 			+ " FROM SIB.VW_ASIGNACION_OFERTAS"
-			+ " WHERE VC_NOMBRECOMPLETO = :nombre"
+			+ " WHERE (VC_NOMBRECOMPLETO = :nombre"
 			+ " OR VC_CODIGO_OFERTA = :oferta"
-			+ " OR VC_COD_REFERENCIA = :referencia"
-			+ " OR I_CLIENTEID = :cliente", nativeQuery = true)
+			+ " OR VC_COD_REFERENCIA = :referencia)"
+			+ " OR I_CLIENTEID=:cliente", nativeQuery = true)
 	public List<ListaSeguimientoModel> busquedaPorSeguimiento(@Param("nombre") String nombre, 
 			@Param("oferta") String oferta, 
 			@Param("referencia") String referencia, 
 			@Param("cliente") String cliente);
+	
+	@Query(value = "SELECT I_CLIENTEID"
+			+ " ,PK_ID_ASIGNACION_OA"
+			+ " ,VC_NOMBRECOMPLETO as nombreCompleto"
+			+ " ,VC_CODIGO_OFERTA"
+			+ " ,VC_COD_REFERENCIA"
+			+ " ,FECHAINICIO"
+			+ " ,FECHAFIN"
+			+ " ,i_estatus"
+			+ " ,V_VALOR"
+			+ " ,FK_ID_SUCURSAL"
+			+ " ,VC_NOMBRESUCURSAL"
+			+ " ,I_BLOQUEO"
+			+ " ,VC_NOMBRE_USUARIO"
+			+ " FROM SIB.VW_ASIGNACION_OFERTAS"
+			+ " WHERE (VC_NOMBRECOMPLETO = :nombre"
+			+ " OR VC_CODIGO_OFERTA = :oferta"
+			+ " OR VC_COD_REFERENCIA = :referencia)"
+			+ " and FK_ID_SUCURSAL =:sucursal", nativeQuery = true)
+	public List<ListaSeguimientoModel> busquedaPorSeguimientoSucursal(@Param("nombre") String nombre, 
+			@Param("oferta") String oferta, 
+			@Param("referencia") String referencia, 
+			@Param("sucursal") int sucursal);
 	
 }

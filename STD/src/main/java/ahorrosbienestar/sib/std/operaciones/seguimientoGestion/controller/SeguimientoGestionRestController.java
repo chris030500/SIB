@@ -81,12 +81,12 @@ public class SeguimientoGestionRestController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/lista_seguimiento" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion() {
+	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion(@RequestParam("sucursal") int sucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
-			listaSeguimiento = listaSeguimientoService.listaSeguimiento();
+			listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado());
 			logger.info("se llenó la lista");
 			respuesta.put("lista", listaSeguimiento);
 			return ResponseEntity.ok(respuesta);
@@ -109,14 +109,31 @@ public class SeguimientoGestionRestController {
 	 */
 	@RequestMapping(value = { "/parametros_seguimiento" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("nombre") String nombre,
-			@RequestParam("oferta") String oferta, @RequestParam("referencia") String referencia) {
+			@RequestParam("oferta") String oferta, @RequestParam("referencia") String referencia,@RequestParam("sucursal") int sucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
-			listaSeguimiento = listaSeguimientoService.busquedaPorSeguimiento(nombre, oferta, referencia, "");
-			logger.info("se llenó la lista");
-			respuesta.put("lista", listaSeguimiento);
+			listaSeguimiento = listaSeguimientoService.busquedaPorSeguimientoSucursal(nombre, oferta, referencia, sucursal);
+			
+			if(listaSeguimiento != null && !listaSeguimiento.isEmpty()) {
+				String usuarioLogueado = obtenerUsuarioLogueado();
+				String vcUsuario = listaSeguimiento.get(0).getVc_usuario();
+				
+				if((vcUsuario != null && vcUsuario.equalsIgnoreCase(usuarioLogueado)) || (vcUsuario == null )) {
+					logger.info("se llenó la lista");
+					respuesta.put("lista", listaSeguimiento);
+				}else {
+					logger.info("se llenó la lista");
+					respuesta.put("lista", null);
+					respuesta.put("error", Constantes.ERROR_GESTION_ASIGNADA);
+				}
+			}else {
+				logger.info("se llenó la lista");
+				respuesta.put("lista", null);
+				respuesta.put("error", Constantes.ERROR_GESTION_ASIGNADA);
+				
+			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -125,6 +142,7 @@ public class SeguimientoGestionRestController {
 			respuesta.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
+
 	}
 
 	/**
@@ -440,6 +458,18 @@ public class SeguimientoGestionRestController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			return 0;
+		}
+	}
+	
+	public String obtenerUsuarioLogueado() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			
+			return usuario.getVc_nombre_usuario();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return null;
 		}
 	}
 }

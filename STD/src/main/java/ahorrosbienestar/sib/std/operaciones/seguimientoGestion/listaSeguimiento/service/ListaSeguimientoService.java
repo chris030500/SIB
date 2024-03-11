@@ -15,12 +15,17 @@ public class ListaSeguimientoService {
 	@Autowired
 	private ListaSeguimientoRepository repository;
 
-	public List<ListaSeguimientoModel> listaSeguimiento() {
-		return repository.listaSeguimiento();
+	public List<ListaSeguimientoModel> listaSeguimiento(int idSucursal, String usuario) {
+		return repository.listaSeguimiento(idSucursal,usuario);
 	}
 	
 	public List<ListaSeguimientoModel> busquedaPorSeguimiento(String nombre, String oferta, String referencia, String cliente) {
 		return repository.busquedaPorSeguimiento(nombre, oferta, referencia, cliente);
+	}
+
+	public List<ListaSeguimientoModel> busquedaPorSeguimientoSucursal(String nombre, String oferta, String referencia, int sucursal) {
+		return repository.busquedaPorSeguimientoSucursal(nombre, oferta, referencia, sucursal);
+
 	}
 
 }

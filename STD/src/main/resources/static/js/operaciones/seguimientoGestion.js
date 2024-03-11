@@ -114,9 +114,9 @@ var idOferta;
 function llenarTablaSeguimiento(condicion) {
 
 	if (condicion) {
-		servicioURL = "parametros_seguimiento?nombre=" + parametroNombre + "&oferta=" + parametroOferta + "&referencia=" + parametroReferencia
+		servicioURL = "parametros_seguimiento?nombre=" + parametroNombre + "&oferta=" + parametroOferta + "&referencia=" + parametroReferencia + "&sucursal="+sucursalSeleccionadaS.value
 	} else {
-		servicioURL = "lista_seguimiento";
+		servicioURL = "lista_seguimiento?sucursal="+sucursalSeleccionadaS.value;
 	}
 
 	$.ajax({
@@ -124,6 +124,20 @@ function llenarTablaSeguimiento(condicion) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			
+			if(respuesta.lista == null){
+				swal({
+      				text: respuesta.error,
+      				icon: 'error',
+      				buttons: ["Cancelar", "Confirmar"],
+    			}).then(resultado => {
+					if (resultado) {
+						llenarTablaSeguimiento(false);
+					}
+				});
+				
+			}else{
+					console.log(respuesta);
 			document.getElementById("ver-cargaSeguimiento").style.display = "none";
 			document.getElementById("ver-listaSeguimiento").style.display = "block";
 			tablaFiltro.clear().draw();
@@ -157,6 +171,8 @@ function llenarTablaSeguimiento(condicion) {
 					btnEditar
 				]).draw(false);
 			});
+				
+			}
 		},
 		error: function(error) {
 			//console.log(error.error);
@@ -357,7 +373,7 @@ function mostrarGestion(id, asignacion, bloqueo) {
 
 function cerrarModal(valor) {
 	$('#modal-' + valor).modal('hide');
-	llenarTablaSeguimiento(true);
+	llenarTablaSeguimiento(false);
 	limpiarVariablesModal();
 }
 
@@ -699,6 +715,7 @@ function cerrarModalAlertas(valor) {
 		myChart.destroy();
 	}
 	listaClientes();
+	llenarTablaSeguimiento(false);
 }
 
 function cerrarModalEditar() {
@@ -940,9 +957,9 @@ buscarClientesSucursal.addEventListener('change', function () {
         nombreSucursalSeguimiento.textContent = valorSeleccionado;
         
         sucursalSeleccionadaS.value = idSelec;
-
-        
         listaClientes();
+        llenarTablaSeguimiento(false);
+        
       
 });
 
@@ -992,8 +1009,8 @@ function cargarTablaAlertas(datos) {
 			opt.vc_clasificacion,
 			opt.vc_tipo_alerta,
 			opt.vc_estatus,
-			opt.vc_descripcion_cita,
-			btnConfirmar
+			opt.vc_descripcion_cita
+			//,btnConfirmar
 		]).draw(false);
 
 	});
