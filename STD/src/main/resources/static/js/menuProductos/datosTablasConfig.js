@@ -148,7 +148,7 @@ var url = "";
 					+ ((opt.i_estatus == 1)?"<i class='bi bi-toggle2-on'></i></button>":"<i class='bi bi-toggle2-off'></i></button>")
 					+ "&nbsp;";
 
-			 tblClienteBloqueados.row.add([opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 tblClienteBloqueados.row.add([opt.pk_id_bloqueo,opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
 			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento == null?'----/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'----':opt.vc_motivo_desbloqueo)
 			 ,(opt.dt_fecha_desbloqueo == null?'----/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
 			 

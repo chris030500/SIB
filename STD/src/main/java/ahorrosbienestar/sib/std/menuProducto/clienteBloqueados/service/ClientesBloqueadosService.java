@@ -24,7 +24,7 @@ public class ClientesBloqueadosService {
 	
 	public List<ClientesBloqueados> obtClienteB(){
 		try {
-			return iClientesBloqueadosRepository.findAll();
+			return iClientesBloqueadosRepository.buscarClientesBloqueados();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error(e.getStackTrace());

@@ -1010,7 +1010,7 @@ function cargarTablaAlertas(datos) {
 			opt.vc_tipo_alerta,
 			opt.vc_estatus,
 			opt.vc_descripcion_cita
-			//,btnConfirmar
+			,btnConfirmar
 		]).draw(false);
 
 	});
