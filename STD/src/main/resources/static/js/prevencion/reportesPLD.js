@@ -4,6 +4,19 @@
 ////////////////----viviana.zamudio-------------------------////////////////
  */
 
+window.onload = function(){
+  var fecha = new Date(); //Fecha actual
+  var mes = fecha.getMonth()+1; //obteniendo mes
+  var dia = fecha.getDate(); //obteniendo dia
+  var ano = fecha.getFullYear(); //obteniendo año
+  if(dia<10)
+    dia='0'+dia; //agrega cero si el menor de 10
+  if(mes<10)
+    mes='0'+mes //agrega cero si el menor de 10
+  document.getElementById('dtFechaInicio').value=ano+"-"+mes+"-"+dia;
+  document.getElementById('dtFechaFin').value=ano+"-"+mes+"-"+dia;
+}
+
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
 	var loc = window.location;
@@ -25,27 +38,47 @@ var newUrlBase = urlPrincipal.replace("/prevencion", "");
 var url = "";
 var mensajeError = "Datos incorrectos, favor de validar.";
 function valVacio(fecha1, fecha2) {
+	
 	url = "";
 	var result = false;
+	var contador = 0;
+	/*
 	var fechaInicio = Date.parse(fecha1);
 	var fechaFin = Date.parse(fecha2);
+	*/
+	
+	if(document.getElementById("dtFechaFin").value < document.getElementById("dtFechaInicio").value){
+		mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
+		document.getElementById("dtFechaFin").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(document.getElementById("dtFechaInicio").value > document.getElementById("dtFechaFin").value){
+		mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
+		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
 
-	if (fechaInicio > fechaFin) {
+	/*if (fechaInicio > fechaFin) {
 		mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
 		result = true;
-	}
+	}*/
+	
+	
 
-	if (fechaFin < fechaInicio) {
+	/*if (fechaFin < fechaInicio) {
 		mensajeError = "Fecha fin no debe ser menor a fecha fin.";
 		result = true;
-	}
+	}*/
 
-	if (fecha1.length == 0) {
+	/*if (fecha1.length == 0) {
 		result = true;
 	}
 	if (fecha2.length == 0) {
 		result = true;
-	}
+	}*/
 
 	// @ts-ignore
 	if (document.getElementById("idReportePLD").value > 0) {
@@ -57,6 +90,7 @@ function valVacio(fecha1, fecha2) {
 	} else {
 		mensajeError = "Debe seleccionar un reporte.";
 		document.getElementById("idReportePLD").style.borderColor = "#F70707";
+		contador = contador + 1;
 		result = true;
 	}
 
@@ -69,19 +103,33 @@ function valVacio(fecha1, fecha2) {
 	} else {
 		mensajeError = "Debe seleccionar la extension del reporte.";
 		document.getElementById("extReportePLD").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(contador == 0){
+		document.getElementById("dtFechaInicio").style.borderColor = "";
+		document.getElementById("dtFechaFin").style.borderColor = "";
+		// @ts-ignore
+		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+	
+		result = false;
+	}else{
+		
 		result = true;
 	}
 
-	if (result == true) {
+	/*if (result == true) {
 		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
 		document.getElementById("dtFechaFin").style.borderColor = "#F70707";
+		
 	} else {
 		document.getElementById("dtFechaInicio").style.borderColor = "";
 		document.getElementById("dtFechaFin").style.borderColor = "";
 		// @ts-ignore
 		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
 		//console.log(url);
-	}
+	}*/
 	return result;
 }
 
