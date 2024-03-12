@@ -209,7 +209,7 @@ function llenarTablaSeguimiento() {
 			tblMensajesGenerados.clear().draw();;
 			$.each(respuesta.lista, function(idx, opt) {
 				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
-				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + ", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
+				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
 				var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
 				var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
 				var botones = "";
@@ -231,7 +231,7 @@ function llenarTablaSeguimiento() {
 					idMensaje: opt.mensajeID
 				};
 
-				if(opc.estMensaje == 1){
+				if(opt.estMensaje == 1){
 					sms.push(mensaje);
 				}
 				

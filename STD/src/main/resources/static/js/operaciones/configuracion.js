@@ -1035,6 +1035,7 @@ function abrirModalRelacion() {
 	catalogoAccionRealizar();
 	catalogoBloqueo();
 	catalogoGestion();
+	catalogoTipoGestion();
 }
 
 function cerrarModalRelacionA(elemento) {
@@ -1217,6 +1218,38 @@ function catalogoGestion() {
  */
 
 
+function catalogoTipoGestion() {
+	const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.disabled = true;
+	opcion.selected = true;
+	document.getElementById("tipoGestion").innerHTML = '';
+	document.getElementById("tipoGestion").add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_tipoGestion",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opcionBusqueda = document.getElementById("tipoGestion");
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				const opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
+				opcionBusqueda.add(opcion);
+			}
+			opcionBusqueda.addEventListener("change", function() {
+				valorAccionR = opcionBusqueda.value;
+			});
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
 
 /**
  * Registrar relación
@@ -1228,9 +1261,11 @@ function validarFormRelacion() {
 	var valorAccionR = formulario.querySelector("#selectRealizar").value;
 	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
 	var valorGestion = formulario.querySelector("#selectGestion").value;
+	var valorTipoGestion = formulario.querySelector("#tipoGestion").value;
 
 	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
 	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
+	valorTipoGestion = valorTipoGestion == "Elige una opción" ? 0 : valorTipoGestion;
 
 	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorGestion != "Elige una opción") {
 		//console.log("entró");
@@ -1239,7 +1274,8 @@ function validarFormRelacion() {
 			idCodigoResultado: valorCodigoR,
 			idAccionRealizar: valorAccionR,
 			ultimaGestion: valorGestion,
-			idBloqueo: valorBloqueo
+			idBloqueo: valorBloqueo,
+			idTipoGes: valorTipoGestion
 		}
 		// console.log(dto);
 		agregarRelacion(dto);
@@ -1293,7 +1329,7 @@ function listaDeRelaciones() {
 		success: function(respuesta) {
 			vistaTablaRel.clear().draw();
 			$.each(respuesta.lista, function(idx, opt) {
-
+				
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
@@ -1314,6 +1350,7 @@ function listaDeRelaciones() {
 					+ " <i class='bi bi-unlock'></i></button></div></div>";
 
 				var vigente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+				var tipo = opt.i_tipo_gestion != null ? opt.i_tipo_gestion.v_valor : "";
 
 				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "";
 				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "";
@@ -1326,6 +1363,7 @@ function listaDeRelaciones() {
 					opt.ultimaGestion.v_valor,
 					listaB,
 					vigente,
+					tipo,
 					btnEditar + btnEstatus
 				]).draw(false);
 			});
@@ -1352,6 +1390,7 @@ function abrirRelacion(id) {
 	var selectAccionR = document.getElementById("selectRealizarE");
 	var selectGestion = document.getElementById("selectGestionE");
 	var selectBloqueo = document.getElementById("selectBloqueoE");
+	var selectTipoGes = document.getElementById("tipoGestionE");
 	$.ajax({
 		url: newUrlBase + "buscar_relacionCodigo?idRelacion=" + id,
 		type: "GET",
@@ -1365,6 +1404,7 @@ function abrirRelacion(id) {
 			catalogoRealizarE(selectAccionR, relacion);
 			catalogoGestionE(selectGestion, relacion);
 			catalogoBloqueoE(selectBloqueo, relacion);
+			catalogoTipoGes(selectTipoGes, relacion);
 		}, error: function(error) {
 			//console.log(error);
 			swal("Hubo un error al momento de mostrar la información", {
@@ -1549,6 +1589,39 @@ function catalogoBloqueoE(select, relacion) {
  * Fin
  */
 
+function catalogoTipoGes(select, relacion) {
+const opcion = document.createElement("option");
+	opcion.text = "Elige una opción";
+	opcion.selected = true;
+	select.innerHTML = '';
+	select.add(opcion);
+	$.ajax({
+		url: newUrlBase + "lista_tipoGes",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			for (var i = 0; i < respuesta.lista.length; i++) {
+				var opcion = document.createElement("option");
+				opcion.value = respuesta.lista[i].pk_id;
+				opcion.text = respuesta.lista[i].v_valor;
+				select.add(opcion);
+				// Selecciona la sucursal actual
+				if (relacion.bloqueoListas != null) {
+					if (respuesta.lista[i].pk_id === relacion.i_tipo_gestion.pk_id) {
+						opcion.selected = true;
+					}
+				}
+			}
+		}, error: function(error) {
+			swal({
+				closeOnClickOutside: false,
+				text: "Hubo un error al momento de mostrar la información",
+				icon: "warning",
+			});
+		}
+	});
+}
+
 /**
  * Editar relación
  */
@@ -1559,6 +1632,7 @@ function validarFormRelacionE() {
 	var valorAccionR = formulario.querySelector("#selectRealizarE").value;
 	var valorBloqueo = formulario.querySelector("#selectBloqueoE").value;
 	var valorGestion = formulario.querySelector("#selectGestionE").value;
+	var valorTipoGes = formulario.querySelector("#tipoGestionE").value;
 
 	valorAccionR = valorAccionR == "Elige una opción" ? 0 : valorAccionR;
 	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
@@ -1568,7 +1642,8 @@ function validarFormRelacionE() {
 		idCodigoResultado: valorCodigoR,
 		idAccionRealizar: valorAccionR,
 		ultimaGestion: valorGestion,
-		idBloqueo: valorBloqueo
+		idBloqueo: valorBloqueo,
+		idTipoGes: valorTipoGes
 	}
 
 	// console.log(dto);
@@ -1875,7 +1950,6 @@ const selectElement2 = document.getElementById('selectBloqueoE');
 selectElement.addEventListener('change', function(event) {
 	// Obtener el valor seleccionado del select
 	const selectedValue = event.target.value;
-	console.log('Valor seleccionado:', selectedValue);
 
 	if (selectedValue == '78' || selectedValue == '72') {
 		selectElement2.value = "79";
@@ -1883,6 +1957,27 @@ selectElement.addEventListener('change', function(event) {
 	} else {
 		selectElement2.value = "''";
 		selectElement2.disabled = false; // Asegúrate de desbloquearlo si no cumple la condición
+	}
+});
+/**
+ * Fin
+ */
+
+// Seleccionar el elemento select por su ID
+const selectElement3 = document.getElementById('selectRealizar');
+const selectElement4 = document.getElementById('selectBloqueo');
+
+// Agregar un evento 'change' al elemento select
+selectElement3.addEventListener('change', function(event) {
+	// Obtener el valor seleccionado del select
+	const selectedValue = event.target.value;
+
+	if (selectedValue == '78' || selectedValue == '72') {
+		selectElement4.value = "79";	
+		selectElement4.disabled = true; // CORRECCIÓN AQUÍ
+	} else {
+		selectElement4.value = "Elige una opción";
+		selectElement4.disabled = false; // Asegúrate de desbloquearlo si no cumple la condición
 	}
 });
 /**

@@ -7,6 +7,7 @@ public class RelacionDTO {
 	private int idAccionRealizar;
 	private int ultimaGestion;
 	private int idBloqueo;
+	private int idTipoGes;
 
 	public int getIdCodigoAccion() {
 		return idCodigoAccion;
@@ -48,4 +49,13 @@ public class RelacionDTO {
 		this.idBloqueo = idBloqueo;
 	}
 
+	public int getIdTipoGes() {
+		return idTipoGes;
+	}
+
+	public void setIdTipoGes(int idTipoGes) {
+		this.idTipoGes = idTipoGes;
+	}
+	
+	
 }
