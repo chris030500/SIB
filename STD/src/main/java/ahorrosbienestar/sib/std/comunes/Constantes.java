@@ -79,7 +79,7 @@ public class Constantes {
 	
 	//MENSAJES SEGUIMIENTOS 
 	public static final String ERROR_GESTION_ASIGNADA = "La Gestion del Cliente ya esta Asignada a otro usuario y/o esta asignada a otra sucursal.";
-	
+	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
     private Constantes() {
         

@@ -15,10 +15,27 @@ public class ListaSeguimientoService {
 	@Autowired
 	private ListaSeguimientoRepository repository;
 
-	public List<ListaSeguimientoModel> listaSeguimiento(int idSucursal, String usuario) {
-		return repository.listaSeguimiento(idSucursal,usuario);
+	public List<ListaSeguimientoModel> listaSeguimiento(int idSucursal, String usuario,int permiso) {
+		List<ListaSeguimientoModel> listaSeg = null;
+		
+		switch (permiso) {
+		case 1:
+			listaSeg = repository.listaSeguimientoGestor(idSucursal,usuario);
+			break;
+		case 2:
+			listaSeg = repository.listaSeguimientoSupervisor(idSucursal);
+			break;
+		case 3:
+			listaSeg = repository.listaSeguimientoSupervisor(idSucursal);
+			break;
+		default:
+			break;
+		}
+		
+		return listaSeg;
+		
 	}
-	
+		
 	public List<ListaSeguimientoModel> busquedaPorSeguimiento(String nombre, String oferta, String referencia, String cliente) {
 		return repository.busquedaPorSeguimiento(nombre, oferta, referencia, cliente);
 	}

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,7 @@ public class SeguimientoGestionRestController {
 	@Autowired
 	private EstatusSeguimientoService estatusSeguimientoService;
 
+
 	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
 
 	private static final String accionRealizar = "MOSTRAR CALENDARIO";
@@ -86,7 +88,15 @@ public class SeguimientoGestionRestController {
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
-			listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado());
+			
+			//List<SeguimientoPorEmpleado> queryEmpleado = seguimientoPorEmpleadoService.obtenerConsulta(obtenerEmpleadoLogueado(),sucursal);
+			
+			if(datosUsuario().get(0).getPermisoCC() > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),datosUsuario().get(0).getPermisoCC());
+			}
+			if(datosUsuario().get(0).getPermisoSuc() > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),datosUsuario().get(0).getPermisoSuc());
+			}
 			logger.info("se llenó la lista");
 			respuesta.put("lista", listaSeguimiento);
 			return ResponseEntity.ok(respuesta);
@@ -98,6 +108,7 @@ public class SeguimientoGestionRestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
+	
 
 	/**
 	 * Parametros para la busqueda de una oferta
@@ -382,19 +393,20 @@ public class SeguimientoGestionRestController {
 	}
 
 	@RequestMapping(value = { "/todos_los_estatus" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") String idSucursal) {
+	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") int idSucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
-		String sucursal;
+		int sucursal = 0;
 		try {
 
-			if (idSucursal.equals(""))
-				sucursal = sucursalPorEmpleado() == null?"100":sucursalPorEmpleado();
+			if (idSucursal == 0)
+				sucursal = datosUsuario()!=null?datosUsuario().get(0).getSucursalUsuario():0;
 			else
 				sucursal = idSucursal;
-
-			lista = estatusSeguimientoService.listaDeEstatus(Integer.parseInt(sucursal));
+			
+			
+			lista = estatusSeguimientoService.listaDeEstatus(sucursal);
 			logger.info("se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);
@@ -407,7 +419,7 @@ public class SeguimientoGestionRestController {
 		}
 	}
 
-	public String sucursalPorEmpleado() {
+	public List<MicrofinUsuarioDTO> datosUsuario() {
 		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
 		//
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -416,7 +428,7 @@ public class SeguimientoGestionRestController {
 		//
 		lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
 		logger.info("se llenó la lista");
-		return lista.size()>0?lista.get(0).getSucursalUsuario():null;
+		return lista.size()>0?lista:null;
 	}
 
 	@RequestMapping(value = { "/guardar_gestion" }, method = RequestMethod.GET)

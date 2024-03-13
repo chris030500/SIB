@@ -30,7 +30,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ "END, "
 			+ "i_estatus, "
 			+ "VC_NOMBRE_USUARIO ASC "
-			+ "LIMIT 200 ", nativeQuery = true)
+			+ "LIMIT 500 ", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimiento(@Param("idSucursal") int idSucursal, @Param("usuario") String usuario);
 	
 	
@@ -79,5 +79,47 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			@Param("oferta") String oferta, 
 			@Param("referencia") String referencia, 
 			@Param("sucursal") int sucursal);
+
+	@Query(value = "select I_CLIENTEID "
+			+ ",PK_ID_ASIGNACION_OA "
+			+ ",VC_NOMBRECOMPLETO as nombreCompleto "
+			+ ",VC_CODIGO_OFERTA "
+			+ ",VC_COD_REFERENCIA "
+			+ ",FECHAINICIO "
+			+ ",FECHAFIN "
+			+ ",i_estatus "
+			+ ",V_VALOR "
+			+ ",FK_ID_SUCURSAL "
+			+ ",VC_NOMBRESUCURSAL "
+			+ ",I_BLOQUEO "
+			+ ",VC_NOMBRE_USUARIO "
+			+ "FROM SIB.VW_ASIGNACION_OFERTAS "
+			+ "WHERE FK_ID_SUCURSAL =:idSucursal "
+			+ "order by case WHEN VC_NOMBRE_USUARIO =:usuario THEN 0 "
+			+ "				 ELSE 1 "
+			+ "END, "
+			+ "i_estatus, "
+			+ "VC_NOMBRE_USUARIO DESC "
+			+ "LIMIT 500 ", nativeQuery = true)
+	public List<ListaSeguimientoModel> listaSeguimientoGestor(int idSucursal, String usuario);
+
+	@Query(value = "select I_CLIENTEID "
+			+ ",PK_ID_ASIGNACION_OA "
+			+ ",VC_NOMBRECOMPLETO as nombreCompleto "
+			+ ",VC_CODIGO_OFERTA "
+			+ ",VC_COD_REFERENCIA "
+			+ ",FECHAINICIO "
+			+ ",FECHAFIN "
+			+ ",i_estatus "
+			+ ",V_VALOR "
+			+ ",FK_ID_SUCURSAL "
+			+ ",VC_NOMBRESUCURSAL "
+			+ ",I_BLOQUEO "
+			+ ",VC_NOMBRE_USUARIO "
+			+ "FROM SIB.VW_ASIGNACION_OFERTAS "
+			+ "WHERE FK_ID_SUCURSAL =:idSucursal "
+			+ "order by VC_NOMBRE_USUARIO desc "
+			+ "LIMIT 500 ", nativeQuery = true)
+	public List<ListaSeguimientoModel> listaSeguimientoSupervisor(int idSucursal);
 	
 }

@@ -112,17 +112,31 @@ var servicioURL;
 var idOferta;
 
 function llenarTablaSeguimiento(condicion) {
+	
+	if(sucursalSeleccionadaS.value != ''){
+		
 
 	if (condicion) {
 		servicioURL = "parametros_seguimiento?nombre=" + parametroNombre + "&oferta=" + parametroOferta + "&referencia=" + parametroReferencia + "&sucursal="+sucursalSeleccionadaS.value
 	} else {
 		servicioURL = "lista_seguimiento?sucursal="+sucursalSeleccionadaS.value;
 	}
+	
+	Swal.fire({
+    		title: 'Consultando informacion..',
+    		html: 'Espere Por Favor...',
+    		allowOutsideClick: false,
+    		showConfirmButton: false,
+    		onBeforeOpen: () => {
+      			Swal.showLoading();
+    		}
+  	});
 
 	$.ajax({
 		url: newUrlBase + servicioURL,
 		type: "GET",
 		dataType: "JSON",
+		async: true, // Configurar la llamada AJAX como asíncrona
 		success: function(respuesta) {
 			
 			if(respuesta.lista == null){
@@ -137,7 +151,8 @@ function llenarTablaSeguimiento(condicion) {
 				});
 				
 			}else{
-					console.log(respuesta);
+			Swal.close();
+			console.log(respuesta);
 			document.getElementById("ver-cargaSeguimiento").style.display = "none";
 			document.getElementById("ver-listaSeguimiento").style.display = "block";
 			tablaFiltro.clear().draw();
@@ -178,6 +193,15 @@ function llenarTablaSeguimiento(condicion) {
 			//console.log(error.error);
 		}
 	});
+	
+	}else{
+		swal("No cuenta con los permisos de consulta.", {
+			closeOnClickOutside: false,
+			icon: "error",
+		});
+		
+		document.getElementById("filtroSeguimiento").style.display = "none";
+	}
 }
 /**
  * Fin
@@ -724,7 +748,7 @@ function cerrarModalEditar() {
 
 function mostrarAlerta() {
 	$('#modal-alerta').modal('show');
-	todosLosEstatus("");
+	todosLosEstatus(0);
 }
 
 document.addEventListener('click', function(event) {

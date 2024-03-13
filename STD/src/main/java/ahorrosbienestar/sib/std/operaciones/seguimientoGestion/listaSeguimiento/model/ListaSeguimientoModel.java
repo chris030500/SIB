@@ -11,7 +11,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(indexes = { @Index(name = "idx_nombreCompleto", columnList = "nombreCompleto") })
+@Table(indexes = { @Index(name = "idx_nombreCompleto", columnList = "nombreCompleto")
+,@Index(name = "idx_FK_ID_SUCURSAL", columnList = "FK_ID_SUCURSAL")
+,@Index(name = "idx_VC_NOMBRE_USUARIO", columnList = "VC_NOMBRE_USUARIO") })
 public class ListaSeguimientoModel {
 
 	@Id
