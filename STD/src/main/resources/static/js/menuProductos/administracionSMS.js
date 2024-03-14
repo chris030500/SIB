@@ -231,7 +231,7 @@ function llenarTablaSeguimiento() {
 					idMensaje: opt.mensajeID
 				};
 
-				if(opc.estMensaje == 1){
+				if(opt.estMensaje == 1){
 					sms.push(mensaje);
 				}
 				

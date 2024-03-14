@@ -58,7 +58,7 @@ public class CitasVencidosService {
 	public List<SucursalXEmpleadoSeguimiento> obtenerSucursales(int empleadoid){
 		logger.info("Consultar Sucursal por empleado");
 		try {
-			String sql = "CALL SIB.SP_SUCURSALES_ACCESO (?);";
+			String sql = "CALL SIB.SP_SUCURSALES_ACCESO(?);";
 			List<SucursalXEmpleadoSeguimiento> ls = jdbcTemplate.query(sql, new Object[] {empleadoid},
 					new RowMapper<SucursalXEmpleadoSeguimiento>() {
 						public SucursalXEmpleadoSeguimiento mapRow(ResultSet rs, final int rowNum) throws SQLException {

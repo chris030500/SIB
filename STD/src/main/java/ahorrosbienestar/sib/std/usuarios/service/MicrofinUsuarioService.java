@@ -30,8 +30,6 @@ public class MicrofinUsuarioService {
 		logger.info("Ejecutando obtenerUsuario: " + empleadoId);
 		try {
 				
-			
-			
 			String sql = "CALL SIB.SP_INFORMACION_USUARIO(?);";
 			@SuppressWarnings("deprecation")
 			List<MicrofinUsuarioDTO> ls = jdbcTemplate.query(sql, new Object[] { empleadoId }, new RowMapper<MicrofinUsuarioDTO>() {
@@ -42,7 +40,8 @@ public class MicrofinUsuarioService {
 							e.setSucursalUsuario(rs.getInt(3));
 							e.setPermisoCC(rs.getInt(4));
 							e.setPermisoSuc(rs.getInt(5));
-							
+							e.setPermisoAdmin(rs.getInt(6));
+							e.setPermisoConsulta(rs.getInt(7));
 							return e;
 						}
 					});

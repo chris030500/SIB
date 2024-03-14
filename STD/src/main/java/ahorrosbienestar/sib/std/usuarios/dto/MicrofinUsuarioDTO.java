@@ -7,6 +7,8 @@ public class MicrofinUsuarioDTO {
 	private int sucursalUsuario;
 	private int permisoCC;
 	private int permisoSuc;
+	private int permisoAdmin;
+	private int permisoConsulta;
 	public String getClavePuestoID() {
 		return clavePuestoID;
 	}
@@ -37,7 +39,16 @@ public class MicrofinUsuarioDTO {
 	public void setPermisoSuc(int permisoSuc) {
 		this.permisoSuc = permisoSuc;
 	}
-	
-	
-	
+	public int getPermisoAdmin() {
+		return permisoAdmin;
+	}
+	public void setPermisoAdmin(int permisoAdmin) {
+		this.permisoAdmin = permisoAdmin;
+	}
+	public int getPermisoConsulta() {
+		return permisoConsulta;
+	}
+	public void setPermisoConsulta(int permisoConsulta) {
+		this.permisoConsulta = permisoConsulta;
+	}
 }

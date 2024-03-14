@@ -36,7 +36,8 @@
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
-								<input type="hidden" id="idSucursalInicial"/>
+								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}"/>
+								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}"/>
 								<input type="hidden" id="NombreSucursalS" />
 								<legend class="float-none w-auto p-2">Filtro busqueda</legend>
 								<!-- Campos del filtro -->

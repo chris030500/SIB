@@ -83,13 +83,16 @@ public class SeguimientoGestionRestController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/lista_seguimiento" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion(@RequestParam("sucursal") int sucursal) {
+	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion(@RequestParam("sucursal") int sucursal,@RequestParam("permiso") int permiso) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
 			
-			//List<SeguimientoPorEmpleado> queryEmpleado = seguimientoPorEmpleadoService.obtenerConsulta(obtenerEmpleadoLogueado(),sucursal);
+			if(permiso > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),2);
+			}
+			
 			
 			if(datosUsuario().get(0).getPermisoCC() > 0) {
 				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),datosUsuario().get(0).getPermisoCC());
@@ -397,16 +400,14 @@ public class SeguimientoGestionRestController {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
-		int sucursal = 0;
 		try {
 
-			if (idSucursal == 0)
+			/*if (idSucursal == 0)
 				sucursal = datosUsuario()!=null?datosUsuario().get(0).getSucursalUsuario():0;
 			else
-				sucursal = idSucursal;
+				sucursal = idSucursal;*/
 			
-			
-			lista = estatusSeguimientoService.listaDeEstatus(sucursal);
+			lista = estatusSeguimientoService.listaDeEstatus(idSucursal);
 			logger.info("se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);
