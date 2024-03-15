@@ -234,7 +234,7 @@
 												<div class="col-sm-3" style="text-align: right; padding-top: 24px;">
 													<button style='background: #0dcaf0; border-color: #0dcaf0;'
 														type="button" onclick="validarGestion()" data-dismiss="modal"
-														class="btn btn-primary">Registrar</button>
+														class="btn btn-primary" th:if="${permisoUsuario != 2}">Registrar</button>
 												</div>
 											</div>
 										</form>

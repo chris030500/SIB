@@ -11,7 +11,7 @@ public class Constantes {
 	
 	//Rutas de Seguimiento
 	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
-
+	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
 	
 	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
@@ -86,6 +86,9 @@ public class Constantes {
 	public static final String ERROR_GESTION_ASIGNADA = "La Gestion del Cliente ya esta Asignada a otro usuario y/o esta asignada a otra sucursal.";
 	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
+	//CATALOGOS DE PANTALLAS
+	public static final int CATALOGO_GESTION = 14;
+	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
 	
     private Constantes() {
         
