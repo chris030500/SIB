@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,18 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesPorSucursal;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.ClientesActivosService;
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.ClientesPorActivosService;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.operaciones.reportes.dto.ReporteDTO;
-import ahorrosbienestar.sib.std.operaciones.reportes.dto.ValoresDTO;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import groovy.transform.Undefined;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.id_return;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -36,6 +36,9 @@ public class ReportesRestController {
 	
 	@Autowired
 	private ClientesActivosService clientesActivosService;
+	
+	@Autowired
+	private ClientesPorActivosService clientesPorActivosService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -112,6 +115,25 @@ public class ReportesRestController {
 		}
 	}
 	
+	@RequestMapping(value = {"/buscar_cliente_activo_sucursal"}, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaClientesOfertasAutomaticasxSucursal(@RequestParam("idSucursal") int idSucursal) {
+		Map<String, Object> respuesta =  new HashMap<>();
+		String mensajeError = null;
+		List<ClientesPorSucursal> lista = new ArrayList<ClientesPorSucursal>();
+		try {
+			lista = clientesPorActivosService.listaClientesFiltro(idSucursal);
+			logger.info("Se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
 	
 	@RequestMapping(value = {"/reporte_gestion"}, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteGestiones(@RequestBody ReporteDTO dto) {
@@ -121,46 +143,51 @@ public class ReportesRestController {
 		StringBuilder sbGestion2 = new StringBuilder();
 		StringBuilder sbClientes = new StringBuilder();
 		StringBuilder sbSucursales = new StringBuilder();
-		String tipo = dto.getBusqueda() == 53 ? "sucursal" : "usuario";
-        
-		
-        if (tipo.equals("sucursal")) {
-        	// gestion
-    		dto.getEstatusGestion().forEach(gestion -> {
-    			sbGestion.append(gestion.getId()).append(", ");
-    		});
-    		
-            if (sbGestion.length() > 0) {
-            	sbGestion.setLength(sbGestion.length() - 2);
-            }
-        	
-            // sucursal
-    		dto.getValores().forEach(valor -> {
-    			sbSucursales.append(valor.getId()).append(", ");
-    		});
-            
-            if (sbSucursales.length() > 0) {
-            	sbSucursales.setLength(sbSucursales.length() - 2);
-            }
-        } else {
-        	// gestion
-    		dto.getEstatusGestion().forEach(gestion -> {
-    			sbGestion2.append(gestion.getId()).append(", ");
-    		});
-    		
-            if (sbGestion2.length() > 0) {
-            	sbGestion2.setLength(sbGestion2.length() - 2);
-            }
-        	
-            // clientes
-    		dto.getValores().forEach(valor -> {
-    			sbClientes.append(valor.getId()).append(", ");
-    		});
-            
-            if (sbClientes.length() > 0) {
-            	sbClientes.setLength(sbClientes.length() - 2);
-            }
-        }
+		int tipo = dto.getBusqueda();
+				
+		switch(tipo) {
+			case 1:
+				// gestion
+	    		dto.getEstatusGestion().forEach(gestion -> {
+	    			sbGestion.append(gestion.getId()).append("~gestiones=");
+	    		});
+	    		
+	            if (sbGestion.length() > 0) {
+	            	sbGestion.setLength(sbGestion.length() - 11);
+	            }
+	        	
+	            // sucursal
+	    		dto.getValores().forEach(valor -> {
+	    			sbSucursales.append(valor.getId()).append("~sucursales=");
+	    		});
+	            
+	            if (sbSucursales.length() > 0) {
+	            	sbSucursales.setLength(sbSucursales.length() - 13);
+	            }
+				break;
+			case 2:
+				// gestion
+	    		dto.getEstatusGestion().forEach(gestion -> {
+	    			sbGestion2.append(gestion.getId()).append("~gestiones2=");
+	    		});
+	    		
+	            if (sbGestion2.length() > 0) {
+	            	sbGestion2.setLength(sbGestion2.length() - 12);
+	            }
+	        	
+	            // clientes
+	    		dto.getValores().forEach(valor -> {
+	    			sbClientes.append(valor.getId()).append("~clientesActivos=");
+	    		});
+	            
+	            if (sbClientes.length() > 0) {
+	            	sbClientes.setLength(sbClientes.length() - 17);
+	            }
+				break;
+			default:
+				break;
+		}
+       
 		
 		try {
 			

@@ -32,12 +32,38 @@
 				</div>
 
 				<!-- Filtro busqueda -->
-				<div class="border p-2 card">
+				<div class="border p-2 card" id="filtroSeguimiento" style="display: block;">
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
+								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}"/>
+								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}"/>
+								<input type="hidden" id="NombreSucursalS" />
 								<legend class="float-none w-auto p-2">Filtro busqueda</legend>
 								<!-- Campos del filtro -->
+								<div class="row">
+									<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursalSeguimiento"
+													list="opcionSucursalSeguiento" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursalSeguiento">
+													<option th:each="sucursal : ${sucursales}"
+                                                        th:value="${sucursal.vc_nombre_sucursal}"
+                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
+												</datalist>
+									</div>
+									<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursalSeguimiento"></p>
+												</b>
+											
+									</div>
+									
+								</div>
 								<div class="row">
 									<div class="col-sm-12">
 										<form name="formFiltro" id="formFiltro">
@@ -208,7 +234,7 @@
 												<div class="col-sm-3" style="text-align: right; padding-top: 24px;">
 													<button style='background: #0dcaf0; border-color: #0dcaf0;'
 														type="button" onclick="validarGestion()" data-dismiss="modal"
-														class="btn btn-primary">Registrar</button>
+														class="btn btn-primary" th:if="${permisoUsuario != 2}">Registrar</button>
 												</div>
 											</div>
 										</form>

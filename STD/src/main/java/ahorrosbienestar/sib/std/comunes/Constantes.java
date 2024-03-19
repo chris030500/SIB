@@ -5,8 +5,13 @@ public class Constantes {
 	//Constantes Rutas de Acceso
 	public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
 	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
-	
 	public static final String RUTA_ERROR = "errores/error_403";
+	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
+	
+	
+	//Rutas de Seguimiento
+	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
+	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
 	
 	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
@@ -77,7 +82,14 @@ public class Constantes {
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
 	public static final int BUSQUEDA_POR_USUARIO = 1;
 	
+	//MENSAJES SEGUIMIENTOS 
+	public static final String ERROR_GESTION_ASIGNADA = "La Gestion del Cliente ya esta Asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
+	//CATALOGOS DE PANTALLAS
+	public static final int CATALOGO_GESTION = 14;
+	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
+	
     private Constantes() {
         
     }

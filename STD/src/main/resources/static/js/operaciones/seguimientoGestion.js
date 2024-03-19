@@ -13,11 +13,10 @@ function getAbsolutePath() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
+var sucursalSeleccionadaS = document.getElementById("idSucursalInicial");
+var permisoUsuario = document.getElementById("idPermisoUsuario");
 window.onload = function() {
 	mostrarAlerta();
-	listaClientes();
-	// obtenerSucursal();
-	// llenarTablaSeguimiento(false);
 }
 /**
 * Fin
@@ -66,9 +65,10 @@ var clienteValue;
 
 function listaClientes() {
 	// spinner.style.display = "block";
-	var buscar = buscarCliente.value;
+	
+	var buscar = sucursalSeleccionadaS.value
 	$.ajax({
-		url: newUrlBase + "buscar_cliente_activo?valor=" + buscar,
+		url: newUrlBase + "buscar_cliente_activo_sucursal?idSucursal=" + buscar,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -110,18 +110,47 @@ var servicioURL;
 var idOferta;
 
 function llenarTablaSeguimiento(condicion) {
+	
+	if(sucursalSeleccionadaS.value != 0){
+		
 
 	if (condicion) {
-		servicioURL = "parametros_seguimiento?nombre=" + parametroNombre + "&oferta=" + parametroOferta + "&referencia=" + parametroReferencia
+		servicioURL = "parametros_seguimiento?nombre=" + parametroNombre + "&oferta=" + parametroOferta + "&referencia=" + parametroReferencia + "&sucursal="+sucursalSeleccionadaS.value
 	} else {
-		servicioURL = "lista_seguimiento";
+		servicioURL = "lista_seguimiento?sucursal="+sucursalSeleccionadaS.value+"&permiso="+permisoUsuario.value;
 	}
+	
+	Swal.fire({
+    		title: 'Consultando informacion..',
+    		html: 'Espere Por Favor...',
+    		allowOutsideClick: false,
+    		showConfirmButton: false,
+    		onBeforeOpen: () => {
+      			Swal.showLoading();
+    		}
+  	});
 
 	$.ajax({
 		url: newUrlBase + servicioURL,
 		type: "GET",
 		dataType: "JSON",
+		async: true, // Configurar la llamada AJAX como asíncrona
 		success: function(respuesta) {
+			
+			if(respuesta.lista == null){
+				swal({
+      				text: respuesta.error,
+      				icon: 'error',
+      				buttons: ["Cancelar", "Confirmar"],
+    			}).then(resultado => {
+					if (resultado) {
+						llenarTablaSeguimiento(false);
+					}
+				});
+				
+			}else{
+			Swal.close();
+			console.log(respuesta);
 			document.getElementById("ver-cargaSeguimiento").style.display = "none";
 			document.getElementById("ver-listaSeguimiento").style.display = "block";
 			tablaFiltro.clear().draw();
@@ -155,11 +184,22 @@ function llenarTablaSeguimiento(condicion) {
 					btnEditar
 				]).draw(false);
 			});
+				
+			}
 		},
 		error: function(error) {
 			//console.log(error.error);
 		}
 	});
+	
+	}else{
+		swal("No cuenta con los permisos de consulta.", {
+			closeOnClickOutside: false,
+			icon: "error",
+		});
+		
+		document.getElementById("filtroSeguimiento").style.display = "none";
+	}
 }
 /**
  * Fin
@@ -321,6 +361,7 @@ function registrarGestion(dto) {
 					validarBotonRegistro(respuesta.valor);
 					listaDeGestiones();
 					limpiarVariablesModal();
+					llenarTablaSeguimiento(false);
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -355,7 +396,6 @@ function mostrarGestion(id, asignacion, bloqueo) {
 
 function cerrarModal(valor) {
 	$('#modal-' + valor).modal('hide');
-	llenarTablaSeguimiento(true);
 	limpiarVariablesModal();
 }
 
@@ -575,18 +615,23 @@ var listaDeEstatus = [];
 var listaDeTotales = [];
 var sucursalActual = document.getElementById("nombreSucursal");
 var sucursalCitaVencidas = document.getElementById("nombreSucursalCitaVencidas");
+var nombreSucursalSeguimiento = document.getElementById("nombreSucursalSeguimiento");
+
 
 var idBusquedaInicial = 0;
 
-function todosLosEstatus(id) {
+function todosLosEstatus() {
 	$.ajax({
-		url: newUrlBase + "todos_los_estatus?idSucursal=" + id,
+		url: newUrlBase + "todos_los_estatus?idSucursal=" + sucursalSeleccionadaS.value,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			sucursalActual.textContent = respuesta.lista[0].vc_nombresucursal;
-			sucursalCitaVencidas.textContent = respuesta.lista[0].vc_nombresucursal;
-			idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
+			document.getElementById("NombreSucursalS").value = respuesta.lista[0].vc_nombresucursal;
+			sucursalActual.textContent = document.getElementById("NombreSucursalS").value;
+			sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
+			nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
+			sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
+			//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
@@ -595,6 +640,7 @@ function todosLosEstatus(id) {
 			createChart(listaDeEstatus, listaDeTotales);
 		}
 	});
+	
 }
 /**
  * Fin
@@ -690,6 +736,8 @@ function cerrarModalAlertas(valor) {
 	if (myChart) {
 		myChart.destroy();
 	}
+	listaClientes();
+	llenarTablaSeguimiento(false);
 }
 
 function cerrarModalEditar() {
@@ -697,8 +745,8 @@ function cerrarModalEditar() {
 }
 
 function mostrarAlerta() {
+	todosLosEstatus();
 	$('#modal-alerta').modal('show');
-	todosLosEstatus("");
 }
 
 document.addEventListener('click', function(event) {
@@ -751,68 +799,30 @@ function obtenerSucursal() {
  */
 var idSucursal; // Variable para almacenar el valor del campo de búsqueda
 
-function buscarSucursales() {
-	// Limpiar datos de la gráfica
-	listaDeEstatus = [];
-	listaDeTotales = [];
-	// Destruir la instancia de la gráfica
-	if (myChart) {
-		myChart.destroy();
-	}
-	var searchSucursal = document.getElementById('buscarSucursal').value;
-	
-	 var idSeleccionado = 0;
 
-	
-	// Llamar a la función todosLosEstatus con idSucursal
-	todosLosEstatus(idSeleccionado);
-	
-	
-	/*$.ajax({
-		url: newUrlBase + "buscar_sucursal?sucursal=" + searchSucursal,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			var opcionSucursal = document.getElementById('opcionSucursal');
-			opcionSucursal.innerHTML = '';
-			respuesta.sucursal.forEach(function(sucursal) {
-				var option = document.createElement('option');
-				option.value = sucursal.vc_nombresucursal;
-				opcionSucursal.appendChild(option);
-				console.log(sucursal.pk_id_sucursal);
-				console.log(sucursal.vc_nombresucursal);
-			});
-
-			if (respuesta.sucursal[0]) {
-				idSucursal = respuesta.sucursal[0].pk_id_sucursal; // Aquí asumo que deseas guardar el primer valor de pk_id_sucursal                
-			}
-
-
-			todosLosEstatus(idSucursal);
-		}
-	});*/
-	
-}
 
 var searchSucursal = document.getElementById('buscarSucursal');
 searchSucursal.addEventListener('change', function () {
         // Obtener el valor seleccionado del input
         var valorSeleccionado = $(this).val();
 
-        // Obtener el id asociado al valor seleccionado
-        var idSeleccionado = $('#opcionSucursal option[value="' + valorSeleccionado + '"]').attr('id');
+		if(valorSeleccionado.trim().length > 0){
+			// Obtener el id asociado al valor seleccionado
+        	var idSeleccionado = $('#opcionSucursal option[value="' + valorSeleccionado + '"]').attr('id');
 
         
-        // Limpiar datos de la gráfica
-		listaDeEstatus = [];
-		listaDeTotales = [];
-		// Destruir la instancia de la gráfica
-		if (myChart) {
-			myChart.destroy();
+        	// Limpiar datos de la gráfica
+			listaDeEstatus = [];
+			listaDeTotales = [];
+			// Destruir la instancia de la gráfica
+			if (myChart) {
+				myChart.destroy();
+			}
+			// Llamar a la función todosLosEstatus con idSucursal
+			sucursalSeleccionadaS.value = idSeleccionado;
+			todosLosEstatus();
 		}
-
-		// Llamar a la función todosLosEstatus con idSucursal
-		todosLosEstatus(idSeleccionado);
+    
 });
 
 
@@ -939,7 +949,7 @@ function cancelarSegGestion(gestionID) {
             //div.classList.remove('show', 'active');
         });
 		if(divId == 'vencidasCita'){
-			listaconsultarCitaVencidos(idBusquedaInicial);
+			listaconsultarCitaVencidos(document.getElementById("idSucursalInicial").value);
 		}
 
         // Mostrar el div seleccionado
@@ -951,14 +961,33 @@ var searchSucursalVencidas = document.getElementById('buscarSucursalVencidas');
 searchSucursalVencidas.addEventListener('change', function () {
         // Obtener el valor seleccionado del input
         var valorSeleccionado = $(this).val();
-
-        // Obtener el id asociado al valor seleccionado
-        var idSelec = $('#opcionSucursalVencidas option[value="' + valorSeleccionado + '"]').attr('id');
         
-        sucursalCitaVencidas.textContent = valorSeleccionado;
+        if(valorSeleccionado.trim().length > 0){
+			// Obtener el id asociado al valor seleccionado
+        	var idSelec = $('#opcionSucursalVencidas option[value="' + valorSeleccionado + '"]').attr('id');
+        
+        	sucursalCitaVencidas.textContent = valorSeleccionado;
 
-        listaconsultarCitaVencidos(idSelec);
-      
+        	listaconsultarCitaVencidos(idSelec);
+		}
+});
+
+var buscarClientesSucursal = document.getElementById('buscarSucursalSeguimiento');
+buscarClientesSucursal.addEventListener('change', function () {
+        // Obtener el valor seleccionado del input
+        var valorSeleccionado = $(this).val();
+        
+        if (valorSeleccionado.trim().length > 0){
+			// Obtener el id asociado al valor seleccionado
+        	var idSelec = $('#opcionSucursalVencidas option[value="' + valorSeleccionado + '"]').attr('id');
+        
+       		nombreSucursalSeguimiento.textContent = valorSeleccionado;
+        
+        	sucursalSeleccionadaS.value = idSelec;
+        	listaClientes();
+        	llenarTablaSeguimiento(false);
+		}
+
 });
 
  function listaconsultarCitaVencidos(idSucursalCitaVencidos) {
@@ -1007,9 +1036,14 @@ function cargarTablaAlertas(datos) {
 			opt.vc_clasificacion,
 			opt.vc_tipo_alerta,
 			opt.vc_estatus,
-			opt.vc_descripcion_cita,
-			btnConfirmar
+			opt.vc_descripcion_cita
+			,btnConfirmar
 		]).draw(false);
 
 	});
+	
 }
+
+
+ 
+ 

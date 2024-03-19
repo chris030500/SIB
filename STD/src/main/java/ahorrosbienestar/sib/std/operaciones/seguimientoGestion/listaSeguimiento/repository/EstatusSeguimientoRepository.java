@@ -10,7 +10,7 @@ import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.listaSeguimiento.
 @Repository
 public interface EstatusSeguimientoRepository extends JpaRepository<EstatusSeguimientoModel, Integer> {
 	
-	@Query(value = "SELECT COUNT(*) AS TOTAL_REGISTROS,PK_ID,V_VALOR,VC_NOMBRESUCURSAL, FK_ID_SUCURSAL AS I_ID_SUCURSAL "
+	@Query(value = "SELECT COUNT(*) AS TOTAL_REGISTROS,PK_ID,V_VALOR,CASE WHEN FK_ID_SUCURSAL=100 THEN 'CALL CENTER' ELSE VC_NOMBRESUCURSAL END VC_NOMBRESUCURSAL, FK_ID_SUCURSAL AS I_ID_SUCURSAL "
 			+ "FROM SIB.VW_ASIGNACION_OFERTAS "
 			+ "where FK_ID_SUCURSAL = :sucursal "
 			+ "GROUP BY PK_ID,V_VALOR,VC_NOMBRESUCURSAL,FK_ID_SUCURSAL", nativeQuery = true)

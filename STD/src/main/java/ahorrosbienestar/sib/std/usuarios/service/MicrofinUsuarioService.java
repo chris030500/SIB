@@ -29,24 +29,19 @@ public class MicrofinUsuarioService {
 	public List<MicrofinUsuarioDTO> obtenerUsuario(int empleadoId) {
 		logger.info("Ejecutando obtenerUsuario: " + empleadoId);
 		try {
-			String sql = "SELECT UsuarioId, EmpleadoID, ClavePuestoID, Nombre, ApPaterno, ApMaterno, NombreCompleto, Clave, Estatus, Correo, SucursalUsuario, Semilla, RFC FROM CE.TBL_MICROFIN_USUARIOS WHERE EmpleadoID = ?";
+				
+			String sql = "CALL SIB.SP_INFORMACION_USUARIO(?);";
 			@SuppressWarnings("deprecation")
 			List<MicrofinUsuarioDTO> ls = jdbcTemplate.query(sql, new Object[] { empleadoId }, new RowMapper<MicrofinUsuarioDTO>() {
 						public MicrofinUsuarioDTO mapRow(ResultSet rs, final int rowNum) throws SQLException {
 							MicrofinUsuarioDTO e = new MicrofinUsuarioDTO();
-							e.setUsuarioId(rs.getString(1));
-							e.setEmpleadoID(rs.getString(2));
-							e.setClavePuestoID(rs.getString(3));
-							e.setNombre(rs.getString(4));
-							e.setApPaterno(rs.getString(5));
-							e.setApMaterno(rs.getString(6));
-							e.setNombreCompleto(rs.getString(7));
-							e.setClave(rs.getString(8));
-							e.setEstatus(rs.getString(9));
-							e.setCorreo(rs.getString(10));
-							e.setSucursalUsuario(rs.getString(11));
-							e.setSemilla(rs.getString(12));
-							e.setRfc(rs.getString(13));
+							e.setClavePuestoID(rs.getString(1));
+							e.setDescPuesto(rs.getString(2));
+							e.setSucursalUsuario(rs.getInt(3));
+							e.setPermisoCC(rs.getInt(4));
+							e.setPermisoSuc(rs.getInt(5));
+							e.setPermisoAdmin(rs.getInt(6));
+							e.setPermisoConsulta(rs.getInt(7));
 							return e;
 						}
 					});

@@ -2,122 +2,53 @@ package ahorrosbienestar.sib.std.usuarios.dto;
 
 public class MicrofinUsuarioDTO {
 
-	private String usuarioId;
-	private String empleadoID;
 	private String clavePuestoID;
-	private String nombre;
-	private String apPaterno;
-	private String apMaterno;
-	private String nombreCompleto;
-	private String clave;
-	private String estatus;
-	private String correo;
-	private String sucursalUsuario;
-	private String semilla;
-	private String rfc;
-
-	public String getUsuarioId() {
-		return usuarioId;
-	}
-
-	public void setUsuarioId(String usuarioId) {
-		this.usuarioId = usuarioId;
-	}
-
-	public String getEmpleadoID() {
-		return empleadoID;
-	}
-
-	public void setEmpleadoID(String empleadoID) {
-		this.empleadoID = empleadoID;
-	}
-
+	private String descPuesto;
+	private int sucursalUsuario;
+	private int permisoCC;
+	private int permisoSuc;
+	private int permisoAdmin;
+	private int permisoConsulta;
 	public String getClavePuestoID() {
 		return clavePuestoID;
 	}
-
 	public void setClavePuestoID(String clavePuestoID) {
 		this.clavePuestoID = clavePuestoID;
 	}
-
-	public String getNombre() {
-		return nombre;
+	public String getDescPuesto() {
+		return descPuesto;
 	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setDescPuesto(String descPuesto) {
+		this.descPuesto = descPuesto;
 	}
-
-	public String getApPaterno() {
-		return apPaterno;
-	}
-
-	public void setApPaterno(String apPaterno) {
-		this.apPaterno = apPaterno;
-	}
-
-	public String getApMaterno() {
-		return apMaterno;
-	}
-
-	public void setApMaterno(String apMaterno) {
-		this.apMaterno = apMaterno;
-	}
-
-	public String getNombreCompleto() {
-		return nombreCompleto;
-	}
-
-	public void setNombreCompleto(String nombreCompleto) {
-		this.nombreCompleto = nombreCompleto;
-	}
-
-	public String getClave() {
-		return clave;
-	}
-
-	public void setClave(String clave) {
-		this.clave = clave;
-	}
-
-	public String getEstatus() {
-		return estatus;
-	}
-
-	public void setEstatus(String estatus) {
-		this.estatus = estatus;
-	}
-
-	public String getCorreo() {
-		return correo;
-	}
-
-	public void setCorreo(String correo) {
-		this.correo = correo;
-	}
-
-	public String getSucursalUsuario() {
+	public int getSucursalUsuario() {
 		return sucursalUsuario;
 	}
-
-	public void setSucursalUsuario(String sucursalUsuario) {
+	public void setSucursalUsuario(int sucursalUsuario) {
 		this.sucursalUsuario = sucursalUsuario;
 	}
-
-	public String getSemilla() {
-		return semilla;
+	public int getPermisoCC() {
+		return permisoCC;
 	}
-
-	public void setSemilla(String semilla) {
-		this.semilla = semilla;
+	public void setPermisoCC(int permisoCC) {
+		this.permisoCC = permisoCC;
 	}
-
-	public String getRfc() {
-		return rfc;
+	public int getPermisoSuc() {
+		return permisoSuc;
 	}
-
-	public void setRfc(String rfc) {
-		this.rfc = rfc;
+	public void setPermisoSuc(int permisoSuc) {
+		this.permisoSuc = permisoSuc;
 	}
-
+	public int getPermisoAdmin() {
+		return permisoAdmin;
+	}
+	public void setPermisoAdmin(int permisoAdmin) {
+		this.permisoAdmin = permisoAdmin;
+	}
+	public int getPermisoConsulta() {
+		return permisoConsulta;
+	}
+	public void setPermisoConsulta(int permisoConsulta) {
+		this.permisoConsulta = permisoConsulta;
+	}
 }

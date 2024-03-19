@@ -13,9 +13,80 @@ function getAbsolutePath() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
+var selectBusqueda = document.getElementById("selectBusqueda");
+var verSucursal = document.getElementById("verSucursal");
+var verCliente = document.getElementById("verCliente");
+
+
 window.onload = function() {
-	listaDeBusqueda();
+	//listaDeBusqueda();
+	if(selectBusqueda){
+		selectBusqueda.addEventListener('change', function () {
+			// Obtener el valor seleccionado del input
+        	var valorSeleccionado = $(this).val();
+        	if(valorSeleccionado.trim().length > 0){
+				formulario.style.display = "block";
+				destruirListGroup('sucursal');
+				destruirListGroup('general');
+				destruirListGroup('estatus');
+				listaValores = [];
+				listaEstatus = [];
+				listaSucursales = [];
+        	switch(valorSeleccionado){
+				case "1":
+					if(verCliente){
+						document.getElementById("verCliente").style.display = "none";
+						document.getElementById("verCliente").style.visibility = "hidden";
+					}
+					break;
+				case "2":
+					
+					if(verCliente){
+						document.getElementById("verCliente").style.display = "block";
+						document.getElementById("verCliente").style.visibility = "visible";						
+					}
+					
+					
+					break;
+				default:
+					break;
+			}
+        	}
+			
+		});
+	}	
 }
+var buscarSucursal = document.getElementById('buscarSucursal');
+buscarSucursal.addEventListener('change', function() {
+
+			// Obtener el valor seleccionado del input
+       		var valorSeleccionado = $(this).val();
+        
+        	if(valorSeleccionado.trim().length > 0){
+				var idSelec = $('#opcionSucursal option[value="' + valorSeleccionado + '"]').attr('id');
+      		
+      			sucursalSeleccionadaS.value = idSelec;
+      			listaClientes();
+      			
+      				
+				if(selectBusqueda.value == 1){
+      				// Actualiza el valor seleccionado cada vez que se ingresa texto
+					llenarGroupSucursales(sucursalSeleccionadaS.value, 'sucursal');
+				}
+			}
+});
+
+var selectGestion = document.getElementById("selectGestion"); 
+selectGestion.addEventListener('change', function() {
+			// Obtener el valor seleccionado del input
+       		var valorSeleccionado = $(this).val();
+            
+        	if(valorSeleccionado.trim().length > 0){
+				//var idSelec = $('#selectGestion option[value="' + valorSeleccionado + '"]').attr('id');
+				llenarGroupEstatus(valorSeleccionado, 'estatus');
+			}
+});
+
 /**
 * Fin
 */
@@ -43,16 +114,16 @@ function listaDeBusqueda() {
 				sucursalValue = '';
 				clienteValue = '';
 				if (busqueda.value == 53) {
-					document.getElementById("verSucursal").style.display = "block";
-					document.getElementById("verSucursal").style.visibility = "visible";
+					//document.getElementById("verSucursal").style.display = "block";
+					//document.getElementById("verSucursal").style.visibility = "visible";
 					document.getElementById("verCliente").style.display = "none";
 					document.getElementById("verCliente").style.visibility = "hidden";
-					listaSucursales();
+					// listaSucursales();
 				} else {
 					document.getElementById("verCliente").style.display = "block";
 					document.getElementById("verCliente").style.visibility = "visible";
-					document.getElementById("verSucursal").style.display = "none";
-					document.getElementById("verSucursal").style.visibility = "hidden";
+					//document.getElementById("verSucursal").style.display = "none";
+					//document.getElementById("verSucursal").style.visibility = "hidden";
 					listaClientes();
 				}
 				listaValores = [];
@@ -119,7 +190,7 @@ function listaDeGestiones() {
 let listaEstatus = [];
 
 function llenarGroupEstatus(valor, identificador) {
-	var opcionSeleccionada = valor.options[valor.selectedIndex]; // Obtener la opción seleccionada del select
+	var opcionSeleccionada = selectGestion.options[valor]; // Obtener la opción seleccionada del select
 	var valorBuscador = opcionSeleccionada.value; // Valor de la opción seleccionada
 	var textoOpcion = opcionSeleccionada.text; // Texto de la opción seleccionada
 
@@ -200,30 +271,55 @@ function destruirListEstatus(identificador) {
  * Generar reporte
  */
 function obtenerDatos() {
+
 	var fechaInicio = $('#fechaInicio').val();
 	var fechaFin = $('#fechaFin').val();
+	switch(selectBusqueda.value){
+		case "1":
+			if(listaSucursales.length > 0 && fechaInicio != '' && fechaFin != ''  && listaEstatus.length > 0){
+				const dto = {
+				estatusGestion: listaEstatus,
+				valores: listaSucursales,
+				fechaInicio: fechaInicio,
+					fechaFin: fechaFin,
+					busqueda: selectBusqueda.value,
+				}
 
-	console.log(listaValores.length + ', ' + fechaInicio + ', ' + fechaFin + ', ' + listaEstatus.length);
+				// console.log(dto);
+				generarReporte(dto);
+			}else{
+				swal("Falta información por llenar", {
+					icon: "warning"
+				});
+			}
+			
+			break;
+		case "2":
+			if(listaValores.length > 0 && fechaInicio != '' && fechaFin != ''  && listaEstatus.length > 0){
+				const dto = {
+				estatusGestion: listaEstatus,
+				valores: listaValores,
+				fechaInicio: fechaInicio,
+					fechaFin: fechaFin,
+					busqueda: selectBusqueda.value,
+				}
 
-	if (listaValores.length > 0 && fechaInicio != '' && fechaFin != '' && listaEstatus.length > 0) {
-
-		const dto = {
-			estatusGestion: listaEstatus,
-			valores: listaValores,
-			fechaInicio: fechaInicio,
-			fechaFin: fechaFin,
-			busqueda: tipoBusqueda,
-		}
-
-		// console.log(dto);
-		generarReporte(dto);
-
-	} else {
-		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
-			icon: "warning"
-		});
+				// console.log(dto);
+				generarReporte(dto);
+			}else{
+				swal("Falta información por llenar", {
+					icon: "warning"
+				});
+			}
+			break;
+		default:
+				swal("Falta información por llenar", {
+					icon: "warning"
+				});
+			break;
+		
 	}
+
 }
 /**
  * Fin
@@ -233,10 +329,10 @@ function obtenerDatos() {
 /**
  * Lista sucursales
  */
-var buscarSucursal = document.getElementById('buscarSucursal');
+
 var sucursalValue;
 
-function listaSucursales() {
+function listaSucursalesA() {
 	var buscar = buscarSucursal.value;
 	$.ajax({
 		url: newUrlBase + "buscar_sucursal?sucursal=" + buscar,
@@ -257,10 +353,18 @@ function listaSucursales() {
 	});
 }
 
-buscarSucursal.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	llenarGroupBuscador(buscarSucursal.value, 'general');
-});
+/*buscarSucursal.addEventListener('change', function() {
+	// Obtener el valor seleccionado del input
+        var valorSeleccionado = $(this).val();
+        
+        if(valorSeleccionado.trim().length > 0){
+			var idSelec = $('#opcionSucursal option[value="' + valorSeleccionado + '"]').attr('id');
+      		
+      		sucursalSeleccionadaS.value = idSelec;
+      		// Actualiza el valor seleccionado cada vez que se ingresa texto
+			llenarGroupBuscador(buscarSucursal.value, 'general');
+		}
+});*/
 /**
  * Fin
  */
@@ -272,13 +376,13 @@ buscarSucursal.addEventListener('input', function() {
 var buscarCliente = document.getElementById('buscarCliente');
 var spinner = document.getElementById("spinnerClientes");
 var clienteValue;
-
+var sucursalSeleccionadaS = document.getElementById("idSucursalInicial");
 function listaClientes() {
 	buscarCliente.disabled = true;
 	spinner.style.display = "block";
-	var buscar = buscarCliente.value = '';
+	var buscar = sucursalSeleccionadaS.value
 	$.ajax({
-		url: newUrlBase + "buscar_cliente_activo?valor=" + buscar,
+		url: newUrlBase + "buscar_cliente_activo_sucursal?idSucursal=" + buscar,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
@@ -291,7 +395,7 @@ function listaClientes() {
 				opciones.appendChild(option);
 			});
 			//
-			llenarGroupBuscador(buscarCliente.value, 'general');
+			//llenarGroupBuscador(buscarCliente.value, 'general');
 
 			buscarCliente.disabled = false;
 			spinner.style.display = "none";
@@ -376,6 +480,77 @@ function generarReporte(dto) {
  * Fin
  */
 
+/**
+ * Llenar group de las sucursales
+ */
+let listaSucursales = [];
+
+function llenarGroupSucursales(valor, identificador) {
+	var valorIgual = false;
+	var opcionSeleccionada = document.querySelector('option[id="' + valor + '"]');
+	var valorBuscador = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
+
+	if (valorBuscador) {
+		listaSucursales.forEach(function(elemento) {
+			if (valorBuscador === elemento.id) {
+				valorIgual = true;
+				swal({
+					text: "Ya se agregó " + opcionSeleccionada.value,
+					icon: "warning",
+				});
+			}
+		});
+
+		if (!valorIgual) {
+			listaSucursales.push({ id: valorBuscador, nombre: opcionSeleccionada.value });
+			// Agregar la sucursal al contenedor
+			renderizarGroupSucursales(identificador);
+		}
+
+		// console.log(listaValores);
+	}
+}
+
+// Función para renderizar la lista de sucursales
+function renderizarGroupSucursales(identificador) {
+	var contenedorGroup = document.getElementById('group-' + `${identificador}`);
+
+	// Limpiar el contenido del contenedor antes de agregar nuevos elementos
+	contenedorGroup.innerHTML = '';
+
+	// Iterar sobre cada objeto en el arreglo
+	listaSucursales.forEach(function(elemento) {
+		// Crear un nuevo elemento <a> para cada sucursal
+		var nuevoElemento = document.createElement('a');
+		nuevoElemento.classList.add('list-group-item');
+		nuevoElemento.style.background = '#e0e0e0';
+
+		// Crear el contenido del elemento
+		nuevoElemento.innerHTML = `
+            <div style="display: flex; justify-content: space-between;">
+                <div>${elemento.nombre}</div>
+                <button class="btn btn-danger btn-sm eliminar-${identificador}" style="background: none; border: none; color: gray;" data-id="${elemento.id}">x</button>
+            </div>
+        `;
+
+		// Agregar el elemento al contenedor
+		contenedorGroup.appendChild(nuevoElemento);
+	});
+
+	// Agregar controladores de eventos para los botones de eliminar
+	var botonesEliminar = document.querySelectorAll('.eliminar-' + `${identificador}`);
+	botonesEliminar.forEach(function(boton) {
+		boton.addEventListener('click', function(event) {
+			var idElemento = event.target.dataset.id;
+			// Eliminar la sucursal tanto del list-group como de la variable listaValores
+			listaSucursales = listaSucursales.filter(function(elemento) {
+				return elemento.id !== idElemento;
+			});
+			// Volver a renderizar la lista
+			renderizarGroupSucursales(identificador);
+		});
+	});
+}
 
 
 /**

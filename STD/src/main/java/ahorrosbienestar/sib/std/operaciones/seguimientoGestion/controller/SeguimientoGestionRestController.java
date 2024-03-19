@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.AsignacionOfertas;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.AsignacionOfertasService;
 import ahorrosbienestar.sib.std.operaciones.configuracion.codigos.relacion.consultarRelaciones.model.ConsultarRelacionesModel;
@@ -65,6 +68,7 @@ public class SeguimientoGestionRestController {
 	@Autowired
 	private EstatusSeguimientoService estatusSeguimientoService;
 
+
 	private static final Logger logger = Logger.getLogger(SeguimientoGestionRestController.class);
 
 	private static final String accionRealizar = "MOSTRAR CALENDARIO";
@@ -79,12 +83,23 @@ public class SeguimientoGestionRestController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/lista_seguimiento" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion() {
+	public ResponseEntity<Map<String, Object>> listaDeSeguimientoDeGestion(@RequestParam("sucursal") int sucursal,@RequestParam("permiso") int permiso) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
-			listaSeguimiento = listaSeguimientoService.listaSeguimiento();
+			
+			if(permiso > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),2);
+			}
+			
+			
+			if(datosUsuario().get(0).getPermisoCC() > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),datosUsuario().get(0).getPermisoCC());
+			}
+			if(datosUsuario().get(0).getPermisoSuc() > 0) {
+				listaSeguimiento = listaSeguimientoService.listaSeguimiento(sucursal,obtenerUsuarioLogueado(),datosUsuario().get(0).getPermisoSuc());
+			}
 			logger.info("se llenó la lista");
 			respuesta.put("lista", listaSeguimiento);
 			return ResponseEntity.ok(respuesta);
@@ -96,6 +111,7 @@ public class SeguimientoGestionRestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
+	
 
 	/**
 	 * Parametros para la busqueda de una oferta
@@ -107,14 +123,31 @@ public class SeguimientoGestionRestController {
 	 */
 	@RequestMapping(value = { "/parametros_seguimiento" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosDelSeguimiento(@RequestParam("nombre") String nombre,
-			@RequestParam("oferta") String oferta, @RequestParam("referencia") String referencia) {
+			@RequestParam("oferta") String oferta, @RequestParam("referencia") String referencia,@RequestParam("sucursal") int sucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ListaSeguimientoModel> listaSeguimiento = new ArrayList<ListaSeguimientoModel>();
 		try {
-			listaSeguimiento = listaSeguimientoService.busquedaPorSeguimiento(nombre, oferta, referencia, "");
-			logger.info("se llenó la lista");
-			respuesta.put("lista", listaSeguimiento);
+			listaSeguimiento = listaSeguimientoService.busquedaPorSeguimientoSucursal(nombre, oferta, referencia, sucursal);
+			
+			if(listaSeguimiento != null && !listaSeguimiento.isEmpty()) {
+				String usuarioLogueado = obtenerUsuarioLogueado();
+				String vcUsuario = listaSeguimiento.get(0).getVc_usuario();
+				
+				if((vcUsuario != null && vcUsuario.equalsIgnoreCase(usuarioLogueado)) || (vcUsuario == null )) {
+					logger.info("se llenó la lista");
+					respuesta.put("lista", listaSeguimiento);
+				}else {
+					logger.info("se llenó la lista");
+					respuesta.put("lista", null);
+					respuesta.put("error", Constantes.ERROR_GESTION_ASIGNADA);
+				}
+			}else {
+				logger.info("se llenó la lista");
+				respuesta.put("lista", null);
+				respuesta.put("error", Constantes.ERROR_GESTION_ASIGNADA);
+				
+			}
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -123,6 +156,7 @@ public class SeguimientoGestionRestController {
 			respuesta.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
+
 	}
 
 	/**
@@ -362,19 +396,18 @@ public class SeguimientoGestionRestController {
 	}
 
 	@RequestMapping(value = { "/todos_los_estatus" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") String idSucursal) {
+	public ResponseEntity<Map<String, Object>> estatusDeLasGestiones(@RequestParam("idSucursal") int idSucursal) {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<EstatusSeguimientoModel> lista = new ArrayList<EstatusSeguimientoModel>();
-		String sucursal;
 		try {
 
-			if (idSucursal.equals(""))
-				sucursal = sucursalPorEmpleado() == null?"100":sucursalPorEmpleado();
+			/*if (idSucursal == 0)
+				sucursal = datosUsuario()!=null?datosUsuario().get(0).getSucursalUsuario():0;
 			else
-				sucursal = idSucursal;
-
-			lista = estatusSeguimientoService.listaDeEstatus(Integer.parseInt(sucursal));
+				sucursal = idSucursal;*/
+			
+			lista = estatusSeguimientoService.listaDeEstatus(idSucursal);
 			logger.info("se llenó la lista");
 			respuesta.put("lista", lista);
 			return ResponseEntity.ok(respuesta);
@@ -387,7 +420,7 @@ public class SeguimientoGestionRestController {
 		}
 	}
 
-	public String sucursalPorEmpleado() {
+	public List<MicrofinUsuarioDTO> datosUsuario() {
 		List<MicrofinUsuarioDTO> lista = new ArrayList<MicrofinUsuarioDTO>();
 		//
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -396,7 +429,7 @@ public class SeguimientoGestionRestController {
 		//
 		lista = microfinUsuarioService.obtenerUsuario(usuario.getI_id_empleado());
 		logger.info("se llenó la lista");
-		return lista.size()>0?lista.get(0).getSucursalUsuario():null;
+		return lista.size()>0?lista:null;
 	}
 
 	@RequestMapping(value = { "/guardar_gestion" }, method = RequestMethod.GET)
@@ -427,5 +460,29 @@ public class SeguimientoGestionRestController {
 		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.inactivarSeguimientoGestion(idGestion);
 
 		return ResponseEntity.ok(seguimiento);
+	}
+	
+	public int obtenerEmpleadoLogueado() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			
+			return usuario.getI_id_empleado();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return 0;
+		}
+	}
+	
+	public String obtenerUsuarioLogueado() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Usuario usuario = usuarioService.findByNombre(auth.getName());
+			
+			return usuario.getVc_nombre_usuario();
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return null;
+		}
 	}
 }
