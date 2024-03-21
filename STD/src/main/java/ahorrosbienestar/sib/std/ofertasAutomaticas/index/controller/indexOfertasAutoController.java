@@ -13,7 +13,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -30,6 +32,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.ctc.wstx.shaded.msv_core.verifier.jarv.Const;
+
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -147,6 +152,8 @@ public class indexOfertasAutoController {
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
 	private int tipoArchivo = 12;
+	
+	private String error = "";
 
 	@GetMapping("/index")
 	public String indexOfertasAuto(Model model) throws IOException {
@@ -397,8 +404,10 @@ public class indexOfertasAutoController {
 			){
 		
 		logger.info("/actualizarParametro");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
 				switch(basesID){
@@ -423,16 +432,20 @@ public class indexOfertasAutoController {
 		            	logger.info("En el metodo actualizarParametro al entrar al switch no se encontro ninguna coinsidencia");
 		                break;
 				}
+				mensaje =Constantes.ACTUALIZACION_OK;
 				
-				respuesta.add(mensaje);
 			}else {
-				respuesta.add("No fue posible actualizar. Intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
-			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
-			return null;
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			return ResponseEntity.ok(respuesta);
 		}
 	}
 	/***
@@ -480,8 +493,9 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
 			){
 		logger.info("/altaClasificacion");
-		String mensaje ="Registro Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
 		try {		
 			Bases iBase = basesService.obtBase(idBase);
 			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
@@ -499,19 +513,22 @@ public class indexOfertasAutoController {
 					altaClasificacion.setI_estatus_clasificacion(ACTIVO);
 					
 					clasificacionBasesService.save(altaClasificacion);
-					respuesta.add(mensaje);
+					mensaje = Constantes.ACTUALIZACION_OK;
 				}else {
-					mensaje = "Existe Clasificación, se recomienda editar el registro existente";
-					respuesta.add(mensaje);
+					mensaje = Constantes.CLASIF_REGISTRADO;
+					tipo = Constantes.MENSAJE_ERROR;
 				}
 			}else {
-				mensaje = "Existe codigo Clasificacion registrado.";
-				respuesta.add(mensaje);
+				mensaje = Constantes.CODIGO_CLASIF_REGISTRADO;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -547,26 +564,30 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
 			){
 		logger.info("/modClasificacion");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
 		try {
 		
 			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
 				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
-					
-					respuesta.add(mensaje);
+					mensaje =Constantes.ACTUALIZACION_OK;
 					
 				}else {
-					respuesta.add("No fue posible actualizar, intente mas tarde.");
+					mensaje = Constantes.ACTUALIZACION_ERROR;
+					tipo = Constantes.MENSAJE_ERROR;
 				}
 			}else {
-				mensaje = "No fue posible actualizar. Existe codigo clasificacion registrado.";
-				respuesta.add(mensaje);
+				mensaje = Constantes.CODIGO_CLASIF_REGISTRADO;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -581,19 +602,26 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idClass") Integer idClass
 			){
 		logger.info("/activarClasificacion");
-		String mensaje ="Activo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			
 			if(clasificacionBasesService.activarClasificacion(idClass) == 1) {
-				respuesta.add(mensaje);
+				mensaje = Constantes.CLASIF_ACTIVO;
 			}else {
-				respuesta.add("No fue posible activar, intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -607,19 +635,26 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idClass") Integer idClass
 			){
 		logger.info("/inactivarClasificacion");
-		String mensaje ="Inactivo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+
 		try {
 			
 			if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
-				respuesta.add(mensaje);
+				mensaje = Constantes.CLASIF_INACTIVO;
+				
 			}else {
-				respuesta.add("No fue posible activar, intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -633,10 +668,11 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idBase") Integer idBase
 			){
 	
-		
 		logger.info("/ejecutarProceso");
-		String mensaje ="El proceso ha terminado.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			logger.info("proceso a ejecutar:"+idBase);
 			
@@ -644,9 +680,11 @@ public class indexOfertasAutoController {
 			case 1:
 				try {
 					nominaTareaConfiguracion.procesarNomina();
-					respuesta.add(Constantes.MENSAJE_BASE_NOMINA);
+					mensaje =Constantes.MENSAJE_BASE_NOMINA;
+
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
@@ -654,9 +692,10 @@ public class indexOfertasAutoController {
 			case 2:
 				try {
 					fidelidadTareaConfiguracion.ejecutarFidelidad();			
-					respuesta.add(Constantes.MENSAJE_BASE_FIDELIDAD);
+					mensaje =Constantes.MENSAJE_BASE_FIDELIDAD;
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
@@ -664,9 +703,10 @@ public class indexOfertasAutoController {
 			case 4:
 				try {
 					prospectorTareaConfiguracion.procesarProspector();					
-					respuesta.add(Constantes.MENSAJE_BASE_PROSPECTOR);
+					mensaje =Constantes.MENSAJE_BASE_PROSPECTOR;
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
@@ -674,9 +714,10 @@ public class indexOfertasAutoController {
 			case 3:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();					
-					respuesta.add(Constantes.MENSAJE_BASE_CAMPANIA_VIP);
+					mensaje =Constantes.MENSAJE_BASE_CAMPANIA_VIP;
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
@@ -684,9 +725,10 @@ public class indexOfertasAutoController {
 			case 5:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
-					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_NOMINA);
+					mensaje =Constantes.MENSAJE_BASE_FIDELIZACION_NOMINA;
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
@@ -694,19 +736,22 @@ public class indexOfertasAutoController {
 			case 6:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
-					respuesta.add(Constantes.MENSAJE_BASE_FIDELIZACION_RENOVADO);
+					mensaje =Constantes.MENSAJE_BASE_FIDELIZACION_RENOVADO;
 				} catch (Exception e) {
-					respuesta.add(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
 					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			}
-			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -884,8 +929,11 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion
 			){
 		logger.info("/actualizarParametro");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+
 		try {
 			if(procesoGestionService.actParams(procesoGestionID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion) == 1) {
 				switch(procesoGestionID){
@@ -900,16 +948,20 @@ public class indexOfertasAutoController {
 						//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
 						break;
 				}
+				mensaje = Constantes.ACTUALIZACION_OK;
 				
-				respuesta.add(mensaje);
 			}else {
-				respuesta.add("No fue posible actualizar. Intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
-			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
-			return null;
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			return ResponseEntity.ok(respuesta);
 		}
 	}
 	
@@ -924,16 +976,28 @@ public class indexOfertasAutoController {
 			){
 	
 		logger.info("/ejecutarDatosProceso");
-		ArrayList<String> respuesta = new ArrayList<String>();
+		//ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+	
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			switch(idProceso) {
 			case 1:
 				try {
+					error = gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
-					gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
-					respuesta.add(Constantes.ASIGNACION_OK);
+					if(error == null) {
+						mensaje = Constantes.ASIGNACION_OK;
+						
+					}else {
+						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
+						tipo =Constantes.MENSAJE_ERROR;
+					}
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
+					mensaje ="Error:"+e.getMessage();
+					tipo =Constantes.MENSAJE_ERROR;
 					logger.error("Error"+e.getMessage());
 				}
 				
@@ -941,20 +1005,31 @@ public class indexOfertasAutoController {
 			case 2:
 				try {
 					logger.debug("Ejecutar proceso Generacion SMS.");
-					generacionSMSConfiguracion.procesarSMS(idProceso);
-					respuesta.add(Constantes.SMS_OK);
+					error = generacionSMSConfiguracion.procesarSMS(idProceso);
+					if(error == null) {
+						mensaje = Constantes.SMS_OK;
+						
+					}else {
+						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
+						tipo =Constantes.MENSAJE_ERROR;
+					}
+					
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
+					mensaje ="Error:"+e.getMessage();
+					tipo =Constantes.MENSAJE_ERROR;
 					logger.error("Error"+e.getMessage());
 				}
 				
 				break;
 			}
 			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -979,19 +1054,23 @@ public class indexOfertasAutoController {
 	public ResponseEntity<?> reporteOA(
 			@RequestParam("idSucursal") Integer idSucursal){
 		
-		ArrayList<String> respuesta = new ArrayList<String>();
+		Map<String, Object> respuesta = new HashMap<>();
 		
 		try {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_ASIGNACION_X_SUCURSAL);
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros=?IDSUCURSAL="
 					+idSucursal+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+idSucursal;
-			respuesta.add(Constantes.REPORTE_OK);
-			respuesta.add(reporteURL);
+			
+			respuesta.put(Constantes.TEXTO_MNS,Constantes.REPORTE_OK);
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
+			respuesta.put(Constantes.URL_REPORTE,reporteURL);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			respuesta.put(Constantes.URL_REPORTE,null);
 			return ResponseEntity.ok(respuesta);
 		}
 				

@@ -38,6 +38,7 @@ public class Constantes {
     //Identificar de mensaje
     public static final String TEXTO_MNS = "mensaje";
     public static final String TIPO_MNS = "tipo";
+    public static final String URL_REPORTE = "reporte";
     
     
     // Ejemplo de constantes para descripcion de Mensajes
@@ -49,6 +50,12 @@ public class Constantes {
     public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
     public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
     
+    
+    //Mensajes Error
+    public static final String TEXTO_KO = "Error: $error, Comuniquece con el administrador del sistema.";
+    
+    //identificadores en mensaje de error
+    public static final String IDENTIFICADOR_ERROR = "$error";
     
     
     // Ejemplo de constantes para descripcion de Errores
@@ -89,6 +96,35 @@ public class Constantes {
 	//CATALOGOS DE PANTALLAS
 	public static final int CATALOGO_GESTION = 14;
 	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
+	
+	// TIPOS DE CORREOS
+	public static final int CORREO_ASIGNACION = 9;
+	public static final int CORREO_REASIGNACION = 10;
+	
+	//PROCESO A EJECUTAR
+	public static final String PROCESO_ASIGNACION = "SIB.SP_PROCESOS_ASIGNACION";
+	public static final String PROCESO_REASIGNACION = "SIB.SP_REASIG_X_FAL_SEGUIMIENTO";
+	public static final String PROCESO_SMS = "SIB.SP_GENERAR_SMS";
+	//PARAMETROS REPORTE ADJUNTO
+	public static final String PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES = "?IDSUCURSAL=";
+	
+	// nombre reportes
+	public static final String REPORTE_ASIGNACION = "rpt_asignacion_sucursal";
+	public static final String REPORTE_REASIGNACION = "rpt_reasignacion_oferta";
+	
+	//PROCESO A EJECUTAR
+	public static final String NOMBRE_REPORTE_ASIGNACION = "registros_asignados_suc";
+	public static final String NOMBRE_REPORTE_REASIGNACION = "registros_reasignados_suc";
+	
+	//busqueda
+	public static final int TIPO_BUSQUEDA_1 = 1;
+	public static final int TIPO_BUSQUEDA_2 = 2;
+	
+	//Mensajes Ofertas Automaticas
+	public static final String CLASIF_REGISTRADO = "No fue posible actualizar. Existe codigo clasificación registrado.";
+	public static final String CODIGO_CLASIF_REGISTRADO = "Existe codigo clasificación registrado.";
+	public static final String CLASIF_INACTIVO = "Se inactivo clasificación correctamente.";
+	public static final String CLASIF_ACTIVO = "Se activo clasificación correctamente.";
 	
     private Constantes() {
         

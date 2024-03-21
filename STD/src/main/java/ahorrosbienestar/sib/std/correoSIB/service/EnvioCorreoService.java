@@ -15,6 +15,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 
 import javax.mail.util.ByteArrayDataSource;
 import javax.activation.DataSource;
@@ -31,6 +33,9 @@ public class EnvioCorreoService {
 	
 	@Autowired
 	private final JasperReportController jasperReportController;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
 	
 	@Autowired
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
@@ -115,16 +120,15 @@ public class EnvioCorreoService {
         }
     }
 	
-	public void preparCorreoAdjunto(int tipoCorreo) {
-		try {
-			Integer idReporte = 7;
-			String parametros = "?IDSUCURSAL=";
+	public void preparCorreoAdjunto(int tipoCorreo, String nombreReporte, String parametros, String nombre, int tipoBusqueda) {
+		try {	
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
 			
 			
-			List<Integer> listaSucRegistros = envioCorreoContenidoService.registrosXsucursal();
+			List<Integer> listaSucRegistros = envioCorreoContenidoService.registrosXsucursal(tipoBusqueda);
 			for(Integer idSuc:listaSucRegistros) {
-				String fileName="registros_asignados_suc"+idSuc+".xls";
-	        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(idReporte,parametros+idSuc);
+				String fileName=nombre+idSuc+datosReporte.getVc_extension();
+	        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(),parametros+idSuc);
 				List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoCorreo,String.valueOf(idSuc));
 				for(ContenidoCorreo correoContenido : listaCorreos) {
 					String[] listDireccion = correoContenido.getVc_destinatarios().split(";");

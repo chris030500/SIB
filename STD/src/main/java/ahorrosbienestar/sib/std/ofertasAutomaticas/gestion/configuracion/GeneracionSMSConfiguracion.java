@@ -1,8 +1,10 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -11,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
 
@@ -47,6 +52,8 @@ public class GeneracionSMSConfiguracion {
 		
 		@Value("${my.job.cron}")
 		private String expresionCron;
+		
+		private String error="";
 		
 		@PostConstruct
 		public void init() {
@@ -112,15 +119,35 @@ public class GeneracionSMSConfiguracion {
 		}
 
 	    
-		public synchronized void procesarSMS(Integer idProceso){
+		public synchronized String procesarSMS(Integer idProceso){
 	    	try {
 	    		logger.info("Generar SMS");
-	        	jdbcTemplate.update("CALL SIB.SP_GENERAR_SMS()");
-	        	
+	    		error = procesoGeneracionSMS();
+	    		if(error == null) {
+	    			return null;
+	    		}else {
+	    			return error;
+	    		}
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
+				return "Error:"+e.getMessage();
 			}
 	    }
+		
+		public String procesoGeneracionSMS() {
+		        // Crear un SimpleJdbcCall para invocar al procedimiento almacenado
+		    	StoredProcedure procedure = new StoredProcedure(jdbcTemplate.getDataSource(), Constantes.PROCESO_SMS) {
+		            {
+		                declareParameter(new SqlOutParameter("error_message", Types.VARCHAR));
+		                compile();
+		            }
+		        };
+
+		        Map<String, Object> out = procedure.execute();
+
+
+		        return (String) out.get("error_message");
+		    }
 
 
 }

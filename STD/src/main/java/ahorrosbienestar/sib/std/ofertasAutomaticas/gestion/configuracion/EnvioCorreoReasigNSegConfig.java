@@ -1,8 +1,9 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -12,12 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.SucursalesNotificar;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.SucursalesNotificarService;
 
 /***
@@ -52,6 +55,8 @@ public class EnvioCorreoReasigNSegConfig {
 	
 	@Value("${my.job.enviocorreo}")
 	private String expresionCron;
+	
+	private String error="";
 	
 	
 	@PostConstruct
@@ -91,21 +96,41 @@ public class EnvioCorreoReasigNSegConfig {
 	
 	public synchronized void procesarReasignacion(Integer idProceso) throws DataAccessException {
 		try {
-    		logger.info("Ejecuta los SP Asignacion");
-        	jdbcTemplate.update("CALL SIB.SP_REASIG_X_FAL_SEGUIMIENTO()");
-        	
-        	List<SucursalesNotificar> listaSucursales = sucursalesNotificarService.consultaSucursal();
-        	for(SucursalesNotificar suc : listaSucursales) {
-        		int tipoCorreo = 10;
-        	
-            	// registrso de asignacion
-            	envioCorreoService.prepararCorreo(tipoCorreo,String.valueOf(suc.getFk_id_sucursal()));
-        	}
+			
+			error = procesoReasignacion();
+			
+			if(error == null) {
+				// Metodo envio de correo y adjunto
+	    		envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_REASIGNACION,Constantes.REPORTE_REASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_REASIGNACION,Constantes.TIPO_BUSQUEDA_2);
+	        	
+			}else {
+				logger.error("Error:"+error);
+			}
+    		
+    	
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
 		
 	}
+	
+
+    public String procesoReasignacion() {
+        // Crear un SimpleJdbcCall para invocar al procedimiento almacenado
+    	StoredProcedure procedure = new StoredProcedure(jdbcTemplate.getDataSource(), Constantes.PROCESO_REASIGNACION) {
+            {
+                declareParameter(new SqlOutParameter("error_message", Types.VARCHAR));
+                compile();
+            }
+        };
+
+        Map<String, Object> out = procedure.execute();
+
+
+        return (String) out.get("error_message");
+    }
+	
+	
 	
     
 }
