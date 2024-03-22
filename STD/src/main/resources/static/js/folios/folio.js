@@ -671,6 +671,7 @@ function guardarFolio(proceso) {
 }
 
 function peticionPost(urlServicio, num, numFolio) {
+	console.log(urlServicio);
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
