@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglas;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
 import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ReglasAsignacion;
@@ -68,10 +68,9 @@ public class ReglasAsignacionController {
 		logger.info("/cambiarEstatusRegla");
 		
 		
-		String mensaje ="Actualizo Estatus Correctamente.";
-		String tipo ="success";
+		String mensaje =Constantes.REGLA_ESTATUS;
+		String tipo =Constantes.MENSAJE_OK;
 	
-		
 		Map<String, Object> respuesta = new HashMap<>();
 		try {
 			
@@ -108,17 +107,17 @@ public class ReglasAsignacionController {
 				
 				reglasAsignacionService.save(editarRegla.get());
 			}else {
-				mensaje = "Solo se permite tener una Regla de Asignacion Activa.";
-				tipo ="error";
+				mensaje = Constantes.REGLA_ESTATUS_ACTIVO;
+				tipo =Constantes.MENSAJE_ERROR;
 			} 
 				
-			respuesta.put("mensaje",mensaje);
-			respuesta.put("tipo",tipo);
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.put("mensaje",e.getMessage());
-			respuesta.put("tipo","error");
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -146,8 +145,10 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "slEstatus") Integer slEstatus
 			){
 		logger.info("/registroParams");
-		String mensaje ="Registro Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje =Constantes.REGISTRO_OK;
+		String tipo = Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+
 		try {
 			
 			if(parametrosReglasAsignacionService.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla,tipoPrioridad) == 0) {
@@ -174,17 +175,20 @@ public class ReglasAsignacionController {
 				parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
 				
 				parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
+
 			}else {
-				mensaje = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
+				mensaje = Constantes.REGLA_ERROR_DUPLICADO;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
 			
 			
-
-			respuesta.add(mensaje);
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -211,13 +215,12 @@ public class ReglasAsignacionController {
 			@RequestParam(name = "slEstatus") Integer slEstatus
 			){
 		logger.info("/actualizaParams");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		String mensaje =Constantes.ACTUALIZACION_OK;
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
-			
-			
-			//if(parametrosReglasAsignacionService.existeRegistroAct(slAsignar,tipoCliente,slcTipoCartera,tipoPrioridad) == 0) {
-
 				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 				UserDetails userDetails = null;
 				if (principal instanceof UserDetails) {
@@ -238,15 +241,14 @@ public class ReglasAsignacionController {
 				parametrosReglasAsignacion.get().setI_usuario_mod(usuario.get(0));
 				
 				parametrosReglasAsignacionService.save(parametrosReglasAsignacion.get());
-			//}else {
-				//mensaje = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
-			//}
 
-			respuesta.add(mensaje);
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}

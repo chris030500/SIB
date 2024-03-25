@@ -1,8 +1,9 @@
 package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.model.PlantillasSMS;
 import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.service.PlantillasSMSService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
@@ -81,41 +83,53 @@ public class PlantillasSMSController {
 			@RequestParam(name = "slcEstatus") Integer slcEstatus
 			){
 		logger.info("/registrarPlantillas"+nombrePlantilla);
-		String mensaje ="Registro Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje = Constantes.REGISTRO_OK;
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
+
 		try {
 			
-			if(plantillasSMSService.existeRegistro(slcCampania,slcClasificacion) == 0) {
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+			if(plantillasSMSService.existeNombre(nombrePlantilla) == 0) {
+				if(plantillasSMSService.existeRegistro(slcCampania,slcClasificacion) == 0) {
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					UserDetails userDetails = null;
+					if (principal instanceof UserDetails) {
+						userDetails = (UserDetails) principal;
+					}
+					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+					
+					LocalDate fecha = LocalDate.now();
+				
+					PlantillasSMS plantillasSMS = new PlantillasSMS();
+					
+					plantillasSMS.setVc_nombre_plantilla(nombrePlantilla);
+					Bases base = basesService.findById(slcCampania).get();
+					plantillasSMS.setFK_ID_BASE(base);
+					ClasificacionBases clasBase = clasificacionBasesService.findById(slcClasificacion).get();
+					plantillasSMS.setFK_ID_CLASIFICACION(clasBase);
+					plantillasSMS.setVc_contenido(txtContenido);
+					plantillasSMS.setI_activo(slcEstatus);
+					plantillasSMS.setDt_fecha_registro(fecha);
+					plantillasSMS.setI_usuario_registro(usuario.get(0));
+				
+					plantillasSMSService.save(plantillasSMS);
+				}else {
+					mensaje = Constantes.PLANTILLA_DUPLICADA;
+					tipo = Constantes.MENSAJE_ERROR;
 				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
-				LocalDate fecha = LocalDate.now();
-			
-				PlantillasSMS plantillasSMS = new PlantillasSMS();
-				
-				plantillasSMS.setVc_nombre_plantilla(nombrePlantilla);
-				Bases base = basesService.findById(slcCampania).get();
-				plantillasSMS.setFK_ID_BASE(base);
-				ClasificacionBases clasBase = clasificacionBasesService.findById(slcClasificacion).get();
-				plantillasSMS.setFK_ID_CLASIFICACION(clasBase);
-				plantillasSMS.setVc_contenido(txtContenido);
-				plantillasSMS.setI_activo(slcEstatus);
-				plantillasSMS.setDt_fecha_registro(fecha);
-				plantillasSMS.setI_usuario_registro(usuario.get(0));
-			
-				plantillasSMSService.save(plantillasSMS);
 			}else {
-				mensaje = "Existe Registro para la Campaña y Clasificacion seleccionada.";
+				mensaje = Constantes.NOMBRE_PLANTILLA_DUPLICADA;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
-			
-			respuesta.add(mensaje);
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			respuesta.add(e.getMessage());
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -143,9 +157,13 @@ public class PlantillasSMSController {
 				@RequestParam(name = "slcEstatus") Integer slcEstatus
 				){
 			logger.info("/modPlantilla"+idPlantilla);
-			String mensaje ="Actualizo Correctamente.";
-			ArrayList<String> respuesta = new ArrayList<String>();
+			String mensaje = Constantes.ACTUALIZACION_OK;
+			String tipo =Constantes.MENSAJE_OK;
+			Map<String, Object> respuesta = new HashMap<>();
+			
 			try {
+				if(plantillasSMSService.existeNombreMod(nombrePlantilla,idPlantilla) == 0) {
+					if(plantillasSMSService.existeRegistroMod(slcCampania,slcClasificacion,idPlantilla) == 0) {
 						Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 						UserDetails userDetails = null;
 						if (principal instanceof UserDetails) {
@@ -169,11 +187,24 @@ public class PlantillasSMSController {
 						plantillasSMS.get().setI_usuario_mod(usuario.get(0));
 
 						plantillasSMSService.save(plantillasSMS.get());
+						
+					}else {
+						mensaje = Constantes.PLANTILLA_DUPLICADA;
+						tipo = Constantes.MENSAJE_ERROR;
+					}
 					
-					respuesta.add(mensaje);
+				}else {
+					mensaje = Constantes.NOMBRE_PLANTILLA_DUPLICADA;
+					tipo = Constantes.MENSAJE_ERROR;
+				}
+				
+				respuesta.put(Constantes.TEXTO_MNS,mensaje);
+				respuesta.put(Constantes.TIPO_MNS,tipo);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				respuesta.add(e.getMessage());
+				logger.error("Error:"+e.getMessage());
+				respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 				return ResponseEntity.ok(respuesta);
 			}
 		}

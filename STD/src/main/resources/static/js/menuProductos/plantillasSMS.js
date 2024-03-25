@@ -91,7 +91,7 @@ function peticionPost(urlServicio, servicio) {
 		complete: function() {
 		},
 		success: function(respuesta) {
-			swal("",respuesta[0],"success").then(resp => {
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
 				if (servicio == 1) {
 					//limpiarDatosPlantilla();
@@ -234,14 +234,30 @@ function editarPlantilla(idEditar){
 
 	idPlantillaMod=idEditar;
 	
+	mensajeBanner();
+	
 }
+
+function mensajeBanner(){
+		// Mostrar el mensaje de procesamiento utilizando Swal
+    Swal.fire({
+        title: 'Consultando Informacion...',
+        html: 'Espere por favor...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+}
+
 function obtPlantilla(urlObt){
 	
 		$.getJSON(url, {}, function(data) {
-					setTimeout($.unblockUI, 1000);
 					cargarDatos(data);
+					Swal.close();
 		});
-
+		
 }
 
 function cargarDatos(data) {

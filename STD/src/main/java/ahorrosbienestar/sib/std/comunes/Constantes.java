@@ -42,6 +42,7 @@ public class Constantes {
     
     
     // Ejemplo de constantes para descripcion de Mensajes
+    public static final String REGISTRO_OK = "Se Registro Correctamente.";
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
     public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
     public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
@@ -49,6 +50,15 @@ public class Constantes {
     //Mensajes Bases de Gestion
     public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
     public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
+    
+    //Mensajes Reglas de asignacion
+    public static final String REGLA_ERROR_DUPLICADO = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
+    public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
+    public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
+    
+  //Mensajes plantillas de SMS
+    public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
+    public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
     
     
     //Mensajes Error
