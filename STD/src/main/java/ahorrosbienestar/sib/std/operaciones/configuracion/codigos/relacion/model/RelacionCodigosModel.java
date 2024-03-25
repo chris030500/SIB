@@ -57,6 +57,10 @@ public class RelacionCodigosModel {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Column(name = "DT_FECHA_MODIFICACION")
 	private LocalDate dt_fecha_modificacion;
+	
+	@OneToOne
+	@JoinColumn(name = "I_TIPO_GESTION")
+	private Catalogo i_tipo_gestion;
 
 	@OneToOne
 	@JoinColumn(name = "I_USUARIO_REGISTRO")
@@ -152,6 +156,14 @@ public class RelacionCodigosModel {
 
 	public void setI_usuario_modificacion(Usuario i_usuario_modificacion) {
 		this.i_usuario_modificacion = i_usuario_modificacion;
+	}
+
+	public Catalogo getI_tipo_gestion() {
+		return i_tipo_gestion;
+	}
+
+	public void setI_tipo_gestion(Catalogo i_tipo_gestion) {
+		this.i_tipo_gestion = i_tipo_gestion;
 	}
 
 }

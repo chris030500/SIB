@@ -195,6 +195,8 @@ public class SeguimientoGestionRestController {
 			model.setDt_fecha_modificacion(localDate);
 			model.setI_usuario_registro(usuario);
 			model.setI_usuario_modificacion(usuario);
+			model.setI_telefono(dto.getTelefonoLlamada());
+			System.out.println(model);
 			seguimientoGestionOaService.save(model);
 			//
 			int bloqueo = actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
@@ -435,7 +437,7 @@ public class SeguimientoGestionRestController {
 	@RequestMapping(value = { "/guardar_gestion" }, method = RequestMethod.GET)
 	public ResponseEntity<SeguimientoGestionOaModel> EditarUnaGestion(@RequestParam("idGestion") int idGestion,
 			@RequestParam("fechaCita") String fechaCita, @RequestParam("fechaGestion") String fechaGestion,
-			@RequestParam("codigoRelacion") int codigoRelacion, @RequestParam("descripcion") String descripcion) {
+			@RequestParam("codigoRelacion") int codigoRelacion, @RequestParam("descripcion") String descripcion, @RequestParam("telefono") String telefono) {
 
 		LocalDate fechaCi = null;
 		LocalDate fechaGe = null;
@@ -449,7 +451,7 @@ public class SeguimientoGestionRestController {
 		}
 
 		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.editarSeguimientoGestion(idGestion, fechaCi,
-				fechaGe, codigoRelacion, descripcion);
+				fechaGe, codigoRelacion, descripcion, telefono);
 
 		return ResponseEntity.ok(seguimiento);
 	}
@@ -458,6 +460,14 @@ public class SeguimientoGestionRestController {
 	public ResponseEntity<SeguimientoGestionOaModel> InactivarUnaGestion(@RequestParam("idGestion") int idGestion) {
 
 		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.inactivarSeguimientoGestion(idGestion);
+
+		return ResponseEntity.ok(seguimiento);
+	}
+	
+	@RequestMapping(value = { "/gestion_realizada" }, method = RequestMethod.GET)
+	public ResponseEntity<SeguimientoGestionOaModel> RealizarUnaGestion(@RequestParam("idGestion") int idGestion) {
+		
+		SeguimientoGestionOaModel seguimiento = seguimientoGestionOaService.realizarSeguimientoGestion(idGestion);
 
 		return ResponseEntity.ok(seguimiento);
 	}

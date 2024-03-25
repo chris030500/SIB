@@ -10,6 +10,8 @@ public class CitasVencidos {
 	private String vc_tipo_alerta;
 	private String vc_estatus;
 	private String vc_descripcion_cita;
+	private int i_estatus;
+	private int i_pk_id_seguimiento;
 	public int getI_pk_asignacion() {
 		return i_pk_asignacion;
 	}
@@ -58,8 +60,16 @@ public class CitasVencidos {
 	public void setVc_descripcion_cita(String vc_descripcion_cita) {
 		this.vc_descripcion_cita = vc_descripcion_cita;
 	}
-	
-	
-	
-	
+	public int getI_estatus() {
+		return i_estatus;
+	}
+	public void setI_estatus(int i_estatus) {
+		this.i_estatus = i_estatus;
+	}
+	public int getI_pk_id_seguimiento() {
+		return i_pk_id_seguimiento;
+	}
+	public void setI_pk_id_seguimiento(int i_pk_id_seguimiento) {
+		this.i_pk_id_seguimiento = i_pk_id_seguimiento;
+	}
 }

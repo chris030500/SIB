@@ -6,6 +6,7 @@ public class RegistroSeguimientoDTO {
 
 	private int relacionCodigos;
 	private int asignacionOfertas;
+	private String telefonoLlamada;
 	private String referencia;
 	private String descripcion;
 	private LocalDate fechaCita;
@@ -59,4 +60,12 @@ public class RegistroSeguimientoDTO {
 		this.fechaGestion = fechaGestion;
 	}
 
+	public String getTelefonoLlamada() {
+		return telefonoLlamada;
+	}
+
+	public void setTelefonoLlamada(String telefonoLlamada) {
+		this.telefonoLlamada = telefonoLlamada;
+	}
+	
 }

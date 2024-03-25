@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.registroSeguimien
 public interface SeguimientoGestionOaRepository extends JpaRepository<SeguimientoGestionOaModel, Integer> {
 	
 	@Query(value = "SELECT * FROM SIB.TBL_SEGUIMIENTO_GESTION_OA"
-			+ " WHERE FK_ID_ASIGNACION_OFERTAS = :asignacion", nativeQuery = true)
+			+ " WHERE FK_ID_ASIGNACION_OFERTAS = :asignacion AND I_ESTATUS > 0", nativeQuery = true)
 	public List<SeguimientoGestionOaModel> listaGestionPorOferta(@Param("asignacion") int asignacion);
 
 }

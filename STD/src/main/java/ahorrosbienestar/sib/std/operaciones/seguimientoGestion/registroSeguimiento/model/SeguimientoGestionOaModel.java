@@ -68,6 +68,9 @@ public class SeguimientoGestionOaModel {
 	@OneToOne
 	@JoinColumn(name = "I_USUARIO_MODIFICACION")
 	private Usuario i_usuario_modificacion;
+	
+	@Column(name = "I_TELEFONO")
+	private String i_telefono;
 
 	public int getPk_id_seguimiento_gestion() {
 		return pk_id_seguimiento_gestion;
@@ -165,4 +168,11 @@ public class SeguimientoGestionOaModel {
 		this.i_usuario_modificacion = i_usuario_modificacion;
 	}
 
+	public String getI_telefono() {
+		return i_telefono;
+	}
+
+	public void setI_telefono(String i_telefono) {
+		this.i_telefono = i_telefono;
+	}
 }

@@ -702,6 +702,25 @@ public class RestOpConfiguracionController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
+	
+	@RequestMapping(value = { "/lista_tipoGestion" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaTipoGestion() {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<Catalogo> lista = new ArrayList<Catalogo>();
+		try {
+			lista = catalogoService.generarOpciones(26);
+			logger.info("Se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.info("error: " + e.getMessage());
+			mensajeError = e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.ok(respuesta);
+		}
+	}
 
 	/**
 	 * Lista de relaciones
@@ -769,6 +788,8 @@ public class RestOpConfiguracionController {
 		Catalogo bloqueListas = new Catalogo();
 		Catalogo ultimaGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
+		Catalogo tipoGestion = new Catalogo();
+		
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			Usuario usuario = usuarioService.findByNombre(auth.getName());
@@ -788,6 +809,12 @@ public class RestOpConfiguracionController {
 				bloqueListas = catalogoService.buscarPorId(dto.getIdBloqueo());
 				logger.info("bloqueo: " + bloqueListas.getV_valor());
 				model.setBloqueoListas(bloqueListas);
+			}
+			
+			if (dto.getIdBloqueo() != 0) {
+				tipoGestion = catalogoService.buscarPorId(dto.getIdTipoGes());
+				logger.info("bloqueo: " + tipoGestion.getV_valor());
+				model.setI_tipo_gestion(tipoGestion);
 			}
 
 			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
@@ -825,6 +852,8 @@ public class RestOpConfiguracionController {
 			@RequestBody RelacionDTO dto,
 			@RequestParam("idRelacion") int idRelacion) {
 		
+		System.out.println(dto.getIdTipoGes());
+		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		RelacionCodigosModel model = new RelacionCodigosModel();
@@ -833,6 +862,7 @@ public class RestOpConfiguracionController {
 		Catalogo accionRealizar = new Catalogo();
 		Catalogo bloqueListas = new Catalogo();
 		Catalogo ultimaGestion = new Catalogo();
+		Catalogo tipoGestion = new Catalogo();
 		LocalDate fechaLocal = LocalDate.now();
 		
 		try {
@@ -861,6 +891,14 @@ public class RestOpConfiguracionController {
 				model.setBloqueoListas(model.getBloqueoListas() != bloqueListas ? bloqueListas : model.getBloqueoListas());
 			} else if (dto.getIdBloqueo() == 0) {
 				model.setBloqueoListas(null);
+			}
+			
+			if (dto.getIdTipoGes() != 0) {
+				tipoGestion = catalogoService.buscarPorId(dto.getIdTipoGes());
+				logger.info("tipo gestion: " + tipoGestion.getV_valor());	
+				model.setI_tipo_gestion(model.getI_tipo_gestion() != tipoGestion ? tipoGestion : model.getI_tipo_gestion());
+			} else if (dto.getIdTipoGes() == 0) {
+				model.setI_tipo_gestion(null);
 			}
 			
 			ultimaGestion = catalogoService.buscarPorId(dto.getUltimaGestion());
