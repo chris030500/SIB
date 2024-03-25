@@ -911,6 +911,14 @@ searchInputModal.addEventListener('change', function() {
 		//
 		datosRelacionModal = almacen.listaRelaciones.find(item => item.relacion_codigos == selectedValue);
 		console.log(datosRelacionModal);
+		let relacionPart = datosRelacionModal.relacion_codigos.split(" ")
+		if (relacionPart[0] == 'LLAMADA') {
+			document.getElementById("vistaTelfonoLlamadaModal").style.display = "block";
+			inputTelefonoLlamadaModal.value = '';
+		} else {
+			document.getElementById("vistaTelfonoLlamadaModal").style.display = "none";
+			inputTelefonoLlamadaModal.value = '';
+		}
 		if (datosRelacionModal != undefined) {
 			document.getElementById("vistaAccionRealizarModal").style.display = "block";
 			inputAccionRealizarModal.textContent = datosRelacionModal.v_valor;
@@ -1091,7 +1099,7 @@ function cargarTablaAlertas(datos) {
 
 		if (opt.i_estatus != 2 && opt.vc_tipo_alerta == 'GESTION CON CITA') {
 			btnConfirmar = "<div class='row'><div class='col-sm-6'>"
-				+ "<button class='btn btn-success'"
+				+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-success'"
 				+ " title='Confirmar Gestión' type='button'"
 				+ " onclick='segGestionRealizado("
 				+ opt.i_pk_id_seguimiento
@@ -1128,7 +1136,7 @@ function segGestionRealizado(gestionID) {
 				"El seguimiento ha sido realizado.",
 				"success"
 			)
-			mostrarDiv('vencidasCita')
+			listaDeGestiones();
 		},
 		error: function(xhr, status, error) {
 			// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
