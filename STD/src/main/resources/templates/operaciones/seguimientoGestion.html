@@ -36,33 +36,34 @@
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
-								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}"/>
-								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}"/>
+								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}" />
+								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}" />
 								<input type="hidden" id="NombreSucursalS" />
 								<legend class="float-none w-auto p-2">Filtro busqueda</legend>
 								<!-- Campos del filtro -->
 								<div class="row">
 									<div class="col-sm-6" th:if="${sucursales.size() > 1}">
-												<label for="searchInput">Buscar sucursal:</label>
-												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
-												<input type="search" class="form-control" id="buscarSucursalSeguimiento"
-													list="opcionSucursalSeguiento" autocomplete="off"
-													placeholder="Nombre sucursal">
-												<!-- Lista de opciones para el datalist -->
-												<datalist id="opcionSucursalSeguiento">
-													<option th:each="sucursal : ${sucursales}"
-                                                        th:value="${sucursal.vc_nombre_sucursal}"
-                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
-												</datalist>
+										<label for="searchInput">Buscar sucursal:</label>
+										<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+										<input type="search" class="form-control" id="buscarSucursalSeguimiento"
+											list="opcionSucursalSeguiento" autocomplete="off"
+											placeholder="Nombre sucursal">
+										<!-- Lista de opciones para el datalist -->
+										<datalist id="opcionSucursalSeguiento">
+											<option th:each="sucursal : ${sucursales}"
+												th:value="${sucursal.vc_nombre_sucursal}"
+												th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}">
+											</option>
+										</datalist>
 									</div>
 									<div class="col-sm-6">
-												<label>Sucursal:</label>
-												<b>
-													<p id="nombreSucursalSeguimiento"></p>
-												</b>
-											
+										<label>Sucursal:</label>
+										<b>
+											<p id="nombreSucursalSeguimiento"></p>
+										</b>
+
 									</div>
-									
+
 								</div>
 								<div class="row">
 									<div class="col-sm-12">
@@ -175,37 +176,44 @@
 										<form name="formulario" id="formSeguimientoGestion">
 											<div class="row" style="padding-top: 20px;">
 												<div class="col-sm-4">
-													<label for="buscar-relacion">Código de acción - Código de
-														resultados:</label><span style="color: red;">*</span>
-													<input type="search" class="form-control" id="buscar-relacion"
-														list="opciones-relacion" autocomplete="off"
-														placeholder="Relación entre códigos">
-													<datalist id="opciones-relacion"></datalist>
-													<p id="validar-relacion"
-														style="color: red;display: none; font-size: small; padding-left: 5px;">
-														<i><b>campo requerido</b></i>
-													</p>
-												</div>
-												<div class="col-sm-4" id="vistaAccionRealizar" style="display: none;">
-													<label>Accion a realizar</label>
-													<b>
-														<p id="accionRealizar"></p>
-													</b>
-												</div>
-											</div>
-											<div class="row" style="padding-top: 20px;">
-												<div class="col-sm-3">
 													<div class="form-group">
-														<label>Fecha de gestión realizada:</label><span
-															style="color: red;">*</span>
-														<input class="form-control" type="date" id="fecha-gestion">
-														<p id="validar-fechaGestion"
+														<label for="buscar-relacion">Código de acción - Código de
+															resultados:</label><span style="color: red;">*</span>
+														<input type="search" class="form-control" id="buscar-relacion"
+															list="opciones-relacion" autocomplete="off"
+															placeholder="Relación entre códigos">
+														<datalist id="opciones-relacion"></datalist>
+														<p id="validar-relacion"
 															style="color: red;display: none; font-size: small; padding-left: 5px;">
 															<i><b>campo requerido</b></i>
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-3">
+												<div class="col-sm-4">
+													<div class="form-group" id="vistaAccionRealizar"
+														style="display: none;">
+														<label>Accion a realizar</label>
+														<b>
+															<p id="accionRealizar"></p>
+														</b>
+													</div>
+												</div>
+												<div class="col-sm-4">
+													<div class="form-group" id="vistaTelfonoLlamada"
+														style="display: none;">
+														<label>Número de Teléfono:</label><span
+															style="color: red;">*</span>
+														<input class="form-control" type="number" id="telefono"
+															placeholder="Número de teléfono">
+														<p id="validar-telefono"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Fecha de cita:</label><span style="color: red;">*</span>
 														<input class="form-control" type="date" id="fecha-cita"
@@ -219,7 +227,18 @@
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-3">
+												<div class="col-sm-4">
+													<div class="form-group">
+														<label>Fecha de gestión realizada:</label><span
+															style="color: red;">*</span>
+														<input class="form-control" type="date" id="fecha-gestion">
+														<p id="validar-fechaGestion"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Descripción de la gestión:</label><span
 															style="color: red;">*</span>
@@ -231,10 +250,13 @@
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-3" style="text-align: right; padding-top: 24px;">
+											</div>
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-12" style="text-align: right;">
 													<button style='background: #0dcaf0; border-color: #0dcaf0;'
 														type="button" onclick="validarGestion()" data-dismiss="modal"
-														class="btn btn-primary" th:if="${permisoUsuario != 2}">Registrar</button>
+														class="btn btn-primary"
+														th:if="${permisoUsuario != 2}">Registrar</button>
 												</div>
 											</div>
 										</form>
@@ -290,7 +312,8 @@
 
 									<div class="p-4 border rounded-3 mb-4">
 										<ul class="nav nav-pills" id="pntConf" role="tablist">
-											<li class="nav-item border rounded px-3 py-2" role="presentation" th:if="${sucursales != null}">
+											<li class="nav-item border rounded px-3 py-2" role="presentation"
+												th:if="${sucursales != null}">
 												<button class="nav-link active" id="grafica-tab" data-bs-toggle="pill"
 													role="tab" aria-selected="true" data-bs-target="#grafica"
 													onclick="mostrarDiv('grafica')">Registros por Grafica.</button>
@@ -315,8 +338,9 @@
 												<!-- Lista de opciones para el datalist -->
 												<datalist id="opcionSucursal">
 													<option th:each="sucursal : ${sucursales}"
-                                                        th:value="${sucursal.vc_nombre_sucursal}"
-                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
+														th:value="${sucursal.vc_nombre_sucursal}"
+														th:text="${sucursal.vc_nombre_sucursal}"
+														th:id="${sucursal.i_sucursal}"></option>
 												</datalist>
 											</div>
 											<div class="col-sm-6">
@@ -343,8 +367,9 @@
 												<!-- Lista de opciones para el datalist -->
 												<datalist id="opcionSucursalVencidas">
 													<option th:each="sucursal : ${sucursales}"
-                                                        th:value="${sucursal.vc_nombre_sucursal}"
-                                                        th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"></option>
+														th:value="${sucursal.vc_nombre_sucursal}"
+														th:text="${sucursal.vc_nombre_sucursal}"
+														th:id="${sucursal.i_sucursal}"></option>
 												</datalist>
 											</div>
 											<div class="col-sm-6">
@@ -355,7 +380,8 @@
 											</div>
 										</div>
 										<div class="row" style="margin-top : 15px ">
-											<div class="table-responsive" style="display: block;" id="ver-tbl-buscarCita">
+											<div class="table-responsive" style="display: block;"
+												id="ver-tbl-buscarCita">
 												<table class="table table-sm" style="width: 100%;" id="tblAlertas">
 													<thead>
 														<tr>
@@ -377,9 +403,9 @@
 											<div class="row" id="ver-buscarCita"
 												style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
 												<div class="col-sm-12">
-												<div class="spinner-border"
-												style="color: #0dcaf0; height: 100px; width: 100px;">
-												</div>
+													<div class="spinner-border"
+														style="color: #0dcaf0; height: 100px; width: 100px;">
+													</div>
 												</div>
 											</div>
 										</div>
@@ -415,11 +441,24 @@
 												<datalist id="opciones-relacion"></datalist>
 												<p id="validar-relacion"
 													style="color: red; display: none; font-size: small; padding-left: 5px;">
-													<i><b>Campo requerido</b></i></p>
+													<i><b>Campo requerido</b></i>
+												</p>
 											</div>
 										</div>
 										<div class="col-sm-12">
-											<div class="form-group" id="vistaAccionRealizarModal" style="display: none;">
+											<div class="form-group" id="vistaTelfonoLlamadaModal" style="display: none;">
+												<label>Número de Teléfono:</label><span style="color: red;">*</span>
+												<input class="form-control" type="number" id="telefono-modal"
+													placeholder="Número de teléfono">
+												<p id="validar-telefono-modal"
+													style="color: red;display: none; font-size: small; padding-left: 5px;">
+													<i><b>campo requerido</b></i>
+												</p>
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="form-group" id="vistaAccionRealizarModal"
+												style="display: none;">
 												<label>Acción a realizar:</label>
 												<b>
 													<p id="accionRealizarModal"></p>
@@ -455,7 +494,8 @@
 											<div class="form-group">
 												<label>Descripción de la gestión:</label><span
 													style="color: red;">*</span>
-												<textarea class="form-control" id="descripcion-gestion-modal"></textarea>
+												<textarea class="form-control"
+													id="descripcion-gestion-modal"></textarea>
 												<p id="validar-descripcion-modal"
 													style="color: red; display: none; font-size: small; padding-left: 5px;">
 												</p>

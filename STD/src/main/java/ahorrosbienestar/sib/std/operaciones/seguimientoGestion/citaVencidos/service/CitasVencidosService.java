@@ -40,6 +40,8 @@ public class CitasVencidosService {
 							regCitasVendos.setVc_estatus(rs.getString(6));
 							regCitasVendos.setVc_tipo_alerta(rs.getString(7));
 							regCitasVendos.setVc_descripcion_cita(rs.getString(8));
+							regCitasVendos.setI_estatus(rs.getInt(9));
+							regCitasVendos.setI_pk_id_seguimiento(rs.getInt(10));
 						
 							return regCitasVendos;
 						}
