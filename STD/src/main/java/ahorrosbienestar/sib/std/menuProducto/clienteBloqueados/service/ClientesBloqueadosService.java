@@ -38,7 +38,7 @@ public class ClientesBloqueadosService {
 			return iClientesBloqueadosRepository.findById(idBloqueo);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return null;
+			return Optional.empty();
 		}
 	}
 	
