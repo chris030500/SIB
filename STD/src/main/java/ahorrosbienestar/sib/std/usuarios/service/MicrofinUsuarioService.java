@@ -1,18 +1,18 @@
 package ahorrosbienestar.sib.std.usuarios.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+
 import ahorrosbienestar.sib.std.usuarios.dto.MicrofinUsuarioDTO;
 import ahorrosbienestar.sib.std.usuarios.dto.PuestosMicrofinDTO;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.throwsSpec_return;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import org.apache.log4j.Logger;
-
 @Service
 public class MicrofinUsuarioService {
 
@@ -50,9 +50,8 @@ public class MicrofinUsuarioService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error(e.getMessage());
-			e.printStackTrace();
+			return Collections.emptyList(); // Devuelve una lista vacía en caso de error
 		}
-		return null;
 	}
 	
 	// Obtener el usuario
@@ -74,9 +73,9 @@ public class MicrofinUsuarioService {
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error(e.getMessage());
-				e.printStackTrace();
+				
 			}
-			return null;
+			return Collections.emptyList(); // Devuelve una lista vacía en caso de error
 		}
 
 }
