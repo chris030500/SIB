@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +25,17 @@ public class ParametrosReglasAsignacionService {
 			return iParametrosReglasAsignacion.obtRegParams(idRegla);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return null;
+			return Collections.emptyList(); // Devuelve una lista vacía en caso de excepción
 		}
 	}
 		
-	public ParametrosReglasAsignacion save(ParametrosReglasAsignacion parametrosReglasAsignacion) {
+	public ParametrosReglasAsignacion save(ParametrosReglasAsignacion parametrosReglasAsignacion) throws Exception{
 		try {
 			return iParametrosReglasAsignacion.save(parametrosReglasAsignacion);
 
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
+			logger.error("Error al guardar los parámetros de reglas de asignación: " + e.getMessage(), e);
+	        throw new Exception("Error al guardar los parámetros de reglas de asignación", e);
 		}
 	}
 
@@ -42,8 +43,8 @@ public class ParametrosReglasAsignacionService {
 		try {
 			return iParametrosReglasAsignacion.findById(idParametros);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
+			logger.error("Error al buscar el parámetro con ID " + idParametros + ": " + e.getMessage(), e);
+	        return Optional.empty(); // Devuelve un Optional vacío en caso de excepción
 		}
 	}
 

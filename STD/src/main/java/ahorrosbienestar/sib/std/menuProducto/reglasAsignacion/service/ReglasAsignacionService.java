@@ -24,20 +24,20 @@ public class ReglasAsignacionService {
 		return iReglasAsignacionRepository.obtReglasAsignacion();
 	}
 	
-	public ReglasAsignacion save(ReglasAsignacion reglasAsignacion) {
+	public ReglasAsignacion save(ReglasAsignacion reglasAsignacion) throws Exception{
 		try {
 			return iReglasAsignacionRepository.save(reglasAsignacion);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
+			 logger.error("Error al guardar la regla de asignación: " + e.getMessage(), e);
+		     throw new Exception("Error al guardar la regla de asignación", e);
 		}
 	}
 	public Optional<ReglasAsignacion> findById(Integer idRegla){
 		 try {
 			 return iReglasAsignacionRepository.findById(idRegla);
 		 } catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
+			logger.error("Error al buscar la regla de asignación con ID " + idRegla + ": " + e.getMessage(), e);
+			return Optional.empty(); 
 		}
 		
 	 }

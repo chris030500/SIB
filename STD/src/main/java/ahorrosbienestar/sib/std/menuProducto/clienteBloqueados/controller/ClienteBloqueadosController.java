@@ -79,8 +79,6 @@ public class ClienteBloqueadosController {
 				actualizarEstatus.get().setI_usuario_desbloqueo(usuario.get(0));
 				actualizarEstatus.get().setVc_motivo_desbloqueo(motivoBloqueo);
 				actualizarEstatus.get().setDt_fecha_vencimiento(null);
-			}else {
-				
 			}
 			clientesBloqueadosService.save(actualizarEstatus.get());
 			respuesta.add(mensaje);
