@@ -48,11 +48,11 @@ public class EnvioCorreoContenidoService {
 		}
 	}
 	@SuppressWarnings("deprecation")
-	public List<Integer> registrosXsucursal(){
+	public List<Integer> registrosXsucursal(int tipoBusqueda){
 		try {
 			logger.info("sucursal");
-			String sql = "CALL SIB.SP_REGXSUCURSAL();";
-			List<Integer> ls = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<Integer>() {
+			String sql = "CALL SIB.SP_REGXSUCURSAL(?);";
+			List<Integer> ls = jdbcTemplate.query(sql, new Object[] {tipoBusqueda}, new RowMapper<Integer>() {
 				public Integer mapRow(ResultSet rs, final int rowNum) throws SQLException {
 				        				 
 				return rs.getInt(1);

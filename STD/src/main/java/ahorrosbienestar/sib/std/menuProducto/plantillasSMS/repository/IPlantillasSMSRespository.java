@@ -18,4 +18,14 @@ public interface IPlantillasSMSRespository extends JpaRepository<PlantillasSMS, 
 	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_PLANTILLAS_SMS WHERE FK_ID_BASE =:slcCampania and FK_ID_CLASIFICACION =:slcClasificacion ", nativeQuery = true)
 	public int existeRegistro(@Param("slcCampania") Integer slcCampania, @Param("slcClasificacion") Integer slcClasificacion);
 
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_PLANTILLAS_SMS WHERE FK_ID_BASE =:slcCampania and FK_ID_CLASIFICACION =:slcClasificacion "
+			+ "and PK_ID_PLANTILLA <> :idPlantilla", nativeQuery = true)
+	public int existeRegistroMod(Integer slcCampania, Integer slcClasificacion, Integer idPlantilla);
+
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_PLANTILLAS_SMS WHERE VC_NOMBRE_PLANTILLA =:nombrePlantilla ", nativeQuery = true)
+	public int existeNombre(String nombrePlantilla);
+
+	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_PLANTILLAS_SMS WHERE VC_NOMBRE_PLANTILLA =:nombrePlantilla and PK_ID_PLANTILLA <> :idPlantilla", nativeQuery = true)
+	public int existeNombreMod(String nombrePlantilla, Integer idPlantilla);
+
 }

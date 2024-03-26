@@ -707,10 +707,7 @@ function peticionPost(metodo, metodoUrl) {
 		},
 		success: function(respuesta) {
    			url = "";			
-			swal(respuesta[0], {
-				closeOnClickOutside: false,
-				icon: "success",
-			}).then(resp => {
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
 				if (metodo == 1) {
 					iniciaTblParametros();
@@ -726,7 +723,7 @@ function peticionPost(metodo, metodoUrl) {
 					limpiarParametros();	
 				}else if(metodo == 5){
 		
-					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[1]);
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
 					window.focus();
 				}
 			});

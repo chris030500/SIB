@@ -1,8 +1,10 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -11,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
@@ -49,6 +54,8 @@ public class GestionAsignacionConfiguracion {
 	private int idProceso = 1;
 	@Value("${my.job.cron}")
 	private String expresionCron;
+	
+	private String error="";
 	
 	@PostConstruct
 	public void init() {
@@ -114,19 +121,38 @@ public class GestionAsignacionConfiguracion {
 	}
 
 
-	public synchronized void procesarAsignacion(Integer idProceso) {
+	public synchronized String procesarAsignacion(Integer idProceso) {
 		try {
-    		String sql = "CALL SIB.SP_PROCESOS_ASIGNACION()";
-        	jdbcTemplate.update(sql);
-        	
-        	int tipoCorreo = 9;
-        	// registrso de asignacion
-        	envioCorreoService.preparCorreoAdjunto(tipoCorreo);
-        	
+			logger.info("Ejecuta los SP Asignacion");
+			error = procesoGestionAsignado();
+			if(error == null) {
+	        	// Metodo envio de correo y adjunto
+	        	envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
+			}else {
+				logger.error("Error:"+error);
+			}
+			return error;
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
+			return "Error:"+error+"-"+e.getMessage();
 		}
 		
+		
 	}
+	
+	 public String procesoGestionAsignado() {
+	        // Crear un SimpleJdbcCall para invocar al procedimiento almacenado
+	    	StoredProcedure procedure = new StoredProcedure(jdbcTemplate.getDataSource(), Constantes.PROCESO_ASIGNACION) {
+	            {
+	                declareParameter(new SqlOutParameter("error_message", Types.VARCHAR));
+	                compile();
+	            }
+	        };
+
+	        Map<String, Object> out = procedure.execute();
+
+
+	        return (String) out.get("error_message");
+	    }
 
 }

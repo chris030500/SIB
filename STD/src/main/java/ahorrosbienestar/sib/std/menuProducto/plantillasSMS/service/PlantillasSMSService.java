@@ -43,4 +43,17 @@ public class PlantillasSMSService {
 	public int existeRegistro(Integer slcCampania, Integer slcClasificacion) {
 		return iPlantillasSMSRespository.existeRegistro(slcCampania,slcClasificacion);
 	}
+	
+	public int existeRegistroMod(Integer slcCampania, Integer slcClasificacion,Integer idPlantilla) {
+		return iPlantillasSMSRespository.existeRegistroMod(slcCampania,slcClasificacion,idPlantilla);
+	}
+
+	public int existeNombre(String nombrePlantilla) {
+	
+		return iPlantillasSMSRespository.existeNombre(nombrePlantilla);
+	}
+
+	public int existeNombreMod(String nombrePlantilla, Integer idPlantilla) {
+		return iPlantillasSMSRespository.existeNombreMod(nombrePlantilla,idPlantilla);
+	}
 }
