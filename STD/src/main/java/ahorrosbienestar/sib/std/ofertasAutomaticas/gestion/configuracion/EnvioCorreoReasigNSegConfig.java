@@ -1,9 +1,11 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -13,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
@@ -37,7 +37,7 @@ public class EnvioCorreoReasigNSegConfig {
     @Autowired SucursalesNotificarService sucursalesNotificarService;
     
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
     
     @Autowired
 	private TaskScheduler tareCorreoReasignacion;
@@ -116,21 +116,40 @@ public class EnvioCorreoReasigNSegConfig {
 	
 
     public String procesoReasignacion() {
-        // Crear un SimpleJdbcCall para invocar al procedimiento almacenado
-    	StoredProcedure procedure = new StoredProcedure(jdbcTemplate.getDataSource(), Constantes.PROCESO_REASIGNACION) {
-            {
-                declareParameter(new SqlOutParameter("error_message", Types.VARCHAR));
-                compile();
+              
+    	Connection connection = null;
+        CallableStatement callableStatement = null;
+        String errorMessage = null;
+
+        try {
+            connection = jdbcTemplate.getDataSource().getConnection();
+            callableStatement = connection.prepareCall(Constantes.PROCESO_REASIGNACION);
+            callableStatement.registerOutParameter(1, Types.VARCHAR);
+            callableStatement.execute();
+            errorMessage = callableStatement.getString(1);
+        } catch (SQLException e) {
+            logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+        } finally {
+            if (callableStatement != null) {
+                try {
+                    callableStatement.close();
+                } catch (SQLException e) {
+                    logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+                }
             }
-        };
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+                }
+            }
+        }
 
-        Map<String, Object> out = procedure.execute();
-
-
-        return (String) out.get("error_message");
+        return errorMessage;
+        
+        
     }
 	
-	
-	
-    
 }
