@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -135,16 +136,20 @@ public class PlantillasSMSController {
 	}
 	
 	
-	@ResponseBody
 	@GetMapping("/obtPlantilla")
-	public Optional<PlantillasSMS> cargarPlantilla(@RequestParam(name = "idPlantilla") Integer idPlantilla) {
-		try {
-			return plantillasSMSService.findById(idPlantilla);		
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			return null;
-		}
-		
+	public ResponseEntity<?> cargarPlantilla(@RequestParam(name = "idPlantilla") Integer idPlantilla) {
+	    try {
+	        Optional<PlantillasSMS> plantilla = plantillasSMSService.findById(idPlantilla);
+	        if (plantilla.isPresent()) {
+	            return ResponseEntity.ok(plantilla.get());
+	        } else {
+	            return ResponseEntity.notFound().build();
+	        }
+	    } catch (Exception e) {
+	        logger.error("Error al cargar la plantilla con ID " + idPlantilla + ": " + e.getMessage(), e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("Error al cargar la plantilla con ID " + idPlantilla + ": " + e.getMessage());
+	    }
 	}
 	
 	@PostMapping("/modPlantilla")

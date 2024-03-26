@@ -114,7 +114,7 @@ public class Constantes {
 	//PROCESO A EJECUTAR
 	public static final String PROCESO_ASIGNACION = "SIB.SP_PROCESOS_ASIGNACION";
 	public static final String PROCESO_REASIGNACION = "SIB.SP_REASIG_X_FAL_SEGUIMIENTO";
-	public static final String PROCESO_SMS = "SIB.SP_GENERAR_SMS";
+	public static final String PROCESO_SMS = "{call SIB.SP_GENERAR_SMS (?)}";
 	//PARAMETROS REPORTE ADJUNTO
 	public static final String PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES = "?IDSUCURSAL=";
 	
