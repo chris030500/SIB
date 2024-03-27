@@ -196,7 +196,7 @@ public class SeguimientoGestionRestController {
 			model.setI_usuario_registro(usuario);
 			model.setI_usuario_modificacion(usuario);
 			model.setI_telefono(dto.getTelefonoLlamada());
-			System.out.println(model);
+			logger.info(model);
 			seguimientoGestionOaService.save(model);
 			//
 			int bloqueo = actualizarAsignacion(dto.getRelacionCodigos(), dto.getAsignacionOfertas());
@@ -335,7 +335,7 @@ public class SeguimientoGestionRestController {
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		List<ConsultarRelacionesModel> lista = new ArrayList<ConsultarRelacionesModel>();
-		System.out.println(valor);
+		logger.info(valor);
 		try {
 			lista = consultarRelacionesService.relacionesActivas(valor);
 			respuesta.put("listaRelaciones", lista);
@@ -373,19 +373,17 @@ public class SeguimientoGestionRestController {
 	public int actualizarAsignacion(int idRelacion, int idAsignacion) {
 		AsignacionOfertas asignacion = asignacionOfertasService.findById(idAsignacion);
 		logger.info("Se encontró la asignación");
-		System.out.println("Se encontró la asignación");
 		//
 		RelacionCodigosModel relacion = relacionCodigosService.buscarRelacionPorId(idRelacion);
 		logger.info("Se encnotró la relación");
-		System.out.println("Se encontró la relación");
 		//
 		if (relacion.getBloqueoListas() != null) {
-			System.out.println("Paso 1");
+			logger.info("Paso 1");
 			if (relacion.getAccionRealizar().getV_valor().equals(excluir)) {
-				System.out.println("Paso 2");
+				logger.info("Paso 2");
 				if (relacion.getBloqueoListas().getV_valor().equals(bloqueo1)
 						|| relacion.getBloqueoListas().getV_valor().equals(bloqueo2)) {
-					System.out.println("SIIIII");
+					logger.info("SIIIII");
 					asignacion.setI_bloqueo(2);
 				}
 			}

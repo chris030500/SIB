@@ -347,7 +347,7 @@ public class indexOfertasAutoController {
 	@GetMapping("/consultaTabla")
 	public ResponseEntity<?> consultaTabla(@RequestParam(name = "idBase") Integer idBase){		
 		try {
-			System.out.println(idBase);
+			logger.info(idBase);
 			logger.info("/consultaTabla"+idBase);
 			List<DetalleCampania> detalleCampania = new ArrayList<>();
 			switch (idBase) {
@@ -852,7 +852,7 @@ public class indexOfertasAutoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("--"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);

@@ -8,13 +8,15 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
@@ -45,14 +47,16 @@ public class ProspectorTareaConfiguracion {
 	 
 	 @Autowired
 	 private EnvioCorreoService envioCorreoService;
+	 
+	 @Autowired
+	 private ConfigService configService;
 	
 	 @Autowired
 	 public ProspectorTareaConfiguracion(TaskScheduler taskSchedulerProspector) {
 	       this.taskSchedulerProspector = taskSchedulerProspector;
 	 }
 	 
-	 private int idBase = 4;
-	 @Value("${my.job.cron}")
+	 private Configuracion expresionBD;
 	 private String expresionCron;
 	 
 	 @PostConstruct
@@ -66,12 +70,12 @@ public class ProspectorTareaConfiguracion {
 	 
 	 public void actualizarExpresionCronProspector() {
 			try {
-				
+				expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
 				logger.info("Procesar Campanias");
-				List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+				List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_PROSPECTOR);
 				
 				for(ValidarEjecutarCronBase valBase : validacionCron) {
-					if(!valBase.getExpresionCron().equals(expresionCron)) {
+					if(!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 						expresionCron = valBase.getExpresionCron();
 						// Crea un nuevo trigger con la nueva expresión cron
 			            CronTrigger trigger = new CronTrigger(expresionCron);
@@ -91,8 +95,8 @@ public class ProspectorTareaConfiguracion {
 	   }
 	 
 		public void procesarCron() {
-			logger.info("Proceso de Campanias VIP");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+			logger.info("Proceso de Prospector.");
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_PROSPECTOR);
 			
 			try {
 				LocalTime horaActual = LocalTime.now();
@@ -118,12 +122,11 @@ public class ProspectorTareaConfiguracion {
 
 	    public synchronized void procesarProspector() {
 	    	try {
-	    		logger.info("Ejecuta los SP");
-	        	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(4)");
+	    		logger.info("Ejecuta SP_PROCESAR_INFORMACION_CAMPANIAS");
+	        	jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(+"+Constantes.BASE_PROSPECTOR+")");
 	        	indexOfertasAutomaticasService.generarArchivoOA();
-	        	int tipoCorreo = 11;
 	        	logger.info("REGISTROS DE PROSPECTOR");
-				envioCorreoService.prepararCorreo(tipoCorreo,"");
+				envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_PROSPECTOR,"");
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
 			}

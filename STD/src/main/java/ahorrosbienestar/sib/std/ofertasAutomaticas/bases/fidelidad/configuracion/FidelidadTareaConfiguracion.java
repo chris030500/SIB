@@ -159,7 +159,6 @@ public class FidelidadTareaConfiguracion {
 			}
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			System.out.print("Error:"+e.getMessage());
 		}
 	}
 	
@@ -264,7 +263,7 @@ public class FidelidadTareaConfiguracion {
 				try {
 					double clienteIdCellValue = row.getCell(0).getNumericCellValue();
 					int clienteId = (int) clienteIdCellValue; // Convertir a int
-					System.out.println("clienteId: " + clienteId);
+		
 					logger.info("clienteId: " + clienteId);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
@@ -442,7 +441,7 @@ public class FidelidadTareaConfiguracion {
 				String erroresMns = "";
 				for (String error : errores) {
 					erroresMns = erroresMns+"-"+error+"<br>";
-					System.out.println(error);
+					logger.error(error);
 				}
 				tipoCorreo = 3;
 				logger.info("ERROR CONTENIDO");

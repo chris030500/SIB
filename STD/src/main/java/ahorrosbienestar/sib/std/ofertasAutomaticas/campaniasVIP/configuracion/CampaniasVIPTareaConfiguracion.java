@@ -8,13 +8,15 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
@@ -48,20 +50,24 @@ public class CampaniasVIPTareaConfiguracion {
 	private IndexOfertasAutomaticasService indexOfertasAutomaticasService;
 	@Autowired
 	private EnvioCorreoService envioCorreoService;
+	
+	 @Autowired
+	 private ConfigService configService;
 
 	@Autowired
 	public CampaniasVIPTareaConfiguracion(TaskScheduler taskSchedulerCampanias) {
 		this.taskSchedulerCampanias = taskSchedulerCampanias;
 	}
 
-	private int idBase = 3;
-	@Value("${my.job.cron}")
-	private String expresionCron;
+
 	private String expresionCronFidRen = "0 */5 8-20 1,30 * ?";
 	private String expresionCronFidNom = "0 */5 8-20 1,30 * ?";
 	private static final String ERROR_MESSAGE_PREFIX = "Error:";
 	private static final String HORA_MINUTOS_FORMATO = "HH:mm";
 	private static final String EJECUTA_SP_MENSAJE = "Ejecuta los SP";
+	
+	private Configuracion expresionBD;
+	private String expresionCron;
 
 	@PostConstruct
 	public void init() {
@@ -76,12 +82,12 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public void actualizarExpresionCronCampanias() {
 		try {
-
+			expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
 			logger.info("Procesar Campanias");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_CAMPANIAS_VIP);
 
 			for (ValidarEjecutarCronBase valBase : validacionCron) {
-				if (!valBase.getExpresionCron().equals(expresionCron)) {
+				if (!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 					expresionCron = valBase.getExpresionCron();
 					// Crea un nuevo trigger con la nueva expresión cron
 					CronTrigger trigger = new CronTrigger(expresionCron);
@@ -102,7 +108,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public void procesarCron() {
 		logger.info("Proceso de Campanias VIP");
-		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_CAMPANIAS_VIP);
 
 		try {
 			LocalTime horaActual = LocalTime.now();
@@ -128,13 +134,12 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public void actualizarExpresionCronFidNom() {
 		try {
-
+			expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
 			logger.info("Procesar Fidelizacion Nomina");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(5);
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_FID_NOM);
 
 			for (ValidarEjecutarCronBase valBase : validacionCron) {
-				System.out.println();
-				if (!valBase.getExpresionCron().equals(expresionCronFidNom)) {
+				if (!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 					expresionCronFidNom = valBase.getExpresionCron();
 					// Crea un nuevo trigger con la nueva expresión cron
 					CronTrigger trigger = new CronTrigger(expresionCronFidNom);
@@ -155,7 +160,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public void procesarCronFidNom() {
 		logger.info("Proceso de Fidelizacion Nomina");
-		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(5);
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_FID_NOM);
 
 		try {
 			LocalTime horaActual = LocalTime.now();
@@ -181,12 +186,12 @@ public class CampaniasVIPTareaConfiguracion {
 
 	public void actualizarExpresionCronFidRen() {
 		try {
-			System.out.println("Se ejecuta proceso para actualizar cron");
+			expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
 			logger.info("Procesar Fidelizacion Renovado");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(6);
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_FID_REN);
 
 			for (ValidarEjecutarCronBase valBase : validacionCron) {
-				if (!valBase.getExpresionCron().equals(expresionCronFidRen)) {
+				if (!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 					expresionCronFidRen = valBase.getExpresionCron();
 					// Crea un nuevo trigger con la nueva expresión cron
 					CronTrigger trigger = new CronTrigger(expresionCronFidRen);
@@ -206,9 +211,9 @@ public class CampaniasVIPTareaConfiguracion {
 	}
 
 	public void procesarCronFidRen() {
-		System.out.println("Se ejecuta proceso automatico de fidelizacion Renovado");
+		logger.info("Se ejecuta proceso automatico de fidelizacion Renovado");
 		logger.info("Proceso de Fidelizacion Renovado");
-		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(6);
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_FID_REN);
 
 		try {
 			
@@ -236,11 +241,10 @@ public class CampaniasVIPTareaConfiguracion {
 	public synchronized void procesarCampaniasVIP() {
 		try {
 			logger.info(EJECUTA_SP_MENSAJE);
-			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(3)");
+			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_CAMPANIAS_VIP+")");
 			indexOfertasAutomaticasService.generarArchivoOA();
-			int tipoCorreo = 6;
 			logger.info("REGISTROS DE CAMPANIAS VIP");
-			envioCorreoService.prepararCorreo(tipoCorreo, "");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_CAMPANIAS_VIP, "");
 		} catch (Exception e) {
 			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
@@ -249,11 +253,10 @@ public class CampaniasVIPTareaConfiguracion {
 	public synchronized void procesarCampaniasFidNom() {
 		try {
 			logger.info(EJECUTA_SP_MENSAJE);
-			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(5)");
+			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_FID_NOM+")");
 			indexOfertasAutomaticasService.generarArchivoOA();
-			int tipoCorreo = 7;
 			logger.info("REGISTROS DE CAMPANIAS FIDELIZACION NOMINA");
-			envioCorreoService.prepararCorreo(tipoCorreo, "");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_FID_NOM, "");
 		} catch (Exception e) {
 			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
@@ -262,11 +265,10 @@ public class CampaniasVIPTareaConfiguracion {
 	public synchronized void procesarCampaniasFidRen() {
 		try {
 			logger.info(EJECUTA_SP_MENSAJE);
-			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS(6)");
+			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_FID_REN+")");
 			indexOfertasAutomaticasService.generarArchivoOA();
-			int tipoCorreo = 8;
 			logger.info("REGISTROS DE CAMPANIAS FIDELIZACION RENOVADO");
-			envioCorreoService.prepararCorreo(tipoCorreo, "");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_FID_RENO, "");
 		} catch (Exception e) {
 			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}

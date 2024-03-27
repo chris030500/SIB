@@ -852,7 +852,7 @@ public class RestOpConfiguracionController {
 			@RequestBody RelacionDTO dto,
 			@RequestParam("idRelacion") int idRelacion) {
 		
-		System.out.println(dto.getIdTipoGes());
+		logger.info(dto.getIdTipoGes());
 		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;

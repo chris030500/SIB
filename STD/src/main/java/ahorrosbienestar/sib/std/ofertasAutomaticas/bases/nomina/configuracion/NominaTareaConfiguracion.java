@@ -8,13 +8,15 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
@@ -48,13 +50,16 @@ public class NominaTareaConfiguracion {
 	@Autowired
 	private EnvioCorreoService envioCorreoService;
 	
+	 @Autowired
+	 private ConfigService configService;
+	
 	@Autowired
     public NominaTareaConfiguracion(TaskScheduler taskSchedulerNomina) {
         this.taskSchedulerNomina = taskSchedulerNomina;
     }
     
-    private int idBase = 1;
-	@Value("${my.job.cron}")
+	
+	private Configuracion expresionBD;
 	private String expresionCron;
 
     @PostConstruct
@@ -69,12 +74,12 @@ public class NominaTareaConfiguracion {
     
 	public void actualizarExpresionCronNomina() {
 		try {
-			
+			expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
 			logger.info("Proceso de Nomina.");
-			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_NOMINA);
 			
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
-				if(!valBase.getExpresionCron().equals(expresionCron)) {
+				if(!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 					expresionCron = valBase.getExpresionCron();
 					// Crea un nuevo trigger con la nueva expresión cron
 		            CronTrigger trigger = new CronTrigger(expresionCron);
@@ -95,7 +100,7 @@ public class NominaTareaConfiguracion {
 	
 	public void procesarCron() {
 		logger.info("Proceso de Nomina");
-		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(idBase);
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_NOMINA);
 		
 		try {
 			LocalTime horaActual = LocalTime.now();
@@ -124,12 +129,11 @@ public class NominaTareaConfiguracion {
     public synchronized void procesarNomina() {
     	try {
     		logger.info("Ejecuta los SP nomina");
-        	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS(1)");
+        	jdbcTemplate.update("CALL SIB.SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_NOMINA+")");
         	indexOfertasAutomaticasService.generarArchivoOA();
-        	
-        	int tipoCorreo = 5;
+
         	// "REGISTROS DE NOMINA";
-			envioCorreoService.prepararCorreo(tipoCorreo,"");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_NOMINA,"");
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}

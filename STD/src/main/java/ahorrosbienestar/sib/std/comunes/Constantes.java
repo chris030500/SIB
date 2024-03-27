@@ -107,9 +107,6 @@ public class Constantes {
 	public static final int CATALOGO_GESTION = 14;
 	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
 	
-	// TIPOS DE CORREOS
-	public static final int CORREO_ASIGNACION = 9;
-	public static final int CORREO_REASIGNACION = 10;
 	
 	//PROCESO A EJECUTAR
 	public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
@@ -135,6 +132,25 @@ public class Constantes {
 	public static final String CODIGO_CLASIF_REGISTRADO = "Existe codigo clasificación registrado.";
 	public static final String CLASIF_INACTIVO = "Se inactivo clasificación correctamente.";
 	public static final String CLASIF_ACTIVO = "Se activo clasificación correctamente.";
+	
+	// TIPOS DE CORREOS
+	public static final int CORREO_BASE_NOMINA = 5;
+	public static final int CORREO_BASE_CAMPANIAS_VIP = 6;
+	public static final int CORREO_BASE_FID_NOM = 7;
+	public static final int CORREO_BASE_FID_RENO = 8;
+	public static final int CORREO_ASIGNACION = 9;
+	public static final int CORREO_REASIGNACION = 10;
+	public static final int CORREO_BASE_PROSPECTOR = 11;
+	
+	//Bases de procesamiento
+	public static final int BASE_NOMINA = 1;
+	public static final int BASE_CAMPANIAS_VIP = 3;
+	public static final int BASE_PROSPECTOR = 4;
+	public static final int BASE_FID_NOM = 5;
+	public static final int BASE_FID_REN = 6;
+	
+	// nombre de propiedades de configuracion
+	public static final String CRON_INICIAL = "cronInicialBase";
 	
     private Constantes() {
         

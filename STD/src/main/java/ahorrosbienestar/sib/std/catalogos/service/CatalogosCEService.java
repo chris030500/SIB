@@ -779,7 +779,7 @@ public class CatalogosCEService {
                 logger.info(ls.get(0).getNombreCompleto());
                 return ls;
             } catch (Exception e) {
-                System.out.println("e"+e.getMessage());
+            	logger.error("e"+e.getMessage());
             }
             return null;
         }
