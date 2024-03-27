@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +19,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.SucursalesNotificarService;
 
@@ -45,6 +46,9 @@ public class EnvioCorreoReasigNSegConfig {
     @Autowired
 	private EnvioCorreoService envioCorreoService;
     
+    @Autowired
+	 private ConfigService configService;
+    
 	@Autowired
     public EnvioCorreoReasigNSegConfig(TaskScheduler tareCorreoReasignacion) {
         this.tareCorreoReasignacion = tareCorreoReasignacion;
@@ -53,8 +57,7 @@ public class EnvioCorreoReasigNSegConfig {
 	// proceso asignacion Gestion
 	private int idProceso = 3;
 	
-	@Value("${my.job.enviocorreo}")
-	private String expresionCron;
+	private Configuracion expresionBD;
 	
 	private String error="";
 	
@@ -63,8 +66,9 @@ public class EnvioCorreoReasigNSegConfig {
 	public void init() {
 	    	
 	        try {
+	        	expresionBD = configService.valorPropiedad(Constantes.CRON_ENVIO_CORREO_REASIGNACION);
 	        	// Crea un nuevo trigger con la nueva expresión cron
-	            CronTrigger trigger = new CronTrigger(expresionCron);
+	            CronTrigger trigger = new CronTrigger(expresionBD.getVc_valor_propiedad());
 	            // Reemplaza el trigger existente con el nuevo trigger
 	            tareCorreoReasignacion.schedule(() -> procesarCron(idProceso), trigger);
 	            logger.info("Se actualizo Envio Correo Reasignacion");	

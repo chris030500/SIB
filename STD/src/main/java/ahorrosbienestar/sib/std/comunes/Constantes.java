@@ -151,6 +151,8 @@ public class Constantes {
 	
 	// nombre de propiedades de configuracion
 	public static final String CRON_INICIAL = "cronInicialBase";
+	public static final String CRON_ENVIO_CORREO_REASIGNACION = "cronEnviocorreo";
+	
 	
     private Constantes() {
         
