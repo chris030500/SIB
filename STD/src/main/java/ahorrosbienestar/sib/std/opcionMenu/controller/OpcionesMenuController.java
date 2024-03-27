@@ -40,7 +40,7 @@ public class OpcionesMenuController {
 			logger.info("controller /opciones");
 			return ResponseEntity.ok(coreBancarioService.listaOpcionesxRol(4, usuario.get(0).getRol_idRol().getPk_id_rol()));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("--" + e.getMessage());
 			return null;
 		}
 			

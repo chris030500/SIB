@@ -38,7 +38,6 @@ public class indexOfertasAutoRestController {
 		logger.info("nomClasificacion: " + nomClasificacion);
 		logger.info("codigoClasificacion: " + codigoClas);
 		
-		//System.out.println("existeClasificacionBase: " + existeClasificacionBase.get().getVc_nombre_clasificacion());
 		if (clasificacionId != null && existeClasificacionBase.isPresent()) {
 	        ClasificacionBases existingClasificacion = existeClasificacionBase.get();
 	        if (existingClasificacion.getPk_id_clasificacion() == clasificacionId) {

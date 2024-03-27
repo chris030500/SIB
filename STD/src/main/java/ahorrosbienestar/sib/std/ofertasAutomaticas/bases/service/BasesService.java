@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.repository.IBasesReposi
 @Service
 public class BasesService {
 
+	private static final Logger logger = Logger.getLogger(BasesService.class); 
 	private IBasesRepository iBasesRepository;
 
 	@Autowired
@@ -44,19 +46,19 @@ public class BasesService {
 	
 	public boolean esHorarioValido(int horaInicio, int horaFin) {
         int horaActual = obtenerHoraActual(); // Implementa la lógica para obtener la hora actual
-        System.out.println("horaActual: " + horaActual);
+        logger.info("horaActual: " + horaActual);
         return horaActual >= horaInicio && horaActual <= horaFin;
     }
 
     public boolean esDiaValido(int diaInicio, int diaFin) {
         int diaActual = obtenerDiaActual(); // Implementa la lógica para obtener el día actual
-        System.out.println("diaActual: " + diaActual);
+        logger.info("diaActual: " + diaActual);
         return diaActual >= diaInicio && diaActual <= diaFin;
     }
 
     public boolean esDiaValido(int diaInicio) {
         int diaActual = obtenerDiaActual(); // Implementa la lógica para obtener el día actual
-        System.out.println("diaActual: " + diaActual);
+        logger.info("diaActual: " + diaActual);
         return diaActual == diaInicio;
     }
 

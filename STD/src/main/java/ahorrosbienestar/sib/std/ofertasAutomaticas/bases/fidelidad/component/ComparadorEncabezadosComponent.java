@@ -33,7 +33,7 @@ public class ComparadorEncabezadosComponent {
 	private String propiedadEncabezados = "encabezadosFidelidad";
 
 	public List<String> compararHeader(String archivoPath) throws IOException {
-		System.out.println("compararHeader");
+		logger.info("compararHeader");
 		String nombreHoja =  configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
 				//configService.obtenerConfiguracion(70).getVc_valor_propiedad();
 		String headersComparar = configService.valorPropiedad(propiedadEncabezados).getVc_valor_propiedad();

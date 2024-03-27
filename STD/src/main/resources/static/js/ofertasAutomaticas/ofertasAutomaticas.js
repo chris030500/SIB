@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Metodos a ejecutar en la pantalla de Ofertas Automaticas.
  */
@@ -8,6 +9,7 @@ $(document).ready(function() {
 	eventcontNomClas();
 	//eventcontAbrevia();
 	eventmensajeClasificacion();
+	cargatblProcesoG();
 	iniciaTblParametros();
 	iniciaTblClasificacion();
 });
@@ -61,7 +63,45 @@ function iniciaTblParametros() {
 	$.getJSON(url, {}, function(data) {
 		tblConfiguracion.clear().draw();
 		$.each(data, function(idx, opt) {
+			
 
+			var btnsActualizar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarParametros("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+
+			var btnEjecutar = " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='ejecutarProceso("
+					+ opt.pk_id_base
+					+ ")' id="
+					+ opt.pk_id_base
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+			
+			
+			var btnHistorico = "";
+			if(opt.i_boton_historico != 0){
+				var btnHistorico = " <button class='btn btn-warning btn-sm' tabindex='0' "
+						+ " title='Mostrar Detalle' aria-controls='table-datatable' type='button'"
+						+ " onclick='obtenerTabla("
+						+ opt.pk_id_base
+						+ ")' id="
+						+ opt.pk_id_base
+						+ " data-tooltip='Add'>"
+						+ " <i class='bi bi-archive-fill'></i></button>";
+			}
+			
+
+			tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, 
+			opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso,
+			btnsActualizar+btnEjecutar+btnHistorico]).draw(false);
+
+			/*
 			if (opt.i_subir_archivo == 0) {
 				var btnsActualizar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
@@ -142,7 +182,7 @@ function iniciaTblParametros() {
 
 				tblConfiguracion.row.add([opt.vc_nombre_base, opt.vc_dia_inicio_proceso, opt.vc_dia_fin_proceso, opt.vc_hora_inicio_proceso, opt.vc_hora_fin_proceso, opt.vc_periodo_ejecucion_proceso, btnsArchivo, btnsActualizar, btnEjecutar, btnHistorico]).draw(false);
 
-			}
+			}*/
 
 
 		});
@@ -158,8 +198,23 @@ function adjuntarFiles(idBase) {
 	document.getElementById("file").value = "";
 }
 
-function obtListadoArchivos(ulrServicio) {
-	$.blockUI({ message: 'Espere un momento...' });
+function obtListadoArchivos(ulrServicio){
+	// Mostrar SweetAlert con spinner
+
+    swal({
+      title: "Consultando información",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+    
 	$.getJSON(url, {}, function(data) {
 		tblAdjuntos.clear().draw();
 		$.each(data, function(idx, opt) {
@@ -170,7 +225,8 @@ function obtListadoArchivos(ulrServicio) {
 				+ " <i class='bi bi-download'></i></button>";
 			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion, opt.fechaModifacion, opt.rutaArchivo, botones]).draw(false);
 		});
-		setTimeout($.unblockUI, 100);
+		swal.close();
+		//setTimeout($.unblockUI, 100);
 		//tblAdjuntos.column(4).visible(false);
 	});
 }
@@ -193,13 +249,13 @@ function asignarArchivo(archivo) {
 		document.getElementById("file").value = "";
 		$('#file').attr("accept", extension);
 		$('#file').attr("disabled", false);
-	} else {
-		swal({
-			title: "Informacion.",
-			text: "Se requiere seleccionar una opcion valida",
-			icon: "success",
-			confirmButtonText: 'Aceptar'
-		});
+	} else {	
+		swal("Se requiere seleccionar una opcion valida.", {
+				closeOnClickOutside: false,
+				icon: "error",
+			});
+
+		
 
 		var opcionesArchivo = document.getElementById(archivo.id);
 		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
@@ -214,6 +270,7 @@ function asignarArchivo(archivo) {
 
 var agregarArchivos = "subirArchivo?idBase=2";
 function addArchivos(data) {
+	
 	$.ajax({
 		async: false,
 		url: getAbsolutePath() + agregarArchivos,
@@ -222,25 +279,26 @@ function addArchivos(data) {
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
-		beforeSend: function() {
-			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
+		complete: function() {
+			swal.close();
 		},
 		success: function(data) {
-			swal({
-				title: "",
-				text: data[0],
+			
+			swal(data[0], {
+				closeOnClickOutside: false,
 				icon: "success",
-				confirmButtonText: 'Aceptar'
 			}).then(resp => {
 				adjuntarFiles(2);
 			});
 		},
 		error: function(data) {
-			swal({
-				title: "Alerta",
-				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+					
+			swal("El tamaño del archivo es mayor al permitirdo 30MB.", {
+				closeOnClickOutside: false,
 				icon: "warning",
 			});
+			
+			
 		},
 		complete: function() {
 			setTimeout($.unblockUI, 600);
@@ -254,11 +312,9 @@ function tamFile() {
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
 		if (this.files[0].size > tamMaxFile) {
-			swal({
-				title: "",
-				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+			swal("El archivo seleccionado excede el tamaño maximo permitido (30MB)", {
+				closeOnClickOutside: false,
 				icon: "warning",
-				confirmButtonText: 'Aceptar'
 			}).then(resp => {
 				this.value = "";
 			});
@@ -269,15 +325,16 @@ function tamFile() {
 
 
 
-function ejecutarProceso(idBaseEjecutar) {
-
-	Swal.fire({
-		title: "¿Esta seguro de ejecutar el proceso manual?",
-		showCancelButton: true,
-		confirmButtonText: "Acepto",
-		cancelButtonText: "Cancelar",
-	}).then(resultado => {
-		if (resultado.value) {
+function ejecutarProceso(idBaseEjecutar) {	
+   // title: "¿Está seguro de ejecutar el proceso manual para Generar la Base?",
+   //   text: "El proceso inactivara los registros actuales de Base seleccionada .",
+	 swal({
+      title: "¿Está seguro de ejecutar el proceso manual para Generar la Base?",
+      text: "El proceso inactivara los registros actuales de Base seleccionada.",
+      icon: 'warning',
+      buttons: ["Cancelar", "Confirmar"],
+    }).then(resultado => {
+		if (resultado) {
 			url = "";
 			url = "ejecutarProceso?idBase=" + idBaseEjecutar;
 			peticionPost(3, getAbsolutePath() + url);
@@ -287,12 +344,12 @@ function ejecutarProceso(idBaseEjecutar) {
 }
 
 var obtClasificacion = "obtClasificacion";
-function iniciaTblClasificacion() {
-	url = getAbsolutePath() + obtClasificacion;
-	$.getJSON(url, {}, function(data) {
-		tblclasificacionBaseTable.clear().draw();
-		$.each(data, function(idx, opt) {
-			var btnsEditar = " <button class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
+function iniciaTblClasificacion(){
+	 url = getAbsolutePath() + obtClasificacion;
+	 $.getJSON(url, {}, function(data) {
+   		tblclasificacionBaseTable.clear().draw();
+   		$.each(data, function(idx, opt) {
+			var btnsEditar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
 				+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
 				+ " onclick='editarClasificacion("
 				+ opt.pk_id_clasificacion
@@ -300,8 +357,8 @@ function iniciaTblClasificacion() {
 				+ opt.pk_id_clasificacion
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-pencil-square'></i></button>";
-
-			var btnsActivar = " <button class='btn btn-success' tabindex='0' data-bs-toggle='tooltip'"
+				
+			var btnsActivar = " <button class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Activar Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
 				+ " onclick='activarClasificacion(this)' id="
 				+ opt.pk_id_clasificacion
@@ -309,9 +366,9 @@ function iniciaTblClasificacion() {
 				+ opt.i_estatus_clasificacion
 				+ " data-tooltip='Add'>"
 				+ " <i class='bi bi-check2-circle'></i></button>";
-
-
-			var btnBaja = " <button class='btn btn-warning' tabindex='0' data-bs-toggle='tooltip'"
+			
+			
+			var btnBaja= " <button class='btn btn-warning btn-sm' tabindex='0' data-bs-toggle='tooltip'"
 				+ " title='Baja Clasificacion' aria-controls='table-datatable' type='button' data-tooltip='Refresh'"
 				+ " onclick='bajaClasificacion(this)' id="
 				+ opt.pk_id_clasificacion
@@ -408,9 +465,10 @@ function limpiarParametros() {
 	
 }
 var url = "";
-function btnsModal() {
-	$("#btnCancelar").click(function() {
-		basesID = 0;
+function btnsModal(){
+ 	$("#btnCancelar").click(function() {
+   		basesID = 0;
+   		procesoGestionID = 0;
 		limpiarParametros();
 		$("#modalParametros").modal("hide");
 	});
@@ -420,22 +478,41 @@ function btnsModal() {
 		limpiarDatosClasificacion();
 		$("#modalClasificacion").modal("hide");
 	});
-
-
+	
+	
 	$("#btnActualizarParams").click(function() {
-		url = "actualizarParametro?idBase=" + basesID;
-		if (validarDatosParams() == 0) {
-			if (validarFechas() && validarHoras()) {
-				console.log(getAbsolutePath() + url);
-				$("#modalParametros").modal("hide");
-				peticionPost(1, getAbsolutePath() + url);
-			}
-		} else {
-			swal({
-				title: "Error, ",
-				text: "Existen campos vacíos, favor de validar.",
-				icon: "warning",
-			});
+		
+		if(basesID > 0){
+			url = "actualizarParametro?idBase="+basesID;
+  			if(validarDatosParams() == 0){
+     			if(validarFechas() && validarHoras()){
+        			console.log(getAbsolutePath()+url);
+        			$("#modalParametros").modal("hide");
+        			peticionPost(1,getAbsolutePath()+url);
+       			}
+    		}else{
+				
+				swal("Existen campos vacíos, favor de validar.", {
+					closeOnClickOutside: false,
+					icon: "error",
+				});	
+	
+     		}
+		}else if( procesoGestionID> 0){
+			url = "actualizarParametroGestion?procesoGestionID="+procesoGestionID;
+			if(validarDatosParams() == 0){
+     			if(validarFechas() && validarHoras()){
+        			console.log(getAbsolutePath()+url);
+        			$("#modalParametros").modal("hide");
+        			peticionPost(4,getAbsolutePath()+url);
+       			}
+    		}else{
+				swal("Existen campos vacíos, favor de validar.", {
+					closeOnClickOutside: false,
+					icon: "error",
+				});	
+				
+     		}
 		}
 	});
 
@@ -456,30 +533,35 @@ function btnsModal() {
 
 	$("#btnGuardarFile").click(function() {
 
-
 		if (document.getElementById("file").value.length > 0) {
-			Swal.fire({
-				title: 'Procesando.....',
-				text: 'Espere un momento..',
+			swal({
+				title: "Procesando información.",
+      			content: {
+        			element: "div",
+        			attributes: {
+          			innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          			style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        			},
+      			},
 				timer: 4000, // tiempo en milisegundos
-				timerProgressBar: true,
-				showConfirmButton: false
+				buttons: false,
+      			closeOnClickOutside: false,
+      			closeOnEsc: false,
 			}).then((result) => {
 				// Este código se ejecutará después de que el temporizador haya terminado
-				if (result.dismiss === Swal.DismissReason.timer) {
+				
 					var form = $('#adjuntoArchivoOficio')[0];
 					var data = new FormData(form);
 					addArchivos(data)
-				}
+				
 			});
 
 		} else {
-			swal({
-				title: "Informacion.",
-				text: "Es necesario seleccionar un Archivo.",
-				icon: "Warning",
-				confirmButtonText: 'Aceptar'
-			});
+			
+				swal("Es necesario seleccionar un Archivo.", {
+					closeOnClickOutside: false,
+					icon: "error",
+				});			
 		}
 
 	});
@@ -556,39 +638,37 @@ function validarFechas() {
 	var dFinalCampana = parseInt(document.getElementById('dFinalProceso').value);
 
 	if (dComienzoCampana >= dFinalCampana) {
-		swal({
-			title: "Error, ",
-			text: "El día que comienza el proceso debe ser menor al día que termina el proceso.",
-			icon: "warning",
+	
+		swal("El día que comienza el proceso debe ser menor al día que termina el proceso.", {
+			closeOnClickOutside: false,
+			icon: "error",
 		});
+		
+		
+		
 		return false;
 	}
 	return true;
 }
 
 function validarHoras() {
-	console.log("Entro en validarHoras");
 	var hComienzoCampana = document.getElementById('hComienzoProceso').value;
 	var hFinalCampana = document.getElementById('hFinalProceso').value;
 
-	console.log("hComienzoProceso: " + hComienzoProceso);
-	console.log("hFinalProceso: " + hFinalProceso);
-
 	if (hComienzoCampana === hFinalCampana) {
-		console.log("Las horas son iguales");
-		swal({
-			title: "Advertencia",
-			text: "Las horas de inicio y finalización son iguales, favor de agregar horas diferentes.",
-			icon: "warning",
+		
+		swal("Las horas de inicio y finalización son iguales, favor de agregar horas diferentes.", {
+			closeOnClickOutside: false,
+			icon: "error",
 		});
+		
+		
 		return false; // Indica que la validación falló
 	}
 
 	if (hComienzoCampana >= hFinalCampana) {
-		console.log("Las hora de inicio es menor");
-		swal({
-			title: "Error",
-			text: "La hora de inicio debe ser menor que la hora de fin del proceso.",
+		swal("La hora de inicio debe ser menor que la hora de fin del proceso.", {
+			closeOnClickOutside: false,
 			icon: "error",
 		});
 		return false; // Indica que la validación falló
@@ -599,24 +679,35 @@ function validarHoras() {
 //enviar actualizacion
 
 function peticionPost(metodo, metodoUrl) {
+	
+	 swal({
+      title: "Procesando información.",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+	
+	
 	$.ajax({
 		url: metodoUrl,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
+		
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 300);
+			swal.close();
 		},
 		success: function(respuesta) {
-			url = "";
-			Swal.fire({
-				title: '',
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+   			url = "";			
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
 				if (metodo == 1) {
 					iniciaTblParametros();
@@ -625,18 +716,23 @@ function peticionPost(metodo, metodoUrl) {
 				} else if (metodo == 2) {
 					iniciaTblClasificacion();
 					limpiarDatosClasificacion();
-				} else if (metodo == 3) {
-					console.log("--");
+				}else if(metodo == 3){
+					//proceso manual Bases de ofertas automaticas. 
+				}else if(metodo == 4){
+					cargatblProcesoG();
+					limpiarParametros();	
+				}else if(metodo == 5){
+		
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
+					window.focus();
 				}
-				setTimeout($.unblockUI, 300);
 			});
 
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
+			swal("Se presento un error, intente mas tarde.", {
+				closeOnClickOutside: false,
+				icon: "error",
 			});
 		}
 	});
@@ -762,10 +858,10 @@ function dtosClasificacion() {
 		$("#modalClasificacion").modal("hide");
 		peticionPost(2, getAbsolutePath() + url);
 	} else {
-		swal({
-			title: "Error, ",
-			text: "Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.",
-			icon: "warning",
+				
+		swal("Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.", {
+				closeOnClickOutside: false,
+				icon: "error",
 		});
 	}
 }
@@ -824,48 +920,53 @@ function activarClasificacion(idClass) {
 
 	var estatus = $(idClass).attr('for');
 	if (estatus == 0) {
-		Swal.fire({
-			title: "¿Se activara la Clasificación?",
-			showCancelButton: true,
-			confirmButtonText: "Acepto",
-			cancelButtonText: "Cancelar",
-		}).then(resultado => {
-			if (resultado.value) {
+		
+		
+		 swal({
+      		title: "¿Se activara la Clasificación?",
+      		icon: 'warning',
+      		buttons: ["Cancelar", "Confirmar"],
+    	 }).then(resultado => {
+			if (resultado) {
 				url = "";
 				url = "activarClasificacion?idClass=" + $(idClass).attr('id');
 				peticionPost(2, getAbsolutePath() + url);
 			}
 		});
 	} else {
-		swal({
-			title: "Alerta",
-			text: "La Clasificación esta Activa.",
-			icon: "warning",
+				
+		swal("La Clasificación esta Activa.", {
+				closeOnClickOutside: false,
+				icon: "warning",
 		});
+		
+		
 	}
 }
 
 function bajaClasificacion(idClass) {
 	var estatus = $(idClass).attr('for');
 	if (estatus == 1) {
-		Swal.fire({
-			title: "¿Se inactivara la Clasificación?",
-			showCancelButton: true,
-			confirmButtonText: "Acepto",
-			cancelButtonText: "Cancelar",
-		}).then(resultado => {
-			if (resultado.value) {
+		
+		 swal({
+      		title: "¿Se inactivara la Clasificación?",
+      		icon: 'warning',
+      		buttons: ["Cancelar", "Confirmar"],
+    	 })
+		.then(resultado => {
+			if (resultado) {
 				url = "";
 				url = "bajaClasificacion?idClass=" + $(idClass).attr('id');
 				peticionPost(2, getAbsolutePath() + url);
 			}
 		});
 	} else {
-		swal({
-			title: "Alerta ",
-			text: "La Clasificación esta inactiva.",
-			icon: "warning",
+						
+		swal("La Clasificación esta inactiva.", {
+				closeOnClickOutside: false,
+				icon: "warning",
 		});
+		
 	}
 
 }
@@ -917,5 +1018,149 @@ function mostrarMensajeMod() {
 		document.getElementById("contenidoCheckbox").style.display = "none";
 	}
 
+}
+
+/***
+ * Cambios fase 2
+ */
+
+var cargatblProcesoGestion = "obtProceso";
+function cargatblProcesoG(){
+ 	url = getAbsolutePath() + cargatblProcesoGestion;
+ 	$.getJSON(url, {}, function(data) {
+   	tblProcesoGestion.clear().draw();
+   		$.each(data, function(idx, opt) {
+			   
+				if(opt.i_visible == 1){
+					var btnsActualizar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarDatosProceso("
+					+ opt.pk_id_gestion
+					+ ")' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+				
+					var btnEjecutar= " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='ejecutarDatosProceso("
+					+ opt.pk_id_gestion
+					+ ")' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+					
+					var btnGestiones= " <button class='btn btn-warning btn-sm' tabindex='0' "
+					+ " title='Ver Asignacion de Gestion.' aria-controls='table-datatable' type='button'"
+					+ " onclick='mostrarGestiones()' id="
+					+ opt.pk_id_gestion
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-journals'></i></button>";
+
+
+					
+      				tblProcesoGestion.row.add([opt.vc_nombre_proceso
+      				, opt.vc_dia_inicio_proceso
+      				, opt.vc_dia_fin_proceso
+      				,opt.vc_hora_inicio_proceso
+      				,opt.vc_hora_fin_proceso
+      				,opt.vc_periodo_ejecucion_proceso
+      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones:btnsActualizar+btnEjecutar]).draw(false); 
+      		}
+		
+   		});
+  	}); 	
+}
+
+
+var obtDatosProceso = "obtDatosProceso?idBase=";
+function editarDatosProceso(idBase){
+ limpiarParametros();
+ url = getAbsolutePath() + obtDatosProceso + idBase;
+ peticionDatosProceso(url);
+}
+
+function peticionDatosProceso(url){
+ 	$.getJSON(url, {}, function(data) {
+		modalGestion(data);
+	});
+}
+
+
+var procesoGestionID = 0;
+function modalGestion(data) {
+ 	console.log(data);
+ 	procesoGestionID = data.pk_id_gestion;
+ 	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
+ 	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
+ 	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
+ 	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
+ 	document.getElementById("mPeriodoEjecucion").value =  data.vc_periodo_ejecucion_proceso;
+ 	document.getElementById('rutaArchivo').value = "";
+ 	document.getElementById('lblRuta').style.display = 'none';
+    document.getElementById('rutaArchivo').style.display = 'none';
+ 	
+    $("#modalParametros").modal("show");
+ }
+
+
+function ejecutarDatosProceso(idProceso){
+	
+	swal({
+		title: "¿Está seguro de ejecutar el proceso manual para Generar la Asignacion de las Bases?",
+      	text: "El proceso inactivara los registros actuales de Asignacion.",
+      	icon: 'warning',
+      	buttons: ["Cancelar", "Confirmar"],
+	}).then(resultado => {
+			if (resultado) {
+					url= "";
+					url = "ejecutarDatosProceso?idProceso="+idProceso;
+					peticionPost(3,getAbsolutePath()+url);
+			}
+	});
+
+}
+
+var obtGeneralesGestion = "obtGeneralesGestion";
+function mostrarGestiones(){
+	 url = getAbsolutePath() + obtGeneralesGestion;
+ 	$.getJSON(url, {}, function(data) {
+   	tblRegistroGestiones.clear().draw();
+   		$.each(data, function(idx, opt) {
+			   
+			   var btnGestiones= " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ver Asignacion de Gestion.' aria-controls='table-datatable' type='button'"
+					+ " onclick='descargarArchivoAsignaciones("
+					+ opt.fk_id_sucursal
+					+ ")' id="
+					+ opt.fk_id_sucursal
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-download'></i></button>";
+			   
+      				tblRegistroGestiones.row.add([(opt.fk_id_sucursal == 100)?'CALL CENTER':opt.vc_nombresucursal
+      				, opt.vc_total
+      				, opt.dt_fechainicio
+      				,opt.dt_fechafin
+      				,btnGestiones]).draw(false); 
+      		
+		
+   		});
+  	});
+	
+	 $("#modalRegistroGestiones").modal("show");
+	
+}
+ var reporteGestionesAsignadas = "reporteGestionesAsignadas?idSucursal="
+function descargarArchivoAsignaciones(sucursal){
+	url = getAbsolutePath() + reporteGestionesAsignadas+sucursal;
+	peticionPost(5, url);
+}
+
+
+/**
+ * Modal de alertas
+ */
+function cerrarModalAlertas(valor) {
+	$('#' + valor).modal('hide');
 }
 

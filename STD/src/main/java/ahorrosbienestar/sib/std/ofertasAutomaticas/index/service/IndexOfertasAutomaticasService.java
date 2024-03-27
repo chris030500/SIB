@@ -36,7 +36,6 @@ public class IndexOfertasAutomaticasService {
 			jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			System.out.println("Error"+e.getMessage());
 		}
 
 	}
