@@ -47,11 +47,20 @@ function cambiarContenido(opcion, elemento) {
 	var tabCod = document.getElementById('codigos');
 
 	if (opcion === 'telefonos') {
-		tabTel.style.display = "block";
-		tabCod.style.display = "none"
+		if(tabTel != null){
+			tabTel.style.display = "block";
+		}
+		if(tabCod != null){
+			tabCod.style.display = "none"
+		}
+		
 	} else if (opcion === 'codigos') {
-		tabTel.style.display = "none";
-		tabCod.style.display = "block";
+		if(tabTel != null){
+			tabTel.style.display = "none";
+		}
+		if(tabCod != null){
+			tabCod.style.display = "block"
+		}
 	}
 }
 

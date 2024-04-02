@@ -12,6 +12,7 @@ public class Constantes {
 	//Rutas de Seguimiento
 	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
 	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
+	public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
 	
 	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
@@ -78,6 +79,9 @@ public class Constantes {
     public static final String USUARIOS_SMS = "usuarioSMS";
     public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
     public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
+    public static final String USUARIO_TELEFONOS = "usuariosTelefonos";
+    public static final String USUARIO_COD_ACCION_TELEFONO = "usuariosCodigosAccionR";
+    public static final String USUARIO_CONSULTA = "usuarioConsulta";
     
     //PROPIEDAD DEL CONTROLLER DEL REPORTE
     public static final String CONTROLLER_JASPER_CONF = "generarReporte";
