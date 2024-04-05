@@ -34,12 +34,12 @@
 						<div class="col-sm-12">
 							<div class="">
 								<ul class="nav nav-pills nav-justified">
-									<li class="nav-item">
+									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
 										<a class="nav-link active"
 											onclick="cambiarContenido('telefonos', this)">Teléfonos
 											(Sucursales y Call Center)</a>
 									</li>
-									<li class="nav-item">
+									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
 										<a class="nav-link" onclick="cambiarContenido('codigos', this)">Códigos de
 											Acción y
 											Resultado</a>
@@ -51,7 +51,7 @@
 				</div>
 
 				<!-- Teléfonos -->
-				<div id="telefonos" style="padding: 20px; display: block;">
+				<div id="telefonos" style="padding: 20px; display: block;" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
 					<div class="border p-2 card">
 						<div class="">
 							<div class="col-sm-12">
@@ -96,7 +96,7 @@
 				</div>
 
 				<!-- Códigos -->
-				<div id="codigos" style="padding: 20px; display: none;">
+				<div id="codigos" style="padding: 20px; display: none;" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
 					<!-- Acción -->
 					<div class="border p-2 card" style="padding-top: 20px;">
 						<div class="">

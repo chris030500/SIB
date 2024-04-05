@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogoService;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.dto.SucursalXEmpleadoSeguimiento;
 import ahorrosbienestar.sib.std.operaciones.seguimientoGestion.citaVencidos.service.CitasVencidosService;
 import ahorrosbienestar.sib.std.usuarios.dto.MicrofinUsuarioDTO;
@@ -41,9 +42,39 @@ public class OpConfiguracionController {
 	@Autowired
 	private UsuarioService usuarioService;
 	
+	@Autowired
+	private ConfiguracionSistemaService configuracionSistemaService;
+	
 	@GetMapping("/configuracion")
-	public String ModuloOperacion() {
-		return "operaciones/configuracion";
+	public String ModuloOperacion(Model model) {
+		String rutaPagina ="";
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		
+		int permisoAdmin = datosUsuario().size()>0?datosUsuario().get(0).getPermisoAdmin():0;
+		int permisoConsulta = datosUsuario().size()>0?datosUsuario().get(0).getPermisoConsulta():0;
+		
+		int permisoUsuario = (permisoAdmin >0)?1:(permisoConsulta>0)?2:0;
+		int permisoTelefono =  configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_TELEFONOS,userDetails.getUsername());
+		int permisoCodAccionR = configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_COD_ACCION_TELEFONO,userDetails.getUsername());
+		try {
+			if(permisoUsuario >0 || permisoTelefono > 0 || permisoCodAccionR > 0) {
+				model.addAttribute("permisoTelefono",permisoTelefono);
+				model.addAttribute("permisoCodAccionR",permisoCodAccionR);
+				model.addAttribute("permisoUsuario",permisoUsuario);
+				rutaPagina = Constantes.RUTA_CONFIGURACION_VENTAS;
+			}else {
+				rutaPagina = Constantes.RUTA_ERROR_PERMISO;
+			}
+			return rutaPagina;
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			return  Constantes.RUTA_ERROR;
+		}
 	}
 	
 	@GetMapping("/seguimientoGestion")
