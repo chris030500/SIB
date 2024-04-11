@@ -13,14 +13,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,16 +32,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.ctc.wstx.shaded.msv_core.verifier.jarv.Const;
+
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.prospector.configuracion.ProspectorTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.CampaniasVIPTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
@@ -48,8 +56,15 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.Cl
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.DetalleCampania;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.service.DetalleCampaniaService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GeneracionSMSConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.RegistrosAsignacionService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -68,16 +83,11 @@ public class indexOfertasAutoController {
 
 	// Constantes Campañas VIP
 	private final static int CAMPANAS_VIP = 3;
-	private final static String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
 	
 	// Constante Activo
 	private final static int ACTIVO = 1;
 	
-	private static final String nombrePantalla = "Ofertas Automaticas";
-	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
-	private static final String nombreReporte = "rpt_layout_Ofertas_Automaticas";
-	private static final String MENSAJE_DE_ERROR = "Error";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;	
@@ -103,6 +113,8 @@ public class indexOfertasAutoController {
 	@Autowired
 	private BasesService baseService;
 	
+	@Autowired
+	private ProcesoGestionService procesoGestionService;
 	
 	@Autowired
 	private FidelidadTareaConfiguracion fidelidadTareaConfiguracion;
@@ -112,21 +124,48 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private CampaniasVIPTareaConfiguracion campaniasVIPTareaConfiguracion;
+	
+	@Autowired
+	private ProspectorTareaConfiguracion prospectorTareaConfiguracion;
 		
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
+	@Autowired
+	private GestionAsignacionConfiguracion gestionAsignacionConfiguracion;
+	
+	@Autowired
+	private GeneracionSMSConfiguracion generacionSMSConfiguracion;
+	
+	@Autowired
+	private ConfiguracionSistemaService configuracionSistemaService;
+	
+	@Autowired
+	private RegistrosAsignacionService registrosAsignacionService;
+	
+	@Autowired 
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
+	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
 	private int tipoArchivo = 12;
+	
+	private String error = "";
 
 	@GetMapping("/index")
 	public String indexOfertasAuto(Model model) throws IOException {
 	 try {
-		if(validarAcceso()== 1){
-			logger.info("Ejecutando ofertasAutomaticas");
-			logger.info("Ejecutando ofertasAutomaticas");
-			Configuracion mensajeCampana = configService.valorPropiedad(MENSAJE_CAMPANA_VIP);
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		
+		if(validarAcceso(userDetails.getUsername())== 1){
+			Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
 			model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
 			model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
 			//Bases Configuracion 
@@ -134,9 +173,12 @@ public class indexOfertasAutoController {
 			List<Bases> bases = basesService.findAll();
 			model.addAttribute("bases", bases);
 			model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+			model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_GESTION,userDetails.getUsername()));
+			model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_BASE,userDetails.getUsername()));
+			model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 			rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
 		}else {
-			rutaDireccion = rutaError;
+			rutaDireccion = Constantes.RUTA_ERROR;
 		}
 		return rutaDireccion;
 	 }catch(Exception e) {
@@ -251,7 +293,7 @@ public class indexOfertasAutoController {
 					clasificacionBases.setI_vigencia_clasificacion(vigenciaClasificacion);
 					clasificacionBases.setI_configuracion_mensaje(integerValue);
 					clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-					clasificacionBases.setFk_id_base(tipoBase.orElseThrow(null));
+					clasificacionBases.setFk_id_base(tipoBase.get());
 
 					clasificacionBasesService.actualizarClasificacion(clasificacionBases);
 
@@ -271,7 +313,7 @@ public class indexOfertasAutoController {
 				clasificacionBases.setI_configuracion_mensaje(integerValue);
 				clasificacionBases.setI_estatus_clasificacion(1);
 				clasificacionBases.setVc_mensaje_clasificacion(mensajeClasificacion);
-				clasificacionBases.setFk_id_base(tipoBase.orElseThrow(null));
+				clasificacionBases.setFk_id_base(tipoBase.get());
 
 				clasificacionBasesService.save(clasificacionBases);
 
@@ -305,7 +347,7 @@ public class indexOfertasAutoController {
 	@GetMapping("/consultaTabla")
 	public ResponseEntity<?> consultaTabla(@RequestParam(name = "idBase") Integer idBase){		
 		try {
-			System.out.println(idBase);
+			logger.info(idBase);
 			logger.info("/consultaTabla"+idBase);
 			List<DetalleCampania> detalleCampania = new ArrayList<>();
 			switch (idBase) {
@@ -362,8 +404,10 @@ public class indexOfertasAutoController {
 			){
 		
 		logger.info("/actualizarParametro");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
 				switch(basesID){
@@ -375,6 +419,9 @@ public class indexOfertasAutoController {
 					case 3:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampanias();
 						break;	
+					case 4:
+						prospectorTareaConfiguracion.actualizarExpresionCronProspector();
+						break;
 					case 5:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidNom();
 						break;
@@ -385,16 +432,20 @@ public class indexOfertasAutoController {
 		            	logger.info("En el metodo actualizarParametro al entrar al switch no se encontro ninguna coinsidencia");
 		                break;
 				}
+				mensaje =Constantes.ACTUALIZACION_OK;
 				
-				respuesta.add(mensaje);
 			}else {
-				respuesta.add("No fue posible actualizar. Intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
-			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
-			return null;
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			return ResponseEntity.ok(respuesta);
 		}
 	}
 	/***
@@ -442,8 +493,9 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
 			){
 		logger.info("/altaClasificacion");
-		String mensaje ="Registro Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
 		try {		
 			Bases iBase = basesService.obtBase(idBase);
 			if(clasificacionBasesService.existeCodigo(codigoClasificacion) == 0) {
@@ -461,19 +513,22 @@ public class indexOfertasAutoController {
 					altaClasificacion.setI_estatus_clasificacion(ACTIVO);
 					
 					clasificacionBasesService.save(altaClasificacion);
-					respuesta.add(mensaje);
+					mensaje = Constantes.ACTUALIZACION_OK;
 				}else {
-					mensaje = "Existe Clasificación, se recomienda editar el registro existente";
-					respuesta.add(mensaje);
+					mensaje = Constantes.CLASIF_REGISTRADO;
+					tipo = Constantes.MENSAJE_ERROR;
 				}
 			}else {
-				mensaje = "Existe codigo Clasificacion registrado.";
-				respuesta.add(mensaje);
+				mensaje = Constantes.CODIGO_CLASIF_REGISTRADO;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -509,26 +564,30 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "mensajeClasificacion") String mensajeClasificacion
 			){
 		logger.info("/modClasificacion");
-		String mensaje ="Actualizo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
 		try {
 		
 			if(clasificacionBasesService.existeCodigoMod(codigoClasificacion,idClass) == 0) {
 				if(clasificacionBasesService.updateClasificacion(idClass,idBase,nomClasificacion,abrevacion,codigoClasificacion,vigenciaClasificacion,mensajeClasificacion) == 1) {
-					
-					respuesta.add(mensaje);
+					mensaje =Constantes.ACTUALIZACION_OK;
 					
 				}else {
-					respuesta.add("No fue posible actualizar, intente mas tarde.");
+					mensaje = Constantes.ACTUALIZACION_ERROR;
+					tipo = Constantes.MENSAJE_ERROR;
 				}
 			}else {
-				mensaje = "No fue posible actualizar. Existe codigo clasificacion registrado.";
-				respuesta.add(mensaje);
+				mensaje = Constantes.CODIGO_CLASIF_REGISTRADO;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -543,19 +602,26 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idClass") Integer idClass
 			){
 		logger.info("/activarClasificacion");
-		String mensaje ="Activo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
 			
 			if(clasificacionBasesService.activarClasificacion(idClass) == 1) {
-				respuesta.add(mensaje);
+				mensaje = Constantes.CLASIF_ACTIVO;
 			}else {
-				respuesta.add("No fue posible activar, intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -569,19 +635,26 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idClass") Integer idClass
 			){
 		logger.info("/inactivarClasificacion");
-		String mensaje ="Inactivo Correctamente.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+
 		try {
 			
 			if(clasificacionBasesService.bajaClasificacion(idClass) == 1) {
-				respuesta.add(mensaje);
+				mensaje = Constantes.CLASIF_INACTIVO;
+				
 			}else {
-				respuesta.add("No fue posible activar, intente mas tarde.");
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
 			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -595,70 +668,90 @@ public class indexOfertasAutoController {
 			@RequestParam(name = "idBase") Integer idBase
 			){
 	
-		
 		logger.info("/ejecutarProceso");
-		String mensaje ="El proceso ha terminado.";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+		
 		try {
-			System.out.println(idBase);
+			logger.info("proceso a ejecutar:"+idBase);
+			
 			switch(idBase) {
 			case 1:
 				try {
-					System.out.print("Base de Nomina");
 					nominaTareaConfiguracion.procesarNomina();
-					respuesta.add("Se proceso Base Nomina");
+					mensaje =Constantes.MENSAJE_BASE_NOMINA;
+
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 2:
 				try {
 					fidelidadTareaConfiguracion.ejecutarFidelidad();			
-					respuesta.add("Se proceso Base Fidelidad");
+					mensaje =Constantes.MENSAJE_BASE_FIDELIDAD;
 				} catch (Exception e) {
-					respuesta.add("Error:"+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+				}
+				
+				break;
+			case 4:
+				try {
+					prospectorTareaConfiguracion.procesarProspector();					
+					mensaje =Constantes.MENSAJE_BASE_PROSPECTOR;
+				} catch (Exception e) {
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 3:
 				try {
-					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();
-					respuesta.add("Se proceso Base Campañas VIP");
+					campaniasVIPTareaConfiguracion.procesarCampaniasVIP();					
+					mensaje =Constantes.MENSAJE_BASE_CAMPANIA_VIP;
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 5:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidNom();
-					respuesta.add("Se proceso Base Fidelizacion Nomina");
+					mensaje =Constantes.MENSAJE_BASE_FIDELIZACION_NOMINA;
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			case 6:
 				try {
 					campaniasVIPTareaConfiguracion.procesarCampaniasFidRen();
-					respuesta.add("Se proceso Base Fidelizacion Renovado");
+					mensaje =Constantes.MENSAJE_BASE_FIDELIZACION_RENOVADO;
 				} catch (Exception e) {
-					respuesta.add(""+e.getMessage());
-					System.out.println(MENSAJE_DE_ERROR+e.getMessage());
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 				}
 				
 				break;
 			}
-			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			respuesta.add(e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
@@ -759,24 +852,230 @@ public class indexOfertasAutoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("--"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
 		
-	public int validarAcceso() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
+	public int validarAcceso(String usuarioLogin) {
+
+		usuario = iUsuarioRepository.findByNombreUsuario(usuarioLogin);
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(Constantes.NOMBRE_PANTALLA_OFERTAS));
 		
 		
 	}
+	
+	
+	/**
+	 * Nuevos procesos Fase 2 Ofertas Automaticas.
+	 */
+	
+	
+	/***
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtProceso")
+	public ResponseEntity<List<ProcesoGestion>> obtenerProcesoGestion(Model model) {
+		 logger.info("/obtParametros:");
+		try {
+			return ResponseEntity.ok(procesoGestionService.findAll());
+		} catch (Exception e) {
+			logger.error("--" + e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Obtener los valores de programacion de la ejecucion de gestion
+	 * @param idBase
+	 * @return
+	 */
+	
+	@GetMapping("/obtDatosProceso")
+	public ResponseEntity<?> obtDatosProceso(@RequestParam(name = "idBase") Integer idBase){		
+		try {
+			logger.info("/obtDatosProceso:"+idBase);
+			return ResponseEntity.ok(procesoGestionService.findById(idBase));
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	/**
+	 * 
+	 * @param basesID
+	 * @param dComienzoProceso
+	 * @param dFinalProceso
+	 * @param hComienzoProceso
+	 * @param hFinalProceso
+	 * @param mPeriodoEjecucion
+	 * @param rutaArchivo
+	 * @return
+	 */
+	
+	@PostMapping("/actualizarParametroGestion")
+	public ResponseEntity<?> actualizarParametroGestion(
+			@RequestParam(name = "procesoGestionID") Integer procesoGestionID, 
+			@RequestParam(name = "dComienzoProceso") String dComienzoProceso, 
+			@RequestParam(name = "dFinalProceso") String dFinalProceso,
+			@RequestParam(name = "hComienzoProceso") String hComienzoProceso,
+			@RequestParam(name = "hFinalProceso") String hFinalProceso,
+			@RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion
+			){
+		logger.info("/actualizarParametro");
+		
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		Map<String, Object> respuesta = new HashMap<>();
+
+		try {
+			if(procesoGestionService.actParams(procesoGestionID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion) == 1) {
+				switch(procesoGestionID){
+					case 1:
+						
+						gestionAsignacionConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
+						//nominaTareaConfiguracion.actualizarExpresionCronNomina();
+						break;
+					case 2:
+					
+						generacionSMSConfiguracion.actualizarExpresionCronProceso(procesoGestionID);
+						//fidelidadTareaConfiguracion.actualizarExpresionCronFidelidad();
+						break;
+				}
+				mensaje = Constantes.ACTUALIZACION_OK;
+				
+			}else {
+				mensaje = Constantes.ACTUALIZACION_ERROR;
+				tipo = Constantes.MENSAJE_ERROR;
+			}
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	
+	/***
+	 * 
+	 * @return
+	 */
+	@PostMapping("/ejecutarDatosProceso")
+	public ResponseEntity<?> ejecutarDatosProceso(
+			@RequestParam(name = "idProceso") Integer idProceso
+			){
+	
+		logger.info("/ejecutarDatosProceso");
+		//ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+	
+		Map<String, Object> respuesta = new HashMap<>();
+		
+		try {
+			switch(idProceso) {
+			case 1:
+				try {
+					error = gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
+					logger.debug("Ejecutar proceso Asignacion Gestiones.");
+					if(error == null) {
+						mensaje = Constantes.ASIGNACION_OK;
+						
+					}else {
+						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
+						tipo =Constantes.MENSAJE_ERROR;
+					}
+				} catch (Exception e) {
+					mensaje ="Error:"+e.getMessage();
+					tipo =Constantes.MENSAJE_ERROR;
+					logger.error("Error"+e.getMessage());
+				}
+				
+				break;
+			case 2:
+				try {
+					logger.debug("Ejecutar proceso Generacion SMS.");
+					error = generacionSMSConfiguracion.procesarSMS(idProceso);
+					if(error == null) {
+						mensaje = Constantes.SMS_OK;
+						
+					}else {
+						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
+						tipo =Constantes.MENSAJE_ERROR;
+					}
+					
+				} catch (Exception e) {
+					mensaje ="Error:"+e.getMessage();
+					tipo =Constantes.MENSAJE_ERROR;
+					logger.error("Error"+e.getMessage());
+				}
+				
+				break;
+			}
+			
+			respuesta.put(Constantes.TEXTO_MNS,mensaje);
+			respuesta.put(Constantes.TIPO_MNS,tipo);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
+	@GetMapping("/obtGeneralesGestion")
+	public ResponseEntity<?> obtGeneralesGestion(){		
+		try {
+			
+			return ResponseEntity.ok(registrosAsignacionService.obtRegistroParametros());
+		} catch (Exception e) {
+			logger.info("--" + e.getMessage());
+			return null;
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@PostMapping("/reporteGestionesAsignadas")
+	public ResponseEntity<?> reporteOA(
+			@RequestParam("idSucursal") Integer idSucursal){
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		
+		try {
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_ASIGNACION_X_SUCURSAL);
+			
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros=?IDSUCURSAL="
+					+idSucursal+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+idSucursal;
+			
+			respuesta.put(Constantes.TEXTO_MNS,Constantes.REPORTE_OK);
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
+			respuesta.put(Constantes.URL_REPORTE,reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			respuesta.put(Constantes.URL_REPORTE,null);
+			return ResponseEntity.ok(respuesta);
+		}
+				
+		
+	}
+	
 
 }

@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +11,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 
 @Service
 public class EnvioCorreoContenidoService {
@@ -50,4 +47,24 @@ public class EnvioCorreoContenidoService {
 			return null;
 		}
 	}
+	@SuppressWarnings("deprecation")
+	public List<Integer> registrosXsucursal(int tipoBusqueda){
+		try {
+			logger.info("sucursal");
+			String sql = "CALL SIB.SP_REGXSUCURSAL(?);";
+			List<Integer> ls = jdbcTemplate.query(sql, new Object[] {tipoBusqueda}, new RowMapper<Integer>() {
+				public Integer mapRow(ResultSet rs, final int rowNum) throws SQLException {
+				        				 
+				return rs.getInt(1);
+				    }
+				});
+			return ls;
+			
+			
+		} catch (Exception e) {
+			logger.error("error"+e.getMessage());
+			return null;
+		}
+	}
+	
 }

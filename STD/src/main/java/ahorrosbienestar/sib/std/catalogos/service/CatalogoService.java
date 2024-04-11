@@ -21,5 +21,9 @@ public class CatalogoService {
 	public List<Catalogo> generarOpciones(Integer id){
 		return iCatalogoRepository.generarOpciones(id);
 	}
+	
+	public Catalogo buscarPorId(Integer id) {
+		return iCatalogoRepository.findById(id).orElse(null);
+	}
 		
 }

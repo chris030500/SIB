@@ -31,7 +31,7 @@ public class FidelidadService {
 
 	public void registrarFidelidad(List<Fidelidad> listaFidelidad) {
 		try {
-			System.out.println("ejecutando insertarEnBD");
+			logger.info("ejecutando insertarEnBD");
 			 String insertQuery = "INSERT INTO SIB.TBL_FIDELIDAD_OA(I_CLIENTE_ID, VC_NOMBRE_COMPLETO_CLIENTE, VC_REGION, VC_NOMBRE_SUCURS, DT_FECHA_NACIMIENTO"
 			 		+ ", I_EDAD, I_CREDITO_ID, VC_NOMBRE_PRODUCTO, D_MONTO_ORIGINAL, I_MAX_DIA_MORA, VC_TELEFONO_CELULAR, VC_TELEFONO_RECADOS"
 			 		+ ", VC_TELEFONO_EMPLEADO, VC_TELEFONO_REFERENCIA_1, VC_TELEFONO_REFERENCIA_2,DT_FECHA_REGISTRO,VC_PLAZO_OFERTA) VALUES \r\n"

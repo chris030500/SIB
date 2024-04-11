@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 
 @Repository
@@ -64,6 +64,9 @@ public interface IClasificacionBasesRepository extends JpaRepository<Clasificaci
 	@Query(value = "SELECT COUNT(*) AS NUMERO FROM SIB.TBL_CLASIFICACION_BASES_OA "
 			+ "WHERE VC_CODIGO_CLASIFICACION= :codigoClasificacion and PK_ID_CLASIFICACION <> :idClass", nativeQuery = true)
 	public int existeCodigoMod(String codigoClasificacion, Integer idClass);
+
+	@Query(value = "SELECT * FROM SIB.TBL_CLASIFICACION_BASES_OA WHERE FK_ID_BASE = :idBase", nativeQuery = true)
+	public List<ClasificacionBases> clasificacionXBase(@Param("idBase") Integer idBase);
 
 	
 }

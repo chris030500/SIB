@@ -41,4 +41,24 @@ public class InformacionService {
 		return ls;
 	}
 	
+	public List<ValidarEjecutarCronBase> obtInfoCronGestion(Integer tipoProceso) {
+		String sql = "CALL SIB.SP_VALIDARCRONGESTION(?);";
+		
+		@SuppressWarnings("deprecation")
+		List<ValidarEjecutarCronBase> ls = jdbcTemplate.query(sql, new Object[] {tipoProceso},
+				new RowMapper<ValidarEjecutarCronBase>() {
+					public ValidarEjecutarCronBase mapRow(ResultSet rs, final int rowNum) throws SQLException {
+						ValidarEjecutarCronBase dtosCron = new ValidarEjecutarCronBase();
+						
+						dtosCron.setI_ejecutar(rs.getInt(1));
+						dtosCron.setExpresionCron(rs.getString(2));
+						
+						return dtosCron;
+					}
+				});
+		
+		return ls;
+	}
+	
+	
 }
