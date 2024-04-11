@@ -47,18 +47,18 @@ function cambiarContenido(opcion, elemento) {
 	var tabCod = document.getElementById('codigos');
 
 	if (opcion === 'telefonos') {
-		if(tabTel != null){
+		if (tabTel != null) {
 			tabTel.style.display = "block";
 		}
-		if(tabCod != null){
+		if (tabCod != null) {
 			tabCod.style.display = "none"
 		}
-		
+
 	} else if (opcion === 'codigos') {
-		if(tabTel != null){
+		if (tabTel != null) {
 			tabTel.style.display = "none";
 		}
-		if(tabCod != null){
+		if (tabCod != null) {
 			tabCod.style.display = "block"
 		}
 	}
@@ -117,16 +117,18 @@ function validarFormTelefonos() {
 
 	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
 	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
-	sucursal == "" ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
+	sucursal === "" || !sucuValid ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
-	soloExtension.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+	soloExtension.style.display = pattern.test(extension) && extension.length === 5 ? "none" : "block";
 
 	datosChips == "" ? minimoUno.style.display = "block" : minimoUno.style.display = "none";
+	
+	console.log(datosChips);
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "" && sucursal != "") {
+	if (telefono != "" && extension != "" && sucursal != "" && datosChips != "" && sucuValid) {
 		if (pattern.test(telefono) && telefono.length === 10) {
-			if (pattern.test(extension) && extension.length === 3) {
+			if (pattern.test(extension) && extension.length === 5) {
 				// Se llena el DTO
 				const dto = {
 					telefono: telefono,
@@ -180,14 +182,14 @@ function validarEditarTel(id) {
 	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
 	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
-	alertaExt1.style.display = pattern.test(extension) && extension.length === 3 ? "none" : "block";
+	alertaExt1.style.display = pattern.test(extension) && extension.length === 5 ? "none" : "block";
 
 	datosChipsE == "" ? minimoUnoE.style.display = "block" : minimoUnoE.style.display = "none";
 
 	// Si los valores son diferentes de vacio
-	if (telefono != "" && extension != "") {
+	if (telefono != "" && extension != "" && datosChipsE != "") {
 		if (pattern.test(telefono) && telefono.length === 10) {
-			if (pattern.test(extension) && extension.length === 3) {
+			if (pattern.test(extension) && extension.length === 5) {
 				// Se llena el DTO
 				const dto = {
 					telefono: telefono,
@@ -230,6 +232,7 @@ document.addEventListener('click', function(event) {
  * Fin
  */
 
+var sucuValid; 
 
 
 /**
@@ -244,6 +247,12 @@ function handleSearch() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			console.log(respuesta.sucursal);
+			if (respuesta.sucursal && respuesta.sucursal.length > 0) {
+				sucuValid = true;
+			}else{
+				sucuValid = false;
+			}
 			var opcionesDatalist = document.getElementById('opciones');
 			opcionesDatalist.innerHTML = '';
 			respuesta.sucursal.forEach(function(sucursal) {
@@ -272,6 +281,7 @@ searchInput.addEventListener('input', function() {
  * Lista de telefonos
  */
 function listaTelefonos() {
+	console.log("AQUI")
 	$.ajax({
 		url: newUrlBase + "lista_telefonos",
 		type: "GET",
@@ -342,14 +352,16 @@ function agregarTelefono(dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			document.getElementById('telefonoModal').style.display = 'none';
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
-			})
-				.then((value) => {
-					listaTelefonos();
-				});
+			swal(
+				"¡Procesado!",
+				"El estatus del mensaje ha sido actualizado.",
+				"success"
+			)
+			limpiarFormTelefonos();
+			listaTelefonos();
+			$("#telefonoModal").hide();
+			$('body').removeClass('modal-open');
+			$('.modal-backdrop').remove();
 		}, error: function(error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
@@ -410,14 +422,16 @@ function editarTelefono(id, dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			document.getElementById('editarTelModal').style.display = 'none';
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
-			})
-				.then((value) => {
-					listaTelefonos();
-				});
+			swal(
+				"¡Procesado!",
+				"El estatus del mensaje ha sido actualizado.",
+				"success"
+			)
+			limpiarFormTelefonos();
+			listaTelefonos();
+			$("#editarTelModal").hide();
+			$('body').removeClass('modal-open');
+			$('.modal-backdrop').remove();
 		}, error: function(error) {
 			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
@@ -631,6 +645,8 @@ function agregarAccion(dto) {
 			})
 				.then((value) => {
 					listaCodigosAccion();
+					$('body').removeClass('modal-open');
+					$('.modal-backdrop').remove();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -883,6 +899,8 @@ function agregarResultado(dto) {
 			})
 				.then((value) => {
 					listaCodigosResultado();
+					$('body').removeClass('modal-open');
+					$('.modal-backdrop').remove();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -1312,6 +1330,8 @@ function agregarRelacion(dto) {
 			})
 				.then((value) => {
 					listaDeRelaciones();
+					$('body').removeClass('modal-open');
+					$('.modal-backdrop').remove();
 				});
 		}, error: function(error) {
 			//console.log(error);
@@ -1338,7 +1358,7 @@ function listaDeRelaciones() {
 		success: function(respuesta) {
 			vistaTablaRel.clear().draw();
 			$.each(respuesta.lista, function(idx, opt) {
-				
+
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
@@ -1599,7 +1619,7 @@ function catalogoBloqueoE(select, relacion) {
  */
 
 function catalogoTipoGes(select, relacion) {
-const opcion = document.createElement("option");
+	const opcion = document.createElement("option");
 	opcion.text = "Elige una opción";
 	opcion.selected = true;
 	select.innerHTML = '';
@@ -1982,7 +2002,7 @@ selectElement3.addEventListener('change', function(event) {
 	const selectedValue = event.target.value;
 
 	if (selectedValue == '78' || selectedValue == '72') {
-		selectElement4.value = "79";	
+		selectElement4.value = "79";
 		selectElement4.disabled = true; // CORRECCIÓN AQUÍ
 	} else {
 		selectElement4.value = "Elige una opción";
