@@ -175,7 +175,6 @@ function llenarTablaSeguimiento(condicion) {
 							cliente,
 							opt.vc_codigo_oferta,
 							opt.vc_cod_referencia,
-							asignacion,
 							opt.fechainicio,
 							opt.fechafin,
 							opt.v_valor,
