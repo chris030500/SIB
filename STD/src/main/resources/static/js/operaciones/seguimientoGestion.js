@@ -151,6 +151,7 @@ function llenarTablaSeguimiento(condicion) {
 				} else {
 					Swal.close();
 					console.log(respuesta);
+					const registrosTotales = [];
 					document.getElementById("ver-cargaSeguimiento").style.display = "none";
 					document.getElementById("ver-listaSeguimiento").style.display = "block";
 					tablaFiltro.clear().draw();
@@ -169,7 +170,7 @@ function llenarTablaSeguimiento(condicion) {
 						var cliente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 						var asignacion = opt.i_bloqueo == 1 ? "Activo" : "Inactivo";
 
-						tablaFiltro.row.add([
+						registrosTotales.push([
 							opt.i_clienteid,
 							opt.nombreCompleto,
 							cliente,
@@ -182,9 +183,10 @@ function llenarTablaSeguimiento(condicion) {
 							opt.vc_nombresucursal,
 							opt.vc_usuario,
 							btnEditar
-						]).draw(false);
+						]);
 					});
-
+					// Add all rows at once
+                    tablaFiltro.rows.add(registrosTotales).draw();
 				}
 			},
 			error: function(error) {
