@@ -22,6 +22,19 @@ window.onload = function() {
 * Fin
 */
 
+// Obtiene el elemento del campo de fecha
+const fechaCitaInput = document.getElementById('fecha-cita');
+
+// Obtiene la fecha actual en el formato requerido (YYYY-MM-DD)
+const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()).padStart(2, '0');
+const formattedDate = `${year}-${month}-${day}`;
+
+// Establece el valor mínimo del campo de fecha al formato de fecha actual
+fechaCitaInput.min = formattedDate;
+
 
 /**
  * Validación de las fechas
@@ -277,14 +290,14 @@ function validarGestion() {
 		inputRelacion.value == '' ? validarRelacion.style.display = 'block' : validarRelacion.style.display = 'none';
 		inputDescripcion.value == '' ? validarDescripcion.style.display = 'block' : validarDescripcion.style.display = 'none';
 		inputFechaCita.value == '' ? validarFechaCita.style.display = 'block' : validarFechaCita.style.display = 'none';
-		inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
+		//inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
 
 		if (selectPart[0] == "LLAMADA") {
 			inputTelfono.value == '' ? validarTelefono.style.display = 'block' : validarTelefono.style.display = 'none';
 		}
 
 		if (selectPart[0] == "LLAMADA") {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '' && inputTelfono.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputTelfono.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -298,7 +311,7 @@ function validarGestion() {
 				registrarGestion(dto);
 			}
 		} else {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -323,7 +336,7 @@ function validarGestion() {
 
 		if (selectPart[0] == "LLAMADA") {
 
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '' && inputTelfono.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputTelfono.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -336,7 +349,7 @@ function validarGestion() {
 				registrarGestion(dto);
 			}
 		} else {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
