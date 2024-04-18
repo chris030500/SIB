@@ -29,8 +29,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ "				 ELSE 1 "
 			+ "END, "
 			+ "i_estatus, "
-			+ "VC_NOMBRE_USUARIO ASC "
-			+ "LIMIT 500 ", nativeQuery = true)
+			+ "VC_NOMBRE_USUARIO ASC ", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimiento(@Param("idSucursal") int idSucursal, @Param("usuario") String usuario);
 	
 	
@@ -99,8 +98,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ "				 ELSE 1 "
 			+ "END, "
 			+ "i_estatus, "
-			+ "VC_NOMBRE_USUARIO DESC "
-			+ "LIMIT 500 ", nativeQuery = true)
+			+ "VC_NOMBRE_USUARIO DESC ", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimientoGestor(int idSucursal, String usuario);
 
 	@Query(value = "select I_CLIENTEID "
@@ -118,8 +116,7 @@ public interface ListaSeguimientoRepository extends JpaRepository<ListaSeguimien
 			+ ",VC_NOMBRE_USUARIO "
 			+ "FROM SIB.VW_ASIGNACION_OFERTAS "
 			+ "WHERE FK_ID_SUCURSAL =:idSucursal "
-			+ "order by VC_NOMBRE_USUARIO desc "
-			+ "LIMIT 500 ", nativeQuery = true)
+			+ "order by VC_NOMBRE_USUARIO desc ", nativeQuery = true)
 	public List<ListaSeguimientoModel> listaSeguimientoSupervisor(int idSucursal);
 	
 }
