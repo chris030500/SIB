@@ -676,9 +676,10 @@ function editarSegGestion(id) {
  */
 
 function validarBotonRegistro(bloqueo) {
+	console.log(bloqueo)
 	if (bloqueo === 2) {
 		document.getElementById("form-registro").style.display = 'none';
-	} else if (bloqueo === 1) {
+	} else if (bloqueo === 1 || bloqueo === 0) {
 		document.getElementById("form-registro").style.display = 'block';
 	}
 }
