@@ -23,55 +23,65 @@ import java.util.List;
 @Component
 public class ComparadorEncabezadosComponent {
 
-	@Autowired
-	ConfigService configService;
-	
-	@Autowired
-	private static final Logger logger = Logger.getLogger(ComparadorEncabezadosComponent.class);
-	
-	private String propiedadNombreHoja = "hojaFidelidad";
-	private String propiedadEncabezados = "encabezadosFidelidad";
+    @Autowired
+    ConfigService configService;
 
-	public List<String> compararHeader(String archivoPath) throws IOException {
-		logger.info("compararHeader");
-		String nombreHoja =  configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
-				//configService.obtenerConfiguracion(70).getVc_valor_propiedad();
-		String headersComparar = configService.valorPropiedad(propiedadEncabezados).getVc_valor_propiedad();
-				//configService.obtenerConfiguracion(71).getVc_valor_propiedad();
-		// String headersComparar = "\"Cliente ID\", \"Nombre Cliente\", \"Region\",
-		// \"Sucursal\", \"Fecha Nacimiento\", \"Edad\", \"credito_id\", \"Nombre
-		// Producto\", \"Monto Original\", \"Maximo Dias Mora\", \"Telefono Celular\",
-		// \"Telefono Recados\", \"Telefono Empleado\", \"Telefono Referencia 1\",
-		// \"Telefono Referencia 2\"";
+    private static final Logger logger = Logger.getLogger(ComparadorEncabezadosComponent.class);
 
-		List<String> incorrectHeaders = new ArrayList<>();
-		try (FileInputStream fileInputStream = new FileInputStream(new File(archivoPath))) {
-			Workbook workbook = WorkbookFactory.create(fileInputStream);
-			Sheet sheet = workbook.getSheet(nombreHoja);
+    private String propiedadNombreHoja = "hojaFidelidad";
+    private String propiedadEncabezados = "encabezadosFidelidad";
 
-			Row headerRow = sheet.getRow(0);
-			if (headerRow == null) {
-				throw new IllegalArgumentException("Fila de encabezado no encontrado en la hoja.");
-			}
+    public List<String> compararHeader(String archivoPath) {
+        logger.info("compararHeader");
+        String nombreHoja = configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
+        String headersComparar = configService.valorPropiedad(propiedadEncabezados).getVc_valor_propiedad();
 
-			String[] headersArray = headersComparar.replaceAll("\"", "").split(",\\s*");
+        List<String> incorrectHeaders = new ArrayList<>();
+        FileInputStream fileInputStream = null;
+        
+        try {
+            fileInputStream = new FileInputStream(new File(archivoPath));
+            Workbook workbook = WorkbookFactory.create(fileInputStream);
+            Sheet sheet = workbook.getSheet(nombreHoja);
 
-			String[] expectedHeaders = new String[headersArray.length];
+            if (sheet == null) {
+                throw new IllegalArgumentException("Hoja '" + nombreHoja + "' no encontrada en el archivo.");
+            }
 
-			for (int i = 0; i < headersArray.length; i++) {
-				expectedHeaders[i] = headersArray[i].trim();
-			}
+            Row headerRow = sheet.getRow(0);
+            if (headerRow == null) {
+                throw new IllegalArgumentException("Fila de encabezado no encontrada en la hoja.");
+            }
 
-			for (int i = 0; i < expectedHeaders.length; i++) {
-				Cell cell = headerRow.getCell(i);
-				if (cell == null || !cell.getStringCellValue().equals(expectedHeaders[i])) {
-					incorrectHeaders.add(cell.getStringCellValue());
-				}
-			}
-			logger.info("ComparadorEncabezadosComponent");
-		} // El recurso FileInputStream se cerrará automáticamente aquí
+            String[] headersArray = headersComparar.replaceAll("\"", "").split(",\\s*");
+            String[] expectedHeaders = new String[headersArray.length];
 
-		return incorrectHeaders;
-	}
+            for (int i = 0; i < headersArray.length; i++) {
+                expectedHeaders[i] = headersArray[i].trim();
+            }
 
+            for (int i = 0; i < expectedHeaders.length; i++) {
+                Cell cell = headerRow.getCell(i);
+                if (cell == null || !cell.getStringCellValue().equals(expectedHeaders[i])) {
+                    incorrectHeaders.add(expectedHeaders[i]);
+                }
+            }
+
+            logger.info("Comparación de encabezados completada");
+        } catch (IOException | IllegalArgumentException e) {
+            logger.error("Error al comparar encabezados: " + e.getMessage());
+            // Puedes agregar manejo adicional de la excepción aquí
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    logger.error("Error al cerrar FileInputStream: " + e.getMessage());
+                }
+            }
+        }
+
+
+        return incorrectHeaders;
+    }
 }
