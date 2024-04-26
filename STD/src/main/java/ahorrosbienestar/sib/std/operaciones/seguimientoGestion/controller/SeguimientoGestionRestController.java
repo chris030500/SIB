@@ -190,7 +190,7 @@ public class SeguimientoGestionRestController {
 			model.setVc_descripcion(dto.getDescripcion());
 			model.setI_estatus(1);
 			model.setDt_fecha_cita(dto.getFechaCita());
-			model.setDt_fecha_gestion_realizada(dto.getFechaGestion());
+			model.setDt_fecha_gestion_realizada(localDate);
 			model.setDt_fecha_registro(localDate);
 			model.setDt_fecha_modificacion(localDate);
 			model.setI_usuario_registro(usuario);
