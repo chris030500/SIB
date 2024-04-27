@@ -577,6 +577,7 @@ searchInput.addEventListener('change', function() {
  * seguimiento de gestiones por asignacion de oferta auto.
  */
 function llenarTablaDeGestiones(datos) {
+	const registrosGestionesT = [];
 	tablaGestion.clear().draw();
 	$.each(datos, function(idx, opt) {
 		var btnEditar = "<button style='margin-right: 10px; background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary btn-icon btn-editar'"
@@ -593,9 +594,28 @@ function llenarTablaDeGestiones(datos) {
 			+ opt.pk_id_seguimiento_gestion
 			+ "'><i class='bi bi-x'></i></button>";
 
-		var btns = "<div class='btn-group'>" + btnEditar + btnCancelar + "</div>";
+		/**
+		 * Los funcionales solicitan no tener edicion o cancelacion de registro de seguimientos. 
+		 * se mantiene el codigo. 
+		 */
+		//var btns =""; 
+		/*if(opt.i_usuario_registro.vc_nombre_usuario ==  document.getElementById("usuarioLogueado").value){
+			btns = "<div class='btn-group'>" + btnEditar +"</div>";
+		}else{
+			btns = "";
+		}*/
 
-		tablaGestion.row.add([
+	    registrosGestionesT.push([
+			opt.relacionCodigosModel.accionRealizar.v_valor,
+			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
+			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
+			opt.vc_descripcion,
+			opt.dt_fecha_registro,
+			opt.dt_fecha_gestion_realizada,
+			opt.i_usuario_registro.vc_nombre_usuario
+		])
+
+		/*tablaGestion.row.add([
 			opt.relacionCodigosModel.accionRealizar.v_valor,
 			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
 			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
@@ -603,9 +623,11 @@ function llenarTablaDeGestiones(datos) {
 			opt.dt_fecha_registro,
 			opt.dt_fecha_gestion_realizada,
 			btns
-		]).draw(false);
+		]).draw(false);*/
 
 	});
+	
+    tablaGestion.rows.add(registrosGestionesT).draw();
 }
 /**
  * Fin
@@ -713,6 +735,7 @@ function todosLosEstatus() {
 			sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
 			nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
 			sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
+			document.getElementById("usuarioLogueado").value = respuesta.usuarioLogueado;
 			//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);
