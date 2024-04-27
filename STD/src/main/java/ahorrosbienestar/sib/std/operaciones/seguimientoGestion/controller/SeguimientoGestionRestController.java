@@ -409,7 +409,9 @@ public class SeguimientoGestionRestController {
 			
 			lista = estatusSeguimientoService.listaDeEstatus(idSucursal);
 			logger.info("se llenó la lista");
+			
 			respuesta.put("lista", lista);
+			respuesta.put("usuarioLogueado",obtenerUsuarioLogueado());
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception

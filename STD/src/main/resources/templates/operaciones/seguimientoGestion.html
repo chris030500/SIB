@@ -36,6 +36,7 @@
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
+								<input type="hidden" id="usuarioLogueado" th:value="${usuarioLogueado}" />
 								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}" />
 								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}" />
 								<input type="hidden" id="NombreSucursalS" />
@@ -278,7 +279,7 @@
 														<th>Descripción de la gestión</th>
 														<th>Fecha de registro</th>
 														<th>Fecha de gestión realizada</th>
-														<th id="th-acciones">Acciones</th>
+														<th id="th-acciones">Usuario Registro</th>
 													</tr>
 												</thead>
 												<tbody style="text-align: center;">
