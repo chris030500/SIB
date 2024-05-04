@@ -162,7 +162,7 @@ public class ReportesRestController {
 	    		});
 	            
 	            if (sbSucursales.length() > 0) {
-	            	sbSucursales.setLength(sbSucursales.length() - 13);
+	            	sbSucursales.setLength(sbSucursales.length() - 12);
 	            }
 				break;
 			case 2:

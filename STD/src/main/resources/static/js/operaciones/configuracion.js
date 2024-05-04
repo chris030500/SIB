@@ -122,7 +122,7 @@ function validarFormTelefonos() {
 	soloExtension.style.display = pattern.test(extension) && extension.length === 5 ? "none" : "block";
 
 	datosChips == "" ? minimoUno.style.display = "block" : minimoUno.style.display = "none";
-	
+
 	console.log(datosChips);
 
 	// Si los valores son diferentes de vacio
@@ -232,7 +232,7 @@ document.addEventListener('click', function(event) {
  * Fin
  */
 
-var sucuValid; 
+var sucuValid;
 
 
 /**
@@ -250,7 +250,7 @@ function handleSearch() {
 			console.log(respuesta.sucursal);
 			if (respuesta.sucursal && respuesta.sucursal.length > 0) {
 				sucuValid = true;
-			}else{
+			} else {
 				sucuValid = false;
 			}
 			var opcionesDatalist = document.getElementById('opciones');
@@ -545,7 +545,10 @@ function cambiarEstatusTelefono(id, estatus) {
 // ******************************************************************************************** //
 /**
  * Lista de códigos de acción
+ * 
  */
+var codA = [];
+
 function listaCodigosAccion() {
 	$.ajax({
 		url: newUrlBase + "lista_codigosAccion",
@@ -575,6 +578,8 @@ function listaCodigosAccion() {
 					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
 
 				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+
+				codA.push(opt.vc_codigo);
 
 				vistaTablaCA.row.add([
 					opt.pk_id_codigo_accion,
@@ -612,20 +617,31 @@ function validarFormAccion() {
 	var nombreAccion = $('#nombreAccion').val();
 	var descripcionAccion = $('#descripcionAccion').val();
 	// Si los valores son diferentes de vacio
-	if (nombreAccion != "" && descripcionAccion != "") {
-		// Se llena el DTO
-		const dto = {
-			codigo: nombreAccion,
-			descripcion: descripcionAccion
-		};
-		agregarAccion(dto);
-		// Si los valores estan vacios
-	} else {
-		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
+	if (codA.includes(nombreAccion)) {
+
+		swal("El codigo ya fue registrado anteriormente", {
 			icon: "warning"
 		});
+
+	} else {
+		if (nombreAccion != "" && descripcionAccion != "") {
+			// Se llena el DTO
+			const dto = {
+				codigo: nombreAccion,
+				descripcion: descripcionAccion
+			};
+			codA = [];
+			agregarAccion(dto);
+			// Si los valores estan vacios
+		} else {
+			// Se ejecuta la validacion
+			swal("Falta información por llenar", {
+				icon: "warning"
+			});
+		}
 	}
+
+
 }
 
 function agregarAccion(dto) {
@@ -667,6 +683,8 @@ function validarEditarAccion(id) {
 	var nombreAccionE = $('#nombreAccionE').val();
 	var descripcionAccionE = $('#descripcionAccionE').val();
 	// Si los valores son diferentes de vacio
+
+
 	if (nombreAccionE != "" && descripcionAccionE != "") {
 		// Se llena el DTO
 		const dto = {
@@ -683,6 +701,7 @@ function validarEditarAccion(id) {
 			icon: "warning"
 		});
 	}
+
 }
 
 function editarAccion(id, dto) {
@@ -800,6 +819,7 @@ function cambiarEstatusAccion(id, estatus) {
 /**
  * Lista de códigos de resultado
  */
+var codR = [];
 function listaCodigosResultado() {
 	$.ajax({
 		url: newUrlBase + "lista_codigosResultado",
@@ -829,6 +849,8 @@ function listaCodigosResultado() {
 					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
 
 				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
+
+				codR.push(opt.vc_codigo);
 
 				vistaTablaCR.row.add([
 					opt.pk_id_codigo_resultado,
@@ -865,20 +887,29 @@ function validarFormResultado() {
 	// Asignamos los valores a las variables
 	var nombreResultado = $('#nombreResultado').val();
 	var descripcionResultado = $('#descripcionResultado').val();
-	// Si los valores son diferentes de vacio
-	if (nombreResultado != "" && descripcionResultado != "") {
-		// Se llena el DTO
-		const dto = {
-			codigo: nombreResultado,
-			descripcion: descripcionResultado
-		};
-		agregarResultado(dto);
-		// Si los valores estan vacios
-	} else {
-		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
+	if (codR.includes(nombreResultado)) {
+
+		swal("El codigo ya fue registrado anteriormente", {
 			icon: "warning"
 		});
+
+	} else {
+		// Si los valores son diferentes de vacio
+		if (nombreResultado != "" && descripcionResultado != "") {
+			// Se llena el DTO
+			const dto = {
+				codigo: nombreResultado,
+				descripcion: descripcionResultado
+			};
+			codR = [];
+			agregarResultado(dto);
+			// Si los valores estan vacios
+		} else {
+			// Se ejecuta la validacion
+			swal("Falta información por llenar", {
+				icon: "warning"
+			});
+		}
 	}
 }
 
@@ -921,6 +952,7 @@ function validarEditarResultado(id) {
 	var nombreResultadoE = $('#nombreResultadoE').val();
 	var descripcionResultadoE = $('#descripcionResultadoE').val();
 	// Si los valores son diferentes de vacio
+
 	if (nombreResultadoE != "" && descripcionResultadoE != "") {
 		// Se llena el DTO
 		const dto = {
@@ -937,6 +969,7 @@ function validarEditarResultado(id) {
 			icon: "warning"
 		});
 	}
+
 }
 
 function editarResultado(id, dto) {
@@ -1281,10 +1314,15 @@ function catalogoTipoGestion() {
 /**
  * Registrar relación
  */
+
+var flag = true;
+
 function validarFormRelacion() {
 	var formulario = document.getElementById("formRelacion");
 	var valorCodigoA = formulario.querySelector("#selectAccion").value;
+	var selectAccion = formulario.querySelector("#selectAccion option[value='" + valorCodigoA + "']").textContent;
 	var valorCodigoR = formulario.querySelector("#selectResultado").value;
+	var selectResultado = formulario.querySelector("#selectResultado option[value='" + valorCodigoR + "']").textContent;
 	var valorAccionR = formulario.querySelector("#selectRealizar").value;
 	var valorBloqueo = formulario.querySelector("#selectBloqueo").value;
 	var valorGestion = formulario.querySelector("#selectGestion").value;
@@ -1294,23 +1332,39 @@ function validarFormRelacion() {
 	valorBloqueo = valorBloqueo == "Elige una opción" ? 0 : valorBloqueo;
 	valorTipoGestion = valorTipoGestion == "Elige una opción" ? 0 : valorTipoGestion;
 
-	if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorGestion != "Elige una opción") {
-		//console.log("entró");
-		const dto = {
-			idCodigoAccion: valorCodigoA,
-			idCodigoResultado: valorCodigoR,
-			idAccionRealizar: valorAccionR,
-			ultimaGestion: valorGestion,
-			idBloqueo: valorBloqueo,
-			idTipoGes: valorTipoGestion
+	for (var i = 0; i < RelAR.length; i++) {
+		if (RelAR[i].accion === selectAccion && RelAR[i].resultado === selectResultado) {
+			flag = false
+				;
 		}
-		// console.log(dto);
-		agregarRelacion(dto);
+	}
+
+	if (flag) {
+		if (valorCodigoA != "Elige una opción" && valorCodigoR != "Elige una opción" && valorGestion != "Elige una opción") {
+			//console.log("entró");
+			const dto = {
+				idCodigoAccion: valorCodigoA,
+				idCodigoResultado: valorCodigoR,
+				idAccionRealizar: valorAccionR,
+				ultimaGestion: valorGestion,
+				idBloqueo: valorBloqueo,
+				idTipoGes: valorTipoGestion
+			}
+
+			agregarRelacion(dto);
+
+		} else {
+			swal("Falta información por llenar", {
+				icon: "warning"
+			});
+		}
 	} else {
-		swal("Falta información por llenar", {
+		swal("Ya existe una relacion entre los dos codigos seleccionados", {
 			icon: "warning"
 		});
 	}
+
+
 }
 
 function agregarRelacion(dto) {
@@ -1350,6 +1404,7 @@ function agregarRelacion(dto) {
 /**
  * Lista de relaciones
  */
+var RelAR = [];
 function listaDeRelaciones() {
 	$.ajax({
 		url: newUrlBase + "lista_relacionCodigos",
@@ -1383,6 +1438,11 @@ function listaDeRelaciones() {
 
 				let accionR = opt.accionRealizar != null ? opt.accionRealizar.v_valor : "";
 				let listaB = opt.bloqueoListas != null ? opt.bloqueoListas.v_valor : "";
+
+				RelAR.push({
+					accion: opt.codigoAccionModel.vc_descripcion + " (" + opt.codigoAccionModel.vc_codigo + ")",
+					resultado: opt.codigoResultadoModel.vc_descripcion + " (" + opt.codigoResultadoModel.vc_codigo + ")"
+				})
 
 				vistaTablaRel.row.add([
 					opt.pk_id_relacion_codigo,
@@ -1654,6 +1714,9 @@ function catalogoTipoGes(select, relacion) {
 /**
  * Editar relación
  */
+
+var flag2 = true;
+
 function validarFormRelacionE() {
 	var formulario = document.getElementById("formEditarRelacion");
 	var valorCodigoA = formulario.querySelector("#selectAccionE").value;
@@ -1675,8 +1738,10 @@ function validarFormRelacionE() {
 		idTipoGes: valorTipoGes
 	}
 
+
 	// console.log(dto);
 	editarRelacion(dto);
+
 }
 
 function editarRelacion(dto) {
