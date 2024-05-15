@@ -157,6 +157,9 @@ public class Constantes {
 	public static final String CRON_INICIAL = "cronInicialBase";
 	public static final String CRON_ENVIO_CORREO_REASIGNACION = "cronEnviocorreo";
 	
+	//constantes sccb
+	public static final String SCCB_SOLICITUDES_CREDITO = "sccb/solicitudesCredito";
+	
 	
     private Constantes() {
         
