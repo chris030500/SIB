@@ -16,20 +16,45 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="border p-2 card">
+		<div class="container">
+			<div class="border p-2 card">
 
-			<div class="bg-info text-white">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div>
-							<h2 style="text-align:center">Solicitudes de Crédito</h2>
+				<div class="bg-info text-white">
+					<div class="row no-gutters">
+						<div class="col-md-2"></div>
+						<div class="col-md-8">
+							<div>
+								<h2 style="text-align:center">Solicitudes de Crédito</h2>
+							</div>
 						</div>
 					</div>
 				</div>
+        	</div>
+        	<div class="row">
+				<table class="table table-bordered table-striped table-sm" style="width: 100%;" id="solicitudTable">
+					<thead>
+						<tr>
+							<th>Solcitud</th>
+							<th>Acuerdo</th>
+							<th>Nombre</th>
+							<th>Cliente</th>
+							<th>Rol</th>
+							<th>Centro</th>
+							<th>Etapa</th>
+							<th>Estatus</th>
+							<th>Monto</th>
+							<th>Recepción</th>
+							<th>Inicio trámite</th>
+							<th>Autorización</th>
+							<th>Desembolso</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
 			</div>
-
-        </div>
+		</div>
     </section>
     <th:block layout:fragment="page-scripts">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
