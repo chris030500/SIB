@@ -15,7 +15,7 @@
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
+	<section class="content" layout:fragment="page-content" style="background-color: white;">
 		<div class="container">
 			<div class="border p-2 card">
 
@@ -30,10 +30,24 @@
 					</div>
 				</div>
         	</div>
-        	<div class="row table-responsive" style="background-color: white;">
-				<table class="table table-bordered table-striped" style="width: 100%;" id="solicitudTable">
-					<thead>
-						<tr>
+        	<div class="row p-4">
+				<div class="col-6">
+					<form>
+						<div class="row">
+							<div class="col-3">
+								<label class="form-label">Buscar: </label>
+							</div>
+							<div class="col-8">
+								<input class="form-control" name="busqueda" placeholder="no.credito o cliente o nombre"/>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+        	<div class="row table-responsive">
+				<table class="table table-bordered table-striped table-sm" style="width: 100%;" id="solicitudTable">
+					<thead style="background-color: #0D6EFD;">
+						<tr class="text-white">
 							<th>Solcitud</th>
 							<th>Acuerdo</th>
 							<th>Nombre</th>

@@ -5,20 +5,22 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
-import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
-import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 
 @Controller
 @RequestMapping("sccb")
@@ -28,17 +30,17 @@ public class SolicitudesCreditoController {
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-
+	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
-
-	@Autowired
-	private ICatalogoRepository iCatalogoRepository;
 	
 	@Autowired
-	private OpcionesMenuService opcionesMenuService;
+    private ICatalogoRepository iCatalogoRepository;
 	
-	private String rutaDireccion = "";
+	 @Autowired
+	 private OpcionesMenuService opcionesMenuService;
+	    
+	 private String rutaDireccion = "";
 	
 	@GetMapping("/solicitudesCredito")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -55,6 +57,13 @@ public class SolicitudesCreditoController {
 			return null;
 		}
 	}
+	
+	/*Método para obtener solicitudes por idCredito
+	@GetMapping("/solicitudesByCredito/{idCredito}")
+	public ResponseEntity<?> findByIdCredito(@PathVariable(name = "idCredito") Integer idCredito){
+		return ResponseEntity.ok(solicitudesService.findByIdCredito(idCredito));
+	}
+	*/
 
 	public int validarAcceso() {
 		
@@ -74,11 +83,9 @@ public class SolicitudesCreditoController {
 			return 0;
 		}
 		
-	
 		
 	}
 
 
 }
-
 
