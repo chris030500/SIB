@@ -4,6 +4,7 @@ $(document).ready(function() {
 	
 	$("#opciones").change(function() {
 		optionSelected = $('#opciones').val();
+		console.log(optionSelected);
 		if(optionSelected > 0) {
 			switch(optionSelected) {
 				case "1": 
@@ -58,14 +59,18 @@ function getUrlSolicitudes() {
 	var noCliente = $("#clienteBusqueda").val();
 	var nomCliente = $("#nameBusqueda").val();
 	
+	console.log(typeof(Number(idCredito)));
 	
-	url = url + "getSolicitudes?idCredito=" + Number(idCredito) + "&noCliente=" + Number(noCliente) + "&nomCliente=" + nomCliente;
+	
+	url = url + "getSolicitudes?idCredito=" + Number(idCredito)
 	
 	return url;
 }
 
 function buscarDatos() {
 	var divTable = document.getElementById("divTable");
+	
+	console.log(getUrlSolicitudes());
 	
 	$.ajax({
 		url: getUrlSolicitudes(),

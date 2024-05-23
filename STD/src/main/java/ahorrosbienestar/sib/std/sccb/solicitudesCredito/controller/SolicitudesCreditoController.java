@@ -49,6 +49,7 @@ public class SolicitudesCreditoController {
 	 @Autowired
 	 private OpcionesMenuService opcionesMenuService;
 	 
+	 @Autowired
 	 private SolicitudesCreditoService solicitudesService;
 	    
 	 private String rutaDireccion = "";
@@ -70,15 +71,19 @@ public class SolicitudesCreditoController {
 	}
 	
 	@RequestMapping(value = {"/getSolicitudes"}, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> solicitudesCredito(@RequestParam("idCredito") int idCredito,
-			@RequestParam("noCliente") int noCliente, @RequestParam("nomCliente") String nomCliente) {
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesCredito(@RequestParam("idCredito") Integer idCredito) {
 		
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
+		
+		System.out.print(idCredito);
+		
 		try {
-			List<SolicitudesCredito> solicitudesCredito = solicitudesService.findBySearchType(idCredito, noCliente, nomCliente);
+			List<SolicitudesCredito> solicitudesCredito = solicitudesService.findByCredito(idCredito);
 			
-			if (solicitudesCredito != null && solicitudesCredito.isEmpty()) {
+			System.out.print(solicitudesCredito.toString());
+			
+			if (solicitudesCredito != null && !solicitudesCredito.isEmpty()) {
 				res.put("solicitudes", solicitudesCredito);
 				return ResponseEntity.ok(res);
 			} else {
