@@ -51,6 +51,8 @@ function defaultView() {
 	$('#divCliente').hide();
 	$('#divName').hide();
 	$('#btnBuscar').hide();
+	$('#divDatosSolicitud').hide();
+	$('#divTable').hide();
 }
 
 function getUrlSolicitudes() {
@@ -59,16 +61,16 @@ function getUrlSolicitudes() {
 	var noCliente = $("#clienteBusqueda").val();
 	var nomCliente = $("#nameBusqueda").val();
 	
-	console.log(typeof(Number(idCredito)));
+	console.log(typeof(idCredito));
 	
 	
-	url = url + "getSolicitudes?idCredito=" + Number(idCredito)
+	url = url + "getSolicitudes?idCredito=" + Number(idCredito);
 	
 	return url;
 }
 
 function buscarDatos() {
-	var divTable = document.getElementById("divTable");
+	var divTable = $('#divTable');
 	
 	console.log(getUrlSolicitudes());
 	
@@ -78,14 +80,14 @@ function buscarDatos() {
 		dataType: "JSON",
 		success: function(res) {
 			console.log(res.solicitudes);
-			/*if(res == null || res == '') {
+			if(res == null || res == '') {
 				console.log("Error");
-				divTable.style.display = "none";
+				divTable.hide();
 			} else {
-				divTable.style.display = "block";
+				divTable.show();
 				$('#solicitudes > tbody').empty();
-				$.each(res, function(idx, opt) {
-					var rows = "<tr>";
+				$.each(res.solicitudes, function(idx, opt) {
+					var rows = "<tr>"
 						+ "<td class='text-center'>" + opt.i_solicitud_id + "</td>"
 						+ "<td class='text-center'>" + opt.i_credito_id + "</td>"
 						+ "<td class='text-center'>" + opt.vc_nombre_cliente + "</td>"
@@ -102,7 +104,7 @@ function buscarDatos() {
 						+ "</tr>";
 					$('#solicitudes').append(rows);
 				});
-			} */
+			}
 		},
 	});
 }

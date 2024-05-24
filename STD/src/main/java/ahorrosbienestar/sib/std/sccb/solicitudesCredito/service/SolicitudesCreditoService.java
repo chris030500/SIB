@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.SolicitudesCredito;
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.repository.ISolicitudesCreditoRepository;
 
 @Service
 public class SolicitudesCreditoService {
+	
 	@Autowired
-	private ISolicitudesCreditoRepository iSolicitudesRepository;
+	private ISolicitudesCreditoRepository iSolicitudesCreditoRepository;
 	
-	public List<SolicitudesCredito> findByCredito(Integer idCredito) {
-		return iSolicitudesRepository.findByIdCredito(idCredito);
+	public List<SolicitudesCredito> searchSolicitudesByCredito(Integer idCredito) {
+		return iSolicitudesCreditoRepository.getSolicitudesByIdCredito(idCredito);
 	}
-	
 }

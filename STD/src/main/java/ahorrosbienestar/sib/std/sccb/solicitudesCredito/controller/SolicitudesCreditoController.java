@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -70,35 +71,35 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	@RequestMapping(value = {"/getSolicitudes"}, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosSolicitudesCredito(@RequestParam("idCredito") Integer idCredito) {
-		
+	@RequestMapping(value = { "/getSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesPorCredito(@RequestParam("idCredito") Integer idCredito ) {
+
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		
-		System.out.print(idCredito);
-		
+		//System.out.print(idCredito.getClass().getName());
 		try {
-			List<SolicitudesCredito> solicitudesCredito = solicitudesService.findByCredito(idCredito);
+			List<SolicitudesCredito> solicitudes = solicitudesService.searchSolicitudesByCredito(idCredito);
 			
-			System.out.print(solicitudesCredito.toString());
-			
-			if (solicitudesCredito != null && !solicitudesCredito.isEmpty()) {
-				res.put("solicitudes", solicitudesCredito);
+			System.out.print(solicitudes.get(0).getI_credito_id());
+
+			// Verificar si la lista de mensajes es nula o vacía
+			if (solicitudes != null && !solicitudes.isEmpty()) {
+				res.put("solicitudes", solicitudes);
 				return ResponseEntity.ok(res);
 			} else {
+				// Devolver una lista vacía si no hay mensajes encontrados
 				res.put("solicitudes", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {
+			// TODO: handle exception
 			logger.error("Error: " + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
 			res.put("error", mensajeError);
-			
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
-	
+
 	public int validarAcceso() {
 		
 		try {

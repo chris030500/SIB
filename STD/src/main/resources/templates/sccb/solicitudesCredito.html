@@ -35,7 +35,7 @@
 					<div class="col-5">
 						<div class="row">
 							<div class="col-2">
-								<label for="busqueda" class="form-label">Buscar: </label>
+								<label class="form-label">Buscar: </label>
 							</div>
 							<div class="col-8">
 								<select class="form-control" id="opciones">
@@ -53,7 +53,7 @@
 								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
 							</div>
 							<div class="col-8">
-								<input type="number" class="solo-numero form-control" id="creditoBusqueda"
+								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
 								placeholder="No. de crédito">
 							</div>
 						</div>
@@ -87,8 +87,8 @@
 					</div>
 				</div>
 			</form>
-        	<div id="divTable" class="row table-responsive">
-				<table class="table table-bordered table-striped table-sm" style="width: 100%; display: none;" id="solicitudes">
+        	<div id="divTable" class="row table-responsive" style="display: none;">
+				<table class="table table-bordered table-striped table-sm" style="width: 100%" id="solicitudes">
 					<thead style="background-color: #0D6EFD;">
 						<tr class="text-white">
 							<th>Solcitud</th>
@@ -108,7 +108,7 @@
 					</thead>
 				</table>
 			</div>
-			<div id="divDatosSolicitud">
+			<div id="divDatosSolicitud" style="display: none;">
 				<div style="background-color: #D9D9D9;" class="content">
 					<h2 style="text-align: center;">Solicitud de Crédito</h2>
 				</div>
