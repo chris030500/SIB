@@ -17,4 +17,8 @@ public class SolicitudesCreditoService {
 	public List<SolicitudesCredito> searchSolicitudesByCredito(Integer idCredito) {
 		return iSolicitudesCreditoRepository.getSolicitudesByIdCredito(idCredito);
 	}
+	
+	public List<SolicitudesCredito> searchSolicitudesByCliente(Integer noCliente) {
+		return iSolicitudesCreditoRepository.getSolicitudesBynoCliente(noCliente);
+	}
 }

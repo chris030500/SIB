@@ -71,7 +71,7 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	@RequestMapping(value = { "/getSolicitudes" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/getSolicitudesByIdCredito" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametrosSolicitudesPorCredito(@RequestParam("idCredito") Integer idCredito ) {
 
 		Map<String, Object> res = new HashMap<>();
@@ -79,6 +79,35 @@ public class SolicitudesCreditoController {
 		//System.out.print(idCredito.getClass().getName());
 		try {
 			List<SolicitudesCredito> solicitudes = solicitudesService.searchSolicitudesByCredito(idCredito);
+			
+			System.out.print(solicitudes.get(0).getI_credito_id());
+
+			// Verificar si la lista de mensajes es nula o vacía
+			if (solicitudes != null && !solicitudes.isEmpty()) {
+				res.put("solicitudes", solicitudes);
+				return ResponseEntity.ok(res);
+			} else {
+				// Devolver una lista vacía si no hay mensajes encontrados
+				res.put("solicitudes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getSolicitudesByNoCliente" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesPorCliente(@RequestParam("noCliente") Integer noCliente ) {
+
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		//System.out.print(idCredito.getClass().getName());
+		try {
+			List<SolicitudesCredito> solicitudes = solicitudesService.searchSolicitudesByCliente(noCliente);
 			
 			System.out.print(solicitudes.get(0).getI_credito_id());
 

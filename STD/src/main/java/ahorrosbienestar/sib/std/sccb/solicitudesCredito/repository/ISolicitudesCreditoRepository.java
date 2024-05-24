@@ -15,4 +15,9 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			+ "FROM TBL_SCCB_SOLICITUDES "
 			+ "WHERE I_CREDITO_ID = :idCredito", nativeQuery = true)
 	public List<SolicitudesCredito> getSolicitudesByIdCredito(@Param("idCredito") Integer idCredito);
+	
+	@Query(value = "SELECT * "
+			+ "FROM TBL_SCCB_SOLICITUDES "
+			+ "WHERE I_NO_CLIENTE = :noCliente", nativeQuery = true)
+	public List<SolicitudesCredito> getSolicitudesBynoCliente(@Param("noCliente") Integer noCliente);
 }

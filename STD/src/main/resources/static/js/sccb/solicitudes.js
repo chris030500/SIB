@@ -1,4 +1,5 @@
 var optionSelected = "";
+var url = "";
 $(document).ready(function() {
 	defaultView();
 	
@@ -56,15 +57,17 @@ function defaultView() {
 }
 
 function getUrlSolicitudes() {
-	var url = getAbsolutePath();
 	var idCredito = $("#creditoBusqueda").val();
 	var noCliente = $("#clienteBusqueda").val();
 	var nomCliente = $("#nameBusqueda").val();
 	
-	console.log(typeof(idCredito));
+	if (idCredito != '' && idCredito != null) {
+		url = getAbsolutePath() + "getSolicitudesByIdCredito?idCredito=" + Number(idCredito);
+	}
 	
-	
-	url = url + "getSolicitudes?idCredito=" + Number(idCredito);
+	if (noCliente != '' && noCliente != null) {
+		url = getAbsolutePath() + "getSolicitudesByNoCliente?noCliente=" + Number(noCliente);
+	}
 	
 	return url;
 }
