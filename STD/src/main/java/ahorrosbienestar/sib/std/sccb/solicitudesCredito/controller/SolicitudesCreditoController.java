@@ -71,14 +71,16 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	@RequestMapping(value = { "/getSolicitudesByIdCredito" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosSolicitudesPorCredito(@RequestParam("idCredito") Integer idCredito ) {
+
+	@RequestMapping(value = { "/getByIdCreditoSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByIdCredito(@RequestParam("idCredito") Integer idCredito) {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		//System.out.print(idCredito.getClass().getName());
+		System.out.println(idCredito);
 		try {
-			List<SolicitudesCredito> solicitudes = solicitudesService.searchSolicitudesByCredito(idCredito);
+			List<SolicitudesCredito> solicitudes = solicitudesService.searchByIdCreditoSolicitudes(idCredito);
 			
 			System.out.print(solicitudes.get(0).getI_credito_id());
 
@@ -100,14 +102,15 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	@RequestMapping(value = { "/getSolicitudesByNoCliente" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosSolicitudesPorCliente(@RequestParam("noCliente") Integer noCliente ) {
+	@RequestMapping(value = { "/getByNoClienteSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNoCliente(@RequestParam("noCliente") Integer noCliente) {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		//System.out.print(idCredito.getClass().getName());
+		System.out.println(noCliente);
 		try {
-			List<SolicitudesCredito> solicitudes = solicitudesService.searchSolicitudesByCliente(noCliente);
+			List<SolicitudesCredito> solicitudes = solicitudesService.searchByNoClienteSolicitudes(noCliente);
 			
 			System.out.print(solicitudes.get(0).getI_credito_id());
 
@@ -128,6 +131,37 @@ public class SolicitudesCreditoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+	@RequestMapping(value = { "/getByNomClienteSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNomCliente(@RequestParam("nomCliente") String nomCliente) {
+
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		//System.out.print(idCredito.getClass().getName());
+		System.out.println(nomCliente);
+		try {
+			List<SolicitudesCredito> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente);
+			
+			System.out.print(solicitudes.get(0).getI_credito_id());
+
+			// Verificar si la lista de mensajes es nula o vacía
+			if (solicitudes != null && !solicitudes.isEmpty()) {
+				res.put("solicitudes", solicitudes);
+				return ResponseEntity.ok(res);
+			} else {
+				// Devolver una lista vacía si no hay mensajes encontrados
+				res.put("solicitudes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+
 
 	public int validarAcceso() {
 		

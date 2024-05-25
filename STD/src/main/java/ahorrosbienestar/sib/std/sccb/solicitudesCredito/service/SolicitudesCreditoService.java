@@ -14,11 +14,15 @@ public class SolicitudesCreditoService {
 	@Autowired
 	private ISolicitudesCreditoRepository iSolicitudesCreditoRepository;
 	
-	public List<SolicitudesCredito> searchSolicitudesByCredito(Integer idCredito) {
-		return iSolicitudesCreditoRepository.getSolicitudesByIdCredito(idCredito);
+	public List<SolicitudesCredito> searchByIdCreditoSolicitudes(Integer idCredito) {
+		return iSolicitudesCreditoRepository.getByIdCreditoSolicitudes(idCredito);
 	}
 	
-	public List<SolicitudesCredito> searchSolicitudesByCliente(Integer noCliente) {
-		return iSolicitudesCreditoRepository.getSolicitudesBynoCliente(noCliente);
+	public List<SolicitudesCredito> searchByNoClienteSolicitudes(Integer noCliente) {
+		return iSolicitudesCreditoRepository.getByNoClienteSolicitudes(noCliente);
+	}
+	
+	public List<SolicitudesCredito> searchByNomClienteSolicitudes(String nomCliente) {
+		return iSolicitudesCreditoRepository.getByNomClienteSolicitudes(nomCliente);
 	}
 }
