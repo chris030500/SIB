@@ -72,7 +72,6 @@ function defaultView() {
 	$('#divCliente').hide();
 	$('#divName').hide();
 	$('#btnBuscar').hide();
-	$('#divDatosSolicitud').hide();
 	$('#divTable').hide();
 }
 
@@ -118,7 +117,7 @@ function buscarDatos() {
 				tblSolicitudes.clear().draw();
 				$.each(res.solicitudes, function(idx, opt) {
 					var rows = "<tr>"
-						+ "<td class='text-center'>" + opt.i_solicitud_id + "</td>"
+						+ "<td class='text-center' th:onclick='showSolicitud(this.value)'>" + opt.i_solicitud_id + "</td>"
 						+ "<td class='text-center'>" + opt.i_credito_id + "</td>"
 						+ "<td class='text-center'>" + opt.vc_nombre_cliente + "</td>"
 						+ "<td class='text-center'>" + opt.i_no_cliente + "</td>"
@@ -143,5 +142,25 @@ function buscarDatos() {
 						icon: "warning",
 			});
 		}
+	});	
+}
+
+
+
+function showSolicitud(idSolicitud) {
+	
+	$.ajax({
+		url: getAbsolutePath + "getDatosSolicitud?idSolicitud=" + idSolicitud,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+			console.log(res);
+			/*if(res == null || res == '') {
+				console.log("Error");
+				divTable.hide();
+			} else {
+				
+			}*/
+		},
 	});	
 }
