@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
+
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content" style="background-color: white;">
+		<div class="container">
+			<div class="border p-2 card">
+
+				<div class="bg-info text-white">
+					<div class="row no-gutters">
+						<div class="col-md-2"></div>
+						<div class="col-md-8">
+							<div>
+								<h2 style="text-align:center">Historial de Cobranza</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+        	</div>
+			<form>
+				<div class="row p-4">
+					<div class="col-5">
+						<div class="row">
+							<div class="col-2">
+								<label class="form-label">Buscar: </label>
+							</div>
+							<div class="col-8">
+								<select class="form-control" id="opciones">
+									<option value="0">Seleccione</option>
+									<option value="1">No. de crédito</option>
+									<option value="2">No. de cliente</option>
+									<option value="3">Nombre</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="row" style="display: none;" id="divCredito">
+							<div class="col-3">
+								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
+							</div>
+							<div class="col-8">
+								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
+								placeholder="No. de crédito">
+							</div>
+						</div>
+						<div class="row" style="display: none;" id="divCliente">
+							<div class="col-3">
+								<label for="clienteBusqueda" class="col-form-label">No. de Cliente</label>
+							</div>
+							<div class="col-8">
+								<input type="text" class="solo-numero form-control" id="clienteBusqueda"
+								placeholder="No. de cliente">
+							</div>
+						</div>
+						<div class="row" style="display: none;" id="divName">
+							<div class="col-3">
+								<label for="nameBusqueda" class="col-form-label">Nombre</label>
+							</div>
+							<div class="col-8">
+								<input type="text" class="form-control" id="nameBusqueda"
+								placeholder="Nombre">
+							</div>
+						</div>
+					</div>
+					<div class="col-1">
+						<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+						title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+						th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
+							
+							<i class="bi bi-search"></i>
+							
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+    </section>
+    <th:block layout:fragment="page-scripts">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script th:src="@{/js/jquery-3.5.1.js}"></script>
+        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+        <script th:src="@{/js/sccb/solicitudes.js}"></script>
+    </th:block>
+</body>
+
+
+</html>
