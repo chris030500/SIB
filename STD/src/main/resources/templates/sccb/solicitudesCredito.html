@@ -87,83 +87,62 @@
 					</div>
 				</div>
 			</form>
-        	<div id="divTable" class="row table-responsive" style="display: none;">
-				<table class="table table-bordered table-striped table-sm" style="width: 100%" id="solicitudes">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white">
-							<th>Solcitud</th>
-							<th>Acuerdo</th>
-							<th>Nombre</th>
-							<th>Cliente</th>
-							<th>Rol</th>
-							<th>Centro</th>
-							<th>Etapa</th>
-							<th>Estatus</th>
-							<th>Monto</th>
-							<th>Recepción</th>
-							<th>Inicio trámite</th>
-							<th>Autorización</th>
-							<th>Desembolso</th>
-						</tr>
-					</thead>
-					<tbody>
-						
-					</tbody>
-				</table>
+        	<div id="divTable" class="row table-responsive mb-3" style="display: none;">
+				
 			</div>
 			<div id="divDatosSolicitud" style="display: none;">
-				<div style="background-color: #D9D9D9;" class="content">
+				<div style="background-color: #D9D9D9;" class="content mb-2">
 					<h2 style="text-align: center;">Solicitud de Crédito</h2>
 				</div>
 				<div class="container">
-					<div class="row border" style="background-color: #D9D9D9;">
+					<div class="row border mb-3" style="background-color: #D9D9D9;">
 						<h4>Datos del Crédito</h4>
 					</div>
-					<div class="row border p-2 justify-content-center">
+					<div class="row justify-content-center" style="text-align: center; font-size: small;">
 						
 						<div class="col-sm-2 mx-2">
 							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="text-align: center; font-size: small;">Folio Solicitud</p>
+								<p style="font-weight: bold;">Folio Solicitud</p>
 							</div>
-							<div class="row border">
-								<p style="text-align: center; font-size: small;">0</p>
+							<div id="folioSolicitud" class="row border">
+								
 							</div>
 						</div>
 						
 						
 						<div class="col-sm-2 mx-2">
 							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="text-align: center; font-size: small;">Ac. Crédito</p>
+								<p style="font-weight: bold;">Ac. Crédito</p>
 							</div>
-							<div class="row border">
-								<p style="text-align: center; font-size: small;">0</p>
+							<div id="acCredito" class="row border">
+								
 							</div>
 						</div>
 						
 						<div class="col-sm-2 mx-2">
 							<div class="row text-white border" style="background-color: #0D6EFD; ">
-								<p style="text-align: center; font-size: small;">Ac. Dep. Respaldo</p>
+								<p style="font-weight: bold;">Ac. Dep. Respaldo</p>
 							</div>
-							<div class="row border">
-								<p style="text-align: center; font-size: small;">0</p>
-							</div>
-						</div>
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="text-align: center; font-size: small;">Ac. Operativa</p>
-							</div>
-							<div class="row border">
-								<p style="text-align: center; font-size: small;">0</p>
+							<div id="acDepRespaldo" class="row border">
+								
 							</div>
 						</div>
 						
 						<div class="col-sm-2 mx-2">
 							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="text-align: center; font-size: small;">Recibe</p>
+								<p style="font-weight: bold;">Ac. Operativa</p>
 							</div>
-							<div class="row border">
-								<p style="text-align: center; font-size: small;">0</p>
+							<div id="acOperativa" class="row border">
+								
+							</div>
+						</div>
+						
+						<div class="col-sm-2 mx-2">
+							<div class="row text-white border" style="background-color: #0D6EFD;">
+								<p style="font-weight: bold;">Recibe</p>
+							</div>
+							<div id="recibe" class="row border">
+								
 							</div>
 						</div>
 					</div>
@@ -171,55 +150,55 @@
 					<div class="row justify-content-center mt-3">
 						<div class="col-sm-4 mx-1">
 							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center;">Captura</h5>
-								<div class="border" style="background-color: #D9D9D9;">
-									<p class="card-text">Captura: 0</p>
+								<h5 class="card-header border text-white" style="background-color: #0D6EFD; font-weight: bold; font-size: medium; text-align: center;">Captura</h5>
+								<div id="captura" class="border" style="background-color: #D9D9D9;">
+									
 								</div>
-								<div class="card-body border mt-3">
+								<div class="card-body border mt-3" style="font-size: small; text-align: center; height: 250px;">
 									<div class="row border" style="background-color: #BDECFB;">
-										<p style="text-align: center;">Recepción</p>
+										<p style="text-align: center; font-weight: bold;">Recepción</p>
 									</div>
 									<div class="row border">
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="text-align: center; font-size: small;">Fecha</p>
+												<p style="font-weight: bold;">Fecha</p>
 											</div>
-											<div class="row border">
-												<p style="text-align: center; font-size: small;">25/03/2008</p>
+											<div id="fechaRecepcion" class="row border">
+												
 											</div>
 										</div>
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="text-align: center; font-size: small">Etapa</p>
+												<p style="font-weight: bold; ">Etapa</p>
 											</div>
-											<div class="row border">
-												<p style="text-align: center; font-size: small;">Desembolso</p>
+											<div id="etapaRecepcion" class="row border">
+												
 											</div>
 										</div>
 										
 									</div>
 									<div class="row border mt-3" style="background-color: #BDECFB;">
-										<p style="text-align: center;">Resultado</p>
+										<p style="text-align: center; font-weight: bold; font-size: small;">Resultado</p>
 									</div>
 									<div class="row border">
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="text-align: center; font-size: small;">Fecha</p>
+												<p style="text-align: center; font-size: small; font-weight: bold;">Fecha</p>
 											</div>
-											<div class="row border">
-												<p style="text-align: center; font-size: small;"></p>
+											<div id="fechaResultado" class="row">
+												
 											</div>
 										</div>
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;;">
-												<p style="text-align: center; font-size: small;">Estatus</p>
+												<p style="text-align: center; font-size: small; font-weight: bold;">Estatus</p>
 											</div>
-											<div class="row border">
-												<p style="text-align: center; font-size: small;">Liquidado</p>
+											<div id="estatusResultado" class="row border">
+												
 											</div>
 										</div>
 										
@@ -230,23 +209,23 @@
 						
 						<div class="col-sm-4 mx-1">
 							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center;">Centro</h5>
-								<div class="border" style="background-color: #D9D9D9;">
-									<p class="card-text">Centro: </p>
+								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center; font-weight: bold; font-size: medium;">Centro</h5>
+								<div id="centro" class="border" style="background-color: #D9D9D9;">
+									
 								</div>
-								<div class="card-body border mt-3">
+								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 250px;">
 									<div class="row border" style="background-color: #D9D9D9;">
-										<p style="text-align: center; font-size: small;">Fecha Inicio de Trámite</p>
+										<p style="font-weight: bold;">Fecha Inicio de Trámite</p>
 									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">25/03/2008</p>
+									<div id="fechaInicioTramite" class="row border">
+										
 									</div>
 									
 									<div class="row border mt-3" style="background-color: #D9D9D9;">
-										<p style="text-align: center; font-size: small;">Fecha Autorización</p>
+										<p style="font-weight: bold;">Fecha Autorización</p>
 									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;"></p>
+									<div id="fechaAutorizacion" class="row border">
+										
 									</div>
 								</div>
 							</div>
@@ -255,30 +234,30 @@
 						
 						<div class="col-sm-4 mx-1">
 							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center;">Analista</h5>
-								<div class="border" style="background-color: #D9D9D9;">
-									<p class="card-text">Analista: </p>
+								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center; font-weight: bold; font-size: medium;">Analista</h5>
+								<div id="analista" class="border" style="background-color: #D9D9D9;">
+									
 								</div>
-								<div class="card-body border mt-3">
+								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 250px;">
 									<div class="row border" style="background-color: #D9D9D9;">
-										<p style="text-align: center; font-size: small;">Fecha Desembolso</p>
+										<p style="font-weight: bold;">Fecha Desembolso</p>
 									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">25/03/2008</p>
-									</div>
-									
-									<div class="row border mt-3" style="background-color: #D9D9D9;">
-										<p style="text-align: center; font-size: small;">Fecha Reconsideración</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;"></p>
+									<div id="fechaDesembolso" class="row border">
+										
 									</div>
 									
 									<div class="row border mt-3" style="background-color: #D9D9D9;">
-										<p style="text-align: center; font-size: small;">Monto del Avalúo</p>
+										<p style="font-weight: bold;">Fecha Reconsideración</p>
 									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;"></p>
+									<div id="fechaReconsideracion" class="row border">
+										
+									</div>
+									
+									<div class="row border mt-3" style="background-color: #D9D9D9;">
+										<p style="font-weight: bold;">Monto del Avalúo</p>
+									</div>
+									<div id="montoAvaluo" class="row border">
+										
 									</div>
 								</div>
 							</div>
@@ -290,159 +269,28 @@
 						<h4>Datos de la Solicitud</h4>
 					</div>
 					<div class="row justify-content-center mt-3">
-						<div class="col-sm-3">
-							<div class="row border">
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Cliente</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Nombre</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tipo Cliente</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Destino</p>
-									</div>
-								</div>
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Cliente</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Nombre</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tipo Cliente</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Destino</p>
-									</div>
-								</div>
-							</div>
-						</div>
+						<table id="tblDatosCredito" class="table table-responsive table-bordered table-sm" style="width: 100%;">
 						
-						<div class="col-sm-3">
-							<div class="row border">
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tarifa</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Monto(####.##)</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Plazo</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Frecuencia</p>
-									</div>
-								</div>
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tarifa</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Monto(####.##)</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Plazo</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Frecuencia</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						
-						<div class="col-sm-3">
-							<div class="row border">
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Número de Tantos</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Dep. en Respaldo</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Comisión por impago por Crédito</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Comisión Asesoría Financiera</p>
-									</div>
-								</div>
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Número de Tantos</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Dep. en Respaldo</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Comisión por impago</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Comisión Asesoría </p>
-									</div>
-								</div>
-							</div>
-						</div>
-					
-						<div class="col-sm-3">
-							<div class="row border">
-								<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tasa Normal</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tasa Moratoria</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Abonos Diferidos</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Revisión Vehicular</p>
-									</div>
-								</div>
-									<div class="col border">
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tasa Normal</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Tasa Moratoria</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Abonos Diferidos</p>
-									</div>
-									<div class="row border">
-										<p style="text-align: center; font-size: small;">Revisión Vehicular</p>
-									</div>
-								</div>
-							</div>
-						</div>	
-						
+						</table>
 					</div>
 					
-					<div class="row justify-content-between">
+					<div class="row justify-content-between p-2">
 						<div class="col-sm-5">
-							<div class="row">
-								<p>Observaciones Resonsables:</p>
+							<div class="row" style="font-size: small;">
+								<p style='font-weight: bold;'>Observaciones Responsables:</p>
 							</div>
-						
-							<div class="row" style="background-color: #D9D9D9;">
-								<p>Observaciones</p>
+							<div id="observacionesRes" class="row p-2" style="background-color: #D9D9D9; height: 120px;">
+								
 							</div>
 						
 						</div>
 						
 						<div class="col-sm-5">
-							<div class="row">
-								<p>Observaciones Centro Crédito:</p>
+							<div class="row" style="font-size: small;">
+								<p style='font-weight: bold;'>Observaciones Centro Crédito:</p>
 							</div>
-						
-							<div class="row" style="background-color: #D9D9D9;">
-								<p>Observaciones</p>
+							<div id="observacionesCC" class="row p-2" style="background-color: #D9D9D9; height: 120px;">
+								
 							</div>
 						
 						</div>

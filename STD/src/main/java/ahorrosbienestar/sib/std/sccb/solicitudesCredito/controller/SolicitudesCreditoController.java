@@ -27,7 +27,9 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.DatosSolicitudCredito;
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.SolicitudesCredito;
+import ahorrosbienestar.sib.std.sccb.solicitudesCredito.service.DatosSolicitudCreditoService;
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.service.SolicitudesCreditoService;
 
 @Controller
@@ -50,6 +52,9 @@ public class SolicitudesCreditoController {
 	 
 	 @Autowired
 	 private SolicitudesCreditoService solicitudesService;
+	 
+	 @Autowired
+	 private DatosSolicitudCreditoService datosSolicitudService;
 	    
 	 private String rutaDireccion = "";
 	
@@ -160,12 +165,12 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	/*@RequestMapping(value = { "/getDatosSolicitud" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/getDatosSolicitud" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getDatosSolicitud(@RequestParam("idSolicitud") Integer idSolicitud) {
-		Optional<DatosSolicitudCredito> datosSolicitud = datosSolicitudService.searchDatosSolicitud(idSolicitud);
 		
-		return ResponseEntity.ok(datosSolicitud);
-	}*/
+		System.out.println(idSolicitud);	
+		return ResponseEntity.ok(datosSolicitudService.searchDatosSolicitud(idSolicitud));
+	}
 
 	public int validarAcceso() {
 		

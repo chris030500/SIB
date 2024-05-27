@@ -20,7 +20,7 @@ public class DatosSolicitudCredito {
 	private Integer i_solicitud_id;
 	
 	@Column(name="I_EMPLEADO_RECIBE_ID")
-	private Integer i_empledo_recibe_id;
+	private Integer i_empleado_recibe_id;
 	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "DT_FECHA_RECEPCION")
@@ -189,6 +189,28 @@ public class DatosSolicitudCredito {
 	
 	@Column(name = "VC_OBSERVACIONES_CC")
 	private String vc_observaciones_cc;
+	
+	@Column(name = "VC_NOMBRE_DESTINO")
+	private String vc_nombre_destino;
+	
+	@Column(name = "VC_NOMBRE_TARIFA")
+	private String vc_nombre_tarifa;
+	
+	@Column(name = "I_DEP_EN_RESPALDO")
+	private Integer i_dep_en_respaldo;
+	
+	@Column(name = "I_CMSN_IMP_CREDITO")
+	private Integer i_cmsn_imp_credito;
+	
+	@Column(name = "VC_DESCRIPCION_FRECUENCIA")
+	private String vc_descripcion_frecuencia;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_DESEMBOLSO")
+	private Date dt_fecha_desembolso;
+	
+	@Column(name = "I_REVISION_VEHICULAR")
+	private Integer i_revision_vehicular;
 
 	public Integer getPk_i_row_guid() {
 		return pk_i_row_guid;
@@ -206,12 +228,12 @@ public class DatosSolicitudCredito {
 		this.i_solicitud_id = i_solicitud_id;
 	}
 
-	public Integer getI_empledo_recibe_id() {
-		return i_empledo_recibe_id;
+	public Integer getI_empleado_recibe_id() {
+		return i_empleado_recibe_id;
 	}
 
-	public void setI_empledo_recibe_id(Integer i_empledo_recibe_id) {
-		this.i_empledo_recibe_id = i_empledo_recibe_id;
+	public void setI_empleado_recibe_id(Integer i_empleado_recibe_id) {
+		this.i_empleado_recibe_id = i_empleado_recibe_id;
 	}
 
 	public Date getDt_fecha_recepcion() {
@@ -644,6 +666,99 @@ public class DatosSolicitudCredito {
 
 	public void setVc_observaciones_cc(String vc_observaciones_cc) {
 		this.vc_observaciones_cc = vc_observaciones_cc;
+	}
+
+	public String getVc_nombre_destino() {
+		return vc_nombre_destino;
+	}
+
+	public void setVc_nombre_destino(String vc_nombre_destino) {
+		this.vc_nombre_destino = vc_nombre_destino;
+	}
+
+	public String getVc_nombre_tarifa() {
+		return vc_nombre_tarifa;
+	}
+
+	public void setVc_nombre_tarifa(String vc_nombre_tarifa) {
+		this.vc_nombre_tarifa = vc_nombre_tarifa;
+	}
+
+	public Integer getI_dep_en_respaldo() {
+		return i_dep_en_respaldo;
+	}
+
+	public void setI_dep_en_respaldo(Integer i_dep_en_respaldo) {
+		this.i_dep_en_respaldo = i_dep_en_respaldo;
+	}
+
+	public Integer getI_cmsn_imp_credito() {
+		return i_cmsn_imp_credito;
+	}
+
+	public void setI_cmsn_imp_credito(Integer i_cmsn_imp_credito) {
+		this.i_cmsn_imp_credito = i_cmsn_imp_credito;
+	}
+
+	public String getVc_descripcion_frecuencia() {
+		return vc_descripcion_frecuencia;
+	}
+
+	public void setVc_descripcion_frecuencia(String vc_descripcion_frecuencia) {
+		this.vc_descripcion_frecuencia = vc_descripcion_frecuencia;
+	}
+
+
+	public Date getDt_fecha_desembolso() {
+		return dt_fecha_desembolso;
+	}
+
+	public void setDt_fecha_desembolso(Date dt_fecha_desembolso) {
+		this.dt_fecha_desembolso = dt_fecha_desembolso;
+	}
+
+	public Integer getI_revision_vehicular() {
+		return i_revision_vehicular;
+	}
+
+	public void setI_revision_vehicular(Integer i_revision_vehicular) {
+		this.i_revision_vehicular = i_revision_vehicular;
+	}
+
+	@Override
+	public String toString() {
+		return "DatosSolicitudCredito [pk_i_row_guid=" + pk_i_row_guid + ", i_solicitud_id=" + i_solicitud_id
+				+ ", i_empleado_recibe_id=" + i_empleado_recibe_id + ", dt_fecha_recepcion=" + dt_fecha_recepcion
+				+ ", i_centro_id=" + i_centro_id + ", i_num_contrato=" + i_num_contrato + ", i_credito_id="
+				+ i_credito_id + ", i_ac_dep_respaldo=" + i_ac_dep_respaldo + ", i_producto_id=" + i_producto_id
+				+ ", i_empleado_analiza_id=" + i_empleado_analiza_id + ", dt_fecha_inicio_tramite="
+				+ dt_fecha_inicio_tramite + ", dt_fecha_autorizacion=" + dt_fecha_autorizacion
+				+ ", dt_fecha_reconsideracion=" + dt_fecha_reconsideracion + ", i_etapa=" + i_etapa
+				+ ", vc_descripcion_etapa=" + vc_descripcion_etapa + ", i_estatus=" + i_estatus
+				+ ", vc_descripcion_estatus=" + vc_descripcion_estatus + ", i_importe_credito=" + i_importe_credito
+				+ ", i_plazo=" + i_plazo + ", i_frecuencia_amortizacion=" + i_frecuencia_amortizacion
+				+ ", i_numero_tantos=" + i_numero_tantos + ", i_finalidad=" + i_finalidad + ", fl_tasa_normal="
+				+ fl_tasa_normal + ", i_tasa_moratoria=" + i_tasa_moratoria + ", i_num_abonos_diferidos="
+				+ i_num_abonos_diferidos + ", i_producto_id_1=" + i_producto_id_1 + ", i_persona_id=" + i_persona_id
+				+ ", i_no_cliente=" + i_no_cliente + ", vc_persona=" + vc_persona + ", dt_fecha_resultado="
+				+ dt_fecha_resultado + ", vc_nombre_completo=" + vc_nombre_completo + ", i_ind_seguro=" + i_ind_seguro
+				+ ", i_id_empresa=" + i_id_empresa + ", i_acuerdo_operativa=" + i_acuerdo_operativa
+				+ ", i_num_emp_promotor=" + i_num_emp_promotor + ", i_ind_asegurado=" + i_ind_asegurado
+				+ ", i_tipo_cliente=" + i_tipo_cliente + ", vc_descripcion_cliente=" + vc_descripcion_cliente
+				+ ", i_empleado_captura_id=" + i_empleado_captura_id + ", vc_nombre_centro=" + vc_nombre_centro
+				+ ", dt_fecha_inicio_credito=" + dt_fecha_inicio_credito + ", i_importe=" + i_importe
+				+ ", i_num_emp_asesor=" + i_num_emp_asesor + ", i_num_emp_coordinador=" + i_num_emp_coordinador
+				+ ", i_ind_cmp_crd=" + i_ind_cmp_crd + ", dt_fecha_nacimiento=" + dt_fecha_nacimiento
+				+ ", i_valor_comision=" + i_valor_comision + ", i_valor_avaluo=" + i_valor_avaluo + ", fl_cmsn_ase_fin="
+				+ fl_cmsn_ase_fin + ", i_id_solicitud_in=" + i_id_solicitud_in + ", i_comision_apertura="
+				+ i_comision_apertura + ", i_tipo_rol_persona=" + i_tipo_rol_persona + ", i_tarifa_garantia="
+				+ i_tarifa_garantia + ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_credito_id_safi="
+				+ i_credito_id_safi + ", vc_observaciones=" + vc_observaciones + ", vc_observaciones_cc="
+				+ vc_observaciones_cc + ", vc_nombre_destino=" + vc_nombre_destino + ", vc_nombre_tarifa="
+				+ vc_nombre_tarifa + ", i_dep_en_respaldo=" + i_dep_en_respaldo + ", i_cmsn_imp_credito="
+				+ i_cmsn_imp_credito + ", vc_descripcion_frecuencia=" + vc_descripcion_frecuencia
+				+ ", dt_fecha_desembolso=" + dt_fecha_desembolso + ", i_revision_vehicular=" + i_revision_vehicular
+				+ "]";
 	}
 
 	
