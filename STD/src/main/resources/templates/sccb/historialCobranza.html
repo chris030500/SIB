@@ -78,7 +78,7 @@
 					<div class="col-1">
 						<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
 						title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
-						th:onclick="" id="btnBuscar" style="display: none;">
+						th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
 							
 							<i class="bi bi-search"></i>
 							
@@ -105,13 +105,13 @@
 				</table>
 			</div>
 			
-			<div id="divParticipante" class="row justify-content-center mb-3">
+			<div id="divParticipantes" class="row justify-content-center mb-3">
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Participantes
 				</div>
-				<table id="participantes" class="table table-bordered table-sm">
+				<table id="participantes" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
 					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-size: small; text-align: center; font-weight: bold;">
+						<tr class="text-white" style="font-weight: bold;">
 							<th>Cliente</th>
 							<th>Nombre</th>
 							<th>Rol</th>
@@ -125,9 +125,9 @@
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Expedientes de Negociación
 				</div>
-				<table id="expedientesNegociacion" class="table table-bordered table-sm">
+				<table id="expedientesNegociacion" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
 					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-size: small; text-align: center; font-weight: bold;">
+						<tr class="text-white" style="font-weight: bold;">
 							<th>No.</th>
 							<th>Tipo</th>
 							<th>Exp. Jud.</th>
@@ -252,7 +252,7 @@
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/sccb/solicitudes.js}"></script>
+        <script th:src="@{/js/sccb/historialAsignacion.js}"></script>
     </th:block>
 </body>
 

@@ -39,7 +39,7 @@ public class HistorialAsignacion {
 	private String vc_tipo_expediente;
 	
 	@Column(name = "I_NEGOCIADOR_ASIGNADO")
-	private Integer i_negociador_asiganado;
+	private Integer i_negociador_asignado;
 	
 	@Column(name = "VC_NOMBRE_NEGOCIADOR")
 	private String vc_nombre_negociador;
@@ -150,12 +150,12 @@ public class HistorialAsignacion {
 		this.vc_tipo_expediente = vc_tipo_expediente;
 	}
 
-	public Integer getI_negociador_asiganado() {
-		return i_negociador_asiganado;
+	public Integer getI_negociador_asignado() {
+		return i_negociador_asignado;
 	}
 
-	public void setI_negociador_asiganado(Integer i_negociador_asiganado) {
-		this.i_negociador_asiganado = i_negociador_asiganado;
+	public void setI_negociador_asignado(Integer i_negociador_asignado) {
+		this.i_negociador_asignado = i_negociador_asignado;
 	}
 
 	public String getVc_nombre_negociador() {
@@ -276,7 +276,7 @@ public class HistorialAsignacion {
 				+ ", i_expediente_id=" + i_expediente_id + ", vc_edo_acuerdo=" + vc_edo_acuerdo + ", i_ac_original="
 				+ i_ac_original + ", i_exp_anterior=" + i_exp_anterior + ", i_tipo_expediente_id="
 				+ i_tipo_expediente_id + ", vc_tipo_expediente=" + vc_tipo_expediente + ", i_negociador_asiganado="
-				+ i_negociador_asiganado + ", vc_nombre_negociador=" + vc_nombre_negociador + ", i_empleado_creo="
+				+ i_negociador_asignado + ", vc_nombre_negociador=" + vc_nombre_negociador + ", i_empleado_creo="
 				+ i_empleado_creo + ", vc_nombre_creador=" + vc_nombre_creador + ", dt_fecha_registro="
 				+ dt_fecha_registro + ", dt_fecha_cierre=" + dt_fecha_cierre + ", vc_estatus=" + vc_estatus
 				+ ", i_id_exp_judicial=" + i_id_exp_judicial + ", vc_num_exp_judicial=" + vc_num_exp_judicial

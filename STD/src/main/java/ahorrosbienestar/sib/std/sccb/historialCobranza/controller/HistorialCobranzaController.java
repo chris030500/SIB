@@ -2,20 +2,29 @@ package ahorrosbienestar.sib.std.sccb.historialCobranza.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -34,6 +43,9 @@ public class HistorialCobranzaController {
 	 @Autowired
 	 private OpcionesMenuService opcionesMenuService;
 	 
+	 @Autowired
+	 private HistorialAsignacionService historialAsigService;
+	 
 	 private String rutaDireccion = "";
 	 
 	@GetMapping("/historialCobranza")
@@ -49,6 +61,34 @@ public class HistorialCobranzaController {
 		} catch (Exception e) {
 			logger.error("error:" + e.getMessage());
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = { "/getByIdCreditoHistorialAsignacion" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroHistorialAsignacionByIdCredito(@RequestParam("idCredito") Integer idCredito) {
+		
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(idCredito);
+		
+		try {
+			List<HistorialAsignacion> historialAsig = historialAsigService.searchByIdCreditoHistorialAsig(idCredito);
+			
+			if (historialAsig != null && !historialAsig.isEmpty()) {
+				res.put("historialAsig", historialAsig);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("historialAsig", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
 	
