@@ -24,7 +24,9 @@ import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigCon
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.service.ParticipantesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -45,6 +47,9 @@ public class HistorialCobranzaController {
 	 
 	 @Autowired
 	 private HistorialAsignacionService historialAsigService;
+	 
+	 @Autowired
+	 private ParticipantesService participantesService;
 	 
 	 private String rutaDireccion = "";
 	 
@@ -80,6 +85,34 @@ public class HistorialCobranzaController {
 				return ResponseEntity.ok(res);
 			} else {
 				res.put("historialAsig", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getByIdCreditoParticipantes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroParticipantesByIdCredito(@RequestParam("idCredito") Integer idCredito) {
+		
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(idCredito);
+		
+		try {
+			List<Participantes> participantes = participantesService.searchByIdCreditoParticipantes(idCredito);
+			
+			if (participantes != null && !participantes.isEmpty()) {
+				res.put("participantes", participantes);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("participantes", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 			

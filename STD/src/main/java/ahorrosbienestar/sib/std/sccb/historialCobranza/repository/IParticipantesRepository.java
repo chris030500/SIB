@@ -1,0 +1,19 @@
+package ahorrosbienestar.sib.std.sccb.historialCobranza.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
+
+
+@Repository
+public interface IParticipantesRepository extends JpaRepository<Participantes, Integer> {
+	@Query(value = "SELECT * "
+			+ "FROM TBL_SCCB_PARTICIPANTES "
+			+ "WHERE I_CREDITOID = :idCredito ", nativeQuery = true)
+	public List<Participantes> getByIdCreditoParticipantes(@Param("idCredito") Integer idCredito);
+}

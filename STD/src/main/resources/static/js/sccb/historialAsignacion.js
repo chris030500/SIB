@@ -49,6 +49,45 @@ function defaultView() {
 	$("#divExpedienteDetalle").hide();
 }
 
+function buscarParticipantes() {
+	var idCredito = $("#creditoBusqueda").val();
+	var divParticipantes = $("#divParticipantes");
+	
+	console.log(idCredito);
+	
+	url = getAbsolutePath() + "getByIdCreditoParticipantes?idCredito=" + Number(idCredito);
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function (res) {
+			console.log(res.participantes);
+			divParticipantes.show();
+			
+			if (res == null || res == '') {
+				console.log("Error");
+			}
+			else {
+				var tbody = "<tbody id='tbodyParticipantes'></tbody>";
+				$("#participantes").append(tbody);
+				
+				$.each(res.participantes, function (idx, opt) {
+					var row = "<tr>"
+					+ "<td>" + opt.i_no_cliente + "</td>"
+					+ "<td>" + opt.vc_nombre_cliente + "</td>"
+					+ "<td>" + opt.vc_rol_participante + "</td>"
+					+ "<td>" + opt.vc_tipologia_cliente + "</td>"
+					+ "</tr>";
+					
+					$("#tbodyParticipantes").append(row);
+				});
+				
+			}
+		}
+	});
+}
+
 function buscarExpedientesNegociacion() {
 	var idCredito = $("#creditoBusqueda").val();
 	var divExpedienteNegociacion = $("#divExpedientesNegociacion");
@@ -94,6 +133,6 @@ function buscarExpedientesNegociacion() {
 }
 
 function buscarDatos() {
-	
+	buscarParticipantes();
 	buscarExpedientesNegociacion();
 }
