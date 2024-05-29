@@ -87,10 +87,10 @@
 				</div>
 			</form>
 			
-			<div id="divTableGenerales" class="row justify-content-center mb-5" style="display: none;">
-				<table id="datosGenerales" class="table table-bordered table-sm">
+			<div id="divTableGenerales" class="row justify-content-center mb-3" style="display: none;">
+				<table id="datosGenerales" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
 					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-size: small; text-align: center; font-weight: bold;">
+						<tr class="text-white" style="font-weight: bold;">
 							<th>Acuerdo de Crédito</th>
 							<th>Banda</th>
 							<th>Importe</th>
@@ -144,101 +144,101 @@
 			</div>
 			
 			<div id="divExpedienteDetalle" class="row justify-content-center mb-3" style="display: none;">
-				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
-					Expediente(S) de Negociación # <p id="noExpediente"></p>
+				<div id="noExpediente" class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					 
 				</div>
 				<div class="mb-3" style="background-color: #D9D9D9; text-align: start; font-weight: bold;">
 					Datos Crédito
 				</div>
-				<table id="datosCredito" class="table table-bordered table-sm border-2" style="font-size: smaller; text-align: center;">
+				<table id="datosCredito" class="table table-bordered table-sm border-2" style="font-size: smaller; text-align: center; border-color: whitesmoke;">
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Importe</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">2300000</td>
+						<td id="tdImporte" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Saldo actual</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdSaldoActual" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Días de mora</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0</td>
+						<td id="tdDiasMora" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Inicio del crédito</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">25/03/2008</td>
+						<td id="tdFechaInicio" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Interés Normal</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdInteresNormal" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Banda</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0 días</td>
+						<td id="tdBanda" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Normal</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">28.2%</td>
+						<td id="tdTasaInteresNormal" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Normal</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdIVAInteresNormal" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Facturas impagadas</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0</td>
+						<td id="tdFacturasImpaagadas" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Moratorio</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">48.0%</td>
+						<td id="tdTasaIntMoratorio" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Interés Moratorio</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdIntMoratorio" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Calificación</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0</td>
+						<td id="tdCalificacion" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Plazo</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">72</td>
+						<td id="tdPlazo" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Moratorio</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdIVAIntMoratorio" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Intencionalidad</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">No</td>
+						<td id="tdIntencionalidad" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Frecuencia de pago</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">Mensual</td>
+						<td id="tdFrecuenciaPago" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Comisiones pagadas</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdCmsnPagadas" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Etapa</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;"></td>
+						<td id="tdEtapa" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Vencimiento</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">25/03/2014</td>
+						<td id="tdVencimiento" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">IVA de Comisiones pag.</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdIvaCmsnPag" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Despacho</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">Ahorros Bienestar</td>
+						<td id="tdDespacho" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Centro del Crédito</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">SANTA ROSA</td>
+						<td id="tdCentroCredito" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Gastos</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdGastos" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Negociador asignado</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;"></td>
+						<td id="tdNegociador" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Tipo crédito</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">Crédito al Consumo con Hipoteca</td>
+						<td id="tdTipoCredito" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Atraso a Capital</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdAtrasoCapital" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Analista</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;"></td>
+						<td id="tdAnalista" style="background-color: #D9D9D9;"></td>
 					</tr>
 					
 					<tr>
 						<td style="background-color: #BDECFB; font-weight: bold;">Tarifa</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">CREDITO PERSONAL</td>
+						<td id="tdTarifa" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Atraso total</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">0.00</td>
+						<td id="tdAtrasoTotal" style="background-color: #D9D9D9;"></td>
 						<td style="background-color: #BDECFB; font-weight: bold;">Último movimiento</td>
-						<td style="background-color: #D9D9D9; font-weight: bold;">20/11/2009</td>
+						<td id="tdUltimoMovto" style="background-color: #D9D9D9;"></td>
 					</tr>
 				</table>
 			</div>

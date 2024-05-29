@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.historialCobranza.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,9 @@ public class HistorialAsignacionService {
 	
 	public List<HistorialAsignacion> searchByIdCreditoHistorialAsig(Integer idCredito) {
 		return iHistorialAsignacionRepository.getByIdCreditoHistorialAsignacion(idCredito);
+	}
+	
+	public Optional<HistorialAsignacion> searchByIdCreditoRowHistAsig(Integer idCredito) {
+		return iHistorialAsignacionRepository.getByIdCreditoRowHistAsig(idCredito);
 	}
 }

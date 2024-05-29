@@ -49,6 +49,43 @@ function defaultView() {
 	$("#divExpedienteDetalle").hide();
 }
 
+function buscarDatosGenerales() {
+	var idCredito = $("#creditoBusqueda").val();
+	var divDatosGenerales = $("#divTableGenerales");
+	
+	url = getAbsolutePath() + "getByIdCreditoDatosGenerales?idCredito=" + Number(idCredito);
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+			console.log(res);
+			divDatosGenerales.show();
+			
+			if(res == null || res == '') {
+				console.log("Error");
+			}
+			else {
+				var tbody = "<tbody>"
+					+ "<tr>" 
+					+ "<td>" + idCredito + "</td>"
+					+ "<td>" + res.vc_rango_banda + "</td>"
+					+ "<td>" + res.fl_importe + "</td>"
+					+ "<td>" + res.fl_saldo + "</td>"
+					+ "<td>" + res.fl_atraso + "</td>"
+					+ "<td>" + 0.00 + "</td>"
+					+ "<td>" + res.dt_fecha_cartera + "</td>"
+					+ "<td>No</td>"
+					+ "<td>" + res.vc_en_cobranza_judicial + "</td>"
+					+ "</tr>"
+					+ "</tbody>";
+					$("#datosGenerales").append(tbody);
+			}
+		}
+	});
+}
+
 function buscarParticipantes() {
 	var idCredito = $("#creditoBusqueda").val();
 	var divParticipantes = $("#divParticipantes");
@@ -132,7 +169,146 @@ function buscarExpedientesNegociacion() {
 	});
 }
 
+function cleanDetailsExp() {
+	$("#tdImporte > p").remove();
+	$("#tdSaldoActual > p").remove();
+	$("#tdDiasMora > p").remove();
+	$("#tdFechaInicio > p").remove();
+	$("#tdInteresNormal > p").remove();
+	$("#tdBanda > p").remove();
+	$("#tdTasaInteresNormal > p").remove();
+	$("#tdIVAInteresNormal > p").remove();
+	$("#tdFacturasImpaagadas > p").remove();
+	$("#tdTasaIntMoratorio > p").remove();
+	$("#tdIntMoratorio > p").remove();
+	$("#tdCalificacion > p").remove();
+	$("#tdPlazo > p").remove();
+	$("#tdIVAIntMoratorio > p").remove();
+	$("#tdIntencionalidad > p").remove();
+	$("#tdFrecuenciaPago > p").remove();
+	$("#tdCmsnPagadas > p").remove();
+	$("#tdEtapa > p").remove();
+	$("#tdVencimiento > p").remove();
+	$("#tdIvaCmsnPag > p").remove();
+	$("#tdDespacho > p").remove();
+	$("#tdCentroCredito > p").remove();
+	$("#tdGastos > p").remove();
+	$("#tdNegociador > p").remove();
+	$("#tdTipoCredito > p").remove();
+	$("#tdAtrasoCapital > p").remove();
+	$("#tdAnalista > p").remove();
+	$("#tdTarifa > p").remove();
+	$("#tdAtrasoTotal > p").remove();
+	$("#tdUltimoMovto > p").remove();
+	$("#noExpediente > p").remove();
+}
+
+function showDetalleExpediente() {
+	
+	var divExpDetalle = $("#divExpedienteDetalle");
+	var idCredito = $("#creditoBusqueda").val();
+	
+	url = getAbsolutePath() + "getByIdCreditoDetalleExpediente?idCredito=" + Number(idCredito);
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function (res) {
+			console.log(res);
+			if (res == null || res =='') {
+				console.log("Error");
+				divExpDetalle.hide();
+			}
+			else {
+				var noExp = "<p>Expediente(S) de Negociación #" + res.i_expediente_id + "</p>";
+				$("#noExpediente").append(noExp);
+				divExpDetalle.show();
+				var importe = "<p" + res.fl_importe + "</p>";
+				var saldoActual = "<p>" + res.fl_saldo + "</p>";
+				var diasMora = "<p>" + res.i_dias_mora + "</p>";
+				var inicioCredito = "<p>" + res.dt_fecha_inicio + "</p>";
+				var interesNormal = "<p>" + res.fl_interes_normal + "</p>";;
+				var banda = "<p>" + res.vc_rango_banda + "</p>";
+				var tasaIntNormal = "<p>" + res.fl_tasa_normal + "</p>";
+				var IVAIntNormal = "<p>" + res.fl_iva + "</p>";
+				var facturasImpagadas = "<p>" + res.i_facturas + "</p>";
+				var tasaIntMoratorio = "<p>" + res.fl_tasa_moratoria + "</p>";
+				var interesMoratorio = "<p>" + res.fl_interes_morat + "</p>";
+				var calificacion = "<p>" + res.vc_calificacion + "</p>";
+				var plazo = "<p>" + res.i_plazo + "</p>";
+				var IVAintMoratorio = "<p>" + res.fl_iva_interes_morat + "</p>";
+				var intencionalidad = "<p>" + res.vc_intencionalidad + "</p>";
+				var frecuenciaPago = "<p>" + res.vc_frecuencia + "</p>";
+				var cmsnPagadas = "<p>" + res.fl_comision + "</p>";
+				var etapa = "<p>" + res.vc_etapa + "</p>";
+				var vencimiento = "<p>" + res.dt_fecha_vencimiento + "</p>";
+				var IVAcmsnPag = "<p>" + "</p>";
+				var despacho = "<p>" + res.vc_despacho + "</p>";;
+				var centroCredito = "<p>" + res.vc_nombre_centro + "</p>";
+				var gastos = "<p>" + res.fl_gastos + "</p>";;
+				var negociadorAsig = "<p>" + res.vc_negociador + "</p>";
+				var tipoCredito = "<p>" + res.vc_tipo_credito + "</p>";
+				var atrasoCapital = "<p>" + res.fl_atraso + "</p>";
+				var analista = "<p>" + res.vc_nom_analista + "</p>";
+				var tarifa = "<p>" + res.vc_tarifa + "</p>";
+				var atrasoTotal = "<p>" + "</p>"
+				var ultMovto = "<p>" + res.dt_fecha_ult_movto + "</p>";
+				
+				$("#tdImporte").append(importe);
+				$("#tdSaldoActual").append(saldoActual);
+				$("#tdDiasMora").append(diasMora);
+				$("#tdFechaInicio").append(inicioCredito);
+				$("#tdInteresNormal").append(interesNormal);
+				$("#tdBanda").append(banda);
+				$("#tdTasaInteresNormal").append(tasaIntNormal);
+				$("#tdIVAInteresNormal").append(IVAIntNormal);
+				$("#tdFacturasImpaagadas").append(facturasImpagadas);
+				$("#tdTasaIntMoratorio").append(tasaIntMoratorio);
+				$("#tdIntMoratorio").append(interesMoratorio);
+				$("#tdCalificacion").append(calificacion);
+				$("#tdPlazo").append(plazo);
+				$("#tdIVAIntMoratorio").append(IVAintMoratorio);
+				$("#tdIntencionalidad").append(intencionalidad);
+				$("#tdFrecuenciaPago").append(frecuenciaPago);
+				$("#tdCmsnPagadas").append(cmsnPagadas);
+				$("#tdEtapa").append(etapa);
+				$("#tdVencimiento").append(vencimiento);
+				$("#tdIvaCmsnPag").append(IVAcmsnPag);
+				$("#tdDespacho").append(despacho);
+				$("#tdCentroCredito").append(centroCredito);
+				$("#tdGastos").append(gastos);
+				$("#tdNegociador").append(negociadorAsig);
+				$("#tdTipoCredito").append(tipoCredito);
+				$("#tdAtrasoCapital").append(atrasoCapital);
+				$("#tdAnalista").append(analista);
+				$("#tdTarifa").append(tarifa);
+				$("#tdAtrasoTotal").append(atrasoTotal);
+				$("#tdUltimoMovto").append(ultMovto);
+			}
+		}
+	});
+
+	
+}
+
+function cleanTables() {
+	
+	$("#divTableGenerales").hide();
+	$("#divParticipantes").hide();
+	$("#divExpedientesNegociacion").hide();
+	$("#divExpedienteDetalle").hide();
+	$("#datosGenerales > tbpdy").remove();
+	$("#tbodyParticipantes").remove();
+	$("#tbodyExpedientesNegociacion").remove();
+	cleanDetailsExp();
+}
+
 function buscarDatos() {
+	
+	cleanTables();
+	buscarDatosGenerales();
 	buscarParticipantes();
 	buscarExpedientesNegociacion();
+	showDetalleExpediente();
 }

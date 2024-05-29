@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "TBL_SCCB_HISTORIAL_COBRANZA")
 public class HistorialCobranza {
@@ -21,9 +23,11 @@ public class HistorialCobranza {
 	@Column(name = "VC_DEUDOR")
 	private String vc_deudor;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "DT_FECHA_CARTERA")
 	private Date dt_fecha_cartera;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "DT_FECHA_ULT_MOVTO")
 	private Date dt_fecha_ult_movto;
 	
@@ -66,6 +70,7 @@ public class HistorialCobranza {
 	@Column(name = "FL_TASA_MORATORIA")
 	private Float fl_tasa_moratoria;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "DT_FECHA_INICIO")
 	private Date dt_fecha_inicio;
 	
@@ -81,6 +86,7 @@ public class HistorialCobranza {
 	@Column(name = "VC_FRECUENCIA")
 	private String vc_frecuencia;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "DT_FECHA_VENCIMIENTO")
 	private Date dt_fecha_vencimiento;
 	

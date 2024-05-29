@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialCobranzaService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.ParticipantesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -51,6 +53,9 @@ public class HistorialCobranzaController {
 	 @Autowired
 	 private ParticipantesService participantesService;
 	 
+	 @Autowired
+	 private HistorialCobranzaService historialCobranzaService;
+	 
 	 private String rutaDireccion = "";
 	 
 	@GetMapping("/historialCobranza")
@@ -67,6 +72,19 @@ public class HistorialCobranzaController {
 			logger.error("error:" + e.getMessage());
 			return null;
 		}
+	}
+	
+	
+	@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)
+	public ResponseEntity<?> parametroDatosGenerales(@RequestParam("idCredito") Integer idCredito) {
+		
+		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
+		
+		int idExpediente = histAsig.get().getI_expediente_id();
+		
+		System.out.print(idExpediente);
+		
+		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
 	}
 	
 	@RequestMapping(value = { "/getByIdCreditoHistorialAsignacion" }, method = RequestMethod.GET)
@@ -123,6 +141,16 @@ public class HistorialCobranzaController {
 			res.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
+	}
+	
+	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
+	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
+		
+		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
+		
+		int idExpediente = histAsig.get().getI_expediente_id();
+		
+		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
 	}
 	
 	public int validarAcceso() {

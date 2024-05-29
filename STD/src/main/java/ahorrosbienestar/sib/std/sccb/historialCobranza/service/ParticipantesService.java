@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.historialCobranza.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,4 +19,5 @@ public class ParticipantesService {
 		
 		return iParticipantesRepository.getByIdCreditoParticipantes(idCredito);
 	}
-}
+	
+ }
