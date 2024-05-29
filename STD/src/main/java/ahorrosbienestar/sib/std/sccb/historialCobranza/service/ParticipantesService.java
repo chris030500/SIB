@@ -20,4 +20,7 @@ public class ParticipantesService {
 		return iParticipantesRepository.getByIdCreditoParticipantes(idCredito);
 	}
 	
+	public List<Participantes> searchByNameParticipantes(String nombre) {
+		return iParticipantesRepository.getByNameParticipantes(nombre);
+	}
  }

@@ -18,4 +18,10 @@ public interface IParticipantesRepository extends JpaRepository<Participantes, I
 			+ "WHERE I_CREDITOID = :idCredito ", nativeQuery = true)
 	public List<Participantes> getByIdCreditoParticipantes(@Param("idCredito") Integer idCredito);
 	
+	@Query(value = "SELECT * "
+			+ "FROM TBL_SCCB_PARTICIPANTES "
+			+ "WHERE VC_NOMBRECLIENTE LIKE %:nombre% "
+			+ "LIMIT 100", nativeQuery = true)
+	public List<Participantes> getByNameParticipantes(@Param("nombre") String nombre);
+	
 }

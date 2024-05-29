@@ -49,11 +49,37 @@ function defaultView() {
 	$("#divExpedienteDetalle").hide();
 }
 
+function buscarNombre(name) {
+	var selectName = $("#selectName");
+	var option = "";
+	
+	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	console.log(name);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function(res) {
+			console.log(res.participantes);
+			var participantes = res.participantes;
+			console.log(participantes.length);
+			for(var i = 0; i < participantes.length; i++) {
+				
+				option += "<option value='" + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				
+				$("#selectName").append(option);
+			}
+		}
+	});
+	
+}
+
 function buscarDatosGenerales() {
 	var idCredito = $("#creditoBusqueda").val();
 	var divDatosGenerales = $("#divTableGenerales");
 	
 	url = getAbsolutePath() + "getByIdCreditoDatosGenerales?idCredito=" + Number(idCredito);
+	divDatosGenerales.show();
 	
 	$.ajax({
 		url: url,
@@ -61,7 +87,6 @@ function buscarDatosGenerales() {
 		dataType: "JSON",
 		success: function(res) {
 			console.log(res);
-			divDatosGenerales.show();
 			
 			if(res == null || res == '') {
 				console.log("Error");
@@ -298,7 +323,7 @@ function cleanTables() {
 	$("#divParticipantes").hide();
 	$("#divExpedientesNegociacion").hide();
 	$("#divExpedienteDetalle").hide();
-	$("#datosGenerales > tbpdy").remove();
+	$("#datosGenerales > tbody").remove();
 	$("#tbodyParticipantes").remove();
 	$("#tbodyExpedientesNegociacion").remove();
 	cleanDetailsExp();

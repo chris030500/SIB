@@ -143,6 +143,34 @@ public class HistorialCobranzaController {
 		}
 	}
 	
+	@RequestMapping(value = { "/getByNameParticipantes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroParticipantesByName(@RequestParam("nombre") String nombre) {
+		
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(nombre);
+		
+		try {
+			List<Participantes> participantes = participantesService.searchByNameParticipantes(nombre);
+			
+			if (participantes != null && !participantes.isEmpty()) {
+				res.put("participantes", participantes);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("participantes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
 	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
 		
