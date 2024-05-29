@@ -74,8 +74,17 @@ public class HistorialCobranzaController {
 		}
 	}
 	
+	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
+	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
+		
+		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
+		
+		int idExpediente = histAsig.get().getI_expediente_id();
+		
+		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
+	}
 	
-	@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)
+	/*@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDatosGenerales(@RequestParam("idCredito") Integer idCredito) {
 		
 		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
@@ -84,8 +93,8 @@ public class HistorialCobranzaController {
 		
 		System.out.print(idExpediente);
 		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
-	}
+		return ResponseEntity.ok(historialCobranzaService.searchDatosGeneralesHistorialCobranza(idExpediente));
+	}*/
 	
 	@RequestMapping(value = { "/getByIdCreditoHistorialAsignacion" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametroHistorialAsignacionByIdCredito(@RequestParam("idCredito") Integer idCredito) {
@@ -169,16 +178,6 @@ public class HistorialCobranzaController {
 			res.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
-	}
-	
-	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
-	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
-		
-		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
-		
-		int idExpediente = histAsig.get().getI_expediente_id();
-		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
 	}
 	
 	public int validarAcceso() {

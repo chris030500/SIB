@@ -19,8 +19,9 @@ public interface IHistorialCobranzaRepository extends JpaRepository<HistorialCob
 			+ "WHERE I_EXPEDIENTE_ID = :idExpediente", nativeQuery = true)
 	public Optional<HistorialCobranza> getDetalleExpediente(@Param("idExpediente") Integer idExpediente);
 	
-	@Query(value = "SELECT VC_RANGO_BANDA, FL_IMPORTE, FL_SALDO, DT_FECHA_CARTERA, VC_EN_COBRANZA_JUDICIAL " 
-			+ "FROM TBL_SCCB_HISTORIAL_COBRANZA "
-			+ "WHERE I_EXPEDIENTE_ID = :idExpediente", nativeQuery = true)
+	@Query(value = "SELECT hist.VC_RANGO_BANDA, hist.FL_IMPORTE, hist.FL_SALDO, "
+			+ "hist.DT_FECHA_CARTERA, hist.VC_EN_COBRANZA_JUDICIAL " 
+			+ "FROM TBL_SCCB_HISTORIAL_COBRANZA as hist "
+			+ "WHERE hist.I_EXPEDIENTE_ID = :idExpediente", nativeQuery = true)
 	public Optional<HistorialCobranza> getDatosGeneralesHistorialCobranza(@Param("idExpediente") Integer idExpediente);
 }

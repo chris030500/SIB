@@ -31,6 +31,10 @@ $(document).ready(function() {
 		}
 	});
 	
+	$('.solo-numero').on('input', function() {
+		this.value = this.value.replace(/[^0-9]/g, '');
+	});
+	
 });
 
 function getAbsolutePath() {
@@ -50,6 +54,7 @@ function defaultView() {
 }
 
 function buscarNombre(name) {
+	
 	var selectName = $("#selectName");
 	var option = "";
 	
@@ -67,22 +72,45 @@ function buscarNombre(name) {
 				
 				option += "<option value='" + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
 				
-				$("#selectName").append(option);
+				$("select#selectName").empty().append(option);
 			}
 		}
 	});
 	
 }
 
+function getUrlDatosGenerales(idCredito) {
+	
+	switch (optionSelected) {
+		case "1":
+			idCredito = $("#creditoBusqueda").val();
+			break;
+		case "2":
+			idCredito = $("#selectName").val();	
+			break;
+		}
+		
+		url = getAbsolutePath() + "getByIdCreditoDetalleExpediente?idCredito=" + Number(idCredito);
+	
+	return url;
+}
+
 function buscarDatosGenerales() {
-	var idCredito = $("#creditoBusqueda").val();
+	
+	var idCredito;
 	var divDatosGenerales = $("#divTableGenerales");
 	
-	url = getAbsolutePath() + "getByIdCreditoDatosGenerales?idCredito=" + Number(idCredito);
-	divDatosGenerales.show();
+	if (optionSelected == "1") {
+		idCredito = $("#creditoBusqueda").val();
+	}
+	if (optionSelected == "2") {
+		idCredito = $("#selectName").val();
+	}
+	
+	console.log(idCredito);
 	
 	$.ajax({
-		url: url,
+		url: getUrlDatosGenerales(idCredito),
 		type: "GET",
 		dataType: "JSON",
 		success: function(res) {
@@ -90,10 +118,13 @@ function buscarDatosGenerales() {
 			
 			if(res == null || res == '') {
 				console.log("Error");
+				divDatosGenerales.hide();
 			}
 			else {
-				var tbody = "<tbody>"
-					+ "<tr>" 
+				divDatosGenerales.show();
+				var tbody = "<tbody id='tbodyDatosGenerales'>" + "</tbody>";
+				$("#datosGenerales").append(tbody);
+				var row =  "<tr>" 
 					+ "<td>" + idCredito + "</td>"
 					+ "<td>" + res.vc_rango_banda + "</td>"
 					+ "<td>" + res.fl_importe + "</td>"
@@ -103,34 +134,57 @@ function buscarDatosGenerales() {
 					+ "<td>" + res.dt_fecha_cartera + "</td>"
 					+ "<td>No</td>"
 					+ "<td>" + res.vc_en_cobranza_judicial + "</td>"
-					+ "</tr>"
-					+ "</tbody>";
-					$("#datosGenerales").append(tbody);
+					+ "</tr>";
+					
+					$("#tbodyDatosGenerales").append(row);
 			}
+		},
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
+			});
 		}
 	});
 }
 
+function getUrlParticipantes() {
+	var idCredito;
+	if (optionSelected > 0) {
+		switch (optionSelected) {
+			case "1":
+				idCredito = $("#creditoBusqueda").val();
+			break;
+			
+			case "2":
+				idCredito = $("#selectName").val();
+				break;
+		}
+		console.log(idCredito);
+		url = getAbsolutePath() + "getByIdCreditoParticipantes?idCredito=" + Number(idCredito);
+	}
+	
+	return url;
+}
+
 function buscarParticipantes() {
-	var idCredito = $("#creditoBusqueda").val();
 	var divParticipantes = $("#divParticipantes");
-	
-	console.log(idCredito);
-	
-	url = getAbsolutePath() + "getByIdCreditoParticipantes?idCredito=" + Number(idCredito);
+	divParticipantes.hide();
 	
 	$.ajax({
-		url: url,
+		url: getUrlParticipantes(),
 		type: "GET",
 		dataType: "JSON",
 		success: function (res) {
 			console.log(res.participantes);
-			divParticipantes.show();
 			
 			if (res == null || res == '') {
 				console.log("Error");
+				divParticipantes.hide();
 			}
 			else {
+				divParticipantes.show();
 				var tbody = "<tbody id='tbodyParticipantes'></tbody>";
 				$("#participantes").append(tbody);
 				
@@ -146,20 +200,41 @@ function buscarParticipantes() {
 				});
 				
 			}
+		},	
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
+			});
 		}
 	});
 }
 
-function buscarExpedientesNegociacion() {
-	var idCredito = $("#creditoBusqueda").val();
-	var divExpedienteNegociacion = $("#divExpedientesNegociacion");
+function getUrlExpedientesNegociacion() {
+	var idCredito;
+	if (optionSelected > 0) {
+		switch (optionSelected) {
+			case "1":
+				idCredito = $("#creditoBusqueda").val();
+				break;
+			
+			case "2": 
+				idCredito = $("#selectName").val();
+				break;
+		}
+		url = getAbsolutePath() + "getByIdCreditoHistorialAsignacion?idCredito=" + Number(idCredito);
+	}
+	
+	return url;
+}
 
-	console.log(idCredito);
-	
-	url = getAbsolutePath() + "getByIdCreditoHistorialAsignacion?idCredito=" + Number(idCredito);
-	
+function buscarExpedientesNegociacion() {
+	var divExpedienteNegociacion = $("#divExpedientesNegociacion");
+	divExpedienteNegociacion.hide();
+
 	$.ajax({
-		url: url,
+		url: getUrlExpedientesNegociacion(),
 		type: "GET",
 		dataType: "JSON",
 		success: function (res) {
@@ -168,8 +243,10 @@ function buscarExpedientesNegociacion() {
 			
 			if (res == null || res == '') {
 				console.log("Error");
+				divExpedienteNegociacion.hide();
 			}
 			else { 
+				divExpedienteNegociacion.show();
 				var tbody = "<tbody id='tbodyExpedientesNegociacion'></tbody>";
 				$("#expedientesNegociacion").append(tbody);
 				$.each(res.historialAsig, function (idx, opt) {
@@ -190,7 +267,15 @@ function buscarExpedientesNegociacion() {
 				});
 			}
 			
+		}, 	
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
+			});
 		}
+		
 	});
 }
 
@@ -228,15 +313,30 @@ function cleanDetailsExp() {
 	$("#noExpediente > p").remove();
 }
 
+function getUrlDetalleExp() {
+	var idCredito;
+	if (optionSelected > 0) {
+		switch (optionSelected) {
+			case "1":
+				idCredito = $("#creditoBusqueda").val();
+				break;
+			
+			case "2": 
+				idCredito = $("#selectName").val();
+				break;
+		}
+		url = getAbsolutePath() + "getByIdCreditoDetalleExpediente?idCredito=" + Number(idCredito);
+	}
+	
+	return url;
+}
+
 function showDetalleExpediente() {
-	
 	var divExpDetalle = $("#divExpedienteDetalle");
-	var idCredito = $("#creditoBusqueda").val();
-	
-	url = getAbsolutePath() + "getByIdCreditoDetalleExpediente?idCredito=" + Number(idCredito);
+	divExpDetalle.hide();
 	
 	$.ajax({
-		url: url,
+		url: getUrlDetalleExp(),
 		type: "GET",
 		dataType: "JSON",
 		success: function (res) {
@@ -249,7 +349,7 @@ function showDetalleExpediente() {
 				var noExp = "<p>Expediente(S) de Negociación #" + res.i_expediente_id + "</p>";
 				$("#noExpediente").append(noExp);
 				divExpDetalle.show();
-				var importe = "<p" + res.fl_importe + "</p>";
+				var importe = "<p>" + res.fl_importe + "</p>";
 				var saldoActual = "<p>" + res.fl_saldo + "</p>";
 				var diasMora = "<p>" + res.i_dias_mora + "</p>";
 				var inicioCredito = "<p>" + res.dt_fecha_inicio + "</p>";
@@ -311,6 +411,13 @@ function showDetalleExpediente() {
 				$("#tdAtrasoTotal").append(atrasoTotal);
 				$("#tdUltimoMovto").append(ultMovto);
 			}
+		}, 	
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
+			});
 		}
 	});
 
@@ -323,17 +430,16 @@ function cleanTables() {
 	$("#divParticipantes").hide();
 	$("#divExpedientesNegociacion").hide();
 	$("#divExpedienteDetalle").hide();
-	$("#datosGenerales > tbody").remove();
+	$("#tbodyDatosGenerales").remove();
 	$("#tbodyParticipantes").remove();
 	$("#tbodyExpedientesNegociacion").remove();
 	cleanDetailsExp();
 }
 
 function buscarDatos() {
-	
 	cleanTables();
 	buscarDatosGenerales();
+	showDetalleExpediente();
 	buscarParticipantes();
 	buscarExpedientesNegociacion();
-	showDetalleExpediente();
 }
