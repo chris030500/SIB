@@ -160,6 +160,7 @@ public class Constantes {
 	//constantes sccb
 	public static final String SCCB_SOLICITUDES_CREDITO = "sccb/solicitudesCredito";
 	public static final String SCCB_HISTORIAL_COBRANZA = "sccb/historialCobranza";
+	public static final String SCCB_CONSULTA_PAGARES = "sccb/consultaPagares";
 	
 	
     private Constantes() {
