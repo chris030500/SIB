@@ -98,33 +98,35 @@
 				</div>
 			</form>
 			
-			<div id="divParticipantes" class="row justify-content-center mb-3" style="display: none;">
+			<div id="divPagares" class="row justify-content-center mb-3" style="display: none;">
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Participantes
 				</div>
-				<table id="participantes" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>Expediente</th>
-							<th>Tipo documento</th>
-							<th>Ubicación</th>
-							<th>Cliente</th>
-							<th>Acuerdo</th>
-							<th>Importe</th>
-							<th>Fecha Inicio Crédito</th>
-							<th>Estatus Crédito</th>
-							<th>Fecha evento</th>
-							<th>Solicitante</th>
-							<th>Centro solicitante</th>
-							<th>Usuario Destino</th>
-							<th>Asignado a</th>
-							<th>Etapa</th>
-							<th>Estatus</th>
-							<th>Fecha anulado</th>
-							<th>Razón Devolución</th>
-						</tr>
-					</thead>
-				</table>
+				<div class="row table-responsive">
+					<table id="pagares" class="table table-bordered table-sm" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Expediente</th>
+								<th>Tipo documento</th>
+								<th>Ubicación</th>
+								<th>Cliente</th>
+								<th>Acuerdo</th>
+								<th>Importe</th>
+								<th>Fecha Inicio Crédito</th>
+								<th>Estatus Crédito</th>
+								<th>Fecha evento</th>
+								<th>Solicitante</th>
+								<th>Centro solicitante</th>
+								<th>Usuario Destino</th>
+								<th>Asignado a</th>
+								<th>Etapa</th>
+								<th>Estatus</th>
+								<th>Fecha anulado</th>
+								<th>Razón Devolución</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
 			</div>
 		</div>
     </section>
@@ -136,6 +138,7 @@
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+         <script th:src="@{/js/sccb/pagares.js}"></script>
     </th:block>
 </body>
 
