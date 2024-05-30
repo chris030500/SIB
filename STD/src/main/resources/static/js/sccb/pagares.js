@@ -35,7 +35,6 @@ $(document).ready(function () {
 	});
 });
 
-
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -62,9 +61,15 @@ function getUrl() {
 	return url;
 }
 
+function cleanTable() {
+	$("#pagares > tbody").remove();
+}
+
 
 function buscarDatos() {
 	var divPagares = $("#divPagares");
+	divPagares.hide();
+	cleanTable();
 	
 	$.ajax({
 		url: getUrl(),
@@ -72,31 +77,58 @@ function buscarDatos() {
 		dataType: "JSON",
 		success: function (res) {
 			console.log(res.pagares);
-			divPagares.show();
-			var tbody = "<tbody></tbody>";
-			$("#pagares").append(tbody);
-			$.each(res.pagares, function(idx, opt) {
-				var rows = "<tr>"
-				+ "<td>Ver</td>"
-				+ "<td>" + opt.vc_tipo_documento + "</td>"
-				+ "<td>" + opt.vc_nombre_centro_ubicacion + "</td>"
-				+ "<td>" + opt.i_no_cliente + "</td>"
-				+ "<td>" + opt.i_credito_id + "</td>"
-				+ "<td>" + "$" + opt.fl_importe_credito + ".00" + "</td>"
-				+ "<td>" + opt.dt_fecha_inicio_credito + "</td>"
-				+ "<td>" + opt.vc_estatus_credito + "</td>"
-				+ "<td>" + opt.dt_fecha_evento + "</td>"
-				+ "<td>" + opt.vc_nombre_solicitante + "</td>"
-				+ "<td>" + opt.vc_nombre_centro_solicitante + "</td>"
-				+ "<td>" + opt.vc_nombre_destino + "</td>"
-				+ "<td>" + opt.vc_nombre_asignado + "</td>"
-				+ "<td>" + opt.vc_etapa_custodia + "</td>"
-				+ "<td>" + "</td>"
-				+ "<td>" + "</td>"
-				+ "<td>" + opt.vc_tipo_devolucion + "</td>"
-				+ "</tr>";
+			if (res.pagares == null || res == '') {
+				console.log("Error");
+				divPagares.hide();
+			} else {
+					divPagares.show();
+				var tbody = "<tbody></tbody>";
+				$("#pagares").append(tbody);
+				$.each(res.pagares, function(idx, opt) {
+					var tipoDocumento = (opt.vc_tipo_documento != null) ? opt.vc_tipo_documento : "";
+					var nombreCentroUbicacion = (opt.vc_nombre_centro_ubicacion != null) ? opt.vc_nombre_centro_ubicacion : "";
+					var noCliente = (opt.i_no_cliente != null) ? opt.i_no_cliente : "";
+					var idCredito = (opt.i_credito_id != null) ? opt.i_credito_id : "";
+					var importeCredito = (opt.fl_importe_credito != null) ? opt.fl_importe_credito : "";
+					var fechaInicioCredito = (opt.dt_fecha_inicio_credito != null) ? opt.dt_fecha_inicio_credito : "";
+					var estatusCredito = (opt.vc_estatus_credito != null) ? opt.vc_estatus_credito : "";
+					var fechaEvento = (opt.dt_fecha_evento != null) ? opt.dt_fecha_evento : "";
+					var nombreSolicitante = (opt.vc_nombre_solicitante != null) ? opt.vc_nombre_solicitante : ""; 
+					var nombreCentroSolicitante = (opt.vc_nombre_centro_solicitante != null) ? opt.vc_nombre_centro_solicitante : "";
+					var nombreDestino = (opt.vc_nombre_destino != null) ? opt.vc_nombre_destino : "";
+					var nombreAsignado = (opt.vc_nombre_asignado != null) ? opt.vc_nombre_asignado : "";
+					var etapaCustodia = (opt.vc_etapa_custodia != null) ? opt.vc_etapa_custodia : "";
+					var tipoDevolucion = (opt.vc_tipo_devolucion != null) ? opt.vc_tipo_devolucion : "";
+					
+					var rows = "<tr>"
+					+ "<td>Ver</td>"
+					+ "<td>" + tipoDocumento + "</td>"
+					+ "<td>" + nombreCentroUbicacion + "</td>"
+					+ "<td>" + noCliente + "</td>"
+					+ "<td>" + idCredito + "</td>"
+					+ "<td>" + "$" + importeCredito + ".00" + "</td>"
+					+ "<td>" + fechaInicioCredito + "</td>"
+					+ "<td>" + estatusCredito + "</td>"
+					+ "<td>" + fechaEvento + "</td>"
+					+ "<td>" + nombreSolicitante + "</td>"
+					+ "<td>" + nombreCentroSolicitante + "</td>"
+					+ "<td>" + nombreDestino + "</td>"
+					+ "<td>" + nombreAsignado + "</td>"
+					+ "<td>" + etapaCustodia + "</td>"
+					+ "<td>" + "</td>"
+					+ "<td>" + "</td>"
+					+ "<td>" + tipoDevolucion + "</td>"
+					+ "</tr>";
 				
-				$("#pagares > tbody").append(rows);
+					$("#pagares > tbody").append(rows);
+				});
+			}
+		}, 
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
 			});
 		}
 	});

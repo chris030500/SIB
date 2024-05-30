@@ -32,6 +32,9 @@ public class ConsultaPagares {
 	@Column(name = "I_CENTRO_ID")
 	private Integer i_centro_id;
 	
+	@Column(name = "I_CREDITO_ID")
+	private Integer i_credito_id;
+	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FL_IMPORTE_CREDITO")
 	private Float fl_importe_credito;
@@ -123,6 +126,15 @@ public class ConsultaPagares {
 
 	public void setI_centro_id(Integer i_centro_id) {
 		this.i_centro_id = i_centro_id;
+	}
+	
+
+	public Integer getI_credito_id() {
+		return i_credito_id;
+	}
+
+	public void setI_credito_id(Integer i_credito_id) {
+		this.i_credito_id = i_credito_id;
 	}
 
 	public Float getFl_importe_credito() {
@@ -242,15 +254,14 @@ public class ConsultaPagares {
 		return "ConsultaPagares [pk_i_row_guid=" + pk_i_row_guid + ", i_control_id=" + i_control_id
 				+ ", vc_tipo_documento=" + vc_tipo_documento + ", vc_nombre_centro_ubicacion="
 				+ vc_nombre_centro_ubicacion + ", i_no_cliente=" + i_no_cliente + ", i_centro_id=" + i_centro_id
-				+ ", fl_importe_credito=" + fl_importe_credito + ", dt_fecha_inicio_credito=" + dt_fecha_inicio_credito
-				+ ", vc_estatus_credito=" + vc_estatus_credito + ", dt_fecha_evento=" + dt_fecha_evento
-				+ ", vc_nombre_solicitante=" + vc_nombre_solicitante + ", vc_nombre_centro_solicitante="
-				+ vc_nombre_centro_solicitante + ", vc_nombre_centro_entrega=" + vc_nombre_centro_entrega
-				+ ", vc_nombre_centro_destino=" + vc_nombre_centro_destino + ", vc_etapa_custodia=" + vc_etapa_custodia
-				+ ", vc_tipo_devolucion=" + vc_tipo_devolucion + ", i_no_cliente_safi=" + i_no_cliente_safi
-				+ ", i_credito_id_safi=" + i_credito_id_safi + ", vc_nombre_asignado=" + vc_nombre_asignado
-				+ ", vc_nombre_destino=" + vc_nombre_destino + "]";
+				+ ", i_credito_id=" + i_credito_id + ", fl_importe_credito=" + fl_importe_credito
+				+ ", dt_fecha_inicio_credito=" + dt_fecha_inicio_credito + ", vc_estatus_credito=" + vc_estatus_credito
+				+ ", dt_fecha_evento=" + dt_fecha_evento + ", vc_nombre_solicitante=" + vc_nombre_solicitante
+				+ ", vc_nombre_centro_solicitante=" + vc_nombre_centro_solicitante + ", vc_nombre_centro_entrega="
+				+ vc_nombre_centro_entrega + ", vc_nombre_centro_destino=" + vc_nombre_centro_destino
+				+ ", vc_etapa_custodia=" + vc_etapa_custodia + ", vc_tipo_devolucion=" + vc_tipo_devolucion
+				+ ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_credito_id_safi=" + i_credito_id_safi
+				+ ", vc_nombre_asignado=" + vc_nombre_asignado + ", vc_nombre_destino=" + vc_nombre_destino + "]";
 	}
-	
 	
 }
