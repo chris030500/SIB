@@ -88,6 +88,31 @@ public class ConsultaPagaresController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+	@RequestMapping(value = { "/getPagaresByNoCliente" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroNoClientePagares(@RequestParam("noCliente") Integer noCliente) {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(noCliente);
+		
+		List<ConsultaPagares> pagares = pagaresService.searchByNoClientePagares(noCliente);
+		
+		try {
+			if (pagares != null && !pagares.isEmpty()) {
+				res.put("pagares", pagares);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("pagares", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 		
 	public int validarAcceso() {
 			

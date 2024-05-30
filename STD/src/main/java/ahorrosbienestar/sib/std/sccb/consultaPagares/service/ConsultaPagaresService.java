@@ -17,4 +17,8 @@ public class ConsultaPagaresService {
 	public List<ConsultaPagares> searchByIdCreditoPagares(Integer idCredito) {
 		return iPagaresRepository.getByIdCreditoConsultaPagares(idCredito);
 	}
+	
+	public List<ConsultaPagares> searchByNoClientePagares(Integer noCliente) {
+		return iPagaresRepository.getBynoClienteConsultaPagares(noCliente);
+	}
 }

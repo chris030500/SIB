@@ -16,4 +16,10 @@ public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagare
 			+ "FROM TBL_SCCB_PAGARES "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	List<ConsultaPagares> getByIdCreditoConsultaPagares(@Param("idCredito") Integer idCredito);
+	
+	@Query( value = "SELECT * "
+			+ "FROM TBL_SCCB_PAGARES "
+			+ "WHERE I_NO_CLIENTE = :noCliente ", nativeQuery = true)
+	List<ConsultaPagares> getBynoClienteConsultaPagares(@Param("noCliente") Integer noCliente);
+	
 }

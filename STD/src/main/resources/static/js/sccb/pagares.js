@@ -42,15 +42,32 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+function getUrl() {
+	var idCredito;
+	var noCliente;
+	
+	switch (optionSelected) {
+		case "1": 
+			idCredito = $("#creditoBusqueda").val();
+			url = getAbsolutePath() + "getPagaresByIdCredito?idCredito=" + Number(idCredito);
+			break;
+		case "2":
+			noCliente = $("#clienteBusqueda").val();
+			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
+			break;
+	}
+	
+	console.log(url);
+	
+	return url;
+}
+
 
 function buscarDatos() {
 	var divPagares = $("#divPagares");
-	var idCredito = $("#creditoBusqueda").val();
-	
-	url = getAbsolutePath() + "getPagaresByIdCredito?idCredito=" + Number(idCredito);
 	
 	$.ajax({
-		url: url,
+		url: getUrl(),
 		type: "GET",
 		dataType: "JSON",
 		success: function (res) {
