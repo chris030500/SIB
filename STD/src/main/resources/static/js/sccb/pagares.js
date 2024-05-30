@@ -35,6 +35,31 @@ $(document).ready(function () {
 	});
 });
 
+function buscarNombre(name) {
+	
+	var selectName = $("#selectName");
+	var option = "";
+	
+	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	console.log(name);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function(res) {
+			console.log(res.participantes);
+			var participantes = res.participantes;
+			console.log(participantes.length);
+			for(var i = 0; i < participantes.length; i++) {
+				
+				option += "<option value='" + participantes[i].i_no_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				
+				$("select#selectName").empty().append(option);
+			}
+		}
+	});
+}
+
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -54,6 +79,9 @@ function getUrl() {
 			noCliente = $("#clienteBusqueda").val();
 			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
 			break;
+		case "3":
+			noCliente = $("#selectName").val();
+			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
 	}
 	
 	console.log(url);
