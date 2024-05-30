@@ -4,7 +4,6 @@ var tblSolicitudes;
 
 $(document).ready(function() {
 	defaultView();
-	initDataTable();
 	
 	$("#opciones").change(function() {
 		optionSelected = $('#opciones').val();
@@ -64,6 +63,31 @@ function defaultView() {
 	$('#divTable').hide();
 }
 
+function buscarNombre(name) {
+	
+	var selectName = $("#selectName");
+	var option = "";
+	
+	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	console.log(name);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function(res) {
+			console.log(res.participantes);
+			var participantes = res.participantes;
+			console.log(participantes.length);
+			for(var i = 0; i < participantes.length; i++) {
+				
+				option += "<option value='" + participantes[i].vc_nombre_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				
+				$("select#selectName").empty().append(option);
+			}
+		}
+	});
+}
+
 function getUrlSolicitudes() {
 	var idCredito;
 	var noCliente;
@@ -79,7 +103,7 @@ function getUrlSolicitudes() {
 			url = getAbsolutePath() + "getByNoClienteSolicitudes?noCliente=" + Number(noCliente);
 			break;
 		case "3":	
-			nomCliente = $("#nameBusqueda").val();
+			nomCliente = $("#selectName").val();
 			url = getAbsolutePath() + "getByNomClienteSolicitudes?nomCliente=" + nomCliente;
 			break;
 	}
@@ -87,54 +111,14 @@ function getUrlSolicitudes() {
 	return url;
 }
 
-function initDataTable() {
-		tblSolicitudes = $("#solicitudes").DataTable({
-			"language": {
-            	"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json",
-        	},
-			'aoColumnDefs': [{
-				'bSortable': false,
-				'aTargets': [-1] /* 1st one, start by the right */
-			}],
-		});
-}
-
-function createTableSolicitudes() {
-	
-	$("#solicitudes").remove();
-	
-	var tableSolicitudes = 
-				"<table class='table table-bordered table-striped table-sm' style='width: 100%' id='solicitudes'>"
-					+ "<thead style='background-color: #0D6EFD;'>"
-						+ "<tr class='text-white' style='font-size: small; text-align: center;'>"
-							+ "<th>Solcitud</th>"
-							+ "<th>Acuerdo</th>"
-							+ "<th>Nombre</th>"
-							+ "<th>Cliente</th>"
-							+ "<th>Rol</th>"
-							+ "<th>Centro</th>"
-							+ "<th>Etapa</th>"
-							+ "<th>Estatus</th>"
-							+ "<th>Monto</th>"
-							+ "<th>Recepción</th>"
-							+ "<th>Inicio trámite</th>"
-							+ "<th>Autorización</th>"
-							+ "<th>Desembolso</th>"
-						+ "</tr>"
-					+ "</thead>"
-					+ "<tbody id='tbodySolicitudes'>"
-						
-					+ "</tbody>"
-				+ "</table>";
-				
-	$("#divTable").append(tableSolicitudes);
+function cleanTable() {
+	$("#solicitudes > tbody").remove();
 }
 
 function buscarDatos() {
-	
-	createTableSolicitudes();
-	
+	cleanTable();
 	var divTable = $('#divTable');
+	divTable.hide();
 	
 	console.log(getUrlSolicitudes());
 	
@@ -149,28 +133,29 @@ function buscarDatos() {
 				divTable.hide();
 			} else {
 				divTable.show();
-				tblSolicitudes.clear().draw();
+				var tbody = "<tbody></tbody>";
+				$("#solicitudes").append(tbody);
 				$.each(res.solicitudes, function(idx, opt) {
 					var fechaRecepcion = (opt.dt_fecha_recepcion != null) ? opt.dt_fecha_recepcion : "";
 					var fechaInicioTramite = (opt.dt_inicio_tramite != null) ? opt.dt_fecha_inicio_tramite : "";
 					var fechaAutorizacion = (opt.dt_fecha_autorizacion != null) ? opt.dt_fecha_autorizacion : "";
 					var fechaDesembolso = (opt.dt_fecha_desembolso != null) ? opt.dt_fecha_desembolso : "";
 					var rows = "<tr>"
-						+ "<td class='text-center' onclick='showSolicitud(" + opt.i_solicitud_id + ")'>" + opt.i_solicitud_id + "</td>"
-						+ "<td class='text-center'>" + opt.i_credito_id + "</td>"
-						+ "<td class='text-center'>" + opt.vc_nombre_cliente + "</td>"
-						+ "<td class='text-center'>" + opt.i_no_cliente + "</td>"
-						+ "<td class='text-center'>" + opt.vc_rol + "</td>"
-						+ "<td class='text-center'>" + opt.vc_nombre_centro + "</td>"
-						+ "<td class='text-center'>" + opt.vc_etapa + "</td>"
-						+ "<td class='text-center'>" + opt.vc_estatus + "</td>"
-						+ "<td class='text-center'>" + opt.fl_monto + "</td>"
-						+ "<td class='text-center'>" + fechaRecepcion + "</td>"
-						+ "<td class='text-center'>" + fechaInicioTramite + "</td>"
-						+ "<td class='text-center'>" + fechaAutorizacion + "</td>"
-						+ "<td class='text-center'>" + fechaDesembolso + "</td>"
+						+ "<td style='width: 300px;' onclick='showSolicitud(" + opt.i_solicitud_id + ")'>" + opt.i_solicitud_id + "</td>"
+						+ "<td style='width: 300px;'>" + opt.i_credito_id + "</td>"
+						+ "<td style='width: 400px;'>" + opt.vc_nombre_cliente + "</td>"
+						+ "<td style='width: 300px;'>" + opt.i_no_cliente + "</td>"
+						+ "<td style='width: 300px;'>" + opt.vc_rol + "</td>"
+						+ "<td style='width: 300px;'>" + opt.vc_nombre_centro + "</td>"
+						+ "<td style='width: 300px;'>" + opt.vc_etapa + "</td>"
+						+ "<td style='width: 300px;'>" + opt.vc_estatus + "</td>"
+						+ "<td style='width: 300px;'>" + "$" + opt.fl_monto + ".00" + "</td>"
+						+ "<td style='width: 350px;'>" + fechaRecepcion + "</td>"
+						+ "<td style='width: 300px;'>" + fechaInicioTramite + "</td>"
+						+ "<td style='width: 300px;'>" + fechaAutorizacion + "</td>"
+						+ "<td style='width: 300px;'>" + fechaDesembolso + "</td>"
 						+ "</tr>";
-					$('#tbodySolicitudes').append(rows);
+					$("#solicitudes > tbody").append(rows);
 					
 					
 				});
@@ -201,7 +186,6 @@ function cleanSolicitud() {
 	$("#pCentro").remove();
 	$("#pFechaInicioTramite").remove();
 	$("#pFechaAutorizacion").remove();
-	$("#pAnalista").remove();
 	$("#pFechaDesembolso").remove();
 	$("#pFechaReconsideracion").remove();
 	$("#pMontoAvaluo").remove();
@@ -239,9 +223,9 @@ function showSolicitud(parametroSolicitud) {
 				divDatosSolicitud.show();
 				var folio = (res.i_solicitud_id != null) ? "<p id='pFolio'>" + res.i_solicitud_id + "</p>" : "<p id='pFolio'></p>";
 				var acCredito = (res.i_credito_id != null) ? "<p id='pAcCredito'>" + res.i_credito_id + "</p>" : "<p id='pAcCredito'></p>";
-				var acDepRespaldo = (res.i_ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.i_ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'></p>";
-				var acOperativa = (res.i_acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.i_acuerdo_operativa + "</p>" : "<p id='pAcOperativa'></p>";
-				var recibe = (res.i_empleado_recibe_id != null) ? "<p id='pRecibe'>" + res.i_empleado_recibe_id + "</p>" : "<p id='pRecibe'></p>";
+				var acDepRespaldo = (res.i_ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.i_ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'>0</p>";
+				var acOperativa = (res.i_acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.i_acuerdo_operativa + "</p>" : "<p id='pAcOperativa'>0</p>";
+				var recibe = (res.i_empleado_recibe_id != null) ? "<p id='pRecibe'>" + res.i_empleado_recibe_id + "</p>" : "<p id='pRecibe'>0</p>";
 				var captura = (res.i_empleado_captura_id != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.i_empleado_captura_id + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: 0 </p>"; 
 				var fechaRecepcion = (res.dt_fecha_recepcion != null) ? "<p id='pFechaRecepcion'>" + res.dt_fecha_recepcion + "</p>" : "<p id='pFechaRecepcion'></p>";
 				var etapaRecepcion = (res.vc_descripcion_etapa != null) ? "<p id='pEtapaRecepcion'>" + res.vc_descripcion_etapa + "</p>" : "<p id='pEtapaRecepcion'></p>";
@@ -250,52 +234,73 @@ function showSolicitud(parametroSolicitud) {
 				var centro = (res.i_centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.i_centro_id + " " + res.vc_nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: 0</p>";
 				var fechaInicioTramite = (res.dt_fecha_inicio_tramite != null) ? "<p id='pFechaInicioTramite'>" + res.dt_fecha_inicio_tramite + "</p>" : "<p id='pFechaInicioTramite'></p>";
 				var fechaAutorizacion = (res.dt_fecha_autorizacion != null) ?  "<p id='pFechaAutorizacion'>" + res.dt_fecha_autorizacion + "</p>" : "<p id='pFechaAutorizacion'></p>";
-				var analista = (res.i_empleado_analiza_id != null) ? "<p id='pAnalista' class='card-text' style='font-weight: bold; font-size: small;'>Analista: " + res.i_empleado_analiza_id + "</p>" : "<p id='pAnalista' class='card-text' style='font-weight: bold; font-size: small;'>Analista: 0</p>";
 				var fechaDesembolso = (res.dt_fecha_desembolso != null) ? "<p id='pFechaDesembolso'>" + res.dt_fecha_desembolso + "</p>" : "<p id='pFechaDesembolso'></p>";
 				var fechaReconsideracion = (res.dt_fecha_reconsideracion != null) ? "<p id='pFechaReconsideracion'>" + res.dt_fecha_reconsideracion + "</p>" : "<p id='pFechaReconsideracion'></p>";
-				var montoAvaluo = (res.i_valor_avaluo != null) ? "<p id='pMontoAvaluo'>" + res.i_valor_avaluo + "</p>" : "<p id='pMontoAvaluo'></p>";
+				var montoAvaluo = (res.i_valor_avaluo != null) ? "<p id='pMontoAvaluo'>" + "$" + res.i_valor_avaluo + "</p>" : "<p id='pMontoAvaluo'></p>";
 				var observaciones = (res.vc_observaciones != null) ? "<p id='pObservaciones'>" + res.vc_observaciones + "</p>" : "<p id='pObservaciones'></p>";
 				var observacionesCC = (res.vc_observaciones_cc != null) ? "<p id='pObservacionesCC'>" + res.vc_observaciones_cc + "</p>" : "<p id='pObservacionesCC'></p>";
 				
+				var noCliente = (res.i_no_cliente != null) ? res.i_no_cliente : "";
+				var nombreTarifa = (res.vc_nombre_tarifa != null) ? res.vc_nombre_tarifa : "";
+				var numeroTantos = (res.i_numero_tantos != null) ? res.i_numero_tantos : "";
+				var tasaNormal = (res.fl_tasa_normal != null) ? res.fl_tasa_normal + "%" : "";
+				var nombreCompleto = (res.vc_nombre_completo != null) ? res.vc_nombre_completo : "";
+				var importeCrediito = (res.i_importe_credito != null) ? "$" + res.i_importe_credito + ".00" : "";
+				var depEnRespaldo = (res.i_dep_en_respaldo != null) ? "$" + res.i_dep_en_respaldo + ".00" : "";
+				var tasaMoratoria = (res.i_tasa_moratoria != null) ? res.i_tasa_moratoria + "%" : "";
+				var descripcionCliente = (res.vc_descripcion_cliente != null) ? res.vc_descripcion_cliente : "";
+				var plazo = (res.i_plazo != null) ? res.i_plazo : "";
+				var csmnImpCredito = (res.i_cmsn_imp_credito != null) ? res.i_cmsn_imp_credito : "";
+				var numAbonosDiferidos = (res.i_num_abonos_diferidos != null) ? res.i_num_abonos_diferidos : "";
+				var nombreDestino = (res.vc_nombre_destino != null) ? res.vc_nombre_destino : "";
+				var descFrecuencia = (res.vc_descripcion_frecuencia != null) ? res.vc_descripcion_frecuencia : "";
+				var cmsnAseFin = (res.fl_cmsn_ase_fin != null) ? res.fl_cmsn_ase_fin : "";
+				var revisionVehicular = (res.i_revision_vehicular != null) ? res.i_revision_vehicular : "";
+				var analista = (res.i_empleado_analiza_id != null) ? res.i_empleado_analiza_id : "";
+				
 				var rowDatosDeCredito = 	"<tr id='tdRow1' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Cliente</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_no_cliente + "</td>"
+								+ "<td style='width: 12.5%;'>" + noCliente + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tarifa</td>"
-								+ "<td style='width: 12.5%;'>" + res.vc_nombre_tarifa + "</td>"
+								+ "<td style='width: 12.5%;'>" + nombreTarifa + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Número de tantos</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_numero_tantos + "</td>"
+								+ "<td style='width: 12.5%;'>" + numeroTantos + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tasa Normal</td>"
-								+ "<td style='width: 12.5%;'>" + res.fl_tasa_normal + "</td>"
+								+ "<td style='width: 12.5%;'>" + tasaNormal + "</td>"
 							 + "</tr>" 
 							 + "<tr id='tdRow2' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Nombre</td>"
-								+ "<td style='width: 12.5%;'>" + res.vc_nombre_completo + "</td>"
+								+ "<td style='width: 12.5%;'>" + nombreCompleto + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Monto(####.##)</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_importe_credito + "</td>"
+								+ "<td style='width: 12.5%;'>" + importeCrediito + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Dep. en Respaldo</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_dep_en_respaldo + "</td>"
+								+ "<td style='width: 12.5%;'>" + depEnRespaldo + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tasa Moratoria</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_tasa_moratoria + "</td>"
+								+ "<td style='width: 12.5%;'>" + tasaMoratoria + "</td>"
 							 + "</tr>" 
 							 + "<tr id='tdRow3' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tipo Cliente</td>"
-								+ "<td style='width: 12.5%;'>" + res.vc_descripcion_cliente + "</td>"
+								+ "<td style='width: 12.5%;'>" + descripcionCliente + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Plazo</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_plazo + "</td>"
-								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>COmisión por impago de Crédito</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_cmsn_imp_credito + "</td>"
+								+ "<td style='width: 12.5%;'>" + plazo + "</td>"
+								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Comisión por impago de Crédito</td>"
+								+ "<td style='width: 12.5%;'>" + csmnImpCredito + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Abonos Diferidos</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_num_abonos_diferidos + "</td>"
+								+ "<td style='width: 12.5%;'>" + numAbonosDiferidos + "</td>"
 							 + "</tr>" 
 							  + "<tr id='tdRow4' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Destino</td>"
-								+ "<td style='width: 12.5%;'>" + res.vc_nombre_destino + "</td>"
+								+ "<td style='width: 12.5%;'>" + nombreDestino + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Frecuencia</td>"
-								+ "<td style='width: 12.5%;'>" + res.vc_descripcion_frecuencia + "</td>"
-								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>COmisión Asesoría Financiera</td>"
-								+ "<td style='width: 12.5%;'>" + res.fl_cmsn_ase_fin + "</td>"
+								+ "<td style='width: 12.5%;'>" + descFrecuencia + "</td>"
+								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Comisión Asesoría Financiera</td>"
+								+ "<td style='width: 12.5%;'>" + cmsnAseFin + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Revisión Vehicular</td>"
-								+ "<td style='width: 12.5%;'>" + res.i_revision_vehicular + "</td>"
+								+ "<td style='width: 12.5%;'>" + revisionVehicular + "</td>"
+							 + "</tr>"
+							 + "<tr id='tdRow4' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
+								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Analista</td>"
+								+ "<td style='width: 12.5%;'>" + analista + "</td>"
 							 + "</tr>";
 				
 				

@@ -71,8 +71,15 @@
 								<label for="nameBusqueda" class="col-form-label">Nombre</label>
 							</div>
 							<div class="col-8">
-								<input type="text" class="form-control" id="nameBusqueda"
-								placeholder="Nombre">
+								<div class="row">
+									<input type="search" class="form-control" id="nameBusqueda"
+									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
+								</div>
+							</div>
+							<div id="divSelect" class="row">
+								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
+										
+								</select>
 							</div>
 						</div>
 					</div>
@@ -88,7 +95,25 @@
 				</div>
 			</form>
         	<div id="divTable" class="row table-responsive mb-3" style="display: none;">
-				
+				<table class="table table-bordered table-striped" style="width: 100%; font-size: small; text-align: center;" id="solicitudes">
+					<thead style="background-color: #0D6EFD;">
+						<tr class="text-white">
+							<th>Soicitud</th>
+							<th>Acuerdo</th>
+							<th>Nombre</th>
+							<th>Cliente</th>
+							<th>Rol</th>
+							<th>Centro</th>
+							<th>Etapa</th>
+							<th>Estatus</th>
+							<th>Monto</th>
+							<th>Recepción</th>
+							<th>Inicio trámite</th>
+							<th>Autorización</th>
+							<th>Desembolso</th>
+						</tr>
+					</thead>
+				</table>
 			</div>
 			<div id="divDatosSolicitud" style="display: none;">
 				<div style="background-color: #D9D9D9;" class="content mb-2">
@@ -154,48 +179,42 @@
 								<div id="captura" class="border" style="background-color: #D9D9D9;">
 									
 								</div>
-								<div class="card-body border mt-3" style="font-size: small; text-align: center; height: 250px;">
-									<div class="row border" style="background-color: #BDECFB;">
-										<p style="text-align: center; font-weight: bold;">Recepción</p>
-									</div>
+								<div class="card-body border mt-3" style="font-size: small; text-align: center; height: 380px;">
 									<div class="row border">
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="font-weight: bold;">Fecha</p>
+												<p style="font-weight: bold;">Fecha Recepción</p>
 											</div>
-											<div id="fechaRecepcion" class="row border">
+											<div id="fechaRecepcion" class="row">
 												
 											</div>
 										</div>
 										
 										<div class="col">
 											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="font-weight: bold; ">Etapa</p>
-											</div>
-											<div id="etapaRecepcion" class="row border">
-												
-											</div>
-										</div>
-										
-									</div>
-									<div class="row border mt-3" style="background-color: #BDECFB;">
-										<p style="text-align: center; font-weight: bold; font-size: small;">Resultado</p>
-									</div>
-									<div class="row border">
-										
-										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="text-align: center; font-size: small; font-weight: bold;">Fecha</p>
+												<p style="font-weight: bold; ">Fecha Resultado</p>
 											</div>
 											<div id="fechaResultado" class="row">
 												
 											</div>
 										</div>
 										
+									</div>
+									<div class="row border mt-2">
+										
 										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;;">
-												<p style="text-align: center; font-size: small; font-weight: bold;">Estatus</p>
+											<div class="row" style="background-color: #D9D9D9;">
+												<p style="text-align: center; font-size: small; font-weight: bold;">Etapa Recepción</p>
+											</div>
+											<div id="etapaRecepción" class="row">
+												
+											</div>
+										</div>
+										
+										<div class="col">
+											<div class="row" style="background-color: #D9D9D9;;">
+												<p style="text-align: center; font-size: small; font-weight: bold;">Estatus Resultado</p>
 											</div>
 											<div id="estatusResultado" class="row border">
 												
@@ -213,7 +232,7 @@
 								<div id="centro" class="border" style="background-color: #D9D9D9;">
 									
 								</div>
-								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 250px;">
+								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 380px;">
 									<div class="row border" style="background-color: #D9D9D9;">
 										<p style="font-weight: bold;">Fecha Inicio de Trámite</p>
 									</div>
@@ -227,18 +246,6 @@
 									<div id="fechaAutorizacion" class="row border">
 										
 									</div>
-								</div>
-							</div>
-						</div>
-						
-						
-						<div class="col-sm-4 mx-1">
-							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center; font-weight: bold; font-size: medium;">Analista</h5>
-								<div id="analista" class="border" style="background-color: #D9D9D9;">
-									
-								</div>
-								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 250px;">
 									<div class="row border" style="background-color: #D9D9D9;">
 										<p style="font-weight: bold;">Fecha Desembolso</p>
 									</div>
@@ -262,7 +269,6 @@
 								</div>
 							</div>
 						</div>
-						
 					</div>
 					
 					<div class="row border" style="background-color: #BDECFB;">
@@ -279,7 +285,7 @@
 							<div class="row" style="font-size: small;">
 								<p style='font-weight: bold;'>Observaciones Responsables:</p>
 							</div>
-							<div id="observacionesRes" class="row p-2" style="background-color: #D9D9D9; height: 120px;">
+							<div id="observacionesRes" class="row p-2" style="background-color: #D9D9D9; height: 300px; font-size: small;">
 								
 							</div>
 						
@@ -289,7 +295,7 @@
 							<div class="row" style="font-size: small;">
 								<p style='font-weight: bold;'>Observaciones Centro Crédito:</p>
 							</div>
-							<div id="observacionesCC" class="row p-2" style="background-color: #D9D9D9; height: 120px;">
+							<div id="observacionesCC" class="row p-2" style="background-color: #D9D9D9; height: 300px; font-size: small;">
 								
 							</div>
 						
