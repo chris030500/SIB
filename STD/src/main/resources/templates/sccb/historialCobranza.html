@@ -66,12 +66,12 @@
 									<input id="nameBusqueda" type="search" class="form-control"
 									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
 								</div>
-								
-								<div class="row p-2">
-									<select id="selectName" class="form-select" name="selectName" style="font-size: x-small;">
+							</div>
 										
-									</select>
-								</div>
+							<div class="row p-2">
+								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
+										
+								</select>
 							</div>
 						</div>
 					</div>
@@ -125,22 +125,24 @@
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Expedientes de Negociación
 				</div>
-				<table id="expedientesNegociacion" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>No.</th>
-							<th>Tipo</th>
-							<th>Exp. Jud.</th>
-							<th>Negociador</th>
-							<th>Estatus</th>
-							<th>Fecha Asignación</th>
-							<th>Asignó</th>
-							<th>Apertura</th>
-							<th>Cierre</th>
-							<th>Generó</th>
-						</tr>
-					</thead>
-				</table>
+				<div class="row table-responsive">
+					<table id="expedientesNegociacion" class="table table-bordered table-sm" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th scope="col">No.</th>
+								<th scope="col">Tipo</th>
+								<th scope="col">Exp. Jud.</th>
+								<th scope="col">Negociador</th>
+								<th scope="col">Estatus</th>
+								<th scope="col">Fecha Asignación</th>
+								<th scope="col">Asignó</th>
+								<th scope="col">Apertura</th>
+								<th scope="col">Cierre</th>
+								<th scope="col">Generó</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
 			</div>
 			
 			<div id="divExpedienteDetalle" class="row justify-content-center mb-3" style="display: none;">

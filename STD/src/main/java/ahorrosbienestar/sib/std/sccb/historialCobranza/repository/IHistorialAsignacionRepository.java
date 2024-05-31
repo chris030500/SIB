@@ -18,12 +18,5 @@ public interface IHistorialAsignacionRepository extends JpaRepository<HistorialA
 			+ "FROM TBL_SCCB_HISTORIAL_ASIGNACION "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	public List<HistorialAsignacion> getByIdCreditoHistorialAsignacion(@Param("idCredito") Integer idCredito);
-	
-	@Query(value = "SELECT * "
-			+ "FROM TBL_SCCB_HISTORIAL_ASIGNACION "
-			+ "WHERE I_CREDITO_ID = :idCredito "
-			+ "ORDER BY I_EXPEDIENTE_ID DESC "
-			+ "LIMIT 1", nativeQuery = true)
-	public Optional<HistorialAsignacion> getByIdCreditoRowHistAsig(@Param("idCredito") Integer idCredito);
 }
 

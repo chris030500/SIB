@@ -14,9 +14,9 @@ public class HistorialCobranzaService {
 	@Autowired
 	private IHistorialCobranzaRepository iHistorialCobranzaRepository;
 	
-	public Optional<HistorialCobranza> searchDetalleExpediente(Integer idExpediente) {
+	public Optional<HistorialCobranza> searchDetalleExpediente(Integer idSolicitud) {
 		
-		return iHistorialCobranzaRepository.getDetalleExpediente(idExpediente);
+		return iHistorialCobranzaRepository.getDetalleExpediente(idSolicitud);
 	}
 	
 	public Optional<HistorialCobranza> searchDatosGeneralesHistorialCobranza(Integer idExpediente) {

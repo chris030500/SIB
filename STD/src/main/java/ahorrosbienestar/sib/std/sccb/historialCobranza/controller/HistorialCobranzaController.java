@@ -29,6 +29,8 @@ import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialCobranzaService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.ParticipantesService;
+import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.DatosSolicitudCredito;
+import ahorrosbienestar.sib.std.sccb.solicitudesCredito.service.DatosSolicitudCreditoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -49,6 +51,9 @@ public class HistorialCobranzaController {
 	 
 	 @Autowired
 	 private HistorialAsignacionService historialAsigService;
+	 
+	 @Autowired
+	 private DatosSolicitudCreditoService datosSolicitudService;
 	 
 	 @Autowired
 	 private ParticipantesService participantesService;
@@ -77,11 +82,11 @@ public class HistorialCobranzaController {
 	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
 		
-		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
+		Optional<DatosSolicitudCredito> datosSolicitud =  datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
 		
-		int idExpediente = histAsig.get().getI_expediente_id();
+		int idSolicitud = datosSolicitud.get().getI_solicitud_id();
 		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idExpediente));
+		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idSolicitud));
 	}
 	
 	/*@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)

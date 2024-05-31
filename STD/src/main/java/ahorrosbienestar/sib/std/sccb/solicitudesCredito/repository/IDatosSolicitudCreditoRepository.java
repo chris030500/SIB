@@ -18,4 +18,8 @@ public interface IDatosSolicitudCreditoRepository extends JpaRepository<DatosSol
 			+ "WHERE I_SOLICITUD_ID = :idSolicitud ", nativeQuery = true)
 	public Optional<DatosSolicitudCredito> getDatosSolicitudCredito(@Param("idSolicitud") Integer idSolicitud);
 	
+	@Query(value = "SELECT * "
+			+ "FROM TBL_SCCB_DATOS_SOLICITUD "
+			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
+	public Optional<DatosSolicitudCredito> getDatosSolicitudByIdCredito(@Param("idCredito") Integer idCredito);
 }

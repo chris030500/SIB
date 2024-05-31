@@ -124,16 +124,26 @@ function buscarDatosGenerales() {
 				divDatosGenerales.show();
 				var tbody = "<tbody id='tbodyDatosGenerales'>" + "</tbody>";
 				$("#datosGenerales").append(tbody);
+				
+				var rangoBanda = (res.vc_rango_banda != null) ? res.vc_rango_banda : "";
+				var importe = (res.fl_importe != null) ? "$" + res.fl_importe + ".00" : "";
+				var saldo = (res.fl_saldo != null) ? "$" + res.fl_saldo : "";
+				var atraso = (res.fl_atraso != null) ? "$" + res.fl_atraso : "0";
+				var intencionalidad = (res.vc_intencionalidad != null) ? res.vc_intencionalidad : ""; 
+				var fechaCartera = (res.dt_fecha_cartera != null) ? res.dt_fecha_cartera : "";
+				var enConbranzaJudicial = (res.vc_en_cobranza_judicial != null) ? res.vc_en_cobranza_judicial : "";
+				var adeudoTotal = "0";
+				
 				var row =  "<tr>" 
 					+ "<td>" + idCredito + "</td>"
-					+ "<td>" + res.vc_rango_banda + "</td>"
-					+ "<td>" + res.fl_importe + "</td>"
-					+ "<td>" + res.fl_saldo + "</td>"
-					+ "<td>" + res.fl_atraso + "</td>"
-					+ "<td>" + 0.00 + "</td>"
-					+ "<td>" + res.dt_fecha_cartera + "</td>"
-					+ "<td>No</td>"
-					+ "<td>" + res.vc_en_cobranza_judicial + "</td>"
+					+ "<td>" + rangoBanda + "</td>"
+					+ "<td>" + importe + "</td>"
+					+ "<td>" + saldo + "</td>"
+					+ "<td>" + atraso + "</td>"
+					+ "<td>" + adeudoTotal + "</td>"
+					+ "<td>" + fechaCartera + "</td>"
+					+ "<td>" + intencionalidad + "</td>"
+					+ "<td>" + enConbranzaJudicial + "</td>"
 					+ "</tr>";
 					
 					$("#tbodyDatosGenerales").append(row);
@@ -189,11 +199,16 @@ function buscarParticipantes() {
 				$("#participantes").append(tbody);
 				
 				$.each(res.participantes, function (idx, opt) {
+					var noCliente = (opt.i_no_cliente != null) ? opt.i_no_cliente : "";
+					var nombreCiente = (opt.vc_nombre_cliente != null) ? opt.vc_nombre_cliente : "";
+					var rolParticipante = (opt.vc_rol_participante != null) ? opt.vc_rol_participante : "";
+					var tipologiaCliente = (opt.vc_tipologia_cliente != null) ? opt.vc_tipologia_cliente : "";
+					
 					var row = "<tr>"
-					+ "<td>" + opt.i_no_cliente + "</td>"
-					+ "<td>" + opt.vc_nombre_cliente + "</td>"
-					+ "<td>" + opt.vc_rol_participante + "</td>"
-					+ "<td>" + opt.vc_tipologia_cliente + "</td>"
+					+ "<td>" + noCliente + "</td>"
+					+ "<td>" + nombreCiente + "</td>"
+					+ "<td>" + rolParticipante + "</td>"
+					+ "<td>" + tipologiaCliente + "</td>"
 					+ "</tr>";
 					
 					$("#tbodyParticipantes").append(row);
@@ -250,17 +265,28 @@ function buscarExpedientesNegociacion() {
 				var tbody = "<tbody id='tbodyExpedientesNegociacion'></tbody>";
 				$("#expedientesNegociacion").append(tbody);
 				$.each(res.historialAsig, function (idx, opt) {
+					var expedienteId = (opt.i_expediente_id != null) ? opt.i_expediente_id : "";
+					var tipoExpediente = (opt.vc_tipo_expediente != null) ? opt.vc_tipo_expediente : "";
+					var numExpJudicial = (opt.vc_num_exp_judicial != null) ? opt.vc_num_exp_judicial : "";
+					var negociadorAsignado = (opt.i_negociador_asignado != null && opt.vc_nombre_negociador != null) ? opt.i_negociador_asignado + " - " + opt.vc_nombre_negociador  : "";
+					var estatus = (opt.vc_estatus != null) ? opt.vc_estatus : "";
+					var fechaAsigReasig = (opt.dt_fecha_asig_reasig != null) ? opt.dt_fecha_asig_reasig : "";
+					var nomEmpAsigReasig = (opt.vc_nom_emp_asig_reasig != null) ? opt.vc_nom_emp_asig_reasig : "";
+					var fechaRegistro = (opt.dt_fecha_registro != null) ? opt.dt_fecha_registro : "";
+					var fechaCierre = (opt.dt_fecha_cierre != null) ? opt.dt_fecha_cierre : "";
+					var empleadoCreo = (opt.i_empleado_creo != null && opt.vc_nombre_creador != null) ? opt.i_empleado_creo + " - " + opt.vc_nombre_creador : "";
+					
 					var row = "<tr>"
-					+ "<td>" + opt.i_expediente_id + "</td>"
-					+ "<td>" + opt.vc_tipo_expediente + "</td>"
-					+ "<td>" + opt.vc_num_exp_judicial + "</td>"
-					+ "<td>" + opt.i_negociador_asignado + " - " + opt.vc_nombre_negociador + "</td>"
-					+ "<td>" + opt.vc_estatus + "</td>"
-					+ "<td>" + opt.dt_fecha_asig_reasig + "</td>"
-					+ "<td>" + opt.vc_nom_emp_asig_reasig + "</td>"
-					+ "<td>" + opt.dt_fecha_registro + "</td>"
-					+ "<td>" + opt.dt_fecha_cierre + "</td>"
-					+ "<td>" + opt.i_empleado_creo + " - " + opt.vc_nombre_creador + "</td>"
+					+ "<td>" + expedienteId + "</td>"
+					+ "<td>" + tipoExpediente + "</td>"
+					+ "<td>" + numExpJudicial + "</td>"
+					+ "<td>" + negociadorAsignado + "</td>"
+					+ "<td>" + estatus + "</td>"
+					+ "<td>" + fechaAsigReasig + "</td>"
+					+ "<td>" + nomEmpAsigReasig + "</td>"
+					+ "<td>" + fechaRegistro + "</td>"
+					+ "<td>" + fechaCierre + "</td>"
+					+ "<td>" + empleadoCreo + "</td>"
 					+ "</tr>";
 					
 					$("#tbodyExpedientesNegociacion").append(row);
@@ -349,36 +375,36 @@ function showDetalleExpediente() {
 				var noExp = "<p>Expediente(S) de Negociación #" + res.i_expediente_id + "</p>";
 				$("#noExpediente").append(noExp);
 				divExpDetalle.show();
-				var importe = "<p>" + res.fl_importe + "</p>";
-				var saldoActual = "<p>" + res.fl_saldo + "</p>";
-				var diasMora = "<p>" + res.i_dias_mora + "</p>";
-				var inicioCredito = "<p>" + res.dt_fecha_inicio + "</p>";
-				var interesNormal = "<p>" + res.fl_interes_normal + "</p>";;
-				var banda = "<p>" + res.vc_rango_banda + "</p>";
-				var tasaIntNormal = "<p>" + res.fl_tasa_normal + "</p>";
-				var IVAIntNormal = "<p>" + res.fl_iva + "</p>";
-				var facturasImpagadas = "<p>" + res.i_facturas + "</p>";
-				var tasaIntMoratorio = "<p>" + res.fl_tasa_moratoria + "</p>";
-				var interesMoratorio = "<p>" + res.fl_interes_morat + "</p>";
-				var calificacion = "<p>" + res.vc_calificacion + "</p>";
-				var plazo = "<p>" + res.i_plazo + "</p>";
-				var IVAintMoratorio = "<p>" + res.fl_iva_interes_morat + "</p>";
-				var intencionalidad = "<p>" + res.vc_intencionalidad + "</p>";
-				var frecuenciaPago = "<p>" + res.vc_frecuencia + "</p>";
-				var cmsnPagadas = "<p>" + res.fl_comision + "</p>";
-				var etapa = "<p>" + res.vc_etapa + "</p>";
-				var vencimiento = "<p>" + res.dt_fecha_vencimiento + "</p>";
-				var IVAcmsnPag = "<p>" + "</p>";
-				var despacho = "<p>" + res.vc_despacho + "</p>";;
-				var centroCredito = "<p>" + res.vc_nombre_centro + "</p>";
-				var gastos = "<p>" + res.fl_gastos + "</p>";;
-				var negociadorAsig = "<p>" + res.vc_negociador + "</p>";
-				var tipoCredito = "<p>" + res.vc_tipo_credito + "</p>";
-				var atrasoCapital = "<p>" + res.fl_atraso + "</p>";
-				var analista = "<p>" + res.vc_nom_analista + "</p>";
-				var tarifa = "<p>" + res.vc_tarifa + "</p>";
-				var atrasoTotal = "<p>" + "</p>"
-				var ultMovto = "<p>" + res.dt_fecha_ult_movto + "</p>";
+				var importe = (res.fl_importe != null) ? "<p>$" + res.fl_importe + "</p>" : "";
+				var saldoActual = (res.fl_saldo != null) ? "<p>$" + res.fl_saldo + "</p>" : "";
+				var diasMora = (res.i_dias_mora != null) ? "<p>" + res.i_dias_mora + "</p>" : "";
+				var inicioCredito = (res.dt_fecha_inicio != null) ? "<p>" + res.dt_fecha_inicio + "</p>" : "";
+				var interesNormal = (res.fl_interes_normal != null) ? "<p>" + res.fl_interes_normal + "</p>" : "";
+				var banda = (res.fl_interes_normal != null) ? "<p>" + res.vc_rango_banda + "</p>" : "";
+				var tasaIntNormal = (res.fl_tasa_normal != null) ? "<p>" + res.fl_tasa_normal + "%</p>" : "";
+				var IVAIntNormal = (res.fl_iva != null) ? "<p>" + res.fl_iva + "</p>" : "";
+				var facturasImpagadas = (res.i_facturas != null) ? "<p>" + res.i_facturas + "</p>" : "";
+				var tasaIntMoratorio = (res.fl_tasa_moratoria != null) ? "<p>" + res.fl_tasa_moratoria + "%</p>" : "";
+				var interesMoratorio = (res.fl_interes_morat != null) ? "<p>" + res.fl_interes_morat + "</p>" : "";
+				var calificacion = (res.vc_calificacion != null) ? "<p>" + res.vc_calificacion + "</p>" : "";
+				var plazo = (res.i_plazo != null) ? "<p>" + res.i_plazo + "</p>" : "";
+				var IVAintMoratorio = (res.fl_iva_interes_morat != null) ? "<p>" + res.fl_iva_interes_morat + "</p>" : "";
+				var intencionalidad = (res.vc_intencionalidad != null) ? "<p>" + res.vc_intencionalidad + "</p>" : "";
+				var frecuenciaPago = (res.vc_frecuencia != null) ? "<p>" + res.vc_frecuencia + "</p>" : "";
+				var cmsnPagadas = (res.vc_frecuencia != null) ? "<p>" + res.fl_comision + "</p>" : "";
+				var etapa = (res.vc_etapa != null) ? "<p>" + res.vc_etapa + "</p>" : "";
+				var vencimiento = (res.dt_fecha_vencimiento != null) ? "<p>" + res.dt_fecha_vencimiento + "</p>" : "";
+				var IVAcmsnPag = "<p>0" + "</p>";
+				var despacho = (res.vc_despacho != null) ? "<p>" + res.vc_despacho + "</p>" : "";
+				var centroCredito = (res.vc_nombre_centro != null) ?  "<p>" + res.vc_nombre_centro + "</p>" : "";
+				var gastos = (res.fl_gastos != null) ? "<p>" + res.fl_gastos + "</p>": "";
+				var negociadorAsig = (res.vc_negociador != null) ? "<p>" + res.vc_negociador + "</p>" : "";
+				var tipoCredito = (res.vc_tipo_credito != null) ? "<p>" + res.vc_tipo_credito + "</p>" : "";
+				var atrasoCapital = (res.fl_atraso != null) ? "<p>$" + res.fl_atraso + "</p>" : "";
+				var analista = (res.vc_nom_analista != null) ? "<p>" + res.vc_nom_analista + "</p>" : "";
+				var tarifa = (res.vc_tarifa != null) ? "<p>" + res.vc_tarifa + "</p>" : "";
+				var atrasoTotal = "<p>0" + "</p>"
+				var ultMovto = (res.dt_fecha_ult_movto != null) ? "<p>" + res.dt_fecha_ult_movto + "</p>" : "";
 				
 				$("#tdImporte").append(importe);
 				$("#tdSaldoActual").append(saldoActual);

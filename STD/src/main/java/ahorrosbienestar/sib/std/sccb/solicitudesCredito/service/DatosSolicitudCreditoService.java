@@ -19,4 +19,9 @@ public class DatosSolicitudCreditoService {
 		return iDatosSolicitudRepository.getDatosSolicitudCredito(idSolicitud);
 	}
 
+	public Optional<DatosSolicitudCredito> searchDatosSolicitudByIdCredito(Integer idCredito) {
+		return iDatosSolicitudRepository.getDatosSolicitudByIdCredito(idCredito);
+	}
+	
+
 }
