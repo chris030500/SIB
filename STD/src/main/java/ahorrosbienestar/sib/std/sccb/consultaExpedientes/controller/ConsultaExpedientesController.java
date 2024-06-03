@@ -25,8 +25,11 @@ import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigCon
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteCredito;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.consultaPagares.model.ConsultaPagares;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -50,6 +53,9 @@ public class ConsultaExpedientesController {
 	
 	@Autowired
 	private ExpedienteAfiliacionService expedienteAfiliacionService;
+	
+	@Autowired
+	private ImagenesExpedienteCreditoService imagenesExpCreditoService;
 	
 	
 	
@@ -86,6 +92,36 @@ public class ConsultaExpedientesController {
 		
 		return ResponseEntity.ok(expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente));
 	}
+	
+	
+	@RequestMapping(value = { "/getDetalleExpedienteCredito" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroIdExpedienteCredito(@RequestParam("idCredito") Integer idCredito) {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		Optional<ExpedienteCredito> expedienteCredito = expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
+		int idExpediente = expedienteCredito.get().getI_expediente_id();
+		
+		System.out.println(idExpediente);
+		
+		List<ImagenesExpedienteCredito> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
+		
+		try {
+			if (imagenes != null && !imagenes.isEmpty()) {
+				res.put("imagenes", imagenes);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("imagenes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+		
 	
 	public int validarAcceso() {
 		

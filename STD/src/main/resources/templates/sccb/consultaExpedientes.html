@@ -99,29 +99,57 @@
 					</div>
 				</div>
 			</form>
-			<div id="divMainTable" class="row table-reponsive justify-content-center" style="display: none;">
-				<table id="credito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>ID Expediente</th>
-							<th>Tipo</th>
-							<th>Fecha Creación</th>
-							<th>Contrato</th>
-							<th>Acuerdo</th>
-							<th>Estatus</th>
-						</tr>
-					</thead>
-				</table>
-				<table id="afiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>ID Expediente</th>
-							<th>Tipo</th>
-							<th>Fecha Creación</th>
-							<th>Estatus</th>
-						</tr>
-					</thead>
-				</table>
+			<div id="divMainTable" class="row justify-content-center mb-3" style="display: none;">
+				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					Expediente
+				</div>
+				<div class="table-responsive">
+					<table id="credito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>ID Expediente</th>
+								<th>Tipo</th>
+								<th>Fecha Creación</th>
+								<th>Contrato</th>
+								<th>Acuerdo</th>
+								<th>Estatus</th>
+							</tr>
+						</thead>
+					</table>
+					<table id="afiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>ID Expediente</th>
+								<th>Tipo</th>
+								<th>Fecha Creación</th>
+								<th>Estatus</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			
+			<div id="divDetalleExpediente" class="row justify-content-center mb-3" style="display: none;">
+				<div id="titleDetalleExpediente" class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					
+				</div>
+				<div class="row table-responsive">
+					<table id="detalleExpediente" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Requisito</th>
+								<th>Comprobante</th>
+								<th>Entregado</th>
+								<th>Fecha de Entregado</th>
+								<th>Fecha de Expedición</th>
+								<th>Control Interno</th>
+								<th>Nombre</th>
+								<th>Relación</th>
+								<th>Imagen Digitalizada</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
 			</div>
 		</div>
     </section>

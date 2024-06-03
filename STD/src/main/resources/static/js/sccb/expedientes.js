@@ -111,6 +111,7 @@ function buscarExpedienteCredito() {
 			else {
 				divMainTable.show();
 				$("#credito").css("display", "block");
+				
 				var tbody = "<tbody>"
 				+ "<tr>"
 				+ "<td>" + res.i_expediente_id + "</td>"
@@ -126,6 +127,48 @@ function buscarExpedienteCredito() {
 			}
 		}
 	}); 
+}
+
+function getDetalleExpedienteCredito() {
+	
+	var idCredito = $("#creditoBusqueda").val();
+	var divDetalleExpediente = $("#divDetalleExpediente");
+	
+	url = getAbsolutePath() + "getDetalleExpedienteCredito?idCredito=" + Number(idCredito);
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function (res) {
+			if (res == null || res == '') {
+				console.log("Error");
+				divDetalleExpediente.hide();
+			}
+			else {
+				console.log(res.imagenes);
+				divDetalleExpediente.show();
+				var tbody = "<tbody id='tbodyDetalleExpediente'></tbody>";
+				$("#detalleExpediente").append(tbody);
+				
+				$.each(res.imagenes, function(idx, opt) {
+					var rows = "<tr>" 
+					+ "<td>"+ opt.vc_tipo_requisito + "</td>"
+					+ "<td>" + opt.vc_tipo_comprobante + "</td>"
+					+ "<td>" + opt.vc_estatus_entregado + "</td>"
+					+ "<td>" + opt.dt_fecha_digitalizacion + "</td>"
+					+ "<td>" + opt.dt_valido_desde + "</td>"
+					+ "<td></td>"
+					+ "<td></td>"
+					+ "<td></td>"
+					+ "<td> <i class='bi bi-camera'></i> </td>"
+					+ "</tr>";
+					
+					$("#tbodyDetalleExpediente").append(rows);
+				});
+			}
+		}
+	});
 }
 
 function buscarExpedienteAfiliacion() {
@@ -173,5 +216,6 @@ function buscarDatos(){
 	
 	if (expOptionSelected == "2") {
 		buscarExpedienteCredito();
+		getDetalleExpedienteCredito();
 	}
 }
