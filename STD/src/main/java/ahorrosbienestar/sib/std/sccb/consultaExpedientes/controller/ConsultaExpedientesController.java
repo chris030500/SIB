@@ -25,6 +25,7 @@ import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigCon
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCreditoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -46,6 +47,9 @@ public class ConsultaExpedientesController {
 	
 	@Autowired
 	private ExpedienteCreditoService expedienteCreditoService; 
+	
+	@Autowired
+	private ExpedienteAfiliacionService expedienteAfiliacionService;
 	
 	
 	
@@ -73,6 +77,14 @@ public class ConsultaExpedientesController {
 		System.out.println(idCredito);	
 		
 		return ResponseEntity.ok(expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito));
+	}
+	
+	@RequestMapping(value = { "/getExpedienteAfiliacionByName" }, method = RequestMethod.GET)
+	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nomCliente") String nomCliente) {
+		
+		System.out.println(nomCliente);	
+		
+		return ResponseEntity.ok(expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente));
 	}
 	
 	public int validarAcceso() {

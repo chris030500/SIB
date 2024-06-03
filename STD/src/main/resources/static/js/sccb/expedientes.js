@@ -65,6 +65,30 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+function buscarNombre(name) {
+	
+	var selectName = $("#selectName");
+	var option = "";
+	
+	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	console.log(name);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function(res) {
+			console.log(res.participantes);
+			var participantes = res.participantes;
+			console.log(participantes.length);
+			for(var i = 0; i < participantes.length; i++) {
+				
+				option += "<option value='" + participantes[i].vc_nombre_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				
+				$("select#selectName").empty().append(option);
+			}
+		}
+	});
+}
 
 function buscarExpedienteCredito() {
 	var idCredito = $("#creditoBusqueda").val();
@@ -104,6 +128,50 @@ function buscarExpedienteCredito() {
 	}); 
 }
 
+function buscarExpedienteAfiliacion() {
+	var nomCliente = $("#selectName").val();
+	var divMainTable = $("#divMainTable");
+	
+	console.log(nomCliente);
+	
+	url = getAbsolutePath() + "getExpedienteAfiliacionByName?nomCliente=" + nomCliente;
+	
+		$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+			if (res == null || res == '') {
+				console.log("Error");
+				divMainTable.hide();
+			}
+			else {
+				console.log(res);
+				divMainTable.show();
+				$("#afiliacion").css("display", "block");
+				var tbody = "<tbody>"
+				+ "<tr>"
+				+ "<td>" + res.i_expediente_id + "</td>"
+				+ "<td>" + res.vc_tipo_expediente + "</td>"
+				+ "<td>" + res.dt_fecha_creacion + "</td>"
+				+ "<td></td>"
+				+ "</tr>"
+				+ "</tbody>";
+				
+				$("#afiliacion").append(tbody);
+			}
+		}
+	}); 
+	
+}
+
 function buscarDatos(){
-	buscarExpedienteCredito();
+	
+	if (expOptionSelected == "1") {
+		buscarExpedienteAfiliacion();
+	}
+	
+	if (expOptionSelected == "2") {
+		buscarExpedienteCredito();
+	}
 }
