@@ -210,10 +210,53 @@ function buscarExpedienteAfiliacion() {
 	
 }
 
+function getDetalleExpedienteAfiliacion() {
+	
+	var nomCliente = $("#selectName").val();
+	var divDetalleExpediente = $("#divDetalleExpediente");
+	
+	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?nomCliente=" + nomCliente;
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+			if (res == null || res == '') {
+				console.log("Error");
+				divDetalleExpediente.hide();
+			}
+			else {
+				divDetalleExpediente.show();
+				var tbody = "<tbody id='tbodyAfiliacion'></tbody>";
+				$("#detalleExpediente").append(tbody);
+				
+				$.each(res.imagenes, function(idx, opt) {
+					var rows = "<tr>"
+					+ "<td>" + opt.vc_tipo_requisito + "</td>"
+					+ "<td>" + opt.vc_tipo_comprobante + "</td>"
+					+ "<td>" + opt.vc_estatus_entregado + "</td>"
+					+ "<td>" + opt.dt_fecha_digitalizacion + "</td>"
+					+ "<td>" + opt.dt_valido_desde + "</td>"
+					+ "<td></td>"
+					+ "<td></td>"
+					+ "<td></td>"
+					+ "<td><i class='bi bi-camera'></i> </td>"
+					+ "</tr>";
+					
+					$("#tbodyAfiliacion").append(rows);
+				});
+			}
+			
+		}
+	});
+}
+
 function buscarDatos(){
 	
 	if (expOptionSelected == "1") {
 		buscarExpedienteAfiliacion();
+		getDetalleExpedienteAfiliacion();
 	}
 	
 	if (expOptionSelected == "2") {

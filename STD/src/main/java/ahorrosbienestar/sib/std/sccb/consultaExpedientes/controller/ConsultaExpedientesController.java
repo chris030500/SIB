@@ -24,10 +24,13 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteAfiliacion;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteAfiliacion;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteCredito;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteCreditoService;
 import ahorrosbienestar.sib.std.sccb.consultaPagares.model.ConsultaPagares;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -56,6 +59,9 @@ public class ConsultaExpedientesController {
 	
 	@Autowired
 	private ImagenesExpedienteCreditoService imagenesExpCreditoService;
+	
+	@Autowired
+	private ImagenesExpedienteAfiliacionService imagenesExpAfiliacionService;
 	
 	
 	
@@ -105,6 +111,34 @@ public class ConsultaExpedientesController {
 		System.out.println(idExpediente);
 		
 		List<ImagenesExpedienteCredito> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
+		
+		try {
+			if (imagenes != null && !imagenes.isEmpty()) {
+				res.put("imagenes", imagenes);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("imagenes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getDetalleExpedienteAfiliacion" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroIdExpedienteAfiliacion(@RequestParam("nomCliente") String nomCliente) {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
+		int idExpediente = expedienteAfiliacion.get().getI_expediente_id();
+		
+		System.out.println(idExpediente);
+		
+		List<ImagenesExpedienteAfiliacion> imagenes = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
 		
 		try {
 			if (imagenes != null && !imagenes.isEmpty()) {
