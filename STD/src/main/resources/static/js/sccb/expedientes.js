@@ -20,12 +20,16 @@ $(document).ready(function () {
 					$("#divCredito").hide();
 					$("#divName").hide();
 					$("#btnBuscar").hide();
+					$("#optIdCredito").hide();
+					$("#optNombre").show();
 					break;
 				case "2": 
 					$("#divTipoBusqueda").show();
 					$("#divCredito").hide();
 					$("#divName").hide();
 					$("#btnBuscar").hide();
+					$("#optIdCredito").show();
+					$("#optNombre").hide();
 					break;
 			}
 		}
@@ -57,6 +61,9 @@ $(document).ready(function () {
 
 function defaultView() {
 	$("#divMainTable").hide();
+	$("#divTblCredito").hide();
+	$("#divTblAfiliacion").hide();
+	$("#divDetalleExpediente").hide();
 }
 
 function getAbsolutePath() {
@@ -111,13 +118,20 @@ function buscarExpedienteCredito() {
 			else {
 				divMainTable.show();
 				$("#divTblCredito").css("display", "block");
+				
+				var idExpediente = (res.i_expediente_id != null) ? res.i_expediente_id : "";
+				var tipoExpediente = (res.vc_tipo_expediente != null) ? res.vc_tipo_expediente : "";
+				var fechaCreacion = (res.dt_fecha_creacion != null) ? res.dt_fecha_creacion : "";
+				var idSolicitud = (res.i_solicitud_id != null) ? res.i_solicitud_id : "";
+				var idCredito = (res.i_credito_id != null) ? res.i_credito_id : "";
+				
 				var tbody = "<tbody>"
 				+ "<tr>"
-				+ "<td>" + res.i_expediente_id + "</td>"
-				+ "<td>" + res.vc_tipo_expediente + "</td>"
-				+ "<td>" + res.dt_fecha_creacion + "</td>"
-				+ "<td>" + res.i_solicitud_id + "</td>"
-				+ "<td>" + res.i_credito_id + "</td>"
+				+ "<td>" + idExpediente + "</td>"
+				+ "<td>" + tipoExpediente + "</td>"
+				+ "<td>" + fechaCreacion + "</td>"
+				+ "<td>" + idSolicitud + "</td>"
+				+ "<td>" + idCredito + "</td>"
 				+ "<td></td>"
 				+ "</tr>"
 				+ "</tbody>";
@@ -132,7 +146,7 @@ function getDetalleExpedienteCredito() {
 	
 	var idCredito = $("#creditoBusqueda").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
-	var divTitle = "Detalle de Expediente de Crédito";
+	var divTitle = "<p>Detalle de Expediente de Crédito</p>";
 	
 	$("#titleDetalleExpediente").append(divTitle);
 	
@@ -154,12 +168,19 @@ function getDetalleExpedienteCredito() {
 				$("#detalleExpediente").append(tbody);
 				
 				$.each(res.imagenes, function(idx, opt) {
+					
+					var tipoRequisito = (opt.vc_tipo_requisito != null) ? opt.vc_tipo_requisito : "";
+					var tipoComprobante = (opt.vc_tipo_comprobante != null) ? opt.vc_tipo_comprobante : "";
+					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
+					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
+					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
+					
 					var rows = "<tr>" 
-					+ "<td>"+ opt.vc_tipo_requisito + "</td>"
-					+ "<td>" + opt.vc_tipo_comprobante + "</td>"
-					+ "<td>" + opt.vc_estatus_entregado + "</td>"
-					+ "<td>" + opt.dt_fecha_digitalizacion + "</td>"
-					+ "<td>" + opt.dt_valido_desde + "</td>"
+					+ "<td>"+ tipoRequisito + "</td>"
+					+ "<td>" + tipoComprobante + "</td>"
+					+ "<td>" + estatusEntregado + "</td>"
+					+ "<td>" + fechaDigitalizacion + "</td>"
+					+ "<td>" + validoDesde + "</td>"
 					+ "<td></td>"
 					+ "<td></td>"
 					+ "<td></td>"
@@ -194,11 +215,16 @@ function buscarExpedienteAfiliacion() {
 				console.log(res);
 				divMainTable.show();
 				$("#divTblAfiliacion").css("display", "block");
+				
+				var idExpediente = (res.i_expediente_id != null) ? res.i_expediente_id : "";
+				var tipoExpediente = (res.vc_tipo_expediente != null) ? res.vc_tipo_expediente : "";
+				var fechaCreacion = (res.dt_fecha_creacion != null) ? res.dt_fecha_creacion : "";
+				
 				var tbody = "<tbody>"
 				+ "<tr>"
-				+ "<td>" + res.i_expediente_id + "</td>"
-				+ "<td>" + res.vc_tipo_expediente + "</td>"
-				+ "<td>" + res.dt_fecha_creacion + "</td>"
+				+ "<td>" + idExpediente + "</td>"
+				+ "<td>" + tipoExpediente + "</td>"
+				+ "<td>" + fechaCreacion + "</td>"
 				+ "<td></td>"
 				+ "</tr>"
 				+ "</tbody>";
@@ -214,6 +240,9 @@ function getDetalleExpedienteAfiliacion() {
 	
 	var nomCliente = $("#selectName").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
+	var divTitle = "<p>Detalle de Expediente de Afiliación</p>";
+	
+	$("#titleDetalleExpediente").append(divTitle);
 	
 	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?nomCliente=" + nomCliente;
 	
@@ -232,12 +261,18 @@ function getDetalleExpedienteAfiliacion() {
 				$("#detalleExpediente").append(tbody);
 				
 				$.each(res.imagenes, function(idx, opt) {
+					var tipoRequisito = (opt.vc_tipo_requisito != null) ? opt.vc_tipo_requisito : "";
+					var tipoComprobante = (opt.vc_tipo_comprobante != null) ? opt.vc_tipo_comprobante : "";
+					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
+					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
+					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
+					
 					var rows = "<tr>"
-					+ "<td>" + opt.vc_tipo_requisito + "</td>"
-					+ "<td>" + opt.vc_tipo_comprobante + "</td>"
-					+ "<td>" + opt.vc_estatus_entregado + "</td>"
-					+ "<td>" + opt.dt_fecha_digitalizacion + "</td>"
-					+ "<td>" + opt.dt_valido_desde + "</td>"
+					+ "<td>" + tipoRequisito + "</td>"
+					+ "<td>" + tipoComprobante + "</td>"
+					+ "<td>" + estatusEntregado + "</td>"
+					+ "<td>" + fechaDigitalizacion + "</td>"
+					+ "<td>" + validoDesde + "</td>"
 					+ "<td></td>"
 					+ "<td></td>"
 					+ "<td></td>"
@@ -252,7 +287,20 @@ function getDetalleExpedienteAfiliacion() {
 	});
 }
 
-function buscarDatos(){
+function cleanTables() {
+	$("#credito > tbody").remove();
+	$("#tbodyDetalleExpediente").remove();
+	$("#afiliacion > tbody").remove();
+	$("#tbodyAfiliacion").remove();
+	$("#titleDetalleExpediente > p").remove();
+	
+	$("#divTblCredito").css("display", "none");
+	$("#divTblAfiliacion").css("display", "none");
+}
+
+function buscarDatos() {
+	
+	cleanTables();
 	
 	if (expOptionSelected == "1") {
 		buscarExpedienteAfiliacion();
