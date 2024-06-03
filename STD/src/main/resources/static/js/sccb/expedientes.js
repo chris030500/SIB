@@ -106,12 +106,11 @@ function buscarExpedienteCredito() {
 			console.log(res);
 			if (res == null || res == '') {
 				console.log("Error");
-				divMainTable.hide();
+				divMainTable.hide();	
 			}
 			else {
 				divMainTable.show();
-				$("#credito").css("display", "block");
-				
+				$("#divTblCredito").css("display", "block");
 				var tbody = "<tbody>"
 				+ "<tr>"
 				+ "<td>" + res.i_expediente_id + "</td>"
@@ -133,6 +132,9 @@ function getDetalleExpedienteCredito() {
 	
 	var idCredito = $("#creditoBusqueda").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
+	var divTitle = "Detalle de Expediente de Crédito";
+	
+	$("#titleDetalleExpediente").append(divTitle);
 	
 	url = getAbsolutePath() + "getDetalleExpedienteCredito?idCredito=" + Number(idCredito);
 	
@@ -191,7 +193,7 @@ function buscarExpedienteAfiliacion() {
 			else {
 				console.log(res);
 				divMainTable.show();
-				$("#afiliacion").css("display", "block");
+				$("#divTblAfiliacion").css("display", "block");
 				var tbody = "<tbody>"
 				+ "<tr>"
 				+ "<td>" + res.i_expediente_id + "</td>"
