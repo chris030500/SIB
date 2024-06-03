@@ -18,8 +18,4 @@ public class HistorialAsignacionService {
 	public List<HistorialAsignacion> searchByIdCreditoHistorialAsig(Integer idCredito) {
 		return iHistorialAsignacionRepository.getByIdCreditoHistorialAsignacion(idCredito);
 	}
-	
-	public Optional<HistorialAsignacion> searchByIdCreditoRowHistAsig(Integer idCredito) {
-		return iHistorialAsignacionRepository.getByIdCreditoRowHistAsig(idCredito);
-	}
 }
