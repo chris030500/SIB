@@ -30,6 +30,99 @@
 					</div>
 				</div>
         	</div>
+        	<form>
+				<div class="row p-4">
+					<div class="col-6">
+						<div class="row justify-content-center">
+							<div class="col">
+								<div class="col-auto">
+									<label class="form-label">Tipo de expediente: </label>
+								</div>
+								<div class="col-auto">
+									<select class="form-control" id="opcionesTipoExpediente">
+										<option value="0">Seleccione</option>
+										<option value="1">Afiliación</option>
+										<option value="2">Crédito</option>
+									</select>
+								</div>
+							</div>
+							<div class="col" style="display: none;" id="divTipoBusqueda">
+								<div class="col-auto">
+									<label class="form-label">Buscar: </label>
+								</div>
+								<div class="col-auto">
+									<select class="form-control" id="opcionesTipoBusqueda">
+										<option value="0">Seleccione</option>
+										<option value="1">No. de crédito</option>
+										<option value="2">Nombre</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-5">
+						<div class="row justify-content-center" style="display: none;" id="divCredito">
+							<div class="col-3">
+								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
+							</div>
+							<div class="col-8">
+								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
+								placeholder="No. de crédito">
+							</div>
+						</div>
+						
+						<div class="row justify-content-center" style="display: none;" id="divName">
+							<div class="col-3">
+								<label for="nameBusqueda" class="col-form-label">Nombre</label>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<input id="nameBusqueda" type="search" class="form-control"
+									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
+								</div>
+							</div>
+							<div class="row p-2">
+								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
+										
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-1">
+						<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+						title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+						th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
+							
+							<i class="bi bi-search"></i>
+							
+						</button>
+					</div>
+				</div>
+			</form>
+			<div id="divMainTable" class="row table reponsive justify-content-center" style="display: none;">
+				<table id="credito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
+					<thead style="background-color: #0D6EFD;">
+						<tr class="text-white" style="font-weight: bold;">
+							<th>ID Expediente</th>
+							<th>Tipo</th>
+							<th>Fecha Creación</th>
+							<th>Contrato</th>
+							<th>Acuerdo</th>
+							<th>Estatus</th>
+						</tr>
+					</thead>
+				</table>
+				<table id="afilicacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%; display: none;">
+					<thead style="background-color: #0D6EFD;">
+						<tr class="text-white" style="font-weight: bold;">
+							<th>ID Expediente</th>
+							<th>Tipo</th>
+							<th>Fecha Creación</th>
+							<th>Estatus</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
 		</div>
     </section>
     <th:block layout:fragment="page-scripts">
@@ -40,6 +133,7 @@
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+        <script th:src="@{/js/sccb/expedientes.js}"></script>
     </th:block>
 </body>
 
