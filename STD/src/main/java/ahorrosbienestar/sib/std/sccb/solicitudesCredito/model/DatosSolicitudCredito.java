@@ -193,9 +193,6 @@ public class DatosSolicitudCredito {
 	@Column(name = "VC_NOMBRE_DESTINO")
 	private String vc_nombre_destino;
 	
-	@Column(name = "VC_NOMBRE_TARIFA")
-	private String vc_nombre_tarifa;
-	
 	@Column(name = "I_DEP_EN_RESPALDO")
 	private Integer i_dep_en_respaldo;
 	
@@ -204,10 +201,6 @@ public class DatosSolicitudCredito {
 	
 	@Column(name = "VC_DESCRIPCION_FRECUENCIA")
 	private String vc_descripcion_frecuencia;
-	
-	@JsonFormat(pattern = "dd-MM-yyyy")
-	@Column(name = "DT_FECHA_DESEMBOLSO")
-	private Date dt_fecha_desembolso;
 	
 	@Column(name = "I_REVISION_VEHICULAR")
 	private Integer i_revision_vehicular;
@@ -676,14 +669,6 @@ public class DatosSolicitudCredito {
 		this.vc_nombre_destino = vc_nombre_destino;
 	}
 
-	public String getVc_nombre_tarifa() {
-		return vc_nombre_tarifa;
-	}
-
-	public void setVc_nombre_tarifa(String vc_nombre_tarifa) {
-		this.vc_nombre_tarifa = vc_nombre_tarifa;
-	}
-
 	public Integer getI_dep_en_respaldo() {
 		return i_dep_en_respaldo;
 	}
@@ -706,15 +691,6 @@ public class DatosSolicitudCredito {
 
 	public void setVc_descripcion_frecuencia(String vc_descripcion_frecuencia) {
 		this.vc_descripcion_frecuencia = vc_descripcion_frecuencia;
-	}
-
-
-	public Date getDt_fecha_desembolso() {
-		return dt_fecha_desembolso;
-	}
-
-	public void setDt_fecha_desembolso(Date dt_fecha_desembolso) {
-		this.dt_fecha_desembolso = dt_fecha_desembolso;
 	}
 
 	public Integer getI_revision_vehicular() {
@@ -754,13 +730,11 @@ public class DatosSolicitudCredito {
 				+ i_comision_apertura + ", i_tipo_rol_persona=" + i_tipo_rol_persona + ", i_tarifa_garantia="
 				+ i_tarifa_garantia + ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_credito_id_safi="
 				+ i_credito_id_safi + ", vc_observaciones=" + vc_observaciones + ", vc_observaciones_cc="
-				+ vc_observaciones_cc + ", vc_nombre_destino=" + vc_nombre_destino + ", vc_nombre_tarifa="
-				+ vc_nombre_tarifa + ", i_dep_en_respaldo=" + i_dep_en_respaldo + ", i_cmsn_imp_credito="
-				+ i_cmsn_imp_credito + ", vc_descripcion_frecuencia=" + vc_descripcion_frecuencia
-				+ ", dt_fecha_desembolso=" + dt_fecha_desembolso + ", i_revision_vehicular=" + i_revision_vehicular
-				+ "]";
+				+ vc_observaciones_cc + ", vc_nombre_destino=" + vc_nombre_destino + ", i_dep_en_respaldo="
+				+ i_dep_en_respaldo + ", i_cmsn_imp_credito=" + i_cmsn_imp_credito + ", vc_descripcion_frecuencia="
+				+ vc_descripcion_frecuencia + ", i_revision_vehicular=" + i_revision_vehicular + "]";
 	}
-
+	
 	
 	
 }

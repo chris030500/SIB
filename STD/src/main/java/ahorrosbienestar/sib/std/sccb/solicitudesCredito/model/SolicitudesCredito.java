@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "TBL_SCCB_SOLICITUDES")
 public class SolicitudesCredito {
 	
-	@Column(name = "PK_I_ROW_GUID")
 	@Id
+	@Column(name = "PK_I_ROW_GUID")
 	private Integer pk_i_row_guid;
 	
 	@Column(name = "I_SOLICITUD_ID")
@@ -44,20 +44,20 @@ public class SolicitudesCredito {
 	@Column(name = "FL_MONTO")
 	private Float fl_monto;
 	
-	@Column(name = "DT_FECHA_RECEPCION")
 	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_RECEPCION")
 	private Date dt_fecha_recepcion;
 	
-	@Column(name = "DT_FECHA_INICIO_TRAMITE")
 	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_INICIO_TRAMITE")
 	private Date dt_fecha_inicio_tramite;
 	
-	@Column(name = "DT_FECHA_AUTORIZACION")
 	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_AUTORIZACION")
 	private Date dt_fecha_autorizacion;
 	
-	@Column(name = "DT_FECHA_DESEMBOLSO")
 	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_DESEMBOLSO")
 	private Date dt_fecha_desembolso;
 	
 	@Column(name = "I_NO_CLIENTE_SAFI")

@@ -118,7 +118,9 @@ function cleanTable() {
 function buscarDatos() {
 	cleanTable();
 	var divTable = $('#divTable');
+	var divDatosSolicitud = $("#divDatosSolicitud");
 	divTable.hide();
+	divDatosSolicitud.hide();
 	
 	console.log(getUrlSolicitudes());
 	
@@ -137,23 +139,23 @@ function buscarDatos() {
 				$("#solicitudes").append(tbody);
 				$.each(res.solicitudes, function(idx, opt) {
 					var fechaRecepcion = (opt.dt_fecha_recepcion != null) ? opt.dt_fecha_recepcion : "";
-					var fechaInicioTramite = (opt.dt_inicio_tramite != null) ? opt.dt_fecha_inicio_tramite : "";
+					var fechaInicioTramite = (opt.dt_fecha_inicio_tramite != null) ? opt.dt_fecha_inicio_tramite : "";
 					var fechaAutorizacion = (opt.dt_fecha_autorizacion != null) ? opt.dt_fecha_autorizacion : "";
 					var fechaDesembolso = (opt.dt_fecha_desembolso != null) ? opt.dt_fecha_desembolso : "";
 					var rows = "<tr>"
-						+ "<td style='width: 300px;' onclick='showSolicitud(" + opt.i_solicitud_id + ")'>" + opt.i_solicitud_id + "</td>"
-						+ "<td style='width: 300px;'>" + opt.i_credito_id + "</td>"
-						+ "<td style='width: 400px;'>" + opt.vc_nombre_cliente + "</td>"
-						+ "<td style='width: 300px;'>" + opt.i_no_cliente + "</td>"
-						+ "<td style='width: 300px;'>" + opt.vc_rol + "</td>"
-						+ "<td style='width: 300px;'>" + opt.vc_nombre_centro + "</td>"
-						+ "<td style='width: 300px;'>" + opt.vc_etapa + "</td>"
-						+ "<td style='width: 300px;'>" + opt.vc_estatus + "</td>"
-						+ "<td style='width: 300px;'>" + "$" + opt.fl_monto + ".00" + "</td>"
-						+ "<td style='width: 350px;'>" + fechaRecepcion + "</td>"
-						+ "<td style='width: 300px;'>" + fechaInicioTramite + "</td>"
-						+ "<td style='width: 300px;'>" + fechaAutorizacion + "</td>"
-						+ "<td style='width: 300px;'>" + fechaDesembolso + "</td>"
+						+ "<td style='width: 7.69%;' onclick='showSolicitud(" + opt.i_solicitud_id + ")'>" + opt.i_solicitud_id + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.i_credito_id + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.vc_nombre_cliente + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.i_no_cliente + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.vc_rol + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.vc_nombre_centro + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.vc_etapa + "</td>"
+						+ "<td style='width: 7.69%;'>" + opt.vc_estatus + "</td>"
+						+ "<td style='width: 7.69%;'>" + "$" + opt.fl_monto + ".00" + "</td>"
+						+ "<td style='width: 7.69%;'>" + fechaRecepcion + "</td>"
+						+ "<td style='width: 7.69%;'>" + fechaInicioTramite + "</td>"
+						+ "<td style='width: 7.69%;'>" + fechaAutorizacion + "</td>"
+						+ "<td style='width: 7.69%;'>" + fechaDesembolso + "</td>"
 						+ "</tr>";
 					$("#solicitudes > tbody").append(rows);
 					
@@ -193,6 +195,7 @@ function cleanSolicitud() {
 	$("#tdRow2").remove();
 	$("#tdRow3").remove();
 	$("#tdRow4").remove();
+	$("#tdRow5").remove();
 	$("#pObservaciones").remove();
 	$("#pObservacionesCC").remove();
 }
@@ -234,14 +237,14 @@ function showSolicitud(parametroSolicitud) {
 				var centro = (res.i_centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.i_centro_id + " " + res.vc_nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: 0</p>";
 				var fechaInicioTramite = (res.dt_fecha_inicio_tramite != null) ? "<p id='pFechaInicioTramite'>" + res.dt_fecha_inicio_tramite + "</p>" : "<p id='pFechaInicioTramite'></p>";
 				var fechaAutorizacion = (res.dt_fecha_autorizacion != null) ?  "<p id='pFechaAutorizacion'>" + res.dt_fecha_autorizacion + "</p>" : "<p id='pFechaAutorizacion'></p>";
-				var fechaDesembolso = (res.dt_fecha_desembolso != null) ? "<p id='pFechaDesembolso'>" + res.dt_fecha_desembolso + "</p>" : "<p id='pFechaDesembolso'></p>";
+				var fechaDesembolso = "<p id='pFechaDesembolso'></p>";
 				var fechaReconsideracion = (res.dt_fecha_reconsideracion != null) ? "<p id='pFechaReconsideracion'>" + res.dt_fecha_reconsideracion + "</p>" : "<p id='pFechaReconsideracion'></p>";
 				var montoAvaluo = (res.i_valor_avaluo != null) ? "<p id='pMontoAvaluo'>" + "$" + res.i_valor_avaluo + "</p>" : "<p id='pMontoAvaluo'></p>";
 				var observaciones = (res.vc_observaciones != null) ? "<p id='pObservaciones'>" + res.vc_observaciones + "</p>" : "<p id='pObservaciones'></p>";
 				var observacionesCC = (res.vc_observaciones_cc != null) ? "<p id='pObservacionesCC'>" + res.vc_observaciones_cc + "</p>" : "<p id='pObservacionesCC'></p>";
 				
 				var noCliente = (res.i_no_cliente != null) ? res.i_no_cliente : "";
-				var nombreTarifa = (res.vc_nombre_tarifa != null) ? res.vc_nombre_tarifa : "";
+				var nombreTarifa = "";
 				var numeroTantos = (res.i_numero_tantos != null) ? res.i_numero_tantos : "";
 				var tasaNormal = (res.fl_tasa_normal != null) ? res.fl_tasa_normal + "%" : "";
 				var nombreCompleto = (res.vc_nombre_completo != null) ? res.vc_nombre_completo : "";
@@ -254,7 +257,7 @@ function showSolicitud(parametroSolicitud) {
 				var numAbonosDiferidos = (res.i_num_abonos_diferidos != null) ? res.i_num_abonos_diferidos : "";
 				var nombreDestino = (res.vc_nombre_destino != null) ? res.vc_nombre_destino : "";
 				var descFrecuencia = (res.vc_descripcion_frecuencia != null) ? res.vc_descripcion_frecuencia : "";
-				var cmsnAseFin = (res.fl_cmsn_ase_fin != null) ? res.fl_cmsn_ase_fin : "";
+				var cmsnAseFin = (res.fl_cmsn_ase_fin != null) ? res.fl_cmsn_ase_fin : "0";
 				var revisionVehicular = (res.i_revision_vehicular != null) ? res.i_revision_vehicular : "";
 				var analista = (res.i_empleado_analiza_id != null) ? res.i_empleado_analiza_id : "";
 				
@@ -298,7 +301,7 @@ function showSolicitud(parametroSolicitud) {
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Revisión Vehicular</td>"
 								+ "<td style='width: 12.5%;'>" + revisionVehicular + "</td>"
 							 + "</tr>"
-							 + "<tr id='tdRow4' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
+							 + "<tr id='tdRow5' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Analista</td>"
 								+ "<td style='width: 12.5%;'>" + analista + "</td>"
 							 + "</tr>";
