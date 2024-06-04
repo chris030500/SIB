@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -148,8 +149,6 @@ public class SolicitudesCredito {
 	public void setFl_monto(Float fl_monto) {
 		this.fl_monto = fl_monto;
 	}
-	
-	
 
 	public Date getDt_fecha_recepcion() {
 		return dt_fecha_recepcion;
@@ -218,8 +217,6 @@ public class SolicitudesCredito {
 				+ i_no_cliente_safi + ", i_credito_id_safi=" + i_credito_id_safi + ", vc_nombre_centro="
 				+ vc_nombre_centro + "]";
 	}
-	
-	
 	
 
 }

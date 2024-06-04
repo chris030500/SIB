@@ -12,9 +12,9 @@ import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.SolicitudesCredito
 @Repository
 public interface ISolicitudesCreditoRepository extends JpaRepository<SolicitudesCredito, Integer> {
 	
-	@Query(value = "SELECT T1.*, T2.DT_FECHA_INICIO_TRAMITE AS DT_INICIO_TRAMITE "
+	@Query(value = "SELECT T1.*, T2.DT_FECHA_INICIO_TRAMITE "
 			+ "FROM TBL_SCCB_SOLICITUDES T1 "
-			+ "JOIN TBL_SCCB_DATOS_SOLICITUD T2 "
+			+ "LEFT JOIN TBL_SCCB_DATOS_SOLICITUD T2 "
 			+ "ON T2.I_SOLICITUD_ID = T1.I_SOLICITUD_ID "
 			+ "WHERE T1.I_CREDITO_ID = :idCredito "
 			+ "ORDER BY T1.I_SOLICITUD_ID ", nativeQuery = true)

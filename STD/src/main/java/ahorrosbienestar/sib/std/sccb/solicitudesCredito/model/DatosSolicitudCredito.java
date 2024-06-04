@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -734,7 +736,5 @@ public class DatosSolicitudCredito {
 				+ i_dep_en_respaldo + ", i_cmsn_imp_credito=" + i_cmsn_imp_credito + ", vc_descripcion_frecuencia="
 				+ vc_descripcion_frecuencia + ", i_revision_vehicular=" + i_revision_vehicular + "]";
 	}
-	
-	
 	
 }
