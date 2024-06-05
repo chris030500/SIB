@@ -88,57 +88,61 @@
 			</form>
 			
 			<div id="divTableGenerales" class="row justify-content-center mb-3" style="display: none;">
-				<table id="datosGenerales" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>Acuerdo de Crédito</th>
-							<th>Banda</th>
-							<th>Importe</th>
-							<th>Saldo actual</th>
-							<th>Atraso total</th>
-							<th>Adeudo total</th>
-							<th>Inf. al día</th>
-							<th>Intención</th>
-							<th>CJ</th>
-						</tr>
-					</thead>
-				</table>
+				<div class="table-responsive">
+					<table id="datosGenerales" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Acuerdo de Crédito</th>
+								<th>Banda</th>
+								<th>Importe</th>
+								<th>Saldo actual</th>
+								<th>Atraso total</th>
+								<th>Adeudo total</th>
+								<th>Inf. al día</th>
+								<th>Intención</th>
+								<th>CJ</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
 			</div>
 			
 			<div id="divParticipantes" class="row justify-content-center mb-3" style="display: none;">
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Participantes
 				</div>
-				<table id="participantes" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
-					<thead style="background-color: #0D6EFD;">
-						<tr class="text-white" style="font-weight: bold;">
-							<th>Cliente</th>
-							<th>Nombre</th>
-							<th>Rol</th>
-							<th>Tipología</th>
-						</tr>
-					</thead>
-				</table>
+				<div class="table-responsive">
+					<table id="participantes" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Cliente</th>
+								<th>Nombre</th>
+								<th>Rol</th>
+								<th>Tipología</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
 			</div>
 			
 			<div id="divExpedientesNegociacion" class="row justify-content-center mb-3" style="display: none;">
 				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
 					Expedientes de Negociación
 				</div>
-				<div class="row table-responsive">
-					<table id="expedientesNegociacion" class="table table-bordered table-sm" style="font-size: small; text-align: center; width: 100%;">
+				<div class="table-responsive">
+					<table id="expedientesNegociacion" class="table table-bordered" style="font-size: small; text-align: center;">
 						<thead style="background-color: #0D6EFD;">
 							<tr class="text-white" style="font-weight: bold;">
-								<th scope="col">No.</th>
-								<th scope="col">Tipo</th>
-								<th scope="col">Exp. Jud.</th>
-								<th scope="col">Negociador</th>
-								<th scope="col">Estatus</th>
-								<th scope="col">Fecha Asignación</th>
-								<th scope="col">Asignó</th>
-								<th scope="col">Apertura</th>
-								<th scope="col">Cierre</th>
-								<th scope="col">Generó</th>
+								<th>No.</th>
+								<th>Tipo</th>
+								<th>Exp. Jud.</th>
+								<th>Negociador</th>
+								<th>Estatus</th>
+								<th>Fecha Asignación</th>
+								<th>Asignó</th>
+								<th>Apertura</th>
+								<th>Cierre</th>
+								<th>Generó</th>
 							</tr>
 						</thead>
 					</table>
@@ -152,97 +156,99 @@
 				<div class="mb-3" style="background-color: #D9D9D9; text-align: start; font-weight: bold;">
 					Datos Crédito
 				</div>
-				<table id="datosCredito" class="table table-bordered table-sm border-2" style="font-size: smaller; text-align: center; border-color: whitesmoke;">
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Importe</td>
-						<td id="tdImporte" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Saldo actual</td>
-						<td id="tdSaldoActual" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Días de mora</td>
-						<td id="tdDiasMora" style="background-color: #D9D9D9;"></td>
-					</tr>
+				<div class="table-responsive">
+					<table id="datosCredito" class="table table-bordered table-sm border-2" style="font-size: smaller; text-align: center; border-color: whitesmoke;">
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Importe</td>
+							<td id="tdImporte" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Saldo actual</td>
+							<td id="tdSaldoActual" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Días de mora</td>
+							<td id="tdDiasMora" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Inicio del crédito</td>
-						<td id="tdFechaInicio" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Interés Normal</td>
-						<td id="tdInteresNormal" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Banda</td>
-						<td id="tdBanda" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Inicio del crédito</td>
+							<td id="tdFechaInicio" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Interés Normal</td>
+							<td id="tdInteresNormal" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Banda</td>
+							<td id="tdBanda" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Normal</td>
-						<td id="tdTasaInteresNormal" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Normal</td>
-						<td id="tdIVAInteresNormal" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Facturas impagadas</td>
-						<td id="tdFacturasImpaagadas" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Normal</td>
+							<td id="tdTasaInteresNormal" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Normal</td>
+							<td id="tdIVAInteresNormal" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Facturas impagadas</td>
+							<td id="tdFacturasImpaagadas" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Moratorio</td>
-						<td id="tdTasaIntMoratorio" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Interés Moratorio</td>
-						<td id="tdIntMoratorio" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Calificación</td>
-						<td id="tdCalificacion" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Tasa Interés Moratorio</td>
+							<td id="tdTasaIntMoratorio" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Interés Moratorio</td>
+							<td id="tdIntMoratorio" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Calificación</td>
+							<td id="tdCalificacion" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Plazo</td>
-						<td id="tdPlazo" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Moratorio</td>
-						<td id="tdIVAIntMoratorio" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Intencionalidad</td>
-						<td id="tdIntencionalidad" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>	
+							<td style="background-color: #BDECFB; font-weight: bold;">Plazo</td>
+							<td id="tdPlazo" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">IVA Interés Moratorio</td>
+							<td id="tdIVAIntMoratorio" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Intencionalidad</td>
+							<td id="tdIntencionalidad" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Frecuencia de pago</td>
-						<td id="tdFrecuenciaPago" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Comisiones pagadas</td>
-						<td id="tdCmsnPagadas" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Etapa</td>
-						<td id="tdEtapa" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Frecuencia de pago</td>
+							<td id="tdFrecuenciaPago" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Comisiones pagadas</td>
+							<td id="tdCmsnPagadas" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Etapa</td>
+							<td id="tdEtapa" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Vencimiento</td>
-						<td id="tdVencimiento" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">IVA de Comisiones pag.</td>
-						<td id="tdIvaCmsnPag" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Despacho</td>
-						<td id="tdDespacho" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Vencimiento</td>
+							<td id="tdVencimiento" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">IVA de Comisiones pag.</td>
+							<td id="tdIvaCmsnPag" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Despacho</td>
+							<td id="tdDespacho" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Centro del Crédito</td>
-						<td id="tdCentroCredito" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Gastos</td>
-						<td id="tdGastos" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Negociador asignado</td>
-						<td id="tdNegociador" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Centro del Crédito</td>
+							<td id="tdCentroCredito" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Gastos</td>
+							<td id="tdGastos" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Negociador asignado</td>
+							<td id="tdNegociador" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Tipo crédito</td>
-						<td id="tdTipoCredito" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Atraso a Capital</td>
-						<td id="tdAtrasoCapital" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Analista</td>
-						<td id="tdAnalista" style="background-color: #D9D9D9;"></td>
-					</tr>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Tipo crédito</td>
+							<td id="tdTipoCredito" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Atraso a Capital</td>
+							<td id="tdAtrasoCapital" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Analista</td>
+							<td id="tdAnalista" style="background-color: #D9D9D9;"></td>
+						</tr>
 					
-					<tr>
-						<td style="background-color: #BDECFB; font-weight: bold;">Tarifa</td>
-						<td id="tdTarifa" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Atraso total</td>
-						<td id="tdAtrasoTotal" style="background-color: #D9D9D9;"></td>
-						<td style="background-color: #BDECFB; font-weight: bold;">Último movimiento</td>
-						<td id="tdUltimoMovto" style="background-color: #D9D9D9;"></td>
-					</tr>
-				</table>
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">Tarifa</td>
+							<td id="tdTarifa" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Atraso total</td>
+							<td id="tdAtrasoTotal" style="background-color: #D9D9D9;"></td>
+							<td style="background-color: #BDECFB; font-weight: bold;">Último movimiento</td>
+							<td id="tdUltimoMovto" style="background-color: #D9D9D9;"></td>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
     </section>

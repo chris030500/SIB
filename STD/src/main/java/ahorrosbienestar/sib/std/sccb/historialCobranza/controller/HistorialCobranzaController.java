@@ -25,6 +25,7 @@ import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigCon
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialCobranza;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialCobranzaService;
@@ -46,22 +47,22 @@ public class HistorialCobranzaController {
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
-	 @Autowired
-	 private OpcionesMenuService opcionesMenuService;
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
 	 
-	 @Autowired
-	 private HistorialAsignacionService historialAsigService;
+	@Autowired
+	private HistorialAsignacionService historialAsigService;
 	 
-	 @Autowired
-	 private DatosSolicitudCreditoService datosSolicitudService;
+	@Autowired
+	private DatosSolicitudCreditoService datosSolicitudService;
 	 
-	 @Autowired
-	 private ParticipantesService participantesService;
+	@Autowired
+	private ParticipantesService participantesService;
 	 
-	 @Autowired
-	 private HistorialCobranzaService historialCobranzaService;
+	@Autowired
+	private HistorialCobranzaService historialCobranzaService;
 	 
-	 private String rutaDireccion = "";
+	private String rutaDireccion = "";
 	 
 	@GetMapping("/historialCobranza")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -79,27 +80,11 @@ public class HistorialCobranzaController {
 		}
 	}
 	
-	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
-	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
-		
-		Optional<DatosSolicitudCredito> datosSolicitud =  datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
-		
-		int idSolicitud = datosSolicitud.get().getI_solicitud_id();
-		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idSolicitud));
-	}
-	
-	/*@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/getByIdCreditoDatosGenerales" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDatosGenerales(@RequestParam("idCredito") Integer idCredito) {
 		
-		Optional<HistorialAsignacion> histAsig = historialAsigService.searchByIdCreditoRowHistAsig(idCredito);
-		
-		int idExpediente = histAsig.get().getI_expediente_id();
-		
-		System.out.print(idExpediente);
-		
-		return ResponseEntity.ok(historialCobranzaService.searchDatosGeneralesHistorialCobranza(idExpediente));
-	}*/
+		return ResponseEntity.ok(historialCobranzaService.searchDatosGeneralesHistorialCobranza(idCredito));
+	}
 	
 	@RequestMapping(value = { "/getByIdCreditoHistorialAsignacion" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametroHistorialAsignacionByIdCredito(@RequestParam("idCredito") Integer idCredito) {
@@ -183,6 +168,16 @@ public class HistorialCobranzaController {
 			res.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
+	}
+	
+	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
+	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
+		
+		Optional<DatosSolicitudCredito> datosSolicitud =  datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
+		
+		int idSolicitud = datosSolicitud.get().getI_solicitud_id();
+		
+		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idSolicitud));
 	}
 	
 	public int validarAcceso() {

@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class HistorialCobranza {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PK_I_ROW_GUID")
 	private Integer pk_i_row_guid;
 	
@@ -144,7 +147,7 @@ public class HistorialCobranza {
 	@Column(name = "I_COD_ESTATUS_PETICION")
 	private Integer i_cod_estatus_peticion;
 	
-	@Column(name = "I_IND_DESO_INTERNO")
+	@Column(name = "I_IND_DESP_INTERNO")
 	private Integer i_ind_desp_interno;
 
 	public Integer getPk_i_row_guid() {
@@ -513,6 +516,5 @@ public class HistorialCobranza {
 				+ ", i_cod_estatus_peticion=" + i_cod_estatus_peticion + ", i_ind_desp_interno=" + i_ind_desp_interno
 				+ "]";
 	}
-	
 	
 }

@@ -79,7 +79,8 @@ function buscarNombre(name) {
 	
 }
 
-function getUrlDatosGenerales(idCredito) {
+function getUrlDatosGenerales() {
+	var idCredito;
 	
 	switch (optionSelected) {
 		case "1":
@@ -90,33 +91,22 @@ function getUrlDatosGenerales(idCredito) {
 			break;
 		}
 		
-		url = getAbsolutePath() + "getByIdCreditoDetalleExpediente?idCredito=" + Number(idCredito);
+		url = getAbsolutePath() + "getByIdCreditoDatosGenerales?idCredito=" + Number(idCredito);
 	
 	return url;
 }
 
 function buscarDatosGenerales() {
-	
-	var idCredito;
 	var divDatosGenerales = $("#divTableGenerales");
 	
-	if (optionSelected == "1") {
-		idCredito = $("#creditoBusqueda").val();
-	}
-	if (optionSelected == "2") {
-		idCredito = $("#selectName").val();
-	}
-	
-	console.log(idCredito);
-	
 	$.ajax({
-		url: getUrlDatosGenerales(idCredito),
+		url: getUrlDatosGenerales(),
 		type: "GET",
 		dataType: "JSON",
 		success: function(res) {
 			console.log(res);
 			
-			if(res == null || res == '') {
+			if($.isEmptyObject(res)) {
 				console.log("Error");
 				divDatosGenerales.hide();
 			}
@@ -125,13 +115,14 @@ function buscarDatosGenerales() {
 				var tbody = "<tbody id='tbodyDatosGenerales'>" + "</tbody>";
 				$("#datosGenerales").append(tbody);
 				
-				var rangoBanda = (res.vc_rango_banda != null) ? res.vc_rango_banda : "";
-				var importe = (res.fl_importe != null) ? "$" + res.fl_importe + ".00" : "";
-				var saldo = (res.fl_saldo != null) ? "$" + res.fl_saldo : "";
-				var atraso = (res.fl_atraso != null) ? "$" + res.fl_atraso : "0";
-				var intencionalidad = (res.vc_intencionalidad != null) ? res.vc_intencionalidad : ""; 
-				var fechaCartera = (res.dt_fecha_cartera != null) ? res.dt_fecha_cartera : "";
-				var enConbranzaJudicial = (res.vc_en_cobranza_judicial != null) ? res.vc_en_cobranza_judicial : "";
+				var idCredito = (res.CREDITO_ID != null) ? res.CREDITO_ID : "";
+				var rangoBanda = (res.RANGO_BANDA != null) ? res.RANGO_BANDA : "";
+				var importe = (res.IMPORTE != null) ? "$" + res.IMPORTE + ".00" : "";
+				var saldo = (res.SALDO != null && res.SALDO > 0) ? "$" + res.SALDO : "0";
+				var atraso = (res.ATRASO != null && res.ATRASO > 0) ? "$" + res.ATRASO : "0";
+				var intencionalidad = (res.INTENCION != null) ? res.INTENCION : ""; 
+				var fechaCartera = (res.FECHA_CARTERA != null) ? res.FECHA_CARTERA : "";
+				var enConbranzaJudicial = (res.CJ != null) ? res.CJ : "";
 				var adeudoTotal = "0";
 				
 				var row =  "<tr>" 
@@ -150,9 +141,10 @@ function buscarDatosGenerales() {
 			}
 		},
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divDatosGenerales.hide();
 			swal({
 				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
+						text: "No se encuentra en Cobranza.",
 						icon: "warning",
 			});
 		}
@@ -180,7 +172,6 @@ function getUrlParticipantes() {
 
 function buscarParticipantes() {
 	var divParticipantes = $("#divParticipantes");
-	divParticipantes.hide();
 	
 	$.ajax({
 		url: getUrlParticipantes(),
@@ -189,7 +180,7 @@ function buscarParticipantes() {
 		success: function (res) {
 			console.log(res.participantes);
 			
-			if (res == null || res == '') {
+			if (res.participantes.length === 0) {
 				console.log("Error");
 				divParticipantes.hide();
 			}
@@ -217,9 +208,10 @@ function buscarParticipantes() {
 			}
 		},	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divParticipantes.hide();
 			swal({
 				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
+						text: "No se encuentra en Cobranza.",
 						icon: "warning",
 			});
 		}
@@ -246,7 +238,6 @@ function getUrlExpedientesNegociacion() {
 
 function buscarExpedientesNegociacion() {
 	var divExpedienteNegociacion = $("#divExpedientesNegociacion");
-	divExpedienteNegociacion.hide();
 
 	$.ajax({
 		url: getUrlExpedientesNegociacion(),
@@ -256,7 +247,7 @@ function buscarExpedientesNegociacion() {
 			console.log(res.historialAsig);
 			divExpedienteNegociacion.show();
 			
-			if (res == null || res == '') {
+			if (res.historialAsig.length === 0) {
 				console.log("Error");
 				divExpedienteNegociacion.hide();
 			}
@@ -277,16 +268,16 @@ function buscarExpedientesNegociacion() {
 					var empleadoCreo = (opt.i_empleado_creo != null && opt.vc_nombre_creador != null) ? opt.i_empleado_creo + " - " + opt.vc_nombre_creador : "";
 					
 					var row = "<tr>"
-					+ "<td>" + expedienteId + "</td>"
-					+ "<td>" + tipoExpediente + "</td>"
-					+ "<td>" + numExpJudicial + "</td>"
-					+ "<td>" + negociadorAsignado + "</td>"
-					+ "<td>" + estatus + "</td>"
-					+ "<td>" + fechaAsigReasig + "</td>"
-					+ "<td>" + nomEmpAsigReasig + "</td>"
-					+ "<td>" + fechaRegistro + "</td>"
-					+ "<td>" + fechaCierre + "</td>"
-					+ "<td>" + empleadoCreo + "</td>"
+					+ "<td><div style='width: 80px;'>" + expedienteId + "</div></td>"
+					+ "<td><div style='width: 120px;'>" + tipoExpediente + "</div></td>"
+					+ "<td><div style='width: 80px;'>" + numExpJudicial + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + negociadorAsignado + "</div></td>"
+					+ "<td><div style='width: 80px;'>" + estatus + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaAsigReasig + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + nomEmpAsigReasig + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaRegistro + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaCierre + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + empleadoCreo + "</div></td>"
 					+ "</tr>";
 					
 					$("#tbodyExpedientesNegociacion").append(row);
@@ -295,9 +286,10 @@ function buscarExpedientesNegociacion() {
 			
 		}, 	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divExpedienteNegociacion.hide();
 			swal({
 				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
+						text: "No se encuentra en Cobranza.",
 						icon: "warning",
 			});
 		}
@@ -359,7 +351,6 @@ function getUrlDetalleExp() {
 
 function showDetalleExpediente() {
 	var divExpDetalle = $("#divExpedienteDetalle");
-	divExpDetalle.hide();
 	
 	$.ajax({
 		url: getUrlDetalleExp(),
@@ -367,28 +358,28 @@ function showDetalleExpediente() {
 		dataType: "JSON",
 		success: function (res) {
 			console.log(res);
-			if (res == null || res =='') {
+			if ($.isEmptyObject(res)) {
 				console.log("Error");
 				divExpDetalle.hide();
 			}
 			else {
-				var noExp = "<p>Expediente(S) de Negociación #" + res.i_expediente_id + "</p>";
+				var noExp = "<p>Expediente(s) de Negociación #" + res.i_expediente_id + "</p>";
 				$("#noExpediente").append(noExp);
 				divExpDetalle.show();
-				var importe = (res.fl_importe != null) ? "<p>$" + res.fl_importe + "</p>" : "";
-				var saldoActual = (res.fl_saldo != null) ? "<p>$" + res.fl_saldo + "</p>" : "";
+				var importe = (res.fl_importe != null) ? "<p>$" + res.fl_importe + ".00</p>" : "";
+				var saldoActual = (res.fl_saldo != null && res.fl_saldo > 0) ? "<p>$" + res.fl_saldo + "</p>" : "0";
 				var diasMora = (res.i_dias_mora != null) ? "<p>" + res.i_dias_mora + "</p>" : "";
 				var inicioCredito = (res.dt_fecha_inicio != null) ? "<p>" + res.dt_fecha_inicio + "</p>" : "";
-				var interesNormal = (res.fl_interes_normal != null) ? "<p>" + res.fl_interes_normal + "</p>" : "";
+				var interesNormal = (res.fl_interes_normal != null && res.fl_interes_normal > 0) ? "<p>$" + res.fl_interes_normal + "</p>" : "0";
 				var banda = (res.fl_interes_normal != null) ? "<p>" + res.vc_rango_banda + "</p>" : "";
 				var tasaIntNormal = (res.fl_tasa_normal != null) ? "<p>" + res.fl_tasa_normal + "%</p>" : "";
-				var IVAIntNormal = (res.fl_iva != null) ? "<p>" + res.fl_iva + "</p>" : "";
+				var IVAIntNormal = (res.fl_iva != null && res.fl_iva > 0) ? "<p>$" + res.fl_iva + "</p>" : "0";
 				var facturasImpagadas = (res.i_facturas != null) ? "<p>" + res.i_facturas + "</p>" : "";
 				var tasaIntMoratorio = (res.fl_tasa_moratoria != null) ? "<p>" + res.fl_tasa_moratoria + "%</p>" : "";
-				var interesMoratorio = (res.fl_interes_morat != null) ? "<p>" + res.fl_interes_morat + "</p>" : "";
+				var interesMoratorio = (res.fl_interes_morat != null && res.fl_interes_morat > 0) ? "<p>$" + res.fl_interes_morat + "</p>" : "0";
 				var calificacion = (res.vc_calificacion != null) ? "<p>" + res.vc_calificacion + "</p>" : "";
 				var plazo = (res.i_plazo != null) ? "<p>" + res.i_plazo + "</p>" : "";
-				var IVAintMoratorio = (res.fl_iva_interes_morat != null) ? "<p>" + res.fl_iva_interes_morat + "</p>" : "";
+				var IVAintMoratorio = (res.fl_iva_interes_morat != null && res.fl_iva_interes_morat > 0) ? "<p>$" + res.fl_iva_interes_morat + "</p>" : "0";
 				var intencionalidad = (res.vc_intencionalidad != null) ? "<p>" + res.vc_intencionalidad + "</p>" : "";
 				var frecuenciaPago = (res.vc_frecuencia != null) ? "<p>" + res.vc_frecuencia + "</p>" : "";
 				var cmsnPagadas = (res.vc_frecuencia != null) ? "<p>" + res.fl_comision + "</p>" : "";
@@ -397,10 +388,10 @@ function showDetalleExpediente() {
 				var IVAcmsnPag = "<p>0" + "</p>";
 				var despacho = (res.vc_despacho != null) ? "<p>" + res.vc_despacho + "</p>" : "";
 				var centroCredito = (res.vc_nombre_centro != null) ?  "<p>" + res.vc_nombre_centro + "</p>" : "";
-				var gastos = (res.fl_gastos != null) ? "<p>" + res.fl_gastos + "</p>": "";
+				var gastos = (res.fl_gastos != null && res.fl_gastos > 0) ? "<p>$" + res.fl_gastos + "</p>": "0";
 				var negociadorAsig = (res.vc_negociador != null) ? "<p>" + res.vc_negociador + "</p>" : "";
 				var tipoCredito = (res.vc_tipo_credito != null) ? "<p>" + res.vc_tipo_credito + "</p>" : "";
-				var atrasoCapital = (res.fl_atraso != null) ? "<p>$" + res.fl_atraso + "</p>" : "";
+				var atrasoCapital = (res.fl_atraso != null && res.fl_atraso > 0) ? "<p>$" + res.fl_atraso + "</p>" : "0";
 				var analista = (res.vc_nom_analista != null) ? "<p>" + res.vc_nom_analista + "</p>" : "";
 				var tarifa = (res.vc_tarifa != null) ? "<p>" + res.vc_tarifa + "</p>" : "";
 				var atrasoTotal = "<p>0" + "</p>"
@@ -439,9 +430,10 @@ function showDetalleExpediente() {
 			}
 		}, 	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divExpDetalle.hide();
 			swal({
 				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
+						text: "No se encuentra en Cobranza.",
 						icon: "warning",
 			});
 		}

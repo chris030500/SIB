@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.sccb.historialCobranza.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class HistorialCobranzaService {
 		return iHistorialCobranzaRepository.getDetalleExpediente(idSolicitud);
 	}
 	
-	public Optional<HistorialCobranza> searchDatosGeneralesHistorialCobranza(Integer idExpediente) {
+	public Optional<Map<String, Object>> searchDatosGeneralesHistorialCobranza(Integer idCredito) {
 		
-		return iHistorialCobranzaRepository.getDatosGeneralesHistorialCobranza(idExpediente);
+		return iHistorialCobranzaRepository.getDatosGeneralesHistorialCobranza(idCredito);
 	}
 }
