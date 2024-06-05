@@ -266,7 +266,8 @@ function getDetalleExpedienteAfiliacion() {
 					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
 					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
 					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
-					
+					var imagen = opt.vc_imagen.replace(/\{0\}/g,"10.150.102.106");
+					console.log(imagen);
 					var rows = "<tr>"
 					+ "<td>" + tipoRequisito + "</td>"
 					+ "<td>" + tipoComprobante + "</td>"
@@ -276,7 +277,7 @@ function getDetalleExpedienteAfiliacion() {
 					+ "<td></td>"
 					+ "<td></td>"
 					+ "<td></td>"
-					+ "<td><i class='bi bi-camera'></i> </td>"
+					+ "<td onclick='showImage(\"" + imagen + "\")'><i class='bi bi-camera'></i></td>"
 					+ "</tr>";
 					
 					$("#tbodyAfiliacion").append(rows);
@@ -285,6 +286,15 @@ function getDetalleExpedienteAfiliacion() {
 			
 		}
 	});
+}
+
+function showImage(urlImagen) {
+	
+	$("#visorImagenes").show();
+	
+	var modalImage = "<img src='" + urlImagen + "'/>";
+	
+	$("#imagen").append(modalImage);
 }
 
 function cleanTables() {
