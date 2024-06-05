@@ -105,7 +105,7 @@ function buscarDatos() {
 		dataType: "JSON",
 		success: function (res) {
 			console.log(res.pagares);
-			if (res.pagares == null || res == '') {
+			if (res.pagares.length === 0) {
 				console.log("Error");
 				divPagares.hide();
 			} else {
@@ -129,23 +129,23 @@ function buscarDatos() {
 					var tipoDevolucion = (opt.vc_tipo_devolucion != null) ? opt.vc_tipo_devolucion : "";
 					
 					var rows = "<tr>"
-					+ "<td>Ver</td>"
-					+ "<td>" + tipoDocumento + "</td>"
-					+ "<td>" + nombreCentroUbicacion + "</td>"
-					+ "<td>" + noCliente + "</td>"
-					+ "<td>" + idCredito + "</td>"
-					+ "<td>" + "$" + importeCredito + ".00" + "</td>"
-					+ "<td>" + fechaInicioCredito + "</td>"
-					+ "<td>" + estatusCredito + "</td>"
-					+ "<td>" + fechaEvento + "</td>"
-					+ "<td>" + nombreSolicitante + "</td>"
-					+ "<td>" + nombreCentroSolicitante + "</td>"
-					+ "<td>" + nombreDestino + "</td>"
-					+ "<td>" + nombreAsignado + "</td>"
-					+ "<td>" + etapaCustodia + "</td>"
-					+ "<td>" + "</td>"
-					+ "<td>" + "</td>"
-					+ "<td>" + tipoDevolucion + "</td>"
+					+ "<td><div style='width: 70px;'>Ver</div></td>"
+					+ "<td><div style='width: 120px;'>" + tipoDocumento + "</div></td>"
+					+ "<td><div style='width: 120px;'>" + nombreCentroUbicacion + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + noCliente + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + idCredito + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + "$" + importeCredito + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaInicioCredito + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + estatusCredito + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaEvento + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + nombreSolicitante + "</div></td>"
+					+ "<td><div style='width: 120px;'>" + nombreCentroSolicitante + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + nombreDestino + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + nombreAsignado + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + etapaCustodia + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + tipoDevolucion + "</div></td>"
 					+ "</tr>";
 				
 					$("#pagares > tbody").append(rows);
