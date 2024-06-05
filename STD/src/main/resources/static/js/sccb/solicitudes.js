@@ -138,24 +138,24 @@ function buscarDatos() {
 				var tbody = "<tbody></tbody>";
 				$("#solicitudes").append(tbody);
 				$.each(res.solicitudes, function(idx, opt) {
-					var fechaRecepcion = (opt.dt_fecha_recepcion != null) ? opt.dt_fecha_recepcion : "";
-					var fechaInicioTramite = (opt.dt_fecha_inicio_tramite != null) ? opt.dt_fecha_inicio_tramite : "";
-					var fechaAutorizacion = (opt.dt_fecha_autorizacion != null) ? opt.dt_fecha_autorizacion : "";
-					var fechaDesembolso = (opt.dt_fecha_desembolso != null) ? opt.dt_fecha_desembolso : "";
+					var fechaRecepcion = (opt.fecha_recepcion != null) ? opt.fecha_recepcion : "";
+					var fechaInicioTramite = (opt.fecha_inicio_tramite != null) ? opt.fecha_inicio_tramite : "";
+					var fechaAutorizacion = (opt.fecha_autorizacion != null) ? opt.fecha_autorizacion : "";
+					var fechaDesembolso = (opt.fecha_desembolso != null) ? opt.fecha_desembolso : "";
 					var rows = "<tr>"
-						+ "<td onclick='showSolicitud(" + opt.i_solicitud_id + ")'>" + opt.i_solicitud_id + "</td>"
-						+ "<td>" + opt.i_credito_id + "</td>"
-						+ "<td style='width: 7.69%;'>" + opt.vc_nombre_cliente + "</td>"
-						+ "<td>" + opt.i_no_cliente + "</td>"
-						+ "<td>" + opt.vc_rol + "</td>"
-						+ "<td style='width: 7.69%;'>" + opt.vc_nombre_centro + "</td>"
-						+ "<td>" + opt.vc_etapa + "</td>"
-						+ "<td>" + opt.vc_estatus + "</td>"
-						+ "<td>" + "$" + opt.fl_monto + ".00" + "</td>"
-						+ "<td style='width: 7.69%;'>" + fechaRecepcion + "</td>"
-						+ "<td style='width: 7.69%;'>" + fechaInicioTramite + "</td>"
-						+ "<td style='width: 7.69%;'>" + fechaAutorizacion + "</td>"
-						+ "<td style='width: 7.69%;'>" + fechaDesembolso + "</td>"
+						+ "<td onclick='showSolicitud(" + opt.solicitud_id + ")'><div style='width: 80px;'>" + opt.solicitud_id + "</div></td>"
+						+ "<td><div style='width: 70px;'>" + opt.credito_id + "</div></td>"
+						+ "<td><div style='width: 200px;'>" + opt.nombre_cliente + "</div></td>"
+						+ "<td><div style='width: 70px;'>" + opt.no_cliente + "</div></td>"
+						+ "<td><div style='width: 70px;'>" + opt.rol + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + opt.nombre_centro + "</div></td>"
+						+ "<td><div style='width: 70px;'>" + opt.etapa + "</div></td>"
+						+ "<td><div style='width: 70px;'>" + opt.estatus + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + "$" + opt.monto + ".00" + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + fechaRecepcion + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + fechaInicioTramite + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + fechaAutorizacion + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + fechaDesembolso + "</div></td>"
 						+ "</tr>";
 					$("#solicitudes > tbody").append(rows);
 					

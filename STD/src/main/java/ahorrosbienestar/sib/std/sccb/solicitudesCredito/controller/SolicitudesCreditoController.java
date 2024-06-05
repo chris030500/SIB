@@ -45,18 +45,15 @@ public class SolicitudesCreditoController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
-    private ICatalogoRepository iCatalogoRepository;
-	
-	 @Autowired
-	 private OpcionesMenuService opcionesMenuService;
+	private OpcionesMenuService opcionesMenuService;
 	 
-	 @Autowired
-	 private SolicitudesCreditoService solicitudesService;
+	@Autowired
+	private SolicitudesCreditoService solicitudesService;
 	 
-	 @Autowired
-	 private DatosSolicitudCreditoService datosSolicitudService;
+	@Autowired
+	private DatosSolicitudCreditoService datosSolicitudService;
 	    
-	 private String rutaDireccion = "";
+	private String rutaDireccion = "";
 	
 	@GetMapping("/solicitudesCredito")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -83,9 +80,7 @@ public class SolicitudesCreditoController {
 		//System.out.print(idCredito.getClass().getName());
 		System.out.println(idCredito);
 		try {
-			List<SolicitudesCredito> solicitudes = solicitudesService.searchByIdCreditoSolicitudes(idCredito);
-			
-			System.out.print(solicitudes.get(0).getI_credito_id());
+			List<Map<String, Object>> solicitudes = solicitudesService.searchByIdCreditoSolicitudes(idCredito);
 
 			// Verificar si la lista de mensajes es nula o vacía
 			if (solicitudes != null && !solicitudes.isEmpty()) {
@@ -113,9 +108,7 @@ public class SolicitudesCreditoController {
 		//System.out.print(idCredito.getClass().getName());
 		System.out.println(noCliente);
 		try {
-			List<SolicitudesCredito> solicitudes = solicitudesService.searchByNoClienteSolicitudes(noCliente);
-			
-			System.out.print(solicitudes.get(0).getI_credito_id());
+			List<Map<String, Object>> solicitudes = solicitudesService.searchByNoClienteSolicitudes(noCliente);
 
 			// Verificar si la lista de mensajes es nula o vacía
 			if (solicitudes != null && !solicitudes.isEmpty()) {
@@ -143,9 +136,7 @@ public class SolicitudesCreditoController {
 		//System.out.print(idCredito.getClass().getName());
 		System.out.println(nomCliente);
 		try {
-			List<SolicitudesCredito> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente);
-			
-			System.out.print(solicitudes.get(0).getI_credito_id());
+			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente);
 
 			// Verificar si la lista de mensajes es nula o vacía
 			if (solicitudes != null && !solicitudes.isEmpty()) {
