@@ -129,7 +129,6 @@ function buscarDatos() {
 					var tipoDevolucion = (opt.vc_tipo_devolucion != null) ? opt.vc_tipo_devolucion : "";
 					
 					var rows = "<tr>"
-					+ "<td><div style='width: 70px;'>Ver</div></td>"
 					+ "<td><div style='width: 120px;'>" + tipoDocumento + "</div></td>"
 					+ "<td><div style='width: 120px;'>" + nombreCentroUbicacion + "</div></td>"
 					+ "<td><div style='width: 70px;'>" + noCliente + "</div></td>"
@@ -143,8 +142,6 @@ function buscarDatos() {
 					+ "<td><div style='width: 200px;'>" + nombreDestino + "</div></td>"
 					+ "<td><div style='width: 200px;'>" + nombreAsignado + "</div></td>"
 					+ "<td><div style='width: 100px;'>" + etapaCustodia + "</div></td>"
-					+ "<td><div style='width: 70px;'>" + "</div></td>"
-					+ "<td><div style='width: 100px;'>" + "</div></td>"
 					+ "<td><div style='width: 100px;'>" + tipoDevolucion + "</div></td>"
 					+ "</tr>";
 				
