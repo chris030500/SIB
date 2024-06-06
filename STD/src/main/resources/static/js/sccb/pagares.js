@@ -117,7 +117,7 @@ function buscarDatos() {
 					var nombreCentroUbicacion = (opt.vc_nombre_centro_ubicacion != null) ? opt.vc_nombre_centro_ubicacion : "";
 					var noCliente = (opt.i_no_cliente != null) ? opt.i_no_cliente : "";
 					var idCredito = (opt.i_credito_id != null) ? opt.i_credito_id : "";
-					var importeCredito = (opt.fl_importe_credito != null) ? opt.fl_importe_credito : "";
+					var importeCredito = (opt.fl_importe_credito != null) ? opt.fl_importe_credito.toLocaleString() : "";
 					var fechaInicioCredito = (opt.dt_fecha_inicio_credito != null) ? opt.dt_fecha_inicio_credito : "";
 					var estatusCredito = (opt.vc_estatus_credito != null) ? opt.vc_estatus_credito : "";
 					var fechaEvento = (opt.dt_fecha_evento != null) ? opt.dt_fecha_evento : "";

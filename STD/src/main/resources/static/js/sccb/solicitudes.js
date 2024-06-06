@@ -159,7 +159,7 @@ function buscarDatos() {
 						+ "<td><div style='width: 100px;'>" + opt.nombre_centro + "</div></td>"
 						+ "<td><div style='width: 70px;'>" + opt.etapa + "</div></td>"
 						+ "<td><div style='width: 70px;'>" + opt.estatus + "</div></td>"
-						+ "<td><div style='width: 100px;'>" + "$" + opt.monto + ".00" + "</div></td>"
+						+ "<td><div style='width: 100px;'>" + "$" +  opt.monto.toLocaleString() + "</div></td>"
 						+ "<td><div style='width: 100px;'>" + fechaRecepcion + "</div></td>"
 						+ "<td><div style='width: 100px;'>" + fechaInicioTramite + "</div></td>"
 						+ "<td><div style='width: 100px;'>" + fechaAutorizacion + "</div></td>"
@@ -256,7 +256,7 @@ function showSolicitud(parametroSolicitud) {
 				var numeroTantos = (res.num_tantos != null) ? res.num_tantos : "";
 				var tasaNormal = (res.tasa_normal != null) ? res.tasa_normal + "%" : "";
 				var nombreCompleto = (res.nombre_completo != null) ? res.nombre_completo : "";
-				var importeCrediito = (res.importe_credito != null) ? "$" + res.importe_credito : "";
+				var importeCredito = (res.importe_credito != null) ? res.importe_credito : "";
 				var depEnRespaldo = "";
 				var tasaMoratoria = (res.tasa_morat != null) ? res.tasa_morat + "%" : "";
 				var descripcionCliente = (res.desc_cliente != null) ? res.desc_cliente : "";
@@ -282,7 +282,7 @@ function showSolicitud(parametroSolicitud) {
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Nombre</td>"
 								+ "<td style='width: 12.5%;'>" + nombreCompleto + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Monto(####.##)</td>"
-								+ "<td style='width: 12.5%;'>" + importeCrediito + "</td>"
+								+ "<td style='width: 12.5%;'>$" + importeCredito.toLocaleString() + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Dep. en Respaldo</td>"
 								+ "<td style='width: 12.5%;'>" + depEnRespaldo + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tasa Moratoria</td>"

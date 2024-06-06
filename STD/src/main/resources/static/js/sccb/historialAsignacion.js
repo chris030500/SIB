@@ -117,9 +117,9 @@ function buscarDatosGenerales() {
 				
 				var idCredito = (res.CREDITO_ID != null) ? res.CREDITO_ID : "";
 				var rangoBanda = (res.RANGO_BANDA != null) ? res.RANGO_BANDA : "";
-				var importe = (res.IMPORTE != null) ? "$" + res.IMPORTE + ".00" : "";
-				var saldo = (res.SALDO != null && res.SALDO > 0) ? "$" + res.SALDO : "0";
-				var atraso = (res.ATRASO != null && res.ATRASO > 0) ? "$" + res.ATRASO : "0";
+				var importe = (res.IMPORTE != null) ? "$" + res.IMPORTE.toLocaleString() : "";
+				var saldo = (res.SALDO != null && res.SALDO > 0) ? "$" + res.SALDO.toLocaleString() : "0";
+				var atraso = (res.ATRASO != null && res.ATRASO > 0) ? "$" + res.ATRASO.toLocaleString() : "0";
 				var intencionalidad = (res.INTENCION != null) ? res.INTENCION : ""; 
 				var fechaCartera = (res.FECHA_CARTERA != null) ? res.FECHA_CARTERA : "";
 				var enConbranzaJudicial = (res.CJ != null) ? res.CJ : "";
@@ -366,20 +366,20 @@ function showDetalleExpediente() {
 				var noExp = "<p>Expediente(s) de Negociación #" + res.i_expediente_id + "</p>";
 				$("#noExpediente").append(noExp);
 				divExpDetalle.show();
-				var importe = (res.fl_importe != null) ? "<p>$" + res.fl_importe + ".00</p>" : "";
-				var saldoActual = (res.fl_saldo != null && res.fl_saldo > 0) ? "<p>$" + res.fl_saldo + "</p>" : "0";
+				var importe = (res.fl_importe != null) ? "<p>$" + res.fl_importe.toLocaleString() + "</p>" : "";
+				var saldoActual = (res.fl_saldo != null && res.fl_saldo > 0) ? "<p>$" + res.fl_saldo.toLocaleString() + "</p>" : "0";
 				var diasMora = (res.i_dias_mora != null) ? "<p>" + res.i_dias_mora + "</p>" : "";
 				var inicioCredito = (res.dt_fecha_inicio != null) ? "<p>" + res.dt_fecha_inicio + "</p>" : "";
-				var interesNormal = (res.fl_interes_normal != null && res.fl_interes_normal > 0) ? "<p>$" + res.fl_interes_normal + "</p>" : "0";
+				var interesNormal = (res.fl_interes_normal != null && res.fl_interes_normal > 0) ? "<p>$" + res.fl_interes_normal.toLocaleString() + "</p>" : "0";
 				var banda = (res.fl_interes_normal != null) ? "<p>" + res.vc_rango_banda + "</p>" : "";
 				var tasaIntNormal = (res.fl_tasa_normal != null) ? "<p>" + res.fl_tasa_normal + "%</p>" : "";
-				var IVAIntNormal = (res.fl_iva != null && res.fl_iva > 0) ? "<p>$" + res.fl_iva + "</p>" : "0";
+				var IVAIntNormal = (res.fl_iva != null && res.fl_iva > 0) ? "<p>$" + res.fl_iva.toLocaleString() + "</p>" : "0";
 				var facturasImpagadas = (res.i_facturas != null) ? "<p>" + res.i_facturas + "</p>" : "";
 				var tasaIntMoratorio = (res.fl_tasa_moratoria != null) ? "<p>" + res.fl_tasa_moratoria + "%</p>" : "";
-				var interesMoratorio = (res.fl_interes_morat != null && res.fl_interes_morat > 0) ? "<p>$" + res.fl_interes_morat + "</p>" : "0";
+				var interesMoratorio = (res.fl_interes_morat != null && res.fl_interes_morat > 0) ? "<p>$" + res.fl_interes_morat.toLocaleString() + "</p>" : "0";
 				var calificacion = (res.vc_calificacion != null) ? "<p>" + res.vc_calificacion + "</p>" : "";
 				var plazo = (res.i_plazo != null) ? "<p>" + res.i_plazo + "</p>" : "";
-				var IVAintMoratorio = (res.fl_iva_interes_morat != null && res.fl_iva_interes_morat > 0) ? "<p>$" + res.fl_iva_interes_morat + "</p>" : "0";
+				var IVAintMoratorio = (res.fl_iva_interes_morat != null && res.fl_iva_interes_morat > 0) ? "<p>$" + res.fl_iva_interes_morat.toLocaleString() + "</p>" : "0";
 				var intencionalidad = (res.vc_intencionalidad != null) ? "<p>" + res.vc_intencionalidad + "</p>" : "";
 				var frecuenciaPago = (res.vc_frecuencia != null) ? "<p>" + res.vc_frecuencia + "</p>" : "";
 				var cmsnPagadas = (res.vc_frecuencia != null) ? "<p>" + res.fl_comision + "</p>" : "";
@@ -388,10 +388,10 @@ function showDetalleExpediente() {
 				var IVAcmsnPag = "<p>0" + "</p>";
 				var despacho = (res.vc_despacho != null) ? "<p>" + res.vc_despacho + "</p>" : "";
 				var centroCredito = (res.vc_nombre_centro != null) ?  "<p>" + res.vc_nombre_centro + "</p>" : "";
-				var gastos = (res.fl_gastos != null && res.fl_gastos > 0) ? "<p>$" + res.fl_gastos + "</p>": "0";
+				var gastos = (res.fl_gastos != null && res.fl_gastos > 0) ? "<p>$" + res.fl_gastos.toLocaleString() + "</p>": "0";
 				var negociadorAsig = (res.vc_negociador != null) ? "<p>" + res.vc_negociador + "</p>" : "";
 				var tipoCredito = (res.vc_tipo_credito != null) ? "<p>" + res.vc_tipo_credito + "</p>" : "";
-				var atrasoCapital = (res.fl_atraso != null && res.fl_atraso > 0) ? "<p>$" + res.fl_atraso + "</p>" : "0";
+				var atrasoCapital = (res.fl_atraso != null && res.fl_atraso > 0) ? "<p>$" + res.fl_atraso.toLocaleString() + "</p>" : "0";
 				var analista = (res.vc_nom_analista != null) ? "<p>" + res.vc_nom_analista + "</p>" : "";
 				var tarifa = (res.vc_tarifa != null) ? "<p>" + res.vc_tarifa + "</p>" : "";
 				var atrasoTotal = "<p>0" + "</p>"
