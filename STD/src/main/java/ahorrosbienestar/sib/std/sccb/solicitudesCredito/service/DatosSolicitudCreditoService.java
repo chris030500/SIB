@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.solicitudesCredito.service;
 
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class DatosSolicitudCreditoService {
 	@Autowired
 	private IDatosSolicitudCreditoRepository iDatosSolicitudRepository;
 	
-	public Optional<DatosSolicitudCredito> searchDatosSolicitud(Integer idSolicitud) {
+	public Optional<Map<String, Object>> searchDatosSolicitud(Integer idSolicitud) {
 		return iDatosSolicitudRepository.getDatosSolicitudCredito(idSolicitud);
 	}
 

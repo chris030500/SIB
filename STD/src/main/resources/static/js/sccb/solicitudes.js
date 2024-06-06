@@ -224,42 +224,41 @@ function showSolicitud(parametroSolicitud) {
 				divDatosSolicitud.hide();
 			} else {
 				divDatosSolicitud.show();
-				var folio = (res.i_solicitud_id != null) ? "<p id='pFolio'>" + res.i_solicitud_id + "</p>" : "<p id='pFolio'></p>";
-				var acCredito = (res.i_credito_id != null) ? "<p id='pAcCredito'>" + res.i_credito_id + "</p>" : "<p id='pAcCredito'></p>";
-				var acDepRespaldo = (res.i_ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.i_ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'>0</p>";
-				var acOperativa = (res.i_acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.i_acuerdo_operativa + "</p>" : "<p id='pAcOperativa'>0</p>";
-				var recibe = (res.i_empleado_recibe_id != null) ? "<p id='pRecibe'>" + res.i_empleado_recibe_id + "</p>" : "<p id='pRecibe'>0</p>";
-				var captura = (res.i_empleado_captura_id != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.i_empleado_captura_id + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: 0 </p>"; 
-				var fechaRecepcion = (res.dt_fecha_recepcion != null) ? "<p id='pFechaRecepcion'>" + res.dt_fecha_recepcion + "</p>" : "<p id='pFechaRecepcion'></p>";
-				var etapaRecepcion = (res.vc_descripcion_etapa != null) ? "<p id='pEtapaRecepcion'>" + res.vc_descripcion_etapa + "</p>" : "<p id='pEtapaRecepcion'></p>";
-				var fechaResultado = (res.dt_fecha_resultado != null) ? "<p id='pFechaResultado'>" + res.dt_fecha_resultado + "</p>" : "<p id='pFechaResultado'></p>";
-				var estatusResultado = (res.vc_descripcion_estatus != null) ? "<p id='pEstatusResultado'>" + res.vc_descripcion_estatus + "</p>" : "<p id='pEstatusResultado'></p>";
-				var centro = (res.i_centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.i_centro_id + " " + res.vc_nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: 0</p>";
-				var fechaInicioTramite = (res.dt_fecha_inicio_tramite != null) ? "<p id='pFechaInicioTramite'>" + res.dt_fecha_inicio_tramite + "</p>" : "<p id='pFechaInicioTramite'></p>";
-				var fechaAutorizacion = (res.dt_fecha_autorizacion != null) ?  "<p id='pFechaAutorizacion'>" + res.dt_fecha_autorizacion + "</p>" : "<p id='pFechaAutorizacion'></p>";
-				var fechaDesembolso = "<p id='pFechaDesembolso'></p>";
-				var fechaReconsideracion = (res.dt_fecha_reconsideracion != null) ? "<p id='pFechaReconsideracion'>" + res.dt_fecha_reconsideracion + "</p>" : "<p id='pFechaReconsideracion'></p>";
-				var montoAvaluo = (res.i_valor_avaluo != null) ? "<p id='pMontoAvaluo'>" + "$" + res.i_valor_avaluo + "</p>" : "<p id='pMontoAvaluo'></p>";
-				var observaciones = (res.vc_observaciones != null) ? "<p id='pObservaciones'>" + res.vc_observaciones + "</p>" : "<p id='pObservaciones'></p>";
-				var observacionesCC = (res.vc_observaciones_cc != null) ? "<p id='pObservacionesCC'>" + res.vc_observaciones_cc + "</p>" : "<p id='pObservacionesCC'></p>";
+				var folio = (res.solicitud_id != null) ? "<p id='pFolio'>" + res.solicitud_id + "</p>" : "<p id='pFolio'></p>";
+				var acCredito = (res.credito_id != null) ? "<p id='pAcCredito'>" + res.credito_id + "</p>" : "<p id='pAcCredito'></p>";
+				var acDepRespaldo = (res.ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'>0</p>";
+				var acOperativa = (res.acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.acuerdo_operativa + "</p>" : "<p id='pAcOperativa'>0</p>";
+				var recibe = (res.nombre_empleado_recibe != null) ? "<p id='pRecibe'>" + res.nombre_empleado_recibe + "</p>" : "<p id='pRecibe'>0</p>";
+				var captura = (res.nombre_empleado_captura != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.nombre_empleado_captura + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: 0 </p>"; 
+				var fechaRecepcion = (res.fecha_recepcion != null) ? "<p id='pFechaRecepcion'>" + res.fecha_recepcion + "</p>" : "<p id='pFechaRecepcion'></p>";
+				var etapaRecepcion = (res.desc_etapa != null) ? "<p id='pEtapaRecepcion'>" + res.desc_etapa + "</p>" : "<p id='pEtapaRecepcion'></p>";
+				var fechaResultado = (res.fecha_resultado != null) ? "<p id='pFechaResultado'>" + res.fecha_resultado + "</p>" : "<p id='pFechaResultado'></p>";
+				var estatusResultado = (res.desc_estatus != null) ? "<p id='pEstatusResultado'>" + res.desc_estatus + "</p>" : "<p id='pEstatusResultado'></p>";
+				var centro = (res.centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.centro_id + " " + res.nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: 0</p>";
+				var fechaInicioTramite = (res.fecha_inicio_tramite != null) ? "<p id='pFechaInicioTramite'>" + res.fecha_inicio_tramite + "</p>" : "<p id='pFechaInicioTramite'></p>";
+				var fechaAutorizacion = (res.fecha_autorizacion != null) ?  "<p id='pFechaAutorizacion'>" + res.fecha_autorizacion + "</p>" : "<p id='pFechaAutorizacion'></p>";
+				var fechaDesembolso = (res.fecha_desembolso != null) ? "<p id='pFechaDesembolso'>" + res.fecha_desembolso + "</p>" : "<p id='pFechaDesembolso'></p>"
+				var fechaReconsideracion = (res.fecha_reconsideracion != null) ? "<p id='pFechaReconsideracion'>" + res.fecha_reconsideracion + "</p>" : "<p id='pFechaReconsideracion'></p>";
+				var montoAvaluo = (res.valor_avaluo != null && res.valor_avaluo > 0) ? "<p id='pMontoAvaluo'>" + "$" + res.valor_avaluo + "</p>" : "<p id='pMontoAvaluo'>0</p>";
+				var observaciones = (res.observaciones != null) ? "<p id='pObservaciones'>" + res.observaciones + "</p>" : "<p id='pObservaciones'></p>";
+				var observacionesCC = (res.observaciones_cc != null) ? "<p id='pObservacionesCC'>" + res.observaciones_cc + "</p>" : "<p id='pObservacionesCC'></p>";
 				
-				var noCliente = (res.i_no_cliente != null) ? res.i_no_cliente : "";
-				var nombreTarifa = "";
-				var numeroTantos = (res.i_numero_tantos != null) ? res.i_numero_tantos : "";
-				var tasaNormal = (res.fl_tasa_normal != null) ? res.fl_tasa_normal + "%" : "";
-				var nombreCompleto = (res.vc_nombre_completo != null) ? res.vc_nombre_completo : "";
-				var importeCrediito = (res.i_importe_credito != null) ? "$" + res.i_importe_credito + ".00" : "";
-				var depEnRespaldo = (res.i_dep_en_respaldo != null) ? "$" + res.i_dep_en_respaldo + ".00" : "";
-				var tasaMoratoria = (res.i_tasa_moratoria != null) ? res.i_tasa_moratoria + "%" : "";
-				var descripcionCliente = (res.vc_descripcion_cliente != null) ? res.vc_descripcion_cliente : "";
-				var plazo = (res.i_plazo != null) ? res.i_plazo : "";
-				var csmnImpCredito = (res.i_cmsn_imp_credito != null) ? res.i_cmsn_imp_credito : "";
-				var numAbonosDiferidos = (res.i_num_abonos_diferidos != null) ? res.i_num_abonos_diferidos : "";
-				var nombreDestino = (res.vc_nombre_destino != null) ? res.vc_nombre_destino : "";
-				var descFrecuencia = (res.vc_descripcion_frecuencia != null) ? res.vc_descripcion_frecuencia : "";
-				var cmsnAseFin = (res.fl_cmsn_ase_fin != null) ? res.fl_cmsn_ase_fin : "0";
-				var revisionVehicular = (res.i_revision_vehicular != null) ? res.i_revision_vehicular : "";
-				var analista = (res.i_empleado_analiza_id != null) ? res.i_empleado_analiza_id : "";
+				var noCliente = (res.no_cliente != null) ? res.no_cliente : "";
+				var nombreTarifa = (res.nombre_producto != null) ? res.nombre_producto : "";
+				var numeroTantos = (res.num_tantos != null) ? res.num_tantos : "";
+				var tasaNormal = (res.tasa_normal != null) ? res.tasa_normal + "%" : "";
+				var nombreCompleto = (res.nombre_completo != null) ? res.nombre_completo : "";
+				var importeCrediito = (res.importe_credito != null) ? "$" + res.importe_credito : "";
+				var depEnRespaldo = "";
+				var tasaMoratoria = (res.tasa_morat != null) ? res.tasa_morat + "%" : "";
+				var descripcionCliente = (res.desc_cliente != null) ? res.desc_cliente : "";
+				var plazo = (res.plazo != null) ? res.plazo : "";
+				var csmnImpCredito = "";
+				var numAbonosDiferidos = (res.num_abonos_diferidos != null) ? res.num_abonos_diferidos : "";
+				var nombreDestino = "";
+				var descFrecuencia = "";
+				var cmsnAseFin = (res.cmsn_ase_fin != null && res.cmsn_ase_fin > 0) ? res.cmsn_ase_fin : "0";
+				var analista = (res.nombre_empleado_analiza != null) ? res.nombre_empleado_analiza : "";
 				
 				var rowDatosDeCredito = 	"<tr id='tdRow1' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Cliente</td>"
@@ -298,10 +297,6 @@ function showSolicitud(parametroSolicitud) {
 								+ "<td style='width: 12.5%;'>" + descFrecuencia + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Comisión Asesoría Financiera</td>"
 								+ "<td style='width: 12.5%;'>" + cmsnAseFin + "</td>"
-								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Revisión Vehicular</td>"
-								+ "<td style='width: 12.5%;'>" + revisionVehicular + "</td>"
-							 + "</tr>"
-							 + "<tr id='tdRow5' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Analista</td>"
 								+ "<td style='width: 12.5%;'>" + analista + "</td>"
 							 + "</tr>";
