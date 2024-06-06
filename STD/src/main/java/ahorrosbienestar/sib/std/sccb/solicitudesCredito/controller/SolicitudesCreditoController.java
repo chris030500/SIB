@@ -129,14 +129,16 @@ public class SolicitudesCreditoController {
 	}
 	
 	@RequestMapping(value = { "/getByNomClienteSolicitudes" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNomCliente(@RequestParam("nomCliente") String nomCliente) {
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNomCliente(
+			@RequestParam("nomCliente") String nomCliente,
+			@RequestParam("idCredito") Integer idCredito) {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		//System.out.print(idCredito.getClass().getName());
 		System.out.println(nomCliente);
 		try {
-			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente);
+			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente, idCredito);
 
 			// Verificar si la lista de mensajes es nula o vacía
 			if (solicitudes != null && !solicitudes.isEmpty()) {

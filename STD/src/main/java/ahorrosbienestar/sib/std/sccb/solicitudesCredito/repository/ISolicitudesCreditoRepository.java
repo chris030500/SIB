@@ -46,6 +46,9 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			+ "FROM TBL_SCCB_SOLICITUDES T1 "
 			+ "JOIN TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
 			+ "WHERE T1.VC_NOMBRE_CLIENTE = :nomCliente "
+			+ "AND T1.I_CREDITO_ID = :idCredito "
 			+ "ORDER BY T1.I_SOLICITUD_ID ", nativeQuery = true)
-	public List<Map<String, Object>> getByNomClienteSolicitudes(@Param("nomCliente") String nomCliente);
+	public List<Map<String, Object>> getByNomClienteSolicitudes(
+			@Param("nomCliente") String nomCliente,
+			@Param("idCredito") Integer idCredito);
 }

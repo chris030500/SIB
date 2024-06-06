@@ -65,7 +65,6 @@ function defaultView() {
 
 function buscarNombre(name) {
 	
-	var selectName = $("#selectName");
 	var option = "";
 	
 	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
@@ -80,7 +79,7 @@ function buscarNombre(name) {
 			console.log(participantes.length);
 			for(var i = 0; i < participantes.length; i++) {
 				
-				option += "<option value='" + participantes[i].vc_nombre_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				option += "<option value='" + participantes[i].vc_nombre_cliente+ "," + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -92,6 +91,8 @@ function getUrlSolicitudes() {
 	var idCredito;
 	var noCliente;
 	var nomCliente;
+	var select;
+	var valuesSelect;
 	
 	switch(optionSelected) {
 		case "1": 
@@ -103,8 +104,15 @@ function getUrlSolicitudes() {
 			url = getAbsolutePath() + "getByNoClienteSolicitudes?noCliente=" + Number(noCliente);
 			break;
 		case "3":	
-			nomCliente = $("#selectName").val();
-			url = getAbsolutePath() + "getByNomClienteSolicitudes?nomCliente=" + nomCliente;
+			select = $("#selectName").val();
+			valuesSelect = select.toString().split(',');
+			nomCliente = valuesSelect[0];
+			idCredito = valuesSelect[1];
+			
+			console.log(nomCliente);
+			console.log(idCredito);
+			
+			url = getAbsolutePath() + "getByNomClienteSolicitudes?nomCliente=" + nomCliente + "&idCredito=" + Number(idCredito);
 			break;
 	}
 	

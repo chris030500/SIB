@@ -22,7 +22,7 @@ public class SolicitudesCreditoService {
 		return iSolicitudesCreditoRepository.getByNoClienteSolicitudes(noCliente);
 	}
 	
-	public List<Map<String, Object>> searchByNomClienteSolicitudes(String nomCliente) {
-		return iSolicitudesCreditoRepository.getByNomClienteSolicitudes(nomCliente);
+	public List<Map<String, Object>> searchByNomClienteSolicitudes(String nomCliente, Integer idCredito) {
+		return iSolicitudesCreditoRepository.getByNomClienteSolicitudes(nomCliente, idCredito);
 	}
 }
