@@ -20,6 +20,7 @@ $(document).ready(function () {
 					$("#divCredito").hide();
 					$("#divName").hide();
 					$("#btnBuscar").hide();
+					$("#btnClean").hide();
 					$("#optIdCredito").hide();
 					$("#optNombre").show();
 					break;
@@ -28,6 +29,7 @@ $(document).ready(function () {
 					$("#divCredito").hide();
 					$("#divName").hide();
 					$("#btnBuscar").hide();
+					$("#btnClean").hide();
 					$("#optIdCredito").show();
 					$("#optNombre").hide();
 					break;
@@ -47,12 +49,14 @@ $(document).ready(function () {
 					$("#divCredito").show();
 					$("#divName").hide();
 					$("#btnBuscar").show();
+					$("#btnClean").show();
 					break;
 				case "2":
 					$("#divTipoBusqueda").show();
 					$("#divCredito").hide();
 					$("#divName").show();
 					$("#btnBuscar").show();
+					$("#btnClean").show();
 					break;
 			}
 		}
@@ -63,7 +67,7 @@ function defaultView() {
 	$("#divMainTable").hide();
 	$("#divTblCredito").hide();
 	$("#divTblAfiliacion").hide();
-	$("#divDetalleExpediente").hide();
+	$("#divDetalleExpCredito").hide();
 }
 
 function getAbsolutePath() {
@@ -77,19 +81,19 @@ function buscarNombre(name) {
 	var selectName = $("#selectName");
 	var option = "";
 	
-	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	url = getAbsolutePath() + "getNamesExpedienteAfiliacion?nombre=" + name;
 	console.log(name);
 	$.ajax({
 		url: url,
 		type: "GET",
 		dataType: "JSON", 
 		success: function(res) {
-			console.log(res.participantes);
-			var participantes = res.participantes;
-			console.log(participantes.length);
-			for(var i = 0; i < participantes.length; i++) {
+			console.log(res.nombresAfiliacion);
+			var nombresAfiliacion = res.nombresAfiliacion;
+			console.log(nombresAfiliacion.length);
+			for(var i = 0; i < nombresAfiliacion.length; i++) {
 				
-				option += "<option value='" + participantes[i].vc_nombre_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				option += "<option value='" + nombresAfiliacion[i].nombre_cliente + "'>" + nombresAfiliacion[i].nombre_cliente + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -132,7 +136,7 @@ function buscarExpedienteCredito() {
 				+ "<td>" + fechaCreacion + "</td>"
 				+ "<td>" + idSolicitud + "</td>"
 				+ "<td>" + idCredito + "</td>"
-				+ "<td></td>"
+				+ "<td>ACTIVO</td>"
 				+ "</tr>"
 				+ "</tbody>";
 				
@@ -164,8 +168,9 @@ function getDetalleExpedienteCredito() {
 			else {
 				console.log(res.imagenes);
 				divDetalleExpediente.show();
+				$("#divDetalleExpCredito").css("display", "block");
 				var tbody = "<tbody id='tbodyDetalleExpediente'></tbody>";
-				$("#detalleExpediente").append(tbody);
+				$("#detalleCredito").append(tbody);
 				
 				$.each(res.imagenes, function(idx, opt) {
 					
@@ -174,17 +179,20 @@ function getDetalleExpedienteCredito() {
 					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
 					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
 					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
+					var validoHasta = (opt.dt_valido_hasta != null) ? opt.dt_valido_hasta : "";
+					var estatusDigitalizacion = (opt.vc_estatus_digitalizacion != null) ? opt.vc_estatus_digitalizacion : "";
 					
 					var rows = "<tr>" 
-					+ "<td>"+ tipoRequisito + "</td>"
-					+ "<td>" + tipoComprobante + "</td>"
-					+ "<td>" + estatusEntregado + "</td>"
-					+ "<td>" + fechaDigitalizacion + "</td>"
-					+ "<td>" + validoDesde + "</td>"
-					+ "<td></td>"
-					+ "<td></td>"
-					+ "<td></td>"
-					+ "<td> <i class='bi bi-camera'></i> </td>"
+					+ "<td><div style='width: 200px;'>"+ tipoRequisito + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + tipoComprobante + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + estatusEntregado + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + validoDesde + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + validoHasta + "</div></td>"
+					+ "<td><div style='width: 70px;'>"+ estatusDigitalizacion + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaDigitalizacion + "</div></td>"
+					+ "<td><div style='width: 200px;'></div></td>"
+					+ "<td><div style='width: 80px;'></div></td>"
+					+ "<td><div style='width: 70px;'><i class='bi bi-camera'></i></div></td>"
 					+ "</tr>";
 					
 					$("#tbodyDetalleExpediente").append(rows);
@@ -225,7 +233,7 @@ function buscarExpedienteAfiliacion() {
 				+ "<td>" + idExpediente + "</td>"
 				+ "<td>" + tipoExpediente + "</td>"
 				+ "<td>" + fechaCreacion + "</td>"
-				+ "<td></td>"
+				+ "<td>ACTIVO</td>"
 				+ "</tr>"
 				+ "</tbody>";
 				
@@ -257,8 +265,9 @@ function getDetalleExpedienteAfiliacion() {
 			}
 			else {
 				divDetalleExpediente.show();
+				$("#divDetalleExpAfiliacion").css("display", "block")
 				var tbody = "<tbody id='tbodyAfiliacion'></tbody>";
-				$("#detalleExpediente").append(tbody);
+				$("#detalleAfiliacion").append(tbody);
 				
 				$.each(res.imagenes, function(idx, opt) {
 					var tipoRequisito = (opt.vc_tipo_requisito != null) ? opt.vc_tipo_requisito : "";
@@ -266,18 +275,19 @@ function getDetalleExpedienteAfiliacion() {
 					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
 					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
 					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
+					var validoHasta = (opt.dt_valido_hasta != null) ? opt.dt_valido_hasta : "";
+					var estatusDigitalizacion = (opt.vc_estatus_digitalizacion != null) ? opt.vc_estatus_digitalizacion : "";
 					var imagen = opt.vc_imagen.replace(/\{0\}/g,"10.150.102.106");
 					console.log(imagen);
 					var rows = "<tr>"
-					+ "<td>" + tipoRequisito + "</td>"
-					+ "<td>" + tipoComprobante + "</td>"
-					+ "<td>" + estatusEntregado + "</td>"
-					+ "<td>" + fechaDigitalizacion + "</td>"
-					+ "<td>" + validoDesde + "</td>"
-					+ "<td></td>"
-					+ "<td></td>"
-					+ "<td></td>"
-					+ "<td onclick='showImage(\"" + imagen + "\")'><i class='bi bi-camera'></i></td>"
+					+ "<td><div style='width: 200px;'>" + tipoRequisito + "</div></td>"
+					+ "<td><div style='width: 200px;'>" + tipoComprobante + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + estatusEntregado + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + validoDesde + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + validoHasta + "</div></td>"
+					+ "<td><div style='width: 70px;'>" + estatusDigitalizacion + "</div></td>"
+					+ "<td><div style='width: 100px;'>" + fechaDigitalizacion + "</div></td>"
+					+ "<td onclick='showImage(\"" + imagen + "\")'><div style='width: 70px;'><i class='bi bi-camera'></i></div></td>"
 					+ "</tr>";
 					
 					$("#tbodyAfiliacion").append(rows);
@@ -306,6 +316,10 @@ function cleanTables() {
 	
 	$("#divTblCredito").css("display", "none");
 	$("#divTblAfiliacion").css("display", "none");
+	$("#divDetalleExpCredito").css("display", "none");
+	$("#divDetalleExpAfiliacion").css("display", "none");
+	$("#divMainTable").hide();
+	$("#divDetalleExpediente").hide();
 }
 
 function buscarDatos() {

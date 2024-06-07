@@ -33,6 +33,7 @@ import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCredi
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteCreditoService;
 import ahorrosbienestar.sib.std.sccb.consultaPagares.model.ConsultaPagares;
+import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -63,8 +64,6 @@ public class ConsultaExpedientesController {
 	@Autowired
 	private ImagenesExpedienteAfiliacionService imagenesExpAfiliacionService;
 	
-	
-	
 	private String rutaDireccion = "";
 	
 	@GetMapping("/consultaExpedientes")
@@ -89,6 +88,34 @@ public class ConsultaExpedientesController {
 		System.out.println(idCredito);	
 		
 		return ResponseEntity.ok(expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito));
+	}
+	
+	@RequestMapping(value = { "/getNamesExpedienteAfiliacion" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroExpAfiliacionByName(@RequestParam("nombre") String nombre) {
+		
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(nombre);
+		
+		try {
+			List<Map<String, Object>> nombresAfiliacion = expedienteAfiliacionService.searchByNameExpedienteAfiliacion(nombre);
+			
+			if (nombresAfiliacion != null && !nombresAfiliacion.isEmpty()) {
+				res.put("nombresAfiliacion", nombresAfiliacion);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("nombresAfiliacion", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
 	}
 	
 	@RequestMapping(value = { "/getExpedienteAfiliacionByName" }, method = RequestMethod.GET)

@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaExpedientes.service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,5 +18,9 @@ public class ExpedienteAfiliacionService {
 	
 	public Optional<ExpedienteAfiliacion> searchExpedienteAfiliacionByNomCliente(String nomCliente) {
 		return iExpedienteAfiliacionService.getExpedienteAfiliacionByName(nomCliente);
+	}
+	
+	public List<Map<String, Object>> searchByNameExpedienteAfiliacion(String nombre) {
+		return iExpedienteAfiliacionService.getByNameExpedienteAfiliacion(nombre);
 	}
 }
