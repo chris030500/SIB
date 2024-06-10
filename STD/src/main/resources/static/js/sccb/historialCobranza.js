@@ -14,12 +14,14 @@ $(document).ready(function() {
 					$("#divCredito").show();
 					$("#divName").hide();
 					$("#btnBuscar").show();
+					$("#btnClean").show();
 					break;
 				
 				case "2":
 					$("#divCredito").hide();
 					$("#divName").show();
 					$("#btnBuscar").show();
+					$("#btnClean").show();
 					break;	
 			}
 		} else {

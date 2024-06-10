@@ -25,6 +25,7 @@ $(document).ready(function () {
 					break;
 			}
 			$("#btnBuscar").show();
+			$("#btnClean").show();
 		} else {
 			swal({
 				title: "Error",
@@ -90,6 +91,7 @@ function getUrl() {
 }
 
 function cleanTable() {
+	$("#divPagares").hide();
 	$("#pagares > tbody").remove();
 }
 

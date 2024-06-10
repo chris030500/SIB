@@ -15,6 +15,7 @@ $(document).ready(function() {
 					$('#divCliente').hide();
 					$('#divName').hide();
 					$('#btnBuscar').show();
+					$('#btnClean').show();
 					
 					
 					break;
@@ -23,6 +24,7 @@ $(document).ready(function() {
 					$('#divCliente').show();
 					$('#divName').hide();
 					$('#btnBuscar').show();
+					$('#btnClean').show();
 					
 					break;
 				case "3":
@@ -30,6 +32,7 @@ $(document).ready(function() {
 					$('#divCliente').hide();
 					$('#divName').show();
 					$('#btnBuscar').show();
+					$('#btnClean').show();
 					
 					break;
 			}
@@ -117,6 +120,14 @@ function getUrlSolicitudes() {
 	}
 	
 	return url;
+}
+
+function cleanView() {
+	cleanTable();
+	cleanSolicitud();
+	
+	$("#divTable").hide();
+	$("#divDatosSolicitud").hide();
 }
 
 function cleanTable() {
