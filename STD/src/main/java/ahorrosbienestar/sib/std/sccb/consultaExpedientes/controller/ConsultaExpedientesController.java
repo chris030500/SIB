@@ -143,7 +143,7 @@ public class ConsultaExpedientesController {
 		
 		System.out.println(idExpediente);
 		
-		List<ImagenesExpedienteCredito> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
+		List<Map<String, Object>> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
 		
 		try {
 			if (imagenes != null && !imagenes.isEmpty()) {

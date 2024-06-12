@@ -178,14 +178,17 @@ function getDetalleExpedienteCredito() {
 				
 				$.each(res.imagenes, function(idx, opt) {
 					
-					var tipoRequisito = (opt.vc_tipo_requisito != null) ? opt.vc_tipo_requisito : "";
-					var tipoComprobante = (opt.vc_tipo_comprobante != null) ? opt.vc_tipo_comprobante : "";
-					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
-					var fechaDigitalizacion = (opt.dt_fecha_digitalizacion != null) ? opt.dt_fecha_digitalizacion : "";
-					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
-					var validoHasta = (opt.dt_valido_hasta != null) ? opt.dt_valido_hasta : "";
-					var estatusDigitalizacion = (opt.vc_estatus_digitalizacion != null) ? opt.vc_estatus_digitalizacion : "";
-					var imagen = opt.vc_imagen.replace(/\{0\}/g,"");
+					var tipoRequisito = (opt.tipo_requisito != null) ? opt.tipo_requisito : "";
+					var tipoComprobante = (opt.tipo_comprobante != null) ? opt.tipo_comprobante : "";
+					var estatusEntregado = (opt.estatus_entregado != null) ? opt.estatus_entregado : "";
+					var fechaDigitalizacion = (opt.fecha_digitalizacion != null) ? opt.fecha_digitalizacion : "";
+					var validoDesde = (opt.valido_desde != null) ? opt.valido_desde : "";
+					var validoHasta = (opt.valido_hasta != null) ? opt.valido_hasta : "";
+					var estatusDigitalizacion = (opt.estatus_digitalizacion != null) ? opt.estatus_digitalizacion : "";
+					var nombreCliente = (opt.nombre_cliente != null) ? opt.nombre_cliente : "";
+					var rol = (opt.rol_participante != null) ? opt.rol_participante : "";
+					var imagen = opt.imagen.replace(/\{0\}/g,"");
+					var imagenUrl = imagen.replace(/\\/g, "\\\\");
 
 					
 					var rows = "<tr>" 
@@ -196,11 +199,11 @@ function getDetalleExpedienteCredito() {
 					+ "<td><div style='width: 100px;'>" + validoHasta + "</div></td>"
 					+ "<td><div style='width: 70px;'>"+ estatusDigitalizacion + "</div></td>"
 					+ "<td><div style='width: 100px;'>" + fechaDigitalizacion + "</div></td>"
-					+ "<td><div style='width: 200px;'></div></td>"
-					+ "<td><div style='width: 80px;'></div></td>"
+					+ "<td><div style='width: 200px;'>" + nombreCliente + "</div></td>"
+					+ "<td><div style='width: 80px;'>" + rol + "</div></td>"
 					+ "<td>"
 					+ "<div style='width: 70px;'>"
-					+ "<button type='button' class='btn btn-secondary' onclick='showImage(" + imagen + ")'>"
+					+ "<button type='button' class='btn btn-secondary' onclick='showImage(\"" + imagenUrl + "\")'>"
 					+ "<i class='bi bi-camera'></i>"
 					+ "</button>"
 					+ "</div>"
