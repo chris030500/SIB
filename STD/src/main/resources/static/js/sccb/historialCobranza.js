@@ -125,7 +125,7 @@ function buscarDatosGenerales() {
 				var intencionalidad = (res.INTENCION != null) ? res.INTENCION : ""; 
 				var fechaCartera = (res.FECHA_CARTERA != null) ? res.FECHA_CARTERA : "";
 				var enConbranzaJudicial = (res.CJ != null) ? res.CJ : "";
-				var adeudoTotal = "0";
+				var adeudoTotal = (res.ADEUDO_TOTAL != null && res.ADEUDO_TOTAL > 0) ? "$" + res.ADEUDO_TOTAL.toLocaleString() : "0";
 				
 				var row =  "<tr>" 
 					+ "<td>" + idCredito + "</td>"
