@@ -247,8 +247,8 @@ function showSolicitud(parametroSolicitud) {
 				var acCredito = (res.credito_id != null) ? "<p id='pAcCredito'>" + res.credito_id + "</p>" : "<p id='pAcCredito'></p>";
 				var acDepRespaldo = (res.ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'>0</p>";
 				var acOperativa = (res.acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.acuerdo_operativa + "</p>" : "<p id='pAcOperativa'>0</p>";
-				var recibe = (res.nombre_empleado_recibe != null) ? "<p id='pRecibe'>" + res.nombre_empleado_recibe + "</p>" : "<p id='pRecibe'>0</p>";
-				var captura = (res.nombre_empleado_captura != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.nombre_empleado_captura + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: 0 </p>"; 
+				var recibe = (res.nombre_empleado_recibe != null) ? "<p id='pRecibe'>" + res.nombre_empleado_recibe + "</p>" : "<p id='pRecibe'</p>";
+				var captura = (res.nombre_empleado_captura != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.nombre_empleado_captura + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura:  </p>"; 
 				var fechaRecepcion = (res.fecha_recepcion != null) ? "<p id='pFechaRecepcion'>" + res.fecha_recepcion + "</p>" : "<p id='pFechaRecepcion'></p>";
 				var etapaRecepcion = (res.desc_etapa != null) ? "<p id='pEtapaRecepcion'>" + res.desc_etapa + "</p>" : "<p id='pEtapaRecepcion'></p>";
 				var fechaResultado = (res.fecha_resultado != null) ? "<p id='pFechaResultado'>" + res.fecha_resultado + "</p>" : "<p id='pFechaResultado'></p>";
@@ -268,16 +268,18 @@ function showSolicitud(parametroSolicitud) {
 				var tasaNormal = (res.tasa_normal != null) ? res.tasa_normal + "%" : "";
 				var nombreCompleto = (res.nombre_completo != null) ? res.nombre_completo : "";
 				var importeCredito = (res.importe_credito != null) ? res.importe_credito : "";
-				var depEnRespaldo = "";
+				var depEnRespaldo = (res.dep_en_respaldo != null) ? res.dep_en_respaldo : "";
 				var tasaMoratoria = (res.tasa_morat != null) ? res.tasa_morat + "%" : "";
 				var descripcionCliente = (res.desc_cliente != null) ? res.desc_cliente : "";
 				var plazo = (res.plazo != null) ? res.plazo : "";
-				var csmnImpCredito = "";
+				var csmnImpCredito = (res.cmsn_imp_credito != null) ? res.cmsn_imp_credito : "";
 				var numAbonosDiferidos = (res.num_abonos_diferidos != null) ? res.num_abonos_diferidos : "";
-				var nombreDestino = "";
-				var descFrecuencia = "";
+				var nombreDestino = (res.nombre_destino != null) ? res.nombre_destino : "";
+				var descFrecuencia = (res.desc_frecuencia != null) ? res.desc_frecuencia : "";
 				var cmsnAseFin = (res.cmsn_ase_fin != null && res.cmsn_ase_fin > 0) ? res.cmsn_ase_fin : "0";
 				var analista = (res.nombre_empleado_analiza != null) ? res.nombre_empleado_analiza : "";
+				
+				console.log(nombreDestino);
 				
 				var rowDatosDeCredito = 	"<tr id='tdRow1' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Cliente</td>"
