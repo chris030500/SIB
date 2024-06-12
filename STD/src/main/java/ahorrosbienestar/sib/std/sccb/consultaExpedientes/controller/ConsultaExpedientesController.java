@@ -1,15 +1,21 @@
 package ahorrosbienestar.sib.std.sccb.consultaExpedientes.controller;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -182,7 +188,38 @@ public class ConsultaExpedientesController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+	@RequestMapping( value = { "/getImagen" }, method = RequestMethod.GET )
+	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) throws IOException {
 		
+		String SCCB2 = "//10.150.102.106/Imagenes_SCCB_2/Expedientes";
+		//String SCCB = "10.150.102.106/Imagenes_SCCB/Expedientes";
+		
+		System.out.println(ruta);
+		
+		try {
+			Path filePathSCCB2 = Paths.get(SCCB2 + "/C0003/2003/ExpIngreso/SOL. ADMISION P.F.1.JPG");
+			
+			System.out.println(filePathSCCB2.toString());
+			
+			if (Files.exists(filePathSCCB2)) {
+				byte[] imagenSCCB2 = Files.readAllBytes(filePathSCCB2);
+				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imagenSCCB2);
+			}
+			
+			/*Path filePathSCCB = Paths.get(SCCB + ruta);
+			if (Files.exists(filePathSCCB)) {
+				byte[] imagenSCCB = Files.readAllBytes(filePathSCCB);
+				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imagenSCCB);
+			}*/
+			
+			return ResponseEntity.notFound().build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(null);
+		}
+		
+	}
 	
 	public int validarAcceso() {
 		

@@ -185,6 +185,8 @@ function getDetalleExpedienteCredito() {
 					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
 					var validoHasta = (opt.dt_valido_hasta != null) ? opt.dt_valido_hasta : "";
 					var estatusDigitalizacion = (opt.vc_estatus_digitalizacion != null) ? opt.vc_estatus_digitalizacion : "";
+					var imagen = opt.vc_imagen.replace(/\{0\}/g,"");
+
 					
 					var rows = "<tr>" 
 					+ "<td><div style='width: 200px;'>"+ tipoRequisito + "</div></td>"
@@ -196,7 +198,13 @@ function getDetalleExpedienteCredito() {
 					+ "<td><div style='width: 100px;'>" + fechaDigitalizacion + "</div></td>"
 					+ "<td><div style='width: 200px;'></div></td>"
 					+ "<td><div style='width: 80px;'></div></td>"
-					+ "<td><div style='width: 70px;'><i class='bi bi-camera'></i></div></td>"
+					+ "<td>"
+					+ "<div style='width: 70px;'>"
+					+ "<button type='button' class='btn btn-secondary' onclick='showImage(" + imagen + ")'>"
+					+ "<i class='bi bi-camera'></i>"
+					+ "</button>"
+					+ "</div>"
+					+ "</td>"
 					+ "</tr>";
 					
 					$("#tbodyDetalleExpediente").append(rows);
@@ -281,7 +289,8 @@ function getDetalleExpedienteAfiliacion() {
 					var validoDesde = (opt.dt_valido_desde != null) ? opt.dt_valido_desde : "";
 					var validoHasta = (opt.dt_valido_hasta != null) ? opt.dt_valido_hasta : "";
 					var estatusDigitalizacion = (opt.vc_estatus_digitalizacion != null) ? opt.vc_estatus_digitalizacion : "";
-					var imagen = opt.vc_imagen.replace(/\{0\}/g,"\\10.150.102.106\Imagenes_SCCB_2");
+					var imagen = opt.vc_imagen.replace(/\{0\}/g,"");
+					var imagenUrl = imagen.replace(/\\/g, "\\\\");
 					var rows = "<tr>"
 					+ "<td><div style='width: 200px;'>" + tipoRequisito + "</div></td>"
 					+ "<td><div style='width: 200px;'>" + tipoComprobante + "</div></td>"
@@ -292,7 +301,7 @@ function getDetalleExpedienteAfiliacion() {
 					+ "<td><div style='width: 100px;'>" + fechaDigitalizacion + "</div></td>"
 					+ "<td>"
 					+ "<div style='width: 70px;'>"
-					+ "<button type='button' class='btn btn-secondary' onclick='showImage()'>"
+					+ "<button type='button' class='btn btn-secondary' onclick='showImage(\"" + imagenUrl + "\")'>"
 					+ "<i class='bi bi-camera'></i>"
 					+ "</button>"
 					+ "</div>"
@@ -307,14 +316,26 @@ function getDetalleExpedienteAfiliacion() {
 	});
 }
 
-function showImage() {
+
+function showImage(imagen) {
 	
-	console.log("Si entra");
 	$("#visorImagenes").modal("show");
 	
-	const urlImagen = "//10.150.102.106/Imagenes_SCCB_2/Expedientes/C0003/2003/ExpIngreso/SOL.%20ADMISION%20P.F.1.JPG";
-    
-    $("#imagen").attr("src", urlImagen);
+	$.ajax({
+		url: getAbsolutePath() + "getImage?ruta=" + imagen,
+		type: "GET",
+		xhrFields: {
+			responseType: "blob"
+		},
+		success: function (res) {
+			var urlImage = URL.createObjectURL(res);
+			
+			$("#imagen").attr("src", urlImage);
+		},
+		error: function () {
+			console.log("Error al obtener la imagen");
+		}
+	});
     
 }
 
