@@ -15,44 +15,13 @@ $(document).ready(function () {
 		if (expOptionSelected > 0) {
 			
 			switch (expOptionSelected) {
-				case "1":
-					$("#divTipoBusqueda").show();
-					$("#divCredito").hide();
-					$("#divName").hide();
-					$("#btnBuscar").hide();
-					$("#btnClean").hide();
-					$("#optIdCredito").hide();
-					$("#optNombre").show();
-					break;
-				case "2": 
-					$("#divTipoBusqueda").show();
-					$("#divCredito").hide();
-					$("#divName").hide();
-					$("#btnBuscar").hide();
-					$("#btnClean").hide();
-					$("#optIdCredito").show();
-					$("#optNombre").hide();
-					break;
-			}
-		}
-	});
-	
-	$("#opcionesTipoBusqueda").change(function () {
-		
-		searchOptionSelected = $("#opcionesTipoBusqueda").val();
-		
-		if (searchOptionSelected > 0) {
-			switch (searchOptionSelected) {
-				
-				case "1" :
-					$("#divTipoBusqueda").show();
+				case "2":
 					$("#divCredito").show();
 					$("#divName").hide();
 					$("#btnBuscar").show();
 					$("#btnClean").show();
 					break;
-				case "2":
-					$("#divTipoBusqueda").show();
+				case "1": 
 					$("#divCredito").hide();
 					$("#divName").show();
 					$("#btnBuscar").show();
@@ -119,7 +88,7 @@ function buscarExpedienteCredito() {
 		dataType: "JSON",
 		success: function(res) {
 			console.log(res);
-			if (res == null || res == '') {
+			if ($.isEmptyObject(res)) {
 				console.log("Error");
 				divMainTable.hide();	
 			}
@@ -146,6 +115,14 @@ function buscarExpedienteCredito() {
 				
 				$("#credito").append(tbody);
 			}
+		}, 
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divMainTable.hide();
+			swal({
+				title: "Error, ",
+						text: "No se encuentra el no. de crédito.",
+						icon: "warning",
+			});
 		}
 	}); 
 }
@@ -165,7 +142,7 @@ function getDetalleExpedienteCredito() {
 		type: "GET",
 		dataType: "JSON", 
 		success: function (res) {
-			if (res == null || res == '') {
+			if (res.imagenes.length === 0) {
 				console.log("Error");
 				divDetalleExpediente.hide();
 			}
@@ -213,6 +190,14 @@ function getDetalleExpedienteCredito() {
 					$("#tbodyDetalleExpediente").append(rows);
 				});
 			}
+		},
+		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+			divDetalleExpediente.hide();
+			swal({
+				title: "Error, ",
+						text: "No se encuentra el no. de crédito.",
+						icon: "warning",
+			});
 		}
 	});
 }

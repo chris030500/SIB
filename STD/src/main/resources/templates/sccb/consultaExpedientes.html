@@ -32,35 +32,21 @@
         	</div>
         	<form>
 				<div class="row p-4">
-					<div class="col-6">
+					<div class="col-5">
 						<div class="row justify-content-center">
-							<div class="col">
-								<div class="col-auto">
-									<label class="form-label">Tipo de expediente: </label>
-								</div>
-								<div class="col-auto">
-									<select class="form-control" id="opcionesTipoExpediente">
-										<option value="0">Seleccione</option>
-										<option value="1">Afiliación</option>
-										<option value="2">Crédito</option>
-									</select>
-								</div>
+							<div class="col-4">
+								<label class="form-label">Tipo de expediente: </label>
 							</div>
-							<div class="col" style="display: none;" id="divTipoBusqueda">
-								<div class="col-auto">
-									<label class="form-label">Buscar: </label>
-								</div>
-								<div class="col-auto">
-									<select class="form-control" id="opcionesTipoBusqueda">
-										<option value="0">Seleccione</option>
-										<option id="optIdCredito" value="1" style="display: none;">No. de crédito</option>
-										<option id="optNombre" value="2" style="display: none;">Nombre</option>
-									</select>
-								</div>
+							<div class="col-8">
+								<select class="form-control" id="opcionesTipoExpediente">
+									<option value="0">Seleccione</option>
+									<option value="1">Afiliación</option>
+									<option value="2">Crédito</option>
+								</select>
 							</div>
 						</div>
 					</div>
-					<div class="col-5">
+					<div class="col-6">
 						<div class="row justify-content-center" style="display: none;" id="divCredito">
 							<div class="col-3">
 								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
