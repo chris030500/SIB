@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaExpedientes.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,10 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.Resource;
-
+import org.springframework.core.io.Resource;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +71,9 @@ public class ConsultaExpedientesController {
 	
 	@Autowired
 	private ImagenesExpedienteAfiliacionService imagenesExpAfiliacionService;
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
 	
 	private String rutaDireccion = "";
 	
@@ -189,37 +194,46 @@ public class ConsultaExpedientesController {
 		}
 	}
 	
-	@RequestMapping( value = { "/getImagen" }, method = RequestMethod.GET )
-	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) throws IOException {
+	@RequestMapping( value = { "/getUrlImagen" }, method = RequestMethod.GET )
+	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) {
 		
-		String SCCB2 = "//10.150.102.106/Imagenes_SCCB_2/Expedientes";
-		//String SCCB = "10.150.102.106/Imagenes_SCCB/Expedientes";
+		String urlImagen = ruta.replace("\\", "/");
 		
-		System.out.println(ruta);
+		String urlSCCB = "file://10.150.102.106/Imagenes_SCCB/Expedientes" + urlImagen;
+		Resource resource1 = resourceLoader.getResource(urlSCCB);
 		
-		try {
-			Path filePathSCCB2 = Paths.get(SCCB2 + "/C0003/2003/ExpIngreso/SOL. ADMISION P.F.1.JPG");
+		String urlSCCB2 = "file://10.150.102.106/Imagenes_SCCB_2/Expedientes" + urlImagen;
+		Resource resource2 = resourceLoader.getResource(urlSCCB2);
+		
+		if (resource1.exists()) {
 			
-			System.out.println(filePathSCCB2.toString());
+			System.out.println(resource1.getFilename());
 			
-			if (Files.exists(filePathSCCB2)) {
-				byte[] imagenSCCB2 = Files.readAllBytes(filePathSCCB2);
-				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imagenSCCB2);
-			}
+			return ResponseEntity.ok()
+					.contentType(MediaType.IMAGE_JPEG)
+					.body(getImagenBytes(resource1));
+		}
+		if (resource2.exists()) {
 			
-			/*Path filePathSCCB = Paths.get(SCCB + ruta);
-			if (Files.exists(filePathSCCB)) {
-				byte[] imagenSCCB = Files.readAllBytes(filePathSCCB);
-				return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imagenSCCB);
-			}*/
+			System.out.println(resource2.getFilename());
 			
-			return ResponseEntity.notFound().build();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body(null);
+			return ResponseEntity.ok()
+					.contentType(MediaType.IMAGE_JPEG)
+					.body(getImagenBytes(resource2));
 		}
 		
+		return ResponseEntity.notFound().build();
 	}
+	
+    private byte[] getImagenBytes(Resource resource) {
+        try {
+            InputStream inputStream = resource.getInputStream();
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 	
 	public int validarAcceso() {
 		

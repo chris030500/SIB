@@ -324,20 +324,24 @@ function showImage(imagen) {
 	
 	$("#visorImagenes").modal("show");
 	
+	url = getAbsolutePath() + "getUrlImagen?ruta=" + encodeURIComponent(imagen);
+	
 	$.ajax({
-		url: getAbsolutePath() + "getImage?ruta=" + imagen,
+		url: url,
 		type: "GET",
 		xhrFields: {
 			responseType: "blob"
 		},
 		success: function (res) {
+			console.log(res);
 			var urlImage = URL.createObjectURL(res);
+			$("#imagen").attr("class", "img-fluid");
 			
 			$("#imagen").attr("src", urlImage);
 		},
-		error: function () {
-			console.log("Error al obtener la imagen");
-		}
+		error: function(xhr, status, error) {
+                console.error('Error al cargar la imagen:', error);
+        }
 	});
     
 }
