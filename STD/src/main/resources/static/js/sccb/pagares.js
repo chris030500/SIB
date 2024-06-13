@@ -57,7 +57,7 @@ function buscarNombre(name) {
 			console.log(participantes.length);
 			for(var i = 0; i < participantes.length; i++) {
 				
-				option += "<option value='" + participantes[i].i_no_cliente + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				option += "<option value='" + participantes[i].i_no_cliente + "," + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -72,6 +72,8 @@ function getAbsolutePath() {
 }
 
 function getUrl() {
+	var select;
+	var valueSelect;
 	var idCredito;
 	var noCliente;
 	
@@ -85,8 +87,11 @@ function getUrl() {
 			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
 			break;
 		case "3":
-			noCliente = $("#selectName").val();
-			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
+			select = $("#selectName").val();
+			valueSelect = select.toString().split(',');
+			noCliente = valueSelect[0];
+			idCredito = valueSelect[1];
+			url = getAbsolutePath()	 + "getPagaresByNoClienteAndIdCredito?noCliente=" + Number(noCliente) + "&idCredito=" + Number(idCredito);
 	}
 	
 	console.log(url);

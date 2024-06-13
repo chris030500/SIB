@@ -22,4 +22,12 @@ public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagare
 			+ "WHERE I_NO_CLIENTE = :noCliente ", nativeQuery = true)
 	List<ConsultaPagares> getBynoClienteConsultaPagares(@Param("noCliente") Integer noCliente);
 	
+	@Query( value = "SELECT * "
+			+ "FROM SIB.TBL_SCCB_PAGARES "
+			+ "WHERE I_NO_CLIENTE = :noCliente "
+			+ "AND I_CREDITO_ID = :idCredito", nativeQuery = true)
+	List<ConsultaPagares> getBynoClienteAndIdCreditoConsultaPagares(
+			@Param("noCliente") Integer noCliente,
+			@Param("idCredito") Integer idCredito);
+	
 }

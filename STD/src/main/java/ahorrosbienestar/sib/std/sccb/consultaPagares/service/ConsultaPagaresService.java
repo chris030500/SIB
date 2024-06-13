@@ -21,4 +21,8 @@ public class ConsultaPagaresService {
 	public List<ConsultaPagares> searchByNoClientePagares(Integer noCliente) {
 		return iPagaresRepository.getBynoClienteConsultaPagares(noCliente);
 	}
+	
+	public List<ConsultaPagares> searchByNoClienteAndIdCreditoPagares(Integer noCliente, Integer idCredito) {
+		return iPagaresRepository.getBynoClienteAndIdCreditoConsultaPagares(noCliente, idCredito);
+	}
 }
