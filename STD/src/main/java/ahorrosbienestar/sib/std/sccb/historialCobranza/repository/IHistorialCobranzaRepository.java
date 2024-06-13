@@ -16,7 +16,7 @@ import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialCobranza;
 public interface IHistorialCobranzaRepository extends JpaRepository<HistorialCobranza, Integer> {
 	
 	@Query(value = "SELECT * " 
-			+ "FROM TBL_SCCB_HISTORIAL_COBRANZA "
+			+ "FROM SIB.TBL_SCCB_HISTORIAL_COBRANZA "
 			+ "WHERE I_SOLICITUD_ID = :idSolicitud", nativeQuery = true)
 	public Optional<HistorialCobranza> getDetalleExpediente(@Param("idSolicitud") Integer idSolicitud);
 	
@@ -27,8 +27,8 @@ public interface IHistorialCobranzaRepository extends JpaRepository<HistorialCob
 			+ "T1.VC_EN_COBRANZA_JUDICIAL AS CJ, "
 			+ "T1.FL_ADEUDO_TOTAL AS ADEUDO_TOTAL, "
 			+ "T2.I_CREDITO_ID AS CREDITO_ID "
-			+ "FROM TBL_SCCB_HISTORIAL_COBRANZA T1 "
-			+ "JOIN TBL_SCCB_DATOS_SOLICITUD T2 ON T1.I_SOLICITUD_ID = T2.I_SOLICITUD_ID "
+			+ "FROM SIB.TBL_SCCB_HISTORIAL_COBRANZA T1 "
+			+ "JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T1.I_SOLICITUD_ID = T2.I_SOLICITUD_ID "
 			+ "WHERE T2.I_CREDITO_ID = :idCredito", nativeQuery = true)
 	public Optional<Map<String, Object>> getDatosGeneralesHistorialCobranza(@Param("idCredito") Integer idCredito);
 }

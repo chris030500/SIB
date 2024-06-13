@@ -14,7 +14,7 @@ import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedient
 public interface IImagenesExpedienteAfiliacionRepository extends JpaRepository<ImagenesExpedienteAfiliacion, Integer> {
 	
 	@Query( value = "SELECT * "
-			+ "FROM TBL_SCCB_IMAGENES_EXP_AFILIACION "
+			+ "FROM SIB.TBL_SCCB_IMAGENES_EXP_AFILIACION "
 			+ "WHERE I_EXPEDIENTE_ID = :idExpediente ", nativeQuery = true)
 	public List<ImagenesExpedienteAfiliacion> getDetalleExpedienteAfiliacion(@Param("idExpediente") Integer idExpediente);
 }

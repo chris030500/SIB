@@ -13,12 +13,12 @@ import ahorrosbienestar.sib.std.sccb.consultaPagares.model.ConsultaPagares;
 public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagares, Integer> {
 	
 	@Query( value = "SELECT * "
-			+ "FROM TBL_SCCB_PAGARES "
+			+ "FROM SIB.TBL_SCCB_PAGARES "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	List<ConsultaPagares> getByIdCreditoConsultaPagares(@Param("idCredito") Integer idCredito);
 	
 	@Query( value = "SELECT * "
-			+ "FROM TBL_SCCB_PAGARES "
+			+ "FROM SIB.TBL_SCCB_PAGARES "
 			+ "WHERE I_NO_CLIENTE = :noCliente ", nativeQuery = true)
 	List<ConsultaPagares> getBynoClienteConsultaPagares(@Param("noCliente") Integer noCliente);
 	

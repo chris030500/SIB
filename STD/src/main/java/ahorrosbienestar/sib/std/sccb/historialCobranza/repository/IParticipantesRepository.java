@@ -14,12 +14,12 @@ import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 @Repository
 public interface IParticipantesRepository extends JpaRepository<Participantes, Integer> {
 	@Query(value = "SELECT * "
-			+ "FROM TBL_SCCB_PARTICIPANTES "
+			+ "FROM SIB.TBL_SCCB_PARTICIPANTES "
 			+ "WHERE I_CREDITOID = :idCredito ", nativeQuery = true)
 	public List<Participantes> getByIdCreditoParticipantes(@Param("idCredito") Integer idCredito);
 	
 	@Query(value = "SELECT * "
-			+ "FROM TBL_SCCB_PARTICIPANTES "
+			+ "FROM SIB.TBL_SCCB_PARTICIPANTES "
 			+ "WHERE VC_NOMBRECLIENTE LIKE %:nombre% "
 			+ "LIMIT 100", nativeQuery = true)
 	public List<Participantes> getByNameParticipantes(@Param("nombre") String nombre);

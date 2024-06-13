@@ -15,7 +15,7 @@ import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion
 public interface IHistorialAsignacionRepository extends JpaRepository<HistorialAsignacion, Integer> {
 	
 	@Query(value = "SELECT * "
-			+ "FROM TBL_SCCB_HISTORIAL_ASIGNACION "
+			+ "FROM SIB.TBL_SCCB_HISTORIAL_ASIGNACION "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	public List<HistorialAsignacion> getByIdCreditoHistorialAsignacion(@Param("idCredito") Integer idCredito);
 }

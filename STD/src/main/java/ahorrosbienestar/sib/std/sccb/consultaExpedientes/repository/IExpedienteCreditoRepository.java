@@ -13,7 +13,7 @@ import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito
 public interface IExpedienteCreditoRepository extends JpaRepository<ExpedienteCredito, Integer> {
 	
 	@Query( value = "SELECT * "
-			+ "FROM TBL_SCCB_EXPEDIENTE_CREDITO "
+			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_CREDITO "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	public Optional<ExpedienteCredito> getExpedienteCreditoByIdCredito(@Param("idCredito") Integer idCredito);
 }
