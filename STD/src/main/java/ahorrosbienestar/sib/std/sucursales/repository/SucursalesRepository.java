@@ -22,4 +22,9 @@ public interface SucursalesRepository extends JpaRepository<SucursalesModel, Int
 	@Query(value = "SELECT * FROM SIB.TBL_SUCURSALES WHERE VC_NOMBRESUCURSAL = :sucursal", nativeQuery = true)
 	public SucursalesModel sucursalPorNombre(@Param("sucursal") String sucursal);
 
+	@Query(value = "SELECT t1.*\r\n"
+			+ "FROM SIB.TBL_SUCURSALES t1\r\n"
+			+ "LEFT JOIN SIB.TBL_TELEFONOS_SUCURSAL_OA t2 ON t1.PK_ID_SUCURSAL = t2.FK_ID_SUCURSAL\r\n"
+			+ "WHERE t1.VC_NOMBRESUCURSAL LIKE CONCAT(:sucursal, '%');\r\n", nativeQuery = true)
+	public List<SucursalesModel> buscarSucursalPorNombree(@Param("sucursal") String sucursal);
 }

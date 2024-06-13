@@ -25,5 +25,7 @@ public class SucursalesService {
 		return repository.sucursalPorNombre(sucursal);
 	}
 	
-
+	public List<SucursalesModel> buscarSucursalPorNombree(String sucursal) {
+		return repository.buscarSucursalPorNombree(sucursal);
+	}
 }
