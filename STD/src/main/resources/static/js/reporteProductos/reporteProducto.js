@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 
  */
@@ -59,22 +60,43 @@ function generarReporte(){
   
   
   function peticionPost(urlServicio) {
+    
+    
+	 swal({
+      title: "Procesando información.",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+    
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
 		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
+			
 		},
 		complete: function() {
-			setTimeout($.unblockUI, 500);
+			swal.close();
 		},
 		success: function(respuesta) {
 
-				var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-		
-				window.open(urlReporte);
-				window.focus();
+			swal(respuesta[0], {
+				closeOnClickOutside: false,
+				icon: "success",
+			}).then(resp => {
+
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[1]);
+					window.focus();
+				
+			});
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({

@@ -63,6 +63,24 @@ public class Usuario {
 	@JoinColumn(name = "Rol_idRol")
 	private Rol rol_idRol;
 
+	
+	
+	@Override
+	public String toString() {
+		return "Usuario [pk_id_usuario=" + pk_id_usuario + ", vc_nombre_usuario=" + vc_nombre_usuario
+				+ ", i_estatus_usuario=" + i_estatus_usuario + ", i_estatus_sesion=" + i_estatus_sesion
+				+ ", i_estatus_cuenta=" + i_estatus_cuenta + ", i_intentos_fallidos=" + i_intentos_fallidos
+				+ ", i_id_empleado=" + i_id_empleado + ", dt_fecha_ultimo_ingreso=" + dt_fecha_ultimo_ingreso
+				+ ", rol_idRol=" + rol_idRol + ", getPk_id_usuario()=" + getPk_id_usuario()
+				+ ", getVc_nombre_usuario()=" + getVc_nombre_usuario() + ", getI_estatus_usuario()="
+				+ getI_estatus_usuario() + ", getI_estatus_sesion()=" + getI_estatus_sesion()
+				+ ", getI_estatus_cuenta()=" + getI_estatus_cuenta() + ", getI_intentos_fallidos()="
+				+ getI_intentos_fallidos() + ", getRol_idRol()=" + getRol_idRol() + ", getI_id_empleado()="
+				+ getI_id_empleado() + ", getDt_fecha_ultimo_ingreso()=" + getDt_fecha_ultimo_ingreso()
+				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+				+ "]";
+	}
+
 	public int getPk_id_usuario() {
 		return pk_id_usuario;
 	}

@@ -1,10 +1,12 @@
 package ahorrosbienestar.sib.std.reportesJasper.controller;
 
+import java.io.FileOutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-
 
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -27,13 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.reportesJasper.component.Desencriptar;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.FileOutputStream;
 
 @CrossOrigin
 @RestController
@@ -44,8 +42,6 @@ public class JasperReportController {
 	@Autowired
 	private Desencriptar desencriptar;
 	
-	@Autowired
-	private ConfigService configService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -110,29 +106,27 @@ public class JasperReportController {
     					byte[] responseBody = response.getBody();
     					
     					//exportar reporte 
-    					String fechaCreacion = null;
+    					//String fechaCreacion = null;
     					StringBuilder stringBuilder = null;
     					ContentDisposition contentDisposition = null;
     					HttpHeaders h2 = new HttpHeaders();
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
     						//fecha de creacion
-        					fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+        					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
         				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
         				    contentDisposition = ContentDisposition.builder("inline")
         				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc).append("_")
-        				    .append(fechaCreacion)
+        				    .append(identificadorDoc)
         				    .append(tipoDocumento)
         				    .toString())
         				    .build();
         				    h2.setContentDisposition(contentDisposition);
     					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
-    						fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+    						//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
         				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
         				    contentDisposition = ContentDisposition.builder("attachment")
         				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc).append("_")
-        				    .append(fechaCreacion)
+        				    .append(identificadorDoc)
         				    .append(tipoDocumento)
         				    .toString())
         				    .build();
@@ -145,7 +139,7 @@ public class JasperReportController {
     					    		
     	
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
     }
@@ -204,20 +198,60 @@ public class JasperReportController {
 	    					archivoOutputStream.write(responseBody);
 	    					
 	    					archivoOutputStream.close();
-	    					System.out.println("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
+	    					logger.error("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
 	    					
 						} catch (Exception e) {
-							System.out.println("Error:"+e.getMessage());
+							logger.error(e.getMessage());
 						}
     				
     					
 
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error(e.getMessage());
 		}
 		return null;
     }
-    
+        
+	@SuppressWarnings("deprecation")
+	@Transactional
+	public byte[] generarArchivoCorreo(Integer idReporte, String parametros) {
+		try {
+			ReporteJasper report = iReporteRepository.getById(idReporte);
+			
+			String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+report.getVc_extension()+parametros.replace("~", "&");
+			
+			logger.info("url:"+urlGenerarReporte);
+			
+			HttpHeaders headers = new HttpHeaders();
+		    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
+		    		//configService.findAll().get(16).getVc_valor_propiedad());
+			headers.set("Content-Type",report.getVc_tipo_contenido());
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
+				
+			// Request Body
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+			// Request Entity
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+			
+			// RestTemplate
+			RestTemplate restTemplate = new RestTemplate();
+
+			// DELETE cancelar
+			ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
+
+			// ResponseBody
+			byte[] responseBody = response.getBody();
+			
+			return responseBody;
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+	
+	
     
     private static HttpHeaders createHeaders(String username, String password) {
         return new HttpHeaders() {
@@ -229,5 +263,7 @@ public class JasperReportController {
             }
         };
     }
+
+
     
 }

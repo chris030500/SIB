@@ -184,7 +184,7 @@ public class CoreBancarioService {
 			
 			return ls;
 		} catch (Exception e) {
-			System.out.print(""+ e.getMessage());
+			logger.error(""+ e.getMessage());
 			return null;
 		}
 		
@@ -214,7 +214,7 @@ public class CoreBancarioService {
 
 			return ls;
 		} catch (Exception e) {
-			System.out.print(""+ e.getMessage());
+			logger.error(""+ e.getMessage());
 			return null;
 		}
 	}
@@ -236,7 +236,7 @@ public class CoreBancarioService {
 			
 			return ls;
 		} catch (Exception e) {
-			System.out.print(""+ e.getMessage());
+			logger.error(""+ e.getMessage());
 			return null;
 		}
 	}
@@ -256,7 +256,7 @@ public class CoreBancarioService {
 			
 			return ls;
 		} catch (Exception e) {
-			System.out.print(""+ e.getMessage());
+			logger.error(""+ e.getMessage());
 			return null;
 		}
 	}
