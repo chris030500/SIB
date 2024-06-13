@@ -25,7 +25,7 @@ public interface IDatosSolicitudCreditoRepository extends JpaRepository<DatosSol
 			+ "T1.I_TASA_MORATORIA AS tasa_morat, T1.I_NUM_ABONOS_DIFERIDOS AS num_abonos_diferidos, "
 			+ "T1.VC_DESCRIPCION_ETAPA AS desc_etapa, T1.VC_DESCRIPCION_ESTATUS AS desc_estatus, "
 			+ "T1.I_CENTRO_ID AS centro_id, T1.VC_NOMBRE_CENTRO AS nombre_centro, T1.VC_OBSERVACIONES AS observaciones, "
-			+ "T1.VC_OBSERVACIONES_CC AS observaciones_cc, T1.I_CMSN_IMP_CREDITO AS csmn_imp_credito, "
+			+ "T1.VC_OBSERVACIONES_CC AS observaciones_cc, T1.I_CMSN_IMP_CREDITO AS cmsn_imp_credito, "
 			+ "T1.I_DEP_EN_RESPALDO AS dep_en_respaldo, T1.I_REVISION_VEHICULAR AS revision_vehicular, "
 			+ "T1.VC_DESCRIPCION_FRECUENCIA AS desc_frecuencia, T1.VC_NOMBRE_DESTINO AS nombre_destino, "
 			+ "T2.DT_FECHA_DESEMBOLSO AS fecha_desembolso, T2.DT_FECHA_AUTORIZACION AS fecha_autorizacion, "

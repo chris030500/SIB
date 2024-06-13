@@ -268,15 +268,15 @@ function showSolicitud(parametroSolicitud) {
 				var tasaNormal = (res.tasa_normal != null) ? res.tasa_normal + "%" : "";
 				var nombreCompleto = (res.nombre_completo != null) ? res.nombre_completo : "";
 				var importeCredito = (res.importe_credito != null) ? res.importe_credito : "";
-				var depEnRespaldo = (res.dep_en_respaldo != null) ? res.dep_en_respaldo : "";
+				var depEnRespaldo = (res.dep_en_respaldo != null && res.dep_en_respaldo > 0) ? "$" + res.dep_en_respaldo.toLocaleString() : "0";
 				var tasaMoratoria = (res.tasa_morat != null) ? res.tasa_morat + "%" : "";
 				var descripcionCliente = (res.desc_cliente != null) ? res.desc_cliente : "";
 				var plazo = (res.plazo != null) ? res.plazo : "";
-				var csmnImpCredito = (res.cmsn_imp_credito != null) ? res.cmsn_imp_credito : "";
+				var csmnImpCredito = (res.cmsn_imp_credito != null && res.cmsn_imp_credito > 0) ? "$" + res.cmsn_imp_credito.toLocaleString() : "0";
 				var numAbonosDiferidos = (res.num_abonos_diferidos != null) ? res.num_abonos_diferidos : "";
 				var nombreDestino = (res.nombre_destino != null) ? res.nombre_destino : "";
 				var descFrecuencia = (res.desc_frecuencia != null) ? res.desc_frecuencia : "";
-				var cmsnAseFin = (res.cmsn_ase_fin != null && res.cmsn_ase_fin > 0) ? res.cmsn_ase_fin : "0";
+				var cmsnAseFin = (res.cmsn_ase_fin != null && res.cmsn_ase_fin > 0) ? "$" + res.cmsn_ase_fin.toLocaleString() : "0";
 				var analista = (res.nombre_empleado_analiza != null) ? res.nombre_empleado_analiza : "";
 				
 				console.log(nombreDestino);
