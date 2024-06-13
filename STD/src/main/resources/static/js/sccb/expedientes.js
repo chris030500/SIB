@@ -328,8 +328,6 @@ function getDetalleExpedienteAfiliacion() {
 
 function showImage(imagen) {
 	
-	$("#visorImagenes").modal("show");
-	
 	url = getAbsolutePath() + "getUrlImagen?ruta=" + encodeURIComponent(imagen);
 	
 	$.ajax({
@@ -340,13 +338,20 @@ function showImage(imagen) {
 		},
 		success: function (res) {
 			console.log(res);
+			$("#visorImagenes").modal("show");
 			var urlImage = URL.createObjectURL(res);
 			$("#imagen").attr("class", "img-fluid");
 			
 			$("#imagen").attr("src", urlImage);
 		},
 		error: function(xhr, status, error) {
-                console.error('Error al cargar la imagen:', error);
+			$("#visorImagenes").modal("hide");
+            console.error('Error al cargar la imagen:', error);
+            swal({
+				title: "Error, ",
+				text: "No se encuentra disponible la imagen.",
+				icon: "warning",
+			});
         }
 	});
     
