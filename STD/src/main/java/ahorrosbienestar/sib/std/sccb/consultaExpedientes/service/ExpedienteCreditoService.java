@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaExpedientes.service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,5 +18,9 @@ public class ExpedienteCreditoService {
 	
 	public Optional<ExpedienteCredito> searchExpedienteCreditoByIdCredito(Integer idCredito) {
 		return iExpedienteCreditoRepository.getExpedienteCreditoByIdCredito(idCredito);
+	}
+	
+	public List<Map<String, Object>> searcNamesExpedienteCredito(String nombre) {
+		return iExpedienteCreditoRepository.getNamesExpedienteCredito(nombre);
 	}
  }

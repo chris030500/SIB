@@ -49,17 +49,24 @@
 					<div class="col-6">
 						<div class="row justify-content-center" style="display: none;" id="divCredito">
 							<div class="col-3">
-								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
+								<label for="creditoBusqueda" class="col-form-label">Nombre:</label>
 							</div>
 							<div class="col-8">
-								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
-								placeholder="No. de crédito">
+								<div class="row">
+									<input type="search" class="form-control" id="creditoBusqueda"
+									placeholder="Nombre" onkeyup="buscarNombreCredito(this.value);">
+								</div>
+							</div>
+							<div class="row p-2">
+								<select id="selectCredito" class="form-select" name="selectCredito" style="font-size: small;">
+									
+								</select>
 							</div>
 						</div>
 						
 						<div class="row justify-content-center" style="display: none;" id="divName">
 							<div class="col-3">
-								<label for="nameBusqueda" class="col-form-label">Nombre</label>
+								<label for="nameBusqueda" class="col-form-label">Nombre:</label>
 							</div>
 							<div class="col-8">
 								<div class="row">

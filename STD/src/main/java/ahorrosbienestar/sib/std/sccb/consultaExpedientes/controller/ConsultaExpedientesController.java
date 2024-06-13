@@ -101,6 +101,35 @@ public class ConsultaExpedientesController {
 		return ResponseEntity.ok(expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito));
 	}
 	
+	
+	@RequestMapping(value = { "/getNamesExpedienteCredito" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroExpCreditoByName(@RequestParam("nombre") String nombre) {
+		
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		System.out.println(nombre);
+		
+		try {
+			List<Map<String, Object>> nombresCredito = expedienteCreditoService.searcNamesExpedienteCredito(nombre);
+			
+			if (nombresCredito != null && !nombresCredito.isEmpty()) {
+				res.put("nombresCredito", nombresCredito);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("nombresCredito", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			res.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
 	@RequestMapping(value = { "/getNamesExpedienteAfiliacion" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> parametroExpAfiliacionByName(@RequestParam("nombre") String nombre) {
 		

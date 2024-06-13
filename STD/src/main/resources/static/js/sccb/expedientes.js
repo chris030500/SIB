@@ -30,10 +30,6 @@ $(document).ready(function () {
 			}
 		}
 	});
-	
-	$('.solo-numero').on('input', function() {
-		this.value = this.value.replace(/[^0-9]/g, '');
-	});
 });
 
 function defaultView() {
@@ -47,6 +43,31 @@ function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+function buscarNombreCredito(name) {
+	
+	var selectName = $("#selectCredito");
+	var option = "";
+	
+	url = getAbsolutePath() + "getNamesExpedienteCredito?nombre=" + name;
+	console.log(name);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON", 
+		success: function(res) {
+			console.log(res.nombresCredito);
+			var nombresCredito = res.nombresCredito;
+			console.log(nombresCredito.length);
+			for(var i = 0; i < nombresCredito.length; i++) {
+				
+				option += "<option value='" + nombresCredito[i].credito_id + "'>" + nombresCredito[i].nombre_cliente+ " | " + nombresCredito[i].credito_id + "</option>";
+				
+				$("select#selectCredito").empty().append(option);
+			}
+		}
+	});
 }
 
 function buscarNombre(name) {
@@ -75,7 +96,7 @@ function buscarNombre(name) {
 }
 
 function buscarExpedienteCredito() {
-	var idCredito = $("#creditoBusqueda").val();
+	var idCredito = $("#selectCredito").val();
 	var divMainTable = $("#divMainTable");
 	
 	console.log(typeof(idCredito));
@@ -129,7 +150,7 @@ function buscarExpedienteCredito() {
 
 function getDetalleExpedienteCredito() {
 	
-	var idCredito = $("#creditoBusqueda").val();
+	var idCredito = $("#selectCredito").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
 	var divTitle = "<p>Detalle de Expediente de Crédito</p>";
 	

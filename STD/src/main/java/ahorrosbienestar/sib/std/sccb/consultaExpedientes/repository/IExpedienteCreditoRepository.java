@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaExpedientes.repository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +18,10 @@ public interface IExpedienteCreditoRepository extends JpaRepository<ExpedienteCr
 			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_CREDITO "
 			+ "WHERE I_CREDITO_ID = :idCredito ", nativeQuery = true)
 	public Optional<ExpedienteCredito> getExpedienteCreditoByIdCredito(@Param("idCredito") Integer idCredito);
+	
+	@Query( value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, T1.I_CREDITO_ID AS credito_id "
+			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_CREDITO T1 "
+			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nombre% "
+			+ "LIMIT 100", nativeQuery = true )
+	public List<Map<String, Object>> getNamesExpedienteCredito(@Param("nombre") String nombre);
 }
