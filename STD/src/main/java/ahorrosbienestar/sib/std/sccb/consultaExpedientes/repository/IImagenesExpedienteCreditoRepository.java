@@ -24,6 +24,7 @@ public interface IImagenesExpedienteCreditoRepository extends JpaRepository<Imag
 			+ "FROM SIB.TBL_SCCB_IMAGENES_EXP_CREDITO T1 "
 			+ "JOIN SIB.TBL_SCCB_EXPEDIENTE_CREDITO T2 ON T1.I_EXPEDIENTE_ID = T2.I_EXPEDIENTE_ID "
 			+ "JOIN SIB.TBL_SCCB_PARTICIPANTES T3 ON T2.I_CREDITO_ID = T3.I_CREDITOID "
-			+ "WHERE T1.I_EXPEDIENTE_ID = :idExpediente ", nativeQuery = true)
+			+ "WHERE T1.I_EXPEDIENTE_ID = :idExpediente "
+			+ "ORDER BY T3.I_TIPOROLPERSONAID ASC, T1.I_TIPO_REQUISITO_ID DESC ", nativeQuery = true)
 	public List<Map<String, Object>> getDetalleExpedienteCredito(@Param("idExpediente") Integer idExpediente);
 }
