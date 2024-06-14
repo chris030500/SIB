@@ -31,6 +31,11 @@ $(document).ready(function () {
 		}
 	});
 	
+					
+	$("#visorImagenes").on("hidden.bs.modal", function(){
+		$(".zoomContainer").remove();
+	});
+	
 });
 
 function defaultView() {

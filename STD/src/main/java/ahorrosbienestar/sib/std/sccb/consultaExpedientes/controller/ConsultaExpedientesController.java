@@ -103,8 +103,6 @@ public class ConsultaExpedientesController {
 	@RequestMapping(value = { "/getExpedienteCreditoByIdCredito" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getExpedienteCreditoById(@RequestParam("idCredito") Integer idCredito) {
 		
-		System.out.println(idCredito);	
-		
 		return ResponseEntity.ok(expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito));
 	}
 	
@@ -114,8 +112,6 @@ public class ConsultaExpedientesController {
 		
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		
-		System.out.println(nombre);
 		
 		try {
 			List<Map<String, Object>> nombresCredito = expedienteCreditoService.searcNamesExpedienteCredito(nombre);
@@ -166,9 +162,7 @@ public class ConsultaExpedientesController {
 	}
 	
 	@RequestMapping(value = { "/getExpedienteAfiliacionByName" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nomCliente") String nomCliente) {
-		
-		System.out.println(nomCliente);	
+	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nomCliente") String nomCliente) {	
 		
 		return ResponseEntity.ok(expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente));
 	}
@@ -181,8 +175,6 @@ public class ConsultaExpedientesController {
 		
 		Optional<ExpedienteCredito> expedienteCredito = expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
 		int idExpediente = expedienteCredito.get().getI_expediente_id();
-		
-		System.out.println(idExpediente);
 		
 		List<Map<String, Object>> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
 		
@@ -209,8 +201,6 @@ public class ConsultaExpedientesController {
 		
 		Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
 		int idExpediente = expedienteAfiliacion.get().getI_expediente_id();
-		
-		System.out.println(idExpediente);
 		
 		List<ImagenesExpedienteAfiliacion> imagenes = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
 		
