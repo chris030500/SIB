@@ -30,6 +30,7 @@ $(document).ready(function () {
 			}
 		}
 	});
+	
 });
 
 function defaultView() {
@@ -341,8 +342,24 @@ function showImage(imagen) {
 			$("#visorImagenes").modal("show");
 			var urlImage = URL.createObjectURL(res);
 			$("#imagen").attr("class", "img-fluid");
-			
 			$("#imagen").attr("src", urlImage);
+			
+			$("#visorImagenes").on("shown.bs.modal", function () {
+				
+				$("#imagen").elevateZoom({
+					scrollZoom: true,
+    				zoomType: "lens",
+    				containLensZoom: true,
+    				lensSize: 300,
+    				lensFadeIn: 300,
+    				lensFadeOut: 300,
+    				borderSize: 2 ,
+					onZoomedImageLoaded: function() {
+            			// Establecer un z-index alto para el contenedor de zoom
+            			$(".zoomContainer").css("z-index", "2000");
+        			},
+				});
+			});
 		},
 		error: function(xhr, status, error) {
 			$("#visorImagenes").modal("hide");

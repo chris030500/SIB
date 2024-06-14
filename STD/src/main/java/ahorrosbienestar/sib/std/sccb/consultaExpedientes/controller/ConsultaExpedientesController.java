@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,6 +75,12 @@ public class ConsultaExpedientesController {
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
+	
+	@Value("${ruta.base.imagenes.sccb}")
+	private String rutaBaseSCCB;
+	
+	@Value("${ruta.base.imagenes.sccb.2}")
+	private String rutaBaseSCCB2;
 	
 	private String rutaDireccion = "";
 	
@@ -224,35 +231,33 @@ public class ConsultaExpedientesController {
 	}
 	
 	@RequestMapping( value = { "/getUrlImagen" }, method = RequestMethod.GET )
-	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) {
+	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) throws IOException {
 		
 		String urlImagen = ruta.replace("\\", "/");
 		
-		String urlSCCB = "file://10.150.102.106/Imagenes_SCCB/Expedientes" + urlImagen;
-		Resource resource1 = resourceLoader.getResource(urlSCCB);
+		Resource resource = getResourceFromBase(rutaBaseSCCB, urlImagen);
 		
-		String urlSCCB2 = "file://10.150.102.106/Imagenes_SCCB_2/Expedientes" + urlImagen;
-		Resource resource2 = resourceLoader.getResource(urlSCCB2);
 		
-		if (resource1.exists()) {
+		if (!resource.exists()) {
 			
-			System.out.println(resource1.getFilename());
+			resource = getResourceFromBase(rutaBaseSCCB2, urlImagen);	
+		}
+		
+		if (resource.exists()) {
 			
 			return ResponseEntity.ok()
 					.contentType(MediaType.IMAGE_JPEG)
-					.body(getImagenBytes(resource1));
+					.body(getImagenBytes(resource));
+		} 
+		else {
+			return ResponseEntity.notFound().build();
 		}
-		if (resource2.exists()) {
-			
-			System.out.println(resource2.getFilename());
-			
-			return ResponseEntity.ok()
-					.contentType(MediaType.IMAGE_JPEG)
-					.body(getImagenBytes(resource2));
-		}
-		
-		return ResponseEntity.notFound().build();
 	}
+	
+    private Resource getResourceFromBase(String rutaBase, String urlImagen) {
+        String rutaCompleta = rutaBase + urlImagen;
+        return resourceLoader.getResource(rutaCompleta);
+    }
 	
     private byte[] getImagenBytes(Resource resource) {
         try {
