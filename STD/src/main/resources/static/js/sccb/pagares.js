@@ -119,6 +119,11 @@ function buscarDatos() {
 			if (res.pagares.length === 0) {
 				console.log("Error");
 				divPagares.hide();
+				swal({
+					title: "Error, ",
+					text: "No se encuentra el registro de pagare.",
+					icon: "warning",
+				});
 			} else {
 					divPagares.show();
 				var tbody = "<tbody></tbody>";
