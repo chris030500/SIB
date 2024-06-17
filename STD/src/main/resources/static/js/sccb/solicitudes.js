@@ -149,9 +149,14 @@ function buscarDatos() {
 		dataType: "JSON",
 		success: function(res) {
 			console.log(res.solicitudes);
-			if(res == null || res == '') {
+			if(res.solicitudes.length === 0) {
 				console.log("Error");
 				divTable.hide();
+				swal({
+					title: "Error, ",
+					text: "No se encuentra el registro.",
+					icon: "warning",
+				});
 			} else {
 				divTable.show();
 				var tbody = "<tbody></tbody>";
@@ -185,7 +190,7 @@ function buscarDatos() {
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
 				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
+						text: "No se encuentra el registro.",
 						icon: "warning",
 			});
 		}
