@@ -77,8 +77,7 @@ public class SolicitudesCreditoController {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		//System.out.print(idCredito.getClass().getName());
-		System.out.println(idCredito);
+
 		try {
 			List<Map<String, Object>> solicitudes = solicitudesService.searchByIdCreditoSolicitudes(idCredito);
 
@@ -105,8 +104,7 @@ public class SolicitudesCreditoController {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		//System.out.print(idCredito.getClass().getName());
-		System.out.println(noCliente);
+		
 		try {
 			List<Map<String, Object>> solicitudes = solicitudesService.searchByNoClienteSolicitudes(noCliente);
 
@@ -135,8 +133,7 @@ public class SolicitudesCreditoController {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		//System.out.print(idCredito.getClass().getName());
-		System.out.println(nomCliente);
+		
 		try {
 			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente, idCredito);
 
@@ -160,8 +157,7 @@ public class SolicitudesCreditoController {
 	
 	@RequestMapping(value = { "/getDatosSolicitud" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getDatosSolicitud(@RequestParam("idSolicitud") Integer idSolicitud) {
-		
-		System.out.println(idSolicitud);	
+			
 		return ResponseEntity.ok(datosSolicitudService.searchDatosSolicitud(idSolicitud));
 	}
 

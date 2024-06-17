@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaPagares.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +30,4 @@ public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagare
 	List<ConsultaPagares> getBynoClienteAndIdCreditoConsultaPagares(
 			@Param("noCliente") Integer noCliente,
 			@Param("idCredito") Integer idCredito);
-	
 }

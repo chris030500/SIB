@@ -69,8 +69,6 @@ public class ConsultaPagaresController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		System.out.println(idCredito);
-		
 		List<ConsultaPagares> pagares = pagaresService.searchByIdCreditoPagares(idCredito);
 		
 		try {
@@ -93,8 +91,6 @@ public class ConsultaPagaresController {
 	public ResponseEntity<Map<String, Object>> parametroNoClientePagares(@RequestParam("noCliente") Integer noCliente) {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		
-		System.out.println(noCliente);
 		
 		List<ConsultaPagares> pagares = pagaresService.searchByNoClientePagares(noCliente);
 		
@@ -120,8 +116,6 @@ public class ConsultaPagaresController {
 			@RequestParam("idCredito") Integer idCredito) {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		
-		System.out.println(noCliente);
 		
 		List<ConsultaPagares> pagares = pagaresService.searchByNoClienteAndIdCreditoPagares(noCliente, idCredito);
 		

@@ -92,8 +92,6 @@ public class HistorialCobranzaController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		System.out.println(idCredito);
-		
 		try {
 			List<HistorialAsignacion> historialAsig = historialAsigService.searchByIdCreditoHistorialAsig(idCredito);
 			
@@ -120,8 +118,6 @@ public class HistorialCobranzaController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		System.out.println(idCredito);
-		
 		try {
 			List<Participantes> participantes = participantesService.searchByIdCreditoParticipantes(idCredito);
 			
@@ -147,8 +143,6 @@ public class HistorialCobranzaController {
 		
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
-		
-		System.out.println(nombre);
 		
 		try {
 			List<Participantes> participantes = participantesService.searchByNameParticipantes(nombre);

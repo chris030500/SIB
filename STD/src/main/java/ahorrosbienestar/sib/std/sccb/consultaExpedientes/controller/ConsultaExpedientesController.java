@@ -139,8 +139,6 @@ public class ConsultaExpedientesController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		System.out.println(nombre);
-		
 		try {
 			List<Map<String, Object>> nombresAfiliacion = expedienteAfiliacionService.searchByNameExpedienteAfiliacion(nombre);
 			
