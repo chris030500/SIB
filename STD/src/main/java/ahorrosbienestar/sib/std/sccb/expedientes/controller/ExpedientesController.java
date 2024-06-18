@@ -99,7 +99,26 @@ public class ExpedientesController {
 	@RequestMapping(value = { "/getExpedienteCreditoByIdCredito" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getExpedienteCreditoById(@RequestParam("idCredito") Integer idCredito) {
 		
-		return ResponseEntity.ok(expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito));
+		String mensajeError = null;
+		
+		try {
+			
+			Optional<ExpedienteCredito> expedienteCredito = expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
+			
+			if (expedienteCredito.isPresent()) {
+				return ResponseEntity.ok(expedienteCredito);
+			}
+			else {
+				return ResponseEntity.notFound().build();
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+			
+		}
 	}
 	
 	
@@ -122,7 +141,7 @@ public class ExpedientesController {
 			
 		} catch (Exception e) {
 			
-			logger.error(mensajeError + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
@@ -158,7 +177,26 @@ public class ExpedientesController {
 	@RequestMapping(value = { "/getExpedienteAfiliacionByName" }, method = RequestMethod.GET)
 	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nomCliente") String nomCliente) {	
 		
-		return ResponseEntity.ok(expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente));
+		String mensajeError = null;
+		
+		try {
+			
+			Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
+			
+			if (expedienteAfiliacion.isPresent()) {
+				return ResponseEntity.ok(expedienteAfiliacion);
+			}
+			else {
+				return ResponseEntity.notFound().build();
+			}
+			
+		} catch (Exception e) {
+			
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+		}
+		
 	}
 	
 	
@@ -229,9 +267,11 @@ public class ExpedientesController {
 		
 		if (resource.exists()) {
 			
+			byte[] imagenBytes = getImagenBytes(resource);
+			
 			return ResponseEntity.ok()
 					.contentType(MediaType.IMAGE_JPEG)
-					.body(getImagenBytes(resource));
+					.body(imagenBytes);
 		} 
 		else {
 			return ResponseEntity.notFound().build();
