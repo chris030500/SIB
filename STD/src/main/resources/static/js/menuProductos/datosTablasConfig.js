@@ -1,0 +1,182 @@
+// @ts-nocheck
+/**
+ * 
+ */
+var botones="";
+function getAbsolutePath() {
+
+	return window.location.href.substring(0,window.location.href.indexOf("STD/")+4);
+
+}
+
+/**
+ * Cargar tabla reglas de asignacion
+ */
+var url = "";
+ var obtDatosReglasAsignacion = "reglas/obtDatosReglasAsignacion";
+ function obtTblReglas(){
+	 tblReglasAsignacion.clear().draw();
+	 mostrarSpinner();
+	 url = getAbsolutePath()+obtDatosReglasAsignacion;
+	 $.getJSON(url, {}, function(data) {
+		 
+		 $.each(data, function(idx, opt) {
+		 var botones = "";
+			 	var btnEstatus = " <button class='btn btn-warning btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus' type='button'"
+					+ " onclick='updateEstatusRegla("
+					+ opt.pk_id_regla
+					+ ")' id="
+					+ opt.pk_id_regla
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-toggle2-on'></i></button>":"<i class='bi bi-toggle2-off'></i></button>")
+					+ "&nbsp;";
+				
+				
+			 	botones = botones + btnEstatus;
+			 	if(opt.i_params == 1){
+					var btnEditarParams = " <button class='btn btn-primary btn-xs' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#altaLiqRenovados' aria-controls='table-datatable' type='button'"
+					+ " onclick='obtTblParamsAsig("
+					+ opt.pk_id_regla
+					+ ")' id="
+					+ opt.pk_id_regla
+					+ " data-tooltip='Add'>"
+					+ " <i class='fa-solid fa-gear'></i></button>";
+					
+					botones = botones+btnEditarParams;
+				
+				}
+			 tblReglasAsignacion.row.add([
+				 opt.vc_nombre_regla
+				 ,(opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario)
+				 ,(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod)
+				 ,(opt.i_estatus == 1?'ACTIVO':'INACTIVO')
+				 ,botones]).draw(false);
+		 });
+		 ocultarSpinner();
+	 }); 
+ }
+ 
+ /**
+ * Cargar tabla reglas de asignacion
+ */
+
+ var obtDatosPlantillaSMS = "plantillas/obtPlantillas";
+ function obtTblPlantillas(){
+	  tblPlantillasSMS.clear().draw();
+	 mostrarSpinner();
+	 url = getAbsolutePath()+obtDatosPlantillaSMS;
+	 $.getJSON(url, {}, function(data) {
+		
+		 $.each(data, function(idx, opt) {
+		 var botonesActivar = "";
+			 		/*var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='actualizarEstatus("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";*/
+		 var botonesEditar = "";
+			 		var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarPlantilla("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
+				
+			 	botones = botonesActivar+botonesEditar;
+			 	
+			 tblPlantillasSMS.row.add([opt.vc_nombre_plantilla,opt.vc_contenido,opt.fk_ID_CLASIFICACION.fk_id_base.vc_nombre_base,opt.fk_ID_CLASIFICACION.vc_abreviacion_clasificacion,opt.i_usuario_registro.vc_nombre_usuario,opt.dt_fecha_registro,
+			 (opt.i_usuario_mod == null?'----':opt.i_usuario_mod.vc_nombre_usuario),(opt.dt_fecha_mod == null?'--/--/--':opt.dt_fecha_mod),(opt.i_activo == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+		 });
+		  ocultarSpinner();
+	 }); 
+	
+ }
+ 
+ var obtDatosMensajeSMS = "mensajes/obtSMS";
+ function listaMensajes(){
+	 url = getAbsolutePath()+obtDatosMensajeSMS;
+	 $.getJSON(url, {}, function(data) {
+		 tblMensajesGenerados.clear().draw();
+		 $.each(data, function(idx, opt) {
+			 console.log(opt);
+		 var botonesActivar = "";
+			 		/*var botonesActivar = " <button class='btn btn-info bg-info text-black btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='actualizarEstatus("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_activo == 1)?"<i class='bi bi-unlock-fill'></i></button>":"<i class='bi bi-lock-fill'></i></button>")
+					+ "&nbsp;";*/
+		 var botonesEditar = "";
+			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarPlantilla("
+					+ opt.pk_id_plantilla
+					+ ")' id="
+					+ opt.pk_id_plantilla
+					+ " data-tooltip='Add'>"
+					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
+				
+			 	botones = botonesActivar+botonesEditar;
+			 	
+			 tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1?'ACTIVO':'INACTIVO'),botones]).draw(false);
+		 });
+	 }); 
+ }
+ 
+ 
+
+/**
+ * Cargar tabla reglas de asignacion
+ */
+ var obtDatosClienteB = "clientes/obtClientes";
+ function obtTblClienteB(){
+	 
+	 tblClienteBloqueados.clear().draw();
+	 mostrarSpinner();
+	 
+	 url = getAbsolutePath()+obtDatosClienteB;
+	 $.getJSON(url, {}, function(data) {
+		 
+		 $.each(data, function(idx, opt) {
+			var botonesActivar = "";
+			 		 botonesActivar = " <button class='btn btn-warning btn-xs' tabindex='0' "
+					+ " title='Actualizar Estatus'  type='button'"
+					+ " onclick='cambiarEstatusCliente(this)' id="
+					+ opt.pk_id_bloqueo
+					+ " for="
+					+ opt.i_estatus
+					+ " data-tooltip='Add'>"
+					+ ((opt.i_estatus == 1)?"<i class='bi bi-toggle2-on'></i></button>":"<i class='bi bi-toggle2-off'></i></button>")
+					+ "&nbsp;";
+
+			 tblClienteBloqueados.row.add([opt.pk_id_bloqueo,opt.i_clienteid,opt.vc_nombre_cliente,opt.dt_fecha_bloqueo
+			 ,opt.vc_motivo_bloqueo,(opt.i_usuario_desbloqueo == null?'PROCESO AUTOMATICO':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.dt_fecha_vencimiento == null?'----/--/--':opt.dt_fecha_vencimiento),(opt.vc_motivo_desbloqueo == null?'----':opt.vc_motivo_desbloqueo)
+			 ,(opt.dt_fecha_desbloqueo == null?'----/--/--':opt.dt_fecha_desbloqueo),(opt.i_usuario_desbloqueo ==null?'--':opt.i_usuario_desbloqueo.vc_nombre_usuario),(opt.i_estatus == 1?'ACTIVO':'INACTIVO'),botonesActivar]).draw(false);
+			 
+		 });
+		 ocultarSpinner();
+	 }); 
+ }
+ 
+ // Función para mostrar el spinner
+function mostrarSpinner() {
+    $("#spinner-container").html('<div role="status" style="font-size: 40px;"><span class="text-primary">Consultando ... </span><div class="spinner-border text-primary" role="status" aria-hidden="true"></div>');
+}
+
+// Función para ocultar el spinner
+function ocultarSpinner() {
+     $("#spinner-container").empty();
+}
+ 
+ 

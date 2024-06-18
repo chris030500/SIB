@@ -330,6 +330,13 @@
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-ofertasAuto" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O28" class="nav-item" style="display:none;">
+							<a th:href="@{/parametros/configuracion}">
+								<i class="bi bi-tools"></i><span>Parametros Configuracion</span>
+							</a>
+						</li>
+					</ul>
+					<ul id="config-nav-ofertasAuto" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li th:id="M_O22" class="nav-item" style="display:none;">
 							<a th:href="@{/ofertasAutomaticas/index}">
 								<i class="bi bi-cash-coin"></i><span>Ofertas Automaticas</span>
@@ -343,8 +350,37 @@
 							</a>
 						</li>
 					</ul>
+					
 				</li>
 				<!-- Productos -->
+
+				<!-- Operaciones -->
+				<li  style="display:none;"  class="nav-item" th:id="10">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-operaciones"
+						data-bs-toggle="collapse">
+						<i class="fa-solid fa-comments-dollar"></i><span>Gestion de ventas.</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-operaciones" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						<li th:id="M_O25" class="nav-item"  style="display:none;">
+							<a th:href="@{/operaciones/configuracion}">
+								<i class="bi bi-gear-wide"></i><span>Configuracion</span>
+							</a>
+						</li>
+						<li th:id="M_O26" class="nav-item"  style="display:none;">
+							<a th:href="@{/operaciones/seguimientoGestion}">
+								<i class="bi bi-card-checklist"></i><span>Seguimiento de Gestiones</span>
+							</a>
+						</li>
+						<li th:id="M_O27" class="nav-item"  style="display:none;">
+							<a th:href="@{/operaciones/reportes}">
+								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Operaciones -->
+
 			</ul>
 
 			<!-- /.sidebar -->
@@ -389,4 +425,5 @@
 
 	</th:block>
 </body>
+
 </html>

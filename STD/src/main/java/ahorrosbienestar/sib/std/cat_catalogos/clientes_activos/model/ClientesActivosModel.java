@@ -41,4 +41,29 @@ public class ClientesActivosModel {
 	public void setVc_nombrecompleto(String vc_nombrecompleto) {
 		this.vc_nombrecompleto = vc_nombrecompleto;
 	}
+
+	public String getC_estatus() {
+		return c_estatus;
+	}
+
+	public void setC_estatus(String c_estatus) {
+		this.c_estatus = c_estatus;
+	}
+
+	public int getI_EstadoID() {
+		return I_EstadoID;
+	}
+
+	public void setI_EstadoID(int i_EstadoID) {
+		I_EstadoID = i_EstadoID;
+	}
+
+	public String getVC_DireccionCompleta() {
+		return VC_DireccionCompleta;
+	}
+
+	public void setVC_DireccionCompleta(String vC_DireccionCompleta) {
+		VC_DireccionCompleta = vC_DireccionCompleta;
+	}
+
 }

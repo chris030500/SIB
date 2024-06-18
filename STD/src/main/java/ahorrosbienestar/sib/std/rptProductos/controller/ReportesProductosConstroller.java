@@ -1,6 +1,5 @@
 package ahorrosbienestar.sib.std.rptProductos.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -91,7 +91,7 @@ public class ReportesProductosConstroller {
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?FechaInicio="
 					+dtFechaInicio+"~FechaFin="+dtFechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OA";
-					
+			respuesta.add(Constantes.REPORTE_OK);
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {

@@ -1,10 +1,8 @@
 package ahorrosbienestar.sib.std.configuracion.service;
 
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
