@@ -76,7 +76,7 @@ public class ExpedientesController {
 	@Value("${ruta.base.imagenes.sccb.2}")
 	private String rutaBaseSCCB2;
 	
-	private static String msjError = "Error: ";
+	private static final String msjError = "Error: ";
 	
 	
 	@GetMapping("/consultaExpedientes")
