@@ -76,11 +76,11 @@ public class ExpedientesController {
 	@Value("${ruta.base.imagenes.sccb.2}")
 	private String rutaBaseSCCB2;
 	
-	private String rutaDireccion = "";
-	
 	
 	@GetMapping("/consultaExpedientes")
 	public String paramsConfiguracion(Model model) throws IOException {
+		
+		String rutaDireccion = "";
 		
 		try {
 					
