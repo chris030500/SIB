@@ -76,7 +76,7 @@ public class ExpedientesController {
 	@Value("${ruta.base.imagenes.sccb.2}")
 	private String rutaBaseSCCB2;
 	
-	private static final String msjError = "Error: ";
+	private static final String msj = "Error: ";
 	
 	
 	@GetMapping("/consultaExpedientes")
@@ -125,7 +125,7 @@ public class ExpedientesController {
 		} catch (Exception e) {
 			
 			logger.error(mensajeError + e.getMessage());
-			mensajeError = msjError + e.getMessage();
+			mensajeError = msj + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
@@ -151,7 +151,7 @@ public class ExpedientesController {
 		} catch (Exception e) {
 			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			mensajeError = msjError + e.getMessage();
+			mensajeError = msj + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
@@ -184,7 +184,7 @@ public class ExpedientesController {
 			}
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			mensajeError = msjError + e.getMessage();
+			mensajeError = msj + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
@@ -210,7 +210,7 @@ public class ExpedientesController {
 			}
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			mensajeError = msjError + e.getMessage();
+			mensajeError = msj + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
