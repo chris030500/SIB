@@ -2,9 +2,6 @@ package ahorrosbienestar.sib.std.sccb.consultaExpedientes.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -36,13 +32,10 @@ import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteAfiliacion;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteAfiliacion;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteCredito;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCreditoService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteCreditoService;
-import ahorrosbienestar.sib.std.sccb.consultaPagares.model.ConsultaPagares;
-import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -82,10 +75,12 @@ public class ConsultaExpedientesController {
 	@Value("${ruta.base.imagenes.sccb.2}")
 	private String rutaBaseSCCB2;
 	
-	private String rutaDireccion = "";
 	
 	@GetMapping("/consultaExpedientes")
 	public String paramsConfiguracion(Model model) throws IOException {
+		
+		String rutaDireccion = "";
+		
 		try {
 					
 			if (validarAcceso() == 1) {
@@ -111,7 +106,7 @@ public class ConsultaExpedientesController {
 	public ResponseEntity<Map<String, Object>> parametroExpCreditoByName(@RequestParam("nombre") String nombre) {
 		
 		Map<String, Object> res = new HashMap<>();
-		String mensajeError = null;
+		String mensajeError = "Error: ";
 		
 		try {
 			List<Map<String, Object>> nombresCredito = expedienteCreditoService.searcNamesExpedienteCredito(nombre);
@@ -126,8 +121,8 @@ public class ConsultaExpedientesController {
 			
 		} catch (Exception e) {
 			
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
+			logger.error(mensajeError + e.getMessage());
+			mensajeError += e.getMessage();
 			res.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
@@ -174,14 +169,14 @@ public class ConsultaExpedientesController {
 		Optional<ExpedienteCredito> expedienteCredito = expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
 		int idExpediente = expedienteCredito.get().getI_expediente_id();
 		
-		List<Map<String, Object>> imagenes = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
+		List<Map<String, Object>> imagenesCredito = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
 		
 		try {
-			if (imagenes != null && !imagenes.isEmpty()) {
-				res.put("imagenes", imagenes);
+			if (imagenesCredito != null && !imagenesCredito.isEmpty()) {
+				res.put("imagenesCredito", imagenesCredito);
 				return ResponseEntity.ok(res);
 			} else {
-				res.put("imagenes", Collections.emptyList());
+				res.put("imagenesCredito", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {
@@ -200,14 +195,14 @@ public class ConsultaExpedientesController {
 		Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
 		int idExpediente = expedienteAfiliacion.get().getI_expediente_id();
 		
-		List<ImagenesExpedienteAfiliacion> imagenes = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
+		List<ImagenesExpedienteAfiliacion> imagenesAfiliacion = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
 		
 		try {
-			if (imagenes != null && !imagenes.isEmpty()) {
-				res.put("imagenes", imagenes);
+			if (imagenesAfiliacion != null && !imagenesAfiliacion.isEmpty()) {
+				res.put("imagenesAfiliacion", imagenesAfiliacion);
 				return ResponseEntity.ok(res);
 			} else {
-				res.put("imagenes", Collections.emptyList());
+				res.put("imagenesAfiliacion", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {

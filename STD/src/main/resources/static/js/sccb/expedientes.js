@@ -169,18 +169,18 @@ function getDetalleExpedienteCredito() {
 		type: "GET",
 		dataType: "JSON", 
 		success: function (res) {
-			if (res.imagenes.length === 0) {
+			if (res.imagenesCredito.length === 0) {
 				console.log("Error");
 				divDetalleExpediente.hide();
 			}
 			else {
-				console.log(res.imagenes);
+				console.log(res.imagenesCredito);
 				divDetalleExpediente.show();
 				$("#divDetalleExpCredito").css("display", "block");
 				var tbody = "<tbody id='tbodyDetalleExpediente'></tbody>";
 				$("#detalleCredito").append(tbody);
 				
-				$.each(res.imagenes, function(idx, opt) {
+				$.each(res.imagenesCredito, function(idx, opt) {
 					
 					var tipoRequisito = (opt.tipo_requisito != null) ? opt.tipo_requisito : "";
 					var tipoComprobante = (opt.tipo_comprobante != null) ? opt.tipo_comprobante : "";
@@ -286,7 +286,7 @@ function getDetalleExpedienteAfiliacion() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(res) {
-			if (res == null || res == '') {
+			if (res.imagenesAfiliacion.length === 0) {
 				console.log("Error");
 				divDetalleExpediente.hide();
 			}
@@ -296,7 +296,7 @@ function getDetalleExpedienteAfiliacion() {
 				var tbody = "<tbody id='tbodyAfiliacion'></tbody>";
 				$("#detalleAfiliacion").append(tbody);
 				
-				$.each(res.imagenes, function(idx, opt) {
+				$.each(res.imagenesAfiliacion, function(idx, opt) {
 					var tipoRequisito = (opt.vc_tipo_requisito != null) ? opt.vc_tipo_requisito : "";
 					var tipoComprobante = (opt.vc_tipo_comprobante != null) ? opt.vc_tipo_comprobante : "";
 					var estatusEntregado = (opt.vc_estatus_entregado != null) ? opt.vc_estatus_entregado : "";
