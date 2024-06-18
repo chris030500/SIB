@@ -75,7 +75,6 @@ public class ConsultaExpedientesController {
 	@Value("${ruta.base.imagenes.sccb.2}")
 	private String rutaBaseSCCB2;
 	
-	
 	@GetMapping("/consultaExpedientes")
 	public String paramsConfiguracion(Model model) throws IOException {
 		
@@ -90,7 +89,7 @@ public class ConsultaExpedientesController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("error:" + e.getMessage());
+			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
 			return null;
 		}
 	}
@@ -106,7 +105,7 @@ public class ConsultaExpedientesController {
 	public ResponseEntity<Map<String, Object>> parametroExpCreditoByName(@RequestParam("nombre") String nombre) {
 		
 		Map<String, Object> res = new HashMap<>();
-		String mensajeError = "Error: ";
+		String mensajeError = null;
 		
 		try {
 			List<Map<String, Object>> nombresCredito = expedienteCreditoService.searcNamesExpedienteCredito(nombre);
@@ -122,8 +121,8 @@ public class ConsultaExpedientesController {
 		} catch (Exception e) {
 			
 			logger.error(mensajeError + e.getMessage());
-			mensajeError += e.getMessage();
-			res.put("error", mensajeError);
+			mensajeError = "Error: " + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -147,9 +146,9 @@ public class ConsultaExpedientesController {
 			
 		} catch (Exception e) {
 			
-			logger.error("Error: " + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -180,9 +179,9 @@ public class ConsultaExpedientesController {
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -206,9 +205,9 @@ public class ConsultaExpedientesController {
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -266,7 +265,7 @@ public class ConsultaExpedientesController {
 				
 				
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			return 0;
 		}
 			
