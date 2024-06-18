@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.repository;
+package ahorrosbienestar.sib.std.sccb.expedientes.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteCredito;
 
 @Repository
 public interface IExpedienteCreditoRepository extends JpaRepository<ExpedienteCredito, Integer> {

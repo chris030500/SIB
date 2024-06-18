@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.controller;
+package ahorrosbienestar.sib.std.sccb.expedientes.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.core.io.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,23 +25,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteAfiliacion;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ExpedienteCredito;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteAfiliacion;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteAfiliacionService;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ExpedienteCreditoService;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteAfiliacionService;
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.service.ImagenesExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteAfiliacion;
+import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.expedientes.model.ImagenesExpedienteAfiliacion;
+import ahorrosbienestar.sib.std.sccb.expedientes.service.ExpedienteAfiliacionService;
+import ahorrosbienestar.sib.std.sccb.expedientes.service.ExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.expedientes.service.ImagenesExpedienteAfiliacionService;
+import ahorrosbienestar.sib.std.sccb.expedientes.service.ImagenesExpedienteCreditoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("sccb")
-public class ConsultaExpedientesController {
+public class ExpedientesController {
 	
 	private static final Logger logger = Logger.getLogger(ParametrosConfigController.class);
 

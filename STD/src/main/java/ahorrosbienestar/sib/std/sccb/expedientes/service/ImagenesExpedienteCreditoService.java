@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.service;
+package ahorrosbienestar.sib.std.sccb.expedientes.service;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.repository.IImagenesExpedienteCreditoRepository;
+import ahorrosbienestar.sib.std.sccb.expedientes.repository.IImagenesExpedienteCreditoRepository;
 
 @Service
 public class ImagenesExpedienteCreditoService {

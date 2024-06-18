@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.repository;
+package ahorrosbienestar.sib.std.sccb.expedientes.repository;
 
 
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.sccb.consultaExpedientes.model.ImagenesExpedienteCredito;
+import ahorrosbienestar.sib.std.sccb.expedientes.model.ImagenesExpedienteCredito;
 
 
 @Repository

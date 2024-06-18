@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.model;
+package ahorrosbienestar.sib.std.sccb.expedientes.model;
 
 import java.util.Date;
 

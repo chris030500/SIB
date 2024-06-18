@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sccb.consultaExpedientes.model;
+package ahorrosbienestar.sib.std.sccb.expedientes.model;
 
 import java.util.Date;
 
@@ -10,8 +10,9 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "TBL_SCCB_EXPEDIENTE_AFILIACION")
-public class ExpedienteAfiliacion {
+@Table(name = "TBL_SCCB_EXPEDIENTE_CREDITO")
+public class ExpedienteCredito {
+	
 	
 	@Id
 	@Column(name = "PK_I_ROW_GUID")
@@ -26,15 +27,27 @@ public class ExpedienteAfiliacion {
 	@Column(name = "VC_TIPO_EXPEDIENTE")
 	private String vc_tipo_expediente;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_CREACION")
+	private Date dt_fecha_creacion;
+	
 	@Column(name = "I_NO_CLIENTE")
 	private Integer i_no_cliente;
 	
 	@Column(name = "VC_NOMBRE_CLIENTE")
 	private String vc_nombre_cliente;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
-	@Column(name = "DT_FECHA_CREACION")
-	private Date dt_fecha_creacion;
+	@Column(name = "I_SOLICITUD_ID")
+	private Integer i_solicitud_id;
+	
+	@Column(name = "I_CREDITO_ID")
+	private Integer i_credito_id;
+	
+	@Column(name = "I_NO_CLIENTE_SAFI")
+	private Integer i_no_cliente_safi;
+	
+	@Column(name = "I_NO_CREDITO_SAFI")
+	private Long i_no_credito_safi;
 
 	public Integer getPk_i_row_guid() {
 		return pk_i_row_guid;
@@ -68,6 +81,14 @@ public class ExpedienteAfiliacion {
 		this.vc_tipo_expediente = vc_tipo_expediente;
 	}
 
+	public Date getDt_fecha_creacion() {
+		return dt_fecha_creacion;
+	}
+
+	public void setDt_fecha_creacion(Date dt_fecha_creacion) {
+		this.dt_fecha_creacion = dt_fecha_creacion;
+	}
+
 	public Integer getI_no_cliente() {
 		return i_no_cliente;
 	}
@@ -84,19 +105,46 @@ public class ExpedienteAfiliacion {
 		this.vc_nombre_cliente = vc_nombre_cliente;
 	}
 
-	public Date getDt_fecha_creacion() {
-		return dt_fecha_creacion;
+	public Integer getI_solicitud_id() {
+		return i_solicitud_id;
 	}
 
-	public void setDt_fecha_creacion(Date dt_fecha_creacion) {
-		this.dt_fecha_creacion = dt_fecha_creacion;
+	public void setI_solicitud_id(Integer i_solicitud_id) {
+		this.i_solicitud_id = i_solicitud_id;
+	}
+
+	public Integer getI_credito_id() {
+		return i_credito_id;
+	}
+
+	public void setI_credito_id(Integer i_credito_id) {
+		this.i_credito_id = i_credito_id;
+	}
+
+	public Integer getI_no_cliente_safi() {
+		return i_no_cliente_safi;
+	}
+
+	public void setI_no_cliente_safi(Integer i_no_cliente_safi) {
+		this.i_no_cliente_safi = i_no_cliente_safi;
+	}
+
+	public Long getI_no_credito_safi() {
+		return i_no_credito_safi;
+	}
+
+	public void setI_no_credito_safi(Long i_no_credito_safi) {
+		this.i_no_credito_safi = i_no_credito_safi;
 	}
 
 	@Override
 	public String toString() {
-		return "ExpedienteAfiliacion [pk_i_row_guid=" + pk_i_row_guid + ", i_expediente_id=" + i_expediente_id
+		return "ConsultaExpedientes [pk_i_row_guid=" + pk_i_row_guid + ", i_expediente_id=" + i_expediente_id
 				+ ", i_tipo_expediente_id=" + i_tipo_expediente_id + ", vc_tipo_expediente=" + vc_tipo_expediente
-				+ ", i_no_cliente=" + i_no_cliente + ", vc_nombre_cliente=" + vc_nombre_cliente + ", dt_fecha_creacion="
-				+ dt_fecha_creacion + "]";
+				+ ", dt_fecha_creacion=" + dt_fecha_creacion + ", i_no_cliente=" + i_no_cliente + ", vc_nombre_cliente="
+				+ vc_nombre_cliente + ", i_solicitud_id=" + i_solicitud_id + ", i_credito_id=" + i_credito_id
+				+ ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_no_credito_safi=" + i_no_credito_safi + "]";
 	}
+	
+	
 }
