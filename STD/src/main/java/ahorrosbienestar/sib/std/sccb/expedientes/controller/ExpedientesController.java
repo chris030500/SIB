@@ -77,7 +77,7 @@ public class ExpedientesController {
 	private String rutaBaseSCCB2;
 	
 	
-	@GetMapping("/consultaExpedientes")
+	@GetMapping("/expedientes")
 	public String paramsConfiguracion(Model model) throws IOException {
 		
 		String rutaDireccion = "";
