@@ -75,7 +75,7 @@ public class HistorialCobranzaController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("error:" + e.getMessage());
+			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
 			return null;
 		}
 	}
@@ -105,9 +105,9 @@ public class HistorialCobranzaController {
 			
 		} catch (Exception e) {
 			
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -131,9 +131,9 @@ public class HistorialCobranzaController {
 			
 		} catch (Exception e) {
 			
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -157,9 +157,9 @@ public class HistorialCobranzaController {
 			
 		} catch (Exception e) {
 			
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			res.put("error", mensajeError);
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
@@ -188,7 +188,7 @@ public class HistorialCobranzaController {
 			
 			
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			return 0;
 		}
 		
