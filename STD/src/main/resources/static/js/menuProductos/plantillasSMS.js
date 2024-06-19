@@ -94,7 +94,7 @@ function peticionPost(urlServicio, servicio) {
 			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
 				if (servicio == 1) {
-					//limpiarDatosPlantilla();
+					limpiarDatosPlantilla();
 					obtTblPlantillas();
 				
 				}

@@ -58,7 +58,7 @@ window.onload = function() {
 }
 var buscarSucursal = document.getElementById('buscarSucursal');
 buscarSucursal.addEventListener('change', function() {
-
+			console.log("SIII")
 			// Obtener el valor seleccionado del input
        		var valorSeleccionado = $(this).val();
         
@@ -85,6 +85,8 @@ selectGestion.addEventListener('change', function() {
 				//var idSelec = $('#selectGestion option[value="' + valorSeleccionado + '"]').attr('id');
 				llenarGroupEstatus(valorSeleccionado, 'estatus');
 			}
+			
+			selectGestion.value= 0;
 });
 
 /**
@@ -486,6 +488,7 @@ function generarReporte(dto) {
 let listaSucursales = [];
 
 function llenarGroupSucursales(valor, identificador) {
+	console.log("SIIIIII")
 	var valorIgual = false;
 	var opcionSeleccionada = document.querySelector('option[id="' + valor + '"]');
 	var valorBuscador = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
@@ -513,6 +516,7 @@ function llenarGroupSucursales(valor, identificador) {
 
 // Función para renderizar la lista de sucursales
 function renderizarGroupSucursales(identificador) {
+	console.log("AQUI")
 	var contenedorGroup = document.getElementById('group-' + `${identificador}`);
 
 	// Limpiar el contenido del contenedor antes de agregar nuevos elementos
@@ -550,6 +554,10 @@ function renderizarGroupSucursales(identificador) {
 			renderizarGroupSucursales(identificador);
 		});
 	});
+	
+	console.log(buscarSucursal.value)
+	
+	buscarSucursal.value = '';
 }
 
 
@@ -624,6 +632,8 @@ function renderizarGroupBuscador(identificador) {
 			renderizarGroupBuscador(identificador);
 		});
 	});
+	
+	buscarCliente.value =  "";
 }
 
 // Función para destruir el list-group

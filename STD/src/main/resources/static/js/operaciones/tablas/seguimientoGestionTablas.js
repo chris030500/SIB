@@ -11,8 +11,8 @@ $(document).ready(function() {
     "order": [[9, "desc"]],  // Ordenar por la columna 2 en sentido descendente
     "deferRender": true, // Renderizado diferido
     "paging": true, // Habilitar paginación
-    "pageLength": 20, // Número de registros por página
-    "lengthMenu": [[20, 40, 100, -1], [20, 40, 100, "Todos"]], // Opciones de longitud de página
+    "pageLength": 100, // Número de registros por página
+    "lengthMenu": [[20, 40, 100], [20, 40, 100]], // Opciones de longitud de página
     'aoColumnDefs': [{
         'bSortable': false,
         'aTargets': [-1] // 1st one, start by the right

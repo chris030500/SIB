@@ -22,6 +22,19 @@ window.onload = function() {
 * Fin
 */
 
+// Obtiene el elemento del campo de fecha
+const fechaCitaInput = document.getElementById('fecha-cita');
+
+// Obtiene la fecha actual en el formato requerido (YYYY-MM-DD)
+const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()).padStart(2, '0');
+const formattedDate = `${year}-${month}-${day}`;
+
+// Establece el valor mínimo del campo de fecha al formato de fecha actual
+fechaCitaInput.min = formattedDate;
+
 
 /**
  * Validación de las fechas
@@ -151,6 +164,7 @@ function llenarTablaSeguimiento(condicion) {
 				} else {
 					Swal.close();
 					console.log(respuesta);
+					const registrosTotales = [];
 					document.getElementById("ver-cargaSeguimiento").style.display = "none";
 					document.getElementById("ver-listaSeguimiento").style.display = "block";
 					tablaFiltro.clear().draw();
@@ -169,22 +183,22 @@ function llenarTablaSeguimiento(condicion) {
 						var cliente = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 						var asignacion = opt.i_bloqueo == 1 ? "Activo" : "Inactivo";
 
-						tablaFiltro.row.add([
+						registrosTotales.push([
 							opt.i_clienteid,
 							opt.nombreCompleto,
 							cliente,
 							opt.vc_codigo_oferta,
 							opt.vc_cod_referencia,
-							asignacion,
 							opt.fechainicio,
 							opt.fechafin,
 							opt.v_valor,
 							opt.vc_nombresucursal,
 							opt.vc_usuario,
 							btnEditar
-						]).draw(false);
+						]);
 					});
-
+					// Add all rows at once
+                    tablaFiltro.rows.add(registrosTotales).draw();
 				}
 			},
 			error: function(error) {
@@ -278,14 +292,14 @@ function validarGestion() {
 		inputRelacion.value == '' ? validarRelacion.style.display = 'block' : validarRelacion.style.display = 'none';
 		inputDescripcion.value == '' ? validarDescripcion.style.display = 'block' : validarDescripcion.style.display = 'none';
 		inputFechaCita.value == '' ? validarFechaCita.style.display = 'block' : validarFechaCita.style.display = 'none';
-		inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
+		//inputFechaGestion.value == '' ? validarFechaGestion.style.display = 'block' : validarFechaGestion.style.display = 'none';
 
 		if (selectPart[0] == "LLAMADA") {
 			inputTelfono.value == '' ? validarTelefono.style.display = 'block' : validarTelefono.style.display = 'none';
 		}
 
 		if (selectPart[0] == "LLAMADA") {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '' && inputTelfono.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputTelfono.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -299,7 +313,7 @@ function validarGestion() {
 				registrarGestion(dto);
 			}
 		} else {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '' && inputFechaGestion.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaCita.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -324,7 +338,7 @@ function validarGestion() {
 
 		if (selectPart[0] == "LLAMADA") {
 
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '' && inputTelfono.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputTelfono.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -337,7 +351,7 @@ function validarGestion() {
 				registrarGestion(dto);
 			}
 		} else {
-			if (inputRelacion.value != '' && inputDescripcion.value != '' && inputFechaGestion.value != '') {
+			if (inputRelacion.value != '' && inputDescripcion.value != '') {
 				const dto = {
 					asignacionOfertas: idOferta,
 					referencia: inputReferencia.textContent,
@@ -563,6 +577,7 @@ searchInput.addEventListener('change', function() {
  * seguimiento de gestiones por asignacion de oferta auto.
  */
 function llenarTablaDeGestiones(datos) {
+	const registrosGestionesT = [];
 	tablaGestion.clear().draw();
 	$.each(datos, function(idx, opt) {
 		var btnEditar = "<button style='margin-right: 10px; background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary btn-icon btn-editar'"
@@ -579,9 +594,28 @@ function llenarTablaDeGestiones(datos) {
 			+ opt.pk_id_seguimiento_gestion
 			+ "'><i class='bi bi-x'></i></button>";
 
-		var btns = "<div class='btn-group'>" + btnEditar + btnCancelar + "</div>";
+		/**
+		 * Los funcionales solicitan no tener edicion o cancelacion de registro de seguimientos. 
+		 * se mantiene el codigo. 
+		 */
+		//var btns =""; 
+		/*if(opt.i_usuario_registro.vc_nombre_usuario ==  document.getElementById("usuarioLogueado").value){
+			btns = "<div class='btn-group'>" + btnEditar +"</div>";
+		}else{
+			btns = "";
+		}*/
 
-		tablaGestion.row.add([
+	    registrosGestionesT.push([
+			opt.relacionCodigosModel.accionRealizar.v_valor,
+			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
+			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
+			opt.vc_descripcion,
+			opt.dt_fecha_registro,
+			opt.dt_fecha_gestion_realizada,
+			opt.i_usuario_registro.vc_nombre_usuario
+		])
+
+		/*tablaGestion.row.add([
 			opt.relacionCodigosModel.accionRealizar.v_valor,
 			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
 			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
@@ -589,9 +623,11 @@ function llenarTablaDeGestiones(datos) {
 			opt.dt_fecha_registro,
 			opt.dt_fecha_gestion_realizada,
 			btns
-		]).draw(false);
+		]).draw(false);*/
 
 	});
+	
+    tablaGestion.rows.add(registrosGestionesT).draw();
 }
 /**
  * Fin
@@ -662,9 +698,10 @@ function editarSegGestion(id) {
  */
 
 function validarBotonRegistro(bloqueo) {
+	console.log(bloqueo)
 	if (bloqueo === 2) {
 		document.getElementById("form-registro").style.display = 'none';
-	} else if (bloqueo === 1) {
+	} else if (bloqueo === 1 || bloqueo === 0) {
 		document.getElementById("form-registro").style.display = 'block';
 	}
 }
@@ -698,6 +735,7 @@ function todosLosEstatus() {
 			sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
 			nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
 			sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
+			document.getElementById("usuarioLogueado").value = respuesta.usuarioLogueado;
 			//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
 			respuesta.lista.forEach(function(elemento) {
 				listaDeEstatus.push(elemento.v_valor);

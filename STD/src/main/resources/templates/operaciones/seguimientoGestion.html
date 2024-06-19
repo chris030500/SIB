@@ -36,6 +36,7 @@
 					<div class="">
 						<div class="col-sm-12">
 							<fieldset class="border p-2">
+								<input type="hidden" id="usuarioLogueado" th:value="${usuarioLogueado}" />
 								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}" />
 								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}" />
 								<input type="hidden" id="NombreSucursalS" />
@@ -125,7 +126,6 @@
 														<th>Estatus Cliente</th>
 														<th>No. Oferta</th>
 														<th>No. Referencia</th>
-														<th>Estatus Asignación</th>
 														<th>Fecha Inicio</th>
 														<th>Fecha Fin</th>
 														<th>Estatus Oferta</th>
@@ -227,7 +227,7 @@
 														</p>
 													</div>
 												</div>
-												<div class="col-sm-4">
+												<div class="col-sm-4" style="display: none;">
 													<div class="form-group">
 														<label>Fecha de gestión realizada:</label><span
 															style="color: red;">*</span>
@@ -279,7 +279,7 @@
 														<th>Descripción de la gestión</th>
 														<th>Fecha de registro</th>
 														<th>Fecha de gestión realizada</th>
-														<th id="th-acciones">Acciones</th>
+														<th id="th-acciones">Usuario Registro</th>
 													</tr>
 												</thead>
 												<tbody style="text-align: center;">
@@ -446,7 +446,8 @@
 											</div>
 										</div>
 										<div class="col-sm-12">
-											<div class="form-group" id="vistaTelfonoLlamadaModal" style="display: none;">
+											<div class="form-group" id="vistaTelfonoLlamadaModal"
+												style="display: none;">
 												<label>Número de Teléfono:</label><span style="color: red;">*</span>
 												<input class="form-control" type="number" id="telefono-modal"
 													placeholder="Número de teléfono">
@@ -471,7 +472,7 @@
 											<div class="form-group">
 												<label>Fecha de gestión realizada:</label><span
 													style="color: red;">*</span>
-												<input class="form-control" type="date" id="fecha-gestion-modal">
+												<input class="form-control" type="date" id="fecha-gestion-modal" readonly>
 												<p id="validar-fechaGestion-modal"
 													style="color: red; display: none; font-size: small; padding-left: 5px;">
 												</p>

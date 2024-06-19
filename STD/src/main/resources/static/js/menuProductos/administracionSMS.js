@@ -363,6 +363,7 @@ function enviarSMS(telefono, mensaje, mensajeID) {
 						"success"
 					)
 					llenarTablaSeguimiento();
+					mens = [];
 				},
 				error: function(xhr, status, error) {
 					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX

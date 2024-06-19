@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.RegistrosAsigna
 @Repository
 public interface IRegistrosAsignacionRepository extends JpaRepository<RegistrosAsignacion, Integer>{
 
-	@Query(value = "SELECT count(*) as VC_TOTAL,FK_ID_SUCURSAL,VC_NOMBRESUCURSAL,FECHAINICIO AS DT_FECHAINICIO, FECHAFIN AS VC_FECHAFIN  FROM SIB.VW_ASIGNACION_OFERTAS "
-			+ "GROUP BY FK_ID_SUCURSAL,VC_NOMBRESUCURSAL,FECHAINICIO, FECHAFIN order by FK_ID_SUCURSAL asc ", nativeQuery = true) 
+	@Query(value = "SELECT SUM(1) AS VC_TOTAL,FK_ID_SUCURSAL,VC_NOMBRESUCURSAL,MIN(FECHAINICIO) AS DT_FECHAINICIO,MAX(FECHAFIN) AS VC_FECHAFIN FROM SIB.VW_ASIGNACION_OFERTAS "
+			+ "GROUP BY FK_ID_SUCURSAL, VC_NOMBRESUCURSAL ORDER BY FK_ID_SUCURSAL ASC ", nativeQuery = true) 
 	public List<RegistrosAsignacion> obtRegistroParametros();
 }
