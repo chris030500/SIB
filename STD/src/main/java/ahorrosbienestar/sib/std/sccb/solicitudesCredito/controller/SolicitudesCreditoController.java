@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.DatosSolicitudCredito;
-import ahorrosbienestar.sib.std.sccb.solicitudesCredito.model.SolicitudesCredito;
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.service.DatosSolicitudCreditoService;
 import ahorrosbienestar.sib.std.sccb.solicitudesCredito.service.SolicitudesCreditoService;
 

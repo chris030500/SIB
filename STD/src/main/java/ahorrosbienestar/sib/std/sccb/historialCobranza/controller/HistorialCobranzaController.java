@@ -25,7 +25,6 @@ import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigCon
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialAsignacion;
-import ahorrosbienestar.sib.std.sccb.historialCobranza.model.HistorialCobranza;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.model.Participantes;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialAsignacionService;
 import ahorrosbienestar.sib.std.sccb.historialCobranza.service.HistorialCobranzaService;
