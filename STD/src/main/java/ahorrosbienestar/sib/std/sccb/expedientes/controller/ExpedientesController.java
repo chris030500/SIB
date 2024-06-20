@@ -288,7 +288,7 @@ public class ExpedientesController {
             InputStream inputStream = resource.getInputStream();
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return null;
         }
     }
