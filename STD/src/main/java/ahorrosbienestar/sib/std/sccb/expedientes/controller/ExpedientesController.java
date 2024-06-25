@@ -175,13 +175,13 @@ public class ExpedientesController {
 	}
 	
 	@RequestMapping(value = { "/getExpedienteAfiliacionByName" }, method = RequestMethod.GET)
-	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nomCliente") String nomCliente) {	
+	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("rowGuid") Integer rowGuid) {	
 		
 		String mensajeError = null;
 		
 		try {
 			
-			Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
+			Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(rowGuid);
 			
 			if (expedienteAfiliacion.isPresent()) {
 				return ResponseEntity.ok(expedienteAfiliacion);
@@ -227,11 +227,11 @@ public class ExpedientesController {
 	}
 	
 	@RequestMapping(value = { "/getDetalleExpedienteAfiliacion" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametroIdExpedienteAfiliacion(@RequestParam("nomCliente") String nomCliente) {
+	public ResponseEntity<Map<String, Object>> parametroIdExpedienteAfiliacion(@RequestParam("rowGuid") Integer rowGuid) {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nomCliente);
+		Optional<ExpedienteAfiliacion> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(rowGuid);
 		int idExpediente = expedienteAfiliacion.get().getI_expediente_id();
 		
 		List<ImagenesExpedienteAfiliacion> imagenesAfiliacion = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);

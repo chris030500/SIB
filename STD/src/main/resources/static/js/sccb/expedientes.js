@@ -93,7 +93,7 @@ function buscarNombre(name) {
 			console.log(nombresAfiliacion.length);
 			for(var i = 0; i < nombresAfiliacion.length; i++) {
 				
-				option += "<option value='" + nombresAfiliacion[i].nombre_cliente + "'>" + nombresAfiliacion[i].nombre_cliente + "</option>";
+				option += "<option value='" + nombresAfiliacion[i].row_guid + "'>" + nombresAfiliacion[i].nombre_cliente + " | " + nombresAfiliacion[i].row_guid + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -230,12 +230,12 @@ function getDetalleExpedienteCredito() {
 }
 
 function buscarExpedienteAfiliacion() {
-	var nomCliente = $("#selectName").val();
+	var rowGuid = $("#selectName").val();
 	var divMainTable = $("#divMainTable");
 	
-	console.log(nomCliente);
+	console.log(rowGuid);
 	
-	url = getAbsolutePath() + "getExpedienteAfiliacionByName?nomCliente=" + nomCliente;
+	url = getAbsolutePath() + "getExpedienteAfiliacionByName?rowGuid=" + Number(rowGuid);
 	
 		$.ajax({
 		url: url,
@@ -273,13 +273,13 @@ function buscarExpedienteAfiliacion() {
 
 function getDetalleExpedienteAfiliacion() {
 	
-	var nomCliente = $("#selectName").val();
+	var rowGuid = $("#selectName").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
 	var divTitle = "<p>Detalle de Expediente de Afiliación</p>";
 	
 	$("#titleDetalleExpediente").append(divTitle);
 	
-	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?nomCliente=" + nomCliente;
+	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?rowGuid=" + Number(rowGuid)
 	
 	$.ajax({
 		url: url,

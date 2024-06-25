@@ -16,10 +16,11 @@ public interface IExpedienteAfiliacionRepository extends JpaRepository<Expedient
 	
 	@Query( value = "SELECT * "
 			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION "
-			+ "WHERE VC_NOMBRE_CLIENTE = :nomCliente ", nativeQuery = true)
-	public Optional<ExpedienteAfiliacion> getExpedienteAfiliacionByName(@Param("nomCliente") String nomCliente);
+			+ "WHERE PK_I_ROW_GUID = :rowGuid ", nativeQuery = true)
+	public Optional<ExpedienteAfiliacion> getExpedienteAfiliacionByName(@Param("rowGuid") Integer rowGuid);
 	
-	@Query( value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente "
+	@Query( value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, "
+			+ "T1.PK_I_ROW_GUID AS row_guid "
 			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION T1 "
 			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nombre% "
 			+ "LIMIT 100", nativeQuery = true )
