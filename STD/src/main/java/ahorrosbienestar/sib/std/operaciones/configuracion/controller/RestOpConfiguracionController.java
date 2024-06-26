@@ -102,6 +102,25 @@ public class RestOpConfiguracionController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
+	
+	@RequestMapping(value = { "/buscar_sucursall" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaDeSucursaless(@RequestParam("sucursal") String sucursal) {
+		Map<String, Object> respuesta = new HashMap<>();
+		List<SucursalesModel> listaSucursales = new ArrayList<SucursalesModel>();
+		String mensajeError = null;
+		try {
+			listaSucursales = sucursalesService.buscarSucursalPorNombree(sucursal);
+			logger.info("se encontró la sucusal");
+			respuesta.put("sucursal", listaSucursales);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
 
 	/**
 	 * Lista de todos los telefonos
