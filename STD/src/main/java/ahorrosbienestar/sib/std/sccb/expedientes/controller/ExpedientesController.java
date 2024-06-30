@@ -1,19 +1,14 @@
 package ahorrosbienestar.sib.std.sccb.expedientes.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +32,7 @@ import ahorrosbienestar.sib.std.sccb.expedientes.service.ExpedienteAfiliacionSer
 import ahorrosbienestar.sib.std.sccb.expedientes.service.ExpedienteCreditoService;
 import ahorrosbienestar.sib.std.sccb.expedientes.service.ImagenesExpedienteAfiliacionService;
 import ahorrosbienestar.sib.std.sccb.expedientes.service.ImagenesExpedienteCreditoService;
+import ahorrosbienestar.sib.std.sccb.expedientes.service.SFTPService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -68,14 +64,7 @@ public class ExpedientesController {
 	private ImagenesExpedienteAfiliacionService imagenesExpAfiliacionService;
 	
 	@Autowired
-	private ResourceLoader resourceLoader;
-	
-	@Value("${ruta.base.imagenes.sccb}")
-	private String rutaBaseSCCB;
-	
-	@Value("${ruta.base.imagenes.sccb.2}")
-	private String rutaBaseSCCB2;
-	
+	private SFTPService sftpService;
 	
 	@GetMapping("/expedientes")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -252,45 +241,32 @@ public class ExpedientesController {
 		}
 	}
 	
-	@RequestMapping( value = { "/getUrlImagen" }, method = RequestMethod.GET )
-	public ResponseEntity<byte[]> mostrarImagen(@RequestParam("ruta") String ruta) throws IOException {
-		
-		String urlImagen = ruta.replace("\\", "/");
-		
-		Resource resource = getResourceFromBase(rutaBaseSCCB, urlImagen);
-		
-		
-		if (!resource.exists()) {
-			
-			resource = getResourceFromBase(rutaBaseSCCB2, urlImagen);	
-		}
-		
-		if (resource.exists()) {
-			
-			byte[] imagenBytes = getImagenBytes(resource);
-			
-			return ResponseEntity.ok()
-					.contentType(MediaType.IMAGE_JPEG)
-					.body(imagenBytes);
-		} 
-		else {
-			return ResponseEntity.notFound().build();
-		}
-	}
-	
-    private Resource getResourceFromBase(String rutaBase, String urlImagen) {
-        String rutaCompleta = rutaBase + urlImagen;
-        return resourceLoader.getResource(rutaCompleta);
-    }
-	
-    private byte[] getImagenBytes(Resource resource) {
+    @GetMapping("/getImage")
+    public ResponseEntity<byte[]> showImageFiles(@RequestParam("pathImage") String pathImage) {
+    	
+    	String newPathImage = pathImage.replace("\\", "/");
+    	String baseRemoteDirectory = "/Imagenes_SCCB_2024";
+    	String[] directories = {"Imagenes_SCCB", "Imagenes_SCCB_2"};
+    	
         try {
-            InputStream inputStream = resource.getInputStream();
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return null;
+        	
+        	byte[] fileContent = sftpService.findImageFiles(baseRemoteDirectory, directories, newPathImage);
+        	
+            if (fileContent != null) {
+            	
+            	return ResponseEntity.ok()
+            			.contentType(MediaType.IMAGE_JPEG)
+            			.body(fileContent);
+            } else {
+            	
+            	 return ResponseEntity.notFound().build();
+            }
+        	
+        	
+        } catch (Exception e) {
+        	 return ResponseEntity.notFound().build(); 
         }
+        
     }
 	
 	public int validarAcceso() {

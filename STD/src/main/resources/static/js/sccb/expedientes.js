@@ -291,6 +291,7 @@ function getDetalleExpedienteAfiliacion() {
 				divDetalleExpediente.hide();
 			}
 			else {
+				console.log(res);
 				divDetalleExpediente.show();
 				$("#divDetalleExpAfiliacion").css("display", "block")
 				var tbody = "<tbody id='tbodyAfiliacion'></tbody>";
@@ -334,7 +335,9 @@ function getDetalleExpedienteAfiliacion() {
 
 function showImage(imagen) {
 	
-	url = getAbsolutePath() + "getUrlImagen?ruta=" + encodeURIComponent(imagen);
+	url = getAbsolutePath() + "getImage?pathImage=" + encodeURIComponent(imagen);
+	
+	console.log(url);
 	
 	$.ajax({
 		url: url,
