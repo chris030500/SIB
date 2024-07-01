@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
+
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content" style="background-color: white;">
+		<div class="container">
+			<div class="border p-2 card">
+
+				<div class="bg-info text-white">
+					<div class="row no-gutters">
+						<div class="col-md-2"></div>
+						<div class="col-md-8">
+							<div>
+								<h2 style="text-align:center">Historial de Cobranza</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+        	</div>
+			<form>
+				<div class="row p-4">
+					<div class="col-5">
+						<div class="row">
+							<div class="col-2">
+								<label class="form-label">Buscar: </label>
+							</div>
+							<div class="col-8">
+								<select class="form-control" id="opciones">
+									<option value="0">Seleccione</option>
+									<option value="1">No. de crédito</option>
+									<option value="2">Nombre</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="row" style="display: none;" id="divCredito">
+							<div class="col-3">
+								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
+							</div>
+							<div class="col-8">
+								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
+								placeholder="No. de crédito">
+							</div>
+						</div>
+						
+						<div class="row" style="display: none;" id="divName">
+							<div class="col-3">
+								<label for="nameBusqueda" class="col-form-label">Nombre</label>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<input id="nameBusqueda" type="search" class="form-control"
+									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
+								</div>
+							</div>
+										
+							<div class="row p-2">
+								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
+										
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-1">
+						<div class="row">
+							<div class="col-12">
+								<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+								title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+								th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
+							
+									<i class="bi bi-search"></i>
+							
+								</button>
+								<button class="btn btn-secondary mt-1" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+								title="Limpiar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+								th:onclick="cleanScreen()" id="btnClean" style="display: none;">
+							
+									<i class="bi bi-eraser-fill"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			
+			<div id="divTableGenerales" class="row justify-content-center mb-3" style="display: none;">
+				<div class="table-responsive">
+					<table id="datosGenerales" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Acuerdo de Crédito</th>
+								<th>Banda</th>
+								<th>Importe</th>
+								<th>Saldo actual</th>
+								<th>Atraso total</th>
+								<th>Adeudo total</th>
+								<th>Inf. al día</th>
+								<th>Intención</th>
+								<th>CJ</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			
+			<div id="divParticipantes" class="row justify-content-center mb-3" style="display: none;">
+				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					Participantes
+				</div>
+				<div class="table-responsive">
+					<table id="participantes" class="table table-bordered table-sm" style="font-size: small; text-align: center;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Cliente</th>
+								<th>Nombre</th>
+								<th>Rol</th>
+								<th>Tipología</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			
+			<div id="divExpedientesNegociacion" class="row justify-content-center mb-3" style="display: none;">
+				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					Expedientes de Negociación
+				</div>
+				<div class="table-responsive">
+					<table id="expedientesNegociacion" class="table table-bordered" style="font-size: small; text-align: center;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>No.</th>
+								<th>Tipo</th>
+								<th>Exp. Jud.</th>
+								<th>Negociador</th>
+								<th>Estatus</th>
+								<th>Fecha Asignación</th>
+								<th>Asignó</th>
+								<th>Apertura</th>
+								<th>Cierre</th>
+								<th>Generó</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			
+			<div id="divExpedienteDetalle" class="row justify-content-center mb-3" style="display: none;">
+				<div id="noExpediente" class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					 
+				</div>
+				<div class="mb-3" style="background-color: #D9D9D9; text-align: start; font-weight: bold;">
+					Datos Crédito
+				</div>
+				<div class="table-responsive">
+					<table id="datosCredito" class="table table-bordered table-sm border-2" style="font-size: smaller; text-align: center; border-color: whitesmoke;  vertical-align: middle;">
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Importe
+								</div>
+							</td>
+							<td id="tdImporte" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Saldo actual
+								</div>
+							</td>
+							<td id="tdSaldoActual" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Días de mora
+								</div>
+							</td>
+							<td id="tdDiasMora" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Inicio del crédito
+								</div>
+							</td>
+							<td id="tdFechaInicio" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Interés Normal
+								</div>
+							</td>
+							<td id="tdInteresNormal" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Banda
+								</div>
+							</td>
+							<td id="tdBanda" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Tasa Interés Normal
+								</div>
+							</td>
+							<td id="tdTasaInteresNormal" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									IVA Interés Normal
+								</div>
+							</td>
+							<td id="tdIVAInteresNormal" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Facturas impagadas
+								</div>
+							</td>
+							<td id="tdFacturasImpaagadas" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Tasa Interés Moratorio
+								</div>
+							</td>
+							<td id="tdTasaIntMoratorio" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Interés Moratorio
+								</div>
+							</td>
+							<td id="tdIntMoratorio" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Calificación
+								</div>
+							</td>
+							<td id="tdCalificacion" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>	
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Plazo
+								</div>
+							</td>
+							<td id="tdPlazo" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									IVA Interés Moratorio
+								</div>
+							</td>
+							<td id="tdIVAIntMoratorio" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Intencionalidad
+								</div>
+							</td>
+							<td id="tdIntencionalidad" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Frecuencia de pago
+								</div>
+							</td>
+							<td id="tdFrecuenciaPago" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Comisiones pagadas
+								</div>
+							</td>
+							<td id="tdCmsnPagadas" style="background-color: #D9D9D9;">
+									<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Etapa
+								</div>
+							</td>
+							<td id="tdEtapa" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Vencimiento
+								</div>
+							</td>
+							<td id="tdVencimiento" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									IVA de Comisiones pag.
+								</div>
+							</td>
+							<td id="tdIvaCmsnPag" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Despacho
+								</div>
+							</td>
+							<td id="tdDespacho" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Centro del Crédito
+								</div>
+							</td>
+							<td id="tdCentroCredito" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Gastos
+								</div>
+							</td>
+							<td id="tdGastos" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Negociador asignado
+								</div>
+							</td>
+							<td id="tdNegociador" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Tipo crédito
+								</div>
+							</td>
+							<td id="tdTipoCredito" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Atraso a Capital
+								</div>
+							</td>
+							<td id="tdAtrasoCapital" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Analista
+								</div>
+							</td>
+							<td id="tdAnalista" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Tarifa
+								</div>
+							</td>
+							<td id="tdTarifa" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Atraso total
+								</div>
+							</td>
+							<td id="tdAtrasoTotal" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+							<td style="background-color: #BDECFB; font-weight: bold;">
+								<div style="width: 120px; display: inline-block;">
+									Último movimiento
+								</div>
+							</td>
+							<td id="tdUltimoMovto" style="background-color: #D9D9D9;">
+								<div style="width: 120px; display: inline-block;"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+    </section>
+    <th:block layout:fragment="page-scripts">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script th:src="@{/js/jquery-3.5.1.js}"></script>
+        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+        <script th:src="@{/js/sccb/historialCobranza.js}"></script>
+    </th:block>
+</body>
+
+
+</html>

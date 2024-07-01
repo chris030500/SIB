@@ -105,7 +105,7 @@ public class Constantes {
 	public static final int BUSQUEDA_POR_USUARIO = 1;
 	
 	//MENSAJES SEGUIMIENTOS 
-	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario.";
 	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
 	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
@@ -159,6 +159,13 @@ public class Constantes {
 	public static final String CRON_INICIAL = "cronInicialBase";
 	public static final String CRON_ENVIO_CORREO_REASIGNACION = "cronEnviocorreo";
 	
+	//constantes sccb
+	public static final String SCCB_SOLICITUDES_CREDITO = "sccb/solicitudesCredito";
+	public static final String SCCB_HISTORIAL_COBRANZA = "sccb/historialCobranza";
+	public static final String SCCB_CONSULTA_PAGARES = "sccb/consultaPagares";
+	public static final String SCCB_CONSULTA_EXPEDIENTES = "sccb/expedientes";
+	
+
 	//indicadores Procesos
 	public static final int PROCESO_MANUAL = 1;
 	public static final int PROCESO_AUTOMATICO = 2;
