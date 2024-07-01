@@ -134,6 +134,30 @@ public class ConsultaPagaresController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+	@RequestMapping(value = { "/getCostumerNamesPagares" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametroCostumerNamesPagares(
+			@RequestParam("nombre") String nombre) {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> nombresPagares = pagaresService.searchCustumerNamesPagares(nombre);
+		
+		try {
+			if (nombresPagares != null && !nombresPagares.isEmpty()) {
+				res.put("nombresPagares", nombresPagares);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("nombresPagares", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 		
 	public int validarAcceso() {
 			

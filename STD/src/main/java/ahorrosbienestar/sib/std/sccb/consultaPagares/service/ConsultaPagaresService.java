@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.sccb.consultaPagares.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,9 @@ public class ConsultaPagaresService {
 	
 	public List<ConsultaPagares> searchByNoClienteAndIdCreditoPagares(Integer noCliente, Integer idCredito) {
 		return iPagaresRepository.getBynoClienteAndIdCreditoConsultaPagares(noCliente, idCredito);
+	}
+	
+	public List<Map<String, Object>> searchCustumerNamesPagares(String nombre) {
+		return iPagaresRepository.getCustumerNamesPagares(nombre);
 	}
 }

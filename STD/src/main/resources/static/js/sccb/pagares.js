@@ -43,21 +43,21 @@ $(document).ready(function () {
 function buscarNombre(name) {
 	
 	var selectName = $("#selectName");
-	var option = "";
+	var option = "<option value=''>---Seleccione un nombre---</option>";
 	
-	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	url = getAbsolutePath() + "getCostumerNamesPagares?nombre=" + name;
 	console.log(name);
 	$.ajax({
 		url: url,
 		type: "GET",
 		dataType: "JSON", 
 		success: function(res) {
-			console.log(res.participantes);
-			var participantes = res.participantes;
-			console.log(participantes.length);
-			for(var i = 0; i < participantes.length; i++) {
+			console.log(res.nombresPagares);
+			var nombres = res.nombresPagares;
+			console.log(nombres.length);
+			for(var i = 0; i < nombres.length; i++) {
 				
-				option += "<option value='" + participantes[i].i_no_cliente + "," + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				option += "<option value='" + nombres[i].no_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -99,13 +99,20 @@ function getUrl() {
 	return url;
 }
 
+function cleanView() {
+	cleanTable();
+	$("#creditoBusqueda").val("");
+	$("#clienteBusqueda").val("");
+	$("#nameBusqueda").val("");
+	$("#selectName").val("");
+}
+
 function cleanTable() {
 	$("#divPagares").hide();
 	$("#pagares > tbody").remove();
 }
 
-
-function buscarDatos() {
+function getPagares() {
 	var divPagares = $("#divPagares");
 	divPagares.hide();
 	cleanTable();
@@ -173,4 +180,50 @@ function buscarDatos() {
 			});
 		}
 	});
+}
+
+function buscarDatos() {
+	if (optionSelected === "1") {
+		if ($("#creditoBusqueda").val() != "") {
+			getPagares();
+		}
+		if ($("#creditoBusqueda").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe ingresar un no. de crédito.",
+				icon: "warning",
+			});
+		}
+	}
+	if (optionSelected === "2") {
+		if ($("#clienteBusqueda").val() != "") {
+			getPagares();
+		}
+		if ($("#clienteBusqueda").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe ingresar un no. de cliente.",
+				icon: "warning",
+			});
+		}
+	}
+	if (optionSelected === "3") {
+		if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+			getPagares();
+		}
+		if ($("#nameBusqueda").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe ingresar un nombre.",
+				icon: "warning",
+			});
+		}
+		if ($("#selectName").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe seleccionar un nombre.",
+				icon: "warning",
+			});
+		}
+	}
 }
