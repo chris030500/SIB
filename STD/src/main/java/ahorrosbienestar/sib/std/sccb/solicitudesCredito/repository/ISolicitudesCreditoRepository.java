@@ -18,9 +18,9 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			+ "T1.VC_ROL AS rol, T1.VC_NOMBRE_CENTRO AS nombre_centro, T1.VC_ETAPA AS etapa, "
 			+ "T1.VC_ESTATUS AS estatus, T1.FL_MONTO AS monto, T1.DT_FECHA_RECEPCION AS fecha_recepcion, "
 			+ "T1.DT_FECHA_AUTORIZACION AS fecha_autorizacion, T1.DT_FECHA_DESEMBOLSO AS fecha_desembolso, "
-			+ "T2.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
+			+ "T1.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
 			+ "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
-			+ "JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
+			+ "LEFT JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
 			+ "WHERE T1.I_CREDITO_ID = :idCredito "
 			+ "ORDER BY T1.I_SOLICITUD_ID ", nativeQuery = true)
 	public List<Map<String, Object>> getByIdCreditoSolicitudes(@Param("idCredito") Integer idCredito);
@@ -30,9 +30,9 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			+ "T1.VC_ROL AS rol, T1.VC_NOMBRE_CENTRO AS nombre_centro, T1.VC_ETAPA AS etapa, "
 			+ "T1.VC_ESTATUS AS estatus, T1.FL_MONTO AS monto, T1.DT_FECHA_RECEPCION AS fecha_recepcion, "
 			+ "T1.DT_FECHA_AUTORIZACION AS fecha_autorizacion, T1.DT_FECHA_DESEMBOLSO AS fecha_desembolso, "
-			+ "T2.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
+			+ "T1.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
 			+ "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
-			+ "JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
+			+ "LEFT JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
 			+ "WHERE T1.I_NO_CLIENTE = :noCliente "
 			+ "ORDER BY T1.I_SOLICITUD_ID ", nativeQuery = true)
 	public List<Map<String, Object>> getByNoClienteSolicitudes(@Param("noCliente") Integer noCliente);
@@ -42,13 +42,22 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			+ "T1.VC_ROL AS rol, T1.VC_NOMBRE_CENTRO AS nombre_centro, T1.VC_ETAPA AS etapa, "
 			+ "T1.VC_ESTATUS AS estatus, T1.FL_MONTO AS monto, T1.DT_FECHA_RECEPCION AS fecha_recepcion, "
 			+ "T1.DT_FECHA_AUTORIZACION AS fecha_autorizacion, T1.DT_FECHA_DESEMBOLSO AS fecha_desembolso, "
-			+ "T2.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
+			+ "T1.DT_FECHA_INICIO_TRAMITE AS fecha_inicio_tramite "
 			+ "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
-			+ "JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
+			+ "LEFT JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T2 ON T2.I_CREDITO_ID = T1.I_CREDITO_ID "
 			+ "WHERE T1.VC_NOMBRE_CLIENTE = :nomCliente "
 			+ "AND T1.I_CREDITO_ID = :idCredito "
 			+ "ORDER BY T1.I_SOLICITUD_ID ", nativeQuery = true)
-	public List<Map<String, Object>> getByNomClienteSolicitudes(
+	public List<Map<String, Object>> getByNomClienteAndIdCreditoSolicitudes(
 			@Param("nomCliente") String nomCliente,
 			@Param("idCredito") Integer idCredito);
+	
+	@Query(value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, T1.I_CREDITO_ID AS credito_id, "
+			+ "T1.VC_ROL AS rol "
+			+ "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
+			+ "JOIN SIB.TBL_SCCB_PARTICIPANTES T2 ON T1.I_NO_CLIENTE = T2.I_NOCLIENTE "
+			+ "JOIN SIB.TBL_SCCB_DATOS_SOLICITUD T3 ON T1.I_CREDITO_ID = T3.I_CREDITO_ID "
+			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nomCliente% "
+			+ "LIMIT 100 ", nativeQuery = true)
+	public List<Map<String, Object>> getNamesSolicitudes(@Param("nomCliente") String nomCliente);
 }

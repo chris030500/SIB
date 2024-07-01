@@ -68,64 +68,125 @@ function defaultView() {
 
 function buscarNombre(name) {
 	
-	var option = "";
+	var option = "<option value=''>Seleccione</option>";
 	
-	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
+	url = getAbsolutePath() + "getCustomerNamesSolicitudes?nombre=" + name;
 	console.log(name);
 	$.ajax({
 		url: url,
 		type: "GET",
 		dataType: "JSON", 
 		success: function(res) {
-			console.log(res.participantes);
-			var participantes = res.participantes;
-			console.log(participantes.length);
-			for(var i = 0; i < participantes.length; i++) {
+			console.log(res.nombresSolicitudes);
+			var nombres = res.nombresSolicitudes;
+			console.log(nombres.length);
+			for(var i = 0; i < nombres.length; i++) {
 				
-				option += "<option value='" + participantes[i].vc_nombre_cliente+ "," + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+				option += "<option value='" + nombres[i].nombre_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
-		}
+		},
 	});
 }
 
+function resetVariables() {
+	
+	var idCredito = null;
+	var noCliente = null;
+	var nomCliente = null;
+	var select = null;
+	var valuesSelect = null;
+	
+	return {
+		idCredito: idCredito,
+		noCliente: noCliente,
+		nomCliente: nomCliente,
+		select: select,
+		valuesSelect: valuesSelect
+	};
+}
+
 function getUrlSolicitudes() {
-	var idCredito;
-	var noCliente;
-	var nomCliente;
-	var select;
-	var valuesSelect;
+	
+	var variables = resetVariables();
 	
 	switch(optionSelected) {
 		case "1": 
-			idCredito = $("#creditoBusqueda").val();
-			url = getAbsolutePath() + "getByIdCreditoSolicitudes?idCredito=" + Number(idCredito);
+			if ($("#creditoBusqueda").val() === "") {
+				swal({
+					title: "Error",
+					text: "Debe ingresar un no. de crédito.",
+					icon: "warning",
+				});
+			}
+			if ($("#creditoBusqueda").val() != "") {
+				variables.idCredito = $("#creditoBusqueda").val();
+				url = getAbsolutePath() + "getByIdCreditoSolicitudes?idCredito=" + Number(variables.idCredito);
+				return url;
+			}
+			
 			break;
 		case "2":
-			noCliente = $("#clienteBusqueda").val();
-			url = getAbsolutePath() + "getByNoClienteSolicitudes?noCliente=" + Number(noCliente);
+			if ($("#clienteBusqueda").val() === "") {
+				swal({
+					title: "Error",
+					text: "Debe ingresar un no. de cliente.",
+					icon: "warning",
+				});
+			}
+		
+			if ($("#clienteBusqueda").val() != "") {
+				variables.noCliente = $("#clienteBusqueda").val();
+				url = getAbsolutePath() + "getByNoClienteSolicitudes?noCliente=" + Number(variables.noCliente);
+				return url;
+			}
 			break;
-		case "3":	
-			select = $("#selectName").val();
-			valuesSelect = select.toString().split(',');
-			nomCliente = valuesSelect[0];
-			idCredito = valuesSelect[1];
-			
-			console.log(nomCliente);
-			console.log(idCredito);
-			
-			url = getAbsolutePath() + "getByNomClienteSolicitudes?nomCliente=" + nomCliente + "&idCredito=" + Number(idCredito);
+		case "3":
+			if ($("#nameBusqueda").val() === "") {
+				swal({
+					title: "Error",
+					text: "Debe ingresar un nombre.",
+					icon: "warning",
+				});
+			}
+			if ($("#selectName").val() === "") {
+				swal({
+					title: "Error",
+					text: "Debe seleccionar un nombre.",
+					icon: "warning",
+				});
+			}
+	
+			if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+				variables.select = $("#selectName").val();
+				variables.valuesSelect = variables.select.toString().split(',');
+				variables.nomCliente = variables.valuesSelect[0];
+				variables.idCredito = variables.valuesSelect[1];
+				
+				url = getAbsolutePath() + "getByNomClienteAndIdCreditoSolicitudes?nomCliente=" + variables.nomCliente + "&idCredito=" + Number(variables.idCredito);
+				return url;
+			}
 			break;
 	}
 	
-	return url;
+	variables = resetVariables();
+	
+}
+
+function cleanFields() {
+	$("#selectName > option").val("");
+	$("#creditoBusqueda").val("");
+	$("#clienteBusqueda").val("");
+	$("#nameBusqueda").val("");
 }
 
 function cleanView() {
+	cleanFields();
 	cleanTable();
 	cleanSolicitud();
 	
+	$("select#selectName > option").remove();
 	$("#divTable").hide();
 	$("#divDatosSolicitud").hide();
 }
@@ -152,11 +213,20 @@ function buscarDatos() {
 			if(res.solicitudes.length === 0) {
 				console.log("Error");
 				divTable.hide();
-				swal({
-					title: "Error, ",
-					text: "No se encuentra el registro.",
-					icon: "warning",
-				});
+				if (optionSelected === "1") {
+					swal({
+						title: "Error",
+						text: "Ingresar un no. de crédito válido.",
+						icon: "warning",
+					});
+				}
+				if (optionSelected === "2") {
+					swal({
+						title: "Error",
+						text: "Ingresar un no. de cliente válido.",
+						icon: "warning",
+					});
+				}
 			} else {
 				divTable.show();
 				var tbody = "<tbody></tbody>";
@@ -187,13 +257,6 @@ function buscarDatos() {
 				});
 			}
 		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-						text: "No se encuentra el registro.",
-						icon: "warning",
-			});
-		}
 	});	
 }
 
@@ -250,20 +313,20 @@ function showSolicitud(parametroSolicitud) {
 				divDatosSolicitud.show();
 				var folio = (res.solicitud_id != null) ? "<p id='pFolio'>" + res.solicitud_id + "</p>" : "<p id='pFolio'></p>";
 				var acCredito = (res.credito_id != null) ? "<p id='pAcCredito'>" + res.credito_id + "</p>" : "<p id='pAcCredito'></p>";
-				var acDepRespaldo = (res.ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'>0</p>";
-				var acOperativa = (res.acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.acuerdo_operativa + "</p>" : "<p id='pAcOperativa'>0</p>";
+				var acDepRespaldo = (res.ac_dep_respaldo != null) ? "<p id='pAcDepRespaldo'>" + res.ac_dep_respaldo + "</p>" : "<p id='pAcDepRespaldo'></p>";
+				var acOperativa = (res.acuerdo_operativa != null) ? "<p id='pAcOperativa'>" + res.acuerdo_operativa + "</p>" : "<p id='pAcOperativa'></p>";
 				var recibe = (res.nombre_empleado_recibe != null) ? "<p id='pRecibe'>" + res.nombre_empleado_recibe + "</p>" : "<p id='pRecibe'</p>";
 				var captura = (res.nombre_empleado_captura != null) ? "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura: " + res.nombre_empleado_captura + "</p>" : "<p id='pCaptura' class='card-text' style='font-weight: bold; font-size: small;'> Captura:  </p>"; 
 				var fechaRecepcion = (res.fecha_recepcion != null) ? "<p id='pFechaRecepcion'>" + res.fecha_recepcion + "</p>" : "<p id='pFechaRecepcion'></p>";
 				var etapaRecepcion = (res.desc_etapa != null) ? "<p id='pEtapaRecepcion'>" + res.desc_etapa + "</p>" : "<p id='pEtapaRecepcion'></p>";
 				var fechaResultado = (res.fecha_resultado != null) ? "<p id='pFechaResultado'>" + res.fecha_resultado + "</p>" : "<p id='pFechaResultado'></p>";
 				var estatusResultado = (res.desc_estatus != null) ? "<p id='pEstatusResultado'>" + res.desc_estatus + "</p>" : "<p id='pEstatusResultado'></p>";
-				var centro = (res.centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.centro_id + " " + res.nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: 0</p>";
+				var centro = (res.centro_id != null) ? "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: " + res.centro_id + " " + res.nombre_centro + "</p>" : "<p id='pCentro' class='card-text' style='font-weight: bold; font-size: small;'>Centro: </p>";
 				var fechaInicioTramite = (res.fecha_inicio_tramite != null) ? "<p id='pFechaInicioTramite'>" + res.fecha_inicio_tramite + "</p>" : "<p id='pFechaInicioTramite'></p>";
 				var fechaAutorizacion = (res.fecha_autorizacion != null) ?  "<p id='pFechaAutorizacion'>" + res.fecha_autorizacion + "</p>" : "<p id='pFechaAutorizacion'></p>";
 				var fechaDesembolso = (res.fecha_desembolso != null) ? "<p id='pFechaDesembolso'>" + res.fecha_desembolso + "</p>" : "<p id='pFechaDesembolso'></p>"
 				var fechaReconsideracion = (res.fecha_reconsideracion != null) ? "<p id='pFechaReconsideracion'>" + res.fecha_reconsideracion + "</p>" : "<p id='pFechaReconsideracion'></p>";
-				var montoAvaluo = (res.valor_avaluo != null && res.valor_avaluo > 0) ? "<p id='pMontoAvaluo'>" + "$" + res.valor_avaluo + "</p>" : "<p id='pMontoAvaluo'>0</p>";
+				var montoAvaluo = (res.valor_avaluo != null) ? "<p id='pMontoAvaluo'>" + "$" + res.valor_avaluo + "</p>" : "<p id='pMontoAvaluo'></p>";
 				var observaciones = (res.observaciones != null) ? "<p id='pObservaciones'>" + res.observaciones + "</p>" : "<p id='pObservaciones'></p>";
 				var observacionesCC = (res.observaciones_cc != null) ? "<p id='pObservacionesCC'>" + res.observaciones_cc + "</p>" : "<p id='pObservacionesCC'></p>";
 				
@@ -272,19 +335,17 @@ function showSolicitud(parametroSolicitud) {
 				var numeroTantos = (res.num_tantos != null) ? res.num_tantos : "";
 				var tasaNormal = (res.tasa_normal != null) ? res.tasa_normal + "%" : "";
 				var nombreCompleto = (res.nombre_completo != null) ? res.nombre_completo : "";
-				var importeCredito = (res.importe_credito != null) ? res.importe_credito : "";
-				var depEnRespaldo = (res.dep_en_respaldo != null && res.dep_en_respaldo > 0) ? "$" + res.dep_en_respaldo.toLocaleString() : "0";
+				var importeCredito = (res.importe_credito != null) ? "$" + res.importe_credito : "";
+				var depEnRespaldo = (res.dep_en_respaldo != null) ? "$" + res.dep_en_respaldo.toLocaleString() : "";
 				var tasaMoratoria = (res.tasa_morat != null) ? res.tasa_morat + "%" : "";
 				var descripcionCliente = (res.desc_cliente != null) ? res.desc_cliente : "";
 				var plazo = (res.plazo != null) ? res.plazo : "";
-				var csmnImpCredito = (res.cmsn_imp_credito != null && res.cmsn_imp_credito > 0) ? "$" + res.cmsn_imp_credito.toLocaleString() : "0";
+				var csmnImpCredito = (res.cmsn_imp_credito != null) ? "$" + res.cmsn_imp_credito.toLocaleString() : "";
 				var numAbonosDiferidos = (res.num_abonos_diferidos != null) ? res.num_abonos_diferidos : "";
 				var nombreDestino = (res.nombre_destino != null) ? res.nombre_destino : "";
 				var descFrecuencia = (res.desc_frecuencia != null) ? res.desc_frecuencia : "";
-				var cmsnAseFin = (res.cmsn_ase_fin != null && res.cmsn_ase_fin > 0) ? "$" + res.cmsn_ase_fin.toLocaleString() : "0";
+				var cmsnAseFin = (res.cmsn_ase_fin != null) ? "$" + res.cmsn_ase_fin.toLocaleString() : "";
 				var analista = (res.nombre_empleado_analiza != null) ? res.nombre_empleado_analiza : "";
-				
-				console.log(nombreDestino);
 				
 				var rowDatosDeCredito = 	"<tr id='tdRow1' style='font-size: small; text-align: center; word-wrap: break-word;'>" 
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Cliente</td>"
@@ -300,7 +361,7 @@ function showSolicitud(parametroSolicitud) {
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Nombre</td>"
 								+ "<td style='width: 12.5%;'>" + nombreCompleto + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Monto(####.##)</td>"
-								+ "<td style='width: 12.5%;'>$" + importeCredito.toLocaleString() + "</td>"
+								+ "<td style='width: 12.5%;'>" + importeCredito.toLocaleString() + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Dep. en Respaldo</td>"
 								+ "<td style='width: 12.5%;'>" + depEnRespaldo + "</td>"
 								+ "<td class='text-white' style='background-color: #0D6EFD; font-weight: bold; width: 12.5%;'>Tasa Moratoria</td>"

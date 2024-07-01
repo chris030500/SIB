@@ -122,8 +122,8 @@ public class SolicitudesCreditoController {
 		}
 	}
 	
-	@RequestMapping(value = { "/getByNomClienteSolicitudes" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNomCliente(
+	@RequestMapping(value = { "/getByNomClienteAndIdCreditoSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosSolicitudesByNomClienteAndIdCredito(
 			@RequestParam("nomCliente") String nomCliente,
 			@RequestParam("idCredito") Integer idCredito) {
 
@@ -131,19 +131,49 @@ public class SolicitudesCreditoController {
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteSolicitudes(nomCliente, idCredito);
+			List<Map<String, Object>> solicitudes = solicitudesService.searchByNomClienteAndIdCreditoSolicitudes(nomCliente, idCredito);
 
-			// Verificar si la lista de mensajes es nula o vacía
 			if (solicitudes != null && !solicitudes.isEmpty()) {
+				
 				res.put("solicitudes", solicitudes);
 				return ResponseEntity.ok(res);
+				
 			} else {
-				// Devolver una lista vacía si no hay mensajes encontrados
+				
 				res.put("solicitudes", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getCustomerNamesSolicitudes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> parametrosNameSolicitudes(@RequestParam("nombre") String nombre) {
+
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> nombresSolicitudes = solicitudesService.searchNamesSolicitudes(nombre);
+
+			if (nombresSolicitudes != null && !nombresSolicitudes.isEmpty()) {
+				
+				res.put("nombresSolicitudes", nombresSolicitudes);
+				return ResponseEntity.ok(res);
+				
+			} else {
+				
+				res.put("nombresSolicitudes", Collections.emptyList());
+				return ResponseEntity.ok(res);
+				
+			}
+		} catch (Exception e) {
+			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
