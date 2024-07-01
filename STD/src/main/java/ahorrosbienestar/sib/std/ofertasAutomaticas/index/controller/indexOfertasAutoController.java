@@ -22,6 +22,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,17 +36,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ctc.wstx.shaded.msv_core.verifier.jarv.Const;
-
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion.FidelidadTareaConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
@@ -54,13 +52,13 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.campaniasVIP.configuracion.Ca
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.service.ClasificacionBasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.DetalleCampania;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.service.DetalleCampaniaService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GeneracionSMSConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion.GestionAsignacionConfiguracion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model.ProcesoGestion;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.ProcesoGestionService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.RegistrosAsignacionService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.model.DetalleCampania;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.historicoCampanias.service.DetalleCampaniaService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -148,6 +146,9 @@ public class indexOfertasAutoController {
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
+	
+	@Autowired
+	private EnvioCorreoService envioCorreoService;
 	
 	private int catTipoCampanias = 11;
 	List<Usuario> usuario = null;
@@ -979,6 +980,7 @@ public class indexOfertasAutoController {
 		//ArrayList<String> respuesta = new ArrayList<String>();
 		String mensaje ="";
 		String tipo =Constantes.MENSAJE_OK;
+		String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
 	
 		Map<String, Object> respuesta = new HashMap<>();
 		
@@ -986,11 +988,11 @@ public class indexOfertasAutoController {
 			switch(idProceso) {
 			case 1:
 				try {
-					error = gestionAsignacionConfiguracion.procesarAsignacion(idProceso);
+					error = gestionAsignacionConfiguracion.procesarAsignacion(idProceso,Constantes.PROCESO_MANUAL);
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
-					if(error == null) {
+					if(error == null ||error.equals("1")||error.equals("0")) {
 						mensaje = Constantes.ASIGNACION_OK;
-						
+						envio = (error.equals("1"))?Constantes.ENVIA_CORREO_ASIGNACION:Constantes.NO_ENVIA_CORREO_ASIGNACION;	
 					}else {
 						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
 						tipo =Constantes.MENSAJE_ERROR;
@@ -1008,10 +1010,10 @@ public class indexOfertasAutoController {
 					error = generacionSMSConfiguracion.procesarSMS(idProceso);
 					if(error == null) {
 						mensaje = Constantes.SMS_OK;
-						
 					}else {
 						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
 						tipo =Constantes.MENSAJE_ERROR;
+						
 					}
 					
 				} catch (Exception e) {
@@ -1025,14 +1027,40 @@ public class indexOfertasAutoController {
 			
 			respuesta.put(Constantes.TEXTO_MNS,mensaje);
 			respuesta.put(Constantes.TIPO_MNS,tipo);
+			respuesta.put(Constantes.ENVIA_CORREOS, envio);
+			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
 			return ResponseEntity.ok(respuesta);
 		}
 	}
+	
+	@PostMapping("/correoAsignacion")
+	public void correoAsignacion(){
+		try {
+			// Metodo envio de correo y adjunto
+        	envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
+
+		} catch (Exception e) {
+			logger.info(Constantes.MENSAJE_ERROR + e.getMessage());
+		}
+	}
+	
+	@PostMapping("/enviaCorreoSucursal")
+	public void preparCorreoAdjuntoSuc(@RequestParam(name = "numSucursal") Integer numSucursal){
+		try {
+			// Metodo envio de correo y adjunto
+        	envioCorreoService.preparCorreoAdjuntoSuc(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,numSucursal);
+
+		} catch (Exception e) {
+			logger.info(Constantes.MENSAJE_ERROR + e.getMessage());
+		}
+	}
+	
 	
 	@GetMapping("/obtGeneralesGestion")
 	public ResponseEntity<?> obtGeneralesGestion(){		
