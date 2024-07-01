@@ -444,6 +444,13 @@ function showDetalleExpediente() {
 	
 }
 
+function cleanScreen() {
+	cleanTables();
+	$("#creditoBusqueda").val("");
+	$("#nameBusqueda").val("");
+	$("#selectName").val("");
+}
+
 function cleanTables() {
 	
 	$("#divTableGenerales").hide();
@@ -457,9 +464,37 @@ function cleanTables() {
 }
 
 function buscarDatos() {
-	cleanTables();
-	buscarDatosGenerales();
-	showDetalleExpediente();
-	buscarParticipantes();
-	buscarExpedientesNegociacion();
+	if (optionSelected === "1") {
+		if ($("#creditoBusqueda").val() != "") {
+			cleanTables();
+			buscarDatosGenerales();
+			showDetalleExpediente();
+			buscarParticipantes();
+			buscarExpedientesNegociacion();	
+		}
+		if ($("#creditoBusqueda").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe de ingresar un no. de crédito.",
+				icon: "warning",
+			});
+		}
+	}
+	
+	if (optionSelected === "2") {
+		if ($("#nameBusqueda").val() != "") {
+			cleanTables();
+			buscarDatosGenerales();
+			showDetalleExpediente();
+			buscarParticipantes();
+			buscarExpedientesNegociacion();	
+		}
+		if ($("#nameBusqueda").val() === "") {
+			swal({
+				title: "Error, ",
+				text: "Debe de ingresar un nombre.",
+				icon: "warning",
+			});
+		}
+	}
 }
