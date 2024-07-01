@@ -104,7 +104,8 @@ public class Constantes {
 	public static final int BUSQUEDA_POR_USUARIO = 1;
 	
 	//MENSAJES SEGUIMIENTOS 
-	public static final String ERROR_GESTION_ASIGNADA = "La Gestion del Cliente ya esta Asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
 	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
 	//CATALOGOS DE PANTALLAS

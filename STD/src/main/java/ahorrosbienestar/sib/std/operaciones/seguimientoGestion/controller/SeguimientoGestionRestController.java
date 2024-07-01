@@ -145,7 +145,7 @@ public class SeguimientoGestionRestController {
 			}else {
 				logger.info("se llenó la lista");
 				respuesta.put("lista", null);
-				respuesta.put("error", Constantes.ERROR_GESTION_ASIGNADA);
+				respuesta.put("error", Constantes.ERROR_SIN_REGISTROS);
 				
 			}
 			return ResponseEntity.ok(respuesta);
