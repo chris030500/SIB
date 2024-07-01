@@ -54,7 +54,7 @@ function getAbsolutePath() {
 function buscarNombreCredito(name) {
 	
 	var selectName = $("#selectCredito");
-	var option = "";
+	var option = "<option value=''>---Seleccione un nombre---</option>";
 	
 	url = getAbsolutePath() + "getNamesExpedienteCredito?nombre=" + name;
 	console.log(name);
@@ -79,7 +79,7 @@ function buscarNombreCredito(name) {
 function buscarNombre(name) {
 	
 	var selectName = $("#selectName");
-	var option = "";
+	var option = "<option value=''>---Seleccione un nombre---</option>";
 	
 	url = getAbsolutePath() + "getNamesExpedienteAfiliacion?nombre=" + name;
 	console.log(name);
@@ -93,7 +93,7 @@ function buscarNombre(name) {
 			console.log(nombresAfiliacion.length);
 			for(var i = 0; i < nombresAfiliacion.length; i++) {
 				
-				option += "<option value='" + nombresAfiliacion[i].row_guid + "'>" + nombresAfiliacion[i].nombre_cliente + " | " + nombresAfiliacion[i].row_guid + "</option>";
+				option += "<option value='" + nombresAfiliacion[i].nombre_cliente + "'>" + nombresAfiliacion[i].nombre_cliente + "</option>";
 				
 				$("select#selectName").empty().append(option);
 			}
@@ -230,12 +230,12 @@ function getDetalleExpedienteCredito() {
 }
 
 function buscarExpedienteAfiliacion() {
-	var rowGuid = $("#selectName").val();
+	var name = $("#selectName").val();
 	var divMainTable = $("#divMainTable");
 	
-	console.log(rowGuid);
+	console.log(name);
 	
-	url = getAbsolutePath() + "getExpedienteAfiliacionByName?rowGuid=" + Number(rowGuid);
+	url = getAbsolutePath() + "getExpedienteAfiliacionByName?nombre=" + name;
 	
 		$.ajax({
 		url: url,
@@ -251,9 +251,9 @@ function buscarExpedienteAfiliacion() {
 				divMainTable.show();
 				$("#divTblAfiliacion").css("display", "block");
 				
-				var idExpediente = (res.i_expediente_id != null) ? res.i_expediente_id : "";
-				var tipoExpediente = (res.vc_tipo_expediente != null) ? res.vc_tipo_expediente : "";
-				var fechaCreacion = (res.dt_fecha_creacion != null) ? res.dt_fecha_creacion : "";
+				var idExpediente = (res.expediente_id != null) ? res.expediente_id : "";
+				var tipoExpediente = (res.tipo_expediente != null) ? res.tipo_expediente : "";
+				var fechaCreacion = (res.fecha_creacion != null) ? res.fecha_creacion : "";
 				
 				var tbody = "<tbody>"
 				+ "<tr>"
@@ -273,13 +273,13 @@ function buscarExpedienteAfiliacion() {
 
 function getDetalleExpedienteAfiliacion() {
 	
-	var rowGuid = $("#selectName").val();
+	var name = $("#selectName").val();
 	var divDetalleExpediente = $("#divDetalleExpediente");
 	var divTitle = "<p>Detalle de Expediente de Afiliación</p>";
 	
 	$("#titleDetalleExpediente").append(divTitle);
 	
-	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?rowGuid=" + Number(rowGuid)
+	url = getAbsolutePath() + "getDetalleExpedienteAfiliacion?nombre=" + name;
 	
 	$.ajax({
 		url: url,
@@ -382,6 +382,14 @@ function showImage(imagen) {
     
 }
 
+function cleanView() {
+	cleanTables();
+	$("#creditoBusqueda").val("");
+	$("#selectCredito").val("");
+	$("#nameBusqueda").val("");
+	$("#selectName").val("");
+}
+
 function cleanTables() {
 	$("#credito > tbody").remove();
 	$("#tbodyDetalleExpediente").remove();
@@ -402,12 +410,52 @@ function buscarDatos() {
 	cleanTables();
 	
 	if (expOptionSelected == "1") {
-		buscarExpedienteAfiliacion();
-		getDetalleExpedienteAfiliacion();
+		if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+			buscarExpedienteAfiliacion();
+			getDetalleExpedienteAfiliacion();
+		}
+		
+		if ($("#nameBusqueda").val() === "") {
+			
+			swal({
+				title: "Error, ",
+				text: "Debe ingresar un nombre.",
+				icon: "warning",
+			});
+		}
+		
+		if ($("#selectName").val() === "") {
+			
+			swal({
+				title: "Error, ",
+				text: "Debe seleccionar un nombre.",
+				icon: "warning",
+			});
+		}
 	}
 	
 	if (expOptionSelected == "2") {
-		buscarExpedienteCredito();
-		getDetalleExpedienteCredito();
+		if ($("#creditoBusqueda").val() != "" && $("#selectCredito").val() != "") {
+			buscarExpedienteCredito();
+			getDetalleExpedienteCredito();
+		}
+		
+		if ($("#creditoBusqueda").val() === "") {
+			
+			swal({
+				title: "Error, ",
+				text: "Debe ingresar un nombre.",
+				icon: "warning",
+			});
+		}
+		
+		if ($("#selectCredito").val() === "") {
+			
+			swal({
+				title: "Error, ",
+				text: "Debe seleccionar un nombre.",
+				icon: "warning",
+			});
+		}
 	}
 }

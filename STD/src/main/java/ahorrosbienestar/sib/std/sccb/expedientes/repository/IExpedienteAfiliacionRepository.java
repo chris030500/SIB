@@ -14,15 +14,15 @@ import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteAfiliacion;
 @Repository
 public interface IExpedienteAfiliacionRepository extends JpaRepository<ExpedienteAfiliacion, Integer> {
 	
-	@Query( value = "SELECT * "
-			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION "
-			+ "WHERE PK_I_ROW_GUID = :rowGuid ", nativeQuery = true)
-	public Optional<ExpedienteAfiliacion> getExpedienteAfiliacionByName(@Param("rowGuid") Integer rowGuid);
+	@Query( value = "SELECT DISTINCT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, T1.I_EXPEDIENTE_ID AS expediente_id, "
+			+ "T1.VC_TIPO_EXPEDIENTE AS tipo_expediente, T1.DT_FECHA_CREACION AS fecha_creacion "
+			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION T1 "
+			+ "WHERE T1.VC_NOMBRE_CLIENTE = :nombre ", nativeQuery = true)
+	public Optional<Map<String, Object>> getExpedienteAfiliacionByName(@Param("nombre")String nombre);
 	
-	@Query( value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, "
-			+ "T1.PK_I_ROW_GUID AS row_guid "
+	@Query( value = "SELECT DISTINCT T1.VC_NOMBRE_CLIENTE AS nombre_cliente "
 			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION T1 "
 			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nombre% "
-			+ "LIMIT 100", nativeQuery = true )
+			+ "LIMIT 100 ", nativeQuery = true )
 	public List<Map<String, Object>> getByNameExpedienteAfiliacion(@Param("nombre") String nombre);
 }

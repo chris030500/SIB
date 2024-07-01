@@ -16,8 +16,8 @@ public class ExpedienteAfiliacionService {
 	@Autowired
 	private IExpedienteAfiliacionRepository iExpedienteAfiliacionService;
 	
-	public Optional<ExpedienteAfiliacion> searchExpedienteAfiliacionByNomCliente(Integer rowGuid) {
-		return iExpedienteAfiliacionService.getExpedienteAfiliacionByName(rowGuid);
+	public Optional<Map<String, Object>> searchExpedienteAfiliacionByNomCliente(String nombre) {
+		return iExpedienteAfiliacionService.getExpedienteAfiliacionByName(nombre);
 	}
 	
 	public List<Map<String, Object>> searchByNameExpedienteAfiliacion(String nombre) {
