@@ -43,7 +43,7 @@ $(document).ready(function () {
 function buscarNombre(name) {
 	
 	var selectName = $("#selectName");
-	var option = "<option value=''>---Seleccione un nombre---</option>";
+	var option = "";
 	
 	url = getAbsolutePath() + "getCostumerNamesPagares?nombre=" + name;
 	console.log(name);
@@ -218,20 +218,13 @@ function buscarDatos() {
 		}
 	}
 	if (optionSelected === "3") {
-		if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+		if ($("#nameBusqueda").val() != "") {
 			getPagares();
 		}
 		if ($("#nameBusqueda").val() === "") {
 			swal({
 				title: "Error, ",
 				text: "Debe ingresar un nombre.",
-				icon: "warning",
-			});
-		}
-		if ($("#selectName").val() === "") {
-			swal({
-				title: "Error, ",
-				text: "Debe seleccionar un nombre.",
 				icon: "warning",
 			});
 		}

@@ -58,7 +58,7 @@ function defaultView() {
 function buscarNombre(name) {
 	
 	var selectName = $("#selectName");
-	var option = "<option value=''>---Seleccione un nombre---</option>";
+	var option = "";
 	
 	url = getAbsolutePath() + "getByNameParticipantes?nombre=" + name;
 	console.log(name);
@@ -493,7 +493,7 @@ function buscarDatos() {
 	}
 	
 	if (optionSelected === "2") {
-		if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+		if ($("#nameBusqueda").val() != "") {
 			cleanTables();
 			buscarDatosGenerales();
 			showDetalleExpediente();
@@ -504,13 +504,6 @@ function buscarDatos() {
 			swal({
 				title: "Error, ",
 				text: "Debe de ingresar un nombre.",
-				icon: "warning",
-			});
-		}
-		if ($("#selectName").val() === "") {
-			swal({
-				title: "Error, ",
-				text: "Debe de seleccionar un nombre.",
 				icon: "warning",
 			});
 		}

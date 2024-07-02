@@ -68,7 +68,7 @@ function defaultView() {
 
 function buscarNombre(name) {
 	
-	var option = "<option value=''>---Seleccione un nombre---</option>";
+	var option = "";
 	
 	url = getAbsolutePath() + "getCustomerNamesSolicitudes?nombre=" + name;
 	console.log(name);
@@ -160,15 +160,8 @@ function getUrlSolicitudes() {
 					icon: "warning",
 				});
 			}
-			if ($("#selectName").val() === "") {
-				swal({
-					title: "Error",
-					text: "Debe seleccionar un nombre.",
-					icon: "warning",
-				});
-			}
 	
-			if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+			if ($("#nameBusqueda").val() != "") {
 				variables.select = $("#selectName").val();
 				variables.valuesSelect = variables.select.toString().split(',');
 				variables.nomCliente = variables.valuesSelect[0];
