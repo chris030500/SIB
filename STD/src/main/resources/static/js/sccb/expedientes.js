@@ -66,11 +66,21 @@ function buscarNombreCredito(name) {
 			console.log(res.nombresCredito);
 			var nombresCredito = res.nombresCredito;
 			console.log(nombresCredito.length);
-			for(var i = 0; i < nombresCredito.length; i++) {
+			if (nombresCredito.length === 0) {
+				swal({
+					title: "Error, ",
+					text: "El nombre que ingreso no es válido.",
+					icon: "warning",
+				});
+				cleanView();
+			}
+			else {
+				for(var i = 0; i < nombresCredito.length; i++) {
 				
-				option += "<option value='" + nombresCredito[i].credito_id + "'>" + nombresCredito[i].nombre_cliente+ " | " + nombresCredito[i].credito_id + "</option>";
+					option += "<option value='" + nombresCredito[i].credito_id + "'>" + nombresCredito[i].nombre_cliente+ " | " + nombresCredito[i].credito_id + "</option>";
 				
-				$("select#selectCredito").empty().append(option);
+					$("select#selectCredito").empty().append(option);
+				}
 			}
 		}
 	});
@@ -91,11 +101,21 @@ function buscarNombre(name) {
 			console.log(res.nombresAfiliacion);
 			var nombresAfiliacion = res.nombresAfiliacion;
 			console.log(nombresAfiliacion.length);
-			for(var i = 0; i < nombresAfiliacion.length; i++) {
+			if (nombresAfiliacion.length === 0) {
+				swal({
+					title: "Error, ",
+					text: "El nombre que ingreso no es válido.",
+					icon: "warning",
+				});
+				cleanView();
+			}
+			else {
+				for(var i = 0; i < nombresAfiliacion.length; i++) {
 				
-				option += "<option value='" + nombresAfiliacion[i].nombre_cliente + "'>" + nombresAfiliacion[i].nombre_cliente + "</option>";
+					option += "<option value='" + nombresAfiliacion[i].nombre_cliente + "'>" + nombresAfiliacion[i].nombre_cliente + "</option>";
 				
-				$("select#selectName").empty().append(option);
+					$("select#selectName").empty().append(option);
+				}
 			}
 		}
 	});
@@ -385,9 +405,9 @@ function showImage(imagen) {
 function cleanView() {
 	cleanTables();
 	$("#creditoBusqueda").val("");
-	$("#selectCredito").val("");
+	$("#selectCredito > option").remove();
 	$("#nameBusqueda").val("");
-	$("#selectName").val("");
+	$("#selectName > option").remove();
 }
 
 function cleanTables() {

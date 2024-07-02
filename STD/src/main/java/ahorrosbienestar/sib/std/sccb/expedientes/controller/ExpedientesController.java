@@ -25,7 +25,6 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteAfiliacion;
 import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteCredito;
 import ahorrosbienestar.sib.std.sccb.expedientes.model.ImagenesExpedienteAfiliacion;
 import ahorrosbienestar.sib.std.sccb.expedientes.service.ExpedienteAfiliacionService;
@@ -247,7 +246,7 @@ public class ExpedientesController {
     	
     	String newPathImage = pathImage.replace("\\", "/");
     	String baseRemoteDirectory = "/Imagenes_SCCB_2024";
-    	String[] directories = {"Imagenes_SCCB", "Imagenes_SCCB_2"};
+    	String[] directories = {"Imagenes_SCCB", "Imagenes_SCCB_2", "Imagenes_SCCB_3"};
     	
         try {
         	

@@ -55,11 +55,21 @@ function buscarNombre(name) {
 			console.log(res.nombresPagares);
 			var nombres = res.nombresPagares;
 			console.log(nombres.length);
-			for(var i = 0; i < nombres.length; i++) {
+			if (nombres.length === 0) {
+				swal({
+					title: "Error, ",
+					text: "El nombre que ingreso no es válido.",
+					icon: "warning",
+				});
+				cleanView();
+			}
+			else {
+				for(var i = 0; i < nombres.length; i++) {
 				
-				option += "<option value='" + nombres[i].no_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
+					option += "<option value='" + nombres[i].no_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
 				
-				$("select#selectName").empty().append(option);
+					$("select#selectName").empty().append(option);
+				}
 			}
 		}
 	});
@@ -104,7 +114,7 @@ function cleanView() {
 	$("#creditoBusqueda").val("");
 	$("#clienteBusqueda").val("");
 	$("#nameBusqueda").val("");
-	$("#selectName").val("");
+	$("#selectName > option").remove();
 }
 
 function cleanTable() {
