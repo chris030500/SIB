@@ -70,11 +70,22 @@ function buscarNombre(name) {
 			console.log(res.participantes);
 			var participantes = res.participantes;
 			console.log(participantes.length);
-			for(var i = 0; i < participantes.length; i++) {
+			if (participantes.length === 0) {
+				swal({
+					title: "Error, ",
+					text: "El nombre que ingreso no es válido.",
+					icon: "warning",
+				});
+				cleanScreen();
+			}
+			else {
+				for(var i = 0; i < participantes.length; i++) {
 				
-				option += "<option value='" + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
+					option += "<option value='" + participantes[i].i_credito_id + "'>" + participantes[i].vc_nombre_cliente + "|" + participantes[i].vc_rol_participante + "|" + participantes[i].i_credito_id + "</option>";
 				
-				$("select#selectName").empty().append(option);
+					$("select#selectName").empty().append(option);
+				
+				}
 			}
 		}
 	});
@@ -448,7 +459,7 @@ function cleanScreen() {
 	cleanTables();
 	$("#creditoBusqueda").val("");
 	$("#nameBusqueda").val("");
-	$("#selectName").val("");
+	$("#selectName > option").remove();
 }
 
 function cleanTables() {
