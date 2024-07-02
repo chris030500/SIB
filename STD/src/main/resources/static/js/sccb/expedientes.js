@@ -54,7 +54,7 @@ function getAbsolutePath() {
 function buscarNombreCredito(name) {
 	
 	var selectName = $("#selectCredito");
-	var option = "<option value=''>---Seleccione un nombre---</option>";
+	var option = "";
 	
 	url = getAbsolutePath() + "getNamesExpedienteCredito?nombre=" + name;
 	console.log(name);
@@ -89,7 +89,7 @@ function buscarNombreCredito(name) {
 function buscarNombre(name) {
 	
 	var selectName = $("#selectName");
-	var option = "<option value=''>---Seleccione un nombre---</option>";
+	var option = "";
 	
 	url = getAbsolutePath() + "getNamesExpedienteAfiliacion?nombre=" + name;
 	console.log(name);
@@ -430,7 +430,7 @@ function buscarDatos() {
 	cleanTables();
 	
 	if (expOptionSelected == "1") {
-		if ($("#nameBusqueda").val() != "" && $("#selectName").val() != "") {
+		if ($("#nameBusqueda").val() != "") {
 			buscarExpedienteAfiliacion();
 			getDetalleExpedienteAfiliacion();
 		}
@@ -443,19 +443,10 @@ function buscarDatos() {
 				icon: "warning",
 			});
 		}
-		
-		if ($("#selectName").val() === "") {
-			
-			swal({
-				title: "Error, ",
-				text: "Debe seleccionar un nombre.",
-				icon: "warning",
-			});
-		}
 	}
 	
 	if (expOptionSelected == "2") {
-		if ($("#creditoBusqueda").val() != "" && $("#selectCredito").val() != "") {
+		if ($("#creditoBusqueda").val() != "") {
 			buscarExpedienteCredito();
 			getDetalleExpedienteCredito();
 		}
@@ -465,15 +456,6 @@ function buscarDatos() {
 			swal({
 				title: "Error, ",
 				text: "Debe ingresar un nombre.",
-				icon: "warning",
-			});
-		}
-		
-		if ($("#selectCredito").val() === "") {
-			
-			swal({
-				title: "Error, ",
-				text: "Debe seleccionar un nombre.",
 				icon: "warning",
 			});
 		}
