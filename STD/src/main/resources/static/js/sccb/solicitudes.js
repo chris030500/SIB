@@ -91,7 +91,7 @@ function buscarNombre(name) {
 			else {
 				for(var i = 0; i < nombres.length; i++) {
 				
-					option += "<option value='" + nombres[i].nombre_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
+					option += "<option value='" + nombres[i].nombre_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + " | " + nombres[i].rol + " | " + nombres[i].credito_id + "</option>";
 				
 					$("select#selectName").empty().append(option);
 				}

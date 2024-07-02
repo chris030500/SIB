@@ -153,7 +153,7 @@ public class SolicitudesCreditoController {
 	}
 	
 	@RequestMapping(value = { "/getCustomerNamesSolicitudes" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> parametrosNameSolicitudes(@RequestParam("nombre") String nombre) {
+	public ResponseEntity<Map<String, Object>> parametrosNamesSolicitudes(@RequestParam("nombre") String nombre) {
 
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
