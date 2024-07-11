@@ -274,13 +274,16 @@ function buscarExpedienteAfiliacion() {
 				var idExpediente = (res.expediente_id != null) ? res.expediente_id : "";
 				var tipoExpediente = (res.tipo_expediente != null) ? res.tipo_expediente : "";
 				var fechaCreacion = (res.fecha_creacion != null) ? res.fecha_creacion : "";
+				var estatus = (res.desc_estatus != null) ? res.desc_estatus : "";
+				var situacion  = (res.desc_situacion != null) ? res.desc_situacion : "";
 				
 				var tbody = "<tbody>"
 				+ "<tr>"
 				+ "<td>" + idExpediente + "</td>"
 				+ "<td>" + tipoExpediente + "</td>"
 				+ "<td>" + fechaCreacion + "</td>"
-				+ "<td>ACTIVO</td>"
+				+ "<td>" + estatus + "</td>"
+				+ "<td>" + situacion + "</td>"
 				+ "</tr>"
 				+ "</tbody>";
 				
