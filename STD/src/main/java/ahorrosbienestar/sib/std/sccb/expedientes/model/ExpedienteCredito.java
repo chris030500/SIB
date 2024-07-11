@@ -48,6 +48,18 @@ public class ExpedienteCredito {
 	
 	@Column(name = "I_NO_CREDITO_SAFI")
 	private Long i_no_credito_safi;
+	
+	@Column(name = "I_ESTATUS_ID")
+	private Integer i_estatus_id;
+	
+	@Column(name = "VC_ESTATUS_DESC_ESTATUS")
+	private String vc_desc_estatus;
+	
+	@Column(name = "I_SITUACION_ID")
+	private Integer i_situacion_id;
+	
+	@Column(name = "VC_DESC_SITUACION")
+	private String vc_desc_situacion;
 
 	public Integer getPk_i_row_guid() {
 		return pk_i_row_guid;
@@ -136,15 +148,50 @@ public class ExpedienteCredito {
 	public void setI_no_credito_safi(Long i_no_credito_safi) {
 		this.i_no_credito_safi = i_no_credito_safi;
 	}
+	
+	public Integer getI_estatus_id() {
+		return i_estatus_id;
+	}
+
+	public void setI_estatus_id(Integer i_estatus_id) {
+		this.i_estatus_id = i_estatus_id;
+	}
+
+	public String getVc_desc_estatus() {
+		return vc_desc_estatus;
+	}
+
+	public void setVc_desc_estatus(String vc_desc_estatus) {
+		this.vc_desc_estatus = vc_desc_estatus;
+	}
+
+	public Integer getI_situacion_id() {
+		return i_situacion_id;
+	}
+
+	public void setI_situacion_id(Integer i_situacion_id) {
+		this.i_situacion_id = i_situacion_id;
+	}
+
+	public String getVc_desc_situacion() {
+		return vc_desc_situacion;
+	}
+
+	public void setVc_desc_situacion(String vc_desc_situacion) {
+		this.vc_desc_situacion = vc_desc_situacion;
+	}
 
 	@Override
 	public String toString() {
-		return "ConsultaExpedientes [pk_i_row_guid=" + pk_i_row_guid + ", i_expediente_id=" + i_expediente_id
+		return "ExpedienteCredito [pk_i_row_guid=" + pk_i_row_guid + ", i_expediente_id=" + i_expediente_id
 				+ ", i_tipo_expediente_id=" + i_tipo_expediente_id + ", vc_tipo_expediente=" + vc_tipo_expediente
 				+ ", dt_fecha_creacion=" + dt_fecha_creacion + ", i_no_cliente=" + i_no_cliente + ", vc_nombre_cliente="
 				+ vc_nombre_cliente + ", i_solicitud_id=" + i_solicitud_id + ", i_credito_id=" + i_credito_id
-				+ ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_no_credito_safi=" + i_no_credito_safi + "]";
+				+ ", i_no_cliente_safi=" + i_no_cliente_safi + ", i_no_credito_safi=" + i_no_credito_safi
+				+ ", i_estatus_id=" + i_estatus_id + ", vc_desc_estatus=" + vc_desc_estatus + ", i_situacion_id="
+				+ i_situacion_id + ", vc_desc_situacion=" + vc_desc_situacion + "]";
 	}
+	
 	
 	
 }
