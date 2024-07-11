@@ -137,7 +137,12 @@ function buscarExpedienteCredito() {
 			console.log(res);
 			if ($.isEmptyObject(res)) {
 				console.log("Error");
-				divMainTable.hide();	
+				divMainTable.hide();
+				swal({
+					title: "Error, ",
+					text: "No se encuentra el detalle de expediente.",
+					icon: "warning",
+				});	
 			}
 			else {
 				divMainTable.show();
@@ -195,6 +200,11 @@ function getDetalleExpedienteCredito() {
 			if (res.imagenesCredito.length === 0) {
 				console.log("Error");
 				divDetalleExpediente.hide();
+				swal({
+					title: "Error, ",
+					text: "No se encuentra el detalle de expediente.",
+					icon: "warning",
+				});
 			}
 			else {
 				console.log(res.imagenesCredito);
