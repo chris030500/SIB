@@ -148,6 +148,8 @@ function buscarExpedienteCredito() {
 				var fechaCreacion = (res.dt_fecha_creacion != null) ? res.dt_fecha_creacion : "";
 				var idSolicitud = (res.i_solicitud_id != null) ? res.i_solicitud_id : "";
 				var idCredito = (res.i_credito_id != null) ? res.i_credito_id : "";
+				var estatus = (res.vc_desc_estatus != null) ? res.vc_desc_estatus : "";
+				var situacion = (res.vc_desc_situacion != null) ? res.vc_desc_situacion : "";
 				
 				var tbody = "<tbody>"
 				+ "<tr>"
@@ -156,7 +158,8 @@ function buscarExpedienteCredito() {
 				+ "<td>" + fechaCreacion + "</td>"
 				+ "<td>" + idSolicitud + "</td>"
 				+ "<td>" + idCredito + "</td>"
-				+ "<td>ACTIVO</td>"
+				+ "<td>" + estatus +"</td>"
+				+ "<td>" + situacion +"</td>"
 				+ "</tr>"
 				+ "</tbody>";
 				

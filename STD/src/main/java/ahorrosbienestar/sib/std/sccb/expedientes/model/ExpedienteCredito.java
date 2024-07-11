@@ -52,7 +52,7 @@ public class ExpedienteCredito {
 	@Column(name = "I_ESTATUS_ID")
 	private Integer i_estatus_id;
 	
-	@Column(name = "VC_ESTATUS_DESC_ESTATUS")
+	@Column(name = "VC_DESC_ESTATUS")
 	private String vc_desc_estatus;
 	
 	@Column(name = "I_SITUACION_ID")
