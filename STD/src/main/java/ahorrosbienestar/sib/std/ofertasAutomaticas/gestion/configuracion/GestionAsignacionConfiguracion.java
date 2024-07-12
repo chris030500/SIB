@@ -43,9 +43,10 @@ public class GestionAsignacionConfiguracion {
     
 	@Autowired
 	private TaskScheduler tareProcesoAsignacion;
-
+	
 	@Autowired
 	private EnvioCorreoService envioCorreoService;
+
 	@Autowired
     public GestionAsignacionConfiguracion(TaskScheduler tareProcesoAsignacion) {
         this.tareProcesoAsignacion = tareProcesoAsignacion;
@@ -81,7 +82,6 @@ public class GestionAsignacionConfiguracion {
 		            // Reemplaza el trigger existente con el nuevo trigger
 		            tareProcesoAsignacion.schedule(() -> procesarCron(idProceso), trigger);
 		            logger.info("Se actualizo cron Asignacion");
-		        	
 				}else {
 					logger.info("No se actualizo Asignacion");
 		        	
@@ -90,6 +90,16 @@ public class GestionAsignacionConfiguracion {
 			}
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
+		}
+	}
+	
+	public void correoAsignacion(){
+		try {
+			// Metodo envio de correo y adjunto
+        	envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_ERROR+e.getMessage());
 		}
 	}
 	
@@ -107,8 +117,9 @@ public class GestionAsignacionConfiguracion {
 	        String horaYMinutos = horaActual.format(formatter);
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(valBase.getI_ejecutar() == 1) {
-					procesarAsignacion(idProceso);
+					procesarAsignacion(idProceso, Constantes.PROCESO_AUTOMATICO);
 					logger.info("Se ejecuto proceso Asignacion:"+horaYMinutos);
+			            
 				}else {
 					logger.info("No es tiempo de ejecutar proceso Asignacion:"+horaYMinutos);
 				}
@@ -121,14 +132,17 @@ public class GestionAsignacionConfiguracion {
 	}
 
 
-	public synchronized String procesarAsignacion(Integer idProceso) {
+	public synchronized String procesarAsignacion(Integer idProceso, int tipoProceso) {
 		try {
+			
 			logger.info("Ejecuta los SP Asignacion");
 			error = procesoGestionAsignado();
-			if(error == null) {
-	        	// Metodo envio de correo y adjunto
-	        	envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
-			}else {
+			
+			if(error == null || error.equals(Constantes.ENVIA_CORREO_ASIGNACION) || error.equals(Constantes.NO_ENVIA_CORREO_ASIGNACION)) {
+				if(tipoProceso == Constantes.PROCESO_AUTOMATICO && error.equals(Constantes.ENVIA_CORREO_ASIGNACION) ) {
+					envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
+				}
+	        }else{
 				logger.error("Error:"+error);
 			}
 			return error;

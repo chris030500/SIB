@@ -1,6 +1,9 @@
 package ahorrosbienestar.sib.std.correoSIB.service;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -13,6 +16,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -39,6 +44,8 @@ public class EnvioCorreoService {
 	
 	@Autowired
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
+	
+	
 	@Autowired
 	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
 	
@@ -116,33 +123,69 @@ public class EnvioCorreoService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            e.printStackTrace(); // Handle the exception appropriately
+   
+			logger.error(Constantes.MENSAJE_ERROR+e.getMessage());
         }
     }
 	
 	public void preparCorreoAdjunto(int tipoCorreo, String nombreReporte, String parametros, String nombre, int tipoBusqueda) {
 		try {	
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
-			
-			
 			List<Integer> listaSucRegistros = envioCorreoContenidoService.registrosXsucursal(tipoBusqueda);
+			
 			for(Integer idSuc:listaSucRegistros) {
-				String fileName=nombre+idSuc+datosReporte.getVc_extension();
-	        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(),parametros+idSuc);
-				List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoCorreo,String.valueOf(idSuc));
-				for(ContenidoCorreo correoContenido : listaCorreos) {
-					String[] listDireccion = correoContenido.getVc_destinatarios().split(";");
-					for(String correo : listDireccion) {
-						InternetAddress direccion = new InternetAddress(correo);
-						sendEmailWithAttachment(direccion.getAddress(),correoContenido.getVc_asunto(),correoContenido.getVc_html(),fileName,fileBytes);
-					}
-					
-				}
+					 try {
+						 String fileName=nombre+idSuc+datosReporte.getVc_extension();
+				        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(),parametros+idSuc);
+							List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoCorreo,String.valueOf(idSuc));
+							for(ContenidoCorreo correoContenido : listaCorreos) {
+								String[] listDireccion = correoContenido.getVc_destinatarios().split(";");
+								for(String correo : listDireccion) {
+									InternetAddress direccion = new InternetAddress(correo);
+									sendEmailWithAttachment(direccion.getAddress(),correoContenido.getVc_asunto(),correoContenido.getVc_html(),fileName,fileBytes);
+								}
+							}
+					} catch (Exception e) {
+						
+						logger.error(Constantes.MENSAJE_ERROR+e.getMessage());
+					}	
 			}
+						
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
 		}
 	}
+	
+	public void preparCorreoAdjuntoSuc(int tipoCorreo, String nombreReporte, String parametros, String nombre, int numSucursal) {
+		try {	
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(nombreReporte);
+			
+			
+				try {
+							String fileName=nombre+numSucursal+datosReporte.getVc_extension();
+				        	byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(),parametros+numSucursal);
+							List<ContenidoCorreo> listaCorreos= envioCorreoContenidoService.contenidoCorreo(tipoCorreo,String.valueOf(numSucursal));
+							for(ContenidoCorreo correoContenido : listaCorreos) {
+								String[] listDireccion = correoContenido.getVc_destinatarios().split(";");
+								for(String correo : listDireccion) {
+									InternetAddress direccion = new InternetAddress(correo);
+									sendEmailWithAttachment(direccion.getAddress(),correoContenido.getVc_asunto(),correoContenido.getVc_html(),fileName,fileBytes);
+								}
+							}
+					} catch (Exception e) {
+						
+						logger.error(Constantes.MENSAJE_ERROR+e.getMessage());
+					}
+					 
+					 
+				
+			
+						
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+		}
+	}
+	
 	
 	
 	
