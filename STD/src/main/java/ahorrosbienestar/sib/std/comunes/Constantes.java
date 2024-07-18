@@ -39,6 +39,7 @@ public class Constantes {
     //Identificar de mensaje
     public static final String TEXTO_MNS = "mensaje";
     public static final String TIPO_MNS = "tipo";
+    public static final String ENVIA_CORREOS = "envio";
     public static final String URL_REPORTE = "reporte";
     
     
@@ -163,6 +164,14 @@ public class Constantes {
 	public static final String SCCB_HISTORIAL_COBRANZA = "sccb/historialCobranza";
 	public static final String SCCB_CONSULTA_PAGARES = "sccb/consultaPagares";
 	public static final String SCCB_CONSULTA_EXPEDIENTES = "sccb/expedientes";
+	
+	//indicadores Procesos
+	public static final int PROCESO_MANUAL = 1;
+	public static final int PROCESO_AUTOMATICO = 2;
+	
+	//enviar correos
+	public static final String ENVIA_CORREO_ASIGNACION = "1";
+	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
 	
     private Constantes() {
