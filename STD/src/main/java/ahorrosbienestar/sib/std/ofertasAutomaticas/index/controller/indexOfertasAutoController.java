@@ -990,9 +990,12 @@ public class indexOfertasAutoController {
 				try {
 					error = gestionAsignacionConfiguracion.procesarAsignacion(idProceso,Constantes.PROCESO_MANUAL);
 					logger.debug("Ejecutar proceso Asignacion Gestiones.");
-					if(error == null ||error.equals("1")||error.equals("0")) {
+					if(error == null ||Constantes.ENVIA_CORREO_ASIGNACION.equals(error)||Constantes.NO_ENVIA_CORREO_ASIGNACION.equals(error)) {
 						mensaje = Constantes.ASIGNACION_OK;
-						envio = (error.equals("1"))?Constantes.ENVIA_CORREO_ASIGNACION:Constantes.NO_ENVIA_CORREO_ASIGNACION;	
+						if(error != null ) {
+							envio = Constantes.ENVIA_CORREO_ASIGNACION.equals(error)?Constantes.ENVIA_CORREO_ASIGNACION:Constantes.NO_ENVIA_CORREO_ASIGNACION;
+						}	
+							
 					}else {
 						mensaje = Constantes.TEXTO_KO.replace(Constantes.IDENTIFICADOR_ERROR,error);
 						tipo =Constantes.MENSAJE_ERROR;
