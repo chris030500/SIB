@@ -173,6 +173,7 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
+	
     private Constantes() {
         
     }
