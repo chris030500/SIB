@@ -173,6 +173,10 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
+	//constantes contabilidad
+	public static final String CONTABILIDAD_CONFIGURACION = "contabilidad/parametrosConfiguracion";
+	public static final String CONTABILIDAD_COSTO_NETO_FINANCIADO = "contabilidad/costoNetoFinanciado";
+	public static final String CONTABILIDAD_CALCULO_EPRC = "contabilidad/calculoEPRC";
 	
     private Constantes() {
         
