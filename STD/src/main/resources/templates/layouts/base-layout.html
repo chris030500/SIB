@@ -416,6 +416,32 @@
 					</ul>
 				</li>
 				<!-- Fin SCCB -->
+				<!-- CONTABILIDAD -->
+				<li  style="display:none;"  class="nav-item" th:id="12">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-contabilidad"
+						data-bs-toggle="collapse">
+						<i class="fas fa-balance-scale"></i><span>Contabilidad</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-contabilidad" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						<li th:id="M_O34" class="nav-item"  style="display:none;">
+							<a th:href="@{/contabilidad/parametrosConfiguracion}">
+								<i class="bi bi-gear-wide"></i><span>Parametros Configuracion</span>
+							</a>
+						</li>
+						<li th:id="M_O35" class="nav-item"  style="display:none;">
+							<a th:href="@{/contabilidad/costoNetoFinanciado}">
+								<i class="fas fa-money-check-alt"></i><span>Costo Neto Financiado</span>
+							</a>
+						</li>
+						<li th:id="M_O36" class="nav-item"  style="display:none;">
+							<a th:href="@{/contabilidad/calculoEPRC}">
+								<i class="fas fa-hand-holding-usd"></i><span>Calculo EPRC</span>
+							</a>
+						</li>
+					</ul>
+				</li>				
+				<!-- FIN CONTABILIDAD -->
 
 			</ul>
 

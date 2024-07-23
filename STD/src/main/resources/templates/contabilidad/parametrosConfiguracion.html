@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Parametros Configuracion</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros Generales</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="layout-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Carga Layout</button>
+					</li>
+				</ul>
+			</div>
+			<div id="pant-tabs">
+				<div id="params-tab1" class="" style="display: block;" for="1">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Parametros Generales</legend>
+						<div class="row" style="margin-top : 15px "></div>
+					</fieldset>
+				</div>
+				<div id="layout-tab1" class="" style="display: none;" for="2" >
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Carga Layout</legend>
+						<div class="row" style="margin-top : 15px "></div>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/contabilidad/configuracionContabilidad.js}"></script>
+	</th:block>
+</body>
+
+
+</html>
