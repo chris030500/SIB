@@ -718,6 +718,9 @@ function peticionPost(metodo, metodoUrl) {
 					limpiarDatosClasificacion();
 				}else if(metodo == 3){
 					//proceso manual Bases de ofertas automaticas. 
+					if(respuesta.envio == "1" ){
+						correosAsignacion();
+					}
 				}else if(metodo == 4){
 					cargatblProcesoG();
 					limpiarParametros();	
@@ -1116,6 +1119,7 @@ function ejecutarDatosProceso(idProceso){
 					url= "";
 					url = "ejecutarDatosProceso?idProceso="+idProceso;
 					peticionPost(3,getAbsolutePath()+url);
+					
 			}
 	});
 
@@ -1136,12 +1140,20 @@ function mostrarGestiones(){
 					+ opt.fk_id_sucursal
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-download'></i></button>";
+			   var btncorreos= " <button class='btn btn-primary btn-sm' tabindex='0' "
+					+ " title='Ver Asignacion de Gestion.' aria-controls='table-datatable' type='button'"
+					+ " onclick='enviarCorreo("
+					+ opt.fk_id_sucursal
+					+ ")' id="
+					+ opt.fk_id_sucursal
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-envelope'></i></button>";
 			   
       				tblRegistroGestiones.row.add([(opt.fk_id_sucursal == 100)?'CALL CENTER':opt.vc_nombresucursal
       				, opt.vc_total
       				, opt.dt_fechainicio
       				,opt.dt_fechafin
-      				,btnGestiones]).draw(false); 
+      				,btnGestiones+btncorreos]).draw(false); 
       		
 		
    		});
@@ -1163,4 +1175,48 @@ function descargarArchivoAsignaciones(sucursal){
 function cerrarModalAlertas(valor) {
 	$('#' + valor).modal('hide');
 }
+
+
+var urlCorreosAsignacion = "correoAsignacion";
+
+function correosAsignacion() {
+	
+	$.ajax({
+		async: true,
+		url: getAbsolutePath() + urlCorreosAsignacion,
+		type: "POST",
+		dataType: "JSON",
+		success: function(data) {
+        	console.log('Datos recibidos: ', data);
+   		},
+    	error: function(jqXHR, textStatus, errorThrown) {
+        	console.log('Error: ', textStatus, errorThrown);
+    	}
+	});
+}
+var urlEnviarCorreo = "enviaCorreoSucursal?numSucursal="
+function enviarCorreo(numSucursal){
+	
+	 swal({
+      		title: "¿Esta seguro de enviar por correo la base de asignacion de la sucursal seleccionada?",
+      		icon: 'warning',
+      		buttons: ["Cancelar", "Confirmar"],
+    	 })
+		.then(resultado => {
+			if (resultado) {
+				$.ajax({
+					url: getAbsolutePath() + urlEnviarCorreo+numSucursal,
+					type: "POST",
+					dataType: "JSON",
+					success: function(data) {
+        				console.log('Datos recibidos: ', data);
+   					},
+    				error: function(jqXHR, textStatus, errorThrown) {
+        				console.log('Error: ', textStatus, errorThrown);
+    				}
+				});
+			}
+		});
+}
+
 
