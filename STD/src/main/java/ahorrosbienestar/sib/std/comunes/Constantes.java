@@ -178,6 +178,8 @@ public class Constantes {
 	public static final String CONTABILIDAD_COSTO_NETO_FINANCIADO = "contabilidad/costoNetoFinanciado";
 	public static final String CONTABILIDAD_CALCULO_EPRC = "contabilidad/calculoEPRC";
 	
+	//catalogos configuracion contbailidad
+	public static final int CAT_CONCEPTOS = 27;
     private Constantes() {
         
     }

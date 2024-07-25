@@ -6,6 +6,23 @@
 var id = "";
 var idDiv = "";
 var opcion = "";
+
+var tblConfiguracion;
+
+$(document).ready(function() {
+	
+		tblConfiguracion = $("#tblConfiguracion").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+
+});
+
 function ocultarMostrar(divEl) {
 	id = $(divEl).attr("id");
 	idDiv = id + 1;
@@ -44,3 +61,5 @@ function mostrarOcultarDiv(divA) {
 	});
 
 }
+
+
