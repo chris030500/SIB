@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
@@ -39,8 +42,8 @@ import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoSMS;
 
-@Controller
 @RequestMapping("mensajes")
+@RestController
 public class AdminSMSController {
 
 	@Autowired
@@ -184,7 +187,7 @@ public class AdminSMSController {
 	}
 
 	@PostMapping("/sendSMSMasivo")
-	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes) {
+	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes, HttpServletRequest request) {
 		//System.out.println("Cuerpo de la solicitud recibido:");
 		//System.out.println(envioMensajes);
 
@@ -212,6 +215,7 @@ public class AdminSMSController {
 			parametros.setPassword(conf10.getConfiguracion());
 			parametros.setId(conf12.getConfiguracion());
 			parametros.setMensajes(envioMensajes);
+			parametros.setRespuesta("http://" + request.getServerName() + ":" + request.getServerPort() + "/STD/mensajes/respuestaSMS");
 
 			// Configurar encabezados
 			HttpHeaders headers = new HttpHeaders();
@@ -273,4 +277,21 @@ public class AdminSMSController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
+	
+	@PostMapping("/respuestaSMS")
+    public ResponseEntity<String> receiveSoapResponse(@RequestBody String response) {
+        try {
+            // Aquí puedes procesar la respuesta recibida
+            System.out.println("Respuesta SOAP recibida: " + response);
+            
+            // Realizar cualquier acción adicional según la respuesta recibida
+            // Por ejemplo, actualizar el estado de la base de datos, enviar notificaciones, etc.
+
+            return ResponseEntity.ok("Respuesta recibida y procesada.");
+        } catch (Exception e) {
+            logger.error("Error al procesar la respuesta SOAP: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar la respuesta.");
+        }
+    }
+	
 }

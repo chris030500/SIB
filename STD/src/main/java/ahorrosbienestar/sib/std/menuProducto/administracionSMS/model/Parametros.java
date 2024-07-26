@@ -7,6 +7,7 @@ public class Parametros {
     private String password;
     private String server;
     private String id;
+    private String respuesta;
     private List<EnvioMensajes> mensajes;
 
     public String getMail() {
@@ -40,6 +41,14 @@ public class Parametros {
     public void setId(String id) {
         this.id = id;
     }
+
+	public String getRespuesta() {
+		return respuesta;
+	}
+
+	public void setRespuesta(String respuesta) {
+		this.respuesta = respuesta;
+	}
 
 	public List<EnvioMensajes> getMensajes() {
 		return mensajes;
