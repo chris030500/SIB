@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.contabilidad.configuracion.model.ProductosCredito;
@@ -15,4 +16,8 @@ public interface IProductosCredito extends JpaRepository<ProductosCredito, Integ
 	@Query(value = "SELECT I_PRODUCTO_CREDITOID,VC_DESCRIPCION_PRODUCTO,C_ESTATUS "
 			+ "FROM SIB.TBL_PRODUCTOS_CREDITO ", nativeQuery = true) 
 	public List<ProductosCredito> obtProductos();
+	
+	@Query(value = "SELECT VC_DESCRIPCION_PRODUCTO "
+			+ "FROM SIB.TBL_PRODUCTOS_CREDITO where I_PRODUCTO_CREDITOID=:productoID", nativeQuery = true) 
+	public String descProducto(@Param("productoID") String productoID);
 }

@@ -86,20 +86,26 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<fieldset class="border p-2">
-
+						
 						<div class="modal-header">
-							<legend class="float-none w-auto p-2">Catalogo Consulta Buro - Adviser </legend>
-							<button type="button" class="btn-close" onclick="cerrarModal(this)" data-dismiss="modal"
+							<div class="col-md-11">
+								<legend class="float-none w-auto p-2">Catalogo Consulta Buro - Adviser</legend>
+							</div>
+							<div class="col-md-1">
+								<button type="button" class="btn-close" onclick="cerrarModal(this)" data-dismiss="modal"
 								aria-label="Close"></button>
+							</div>
+							
 						</div>
 						<div class="modal-body">
+							<div id="liveAlertPlaceholder"></div>
 							<form th:action="@{/contabilidad/guardar-CatalogoBC}" method="post" id="configuracionForm">
 								<div class="row" style="margin-top : 15px ">
 									<div class="col-md-4">
 										<label for="lblConcepto" name="lblConcepto">Concepto:</label>
 									</div>
 									<div class="col-md-8">
-										<select class="form-control" id="slcConcepto" name="slcConcepto">
+										<select class="form-control" id="slcConcepto" name="Concepto">
 											<option value="0">Seleccione</option>
 											<option th:each="conceptos : ${cat_conceptos}" th:value="${conceptos.i_opcion}"
                                               th:text="${conceptos.v_valor}">
@@ -112,7 +118,7 @@
 										<label for="lblProducto" name="lblProducto">Productos:</label>
 									</div>
 									<div class="col-md-8">
-										<select class="form-control" id="slcProducto" name="slcProducto">
+										<select class="form-control" id="slcProducto" name="Productos">
 											<option value="0">Seleccione</option>
 											<option th:each="producto : ${cat_productos}" th:value="${producto.i_producto_creditoid}"
                                               th:text="${producto.vc_descripcion_producto}">
@@ -125,7 +131,8 @@
 										<label for="lblMontoInicial" name="lblMontoInicial">Monto Inicial:</label>
 									</div>
 									<div class="col-md-8">
-										<input type="number" class="form-control" id="iMontoInicial" min="0" step="1" th:required="true" name="iMontoInicial" th:value="${iMontoInicial != null ? iMontoInicial : 0}">
+										<input type="number" class="form-control" id="montoInicial" min="0" step="1" th:required="true" 
+										name="montoInicial" th:value="${montoInicial != null ? montoInicial : 0}">
 									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
@@ -133,7 +140,8 @@
 										<label for="lblMontoFinal">Monto final:</label>
 									</div>
 									<div class="col-md-8">
-										<input type="number" class="form-control" id="iMontoFinal" min="0" step="1" th:required="true" name="iMontoFinal" th:value="${iMontoFinal != null ? iMontoFinal : 0}">
+										<input type="number" class="form-control" id="montoFinal" min="0" step="1" th:required="true" 
+										name="montoFinal" th:value="${montoFinal != null ? montoFinal : 0}">
 									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">

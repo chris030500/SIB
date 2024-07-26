@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.contabilidad.configuracion.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,12 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.contabilidad.configuracion.model.ConfigAdviserBC;
+import ahorrosbienestar.sib.std.contabilidad.configuracion.repository.IConfigAdviserBC;
 import ahorrosbienestar.sib.std.contabilidad.configuracion.service.ProductosCreditoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import java.util.HashMap;
 
 
 @Controller
@@ -48,6 +51,8 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
+	@Autowired
+	private IConfigAdviserBC iConfigAdviserBC;
 	
 	List<Usuario> usuario = null;
 	
@@ -76,10 +81,21 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	public ResponseEntity<Map<String, String>> guardarCatalogoBC(@RequestParam Map<String, String> params) {
 		Map<String, String> response = new HashMap<>();
 		try {
-			String campo = params.get("slcConcepto");
+			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
+			configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
+			configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
+			configAdviserBC.setProductos(params.get("Productos"));
+			configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+			configAdviserBC.setMontoInicial( new BigDecimal (params.get("montoInicial")));
+			configAdviserBC.setMontoFinal(new BigDecimal (params.get("montoInicial")));
+			iConfigAdviserBC.save(configAdviserBC);
+		
 			response.put("message", "Datos guardados correctamente");
+			
+			
 	        return ResponseEntity.ok(response);
 		} catch (Exception e) {
+			logger.error(""+e.getMessage());
 			response.put("error", "Error al guardar los datos: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}

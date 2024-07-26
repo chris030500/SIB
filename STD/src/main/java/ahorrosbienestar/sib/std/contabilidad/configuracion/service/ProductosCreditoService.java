@@ -20,4 +20,8 @@ public class ProductosCreditoService {
 		return iProductosCredito.obtProductos();
 	}
 
+	public String descProducto(String productoID) {
+		return iProductosCredito.descProducto(productoID);
+	}
+
 }
