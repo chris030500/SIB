@@ -47,7 +47,7 @@ function listaMensajes() {
 
 
 
-			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
+			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'), botones]).draw(false);
 		});
 	});
 }
@@ -228,8 +228,12 @@ function llenarTablaSeguimiento() {
 					botones = botonesEditar + " " + botonesActivar;
 				}
 				if (opt.estMensaje == 2) {
+					botones = "El mensaje esta siendo procesado por el proveedor";
+				}
+				if (opt.estMensaje == 3) {
 					botones = "El mensaje ya se envio";
 				}
+				
 
 				// Agregar el telefono y el mensaje a los arrays correspondientes
 				var mensaje = {
@@ -251,7 +255,7 @@ function llenarTablaSeguimiento() {
 					opt.nombreClasificacion,
 					opt.telefonoCelular,
 					opt.descMensaje,
-					(opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'),
+					(opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'),
 					botones
 				]);
 			});

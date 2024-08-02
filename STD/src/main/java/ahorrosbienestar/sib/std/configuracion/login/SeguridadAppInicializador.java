@@ -54,7 +54,7 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 			http.
 			csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**").permitAll();
+			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**", "/api/**").permitAll();
 			/*
 			 * List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
 			 * if(menuGeneral.size() > 0) { for (MenuGeneral permisos : menuGeneral) {

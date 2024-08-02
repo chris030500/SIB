@@ -8,6 +8,7 @@ public class Parametros {
     private String server;
     private String id;
     private String respuesta;
+    private int proceso;
     private List<EnvioMensajes> mensajes;
 
     public String getMail() {
@@ -48,6 +49,14 @@ public class Parametros {
 
 	public void setRespuesta(String respuesta) {
 		this.respuesta = respuesta;
+	}
+
+	public int getProceso() {
+		return proceso;
+	}
+
+	public void setProceso(int proceso) {
+		this.proceso = proceso;
 	}
 
 	public List<EnvioMensajes> getMensajes() {

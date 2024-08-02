@@ -19,5 +19,10 @@ public interface IMensajeSMSRepository extends JpaRepository<MensajeSMS, Integer
 	@Transactional
 	@Query(value = "UPDATE TBL_MENSAJES_SMS_AO SET I_ESTATUS= 2, FK_ID_PROCES_SMS = :idProce WHERE PK_ID_MENSAJE IN :idsMensajes", nativeQuery = true)
 	int actualizarEstadoMensajes(@Param("idProce") int idProce, @Param("idsMensajes") List<Integer> idsMensajes);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE TBL_MENSAJES_SMS_AO SET I_ESTATUS= :estatus WHERE FK_ID_PROCES_SMS = :idProce", nativeQuery = true)
+	int actualizarEstadoMensajesRecibidos(@Param("idProce") int idProce, @Param("estatus") int estatus);
 
 }

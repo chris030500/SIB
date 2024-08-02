@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -209,14 +209,21 @@ public class AdminSMSController {
 			ConfiguracionSistema conf12 = credenciales.get(12);
 
 			server = conf11.getConfiguracion();
+			InetAddress inetAddress = InetAddress.getLocalHost();
+            String ipAddress = inetAddress.getHostAddress();
+            System.out.println("La IP del servidor es: " + ipAddress);
+            System.out.println("La IP del servidor es: " + request.getServerName());
 
 			Parametros parametros = new Parametros();
 			parametros.setMail(conf9.getConfiguracion());
 			parametros.setPassword(conf10.getConfiguracion());
 			parametros.setId(conf12.getConfiguracion());
 			parametros.setMensajes(envioMensajes);
-			parametros.setRespuesta("http://" + request.getServerName() + ":" + request.getServerPort() + "/STD/mensajes/respuestaSMS");
-
+			parametros.setRespuesta("http://" + ipAddress + ":" + request.getServerPort() + "/STD/api/respuestaSMS");
+			parametros.setProceso(procesoId);
+			
+			System.out.println("La IP del servidor es: " + parametros.getRespuesta());
+			
 			// Configurar encabezados
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
