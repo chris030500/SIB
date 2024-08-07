@@ -552,18 +552,49 @@
 					<div class="border rounded-3 mb-4">
 						<ul class="nav nav-pills justify-content-center" id="pntConf" role="tablist">
 							<li class="nav-item col-4 d-flex justify-content-center" role="presentation" th:if="${permiso_admin == 1 || permiso_admin_sms == 1}">
-								<button onclick="ocultarMostrar(this)" class="nav-link active" id="municipios-tab"
+								<button onclick="ocultarMostrarExclusiones(this)" class="nav-link active" id="municipios-tab"
 									data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Municipios con cobertura</button>
 							</li>
 							<li class="nav-item col-4 d-flex justify-content-center" role="presentation" th:if="${permiso_reglas == 1 || permiso_admin == 1}">
-								<button onclick="ocultarMostrar(this)" class="nav-link" id="convenios-tab" data-bs-toggle="tab"
+								<button onclick="ocultarMostrarExclusiones(this)" class="nav-link" id="convenios-tab" data-bs-toggle="tab"
 									type="button" role="tab" aria-selected="false" tabindex="-1">Convenios</button>
 							</li>
 							<li class="nav-item col-4 d-flex justify-content-center" role="presentation" th:if="${permiso_admin_sms == 1 || permiso_admin == 1}">
-								<button onclick="ocultarMostrar(this)" class="nav-link" id="puestos-tab" data-bs-toggle="tab"
+								<button onclick="ocultarMostrarExclusiones(this)" class="nav-link" id="puestos-tab" data-bs-toggle="tab"
 									type="button" role="tab" aria-selected="false" tabindex="-1">Puestos</button>
 							</li>
 						</ul>
+					</div>
+					<div id="exclusiones-tabs">
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-lg-4"></div>
+							<div id="spinner-container" class="col-lg-4 d-flex justify-content-center"></div>
+							<div class="col-lg-4"></div>
+						</div>
+						<div id="municipios-tab1" class="" style="display: none;" for="7">
+							<fieldset class="border p-2">
+								<legend class="float-none w-auto p-2">Municipios con cobertura</legend>
+								<div class="row" style="margin-top : 15px ">
+									
+								</div>
+							</fieldset>
+						</div>
+						<div id="convenios-tab1" class="" style="display: none;" for="8">
+							<fieldset class="border p-2">
+								<legend class="float-none w-auto p-2">Convenios</legend>
+								<div class="row" style="margin-top : 15px ">
+									
+								</div>
+							</fieldset>
+						</div>
+						<div id="puestos-tab1" class="" style="display: none;" for="9">
+							<fieldset class="border p-2">
+								<legend class="float-none w-auto p-2">Puestos</legend>
+								<div class="row" style="margin-top : 15px ">
+									
+								</div>
+							</fieldset>
+						</div>
 					</div>
 				</fieldset>
 			</div>

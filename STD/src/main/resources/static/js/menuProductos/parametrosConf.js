@@ -30,6 +30,47 @@ function ocultarMostrar(divEl) {
 	mostrarOcultarDiv(idDiv);
 }
 
+function ocultarMostrarExclusiones(divExclusiones) {
+	id = $(divExclusiones).attr("id");
+	idDiv = id + 1;
+	opcion = "#exclusiones-tabs" + " #" + idDiv;
+	switch ($(opcion).attr("for")) {
+		case "7":
+			console.log("Municipios con cobertura");
+			break;
+		case "8":
+			console.log("Convenios");
+			break;
+		case "9":
+			console.log("Puestos");
+			break;
+	}
+	
+	mostrarOcultarDivExclusiones(idDiv);
+	
+}
+
+function mostrarOcultarDivExclusiones(divA) {
+	var opcion = document.getElementById(divA);
+	if (opcion != null) {
+		opcion.style.display = "block";
+	}
+
+	document.querySelectorAll('#exclusiones-tabs div[style*="display: block;"]').forEach(function(checkElement) {
+		console.log("mostrar Datos");
+		if (divA != (checkElement.id)) {
+			var opcion2 = document.getElementById(checkElement.id);
+			if (opcion != null) {
+				opcion2.style.display = "none";
+			}
+		} else {
+			console.log(": Mostrar");
+		}
+
+	});
+
+}
+
 function mostrarOcultarDiv(divA) {
 	var opcion = document.getElementById(divA);
 	if (opcion != null) {
