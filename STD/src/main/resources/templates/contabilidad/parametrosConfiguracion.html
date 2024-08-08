@@ -40,6 +40,7 @@
 			</div>
 			<div id="pant-tabs">
 				<div id="params-tab1" class="" style="display: block;" for="1">
+					<input type="hidden" id="lista_BC" name="lista_BC" th:value="${lista_BC}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Configuracion BC, ADVISER</legend>
 						<div class="row" style="margin-top : 15px ">
@@ -59,10 +60,10 @@
 									<thead>
 										<tr>
 											<th>Concepto</th>
+											<th>Producto</th>
 											<th>Monto Inicial</th>
 											<th>Monto Final</th>
 											<th>Estatus</th>
-											<th>Productos</th>
 											<th style="text-align: center;">Acciones</th>
 										</tr>
 									</thead>

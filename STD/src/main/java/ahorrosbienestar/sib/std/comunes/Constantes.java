@@ -180,7 +180,7 @@ public class Constantes {
 	
 	//catalogos configuracion contbailidad
 	public static final int CAT_CONCEPTOS = 27;
-	public static final int ESTATUS = 1;
+	public static final int ESTATUS_BC = 1;
 	
     private Constantes() {
         

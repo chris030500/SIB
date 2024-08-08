@@ -2,6 +2,13 @@
 /**
 *
 */
+$(document).ready(function() {
+    
+    let valor = $('#lista_BC').val();
+    let listaObtenida = JSON.parse(valor); 
+              
+ 	pintarTabla(listaObtenida,tblConfiguracion);
+});
 
 
 function submitForm(idEvento) {
@@ -41,14 +48,21 @@ function submitForm(idEvento) {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
 				}
-				return response.json(); // Asumiendo que el servidor responde con JSON
+				
+				return response.json();
 			})
 			.then(data => {
+                if(data.listaCatalogo.length > 0){
+                    pintarTabla(data.listaCatalogo,tblConfiguracion);
+                }
+                mostrarAlertar(data.message,"success");
+                
 				console.log('Success:', data);
 				// Maneja la respuesta aquí (por ejemplo, muestra un mensaje al usuario)
 			})
 			.catch(error => {
 				console.log('Error:', error);
+				 mostrarAlertar(data.message,"danger");
 				// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 			})
 			.finally(() => {
@@ -64,6 +78,35 @@ function submitForm(idEvento) {
 			});
 	}
    
+}
+
+function pintarTabla(listaDatos,tablaPintar){
+    const registrosTotales = [];
+    
+    	
+    tablaPintar.clear().draw();
+	$.each(listaDatos, function(idx, opt) {
+        
+        var btnsActualizar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='editarParametros("
+					+ opt.id
+					+ ")' id="
+					+ opt.id
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+        
+        registrosTotales.push([
+            opt.descripcionConcepto,
+            opt.descripcionProducto,
+            opt.montoInicial,
+            opt.montoFinal,
+            (opt.estatus == 1?"Activo":"Inactivo"),
+            btnsActualizar
+        ]);
+    });
+     tablaPintar.rows.add(registrosTotales).draw();
+    
 }
 
 function validarDatos(formData){

@@ -1,7 +1,5 @@
 package ahorrosbienestar.sib.std.contabilidad.configuracion.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,11 +22,11 @@ public class ConfigAdviserBC {
 	@Column(name = "VC_DESCRIPCION_CONCEPTO", length = 200)
 	private String descripcionConcepto;
 
-	@Column(name = "D_MONTO_INICIAL", precision = 12, scale = 2,columnDefinition = "decimal(12,2) default 0.0")
-	private BigDecimal montoInicial;
+	@Column(name = "D_MONTO_INICIAL", columnDefinition = "decimal(12,2)")
+	private Double montoInicial;
 
-	@Column(name = "D_MONTO_FINAL", precision = 12, scale = 2,columnDefinition = "decimal(12,2) default 0.0")
-	private BigDecimal montoFinal;
+	@Column(name = "D_MONTO_FINAL", columnDefinition = "decimal(12,2)")
+	private Double montoFinal;
 
 	@Column(name = "I_PRODUCTOS", length = 200)
 	private String productos;
@@ -36,7 +34,7 @@ public class ConfigAdviserBC {
 	@Column(name = "VC_DESCRIPCION_PRODUCTO", length = 200)
 	private String descripcionProducto;
 
-	@Column(name = "I_ESTATUS", nullable = false, columnDefinition = "int default 1")
+	@Column(name = "I_ESTATUS", columnDefinition = "INT DEFAULT 0")
 	private int estatus;
 
 	public int getId() {
@@ -63,19 +61,19 @@ public class ConfigAdviserBC {
 		this.descripcionConcepto = descripcionConcepto;
 	}
 
-	public BigDecimal getMontoInicial() {
+	public Double getMontoInicial() {
 		return montoInicial;
 	}
 
-	public void setMontoInicial(BigDecimal d) {
+	public void setMontoInicial(Double d) {
 		this.montoInicial = d;
 	}
 
-	public BigDecimal getMontoFinal() {
+	public Double getMontoFinal() {
 		return montoFinal;
 	}
 
-	public void setMontoFinal(BigDecimal montoFinal) {
+	public void setMontoFinal(Double montoFinal) {
 		this.montoFinal = montoFinal;
 	}
 
