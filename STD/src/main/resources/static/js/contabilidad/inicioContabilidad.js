@@ -8,10 +8,21 @@ var idDiv = "";
 var opcion = "";
 
 var tblConfiguracion;
+var tblProcesoGeneradorCNF;
 
 $(document).ready(function() {
 	
-		tblConfiguracion = $("#tblConfiguracion").DataTable({
+	tblConfiguracion = $("#tblConfiguracion").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	tblProcesoGeneradorCNF = $("#tblProcesoGeneradorCNF").DataTable({
 		"language": {
 			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},

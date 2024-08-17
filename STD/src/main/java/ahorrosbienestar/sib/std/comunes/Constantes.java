@@ -48,6 +48,7 @@ public class Constantes {
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
     public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
     public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
+    public static final String REPORTE_KO = "Se Presento error al Generar el reporte, Intente mas tarde.";
     
     //Mensajes Bases de Gestion
     public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
@@ -178,9 +179,22 @@ public class Constantes {
 	public static final String CONTABILIDAD_COSTO_NETO_FINANCIADO = "contabilidad/costoNetoFinanciado";
 	public static final String CONTABILIDAD_CALCULO_EPRC = "contabilidad/calculoEPRC";
 	
-	//catalogos configuracion contbailidad
+	//catalogos configuracion contabilidad
 	public static final int CAT_CONCEPTOS = 27;
 	public static final int ESTATUS_BC = 1;
+	
+	//constantes reportes de contabilidad 
+	public static final String REPORTE_COSTO_NETO_FINANCIADO = "rpt_costoNetoFinanciado";
+	
+	//Constantes Mensajes contabilidad
+	public static final String ERROR_FORMATO_NUMERICO = "Formato de número incorrecto:";
+	public static final String ERROR_PARAMETROS = "Error en los parámetros:";
+	public static final String ERROR_GUARDAR = "Error al guardar los datos:";
+	public static final String PROCESO_CNF_OK = "Termino el procesamiento de información. Favor de Generar el reporte y validar la información. ";
+	
+	// Proceso a ejecutar Contabilidad 
+	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
+	
 	
     private Constantes() {
         

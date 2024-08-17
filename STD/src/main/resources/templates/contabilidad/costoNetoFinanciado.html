@@ -23,14 +23,100 @@
 					</div>
 				</div>
 			</div>
-			
 			<div id="divConfiguracion" class="" style="margin-top : 15px ">
 				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Procesos</legend>
-				
+					<legend class="float-none w-auto p-2">Proceso Costo Neto Financiado</legend>
+					<div id="liveAlertPlaceholder"></div>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-md-3">
+							<label>Procesar información:</label>
+						</div>
+						<div class="col-md-4">
+							<form th:action="@{/contabilidad/procesar-costoNetoFinanciado}" method="post" id="procesarForm">
+								<button type="button" id="btnProcesando" class="btn btn-secondary" onclick="submitBtn(this,1)">
+									<i class="fa-solid fa-circle-play"></i>
+								</button>
+							</form>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-md-3">
+							<label>Descargar reporte: </label>
+						</div>
+						<div class="col-md-4">
+							<form th:action="@{/contabilidad/reporte-costoNetoFinanciado}" method="post" id="reporteForm">
+								<button type="button" id="btnProcesando" class="btn btn-secondary" onclick="submitBtn(this,2)">
+									<i class="fa-sharp fa-solid fa-file-arrow-down"></i>
+								</button>
+							</form>
+						</div>
+					</div>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-md-3">
+							<label>¿La información del reporte es correcta?</label>
+						</div>
+						<div class="col-md-4">
+							<form th:action="@{/contabilidad/guardar-voboProceso}" method="post" id="voboForm">
+								<div class="row" style="margin-top : 5px ">
+									<div class="col-md-2">
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="rbtnDefault"
+												id="rbtnNo" checked>
+											<label class="form-check-label" for="rbtnSi">
+												NO
+											</label>
+										</div>
+									</div>
+									<div class="col-md-2">
+										<div class="form-check">
+											<input class="form-check-input" type="radio" name="rbtnDefault"
+												id="rbtnSi">
+											<label class="form-check-label" for="rbtnSi">
+												SI
+											</label>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<button type="button" id="btnProcesando" class="btn btn-success"
+											onclick="submitForm(this)">
+											Guardar
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
 				</fieldset>
 			</div>
-			
+
+			<div id="divConfiguracion" class="" style="margin-top : 15px ">
+				<input type="hidden" id="listaHistProceso" name="listaHistProceso" th:value="${listaHistProceso}">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Historico Proceso Costo Neto Financiado</legend>
+					<div class="row" style="margin-top : 5px ">
+						<div class="table-responsive">
+							<table class="table table-sm table-striped" id="tblProcesoGeneradorCNF">
+								<thead>
+									<tr>
+										<th>Cierre del Mes</th>
+										<th>Fecha de corte</th>
+										<th>Fecha Ejecucion</th>
+										<th>Usuario Ejecuto</th>
+										<th>Usuario vo.bo</th>
+										<th>Usuario modifico</th>
+										<th>Fecha vo.bo</th>
+										<th>Fecha modifico</th>
+										<th style="text-align: center;">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
@@ -40,7 +126,8 @@
 		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
 		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/contabilidad/inicioContabilidad.js}"></script>
+		<script th:src="@{/js/contabilidad/costoNetoFinanciado.js}"></script>
 	</th:block>
 </body>
 
