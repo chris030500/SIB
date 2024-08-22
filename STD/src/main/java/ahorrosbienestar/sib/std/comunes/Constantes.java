@@ -185,16 +185,21 @@ public class Constantes {
 	
 	//constantes reportes de contabilidad 
 	public static final String REPORTE_COSTO_NETO_FINANCIADO = "rpt_costoNetoFinanciado";
+	public static final String REPORTE_COSTO_NETO_FINANCIADO_HIST = "rpt_costoNetoFinanciado_hist";
+	
 	
 	//Constantes Mensajes contabilidad
 	public static final String ERROR_FORMATO_NUMERICO = "Formato de número incorrecto:";
 	public static final String ERROR_PARAMETROS = "Error en los parámetros:";
 	public static final String ERROR_GUARDAR = "Error al guardar los datos:";
 	public static final String PROCESO_CNF_OK = "Termino el procesamiento de información. Favor de Generar el reporte y validar la información. ";
+	public static final String VOBO_OK = "Se registro el vo.bo de la información procesada. ";
+	public static final String REPORTE_HIST = "&parametros=?proceso=";
+	
 	
 	// Proceso a ejecutar Contabilidad 
 	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
-	
+	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
 	
     private Constantes() {
         

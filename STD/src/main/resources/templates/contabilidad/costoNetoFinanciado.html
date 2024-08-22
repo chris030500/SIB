@@ -91,6 +91,7 @@
 
 			<div id="divConfiguracion" class="" style="margin-top : 15px ">
 				<input type="hidden" id="listaHistProceso" name="listaHistProceso" th:value="${listaHistProceso}">
+				<form id="reporteHistorico" th:action="@{/contabilidad/reporte-costoNetoFinanciadoHist}" method="post">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Historico Proceso Costo Neto Financiado</legend>
 					<div class="row" style="margin-top : 5px ">
@@ -100,12 +101,8 @@
 									<tr>
 										<th>Cierre del Mes</th>
 										<th>Fecha de corte</th>
-										<th>Fecha Ejecucion</th>
-										<th>Usuario Ejecuto</th>
 										<th>Usuario vo.bo</th>
-										<th>Usuario modifico</th>
 										<th>Fecha vo.bo</th>
-										<th>Fecha modifico</th>
 										<th style="text-align: center;">Acciones</th>
 									</tr>
 								</thead>
@@ -115,6 +112,7 @@
 						</div>
 					</div>
 				</fieldset>
+				</form>
 			</div>
 
 		</div>

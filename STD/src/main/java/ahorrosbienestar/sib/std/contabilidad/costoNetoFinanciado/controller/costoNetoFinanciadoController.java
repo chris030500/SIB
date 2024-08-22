@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -89,8 +90,46 @@ public class costoNetoFinanciadoController {
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params){
 		Map<String, Object> response = new HashMap<>();
 		try {
-			System.out.print("");
-			response.put("message", "Se guardo el vo.bo de la ejecucion del proceso");
+			Connection connection = null;
+	        CallableStatement callableStatement = null;
+	        String errorMessage = null;
+	        int estatusProceso = 0;
+            
+            try {
+	            connection = jdbcTemplate.getDataSource().getConnection();
+	            callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK);
+	            callableStatement.setInt(1, obtUsuario());
+	            callableStatement.registerOutParameter(2, Types.VARCHAR);
+	            callableStatement.registerOutParameter(3, Types.INTEGER);
+	            callableStatement.execute();
+	            errorMessage = callableStatement.getString(2);
+	            estatusProceso = callableStatement.getInt(3);
+	        } catch (SQLException e) {
+	            logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        } finally {
+	            if (callableStatement != null) {
+	                try {
+	                    callableStatement.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+	                }
+	            }
+	            if (connection != null) {
+	                try {
+	                    connection.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+	                }
+	            }
+	        }
+            
+        	ObjectMapper objectMapper = new ObjectMapper();
+			String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
+			
+			response.put("message", (errorMessage == null)?Constantes.VOBO_OK:errorMessage);
+			response.put("estatusProceso", estatusProceso);
+			response.put("listaHistProceso", listaHistProceso);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
@@ -166,6 +205,44 @@ public class costoNetoFinanciadoController {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_COSTO_NETO_FINANCIADO);
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+"&parametros="
+					+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+fechaActual;
+				
+			response.put("urlReporte", reporteURL);
+			response.put("message", (reporteURL.length()>0)?Constantes.REPORTE_OK:Constantes.REPORTE_KO);
+			return ResponseEntity.ok(response);
+		} catch (NumberFormatException e) {
+			response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		 } catch (IllegalArgumentException e) {
+			 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		 } catch (Exception e) {
+			 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		 }
+	}
+	
+	@PostMapping("/reporte-costoNetoFinanciadoHist")
+	public ResponseEntity<Map<String, Object>> costoNetoFinanciadoHist(@RequestBody Map<String, Object> data){
+		Map<String, Object> response = new HashMap<>();
+		try {
+			 // Obtén el valor como Object
+	        Object procesoIdObj = data.get("procesoId");
+	        Integer tipoProceso = null;
+
+	        // Verifica si procesoIdObj es una instancia de Number
+	        if (procesoIdObj instanceof Number) {
+	            tipoProceso = ((Number) procesoIdObj).intValue();
+	        } else if (procesoIdObj != null) {
+	            // Convierte a Integer si no es una instancia de Number
+	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
+	        }
+	        System.out.println("Tipo Proceso: " + tipoProceso);
+			LocalDate fechaActual = LocalDate.now();
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_COSTO_NETO_FINANCIADO_HIST);
+			
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()
+					+Constantes.REPORTE_HIST+tipoProceso
 					+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc="+fechaActual;
 				
 			response.put("urlReporte", reporteURL);

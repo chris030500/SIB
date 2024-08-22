@@ -3,13 +3,15 @@
 *
 */
 $(document).ready(function() {
-    
+    tablaProcesos();
+});
+
+function tablaProcesos(){
     let valor = $('#listaHistProceso').val();
     let listaObtenida = JSON.parse(valor); 
               
  	pintarTabla(listaObtenida,tblProcesoGeneradorCNF);
-});
-
+}
 
 function submitForm(idEvento) {
     
@@ -52,6 +54,7 @@ function submitForm(idEvento) {
                 //if(data.listaCatalogo.length > 0){
                  //   pintarTabla(data.listaCatalogo,tblConfiguracion);
                 //}
+                document.getElementById('listaHistProceso').value = data.listaHistProceso;
                 mostrarAlertar(data.message,"success");
                 
 				console.log('Success:', data);
@@ -65,6 +68,7 @@ function submitForm(idEvento) {
 			.finally(() => {
 				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 				$button.html('Guardar');
+				tablaProcesos();
 				//Array.from(form.elements).forEach(element => element.disabled = false);
 				
 				//Array.from(form.elements).forEach(element => {
@@ -157,7 +161,6 @@ function submitBtn(idBotton,num){
 }
 
 
-
 function pintarTabla(listaDatos,tablaPintar){
     const registrosTotales = [];
     
@@ -165,11 +168,9 @@ function pintarTabla(listaDatos,tablaPintar){
     tablaPintar.clear().draw();
 	$.each(listaDatos, function(idx, opt) {
         
-        var btnsActualizar = " <button class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='modal'"
+        var btnsReporte = " <button name='btnHist' class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='editarParametros("
-					+ opt.proceso
-					+ ")' id="
+					+ " onclick='btnReporteHistorico(this)' id="
 					+ opt.proceso
 					+ " data-tooltip='Add'>"
 					+ " <i class='fa-sharp fa-solid fa-file-arrow-down'></i></button>";
@@ -177,13 +178,9 @@ function pintarTabla(listaDatos,tablaPintar){
         registrosTotales.push([
             opt.mes_proceso,
             opt.fecha_corte,
-            opt.fecha_ejecuto,
-            opt.usuario_ejecuto,
             opt.usuario_vobo,
-            opt.usuario_modifico,
             opt.fecha_registro_vobo,
-            opt.fecha_registro_modifico,
-            btnsActualizar
+            btnsReporte
         ]);
     });
      tablaPintar.rows.add(registrosTotales).draw();
@@ -277,4 +274,69 @@ function mostrarAlertar(msnError,tipoError){
 	appendAlert(msnError, tipoError);
 
 }
+
+function btnReporteHistorico(idBotton){
+    
+    const $button = $(idBotton);
+    
+    // Selecciona el formulario más cercano al botón clickeado
+    const $form = $(idBotton).closest('form');
+        
+    // Obtén el ID del formulario
+    const formId = $form.attr('id');
+  
+    // Obtén el formulario
+    const form = document.getElementById(formId);
+    
+    // Captura el valor del ID del botón
+    var procesoId =   $button.attr('id');
+
+    // Crea el objeto de datos para enviar
+    var data = {
+        procesoId: procesoId
+    };
+    
+    // Variable para llevar el seguimiento de si hay campos vacíos
+	//let enviardatos = validarDatos(formData);
+    
+	//if (!enviardatos) {
+        // Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
+		//Array.from(form.elements).forEach(element => element.disabled = true);
+		$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
+        
+		// Usa fetch para enviar una solicitud POST con los datos del formulario
+		fetch(form.action, {
+			 method: 'POST',
+        	headers: {
+            	'Content-Type': 'application/json'
+       		 },
+        	body: JSON.stringify(data) // Stringifica el objeto de datos
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Error de comunicación. Intente mas tarde');
+				}
+				
+				return response.json();
+			})
+			.then(data => {
+                //if(data.listaCatalogo.length > 0){
+                 //   pintarTabla(data.listaCatalogo,tblConfiguracion);
+                //}
+                mostrarAlertar(data.message,"success");
+                window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+data.urlReporte);
+					   		window.focus();
+                
+			})
+			.catch(error => {
+				console.log('Error:', error);
+				 mostrarAlertar(data.message,"danger");
+				// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
+			})
+			.finally(() => {
+				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
+				 $button.html('<i class="fa-sharp fa-solid fa-file-arrow-down"></i>');			
+			});
+}
+
 

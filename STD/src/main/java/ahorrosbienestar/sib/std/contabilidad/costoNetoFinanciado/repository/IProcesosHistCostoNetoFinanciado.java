@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ProcesosH
 public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<ProcesosHistCostoNetoFinanciado, Integer> {
 
 	@Query(value = "select PK_ID_PROCESO as proceso "
-			+ ",case MONTH(DATE_SUB(t1.DT_FECHA_CORTE, INTERVAL 1 MONTH)) "
+			+ ",case MONTH(t1.DT_FECHA_CORTE) "
 			+ "when 1 then 'Enero' "
 			+ "when 2 then 'Febrero' "
 			+ "when 3 then 'Marzo' "
@@ -26,17 +26,11 @@ public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<Procesos
 			+ "when 12 then 'Diciembre' "
 			+ "END mes_proceso "
 			+ ",case when t1.DT_FECHA_CORTE is not null then DATE_FORMAT(t1.DT_FECHA_CORTE, '%d-%m-%Y') else  COALESCE(t1.DT_FECHA_CORTE, '00-00-0000') end fecha_corte "
-			+ ",case when t1.DT_FECHA_EJECUTO is not null then DATE_FORMAT(t1.DT_FECHA_EJECUTO, '%d-%m-%Y') else  COALESCE(t1.DT_FECHA_EJECUTO, '00-00-0000') end fecha_ejecuto "
-			+ ",case when t2.VC_NOMBRE_USUARIO is not null then t2.VC_NOMBRE_USUARIO else COALESCE(t2.VC_NOMBRE_USUARIO , '--.--') end usuario_ejecuto "
 			+ ",case when t3.VC_NOMBRE_USUARIO is not null then t3.VC_NOMBRE_USUARIO else COALESCE(t3.VC_NOMBRE_USUARIO , '--.--') end usuario_vobo "
-			+ ",case when t4.VC_NOMBRE_USUARIO is not null then t4.VC_NOMBRE_USUARIO else COALESCE(t4.VC_NOMBRE_USUARIO , '--.--') end usuario_modifico "
 			+ ",case when t1.DT_FECHA_REGISTRO_VOBO is not null then DATE_FORMAT(t1.DT_FECHA_REGISTRO_VOBO, '%d-%m-%Y') else COALESCE(t1.DT_FECHA_REGISTRO_VOBO, '00-00-0000') end fecha_registro_vobo "
-			+ ",case when t1.DT_FECHA_ACTUALIZO_VOBO is not null then DATE_FORMAT(t1.DT_FECHA_ACTUALIZO_VOBO, '%d-%m-%Y') else COALESCE(t1.DT_FECHA_ACTUALIZO_VOBO, '00-00-0000') end fecha_registro_modifico "
 			+ "from SIB.TBL_REG_PROCESO_MNF t1 "
-			+ "left join SIB.TBL_CAT_USUARIOS t2 on t2.PK_ID_USUARIO = t1.I_USUARIO_EJECUTO "
 			+ "left join SIB.TBL_CAT_USUARIOS t3 on t3.PK_ID_USUARIO = t1.I_USUARIO_VOBO "
-			+ "left join SIB.TBL_CAT_USUARIOS t4 on t4.PK_ID_USUARIO = t1.I_USUARIO_ACTUALIZO_VOBO "
-			+ "where t1.I_VOBO = 1", nativeQuery = true) 
+			+ "where t1.I_VOBO = 1 and I_ACTIVO=1", nativeQuery = true) 
 	public List<ProcesosHistCostoNetoFinanciado> obtProcesoCNF();
 	
 }
