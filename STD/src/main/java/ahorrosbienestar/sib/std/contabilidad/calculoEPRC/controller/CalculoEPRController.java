@@ -20,8 +20,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("/contabilidad")
-public class calculoEPRController {
-	private static final Logger logger = Logger.getLogger(calculoEPRController.class);
+public class CalculoEPRController {
+	private static final Logger logger = Logger.getLogger(CalculoEPRController.class);
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
