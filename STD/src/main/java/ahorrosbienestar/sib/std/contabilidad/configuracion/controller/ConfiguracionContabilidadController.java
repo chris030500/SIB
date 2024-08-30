@@ -42,9 +42,9 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("/contabilidad")
-public class configuracionContabilidadController {
+public class ConfiguracionContabilidadController {
 
-	private static final Logger logger = Logger.getLogger(configuracionContabilidadController.class);
+	private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadController.class);
 
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
