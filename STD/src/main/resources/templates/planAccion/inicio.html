@@ -12,7 +12,7 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="container border p-2">
+		<div class="border p-2 card">
 			<div class="bg-info text-white">
 				<div class="row no-gutters">
 					<div class="col-md-2"></div>
@@ -25,7 +25,7 @@
 			</div>
 
 
-			<div id="divAceptarAsignacion" class="container">
+			<div id="divAceptarAsignacion" class="">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Aceptar Asignacion</legend>
 					<div class="row" style="margin-top : 15px ">
@@ -74,7 +74,7 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 120%;"
+							<table class="table table-bordered table-striped" style="width: 100%;"
 								id="tblObservaciones">
 								<thead>
 									<tr>
@@ -99,7 +99,7 @@
 			</div>
 
 
-			<div id="divRegistroPlanAccion" class="container" style="margin-top : 15px ">
+			<div id="divRegistroPlanAccion" class="" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Registro de plan de accion de la Observacion:</legend>
 					<hr>
@@ -111,8 +111,8 @@
 							<label class="col-form-label"> Nombre de la Actividad</label>
 							<!--<input class="form-control" type="text" id="idNombreActividad" placeholder="Asunto">-->
 							<textarea type="text-Area" class="form-control" id="idNombreActividad"
-								placeholder="Actividad" maxlength="400"></textarea>
-							<div id="contNombre">0/400</div>
+								placeholder="Actividad" maxlength="1500" rows="5"></textarea>
+							<div id="contNombre">0/1500</div>
 						</div>
 						<div class="col-md-6">
 							<label class="col-form-label"> Encargado de la Actividad</label>
@@ -160,7 +160,7 @@
 					</div>
 					<div class="row" style="margin-top : 15px ">
 						<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 120%;" id="tblPlanAccion">
+							<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
 								<thead>
 									<tr>
 										<th style="visibility:collapse; display:none;">ID</th>

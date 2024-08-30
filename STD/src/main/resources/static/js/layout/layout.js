@@ -5,15 +5,20 @@ $(document).ready(function() {
 
 function pintarMenuxRol() {
 	var url = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+opcMenu;
+    //var url = window.location.href.substring(0,22)+opcMenu;
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {
-			  var menu = document.getElementById(''+opt.pk_id_menu+'');
-			  menu.style.display = "block";
+			var menu = document.getElementById(''+opt.pk_id_menu+'');
+			if(menu != null){
+			   menu.style.display = "block";
+			}
 			  
 			for(var i=0; i < opt.opcMenu.length; i++){
 				 var opcion = document.getElementById('M_O'+opt.opcMenu[i].pk_id_opcion);
-				 opcion.style.display = "block";
+				 if(opcion != null){
+					 opcion.style.display = "block";
+				 }
 			}
 		});
 		document.querySelectorAll("#sidebar [style='display:none;']").forEach(function(checkElement) {			

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion.NominaTareaConfiguracion;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -32,6 +34,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("reporteFolio")
 public class ReporteCSOController {
 
+	private static final Logger logger = Logger.getLogger(ReporteCSOController.class);
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
@@ -89,7 +92,7 @@ public class ReporteCSOController {
 
 		return rutaDireccion;
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error(""+e.getMessage());
 		}
 		return null;
 	}
@@ -138,7 +141,7 @@ public class ReporteCSOController {
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error(""+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}		

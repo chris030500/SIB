@@ -52,7 +52,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("seguimientoFolio")
 public class SeguimientoFolioController {
 
-	private static final Logger logger = Logger.getLogger(PlanAccionController.class);
+	private static final Logger logger = Logger.getLogger(SeguimientoFolioController.class);
 
 	
 	@Autowired
@@ -117,7 +117,7 @@ public class SeguimientoFolioController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 		}
 		return null;
 	}
@@ -150,7 +150,7 @@ public class SeguimientoFolioController {
 			
 			return ResponseEntity.ok((listaActividades != null)?listaActividades:0);
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -195,7 +195,7 @@ public class SeguimientoFolioController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}		
@@ -234,7 +234,7 @@ public class SeguimientoFolioController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println(""+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}		
@@ -252,7 +252,7 @@ public class SeguimientoFolioController {
 		try {
 			return ResponseEntity.ok(catalogosCEService.obtSeguimientoxActividad(idActividad));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -267,7 +267,7 @@ public class SeguimientoFolioController {
 		try {
 			return ResponseEntity.ok(iSeguimientoFolioRepository.findById(idSeguimiento));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	
@@ -284,7 +284,7 @@ public class SeguimientoFolioController {
 		try {
 			return ResponseEntity.ok(catalogosCEService.datosArchivos(idFolio));
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -313,7 +313,7 @@ public class SeguimientoFolioController {
 				    .headers(h2).body(new ByteArrayResource(bytesPDF));
 			
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	}
@@ -362,7 +362,7 @@ public class SeguimientoFolioController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
@@ -398,7 +398,7 @@ public class SeguimientoFolioController {
 			}
 			return respuesta;
 		} catch (Exception e) {
-			System.out.println("--"+e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return 0;
 		}
 	}
@@ -425,7 +425,7 @@ public class SeguimientoFolioController {
 
 			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("error:"+e.getMessage());
 			return null;
 		}
 	

@@ -49,7 +49,7 @@ public class Observaciones {
 	@Column(name = "DT_FECHA_ASGINACION")
 	private LocalDate dt_fecha_asignacion;
 	
-	@Column(name = "VC_DESCRIPCION", columnDefinition = "VARCHAR(600)")
+	@Column(name = "VC_DESCRIPCION", columnDefinition = "LONGTEXT")
 	private String vc_descripcion;
 	
 	@Column(name = "I_ESTATUS", columnDefinition = "INT")
@@ -76,7 +76,7 @@ public class Observaciones {
 	private int i_confirma;
 	
 	
-	@Column(name = "VC_DESCRIPCION_RECHAZO", columnDefinition = "VARCHAR(600)")
+	@Column(name = "VC_DESCRIPCION_RECHAZO", columnDefinition = "LONGTEXT")
 	private String vc_descripcion_rechazo;
 	
 	@Column(name = "VC_OBSERVACION_OFICIO", columnDefinition = "VARCHAR(50)")

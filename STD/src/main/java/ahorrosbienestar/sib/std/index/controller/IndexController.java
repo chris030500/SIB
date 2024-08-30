@@ -1,10 +1,6 @@
-package ahorrosbienestar.sib.std.index;
+package ahorrosbienestar.sib.std.index.controller;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,20 +14,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import org.springframework.stereotype.Controller;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
-
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -68,8 +60,9 @@ public class IndexController {
 	private static final Logger logger = Logger.getLogger(IndexController.class);
 
 	@RequestMapping(value = { "/", "/inicio" }, method = RequestMethod.GET)
-	public String index() {
+	public String index(HttpServletRequest request) {
 
+		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String nombreUsuario = auth.getName();
 		Usuario usuario = usuarioService.findByNombre(nombreUsuario);
@@ -189,5 +182,8 @@ public class IndexController {
 				Integer.parseInt(mayusculas), Integer.parseInt(minusculas), Integer.parseInt(numeros),
 				Integer.parseInt(caracteres)));
 	}
+	
+	
+	
 
 }

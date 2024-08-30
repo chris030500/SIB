@@ -118,7 +118,7 @@ function addArchivos(data) {
 
 function guardarActividad() {
 	var urlServicio = getAbsolutePath() + altaActividadPA + obsId;
-	urlServicio= urlServicio+ "&nombreActividad=" + document.getElementById("idNombreActividad").value;
+	urlServicio= urlServicio+ "&nombreActividad=" + encodeURIComponent(document.getElementById("idNombreActividad").value);
 	urlServicio = urlServicio+"&idEncargado=" + document.getElementById("idEncargadoActividad").value;
 	urlServicio= urlServicio+"&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
 	urlServicio = urlServicio+"&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
@@ -128,7 +128,7 @@ function guardarActividad() {
 
 function actualizarActividad() {
 	var urlServicio = getAbsolutePath() + actualizarPA + document.getElementById("idAct").value;
-	urlServicio= urlServicio+ "&nombreActividad=" + document.getElementById("idNombreActividad").value;
+	urlServicio= urlServicio+ "&nombreActividad=" + encodeURIComponent(document.getElementById("idNombreActividad").value);
 	urlServicio = urlServicio+"&idEncargado=" + document.getElementById("idEncargadoActividad").value;
 	urlServicio= urlServicio+"&dtFechaInicio=" + document.getElementById("dtFechaInicio").value;
 	urlServicio = urlServicio+"&dtFechaVencimiento=" + document.getElementById("dtFechaVencimiento").value;
@@ -327,7 +327,7 @@ function actualizacionAsignacion(id, desc, estatus) {
 	if (estatus == 1) {
 		urlServicio = getAbsolutePath() + aceptarObservacion + id;
 	} else {
-		urlServicio = getAbsolutePath() + rechazarObservacion + id + "&vc_motivo=" + desc;
+		urlServicio = getAbsolutePath() + rechazarObservacion + id + "&vc_motivo=" + encodeURIComponent(desc);
 	}
 	peticion(urlServicio);
 }

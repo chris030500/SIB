@@ -27,7 +27,7 @@ public class SeguimientoFolio {
 	@Column(name = "I_PLANACCION", columnDefinition = "INT")
 	private int i_planaccion;
 	
-	@Column(name = "VC_DESC_SEGUIMIENTO", columnDefinition = "VARCHAR(400)")
+	@Column(name = "VC_DESC_SEGUIMIENTO", columnDefinition = "LONGTEXT")
 	private String vc_desc_seguimiento;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")

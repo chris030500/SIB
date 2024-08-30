@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="row">
+			<div class="col-sm-12">
+
+				<!-- Titulo y Tabs -->
+				<div class="border p-2 card">
+					<div class="bg-info text-white">
+						<div class="row no-gutters">
+							<div class="col-md-2"></div>
+							<div class="col-md-8">
+								<div>
+									<h2 style="text-align:center; padding-top: 10px; padding-bottom: 10px;">Seguimiento
+										de Gestiones
+									</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Filtro busqueda -->
+				<div class="border p-2 card" id="filtroSeguimiento" style="display: block;">
+					<div class="">
+						<div class="col-sm-12">
+							<fieldset class="border p-2">
+								<input type="hidden" id="usuarioLogueado" th:value="${usuarioLogueado}" />
+								<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}" />
+								<input type="hidden" id="idPermisoUsuario" th:value="${permisoUsuario}" />
+								<input type="hidden" id="NombreSucursalS" />
+								<legend class="float-none w-auto p-2">Filtro busqueda</legend>
+								<!-- Campos del filtro -->
+								<div class="row">
+									<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+										<label for="searchInput">Buscar sucursal:</label>
+										<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+										<input type="search" class="form-control" id="buscarSucursalSeguimiento"
+											list="opcionSucursalSeguiento" autocomplete="off"
+											placeholder="Nombre sucursal">
+										<!-- Lista de opciones para el datalist -->
+										<datalist id="opcionSucursalSeguiento">
+											<option th:each="sucursal : ${sucursales}"
+												th:value="${sucursal.vc_nombre_sucursal}"
+												th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}">
+											</option>
+										</datalist>
+									</div>
+									<div class="col-sm-6">
+										<label>Sucursal:</label>
+										<b>
+											<p id="nombreSucursalSeguimiento"></p>
+										</b>
+
+									</div>
+
+								</div>
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formFiltro" id="formFiltro">
+											<div class="row">
+												<div class="col-sm-3">
+													<label>Buscar cliente</label>
+													<input type="search" class="form-control" id="buscarCliente"
+														list="opcionCliente" autocomplete="off"
+														placeholder="Buscar cliente" disabled>
+													<datalist id="opcionCliente"></datalist>
+												</div>
+												<!--<div class="col-sm-1" id="spinnerClientes"
+													style="margin: 0px; padding: 0px; padding-top: 25px;">
+													<div class="spinner-border"
+														style="color: #0dcaf0;"></div>
+												</div>-->
+												<div class="col-sm-3">
+													<label>No. Referencia</label>
+													<input type="text" class="form-control" id="inputReferencia"
+														required>
+												</div>
+												<div class="col-sm-3">
+													<label>No. Oferta</label>
+													<input type="text" class="form-control" id="inputOferta" required>
+												</div>
+												<div class="col-sm-3" style="text-align: right; padding-top: 25px;">
+													<button type="button" id="boton-buscar" onclick="validarBusqueda()"
+														style="background: #0dcaf0; border-color: #0dcaf0;"
+														class="btn btn-primary">Buscar</button>
+													<button type="button" onclick="mostrarAlerta()"
+														style="background: rgb(255, 128, 64); border-color: rgb(255, 128, 64);"
+														class="btn btn-primary">Ver detalles</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+
+								<!-- Spinner de carga -->
+								<div class="row" id="ver-cargaSeguimiento"
+									style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
+									<div class="col-sm-12">
+										<div class="spinner-border"
+											style="color: #0dcaf0; height: 100px; width: 100px;">
+										</div>
+									</div>
+								</div>
+
+								<!-- Tabla filtro de busqueda -->
+								<div class="row" id="ver-listaSeguimiento" style="padding-top: 50px; display: none;">
+									<div class="col-sm-12">
+										<div class="table-responsive">
+											<table class="table table-sm" style="width: 100%;" id="vistaFiltro">
+												<thead style="text-align: center;">
+													<tr>
+														<th>No. Cliente</th>
+														<th>Nombre Cliente</th>
+														<th>Estatus Cliente</th>
+														<th>No. Oferta</th>
+														<th>No. Referencia</th>
+														<th>Fecha Inicio</th>
+														<th>Fecha Fin</th>
+														<th>Estatus Oferta</th>
+														<th>Sucursal Asignada</th>
+														<th>Usuario Asignado</th>
+														<th>Acciones</th>
+													</tr>
+												</thead>
+												<tbody style="text-align: center;">
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal seguimiento de gestion -->
+				<div class="modal fade" id="modal-seguimiento" tabindex="-1">
+					<div class="modal-dialog modal-xl">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Registro de gestión</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModal('seguimiento')"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-2">
+										<label>No. de cliente:</label>
+										<b>
+											<p id="numCliente"></p>
+										</b>
+									</div>
+									<div class="col-sm-2">
+										<label>No. de referencia:</label>
+										<b>
+											<p id="referencia"></p>
+										</b>
+									</div>
+								</div>
+
+								<!-- Ajusta la altura según tus necesidades -->
+								<div class="row" id="form-registro">
+									<div class="col-sm-12">
+										<form name="formulario" id="formSeguimientoGestion">
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-4">
+													<div class="form-group">
+														<label for="buscar-relacion">Código de acción - Código de
+															resultados:</label><span style="color: red;">*</span>
+														<input type="search" class="form-control" id="buscar-relacion"
+															list="opciones-relacion" autocomplete="off"
+															placeholder="Relación entre códigos">
+														<datalist id="opciones-relacion"></datalist>
+														<p id="validar-relacion"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-4">
+													<div class="form-group" id="vistaAccionRealizar"
+														style="display: none;">
+														<label>Accion a realizar</label>
+														<b>
+															<p id="accionRealizar"></p>
+														</b>
+													</div>
+												</div>
+												<div class="col-sm-4">
+													<div class="form-group" id="vistaTelfonoLlamada"
+														style="display: none;">
+														<label>Número de Teléfono:</label><span
+															style="color: red;">*</span>
+														<input class="form-control" type="number" id="telefono"
+															placeholder="Número de teléfono">
+														<p id="validar-telefono"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-4">
+													<div class="form-group">
+														<label>Fecha de cita:</label><span style="color: red;">*</span>
+														<input class="form-control" type="date" id="fecha-cita"
+															disabled>
+														<p id="validar-segFecha"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+														</p>
+														<p id="validar-fechaCita"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-4" style="display: none;">
+													<div class="form-group">
+														<label>Fecha de gestión realizada:</label><span
+															style="color: red;">*</span>
+														<input class="form-control" type="date" id="fecha-gestion">
+														<p id="validar-fechaGestion"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-4">
+													<div class="form-group">
+														<label>Descripción de la gestión:</label><span
+															style="color: red;">*</span>
+														<textarea class="form-control"
+															id="descripcion-gestion"></textarea>
+														<p id="validar-descripcion"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 20px;">
+												<div class="col-sm-12" style="text-align: right;">
+													<button style='background: #0dcaf0; border-color: #0dcaf0;'
+														type="button" onclick="validarGestion()" data-dismiss="modal"
+														class="btn btn-primary"
+														th:if="${permisoUsuario != 2}">Registrar</button>
+												</div>
+											</div>
+										</form>
+									</div>
+									<div style="padding-top: 10px;">
+										<hr>
+									</div>
+								</div>
+
+								<!-- Agrega más contenido si es necesario -->
+								<div class="row" style="padding-top: 20px;">
+									<div class="col-sm-12">
+										<div class="table-responsive">
+											<table class="table table-sm" style="width: 100%;" id="vista-seguimiento">
+												<thead style="text-align: center;">
+													<tr>
+														<th>Acción realizada</th>
+														<th>Código de acción</th>
+														<th>Código de resultado</th>
+														<th>Descripción de la gestión</th>
+														<th>Fecha de registro</th>
+														<th>Fecha de gestión realizada</th>
+														<th id="th-acciones">Usuario Registro</th>
+													</tr>
+												</thead>
+												<tbody style="text-align: center;">
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="cerrarModal('seguimiento')" data-dismiss="modal"
+									class="btn btn-primary">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal de alerta -->
+				<div class="modal fade" id="modal-alerta" data-bs-backdrop="static" data-bs-keyboard="false">
+					<div class="modal-dialog modal-xl modal-dialog-centered ">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Seguimiento de gestiones</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalAlertas('alerta')"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+
+									<div class="p-4 border rounded-3 mb-4">
+										<ul class="nav nav-pills" id="pntConf" role="tablist">
+											<li class="nav-item border rounded px-3 py-2" role="presentation"
+												th:if="${sucursales != null}">
+												<button class="nav-link active" id="grafica-tab" data-bs-toggle="pill"
+													role="tab" aria-selected="true" data-bs-target="#grafica"
+													onclick="mostrarDiv('grafica')">Registros por Grafica.</button>
+											</li>
+
+											<li class="nav-item border rounded px-3 py-2" role="presentation">
+												<button class="nav-link" id="vendosCita-tab" data-bs-toggle="pill"
+													role="tab" aria-selected="true" data-bs-target="#vencidasCita"
+													onclick="mostrarDiv('vencidasCita')">Citas y Por Vencer.</button>
+											</li>
+											<!-- Otros elementos li ... -->
+										</ul>
+									</div>
+									<div id="grafica" class="tab-pane" style="display: block;">
+										<div class="row" th:if="${sucursales != null}">
+											<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursal"
+													list="opcionSucursal" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursal">
+													<option th:each="sucursal : ${sucursales}"
+														th:value="${sucursal.vc_nombre_sucursal}"
+														th:text="${sucursal.vc_nombre_sucursal}"
+														th:id="${sucursal.i_sucursal}"></option>
+												</datalist>
+											</div>
+											<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursal"></p>
+												</b>
+											</div>
+										</div>
+										<div class="row" style="padding-top: 30px; text-align: center;">
+											<div class="col-sm-12">
+												<canvas id="myChart"></canvas>
+											</div>
+										</div>
+									</div>
+									<div id="vencidasCita" class="tab-pane" style="display: none;">
+										<div class="row" th:if="${sucursales != null}">
+											<div class="col-sm-6" th:if="${sucursales.size() > 1}">
+												<label for="searchInput">Buscar sucursal:</label>
+												<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+												<input type="search" class="form-control" id="buscarSucursalVencidas"
+													list="opcionSucursalVencidas" autocomplete="off"
+													placeholder="Nombre sucursal">
+												<!-- Lista de opciones para el datalist -->
+												<datalist id="opcionSucursalVencidas">
+													<option th:each="sucursal : ${sucursales}"
+														th:value="${sucursal.vc_nombre_sucursal}"
+														th:text="${sucursal.vc_nombre_sucursal}"
+														th:id="${sucursal.i_sucursal}"></option>
+												</datalist>
+											</div>
+											<div class="col-sm-6">
+												<label>Sucursal:</label>
+												<b>
+													<p id="nombreSucursalCitaVencidas"></p>
+												</b>
+											</div>
+										</div>
+										<div class="row" style="margin-top : 15px ">
+											<div class="table-responsive" style="display: block;"
+												id="ver-tbl-buscarCita">
+												<table class="table table-sm" style="width: 100%;" id="tblAlertas">
+													<thead>
+														<tr>
+															<th># Cliente</th>
+															<th>Nombre Cliente</th>
+															<th>Tipo Campaña</th>
+															<th>Clasificacion</th>
+															<th>Tipo Alerta</th>
+															<th>Estatus</th>
+															<th>Descripion Seguimiento.</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody>
+													</tbody>
+												</table>
+											</div>
+											<!-- Spinner de carga -->
+											<div class="row" id="ver-buscarCita"
+												style="margin: 0px; padding: 0px; margin-bottom: 50px; padding-top: 50px; text-align: center; display: none;">
+												<div class="col-sm-12">
+													<div class="spinner-border"
+														style="color: #0dcaf0; height: 100px; width: 100px;">
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="cerrarModalAlertas('alerta')" data-dismiss="modal"
+									class="btn btn-primary">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal fade" id="modal-editar" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong> Editar Seguimiento</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalEditar()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<form name="formulario" id="formSeguimientoGestion">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label for="buscar-relacion-modal">Código de acción - Código de
+													resultados:</label><span style="color: red;">*</span>
+												<input type="search" class="form-control" id="buscar-relacion-modal"
+													list="opciones-relacion" autocomplete="off"
+													placeholder="Relación entre códigos">
+												<datalist id="opciones-relacion"></datalist>
+												<p id="validar-relacion"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+													<i><b>Campo requerido</b></i>
+												</p>
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="form-group" id="vistaTelfonoLlamadaModal"
+												style="display: none;">
+												<label>Número de Teléfono:</label><span style="color: red;">*</span>
+												<input class="form-control" type="number" id="telefono-modal"
+													placeholder="Número de teléfono">
+												<p id="validar-telefono-modal"
+													style="color: red;display: none; font-size: small; padding-left: 5px;">
+													<i><b>campo requerido</b></i>
+												</p>
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="form-group" id="vistaAccionRealizarModal"
+												style="display: none;">
+												<label>Acción a realizar:</label>
+												<b>
+													<p id="accionRealizarModal"></p>
+												</b>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Fecha de gestión realizada:</label><span
+													style="color: red;">*</span>
+												<input class="form-control" type="date" id="fecha-gestion-modal" readonly>
+												<p id="validar-fechaGestion-modal"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Fecha de cita:</label><span style="color: red;">*</span>
+												<input class="form-control" type="date" id="fecha-cita-modal" disabled>
+												<p id="validar-segFecha"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label>Descripción de la gestión:</label><span
+													style="color: red;">*</span>
+												<textarea class="form-control"
+													id="descripcion-gestion-modal"></textarea>
+												<p id="validar-descripcion-modal"
+													style="color: red; display: none; font-size: small; padding-left: 5px;">
+												</p>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="editarSegGestionG()" data-dismiss="modal"
+									class="btn btn-primary">Guardar</button>
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="cerrarModalEditar()" data-dismiss="modal"
+									class="btn btn-primary">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/operaciones/seguimientoGestion.js}"></script>
+		<script th:src="@{/js/operaciones/tablas/seguimientoGestionTablas.js}"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</th:block>
+</body>
+
+
+</html>
