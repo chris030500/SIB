@@ -29,7 +29,12 @@ $(document).ready(function() {
 		'aoColumnDefs': [{
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
-		}]
+		}],
+		"order": [[1, 'desc']],
+		"columnDefs": [{
+       		"targets": 1, // Índice de la columna de fecha
+        	"type": "string" // Ordenación como string
+    	}]
 	});
 
 });
