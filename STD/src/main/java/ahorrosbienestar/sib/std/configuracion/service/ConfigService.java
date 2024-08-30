@@ -86,5 +86,9 @@ public class ConfigService {
 	public Configuracion valorPropiedad(String valor) {
 		return iConfiguracionRepository.valorPropiedad(valor);
 	}
+	
+	public List<Configuracion>  obtenerUrlLayout() {
+		return iConfiguracionRepository.obtenerUrlLayout();
+	}
 
 }
