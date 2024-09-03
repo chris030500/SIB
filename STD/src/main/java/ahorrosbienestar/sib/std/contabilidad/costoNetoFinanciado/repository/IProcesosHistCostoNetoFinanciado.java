@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,5 +34,9 @@ public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<Procesos
 			+ "where t1.I_VOBO = 1 and I_ACTIVO=1 "
 			+ "order by t1.PK_ID_PROCESO desc", nativeQuery = true) 
 	public List<ProcesosHistCostoNetoFinanciado> obtProcesoCNF();
+
+	@Query(value="select DT_FECHA_CORTE  from SIB.TBL_CREDITOS_COSTO_NETO_FINANCIADO "
+			+ "GROUP BY DT_FECHA_CORTE", nativeQuery = true)
+	public LocalDate obtFechaCierre();
 	
 }

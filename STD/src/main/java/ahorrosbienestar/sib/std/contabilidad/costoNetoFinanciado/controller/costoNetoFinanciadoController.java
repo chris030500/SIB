@@ -70,11 +70,14 @@ public class costoNetoFinanciadoController {
 	@GetMapping("/costoNetoFinanciado")
 	public String costoNetoFinanciado(Model model) throws IOException {
 		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
+		LocalDate fechaSistema = LocalDate.now();
 		try {
 			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
 				ObjectMapper objectMapper = new ObjectMapper();
 				String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
 				model.addAttribute("listaHistProceso", listaHistProceso);
+				model.addAttribute("fechaSistema", fechaSistema);
+				model.addAttribute("fechaCierre",iProcesosHistCostoNetoFinanciado.obtFechaCierre());
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
 			}

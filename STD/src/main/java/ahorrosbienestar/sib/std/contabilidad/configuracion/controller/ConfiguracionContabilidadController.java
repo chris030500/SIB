@@ -71,7 +71,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 				model.addAttribute("lista_BC", listaBCJson);
 				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
 				model.addAttribute("cat_conceptos",  iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
-				
+			
 			}else {
 				rutaDireccion = Constantes.RUTA_ERROR;
 			}
@@ -127,6 +127,33 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
 	}
+	
+	@PostMapping("/guardar-Costos")
+	public ResponseEntity<Map<String, Object>> guardarCostos(@RequestParam Map<String, String> params) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			// Crear un NumberFormat para la localización deseada
+	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+			 // Parsear el monto inicial y final
+	        Number costoBC = format.parse(params.get("costo_unitario_BC"));
+	        Number costoAdviser = format.parse(params.get("costo_unitario_Adviser")); 
+	        
+	      
+	        
+			
+		} catch (NumberFormatException e) {
+            response.put("message", "Formato de número incorrecto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", "Error en los parámetros: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("message", "Error al guardar los datos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+		return null;
+	}
+	
 	
 	public int validarAcceso(String rutaController) {
 

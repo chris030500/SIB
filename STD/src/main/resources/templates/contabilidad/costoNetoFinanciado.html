@@ -26,10 +26,19 @@
 			<div id="divConfiguracion" class="" style="margin-top : 15px ">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Proceso Costo Neto Financiado</legend>
+					<div class="row" style="margin-top : 2px ">
+						<div class="col-md-6"></div>
+						<div class="col-md-3">
+							<label><b>Fecha Sistema: </b><span th:text="${fechaSistema}"></span></label>
+						</div>
+						<div class="col-md-3">
+							<label><b>Fecha de Cierre: </b><span id="fechaProceso" th:text="${fechaCierre ?: '----/--/--'}"></span></label>
+						</div>
+					</div>
 					<div id="liveAlertPlaceholder"></div>
 					<div class="row" style="margin-top : 5px ">
 						<div class="col-md-3">
-							<label>Procesar información:</label>
+							<label><b>Procesar información:</b></label>
 						</div>
 						<div class="col-md-4">
 							<form th:action="@{/contabilidad/procesar-costoNetoFinanciado}" method="post" id="procesarForm">
@@ -41,7 +50,7 @@
 					</div>
 					<div class="row" style="margin-top : 5px ">
 						<div class="col-md-3">
-							<label>Descargar reporte: </label>
+							<label><b>Descargar reporte: </b></label>
 						</div>
 						<div class="col-md-4">
 							<form th:action="@{/contabilidad/reporte-costoNetoFinanciado}" method="post" id="reporteForm">
@@ -53,7 +62,7 @@
 					</div>
 					<div class="row" style="margin-top : 5px ">
 						<div class="col-md-3">
-							<label>¿La información del reporte es correcta?</label>
+							<label><b>¿La información del reporte es correcta?</b></label>
 						</div>
 						<div class="col-md-4">
 							<form th:action="@{/contabilidad/guardar-voboProceso}" method="post" id="voboForm">
@@ -63,7 +72,7 @@
 											<input class="form-check-input" type="radio" name="rbtnDefault"
 												id="rbtnNo" checked>
 											<label class="form-check-label" for="rbtnSi">
-												NO
+												<b>NO</b>
 											</label>
 										</div>
 									</div>
@@ -72,7 +81,7 @@
 											<input class="form-check-input" type="radio" name="rbtnDefault"
 												id="rbtnSi">
 											<label class="form-check-label" for="rbtnSi">
-												SI
+												<b>SI</b>
 											</label>
 										</div>
 									</div>

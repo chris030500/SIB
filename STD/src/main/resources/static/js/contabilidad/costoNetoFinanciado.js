@@ -46,14 +46,14 @@ function submitForm(idEvento) {
 
 
 				$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-
+				$("button").prop("disabled", true);
 				fetch(form.action, {
 					method: 'POST',
 					body: formData
 				})
 					.then(response => {
 						if (!response.ok) {
-							throw new Error('Network response was not ok');
+							throw new Error('Error, comuniquese con el administrador o intente mas tarde.');
 						}
 
 						return response.json();
@@ -72,9 +72,7 @@ function submitForm(idEvento) {
 						// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 						$button.html('Guardar');
 						tablaProcesos();
-
-
-
+						$("button").prop("disabled", false);
 					});
 
 			}
@@ -105,6 +103,7 @@ function submitBtn(idBotton, num) {
 	// Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 	//Array.from(form.elements).forEach(element => element.disabled = true);
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
+	$("button").prop("disabled", true);
 
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	fetch(form.action, {
@@ -113,7 +112,7 @@ function submitBtn(idBotton, num) {
 	})
 		.then(response => {
 			if (!response.ok) {
-				throw new Error('Network response was not ok');
+				throw new Error('Error, comuniquese con el administrador o intente mas tarde.');
 			}
 
 			return response.json();
@@ -158,6 +157,7 @@ function submitBtn(idBotton, num) {
 				default:
 					break;
 			}
+				 $("button").prop("disabled", false);
 		});
 }
 

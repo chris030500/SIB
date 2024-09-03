@@ -42,7 +42,33 @@
 				<div id="params-tab1" class="" style="display: block;" for="1">
 					<input type="hidden" id="lista_BC" name="lista_BC" th:value="${lista_BC}">
 					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Configuracion BC, ADVISER</legend>
+						<legend class="float-none w-auto p-2">Gastos para monto amortizado</legend>
+						<div id="mensajeCostoAmortizado"></div>
+						<form th:action="@{/contabilidad/guardar-Costos}" method="post" id="procesarForm">
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-md-2">
+								<label><b>Costo Unitario BC: </b></label>
+							</div>
+							<div class="col-md-2">
+								<input type="number" class="form-control" id="costoBC" min="0" step="1" th:required="true" 
+										name="costo_unitario_BC" th:value="${costoBuro}">
+							</div>
+							<div class="col-md-2">
+								<label><b>Costo Unitario Adviser: </b></label>
+							</div>
+							<div class="col-md-2">
+								<input type="number" class="form-control" id="costoAdvicer" min="0" step="1" th:required="true" 
+										name="costo_unitario_Adviser" th:value="${costoAdviser}">
+							</div>
+							<div class="col-md-3">
+							
+								<button type="button" id="btnGuardarCostos" class="btn btn-success" onclick="costos(this)">
+											Guardar
+								</button>
+							
+							</div>
+						   </div>	
+						</form>
 						<div class="row" style="margin-top : 15px ">
 							<div class="col-lg-4">
 								<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
