@@ -71,6 +71,10 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 				model.addAttribute("lista_BC", listaBCJson);
 				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
 				model.addAttribute("cat_conceptos",  iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
+				model.addAttribute("cat_costo_unitario",  iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+				model.addAttribute("costoBuro",  iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS,1));
+				model.addAttribute("costoAdviser",  iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS,2));
+			
 			
 			}else {
 				rutaDireccion = Constantes.RUTA_ERROR;
@@ -117,12 +121,15 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
             }
 			
 		 } catch (NumberFormatException e) {
+			 	logger.error("Error:"+e.getMessage());
 	            response.put("message", "Formato de número incorrecto: " + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	        } catch (IllegalArgumentException e) {
-	            response.put("message", "Error en los parámetros: " + e.getMessage());
+	        	logger.error("Error:"+e.getMessage());
+	        	response.put("message", "Error en los parámetros: " + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	        } catch (Exception e) {
+	        	logger.error("Error:"+e.getMessage());
 	            response.put("message", "Error al guardar los datos: " + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
@@ -131,27 +138,44 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	@PostMapping("/guardar-Costos")
 	public ResponseEntity<Map<String, Object>> guardarCostos(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
+		// Convertir la lista a JSON
+        //ObjectMapper objectMapper = new ObjectMapper();
+        
 		try {
 			// Crear un NumberFormat para la localización deseada
 	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
-			 // Parsear el monto inicial y final
+			 //
 	        Number costoBC = format.parse(params.get("costo_unitario_BC"));
 	        Number costoAdviser = format.parse(params.get("costo_unitario_Adviser")); 
+	        String costoBuro = costoBC.toString();
+	        String costoAd = costoAdviser.toString();
 	        
-	      
+	        if (iCatalogoRepository.guardarCosto(costoBuro, Constantes.CAT_COSTOS, 1) == 1 &&
+	        	    iCatalogoRepository.guardarCosto(costoAd, Constantes.CAT_COSTOS, 2) == 1) {
+	        	response.put("costoBC", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS,1));
+	        	response.put("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS,2));
+	        	response.put("catcostounitario",  iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+				//response.put("catcostounitario",iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+                response.put("message", "Datos guardados correctamente");
+                return ResponseEntity.ok(response);
+                
+	        }else {
+                throw new Exception("Error al guardar los datos");
+            }
 	        
-			
 		} catch (NumberFormatException e) {
+			logger.error("Error:"+e.getMessage());
             response.put("message", "Formato de número incorrecto: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (IllegalArgumentException e) {
+        	logger.error("Error:"+e.getMessage());
             response.put("message", "Error en los parámetros: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
+        	logger.error("Error:"+e.getMessage());
             response.put("message", "Error al guardar los datos: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-		return null;
 	}
 	
 	

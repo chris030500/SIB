@@ -181,6 +181,7 @@ public class Constantes {
 	
 	//catalogos configuracion contabilidad
 	public static final int CAT_CONCEPTOS = 27;
+	public static final int CAT_COSTOS = 28;
 	public static final int ESTATUS_BC = 1;
 	
 	//constantes reportes de contabilidad 

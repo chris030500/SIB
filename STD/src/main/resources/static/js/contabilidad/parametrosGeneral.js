@@ -100,9 +100,8 @@ function costos(idEvento) {
 	let enviardatos = validarDatos(formData,2);
     
 	if (!enviardatos) {
-        
+        $("button").prop("disabled", true);
         // Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
-		Array.from(form.elements).forEach(element => element.disabled = true);
 		$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
         
 		// fetch para enviar una solicitud POST con los datos del formulario
@@ -118,9 +117,9 @@ function costos(idEvento) {
 				return response.json();
 			})
 			.then(data => {
-                if(data.listaCatalogo.length > 0){
-                    pintarTabla(data.listaCatalogo,tblConfiguracion);
-                }
+                document.getElementById('costoBC').value = data.costoBC;
+                document.getElementById('costoAdvicer').value = data.costoAdviser;
+                crearOpcionesSelect(data.catcostounitario);
                 mostrarAlertar(data.message,"success",2);
                 
 				console.log('Success:', data);
@@ -133,20 +132,41 @@ function costos(idEvento) {
 			})
 			.finally(() => {
 				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
-				$button.html('Registrar');
-				Array.from(form.elements).forEach(element => element.disabled = false);
-				
-				Array.from(form.elements).forEach(element => {
-                     element.value = 0 ; 
-    			});
-				
-				
+				$button.html('Guardar');			
+				$("button").prop("disabled", false);
 			});
 	}
    
 }
 
+// Función para crear y agregar las opciones al select
+function crearOpcionesSelect(data) {
+            const select = document.getElementById('slcCostoUnitario');
+            select.innerHTML = '';
+            
+             // Crear y agregar la opción por defecto "Seleccione"
+    		const defaultOption = document.createElement('option');
+   	 		defaultOption.value = '';  // Valor vacío para la opción "Seleccione"
+    		defaultOption.text = 'Seleccione'; // Texto visible en el select
+    		defaultOption.disabled = true; // Deshabilitar la selección de esta opción
+    		defaultOption.selected = true; // Seleccionada por defecto
+    		select.appendChild(defaultOption);
 
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.i_opcion;  // Valor que se envía cuando se selecciona
+                option.text = item.v_valor; // Texto visible en el select
+                select.appendChild(option);
+            });
+}
+
+function costoUnitarioS(idConcepto){
+    //obtener el id seleccionado en este select
+    const $slcConcepto = $(idConcepto);
+    const slcCostoU = document.getElementById('slcCostoUnitario');
+    slcCostoU.selectedIndex = $slcConcepto.val();
+    
+}
 
 
 
@@ -284,3 +304,11 @@ function mostrarAlertar(msnError,tipoError,num){
 
 }
 
+function limpiarFormulario(){
+    // Obtén el formulario
+    const form = document.getElementById('configuracionForm');
+    Array.from(form.elements).forEach(element => {
+                     element.value = 0 ; 
+    });
+    
+}

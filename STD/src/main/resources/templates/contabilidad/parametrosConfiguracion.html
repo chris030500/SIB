@@ -73,8 +73,8 @@
 							<div class="col-lg-4">
 								<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
 									title="Agregar" data-bs-target="#registroCatalogo" aria-controls="table-datatable"
-									type="button" data-tooltip="Add">
-									<i class="fa fa-plus-circle"></i> Productos BC O Adviser
+									type="button" data-tooltip="Add" onclick="limpiarFormulario()">
+									<i class="fa fa-plus-circle"></i> Gastos por Productos
 								</button>
 							</div>
 							<div class="col-lg-4"></div>
@@ -132,7 +132,7 @@
 										<label for="lblConcepto" name="lblConcepto">Concepto:</label>
 									</div>
 									<div class="col-md-8">
-										<select class="form-control" id="slcConcepto" name="Concepto">
+										<select class="form-control" id="slcConcepto" name="Concepto" onchange="costoUnitarioS(this)">
 											<option value="0">Seleccione</option>
 											<option th:each="conceptos : ${cat_conceptos}" th:value="${conceptos.i_opcion}"
                                               th:text="${conceptos.v_valor}">
@@ -169,6 +169,19 @@
 									<div class="col-md-8">
 										<input type="number" class="form-control" id="montoFinal" min="0" step="1" th:required="true" 
 										name="montoFinal" th:value="${montoFinal != null ? montoFinal : 0}">
+									</div>
+								</div>
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-4">
+										<label for="lblCostoUnitario" name="lblCostoUnitario">Costo Unitario:</label>
+									</div>
+									<div class="col-md-8">
+										<select class="form-control" id="slcCostoUnitario" name="costoUnitario" disabled>
+											<option value="0">Seleccione</option>
+											<option th:each="costo_unitario : ${cat_costo_unitario}" th:value="${costo_unitario.i_opcion}"
+                                              th:text="${costo_unitario.v_valor}">
+                                              </option>
+										</select>
 									</div>
 								</div>
 								<div class="row" style="margin-top : 15px ">
