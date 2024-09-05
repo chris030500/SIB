@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -97,28 +99,49 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
 	        
 	        // Parsear el monto inicial y final
+	       
 	        Number montoInicial = format.parse(params.get("montoInicial"));
 	        Number montoFinal = format.parse(params.get("montoFinal")); 
-
-			
-			configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
-			configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
-			configAdviserBC.setProductos(params.get("Productos"));
-			configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
-			configAdviserBC.setMontoInicial(montoInicial.doubleValue());
-			configAdviserBC.setMontoFinal(montoFinal.doubleValue());
-			configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
-			iConfigAdviserBC.save(configAdviserBC);
-		
-			  // Guardar el objeto y verificar el resultado
-            ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
-            if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
-                response.put("listaCatalogo", iConfigAdviserBC.findAll());
-                response.put("message", "Datos guardados correctamente");
-                return ResponseEntity.ok(response);
-            } else {
-                throw new Exception("Error al guardar los datos");
-            }
+	      
+	        
+	        //si es igual a 0 es un alta si es mayor a 0 es una actualizacion. 
+	        if(Integer.parseInt(params.get("gastoIde")) > 0) {
+	        	 Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
+	        	 obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
+	        	 obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
+	        	 obtConfiguracion.get().setProductos(params.get("Productos"));
+	        	 obtConfiguracion.get().setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+	        	 obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
+	        	 obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
+	        	 configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
+	        	 
+	             if (configAdviserBC != null && configAdviserBC.getId() != 0) {
+	                 response.put("listaCatalogo", iConfigAdviserBC.findAll());
+	                 response.put("message", "Se actualizo correctamente");
+	                 return ResponseEntity.ok(response);
+	             } else {
+	                 throw new Exception("Error al guardar los datos");
+	             }
+	        	 
+	        }else {
+	        	configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
+	        	configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
+				configAdviserBC.setProductos(params.get("Productos"));
+				configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+				configAdviserBC.setMontoInicial(montoInicial.doubleValue());
+				configAdviserBC.setMontoFinal(montoFinal.doubleValue());
+				configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
+				ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
+				
+				   if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
+		                response.put("listaCatalogo", iConfigAdviserBC.findAll());
+		                response.put("message", "Se registraron datos correctamente");
+		                return ResponseEntity.ok(response);
+		            } else {
+		                throw new Exception("Error al guardar los datos");
+		            }
+				
+	        }
 			
 		 } catch (NumberFormatException e) {
 			 	logger.error("Error:"+e.getMessage());
@@ -160,7 +183,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
                 return ResponseEntity.ok(response);
                 
 	        }else {
-                throw new Exception("Error al guardar los datos");
+	        	  throw new Exception("Error al guardar los datos");
             }
 	        
 		} catch (NumberFormatException e) {
@@ -178,6 +201,45 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
         }
 	}
 	
+	@PostMapping("/obtener-gastos")
+	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data){		
+		Map<String, Object> response = new HashMap<>();
+		try {
+			// Obtén el valor como Object
+	        Object procesoIdObj = data.get("identificador");
+	        Integer tipoProceso = null;
+	        
+	        // Verifica si procesoIdObj es una instancia de Number
+	        if (procesoIdObj instanceof Number) {
+	            tipoProceso = ((Number) procesoIdObj).intValue();
+	        } else if (procesoIdObj != null) {
+	            // Convierte a Integer si no es una instancia de Number
+	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
+	        }
+	        
+	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
+	        
+	        if (!obtConfiguracion.isEmpty()) {
+	        	response.put("gastoDatos", obtConfiguracion);
+                return ResponseEntity.ok(response);
+	        }else {
+	        	  throw new Exception("Error al guardar los datos");
+            }
+			
+		 } catch (NumberFormatException e) {
+			 	logger.error("Error:"+e.getMessage());
+	            response.put("message", "Formato de número incorrecto: " + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        } catch (IllegalArgumentException e) {
+	        	logger.error("Error:"+e.getMessage());
+	        	response.put("message", "Error en los parámetros: " + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        } catch (Exception e) {
+	        	logger.error("Error:"+e.getMessage());
+	            response.put("message", "Error al guardar los datos: " + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
+	}
 	
 	public int validarAcceso(String rutaController) {
 

@@ -81,6 +81,8 @@
 							<div class="col-lg-4"></div>
 						</div>
 						<div class="row" style="margin-top : 15px ">
+							<input type="hidden" id="listaGastos" name="listaGastos">
+							<form id="actualizacionGastos" th:action="@{/contabilidad/obtener-gastos}" method="post">
 							<div class="table-responsive">
 								<table class="table table-sm table-striped" id="tblConfiguracion">
 									<thead>
@@ -97,6 +99,7 @@
 									</tbody>
 								</table>
 							</div>
+							</form>
 						</div>
 					</fieldset>
 				</div>
@@ -113,7 +116,6 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<fieldset class="border p-2">
-						
 						<div class="modal-header">
 							<div class="col-md-11">
 								<legend class="float-none w-auto p-2">Catalogo Consulta Buro - Adviser</legend>
@@ -127,6 +129,7 @@
 						<div class="modal-body">
 							<div id="liveAlertPlaceholder"></div>
 							<form th:action="@{/contabilidad/guardar-CatalogoBC}" method="post" id="configuracionForm">
+								<input type="hidden" id="gastoIde" name="gastoIde">
 								<div class="row" style="margin-top : 15px ">
 									<div class="col-md-4">
 										<label for="lblConcepto" name="lblConcepto">Concepto:</label>

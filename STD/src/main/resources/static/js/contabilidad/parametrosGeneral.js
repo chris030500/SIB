@@ -179,9 +179,7 @@ function pintarTabla(listaDatos,tablaPintar){
         
         var btnsActualizar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='editarParametros("
-					+ opt.id
-					+ ")' id="
+					+ " onclick='editarParametros(this)' id="
 					+ opt.id
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-tools'></i></button>";
@@ -206,7 +204,7 @@ function validarDatos(formData,num){
 	
     // Recorrer todos los campos del formulario
 	for (let [key, value] of formData.entries()) {	
-   		 if (!mayorCero(value)) {
+   		 if (!mayorCero(value) && key != 'gastoIde') {
             esVacio = true;
             txtError += `El campo ${key} no puede estar vacío<br>`;
     	}
@@ -312,3 +310,73 @@ function limpiarFormulario(){
     });
     
 }
+
+function editarParametros(idBotton){
+    const $button = $(idBotton);
+
+	// Selecciona el formulario más cercano al botón clickeado
+	const $form = $(idBotton).closest('form');
+
+	// Obtén el ID del formulario
+	const formId = $form.attr('id');
+
+	// Obtén el formulario
+	const form = document.getElementById(formId);
+
+	// Captura el valor del ID del botón
+	var identificador = $button.attr('id');
+
+	// Crea el objeto de datos para enviar
+	var data = {
+		identificador: identificador
+	};
+	
+	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
+	// Usa fetch para enviar una solicitud POST con los datos del formulario
+	fetch(form.action, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data) // Stringifica el objeto de datos
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Error de comunicación. Intente mas tarde');
+			}
+
+			return response.json();
+		})
+		.then(data => {
+            const conceptoslc = document.getElementById('slcConcepto');
+            const productoslc = document.getElementById('slcProducto');
+            const imontoInicial = document.getElementById('montoInicial');
+            const imontoFinal = document.getElementById('montoFinal');
+            const slcCostoU = document.getElementById('slcCostoUnitario');
+            const gasto = document.getElementById('gastoIde');
+            
+            conceptoslc.selectedIndex = data.gastoDatos.concepto;
+            productoslc.value = data.gastoDatos.productos;
+            imontoInicial.value = data.gastoDatos.montoInicial;
+            imontoFinal.value = data.gastoDatos.montoFinal;
+            slcCostoU.selectedIndex = data.gastoDatos.concepto;
+            slcCostoU.disabled = true;
+            gasto.value = data.gastoDatos.id;
+            
+
+		})
+		.catch(error => {
+			console.log('Error:', error);
+			mostrarAlertar(data.message, "danger");
+		})
+		.finally(() => {
+			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
+			$button.html('<i class="bi bi-tools"></i>');
+			$('#registroCatalogo').modal('show');
+		});
+}
+
+
+
+
+
