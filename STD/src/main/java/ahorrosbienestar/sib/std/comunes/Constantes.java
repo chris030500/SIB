@@ -186,6 +186,8 @@ public class Constantes {
 	//constantes reportes de contabilidad 
 	public static final String REPORTE_COSTO_NETO_FINANCIADO = "rpt_costoNetoFinanciado";
 	public static final String REPORTE_COSTO_NETO_FINANCIADO_HIST = "rpt_costoNetoFinanciado_hist";
+	public static final String REPORTE_EPRC = "rpt_calculo_eprc";
+	public static final String REPORTE_EPRC_HIST = "rpt_eprc_hist";
 	
 	
 	//Constantes Mensajes contabilidad
@@ -200,6 +202,8 @@ public class Constantes {
 	// Proceso a ejecutar Contabilidad 
 	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
 	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
+	public static final String PROCESO_EPRC = "{call SP_PROCESAR_CALCULO_EPRC (?,?,?)}";
+	public static final String PROCESO_VOBO_OK_EPRC = "{call SIB.SP_PROCESO_VOBO_OK_EPRC (?,?,?)}";
 	
     private Constantes() {
         
