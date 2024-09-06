@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.CatPuestosOcupacionService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ConveniosNominaService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
@@ -38,6 +39,9 @@ public class ExclusionesBasesNominaController {
 	
 	@Autowired
 	private ConveniosNominaService conveniosNominaService;
+	
+	@Autowired
+	private CatPuestosOcupacionService puestosOcupacionService;
 	
 	@RequestMapping(value = { "/getEstados" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getEstadosRepub() {
@@ -163,6 +167,29 @@ public class ExclusionesBasesNominaController {
 				return ResponseEntity.ok(res);
 			} else {
 				res.put("conveniosDepurar", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getPuestosOcupacionActivos" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getPuestosOcupacionActivos() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> puestosActivos = puestosOcupacionService.getPuestosOcupacionActivos();
+		
+		try {
+			if (puestosActivos != null && !puestosActivos.isEmpty()) {
+				res.put("puestosActivos", puestosActivos);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("puestosActivos", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
 		} catch (Exception e) {

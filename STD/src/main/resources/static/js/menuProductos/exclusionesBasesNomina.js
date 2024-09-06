@@ -3,6 +3,7 @@ var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura";
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
+var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -158,11 +159,36 @@ function listaConveniosDepurar() {
     });
 }
 
+function listaPuestosActivos() {
+    var divConveniosActivos = $('#puestosActivos');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerPuestosOcupacionActivos,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar opciones al select
+            $.each(res.puestosActivos, function(index, puesto) {
+                
+                var convenios = "<p>" + puesto.desc_puesto + "</p>";
+
+                // Agregar la opción al select
+               divConveniosActivos.append(convenios);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener los puestos activos: " + error);
+        }
+    });
+}
+
 
 $(document).ready(function() {
     listaEstados();
     listaConveniosActivos();
     listaConveniosDepurar();
+    listaPuestosActivos();
     
      // Escuchar el evento de cambio en el select de estados
     $('#opcionesEstado').change(function() {
