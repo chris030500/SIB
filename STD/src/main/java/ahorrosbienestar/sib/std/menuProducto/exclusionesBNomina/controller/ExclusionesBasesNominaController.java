@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,11 +20,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosNomina;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.CatPuestosOcupacionService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ConveniosNominaService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 
 @Controller
@@ -30,6 +36,9 @@ import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.Municipi
 public class ExclusionesBasesNominaController {
 	
 	private static final Logger logger = Logger.getLogger(ExclusionesBasesNominaController.class);
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private EstadosRepubService estadosRepubService;
@@ -42,6 +51,8 @@ public class ExclusionesBasesNominaController {
 	
 	@Autowired
 	private CatPuestosOcupacionService puestosOcupacionService;
+	
+	List<Usuario> usuario = null;
 	
 	@RequestMapping(value = { "/getEstados" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getEstadosRepub() {
@@ -118,7 +129,6 @@ public class ExclusionesBasesNominaController {
             @PathVariable Integer idMunicipio,
             @RequestBody MunicipiosRepub updatedData) {
     	
-        
         try {
         	
         	municipiosRepubService.updateIndicadorDepurar(idEstado, idMunicipio, updatedData.getI_indicador_depurar());
@@ -174,6 +184,29 @@ public class ExclusionesBasesNominaController {
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = "/actualizarIndicadorConveniosNomina", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> actualizarIndicadorConveniosNomina(@RequestParam("idConvenio") Integer idConvenio,
+			@RequestParam("indicadorDepurar") Integer indicadorDepurar) {
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+
+		ConveniosNomina updatedConvenio = conveniosNominaService.actualizarIndicadorConveniosNomina(idConvenio, indicadorDepurar, idUsuario);
+	
+		if (updatedConvenio != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("convenio", updatedConvenio);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 	

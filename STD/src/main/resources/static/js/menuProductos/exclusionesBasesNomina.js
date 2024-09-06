@@ -3,9 +3,12 @@ var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura";
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
+var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
 var puestoSeleccionado = null;
+var convenioSeleccionado = null;
+var idConvenio = null;
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -79,25 +82,26 @@ document.getElementById('btnAgregar').addEventListener('click', function() {
     // Obtener los valores seleccionados
     const idEstado = document.getElementById('opcionesEstado').value;
     const idMunicipio = document.getElementById('opcionesMunicipio').value;
+    const updatedData = {
+        i_indicador_depurar: 1 
+    };
     
 
     // Verificar que ambos valores están seleccionados
     if (idEstado && idMunicipio) {
         // Llamar a la función para actualizar, por ejemplo usando Fetch API
-        agregarMunicipioConCobertura(idEstado, idMunicipio);
+        agregarMunicipioConCobertura(idEstado, idMunicipio, updatedData);
     } else {
         alert('Por favor, seleccione un estado y un municipio.');
     }
 });
 
 
-function agregarMunicipioConCobertura(idEstado, idMunicipio) {
-    
-    const updatedData = {
-        i_indicador_depurar: 1 
-    };
+function agregarMunicipioConCobertura(idEstado, idMunicipio, updatedData) {
     
     var url = actualizarrMunicipioConCobertura + `/${idEstado}/${idMunicipio}`;
+    
+    console.log(getAbsolutePath() + url);
 
     $.ajax({
         url: getAbsolutePath() + url,
@@ -115,20 +119,31 @@ function agregarMunicipioConCobertura(idEstado, idMunicipio) {
 
 function listaConveniosActivos() {
     var divConveniosActivos = $('#conveniosActivos');
-
-    // Hacer la solicitud AJAX para obtener los estados
+    
     $.ajax({
         url: getAbsolutePath() + obtenerConveniosActivos,
         type: "GET",
         dataType: "JSON",
         success: function(res) {
-            // Iterar sobre los datos recibidos y agregar opciones al select
+            // Iterar sobre los datos recibidos y agregar 
             $.each(res.conveniosActivos, function(index, convenio) {
                 
-                var convenios = "<p>" + convenio.desc_convenio + "</p>";
+                var div = $("<div>")
+                .addClass("convenioA border")
+                .text(convenio.desc_convenio)
+                .attr("convenio-id", convenio.id_convenio);
+                
+                div.on("click", function() {
+                    $(".convenioA").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    
+                    // Obtener el ID del convenio seleccionado
+                    var idConvenio = $(this).attr("convenio-id");
+                    convenioSeleccionado = $(this);
+                    
+                });
 
-                // Agregar la opción al select
-               divConveniosActivos.append(convenios);
+               divConveniosActivos.append(div);
             });
         },
         error: function(error) {
@@ -149,16 +164,44 @@ function listaConveniosDepurar() {
             // Iterar sobre los datos recibidos y agregar opciones al select
             $.each(res.conveniosDepurar, function(index, convenio) {
                 
-                var convenios = "<p>" + convenio.desc_convenio + "</p>";
+                var div = $("<div>")
+                .addClass("convenioD border")
+                .text(convenio.desc_convenio)
+                .attr("convenio-id", convenio.id_convenio);
+                
+                div.on("click", function() {
+                    $(".convenioD").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    
+                    // Obtener el ID del convenio seleccionado
+                    var idConvenio = $(this).attr("convenio-id");
+                    convenioSeleccionado = $(this);  // Guardar el puesto seleccionado
+                });
 
                 // Agregar la opción al select
-               divConveniosActivos.append(convenios);
+               divConveniosActivos.append(div);
             });
         },
         error: function(error) {
             console.error("Error al obtener los convenios depurar: " + error);
         }
     });
+}
+
+function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
+    
+    var servicioURL = actualizarIndicadorConvenios + "?idConvenio=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
+
+			$.ajax({
+				url: getAbsolutePath() + servicioURL,
+				type: "GET",
+				success: function(response) {
+					console.log("Actualización exitosa.")
+				},
+				error: function(xhr, status, error) {
+					console.error("Error actualizar convenio: " + error);
+				}
+			});
 }
 
 function listaPuestosActivos() {
@@ -237,6 +280,30 @@ $("#btnAddLeftPuesto").on("click", function() {
         $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
         puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
+    }
+});
+
+// Evento para mover el convenio seleccionado de Activos a Depurar
+$("#btnAddRightConvenio").on("click", function() {
+    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosActivos") {
+        var idConvenio = convenioSeleccionado.attr('convenio-id');
+        
+        $("#conveniosDepurar").append(convenioSeleccionado);  // Mover al contenedor de depurar
+        updateIndicadorConvenio(idConvenio, 1);
+        convenioSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        convenioSeleccionado = null;  // Limpiar la variable
+    }
+});
+
+// Evento para mover el convenio seleccionado de Depurar a Activos
+$("#btnAddLeftConvenio").on("click", function() {
+    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosDepurar") {
+        var idConvenio = convenioSeleccionado.attr('convenio-id');
+        
+        $("#conveniosActivos").append(convenioSeleccionado);  // Mover al contenedor de activos
+         updateIndicadorConvenio(idConvenio, 0);
+        convenioSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        convenioSeleccionado = null;  // Limpiar la variable
     }
 });
 
