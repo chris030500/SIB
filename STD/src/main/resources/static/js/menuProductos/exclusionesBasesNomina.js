@@ -1,6 +1,8 @@
 var obtenerEstados = "exclusiones/getEstados"; 
 var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura";
+var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
+var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -108,10 +110,59 @@ function agregarMunicipioConCobertura(idEstado, idMunicipio) {
     });
 }
 
+function listaConveniosActivos() {
+    var divConveniosActivos = $('#conveniosActivos');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerConveniosActivos,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar opciones al select
+            $.each(res.conveniosActivos, function(index, convenio) {
+                
+                var convenios = "<p>" + convenio.desc_convenio + "</p>";
+
+                // Agregar la opción al select
+               divConveniosActivos.append(convenios);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener los convenios activos: " + error);
+        }
+    });
+}
+
+function listaConveniosDepurar() {
+    var divConveniosActivos = $('#conveniosDepurar');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerConveniosDepurar,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar opciones al select
+            $.each(res.conveniosDepurar, function(index, convenio) {
+                
+                var convenios = "<p>" + convenio.desc_convenio + "</p>";
+
+                // Agregar la opción al select
+               divConveniosActivos.append(convenios);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener los convenios depurar: " + error);
+        }
+    });
+}
 
 
 $(document).ready(function() {
     listaEstados();
+    listaConveniosActivos();
+    listaConveniosDepurar();
     
      // Escuchar el evento de cambio en el select de estados
     $('#opcionesEstado').change(function() {

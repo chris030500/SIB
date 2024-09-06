@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ConveniosNominaService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
 
@@ -34,6 +35,9 @@ public class ExclusionesBasesNominaController {
 	
 	@Autowired
 	private MunicipiosRepubService municipiosRepubService;
+	
+	@Autowired
+	private ConveniosNominaService conveniosNominaService;
 	
 	@RequestMapping(value = { "/getEstados" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getEstadosRepub() {
@@ -122,4 +126,50 @@ public class ExclusionesBasesNominaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    
+	@RequestMapping(value = { "/getConveniosNominaActivos" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getConveniosNominaActivos() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> conveniosActivos = conveniosNominaService.getConveniosNominaActivos();
+		
+		try {
+			if (conveniosActivos != null && !conveniosActivos.isEmpty()) {
+				res.put("conveniosActivos", conveniosActivos);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("conveniosActivos", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getConveniosNominaDepurar" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getConveniosNominaDepurar() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> conveniosDepurar = conveniosNominaService.getConveniosNominaDepurar();
+		
+		try {
+			if (conveniosDepurar != null && !conveniosDepurar.isEmpty()) {
+				res.put("conveniosDepurar", conveniosDepurar);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("conveniosDepurar", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 }
