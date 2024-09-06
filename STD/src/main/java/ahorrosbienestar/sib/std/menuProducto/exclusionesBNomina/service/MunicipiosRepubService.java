@@ -17,5 +17,9 @@ public class MunicipiosRepubService {
 	public List<Map<String, Object>> getMunicipiosRepubById(Integer idEstado) {
 		return iMunicipiosRepubRepository.getMunicipiosRepub(idEstado);
 	}
+	
+	public List<Map<String, Object>> getMunicipiosConCobertura() {
+		return iMunicipiosRepubRepository.getMunicipiosConCobertura();
+	}
 
 }

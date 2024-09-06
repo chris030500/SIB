@@ -78,5 +78,27 @@ public class ExclusionesBasesNominaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
-
+	
+	@RequestMapping(value = { "/getMunicipiosConCobertura" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getMunicipiosConCobertura() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> municipios = municipiosRepubService.getMunicipiosConCobertura();
+		
+		try {
+			if (municipios != null && !municipios.isEmpty()) {
+				res.put("municipios", municipios);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("municipios", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 }

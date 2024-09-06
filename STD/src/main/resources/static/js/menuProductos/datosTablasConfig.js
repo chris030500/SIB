@@ -169,6 +169,43 @@ var url = "";
 	 }); 
  }
  
+ /**
+ * Cargar tabla municipios con cobertura
+ */
+ var obtenerMunicipiosConCobertura = "exclusiones/getMunicipiosConCobertura";
+ function listaMunicipiosConCobertura(){
+	 
+	 tblMunicipiosConCobertura.clear().draw();
+	 mostrarSpinner();
+	 
+	 url = getAbsolutePath() + obtenerMunicipiosConCobertura;
+	 $.getJSON(url, {}, function(data) {
+		 
+		 $.each(data.municipios, function(idx, municipio) {
+			 
+			// Crear los botones de acción según el valor de indicador_depurar
+			var botonesDeshabilitar = "<button class='btn btn-xs btn-danger' tabindex='0' " +
+                "title='Actualizar Estatus' type='button' " +
+                "onclick='cambiarEstatusMunicipio(this)' id=" + municipio.id_municipio +
+                " for=" + municipio.indicador_depurar + ">" +
+                "<i class='bi bi-dash'></i>" +
+                "</button>&nbsp;";
+
+            // Agregar la fila con los datos del municipio a la tabla
+            tblMunicipiosConCobertura.row.add([
+				municipio.nombre_estado,
+                municipio.nombre_municipio,
+                (municipio.usuario_modifico == null ? '---' : municipio.usuario_modifico), // Usuario que modificó
+                (municipio.fecha_modifico == null ? '----/--/--' : municipio.fecha_modifico), // Fecha de modificación
+                (municipio.indicador_anterior == null ? '-' : municipio.indicador_anterior),
+                botonesDeshabilitar, // Botón para deshabilitar (indicador de depurar)
+            ]).draw(false); // Redibujar la tabla
+			 
+		 });
+		 ocultarSpinner();
+	 }); 
+ }
+ 
  // Función para mostrar el spinner
 function mostrarSpinner() {
     $("#spinner-container").html('<div role="status" style="font-size: 40px;"><span class="text-primary">Consultando ... </span><div class="spinner-border text-primary" role="status" aria-hidden="true"></div>');

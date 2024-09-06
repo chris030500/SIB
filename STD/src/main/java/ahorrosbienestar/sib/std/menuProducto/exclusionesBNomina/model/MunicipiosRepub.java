@@ -60,6 +60,9 @@ public class MunicipiosRepub {
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column( name = "DT_FECHA_MODIFICO" )
 	private Date dt_fecha_modifico;
+	
+	@Column( name = "I_INDICADOR_DEPURAR_ANTERIOR" )
+	private Integer i_indicador_depurar_anterior;
 
 	public Integer getPk_i_estado_id() {
 		return pk_i_estado_id;
@@ -181,6 +184,14 @@ public class MunicipiosRepub {
 		this.dt_fecha_modifico = dt_fecha_modifico;
 	}
 
+	public Integer getI_indicador_depurar_anterior() {
+		return i_indicador_depurar_anterior;
+	}
+
+	public void setI_indicador_depurar_anterior(Integer i_indicador_depurar_anterior) {
+		this.i_indicador_depurar_anterior = i_indicador_depurar_anterior;
+	}
+
 	@Override
 	public String toString() {
 		return "MunicipiosRepub [pk_i_estado_id=" + pk_i_estado_id + ", pk_i_municipio_id=" + pk_i_municipio_id
@@ -189,8 +200,8 @@ public class MunicipiosRepub {
 				+ ", vc_direccion_ip=" + vc_direccion_ip + ", vc_programa_id=" + vc_programa_id + ", i_sucursal="
 				+ i_sucursal + ", i_num_transaccion=" + i_num_transaccion + ", i_indicador_depurar="
 				+ i_indicador_depurar + ", i_usuario_modifico=" + i_usuario_modifico + ", dt_fecha_modifico="
-				+ dt_fecha_modifico + "]";
+				+ dt_fecha_modifico + ", i_indicador_depurar_anterior=" + i_indicador_depurar_anterior + "]";
 	}
-
+	
 	
 }

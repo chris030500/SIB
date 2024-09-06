@@ -37,6 +37,7 @@ function ocultarMostrarExclusiones(divExclusiones) {
 	switch ($(opcion).attr("for")) {
 		case "7":
 			console.log("Municipios con cobertura");
+			listaMunicipiosConCobertura();
 			break;
 		case "8":
 			console.log("Convenios");
