@@ -199,4 +199,27 @@ public class ExclusionesBasesNominaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+	@RequestMapping(value = { "/getPuestosOcupacionDepurar" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getPuestosOcupacionDepurar() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> puestosDepurar = puestosOcupacionService.getPuestosOcupacionDepurar();
+		
+		try {
+			if (puestosDepurar != null && !puestosDepurar.isEmpty()) {
+				res.put("puestosDepurar", puestosDepurar);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("puestosDepurar", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
 }

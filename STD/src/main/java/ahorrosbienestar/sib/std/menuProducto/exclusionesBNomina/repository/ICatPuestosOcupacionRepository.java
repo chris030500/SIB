@@ -16,5 +16,10 @@ public interface ICatPuestosOcupacionRepository extends JpaRepository<CatPuestos
 			+ "FROM SIB.TBL_CAT_PUESTOS_OCUPACION T1 "
 			+ "WHERE T1.I_INDICADOR_DEPURAR = 0 ", nativeQuery = true)
 	List<Map<String, Object>> getPuestosOcupacionActivos();
+	
+	@Query( value = "SELECT T1.PK_I_PUESTO_OCUPACION_ID AS id_puesto, T1.VC_DESCRIPCION AS desc_puesto "
+			+ "FROM SIB.TBL_CAT_PUESTOS_OCUPACION T1 "
+			+ "WHERE T1.I_INDICADOR_DEPURAR = 1 ", nativeQuery = true)
+	List<Map<String, Object>> getPuestosOcupacionDepurar();
 
 }

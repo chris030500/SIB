@@ -17,5 +17,9 @@ public class CatPuestosOcupacionService {
 	public List<Map<String, Object>> getPuestosOcupacionActivos() {
 		return iCatPuestosOcupacionRepository.getPuestosOcupacionActivos();
 	}
+	
+	public List<Map<String, Object>> getPuestosOcupacionDepurar() {
+		return iCatPuestosOcupacionRepository.getPuestosOcupacionDepurar();
+	}
 
 }

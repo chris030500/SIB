@@ -4,6 +4,8 @@ var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
+var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
+var puestoSeleccionado = null;
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -160,7 +162,7 @@ function listaConveniosDepurar() {
 }
 
 function listaPuestosActivos() {
-    var divConveniosActivos = $('#puestosActivos');
+    var divPuestosActivos = $('#puestosActivos');
 
     // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
@@ -171,10 +173,17 @@ function listaPuestosActivos() {
             // Iterar sobre los datos recibidos y agregar opciones al select
             $.each(res.puestosActivos, function(index, puesto) {
                 
-                var convenios = "<p>" + puesto.desc_puesto + "</p>";
+                
+               	var div = $("<div>").addClass("puestoA border").text(puesto.desc_puesto);
+                
+                div.on("click", function() {
+                    $(".puestoA").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    puestoSeleccionado = $(this);  // Guardar el puesto seleccionado
+                });
 
                 // Agregar la opción al select
-               divConveniosActivos.append(convenios);
+               divPuestosActivos.append(div);
             });
         },
         error: function(error) {
@@ -183,12 +192,61 @@ function listaPuestosActivos() {
     });
 }
 
+function listaPuestosDepurar() {
+    var divPuestosDepurar = $('#puestosDepurar');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerPuestosOcupacionDepurar,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar 
+            $.each(res.puestosDepurar, function(index, puesto) {
+                
+                var div = $("<div>").addClass("puestoD border").text(puesto.desc_puesto);
+                
+                // Añadir evento de clic para seleccionar el convenio
+                div.on("click", function() {
+                    $(".puestoD").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    puestoSeleccionado = $(this);  // Guardar el convenio seleccionado
+                });
+                
+               divPuestosDepurar.append(div);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener los puestos depurar: " + error);
+        }
+    });
+}
+
+// Evento para mover el puesto seleccionado de Activos a Depurar
+$("#btnAddRightPuesto").on("click", function() {
+    if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
+        $("#puestosDepurar").append(puestoSeleccionado);  // Mover al contenedor de depurar
+        puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        puestoSeleccionado = null;  // Limpiar la variable
+    }
+});
+
+// Evento para mover el puesto seleccionado de Depurar a Activos
+$("#btnAddLeftPuesto").on("click", function() {
+    if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosDepurar") {
+        $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
+        puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        puestoSeleccionado = null;  // Limpiar la variable
+    }
+});
+
 
 $(document).ready(function() {
     listaEstados();
     listaConveniosActivos();
     listaConveniosDepurar();
     listaPuestosActivos();
+    listaPuestosDepurar();
     
      // Escuchar el evento de cambio en el select de estados
     $('#opcionesEstado').change(function() {
