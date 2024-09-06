@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
 
@@ -61,8 +65,6 @@ public class ExclusionesBasesNominaController {
 		
 		List<Map<String, Object>> municipios = municipiosRepubService.getMunicipiosRepubById(idEstado);
 		
-		System.out.println(municipios.size());
-		
 		try {
 			if (municipios != null && !municipios.isEmpty()) {
 				res.put("municipios", municipios);
@@ -101,4 +103,23 @@ public class ExclusionesBasesNominaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}
+	
+    @PutMapping("/agregarMunicipioConCobertura/{idEstado}/{idMunicipio}")
+    public ResponseEntity<?> actualizarIndicadorDepurar(
+            @PathVariable Integer idEstado, 
+            @PathVariable Integer idMunicipio,
+            @RequestBody MunicipiosRepub updatedData) {
+    	
+        
+        try {
+        	
+        	municipiosRepubService.updateIndicadorDepurar(idEstado, idMunicipio, updatedData.getI_indicador_depurar());
+        	
+            return ResponseEntity.ok("Actualización exitosa");
+            
+        } catch (RuntimeException e) {
+        	
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

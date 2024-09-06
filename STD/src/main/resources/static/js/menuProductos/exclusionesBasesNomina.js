@@ -1,5 +1,6 @@
 var obtenerEstados = "exclusiones/getEstados"; 
 var obtenerMunicipios = "exclusiones/getMunicipios";
+var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura";
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -43,6 +44,7 @@ function listaMunicipios(estadoId) {
     selectMunicipios.append('<option value="">Seleccionar municipio</option>');
 
     // Hacer la solicitud AJAX para obtener los municipios por estado
+    
     $.ajax({
         url: getAbsolutePath() + obtenerMunicipios,
         type: "GET",
@@ -67,6 +69,45 @@ function listaMunicipios(estadoId) {
         }
     });
 }
+
+document.getElementById('btnAgregar').addEventListener('click', function() {
+    // Obtener los valores seleccionados
+    const idEstado = document.getElementById('opcionesEstado').value;
+    const idMunicipio = document.getElementById('opcionesMunicipio').value;
+    
+
+    // Verificar que ambos valores están seleccionados
+    if (idEstado && idMunicipio) {
+        // Llamar a la función para actualizar, por ejemplo usando Fetch API
+        agregarMunicipioConCobertura(idEstado, idMunicipio);
+    } else {
+        alert('Por favor, seleccione un estado y un municipio.');
+    }
+});
+
+
+function agregarMunicipioConCobertura(idEstado, idMunicipio) {
+    
+    const updatedData = {
+        i_indicador_depurar: 1 
+    };
+    
+    var url = actualizarrMunicipioConCobertura + `/${idEstado}/${idMunicipio}`;
+
+    $.ajax({
+        url: getAbsolutePath() + url,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(updatedData),
+        success: function(res) {
+            console.log('Actualización exitosa:', res);
+        },
+        error: function(error) {
+            console.error('Error en la actualización:', error);
+        }
+    });
+}
+
 
 
 $(document).ready(function() {
