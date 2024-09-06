@@ -11,7 +11,7 @@ $(document).ready(function() {
 });
 
 
-function submitForm(idEvento) {
+function submitForm(idEvento,num) {
     
     //obtener id boton
     const btnProcesar = $(idEvento).attr('id');
@@ -31,7 +31,11 @@ function submitForm(idEvento) {
     const formData = new FormData(form);
     
     // Variable para llevar el seguimiento de si hay campos vacíos
-	let enviardatos = validarDatos(formData,1);
+    let enviardatos = false;
+    if (num == 1){
+        enviardatos = validarDatos(formData,num);
+    }
+	
     
 	if (!enviardatos) {
         
@@ -67,12 +71,24 @@ function submitForm(idEvento) {
 			})
 			.finally(() => {
 				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
-				$button.html('Registrar');
 				Array.from(form.elements).forEach(element => element.disabled = false);
+				switch(num){
+                    case 1:
+                        	$button.html('Registrar');
+				 			const slcCostoUn = document.getElementById('slcCostoUnitario');
+             	 slcCostoUn.disabled = true;
+                        break;
+                 	case 2:
+                         	$button.html('<i class="bi bi-diagram-3-fill"></i>');
+                         break;	
+           
+                }
 				
-				Array.from(form.elements).forEach(element => {
+			
+				
+				/*Array.from(form.elements).forEach(element => {
                      element.value = 0 ; 
-    			});
+    			});*/
 				
 				
 			});
@@ -363,6 +379,8 @@ function editarParametros(idBotton){
             slcCostoU.disabled = true;
             gasto.value = data.gastoDatos.id;
             
+            
+           
 
 		})
 		.catch(error => {

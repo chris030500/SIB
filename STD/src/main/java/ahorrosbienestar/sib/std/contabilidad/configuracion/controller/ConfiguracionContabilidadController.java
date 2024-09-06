@@ -1,6 +1,10 @@
 package ahorrosbienestar.sib.std.contabilidad.configuracion.controller;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -58,6 +63,9 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	@Autowired
 	private IConfigAdviserBC iConfigAdviserBC;
 	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+	
 	List<Usuario> usuario = null;
 	
 	private String rutaDireccion="";
@@ -102,7 +110,10 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	       
 	        Number montoInicial = format.parse(params.get("montoInicial"));
 	        Number montoFinal = format.parse(params.get("montoFinal")); 
-	      
+	        
+	        int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(),montoFinal.doubleValue(),params.get("Productos"),Integer.parseInt(params.get("Concepto")));
+	        if(existe == 0) {
+	        
 	        
 	        //si es igual a 0 es un alta si es mayor a 0 es una actualizacion. 
 	        if(Integer.parseInt(params.get("gastoIde")) > 0) {
@@ -142,7 +153,11 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 		            }
 				
 	        }
-			
+	        }else {
+	        	response.put("listaCatalogo", iConfigAdviserBC.findAll());
+                response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
+                return ResponseEntity.ok(response);
+	        }
 		 } catch (NumberFormatException e) {
 			 	logger.error("Error:"+e.getMessage());
 	            response.put("message", "Formato de número incorrecto: " + e.getMessage());
@@ -239,6 +254,78 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	            response.put("message", "Error al guardar los datos: " + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
+	}
+	
+	
+	@PostMapping("/procesar-prorrateo")
+	public ResponseEntity<Map<String, Object>> procesarProrrateo(@RequestParam Map<String, String> params){
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Connection connection = null;
+	        CallableStatement callableStatement = null;
+	        String errorMessage = null;
+	        int estatusProceso = 0;
+            
+            try {
+	            connection = jdbcTemplate.getDataSource().getConnection();
+	            callableStatement = connection.prepareCall(Constantes.PROCESO_PRORRATEO);
+	            callableStatement.setInt(1, obtUsuario());
+	            callableStatement.registerOutParameter(2, Types.VARCHAR);
+	            callableStatement.registerOutParameter(3, Types.INTEGER);
+	            callableStatement.execute();
+	            errorMessage = callableStatement.getString(2);
+	            estatusProceso = callableStatement.getInt(3);
+	        } catch (SQLException e) {
+	            logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        } finally {
+	            if (callableStatement != null) {
+	                try {
+	                    callableStatement.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+	                }
+	            }
+	            if (connection != null) {
+	                try {
+	                    connection.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+	                }
+	            }
+	        }
+            response.put("estatusProceso", estatusProceso);
+			response.put("message", (errorMessage == null)?Constantes.VOBO_OK:errorMessage);
+			return ResponseEntity.ok(response);
+		} catch (NumberFormatException e) {
+			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		 } catch (IllegalArgumentException e) {
+			 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		 } catch (Exception e) {
+			 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		 }
+	}
+	
+	public int obtUsuario() {
+
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			return usuario.get(0).getPk_id_usuario();
+
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			return 0;
+		}
+
 	}
 	
 	public int validarAcceso(String rutaController) {

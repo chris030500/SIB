@@ -201,6 +201,8 @@ public class Constantes {
 	// Proceso a ejecutar Contabilidad 
 	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
 	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
+	public static final String PROCESO_PRORRATEO = "{call SIB.PROCESO_PRORRATEO (?,?,?)}";
+	
 	
     private Constantes() {
         

@@ -29,8 +29,8 @@
 				<ul class="nav nav-pills" id="pntConf" role="tablist">
 					<li class="nav-item" role="presentation">
 						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
-							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Parametros
-							Generales</button>
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">
+							<i class="bi bi-1-circle"></i> Gastos</button>					
 					</li>
 					<li class="nav-item" role="presentation">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="layout-tab" data-bs-toggle="tab"
@@ -44,6 +44,19 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Gastos para monto amortizado</legend>
 						<div id="mensajeCostoAmortizado"></div>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-md-2">
+								<label><b>Procesar Prorrateo:</b></label>
+							</div>
+							<div class="col-md-3">
+								<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
+									<button type="button" id="btnProrrateo" class="btn btn-success" onclick="submitForm(this,2)">
+										<i class="bi bi-diagram-3-fill"></i>
+									</button>
+								</form>
+							</div>
+						</div>
+							
 						<form th:action="@{/contabilidad/guardar-Costos}" method="post" id="procesarForm">
 						<div class="row" style="margin-top : 15px ">
 							<div class="col-md-2">
@@ -118,7 +131,7 @@
 					<fieldset class="border p-2">
 						<div class="modal-header">
 							<div class="col-md-11">
-								<legend class="float-none w-auto p-2">Catalogo Consulta Buro - Adviser</legend>
+								<legend class="float-none w-auto p-2">Gastos por producto</legend>
 							</div>
 							<div class="col-md-1">
 								<button type="button" class="btn-close" onclick="cerrarModal(this)" data-dismiss="modal"
@@ -190,7 +203,7 @@
 								<div class="row" style="margin-top : 15px ">
 									<div class="col-md-6"></div>
 									<div class="col-md-6 d-flex justify-content-end">
-										<button type="button" id="btnProcesando" class="btn btn-success" onclick="submitForm(this)">
+										<button type="button" id="btnProcesando" class="btn btn-success" onclick="submitForm(this,1)">
 											Registrar
 										</button>
 									</div>
