@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,7 +28,7 @@ public class CatPuestosOcupacion {
 	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column( name = "DT_FECHA_MODIFICO" )
-	private Integer dt_fecha_modifico;
+	private Date dt_fecha_modifico;
 
 	public Integer getPk_i_puesto_ocupacion_id() {
 		return pk_i_puesto_ocupacion_id;
@@ -60,11 +62,11 @@ public class CatPuestosOcupacion {
 		this.i_usuario_modifico = i_usuario_modifico;
 	}
 
-	public Integer getDt_fecha_modifico() {
+	public Date getDt_fecha_modifico() {
 		return dt_fecha_modifico;
 	}
 
-	public void setDt_fecha_modifico(Integer dt_fecha_modifico) {
+	public void setDt_fecha_modifico(Date dt_fecha_modifico) {
 		this.dt_fecha_modifico = dt_fecha_modifico;
 	}
 
@@ -74,5 +76,7 @@ public class CatPuestosOcupacion {
 				+ vc_descripcion + ", i_indicador_depurar=" + i_indicador_depurar + ", i_usuario_modifico="
 				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + "]";
 	}
+	
+	
 
 }

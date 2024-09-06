@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.CatPuestosOcupacion;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosNomina;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.CatPuestosOcupacionService;
@@ -253,6 +253,29 @@ public class ExclusionesBasesNominaController {
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = "/actualizarIndicadorPuestos", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> actualizarIndicadorPuestos(@RequestParam("idPuesto") Integer idPuesto,
+			@RequestParam("indicadorDepurar") Integer indicadorDepurar) {
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+
+		CatPuestosOcupacion updatedPuestos = puestosOcupacionService.actualizarIndicadorPuestosOcupacion(idPuesto, indicadorDepurar, idUsuario);
+	
+		if (updatedPuestos != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("puesto", updatedPuestos);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 }

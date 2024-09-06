@@ -6,9 +6,11 @@ var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
 var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
+var actualizarIndicadorPuestos = "exclusiones/actualizarIndicadorPuestos";
 var puestoSeleccionado = null;
 var convenioSeleccionado = null;
 var idConvenio = null;
+var idPuesto = null;
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -217,11 +219,17 @@ function listaPuestosActivos() {
             $.each(res.puestosActivos, function(index, puesto) {
                 
                 
-               	var div = $("<div>").addClass("puestoA border").text(puesto.desc_puesto);
+               	var div = $("<div>")
+               	.addClass("puestoA border")
+               	.text(puesto.desc_puesto)
+               	.attr("puesto-id", puesto.id_puesto);
                 
                 div.on("click", function() {
                     $(".puestoA").removeClass("selected"); // Remover selección previa
                     $(this).addClass("selected");  // Añadir clase selected
+                    
+                    // Obtener el ID del convenio seleccionado
+                    var idPuesto = $(this).attr("puesto-id");
                     puestoSeleccionado = $(this);  // Guardar el puesto seleccionado
                 });
 
@@ -247,13 +255,18 @@ function listaPuestosDepurar() {
             // Iterar sobre los datos recibidos y agregar 
             $.each(res.puestosDepurar, function(index, puesto) {
                 
-                var div = $("<div>").addClass("puestoD border").text(puesto.desc_puesto);
+                var div = $("<div>")
+                .addClass("puestoD border")
+                .text(puesto.desc_puesto)
+                .attr("puesto-id", puesto.id_puesto);
                 
                 // Añadir evento de clic para seleccionar el convenio
                 div.on("click", function() {
                     $(".puestoD").removeClass("selected"); // Remover selección previa
                     $(this).addClass("selected");  // Añadir clase selected
-                    puestoSeleccionado = $(this);  // Guardar el convenio seleccionado
+                    
+                    var idPuesto = $(this).attr("puesto-id");
+                    puestoSeleccionado = $(this); 
                 });
                 
                divPuestosDepurar.append(div);
@@ -265,10 +278,29 @@ function listaPuestosDepurar() {
     });
 }
 
+function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
+    
+    var servicioURL = actualizarIndicadorPuestos + "?idPuesto=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
+
+			$.ajax({
+				url: getAbsolutePath() + servicioURL,
+				type: "GET",
+				success: function(response) {
+					console.log("Actualización exitosa.")
+				},
+				error: function(xhr, status, error) {
+					console.error("Error actualizar puesto: " + error);
+				}
+			});
+}
+
 // Evento para mover el puesto seleccionado de Activos a Depurar
 $("#btnAddRightPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
+        var idPuesto = puestoSeleccionado.attr('puesto-id');
+        
         $("#puestosDepurar").append(puestoSeleccionado);  // Mover al contenedor de depurar
+        updateIndicadorPuesto(idPuesto, 1);
         puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     }
@@ -277,7 +309,10 @@ $("#btnAddRightPuesto").on("click", function() {
 // Evento para mover el puesto seleccionado de Depurar a Activos
 $("#btnAddLeftPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosDepurar") {
+        var idPuesto = puestoSeleccionado.attr('puesto-id');
+        
         $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
+        updateIndicadorPuesto(idPuesto, 0);
         puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     }
