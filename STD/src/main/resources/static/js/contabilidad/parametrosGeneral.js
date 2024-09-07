@@ -7,11 +7,11 @@ $(document).ready(function() {
     let valor = $('#lista_BC').val();
     let listaObtenida = JSON.parse(valor); 
               
- 	pintarTabla(listaObtenida,tblConfiguracion);
+ 	pintarTablaGastos(listaObtenida,tblConfiguracion);
 });
 
 
-function submitForm(idEvento,num) {
+function submitFormGastos(idEvento,num) {
     
     //obtener id boton
     const btnProcesar = $(idEvento).attr('id');
@@ -33,7 +33,7 @@ function submitForm(idEvento,num) {
     // Variable para llevar el seguimiento de si hay campos vacíos
     let enviardatos = false;
     if (num == 1){
-        enviardatos = validarDatos(formData,num);
+        enviardatos = validarDatosGastos(formData,num);
     }
 	
     
@@ -56,29 +56,32 @@ function submitForm(idEvento,num) {
 				return response.json();
 			})
 			.then(data => {
-                if(data.listaCatalogo.length > 0){
-                    pintarTabla(data.listaCatalogo,tblConfiguracion);
+                switch(num){
+                    case 1:
+                        if(data.listaCatalogo.length > 0){
+                    		pintarTablaGastos(data.listaCatalogo,tblConfiguracion);
+                		}
+                        break;
+                    default:
+                        break; 
                 }
-                mostrarAlertar(data.message,"success",1);
+                mostrarAlertarGastos(data.message,"success",num);
                 
-				console.log('Success:', data);
-				// Maneja la respuesta aquí (por ejemplo, muestra un mensaje al usuario)
 			})
 			.catch(error => {
-				console.log('Error:', error);
-				 mostrarAlertar(data.message,"danger",1);
-				// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
+				 mostrarAlertarGastos("Error al mostrar información en pantalla, favor de comunicarse con el administrador del sistema.","danger",num);
+				
 			})
 			.finally(() => {
-				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
+				// habilitar los elementos del formulario
 				Array.from(form.elements).forEach(element => element.disabled = false);
 				switch(num){
                     case 1:
                         	$button.html('Registrar');
 				 			const slcCostoUn = document.getElementById('slcCostoUnitario');
-             	 slcCostoUn.disabled = true;
+             	 			slcCostoUn.disabled = true;
                         break;
-                 	case 2:
+                 	case 3:
                          	$button.html('<i class="bi bi-diagram-3-fill"></i>');
                          break;	
            
@@ -113,7 +116,7 @@ function costos(idEvento) {
     const formData = new FormData(form);
     
     // Variable para llevar el seguimiento de si hay campos vacíos
-	let enviardatos = validarDatos(formData,2);
+	let enviardatos = validarDatosGastos(formData,2);
     
 	if (!enviardatos) {
         $("button").prop("disabled", true);
@@ -136,14 +139,13 @@ function costos(idEvento) {
                 document.getElementById('costoBC').value = data.costoBC;
                 document.getElementById('costoAdvicer').value = data.costoAdviser;
                 crearOpcionesSelect(data.catcostounitario);
-                mostrarAlertar(data.message,"success",2);
+                mostrarAlertarGastos(data.message,"success",2);
                 
 				console.log('Success:', data);
 				// Maneja la respuesta aquí (por ejemplo, muestra un mensaje al usuario)
 			})
 			.catch(error => {
-				console.log('Error:', error);
-				 mostrarAlertar(data.message,"danger",2);
+				 mostrarAlertarGastos(data.message,"danger",2);
 				// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 			})
 			.finally(() => {
@@ -186,7 +188,7 @@ function costoUnitarioS(idConcepto){
 
 
 
-function pintarTabla(listaDatos,tablaPintar){
+function pintarTablaGastos(listaDatos,tablaPintar){
     const registrosTotales = [];
     
     	
@@ -213,7 +215,7 @@ function pintarTabla(listaDatos,tablaPintar){
     
 }
 
-function validarDatos(formData,num){
+function validarDatosGastos(formData,num){
     let esVacio = false;
     let txtError = "";
 	let tipoError = "";
@@ -228,7 +230,7 @@ function validarDatos(formData,num){
 	}
 	tipoError = "warning";
 	if(esVacio){
-        mostrarAlertar(txtError,tipoError,num);
+        mostrarAlertarGastos(txtError,tipoError,num);
     }else{
         limpiarAlerta(num);
     }
@@ -285,36 +287,38 @@ function toggleProcessingButton(isProcessing) {
     }
 }
 
-function mostrarAlertar(msnError,tipoError,num){
+function mostrarAlertarGastos(msnError,tipoError,num){
     limpiarAlerta(num);
-    let contenedorMensaje = '';
+    let contenedorMensajeGasto = '';
     switch(num){
         case 1:
-            contenedorMensaje = document.getElementById('liveAlertPlaceholder');
+            contenedorMensajeGasto = document.getElementById('alertaGastoCatalogo');
             break;
         case 2:
-            contenedorMensaje = document.getElementById('mensajeCostoAmortizado');
+            contenedorMensajeGasto = document.getElementById('mensajeCostoAmortizado');
+            break;
+        case 3:
+            contenedorMensajeGasto = document.getElementById('mensajeProrrateo');
             break;
     }
     
 	// Obtener el contenedor de alertas
-	
 	//const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-	
+	$(contenedorMensajeGasto).find('div').remove();
 
 	// Función para añadir una alerta al contenedor
-	const appendAlert = (message, type) => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = [
+	const appendAlerGastos = (message, type) => {
+    const wrapperGasto = document.createElement('div');
+    wrapperGasto.innerHTML = [
         `<div class="alert alert-${type} alert-dismissible" role="alert">`,
         `   <div>${message}</div>`,
         '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="cerrarAlerta"></button>',
         '</div>'
     ].join('');
-    contenedorMensaje.append(wrapper);
+    contenedorMensajeGasto.append(wrapperGasto);
 	};
 	
-	appendAlert(msnError, tipoError);
+	appendAlerGastos(msnError, tipoError);
 
 }
 
@@ -385,7 +389,7 @@ function editarParametros(idBotton){
 		})
 		.catch(error => {
 			console.log('Error:', error);
-			mostrarAlertar(data.message, "danger");
+			mostrarAlertarGastos(data.message, "danger");
 		})
 		.finally(() => {
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario

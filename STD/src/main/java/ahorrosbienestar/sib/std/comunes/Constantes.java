@@ -195,6 +195,7 @@ public class Constantes {
 	public static final String ERROR_GUARDAR = "Error al guardar los datos:";
 	public static final String PROCESO_CNF_OK = "Termino el procesamiento de información. Favor de Generar el reporte y validar la información. ";
 	public static final String VOBO_OK = "Se registro el vo.bo de la información procesada. ";
+	public static final String PRORRATEO = "Se realizo el proceso de prorrateo.";
 	public static final String REPORTE_HIST = "&parametros=?proceso=";
 	
 	

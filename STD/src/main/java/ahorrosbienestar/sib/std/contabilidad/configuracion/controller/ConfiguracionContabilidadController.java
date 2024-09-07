@@ -97,7 +97,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 		
 	}
 	
-	@PostMapping("/guardar-CatalogoBC")
+	@PostMapping("/guardar-CatalogoBC1")
 	public ResponseEntity<Map<String, Object>> guardarCatalogoBC(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -173,7 +173,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	        }
 	}
 	
-	@PostMapping("/guardar-Costos")
+	@PostMapping("/guardar-Costos1")
 	public ResponseEntity<Map<String, Object>> guardarCostos(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		// Convertir la lista a JSON
@@ -216,7 +216,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
         }
 	}
 	
-	@PostMapping("/obtener-gastos")
+	@PostMapping("/obtener-gastos1")
 	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data){		
 		Map<String, Object> response = new HashMap<>();
 		try {
@@ -257,7 +257,7 @@ private static final Logger logger = Logger.getLogger(ConfiguracionContabilidadC
 	}
 	
 	
-	@PostMapping("/procesar-prorrateo")
+	@PostMapping("/procesar-prorrateo1")
 	public ResponseEntity<Map<String, Object>> procesarProrrateo(@RequestParam Map<String, String> params){
 		Map<String, Object> response = new HashMap<>();
 		try {

@@ -39,7 +39,7 @@ $(document).ready(function() {
 
 });
 
-function ocultarMostrar(divEl) {
+/*function ocultarMostrar(divEl) {
 	id = $(divEl).attr("id");
 	idDiv = id + 1;
 	opcion = "#pant-tabs" + " #" + idDiv;
@@ -55,27 +55,13 @@ function ocultarMostrar(divEl) {
 	}
 
 	mostrarOcultarDiv(idDiv);
-}
+}*/
 
-function mostrarOcultarDiv(divA) {
-	var opcion = document.getElementById(divA);
-	if (opcion != null) {
-		opcion.style.display = "block";
-	}
-
-	document.querySelectorAll('#pant-tabs div[style*="display: block;"]').forEach(function(checkElement) {
-		console.log("mostrar Datos");
-		if (divA != (checkElement.id)) {
-			var opcion2 = document.getElementById(checkElement.id);
-			if (opcion != null) {
-				opcion2.style.display = "none";
-			}
-		} else {
-			console.log(": Mostrar");
-		}
-
-	});
-
+function ocultarMostrar(divA) {
+	const navOpcion =$(divA).attr('id')+1;
+	
+	$('.opciones').hide();
+	$("#"+navOpcion).show();
 }
 
 

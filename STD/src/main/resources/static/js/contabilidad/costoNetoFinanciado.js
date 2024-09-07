@@ -121,7 +121,7 @@ function submitBtn(idBotton, num) {
 			//if(data.listaCatalogo.length > 0){
 			//   pintarTabla(data.listaCatalogo,tblConfiguracion);
 			//}
-			mostrarAlertar(data.message, "success");
+			mostrarAlertar(data.message, "success",num);
 
 			switch (num) {
 				case 1:
@@ -142,7 +142,7 @@ function submitBtn(idBotton, num) {
 		})
 		.catch(error => {
 			console.log('Error:', error);
-			mostrarAlertar(data.message, "danger");
+			mostrarAlertarGastos("Error al mostrar información en pantalla, favor de comunicarse con el administrador del sistema.","danger",num);
 			// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 		})
 		.finally(() => {
@@ -187,7 +187,7 @@ function pintarTabla(listaDatos, tablaPintar) {
 	tablaPintar.rows.add(registrosTotales).draw();
 
 }
-
+/*
 function validarDatos(formData) {
 	let esVacio = false;
 	let txtError = "";
@@ -213,7 +213,7 @@ function validarDatos(formData) {
 	}
 
 	return esVacio;
-}
+}*/
 
 // Función para validar si un campo está vacío
 function mayorCero(value) {
