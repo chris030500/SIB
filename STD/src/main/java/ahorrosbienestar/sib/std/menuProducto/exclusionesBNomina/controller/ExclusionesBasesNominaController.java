@@ -12,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -109,6 +106,7 @@ public class ExclusionesBasesNominaController {
 		
 		try {
 			if (municipios != null && !municipios.isEmpty()) {
+
 				res.put("municipios", municipios);
 				return ResponseEntity.ok(res);
 			} else {
@@ -123,23 +121,32 @@ public class ExclusionesBasesNominaController {
 		}
 	}
 	
-    @PutMapping("/agregarMunicipioConCobertura/{idEstado}/{idMunicipio}")
-    public ResponseEntity<?> actualizarIndicadorDepurar(
-            @PathVariable Integer idEstado, 
-            @PathVariable Integer idMunicipio,
-            @RequestBody MunicipiosRepub updatedData) {
-    	
-        try {
-        	
-        	municipiosRepubService.updateIndicadorDepurar(idEstado, idMunicipio, updatedData.getI_indicador_depurar());
-        	
-            return ResponseEntity.ok("Actualización exitosa");
-            
-        } catch (RuntimeException e) {
-        	
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
+	@RequestMapping(value = "/actualizarIndicadorMunicipios", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> actualizarIndicadorMunicipios(
+			@RequestParam("idEstado") Integer idEstado,
+			@RequestParam("idMunicipio") Integer idMunicipio,
+			@RequestParam("indicadorDepurar") Integer indicadorDepurar) {
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+
+		MunicipiosRepub updatedMunicipio = municipiosRepubService.actualizarIndicadorMunicipiosRepub(idEstado, idMunicipio, indicadorDepurar, idUsuario);
+		if (updatedMunicipio != null) {
+			
+			Map<String, Object> response = new HashMap<>();
+			response.put("municipio", updatedMunicipio);
+			
+			return new ResponseEntity<>(response, HttpStatus.OK);
+			
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
     
 	@RequestMapping(value = { "/getConveniosNominaActivos" }, method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getConveniosNominaActivos() {

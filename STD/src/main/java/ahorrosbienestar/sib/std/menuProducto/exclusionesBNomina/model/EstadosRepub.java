@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table( name = "TBL_ESTADOS_REPUB" )
 public class EstadosRepub {
 	
-	@Id()
+	@Id
 	@Column( name = "PK_I_ESTADO_ID" )
 	private Integer pk_i_estado_id;
 	

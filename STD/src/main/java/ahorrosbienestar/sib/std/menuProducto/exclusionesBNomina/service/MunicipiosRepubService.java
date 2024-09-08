@@ -1,8 +1,8 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,23 +24,28 @@ public class MunicipiosRepubService {
 		return iMunicipiosRepubRepository.getMunicipiosConCobertura();
 	}
 	
-    public MunicipiosRepub updateIndicadorDepurar(Integer idEstado, Integer idMunicipio, Integer indicadorDepurar) {
+    public MunicipiosRepub actualizarIndicadorMunicipiosRepub(Integer idEstado, Integer idMunicipio, Integer indicadorDepurar, Integer idUsuario) {
+    	try {
+    		
+    	       MunicipiosRepub municipio = iMunicipiosRepubRepository.findByIdEstadoAndIdMunicipio(idEstado, idMunicipio).orElse(null);
+    	       
+    	        if (municipio != null) {
+    	        	
+    	        	LocalDateTime currentDateTime = LocalDateTime.now();
+    	        	
+    	        	municipio.setI_indicador_depurar(indicadorDepurar);
+    	        	municipio.setDt_fecha_modifico(currentDateTime);
+    	        	municipio.setI_usuario_modifico(idUsuario);
+    	        	municipio.setI_indicador_depurar_anterior(0);
+    	        
+    	            return iMunicipiosRepubRepository.save(municipio);
+    	        }
+    		
+    	} catch (Exception e) {
+			System.err.println("Ocurrió un error: " + e.getMessage());
+			e.printStackTrace();
+		}
     	
-        // Buscar el municipio con los IDs proporcionados
-        Optional<MunicipiosRepub> municipioOptional = iMunicipiosRepubRepository.findByIdEstadoAndIdMunicipio(idEstado, idMunicipio);
-        
-        if (municipioOptional.isPresent()) {
-        	
-            MunicipiosRepub municipio = municipioOptional.get();
-            // Actualizar el campo i_indicador_depurar
-            municipio.setI_indicador_depurar(indicadorDepurar);
-            
-            // Guardar los cambios en la base de datos
-            MunicipiosRepub updatedMunicipio = iMunicipiosRepubRepository.save(municipio);
-            return updatedMunicipio;
-            
-        } else {
-            throw new RuntimeException("Municipio no encontrado con ID de Estado: " + idEstado + " y ID de Municipio: " + idMunicipio);
-        }
-    }
+    	return null;
+    } 
 }

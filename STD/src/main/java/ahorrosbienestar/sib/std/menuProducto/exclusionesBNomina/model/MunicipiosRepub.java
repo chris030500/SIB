@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,43 +13,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table( name = "TBL_MUNICIPIOS_REPUB" )
 public class MunicipiosRepub {
 	
-	@Column( name = "PK_I_ESTADO_ID" )
-	private Integer pk_i_estado_id;
+	@Id
+	@Column( name = "PK_I_MUNICIPIO_COBERTURA" )
+	private Integer pk_i_municipio_cobertura;
 	
-	@Id()
-	@Column( name = "PK_I_MUNICIPIO_ID" )
-	private Integer pk_i_municipio_id;
+	@Column( name = "I_ESTADO_ID" )
+	private Integer i_estado_id;
 	
-	@Column( name = "I_EMPRESA_ID" )
-	private Integer i_empresa_id;
+	@Column( name = "I_MUNICIPIO_ID" )
+	private Integer i_municipio_id;
 	
 	@Column( name = "VC_NOMBRE" )
 	private String vc_nombre;
-	
-	@Column( name = "VC_LOCALIDAD" )
-	private String vc_localidad;
-	
-	@Column( name = "VC_EQCNBV" )
-	private String vc_eqcnbv;
-	
-	@Column( name = "I_USUARIO" )
-	private Integer i_usuario;
-	
-	@JsonFormat(pattern = "dd-MM-yyyy")
-	@Column( name = "DT_FECHA_ACTUAL" )
-	private Date dt_fecha_actual;
-	
-	@Column( name = "VC_DIRECCION_IP" )
-	private String vc_direccion_ip;
-	
-	@Column( name = "VC_PROGRAMA_ID" )
-	private String vc_programa_id;
-	
-	@Column( name = "I_SUCURSAL" )
-	private Integer i_sucursal;
-	
-	@Column( name = "I_NUM_TRANSACCION" )
-	private Integer i_num_transaccion;
 	
 	@Column( name = "I_INDICADOR_DEPURAR" )
 	private Integer i_indicador_depurar;
@@ -57,35 +32,35 @@ public class MunicipiosRepub {
 	@Column( name = "I_USUARIO_MODIFICO" )
 	private Integer i_usuario_modifico;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column( name = "DT_FECHA_MODIFICO" )
-	private Date dt_fecha_modifico;
+	private LocalDateTime dt_fecha_modifico;
 	
 	@Column( name = "I_INDICADOR_DEPURAR_ANTERIOR" )
 	private Integer i_indicador_depurar_anterior;
 
-	public Integer getPk_i_estado_id() {
-		return pk_i_estado_id;
+	public Integer getPk_i_municipio_cobertura() {
+		return pk_i_municipio_cobertura;
 	}
 
-	public void setPk_i_estado_id(Integer pk_i_estado_id) {
-		this.pk_i_estado_id = pk_i_estado_id;
+	public void setPk_i_municipio_cobertura(Integer pk_i_municipio_cobertura) {
+		this.pk_i_municipio_cobertura = pk_i_municipio_cobertura;
 	}
 
-	public Integer getPk_i_municipio_id() {
-		return pk_i_municipio_id;
+	public Integer getI_estado_id() {
+		return i_estado_id;
 	}
 
-	public void setPk_i_municipio_id(Integer pk_i_municipio_id) {
-		this.pk_i_municipio_id = pk_i_municipio_id;
+	public void setI_estado_id(Integer i_estado_id) {
+		this.i_estado_id = i_estado_id;
 	}
 
-	public Integer getI_empresa_id() {
-		return i_empresa_id;
+	public Integer getI_municipio_id() {
+		return i_municipio_id;
 	}
 
-	public void setI_empresa_id(Integer i_empresa_id) {
-		this.i_empresa_id = i_empresa_id;
+	public void setI_municipio_id(Integer i_municipio_id) {
+		this.i_municipio_id = i_municipio_id;
 	}
 
 	public String getVc_nombre() {
@@ -94,70 +69,6 @@ public class MunicipiosRepub {
 
 	public void setVc_nombre(String vc_nombre) {
 		this.vc_nombre = vc_nombre;
-	}
-
-	public String getVc_localidad() {
-		return vc_localidad;
-	}
-
-	public void setVc_localidad(String vc_localidad) {
-		this.vc_localidad = vc_localidad;
-	}
-
-	public String getVc_eqcnbv() {
-		return vc_eqcnbv;
-	}
-
-	public void setVc_eqcnbv(String vc_eqcnbv) {
-		this.vc_eqcnbv = vc_eqcnbv;
-	}
-
-	public Integer getI_usuario() {
-		return i_usuario;
-	}
-
-	public void setI_usuario(Integer i_usuario) {
-		this.i_usuario = i_usuario;
-	}
-
-	public Date getDt_fecha_actual() {
-		return dt_fecha_actual;
-	}
-
-	public void setDt_fecha_actual(Date dt_fecha_actual) {
-		this.dt_fecha_actual = dt_fecha_actual;
-	}
-
-	public String getVc_direccion_ip() {
-		return vc_direccion_ip;
-	}
-
-	public void setVc_direccion_ip(String vc_direccion_ip) {
-		this.vc_direccion_ip = vc_direccion_ip;
-	}
-
-	public String getVc_programa_id() {
-		return vc_programa_id;
-	}
-
-	public void setVc_programa_id(String vc_programa_id) {
-		this.vc_programa_id = vc_programa_id;
-	}
-
-	public Integer getI_sucursal() {
-		return i_sucursal;
-	}
-
-	public void setI_sucursal(Integer i_sucursal) {
-		this.i_sucursal = i_sucursal;
-	}
-
-	public Integer getI_num_transaccion() {
-		return i_num_transaccion;
-	}
-
-	public void setI_num_transaccion(Integer i_num_transaccion) {
-		this.i_num_transaccion = i_num_transaccion;
 	}
 
 	public Integer getI_indicador_depurar() {
@@ -176,11 +87,11 @@ public class MunicipiosRepub {
 		this.i_usuario_modifico = i_usuario_modifico;
 	}
 
-	public Date getDt_fecha_modifico() {
+	public LocalDateTime getDt_fecha_modifico() {
 		return dt_fecha_modifico;
 	}
 
-	public void setDt_fecha_modifico(Date dt_fecha_modifico) {
+	public void setDt_fecha_modifico(LocalDateTime dt_fecha_modifico) {
 		this.dt_fecha_modifico = dt_fecha_modifico;
 	}
 
@@ -194,14 +105,9 @@ public class MunicipiosRepub {
 
 	@Override
 	public String toString() {
-		return "MunicipiosRepub [pk_i_estado_id=" + pk_i_estado_id + ", pk_i_municipio_id=" + pk_i_municipio_id
-				+ ", i_empresa_id=" + i_empresa_id + ", vc_nombre=" + vc_nombre + ", vc_localidad=" + vc_localidad
-				+ ", vc_eqcnbv=" + vc_eqcnbv + ", i_usuario=" + i_usuario + ", dt_fecha_actual=" + dt_fecha_actual
-				+ ", vc_direccion_ip=" + vc_direccion_ip + ", vc_programa_id=" + vc_programa_id + ", i_sucursal="
-				+ i_sucursal + ", i_num_transaccion=" + i_num_transaccion + ", i_indicador_depurar="
+		return "MunicipiosRepub [pk_i_municipio_cobertura=" + pk_i_municipio_cobertura + ", i_estado_id=" + i_estado_id
+				+ ", i_municipio_id=" + i_municipio_id + ", vc_nombre=" + vc_nombre + ", i_indicador_depurar="
 				+ i_indicador_depurar + ", i_usuario_modifico=" + i_usuario_modifico + ", dt_fecha_modifico="
 				+ dt_fecha_modifico + ", i_indicador_depurar_anterior=" + i_indicador_depurar_anterior + "]";
 	}
-	
-	
 }

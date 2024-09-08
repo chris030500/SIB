@@ -1,6 +1,6 @@
 var obtenerEstados = "exclusiones/getEstados"; 
 var obtenerMunicipios = "exclusiones/getMunicipios";
-var actualizarrMunicipioConCobertura = "exclusiones/agregarMunicipioConCobertura";
+var actualizarIndicadorMunicipios = "exclusiones/actualizarIndicadorMunicipios";
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
 var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
@@ -84,39 +84,71 @@ document.getElementById('btnAgregar').addEventListener('click', function() {
     // Obtener los valores seleccionados
     const idEstado = document.getElementById('opcionesEstado').value;
     const idMunicipio = document.getElementById('opcionesMunicipio').value;
-    const updatedData = {
-        i_indicador_depurar: 1 
-    };
     
 
     // Verificar que ambos valores están seleccionados
     if (idEstado && idMunicipio) {
         // Llamar a la función para actualizar, por ejemplo usando Fetch API
-        agregarMunicipioConCobertura(idEstado, idMunicipio, updatedData);
+       updateMunicipios(idEstado, idMunicipio, 1);
     } else {
         alert('Por favor, seleccione un estado y un municipio.');
     }
 });
 
 
-function agregarMunicipioConCobertura(idEstado, idMunicipio, updatedData) {
+function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
     
-    var url = actualizarrMunicipioConCobertura + `/${idEstado}/${idMunicipio}`;
-    
-    console.log(getAbsolutePath() + url);
+   	var servicioURL = actualizarIndicadorMunicipios + "?idEstado=" + Number(idEstado) + "&idMunicipio=" + Number(idMunicipio) + "&indicadorDepurar=" + indicadorDepurar;
+   			
+   	$.ajax({
+		url: getAbsolutePath() + servicioURL,
+		type: "GET",
+		success: function(response) {
+   
+            if (response.municipio.i_indicador_depurar === 1) {
+                
+               	swal(
+					'¡Guardado exitoso!',
+					"Los datos se han guardado correctamente.",
+					"success"
+				)
 
-    $.ajax({
-        url: getAbsolutePath() + url,
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify(updatedData),
-        success: function(res) {
-            console.log('Actualización exitosa:', res);
-        },
-        error: function(error) {
-            console.error('Error en la actualización:', error);
-        }
-    });
+				setTimeout(function() {
+					swal.close(); // Cierra el SweetAlert
+				}, 2000);
+                
+            }
+            
+            if (response.municipio.i_indicador_depurar === 0) {
+                
+               	swal(
+					'¡Eliminado exitoso!',
+					"Se ha deshabilitado exitosamente",
+					"success"
+				)
+
+				setTimeout(function() {
+					swal.close(); // Cierra el SweetAlert
+				}, 2000);
+                
+            }
+            
+			$('#opcionesMunicipio').empty();
+			listaEstados();
+			listaMunicipiosConCobertura();
+		},
+		error: function(xhr, status, error) {
+			swal(
+				'Error!',
+				"Hubo un problema al guardar los datos.",
+				"error"
+			)
+
+			setTimeout(function() {
+				swal.close(); // Cierra el SweetAlert
+			}, 2000);
+		}
+	});
 }
 
 function listaConveniosActivos() {

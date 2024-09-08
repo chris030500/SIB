@@ -183,10 +183,14 @@ var url = "";
 		 
 		 $.each(data.municipios, function(idx, municipio) {
 			 
+			 const date = new Date(municipio.fecha_modifico);
+			 const fechaFormateada = formatDate(date);
+			 
 			// Crear los botones de acción según el valor de indicador_depurar
 			var botonesDeshabilitar = "<button class='btn btn-xs btn-danger' tabindex='0' " +
                 "title='Remover municipio' type='button' " +
-                "onclick='cambiarIndicadorDepurar(this)' id=" + municipio.id_municipio +
+                "onclick='updateMunicipios(" + municipio.id_estado + ", " + municipio.id_municipio + ", " + 0 + ")'" +
+                "id=" + municipio.id_municipio +
                 " for=" + municipio.indicador_depurar + ">" +
                 "<i class='bi bi-dash'></i>" +
                 "</button>&nbsp;";
@@ -196,7 +200,7 @@ var url = "";
 				municipio.nombre_estado,
                 municipio.nombre_municipio,
                 (municipio.usuario_modifico == null ? '---' : municipio.usuario_modifico), // Usuario que modificó
-                (municipio.fecha_modifico == null ? '----/--/--' : municipio.fecha_modifico), // Fecha de modificación
+                (municipio.fecha_modifico == null ? '----/--/--' : fechaFormateada), // Fecha de modificación
                 (municipio.indicador_anterior == null ? '-' : municipio.indicador_anterior),
                 botonesDeshabilitar, // Botón para deshabilitar (indicador de depurar)
             ]).draw(false); // Redibujar la tabla
@@ -205,6 +209,17 @@ var url = "";
 		 ocultarSpinner();
 	 }); 
  }
+ 
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Meses desde 0
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
  
  // Función para mostrar el spinner
 function mostrarSpinner() {
