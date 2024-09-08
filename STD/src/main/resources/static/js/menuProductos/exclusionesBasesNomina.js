@@ -1,6 +1,7 @@
 var obtenerEstados = "exclusiones/getEstados"; 
 var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarIndicadorMunicipios = "exclusiones/actualizarIndicadorMunicipios";
+var obtenerConvenios = "exclusiones/getConveniosNomina";
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
 var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
