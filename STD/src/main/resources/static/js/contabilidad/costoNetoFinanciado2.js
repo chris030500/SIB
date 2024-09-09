@@ -42,7 +42,7 @@ function submitFormGastos(idEvento,num) {
         // Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 		Array.from(form.elements).forEach(element => element.disabled = true);
 		$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-        
+         bloquearPantalla(1);
 		// fetch para enviar una solicitud POST con los datos del formulario
 		fetch(form.action, {
 			method: 'POST',
@@ -75,6 +75,7 @@ function submitFormGastos(idEvento,num) {
 			.finally(() => {
 				// habilitar los elementos del formulario
 				Array.from(form.elements).forEach(element => element.disabled = false);
+				 bloquearPantalla(2);
 				switch(num){
                     case 1:
                         	$button.html('Registrar');
@@ -120,9 +121,10 @@ function costos(idEvento) {
     
 	if (!enviardatos) {
         $("button").prop("disabled", true);
+     
         // Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 		$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-        
+         bloquearPantalla(1);
 		// fetch para enviar una solicitud POST con los datos del formulario
 		fetch(form.action, {
 			method: 'POST',
@@ -152,6 +154,8 @@ function costos(idEvento) {
 				// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 				$button.html('Guardar');			
 				$("button").prop("disabled", false);
+				 bloquearPantalla(2);
+		
 			});
 	}
    
@@ -352,6 +356,7 @@ function editarParametros(idBotton){
 	};
 	
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
+	 bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	fetch(form.action, {
 		method: 'POST',
@@ -395,9 +400,38 @@ function editarParametros(idBotton){
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			$button.html('<i class="bi bi-tools"></i>');
 			$('#registroCatalogo').modal('show');
+			bloquearPantalla(2);
 		});
 }
 
+
+function bloquearPantalla(num) {
+	
+	switch(num){
+		case 1:
+			 swal({
+      title: "",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando Información.. ',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+			break;
+		case 2:
+			swal.close();
+			break;
+		default:
+			swal.close();
+			break;
+	}
+
+}
 
 
 

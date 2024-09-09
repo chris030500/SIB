@@ -46,6 +46,7 @@ function submitForm(idEvento) {
 
 
 				$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
+				 bloquearPantalla(1);
 				$("button").prop("disabled", true);
 				fetch(form.action, {
 					method: 'POST',
@@ -73,6 +74,7 @@ function submitForm(idEvento) {
 						$button.html('Guardar');
 						tablaProcesos();
 						$("button").prop("disabled", false);
+						 bloquearPantalla(2);
 					});
 
 			}
@@ -104,7 +106,7 @@ function submitBtn(idBotton, num) {
 	//Array.from(form.elements).forEach(element => element.disabled = true);
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
 	$("button").prop("disabled", true);
-
+	   bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	fetch(form.action, {
 		method: 'POST',
@@ -146,6 +148,7 @@ function submitBtn(idBotton, num) {
 			// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 		})
 		.finally(() => {
+			   bloquearPantalla(2);
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			switch (num) {
 				case 1:
@@ -304,7 +307,7 @@ function btnReporteHistorico(idBotton) {
 	// Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 	//Array.from(form.elements).forEach(element => element.disabled = true);
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-
+	 bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	fetch(form.action, {
 		method: 'POST',
@@ -337,6 +340,7 @@ function btnReporteHistorico(idBotton) {
 		.finally(() => {
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			$button.html('<i class="fa-sharp fa-solid fa-file-arrow-down"></i>');
+			bloquearPantalla(2);
 		});
 }
 

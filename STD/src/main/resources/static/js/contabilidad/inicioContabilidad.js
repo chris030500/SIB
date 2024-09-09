@@ -39,29 +39,12 @@ $(document).ready(function() {
 
 });
 
-/*function ocultarMostrar(divEl) {
-	id = $(divEl).attr("id");
-	idDiv = id + 1;
-	opcion = "#pant-tabs" + " #" + idDiv;
-	switch ($(opcion).attr("for")) {
-		case "1":
-			console.log("Parametros");
-			break;
-		case "2":
-			console.log("layout");
-			break;
-		default:
-			break;
-	}
-
-	mostrarOcultarDiv(idDiv);
-}*/
-
 function ocultarMostrar(divA) {
 	const navOpcion =$(divA).attr('id')+1;
 	
 	$('.opciones').hide();
 	$("#"+navOpcion).show();
 }
+
 
 

@@ -13,11 +13,11 @@ import ahorrosbienestar.sib.std.contabilidad.configuracion.model.ProductosCredit
 @Repository
 public interface IProductosCredito extends JpaRepository<ProductosCredito, Integer> {
 
-	@Query(value = "SELECT I_PRODUCTO_CREDITOID,VC_DESCRIPCION_PRODUCTO,C_ESTATUS "
-			+ "FROM SIB.TBL_PRODUCTOS_CREDITO ", nativeQuery = true) 
+	@Query(value = "SELECT PK_ID_CREDITO as I_PRODUCTO_CREDITOID,VC_DESCRIPCION as VC_DESCRIPCION_PRODUCTO,C_ESTATUS "
+			+ "FROM SIB.TBL_PRODUCTOS_CREDITOS ", nativeQuery = true) 
 	public List<ProductosCredito> obtProductos();
 	
-	@Query(value = "SELECT VC_DESCRIPCION_PRODUCTO "
-			+ "FROM SIB.TBL_PRODUCTOS_CREDITO where I_PRODUCTO_CREDITOID=:productoID", nativeQuery = true) 
+	@Query(value = "SELECT VC_DESCRIPCION as VC_DESCRIPCION_PRODUCTO "
+			+ "FROM SIB.TBL_PRODUCTOS_CREDITOS where PK_ID_CREDITO=:productoID", nativeQuery = true) 
 	public String descProducto(@Param("productoID") String productoID);
 }
