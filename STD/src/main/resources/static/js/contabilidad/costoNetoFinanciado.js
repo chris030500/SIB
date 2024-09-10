@@ -309,6 +309,9 @@ function btnReporteHistorico(idBotton) {
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
 	 bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
+	
+	console.log(form.action)
+	console.log(JSON.stringify(data))
 	fetch(form.action, {
 		method: 'POST',
 		headers: {
@@ -343,5 +346,4 @@ function btnReporteHistorico(idBotton) {
 			bloquearPantalla(2);
 		});
 }
-
 
