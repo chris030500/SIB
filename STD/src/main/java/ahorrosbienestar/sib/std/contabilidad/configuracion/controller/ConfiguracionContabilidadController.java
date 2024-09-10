@@ -208,7 +208,6 @@ public class ConfiguracionContabilidadController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
 	}
-	
 	@PostMapping("/guardar-Costos1")
 	public ResponseEntity<Map<String, Object>> guardarCostos(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
@@ -251,7 +250,6 @@ public class ConfiguracionContabilidadController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 	}
-	
 	@PostMapping("/obtener-gastos1")
 	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data){		
 		Map<String, Object> response = new HashMap<>();
@@ -344,7 +342,8 @@ public class ConfiguracionContabilidadController {
 			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		 }
 	}
-    public int datosArchivo(String urlArchivo, String idFolio, String nombreArchivo) {
+	
+	public int datosArchivo(String urlArchivo, String idFolio, String nombreArchivo) {
         Integer estatus = 1;
         Integer respuesta = 0;
         try {
@@ -378,8 +377,8 @@ public class ConfiguracionContabilidadController {
             return 0;
         }
     }
- 
-    @GetMapping
+
+  	@GetMapping
     public String UrlPDFServidor() {
         String url = configService.obtenerUrlCSO().get(0).getVc_valor_propiedad();
         return url.toString();
@@ -463,27 +462,6 @@ public class ConfiguracionContabilidadController {
             return null;
         }
     }
- 
-    public int validarAcceso(String rutaController) {
- 
-        try {
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserDetails userDetails = null;
-            if (principal instanceof UserDetails) {
-                userDetails = (UserDetails) principal;
-            }
-            List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
- 
-            return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
-                    opcionesMenuService.buscarRelacionController(rutaController));
- 
-        } catch (Exception e) {
-            logger.error("Error:" + e.getMessage());
-            return 0;
-        }
- 
-    }
-	
 	public int obtUsuario() {
 
 		try {
@@ -503,6 +481,27 @@ public class ConfiguracionContabilidadController {
 
 	}
 	
+
+	public int validarAcceso(String rutaController) {
+
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(rutaController));
+			
+			
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			return 0;
+		}
+		
+		
+	}
     
     @PostMapping("/procesarArchivoFactura")
 	public ResponseEntity<Map<String, Object>> procesarArchivo(@RequestBody Map<String, String> request) {

@@ -347,3 +347,6 @@ function btnReporteHistorico(idBotton) {
 		});
 }
 
+
+
+
