@@ -48,6 +48,7 @@ public class Constantes {
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
     public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
     public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
+    public static final String REPORTE_KO = "Se Presento error al Generar el reporte, Intente mas tarde.";
     
     //Mensajes Bases de Gestion
     public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
@@ -172,6 +173,36 @@ public class Constantes {
 	//enviar correos
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
+	
+	//constantes contabilidad
+	public static final String CONTABILIDAD_CONFIGURACION = "contabilidad/parametrosConfiguracion";
+	public static final String CONTABILIDAD_COSTO_NETO_FINANCIADO = "contabilidad/costoNetoFinanciado";
+	public static final String CONTABILIDAD_CALCULO_EPRC = "contabilidad/calculoEPRC";
+	
+	//catalogos configuracion contabilidad
+	public static final int CAT_CONCEPTOS = 27;
+	public static final int CAT_COSTOS = 28;
+	public static final int ESTATUS_BC = 1;
+	
+	//constantes reportes de contabilidad 
+	public static final String REPORTE_COSTO_NETO_FINANCIADO = "rpt_costoNetoFinanciado";
+	public static final String REPORTE_COSTO_NETO_FINANCIADO_HIST = "rpt_costoNetoFinanciado_hist";
+	
+	
+	//Constantes Mensajes contabilidad
+	public static final String ERROR_FORMATO_NUMERICO = "Formato de número incorrecto:";
+	public static final String ERROR_PARAMETROS = "Error en los parámetros:";
+	public static final String ERROR_GUARDAR = "Error al guardar los datos:";
+	public static final String PROCESO_CNF_OK = "Termino el procesamiento de información. Favor de Generar el reporte y validar la información. ";
+	public static final String VOBO_OK = "Se registro el vo.bo de la información procesada. ";
+	public static final String PRORRATEO = "Se realizo el proceso de prorrateo.";
+	public static final String REPORTE_HIST = "&parametros=?proceso=";
+	
+	
+	// Proceso a ejecutar Contabilidad 
+	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
+	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
+	public static final String PROCESO_PRORRATEO = "{call SIB.PROCESO_PRORRATEO (?,?,?)}";
 	
 	
     private Constantes() {

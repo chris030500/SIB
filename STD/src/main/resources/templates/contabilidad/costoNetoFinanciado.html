@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Costo Neto Financiado</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">
+							<i class="bi bi-1-circle"></i> Gastos</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="paso2-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">
+							<i class="bi bi-2-circle"></i> Cargar Factura / Prorrateo </button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="costoNeto-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">
+							<i class="bi bi-3-circle"></i> Proceso Costo Neto</button>
+					</li>
+				</ul>
+			</div>
+			<div id="pant-tabs">
+				<div id="params-tab1" class="opciones" style="display: block;" for="1">
+					<input type="hidden" id="lista_BC" name="lista_BC" th:value="${lista_BC}">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Gastos para monto amortizado</legend>
+						<div id="mensajeCostoAmortizado"></div>
+						<form th:action="@{/contabilidad/guardar-Costos}" method="post" id="procesarForm">
+							<div class="row" style="margin-top : 15px ">
+								<div class="col-md-2">
+									<label><b>Costo Unitario BC: </b></label>
+								</div>
+								<div class="col-md-2">
+									<input type="number" class="form-control" id="costoBC" min="0" step="1"
+										th:required="true" name="costo_unitario_BC" th:value="${costoBuro}">
+								</div>
+								<div class="col-md-2">
+									<label><b>Costo Unitario Adviser: </b></label>
+								</div>
+								<div class="col-md-2">
+									<input type="number" class="form-control" id="costoAdvicer" min="0" step="1"
+										th:required="true" name="costo_unitario_Adviser" th:value="${costoAdviser}">
+								</div>
+								<div class="col-md-3">
+
+									<button type="button" id="btnGuardarCostos" class="btn btn-success"
+										onclick="costos(this)">
+										Guardar
+									</button>
+
+								</div>
+							</div>
+						</form>
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-lg-4">
+								<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
+									title="Agregar" data-bs-target="#registroCatalogo" aria-controls="table-datatable"
+									type="button" data-tooltip="Add" onclick="limpiarFormulario()">
+									<i class="fa fa-plus-circle"></i> Gastos por Productos
+								</button>
+							</div>
+							<div class="col-lg-4"></div>
+							<div class="col-lg-4"></div>
+						</div>
+						<div class="row" style="margin-top : 15px ">
+							<input type="hidden" id="listaGastos" name="listaGastos">
+							<form id="actualizacionGastos" th:action="@{/contabilidad/obtener-gastos}" method="post">
+								<div class="table-responsive">
+									<table class="table table-sm table-striped" id="tblConfiguracion">
+										<thead>
+											<tr>
+												<th>Concepto</th>
+												<th>Producto</th>
+												<th>Monto Inicial</th>
+												<th>Monto Final</th>
+												<th>Estatus</th>
+												<th style="text-align: center;">Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</form>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div id="paso2-tab1" class="opciones" style="display: none;" for="2">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Proceso Prorrateo</legend>
+					<div id="mensajeProrrateo"></div>
+					<div class="row" style="margin-top : 5px ">
+						<div class="col-md-2">
+							<label><b>Procesar Prorrateo:</b></label>
+						</div>
+						<div class="col-md-3">
+							<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
+								<button type="button" id="btnProrrateo" class="btn btn-success"
+									onclick="submitFormGastos(this,3)">
+									<i class="bi bi-diagram-3-fill"></i>
+								</button>
+							</form>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<div id="costoNeto-tab1" class="opciones" style="display: none;" for="3">
+				<div id="divConfiguracion" class="" style="margin-top : 15px ">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Proceso Costo Neto Financiado</legend>
+						<div class="row" style="margin-top : 2px ">
+							<div class="col-md-6"></div>
+							<div class="col-md-3">
+								<label><b>Fecha Sistema: </b><span th:text="${fechaSistema}"></span></label>
+							</div>
+							<div class="col-md-3">
+								<label><b>Fecha de Cierre: </b><span id="fechaProceso"
+										th:text="${fechaCierre ?: '----/--/--'}"></span></label>
+							</div>
+						</div>
+						<div id="liveAlertPlaceholder"></div>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-md-3">
+								<label><b>Procesar información:</b></label>
+							</div>
+							<div class="col-md-4">
+								<form th:action="@{/contabilidad/procesar-costoNetoFinanciado}" method="post"
+									id="procesarCostoNetoFinanciado">
+									<button type="button" id="btncostoNetoFinanciado" class="btn btn-secondary"
+										onclick="submitBtn(this,1)">
+										<i class="fa-solid fa-circle-play"></i>
+									</button>
+								</form>
+							</div>
+						</div>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-md-3">
+								<label><b>Descargar reporte: </b></label>
+							</div>
+							<div class="col-md-4">
+								<form th:action="@{/contabilidad/reporte-costoNetoFinanciado}" method="post"
+									id="reporteForm">
+									<button type="button" id="btnProcesando" class="btn btn-secondary"
+										onclick="submitBtn(this,2)">
+										<i class="fa-sharp fa-solid fa-file-arrow-down"></i>
+									</button>
+								</form>
+							</div>
+						</div>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-md-3">
+								<label><b>¿La información del reporte es correcta?</b></label>
+							</div>
+							<div class="col-md-4">
+								<form th:action="@{/contabilidad/guardar-voboProceso}" method="post" id="voboForm">
+									<div class="row" style="margin-top : 5px ">
+										<div class="col-md-2">
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="rbtnDefault"
+													id="rbtnNo" checked>
+												<label class="form-check-label" for="rbtnSi">
+													<b>NO</b>
+												</label>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="rbtnDefault"
+													id="rbtnSi">
+												<label class="form-check-label" for="rbtnSi">
+													<b>SI</b>
+												</label>
+											</div>
+										</div>
+										<div class="col-md-8">
+											<button type="button" id="btnProcesando" class="btn btn-success"
+												onclick="submitForm(this)">
+												Guardar
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<div id="divConfiguracion" class="" style="margin-top : 15px ">
+					<input type="hidden" id="listaHistProceso" name="listaHistProceso" th:value="${listaHistProceso}">
+					<form id="reporteHistorico" th:action="@{/contabilidad/reporte-costoNetoFinanciadoHist}"
+						method="post">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Historico Proceso Costo Neto Financiado</legend>
+							<div class="row" style="margin-top : 5px ">
+								<div class="table-responsive">
+									<table class="table table-sm table-striped" id="tblProcesoGeneradorCNF">
+										<thead>
+											<tr>
+												<th>Cierre del Mes</th>
+												<th>Fecha de corte</th>
+												<th>Usuario vo.bo</th>
+												<th>Fecha vo.bo</th>
+												<th style="text-align: center;">Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+
+			<!--Modal Cataogo-->
+			<div class="modal fade" id="registroCatalogo" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<div class="modal-header">
+								<div class="col-md-11">
+									<legend class="float-none w-auto p-2">Gastos por producto</legend>
+								</div>
+								<div class="col-md-1">
+									<button type="button" class="btn-close" onclick="cerrarModal(this)"
+										data-dismiss="modal" aria-label="Close"></button>
+								</div>
+
+							</div>
+							<div class="modal-body">
+								<div id="alertaGastoCatalogo"></div>
+								<form th:action="@{/contabilidad/guardar-CatalogoBC}" method="post"
+									id="configuracionForm">
+									<input type="hidden" id="gastoIde" name="gastoIde">
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblConcepto" name="lblConcepto">Concepto:</label>
+										</div>
+										<div class="col-md-8">
+											<select class="form-control" id="slcConcepto" name="Concepto"
+												onchange="costoUnitarioS(this)">
+												<option value="0">Seleccione</option>
+												<option th:each="conceptos : ${cat_conceptos}"
+													th:value="${conceptos.i_opcion}" th:text="${conceptos.v_valor}">
+												</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblProducto" name="lblProducto">Productos:</label>
+										</div>
+										<div class="col-md-8">
+											<select class="form-control" id="slcProducto" name="Productos">
+												<option value="0">Seleccione</option>
+												<option th:each="producto : ${cat_productos}"
+													th:value="${producto.i_producto_creditoid}"
+													th:text="${producto.vc_descripcion_producto}">
+												</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblMontoInicial" name="lblMontoInicial">Monto Inicial:</label>
+										</div>
+										<div class="col-md-8">
+											<input type="number" class="form-control" id="montoInicial" min="0" step="1"
+												th:required="true" name="montoInicial"
+												th:value="${montoInicial != null ? montoInicial : 0}">
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblMontoFinal">Monto final:</label>
+										</div>
+										<div class="col-md-8">
+											<input type="number" class="form-control" id="montoFinal" min="0" step="1"
+												th:required="true" name="montoFinal"
+												th:value="${montoFinal != null ? montoFinal : 0}">
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-4">
+											<label for="lblCostoUnitario" name="lblCostoUnitario">Costo
+												Unitario:</label>
+										</div>
+										<div class="col-md-8">
+											<select class="form-control" id="slcCostoUnitario" name="costoUnitario"
+												disabled>
+												<option value="0">Seleccione</option>
+												<option th:each="costo_unitario : ${cat_costo_unitario}"
+													th:value="${costo_unitario.i_opcion}"
+													th:text="${costo_unitario.v_valor}">
+												</option>
+											</select>
+										</div>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-6"></div>
+										<div class="col-md-6 d-flex justify-content-end">
+											<button type="button" id="btnProcesando" class="btn btn-success"
+												onclick="submitFormGastos(this,1)">
+												Registrar
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--Ctalogo-->
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
+		<script th:src="@{/js/contabilidad/inicioContabilidad.js}"></script>
+		<script th:src="@{/js/contabilidad/costoNetoFinanciado2.js}"></script>
+		<script th:src="@{/js/contabilidad/costoNetoFinanciado.js}"></script>
+	</th:block>
+
+</body>
+
+
+</html>
