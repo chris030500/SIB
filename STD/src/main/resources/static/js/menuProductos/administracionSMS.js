@@ -47,7 +47,7 @@ function listaMensajes() {
 
 
 
-			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
+			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'), botones]).draw(false);
 		});
 	});
 }
@@ -196,73 +196,77 @@ function validarBusqueda() {
 }
 
 function llenarTablaSeguimiento() {
-    sms = [];
+	sms = [];
 
-    servicioURL = "mensajes/obtSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce;
+	servicioURL = "mensajes/obtSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce;
 
-    $.ajax({
-        url: getAbsolutePath() + servicioURL,
-        type: "GET",
-        dataType: "JSON",
-        success: function(respuesta) {
-            document.getElementById("ver-cargaSeguimiento").style.display = "none";
-            document.getElementById("ver-listaSeguimiento").style.display = "block";
-            
-            // Desactivar la actualización automática del DataTable
-            tblMensajesGenerados.clear().draw(false);
+	$.ajax({
+		url: getAbsolutePath() + servicioURL,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			document.getElementById("ver-cargaSeguimiento").style.display = "none";
+			document.getElementById("ver-listaSeguimiento").style.display = "block";
 
-            // Crear un array de datos para las filas
-            const data = [];
+			// Desactivar la actualización automática del DataTable
+			tblMensajesGenerados.clear().draw(false);
 
-            $.each(respuesta.lista, function(idx, opt) {
-                var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
-                var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
-                var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
-                var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
-                var botones = "";
+			// Crear un array de datos para las filas
+			const data = [];
 
-                if (opt.estMensaje == 1) {
-                    botones = botonesEditar + " " + botonesEnviar + " " + botonesInactivar;
-                }
-                if (opt.estMensaje == 0) {
-                    botones = botonesEditar + " " + botonesActivar;
-                }
-                if (opt.estMensaje == 2) {
-                    botones = "El mensaje ya se envio";
-                }
+			$.each(respuesta.lista, function(idx, opt) {
+				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
+				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID + "\")'><i class='fas fa-paper-plane'></i></button>";
+				var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
+				var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
+				var botones = "";
 
-                // Agregar el telefono y el mensaje a los arrays correspondientes
-                var mensaje = {
-                    telefono: opt.telefonoCelular,
-                    mensaje: opt.descMensaje,
-                    idMensaje: opt.mensajeID
-                };
+				if (opt.estMensaje == 1) {
+					botones = botonesEditar + " " + botonesEnviar + " " + botonesInactivar;
+				}
+				if (opt.estMensaje == 0) {
+					botones = botonesEditar + " " + botonesActivar;
+				}
+				if (opt.estMensaje == 2) {
+					botones = "El mensaje esta siendo procesado por el proveedor";
+				}
+				if (opt.estMensaje == 3) {
+					botones = "El mensaje ya se envio";
+				}
+				
 
-                if(opt.estMensaje == 1){
-                    sms.push(mensaje);
-                }
-                
-                //console.log(sms);
+				// Agregar el telefono y el mensaje a los arrays correspondientes
+				var mensaje = {
+					telefono: opt.telefonoCelular,
+					mensaje: opt.descMensaje,
+					idMensaje: opt.mensajeID
+				};
 
-                data.push([
-                    opt.clienteID,
-                    opt.nombreCompleto,
-                    opt.nombreBase,
-                    opt.nombreClasificacion,
-                    opt.telefonoCelular,
-                    opt.descMensaje,
-                    (opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'),
-                    botones
-                ]);
-            });
+				if (opt.estMensaje == 1) {
+					sms.push(mensaje);
+				}
 
-            // Agregar todas las filas al DataTable de una vez
-            tblMensajesGenerados.rows.add(data).draw();
-        },
-        error: function(error) {
-            //console.log(error.error);
-        }
-    });
+				//console.log(sms);
+
+				data.push([
+					opt.clienteID,
+					opt.nombreCompleto,
+					opt.nombreBase,
+					opt.nombreClasificacion,
+					opt.telefonoCelular,
+					opt.descMensaje,
+					(opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'),
+					botones
+				]);
+			});
+
+			// Agregar todas las filas al DataTable de una vez
+			tblMensajesGenerados.rows.add(data).draw();
+		},
+		error: function(error) {
+			//console.log(error.error);
+		}
+	});
 }
 
 
@@ -392,9 +396,9 @@ function enviarSMS(telefono, mensaje, mensajeID) {
 					console.error("Error al enviar los datos: " + error);
 				}
 			});
-			
+
 			mens = [];
-			
+
 		}
 	})
 }
@@ -413,35 +417,39 @@ function enviarMasivo() {
 		cancelButtonColor: '#d33',
 		cancelButtonText: 'Cancelar',
 		confirmButtonText: confirmButton,
-	}).then((result) => {
-		if (result.value) {
-			console.log(sms)
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "POST",
-				contentType: "application/json",
-				data: JSON.stringify(sms),
-				success: function(response) {
-					swal(
-						"¡Enviado!",
-						"El mensaje ha sido enviado.",
-						"success"
-					)
-					llenarTablaSeguimiento();
-				},
-				error: function(xhr, status, error) {
-					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
-					console.error("Error al enviar los datos: " + error);
-				}
+		showLoaderOnConfirm: true, // Mostrar spinner mientras espera la respuesta
+		preConfirm: () => {
+			return new Promise((resolve) => {
+				$.ajax({
+					url: getAbsolutePath() + servicioURL,
+					type: "POST",
+					contentType: "application/json",
+					data: JSON.stringify(sms),
+					success: function(response) {
+						resolve(response); // Resolver la promesa con la respuesta del servidor
+					},
+					error: function(xhr, status, error) {
+						// Manejar cualquier error que ocurra durante la solicitud AJAX
+						console.error("Error al enviar los datos: " + error);
+						swal("Error", "Hubo un problema al enviar el mensaje.", "error");
+						resolve(null); // Resolver la promesa con null en caso de error
+					}
+				});
 			});
 		}
-	})
+	}).then((result) => {
+		if (result) {
+			swal("¡Enviado!", "El mensaje ha sido enviado.", "success");
+			llenarTablaSeguimiento();
+		}
+	});
+
 }
 
 function downloadReport() {
-	
+
 	servicioURL = "mensajes/reporteSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce
-	
+
 	$.ajax({
 		url: getAbsolutePath() + servicioURL,
 		type: "GET",
