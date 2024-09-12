@@ -45,6 +45,9 @@ function ocultarMostrarExclusiones(divExclusiones) {
 		case "9":
 			console.log("Puestos");
 			break;
+		case "10":
+			console.log("Sucursales");
+			break;
 	}
 	
 	mostrarOcultarDivExclusiones(idDiv);
