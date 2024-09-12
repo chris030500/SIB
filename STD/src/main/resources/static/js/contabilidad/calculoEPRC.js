@@ -390,7 +390,7 @@ document.getElementById("uploadForm").addEventListener("submit", function(event)
 
 			formData.append("idFolio", idFolio);
 
-			fetch(getAbsolutePath() + "subirArchivo", {
+			fetch(getAbsolutePath() + "subirArchivoEPRC", {
 				method: "POST",
 				body: formData,
 			})
@@ -402,7 +402,6 @@ document.getElementById("uploadForm").addEventListener("submit", function(event)
 							icon: "success",
 						}).then(resp => {
 							adjuntarFiles();
-							console.log("SII")
 						});
 					} else {
 						swal("No se recibió respuesta del servidor.", {
@@ -431,7 +430,7 @@ document.getElementById("uploadForm").addEventListener("submit", function(event)
 
 });
 
-var listarArchivos = "listaArchivos";
+var listarArchivos = "listaArchivosEPRC";
 function adjuntarFiles() {
 	url = "";
 	url = getAbsolutePath() + listarArchivos;
@@ -440,6 +439,8 @@ function adjuntarFiles() {
 }
 
 function obtListadoArchivos(url) {
+	
+	console.log(url);
 	// Mostrar SweetAlert con spinner
 	swal({
 		title: "Consultando información",

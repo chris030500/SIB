@@ -115,10 +115,10 @@
 					<legend class="float-none w-auto p-2">Carga Layout</legend>
 					<div class="row" style="margin-top : 15px">
 						<div class="col-12">
-							<form id="uploadForm" enctype="multipart/form-data">
+							<form id="uploadFormFactura" enctype="multipart/form-data">
 								<div class="form-group">
-									<label for="fileUpload">Seleccionar archivo XML:</label>
-									<input type="file" id="fileUpload" name="fileUpload" accept=".xml"
+									<label for="fileUploadFactura">Seleccionar archivo XML:</label>
+									<input type="file" id="fileUploadFactura" name="fileUploadFactura" accept=".xml"
 										class="form-control" />
 								</div>
 								<button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
@@ -129,7 +129,7 @@
 					<div class="row" style="margin-top: 30px;">
 						<div class="col-12">
 							<h5>Archivos Subidos</h5>
-							<ul id="fileList" class="list-group">
+							<ul id="fileListFactura" class="list-group">
 								<!-- Aquí se mostrarán los archivos subidos -->
 								<li class="list-group-item">No hay archivos subidos.</li>
 							</ul>
@@ -159,14 +159,29 @@
 				<div id="divConfiguracion" class="" style="margin-top : 15px ">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Proceso Costo Neto Financiado</legend>
-						<div class="row" style="margin-top : 2px ">
-							<div class="col-md-6"></div>
+						<div class="row" style="margin-top: 2px;">
+							<div class="col-md-3"></div>
+							<!-- Columna para Fecha Sistema -->
 							<div class="col-md-3">
 								<label><b>Fecha Sistema: </b><span th:text="${fechaSistema}"></span></label>
 							</div>
+
+							<!-- Columna para Fecha de Cierre -->
 							<div class="col-md-3">
-								<label><b>Fecha de Cierre: </b><span id="fechaProceso"
-										th:text="${fechaCierre ?: '----/--/--'}"></span></label>
+								<label><b>Fecha de Cierre: </b>
+									<span id="fechaProceso" th:text="${fechaCierre ?: '----/--/--'}"></span>
+								</label>
+							</div>
+
+							<!-- Columna para el botón Ver Documentos -->
+							<div class="col-md-2">
+								<label>Ver Documentos</label>
+								<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
+									title="Adjuntar Archivos" data-bs-target="#modalAdjuntosComisiones"
+									aria-controls="table-datatable" type="button" onclick="adjuntarFilesComisiones(2)"
+									data-tooltip="Add">
+									<i class="bi bi-files"></i>
+								</button>
 							</div>
 						</div>
 						<div id="liveAlertPlaceholder"></div>
@@ -364,6 +379,54 @@
 				</div>
 			</div>
 			<!--Ctalogo-->
+			<div class="modal fade" id="modalAdjuntosComisiones" data-backdrop="static" tabindex="-1"
+				data-keyboard="false" role="dialog">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<div class="modal-body">
+								<div id="layout-tab1" class="">
+									<fieldset class="border p-2">
+										<legend class="float-none w-auto p-2">Carga Layout</legend>
+										<div class="row" style="margin-top : 15px ">
+											<div class="col-12">
+												<form id="uploadFormComisiones" enctype="multipart/form-data">
+													<div class="form-group">
+														<label for="fileUploadComisiones">Seleccionar archivo
+															Excel:</label>
+														<input type="file" id="fileUploadComisiones"
+															name="fileUploadComisiones" accept=".xlsx, .xls"
+															class="form-control" />
+													</div>
+													<button type="submit" class="btn btn-primary mt-2">Subir
+														archivo</button>
+												</form>
+											</div>
+										</div>
+
+										<div class="row" style="margin-top: 30px;">
+											<div class="col-12">
+												<h5>Archivos Subidos</h5>
+												<ul id="fileListComisiones" class="list-group">
+													<li class="list-group-item">No hay archivos subidos.</li>
+												</ul>
+											</div>
+										</div>
+									</fieldset>
+								</div>
+
+							</div>
+							<div class="modal-footer">
+								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;"
+									id="lblCargaAdjunto"></h1>
+								<button type="button" class="btn btn-primary" id="btnGuardarFile">Guardar</button>
+								<button type="button" class="btn btn-primary" data-dismiss="modal"
+									id="btnCerrarAdjunto">Cerrar</button>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">

@@ -4,12 +4,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -43,8 +52,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.contabilidad.calculoEPRC.repository.IProcesoHistEPRC;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -77,10 +89,92 @@ public class CalculoEPRController {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+    private ConfigService configService;
 
 	List<Usuario> usuario = null;
 
 	private String rutaDireccion = "";
+	
+	@PostMapping("/subirArchivoEPRC")
+    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
+            @RequestParam("idFolio") String idFolio) {
+ 
+        String mensaje = "";
+        ArrayList<String> respuesta = new ArrayList<String>();
+        List<Configuracion> bases = configService.obtenerUrlLayout();
+        try {
+            if (files.length > 0) {
+                for (MultipartFile file : files) {
+                    byte[] bytes = file.getBytes();
+                    String folderPath = bases.get(0).getVc_valor_propiedad();
+                    Path folder = Paths.get(folderPath);
+ 
+                    Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+                    Files.write(nuevoPath, bytes);
+ 
+                    mensaje = "Se agrego archivo correctamente.";
+                    logger.info(mensaje);
+                }
+            } else {
+                mensaje = "No subio archivo.";
+                logger.info(mensaje);
+            }
+            respuesta.add(mensaje);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("--" + e.getMessage());
+            mensaje = e.getMessage();
+            respuesta.add(mensaje);
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+	
+	@GetMapping("/listaArchivosEPRC")
+    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder() throws IOException {
+ 
+        try {
+            List<Configuracion> bases = configService.obtenerUrlLayout();
+            String folderPath = bases.get(0).getVc_valor_propiedad();
+            Path folder = Paths.get(folderPath);
+ 
+            List<ArchivoOfertasAutomaticas> listaArchivos = new ArrayList<>();
+ 
+            // Listar los archivos en la carpeta
+            Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
+                    archivos.setNombreArchivo(file.getFileName().toString());
+                    archivos.setPesoArchivo((attrs.size() / 1024) + " KB");
+ 
+                    logger.info("Nombre:" + archivos.getNombreArchivo());
+                    logger.info("tamaño:" + archivos.getPesoArchivo());
+                    long millis = attrs.creationTime().toMillis();
+                    FileTime fileTime = FileTime.fromMillis(millis);
+                    LocalDate fechaCreacion = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    String fechaFormateada = fechaCreacion.toString();
+                    archivos.setFechaCreacion(fechaFormateada);
+ 
+                    long fechaModificacion = attrs.lastModifiedTime().toMillis();
+                    FileTime fileTimeMod = FileTime.fromMillis(fechaModificacion);
+                    LocalDate fechaMod = fileTimeMod.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    String fechaFormateadaMod = fechaMod.toString();
+                    archivos.setFechaModifacion(fechaFormateadaMod);
+ 
+                    logger.info("fecha de creacion:" + fechaFormateada);
+                    logger.info("fecha de Modificacion:" + fechaFormateadaMod);
+                    archivos.setRutaArchivo(bases.get(0).getVc_valor_propiedad() + file.getFileName().toString());
+                    listaArchivos.add(archivos);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            return ResponseEntity.ok(listaArchivos);
+        } catch (Exception e) {
+            logger.error("Error:" + e.getMessage());
+            return null;
+        }
+    }
 
 	@GetMapping("/calculoEPRC")
 	public String calculoEPRC(Model model) throws IOException {
@@ -330,31 +424,60 @@ public class CalculoEPRController {
 	@PostMapping("/procesarArchivo")
 	public ResponseEntity<Map<String, Object>> procesarArchivo(@RequestBody Map<String, String> request) {
 		String nombreArchivo = request.get("nombreArchivo");
+		
+		if(nombreArchivo.contains("layout_garantias")) {
+			
+			try {
+				// Aquí agregas la lógica para procesar el archivo
+				procesarYMigrarArchivoGarantias(nombreArchivo);
 
-		try {
-			// Aquí agregas la lógica para procesar el archivo
-			procesarYMigrarArchivo(nombreArchivo);
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", false);
+				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", false);
+				response.put("error", e.getMessage());
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			}
+			
+		} else {
+			
+			try {
+				// Aquí agregas la lógica para procesar el archivo
+				procesarYMigrarArchivoEtapas(nombreArchivo);
 
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", true);
-			return ResponseEntity.ok(response);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", "Error al procesar el archivo: " + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			} catch (IOException e) {
+				e.printStackTrace();
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", false);
+				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", false);
+				response.put("error", e.getMessage());
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			}
 		}
 	}
 
-	public void procesarYMigrarArchivo(String nombreArchivo) throws IOException {
+	public void procesarYMigrarArchivoGarantias(String nombreArchivo) throws IOException {
 		File file = new File("\\\\10.150.102.63\\std\\Layouts\\" + nombreArchivo);
+		String fechaCorteFin = "";
+		
+		System.out.print(nombreArchivo);
 
 		if (!file.exists()) {
 			throw new IOException("El archivo no existe en la ruta especificada.");
@@ -376,7 +499,7 @@ public class CalculoEPRController {
 				// Acumulación de datos para batch insert
 				List<Object[]> dataToInsert = new ArrayList<>();
 				int totalRecords = 0;
-				int idProceso = obtenerSiguienteIdProceso();
+				int idProceso = obtenerSiguienteIdProcesoGarantias();
 
 				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 					Row row = sheet.getRow(i);
@@ -428,20 +551,25 @@ public class CalculoEPRController {
 					// Acumulamos los datos para el batch
 					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5, valor6});
 					totalRecords++;
-					Object[] firstRow = dataToInsert.get(0); 
-					Date fechaCorte = (Date) firstRow[5];
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-					LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-					String fechaCorteFin = localDate.format(formatter);
 				}
 				
+				Object[] firstRow = dataToInsert.get(0);
+				System.out.print(firstRow[0]);
+				System.out.print(firstRow[1]);
+				System.out.print(firstRow[2]);
+				System.out.print(firstRow[3]);
+				System.out.print(firstRow[4]);
+				//Date fechaCorte = (Date) firstRow[4];
+				//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				//LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+				fechaCorteFin = (String) firstRow[4];
 				
 
 				// Insertar los datos en la base de datos
-				insertarEnBaseDeDatos(dataToInsert);
+				insertarEnBaseDeDatosGarantias(dataToInsert);
 
 				// Insertar datos de control en la tabla de control
-				insertarDatosDeControl(idProceso, totalRecords);
+				insertarDatosDeControlGarantias(idProceso, totalRecords, fechaCorteFin);
 
 			} finally {
 				if (workbook != null) {
@@ -453,7 +581,7 @@ public class CalculoEPRController {
 
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
-	private void insertarEnBaseDeDatos(List<Object[]> dataToInsert) {
+	private void insertarEnBaseDeDatosGarantias(List<Object[]> dataToInsert) {
 		String sql = "INSERT INTO TBL_GARANTIA_EPRC (I_NumCredito, VC_TipoGarantia, DC_MontoGarantia, VC_CalidadGarantia, DT_FechaCorte, I_IdProceso) VALUES (?, ?, ?, ?, ?, ?)";
 
 		// Ejecutar el batch insert usando JdbcTemplate
@@ -461,25 +589,212 @@ public class CalculoEPRController {
 	}
 
 	// Método para insertar datos de control en la tabla de control
-	private void insertarDatosDeControl(int idProceso, int totalRecords) {
-		String sql = "INSERT INTO TBL_CONTROL_GARANTIAS (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus) VALUES (?, ?, ?, ?, ?)";
+	private void insertarDatosDeControlGarantias(int idProceso, int totalRecords, String fechaCorteFin) {
+		
+		String sql1 = "SELECT * FROM TBL_CONTROL_GARANTIAS WHERE DT_FechaCorte = ? ";
+		String sql2 = "INSERT INTO TBL_CONTROL_GARANTIAS (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 
-		// Generar un ID de proceso único, por ejemplo, usando un UUID o similar
+		// Ejecutar el SELECT y obtener una lista de resultados
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+
+		// Validar si se encontró algún resultado
+		if (!result.isEmpty()) {
+		    // Extraer el primer registro (ya que esperas un solo resultado)
+		    Map<String, Object> row = result.get(0);
+
+		    // Obtener los valores del registro
+		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+
+		    // Lógica para realizar el UPDATE
+		    String sqlUpdate = "UPDATE TBL_CONTROL_GARANTIAS SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+
+		    // Ejecutar el UPDATE con los nuevos valores
+		    jdbcTemplate.update(sqlUpdate, idProc);
+
+		    System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
+		    
+		 // Definir los valores de control
+			String estatusProceso = "A";
+			Date fechaProceso = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String fechaProcesoStr = dateFormat.format(fechaProceso);
+
+			// Ejecutar la inserción de control
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+		    
+		} else {
+			// Definir los valores de control
+			String estatusProceso = "A";
+			Date fechaProceso = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String fechaProcesoStr = dateFormat.format(fechaProceso);
+
+			// Ejecutar la inserción de control
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+		}
+	}
+	
+	// Método para obtener el siguiente ID de proceso
+    private int obtenerSiguienteIdProcesoGarantias() {
+        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_GARANTIAS";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+    
+    
+    
+    
+    public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
+		File file = new File("\\\\10.150.102.63\\std\\Layouts\\" + nombreArchivo);
+		String fechaCorteFin = "";
+		
+		System.out.print(nombreArchivo);
+
+		if (!file.exists()) {
+			throw new IOException("El archivo no existe en la ruta especificada.");
+		}
+
+		try (FileInputStream fis = new FileInputStream(file)) {
+			Workbook workbook = null;
+			try {
+				if (nombreArchivo.endsWith("xlsx")) {
+					workbook = new XSSFWorkbook(fis);
+				} else if (nombreArchivo.endsWith("xls")) {
+					workbook = new HSSFWorkbook(fis);
+				} else {
+					throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+				}
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// Acumulación de datos para batch insert
+				List<Object[]> dataToInsert = new ArrayList<>();
+				int totalRecords = 0;
+				int idProceso = obtenerSiguienteIdProcesoEtapas();
+
+				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+					Row row = sheet.getRow(i);
+					if (row == null) {
+						continue;
+					}
+
+					// Obtener el valor de la primera celda (BigInteger)
+					Cell cell0 = row.getCell(0);
+					BigInteger valor1 = BigInteger.ZERO;
+					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
+						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
+					}
+
+					// Obtener el valor de la tercera celda (float)
+					Cell cell1 = row.getCell(1);
+					int valor2 = 0;
+					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
+						valor2 = (int) cell1.getNumericCellValue();
+					}
+
+					// Obtener el valor de la quinta celda (Date)
+					Cell cell2 = row.getCell(2);
+					String valor3 = "";
+					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC
+							&& DateUtil.isCellDateFormatted(cell2)) {
+						Date date = cell2.getDateCellValue();
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+						valor3 = localDate.format(formatter);
+					}
+					
+					int valor4 = idProceso;
+
+					// Acumulamos los datos para el batch
+					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4});
+					totalRecords++;
+				}
+				
+				Object[] firstRow = dataToInsert.get(0);
+				System.out.print(firstRow[0]);
+				System.out.print(firstRow[1]);
+				System.out.print(firstRow[2]);
+				System.out.print(firstRow[3]);
+				//Date fechaCorte = (Date) firstRow[4];
+				//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				//LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+				fechaCorteFin = (String) firstRow[2];
+				
+
+				// Insertar los datos en la base de datos
+				insertarEnBaseDeDatosEtapas(dataToInsert);
+
+				// Insertar datos de control en la tabla de control
+				insertarDatosDeControlEtapas(idProceso, totalRecords, fechaCorteFin);
+
+			} finally {
+				if (workbook != null) {
+					workbook.close();
+				}
+			}
+		}
+	}
+
+	// Método para insertar los datos en la base de datos usando batch insert con
+	// JdbcTemplate
+	private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
+		String sql = "INSERT INTO TBL_CAMBIO_ETAPA (I_CREDITOID, I_TIPO_ETAPA, DT_FECHA_CORTE, I_IDPROCESO) VALUES (?, ?, ?, ?)";
+
+		// Ejecutar el batch insert usando JdbcTemplate
+		jdbcTemplate.batchUpdate(sql, dataToInsert);
+	}
+
+	// Método para insertar datos de control en la tabla de control
+	private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
+		
+		String sql1 = "SELECT * FROM TBL_CONTROL_ETAPA WHERE DT_FechaCorte = ? ";
+		String sql2 = "INSERT INTO TBL_CONTROL_ETAPA (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+
+		// Ejecutar el SELECT y obtener una lista de resultados
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+
+		// Validar si se encontró algún resultado
+		if (!result.isEmpty()) {
+		    // Extraer el primer registro (ya que esperas un solo resultado)
+		    Map<String, Object> row = result.get(0);
+
+		    // Obtener los valores del registro
+		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+
+		    // Lógica para realizar el UPDATE
+		    String sqlUpdate = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+
+		    // Ejecutar el UPDATE con los nuevos valores
+		    jdbcTemplate.update(sqlUpdate, idProc);
+
+		    System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
+		    
+		 // Definir los valores de control
+			String estatusProceso = "A";
+			Date fechaProceso = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String fechaProcesoStr = dateFormat.format(fechaProceso);
+
+			// Ejecutar la inserción de control
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+		    
+		} else {
+			// Definir los valores de control
+			String estatusProceso = "A";
+			Date fechaProceso = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String fechaProcesoStr = dateFormat.format(fechaProceso);
+
+			// Ejecutar la inserción de control
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+		}
 		
 
-		// Definir los valores de control
-		String estatusProceso = "A";
-		Date fechaProceso = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-		// Ejecutar la inserción de control
-		jdbcTemplate.update(sql, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso);
+		
 	}
 
 	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProceso() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_GARANTIAS";
+    private int obtenerSiguienteIdProcesoEtapas() {
+        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
