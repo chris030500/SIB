@@ -8,10 +8,15 @@ var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNom
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
 var actualizarIndicadorPuestos = "exclusiones/actualizarIndicadorPuestos";
+var obtenerSucursalesActivos = "exclusiones/getSucursalesActivos";
+var obtenerSucursalesDepurar = "exclusiones/getSucursalesDepurar";
+var actualizarIndicadorSucursales = "exclusiones/actualizarIndicadorSucursales";
 var puestoSeleccionado = null;
 var convenioSeleccionado = null;
+var sucursalSeleccionado = null;
 var idConvenio = null;
 var idPuesto = null;
+var idSucursal = null;
 
 function listaEstados() {
     var selectEstados = $('#opcionesEstado'); // Seleccionar el elemento select por su ID
@@ -89,7 +94,7 @@ document.getElementById('btnAgregar').addEventListener('click', function() {
 
     // Verificar que ambos valores están seleccionados
     if (idEstado && idMunicipio) {
-        // Llamar a la función para actualizar, por ejemplo usando Fetch API
+        // Llamar a la función para actualizar
        updateMunicipios(idEstado, idMunicipio, 1);
     } else {
         alert('Por favor, seleccione un estado y un municipio.');
@@ -327,6 +332,93 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 			});
 }
 
+function listaSucursalesActivos() {
+    var divSucursalesActivos = $('#sucursalesActivos');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerSucursalesActivos,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar opciones al select
+            $.each(res.sucursalesActivos, function(index, sucursal) {
+                
+                
+               	var div = $("<div>")
+               	.addClass("sucursalA border")
+               	.text(sucursal.nombre_sucursal)
+               	.attr("sucursal-id", sucursal.id_sucursal);
+                
+                div.on("click", function() {
+                    $(".sucursalA").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    
+                    // Obtener el ID del convenio seleccionado
+                    var idSucursal = $(this).attr("sucursal-id");
+                    sucursalSeleccionado = $(this);  // Guardar la sucursal seleccionada
+                });
+
+                // Agregar la opción al select
+               divSucursalesActivos.append(div);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener las sucursales activas: " + error);
+        }
+    });
+}
+
+function listaSucursalesDepurar() {
+    var divSucursalesDepurar = $('#sucursalesDepurar');
+
+    // Hacer la solicitud AJAX para obtener los estados
+    $.ajax({
+        url: getAbsolutePath() + obtenerSucursalesDepurar,
+        type: "GET",
+        dataType: "JSON",
+        success: function(res) {
+            // Iterar sobre los datos recibidos y agregar 
+            $.each(res.sucursalesDepurar, function(index, sucursal) {
+                
+                var div = $("<div>")
+                .addClass("sucursalD border")
+                .text(sucursal.nombre_sucursal)
+                .attr("sucursal-id", sucursal.id_sucursal);
+                
+                div.on("click", function() {
+                    $(".sucursalD").removeClass("selected"); // Remover selección previa
+                    $(this).addClass("selected");  // Añadir clase selected
+                    
+                    var idSucursal = $(this).attr("sucursal-id");
+                    sucursalSeleccionado = $(this); 
+                });
+                
+               divSucursalesDepurar.append(div);
+            });
+        },
+        error: function(error) {
+            console.error("Error al obtener las sucursales a depurar: " + error);
+        }
+    });
+}
+
+function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
+    
+    var servicioURL = actualizarIndicadorSucursales + "?idSucursal=" + Number(idSucursal) + "&indicadorDepurar=" + indicadorDepurar;
+
+			$.ajax({
+				url: getAbsolutePath() + servicioURL,
+				type: "GET",
+				success: function(response) {
+					console.log("Actualización exitosa.")
+				},
+				error: function(xhr, status, error) {
+					console.error("Error actualizar sucursal: " + error);
+				}
+			});
+}
+
 // Evento para mover el puesto seleccionado de Activos a Depurar
 $("#btnAddRightPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
@@ -375,6 +467,30 @@ $("#btnAddLeftConvenio").on("click", function() {
     }
 });
 
+// Evento para mover la sucursal seleccionada de Activos a Depurar
+$("#btnAddRightSucursal").on("click", function() {
+    if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesActivos") {
+        var idSucursal = sucursalSeleccionado.attr('sucursal-id');
+        
+        $("#sucursalesDepurar").append(sucursalSeleccionado);  // Mover al contenedor de depurar
+        updateIndicadorSucursal(idSucursal, 1);
+        sucursalSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+       	sucursalSeleccionado = null;  // Limpiar la variable
+    }
+});
+
+// Evento para mover la sucursal seleccionada de Depurar a Activos
+$("#btnAddLeftSucursal").on("click", function() {
+    if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesDepurar") {
+        var idSucursal = sucursalSeleccionado.attr('sucursal-id');
+        
+        $("#sucursalesActivos").append(sucursalSeleccionado);  // Mover al contenedor de activos
+        updateIndicadorSucursal(idSucursal, 0);
+        sucursalSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        sucursalSeleccionado = null;  // Limpiar la variable
+    }
+});
+
 
 $(document).ready(function() {
     listaEstados();
@@ -382,6 +498,8 @@ $(document).ready(function() {
     listaConveniosDepurar();
     listaPuestosActivos();
     listaPuestosDepurar();
+    listaSucursalesActivos();
+    listaConveniosDepurar();
     
      // Escuchar el evento de cambio en el select de estados
     $('#opcionesEstado').change(function() {

@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.CatPuestosOcupacion;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosNomina;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ExclusionSucursales;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.CatPuestosOcupacionService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ConveniosNominaService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
+import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ExclusionSucursalesService;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -48,6 +50,9 @@ public class ExclusionesBasesNominaController {
 	
 	@Autowired
 	private CatPuestosOcupacionService puestosOcupacionService;
+	
+	@Autowired
+	private ExclusionSucursalesService sucursalesService;
 	
 	List<Usuario> usuario = null;
 	
@@ -280,6 +285,75 @@ public class ExclusionesBasesNominaController {
 		if (updatedPuestos != null) {
 			Map<String, Object> response = new HashMap<>();
 			response.put("puesto", updatedPuestos);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@RequestMapping(value = { "/getSucursalesActivos" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getSucursalesActivos() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> sucursalesActivos = sucursalesService.getSucursalesActivos();
+		
+		try {
+			if (sucursalesActivos != null && !sucursalesActivos.isEmpty()) {
+				res.put("sucursalesActivos", sucursalesActivos);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("sucursalesActivos", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = { "/getSucursalesDepurar" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getSucursalesDepurar() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> sucursalesDepurar = sucursalesService.getSucursalesDepurar();
+		
+		try {
+			if (sucursalesDepurar != null && !sucursalesDepurar.isEmpty()) {
+				res.put("sucursalesDepurar", sucursalesDepurar);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("sucursalesDepurar", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+	}
+	
+	@RequestMapping(value = "/actualizarIndicadorSucursales", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> actualizarIndicadorSucursales(@RequestParam("idSucursal") Integer idSucursal,
+			@RequestParam("indicadorDepurar") Integer indicadorDepurar) {
+		
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = null;
+		if (principal instanceof UserDetails) {
+			userDetails = (UserDetails) principal;
+		}
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+
+		ExclusionSucursales updatedSucursal = sucursalesService.actualizarIndicadorSucursal(idSucursal, indicadorDepurar, idUsuario);
+	
+		if (updatedSucursal != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("sucursal", updatedSucursal);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
