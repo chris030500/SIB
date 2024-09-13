@@ -172,7 +172,7 @@ public class CostoNetoFinanciadoController {
 	public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolderComisiones() throws IOException {
 
 		try {
-			List<Configuracion> bases = configService.obtenerUrlLayout();
+			List<Configuracion> bases = configService.obtenerUrlComisiones();
 			String folderPath = bases.get(0).getVc_valor_propiedad();
 			Path folder = Paths.get(folderPath);
 
@@ -253,7 +253,7 @@ public class CostoNetoFinanciadoController {
 
 		String mensaje = "";
 		ArrayList<String> respuesta = new ArrayList<String>();
-		List<Configuracion> bases = configService.obtenerUrlLayout();
+		List<Configuracion> bases = configService.obtenerUrlComisiones();
 		try {
 			if (files.length > 0) {
 				for (MultipartFile file : files) {
@@ -782,11 +782,11 @@ public class CostoNetoFinanciadoController {
 	public ResponseEntity<Map<String, Object>> procesarArchivoComisiones(@RequestBody Map<String, String> request) {
 		String nombreArchivo = request.get("nombreArchivo");
 
-		if (nombreArchivo.contains("layout_garantias")) {
+		if (nombreArchivo.contains("layout_comisiones")) {
 
 			try {
 				// Aquí agregas la lógica para procesar el archivo
-				procesarYMigrarArchivoGarantias(nombreArchivo);
+				procesarYMigrarArchivoComisiones(nombreArchivo);
 
 				Map<String, Object> response = new HashMap<>();
 				response.put("success", true);
@@ -830,8 +830,8 @@ public class CostoNetoFinanciadoController {
 		}
 	}
 	
-	public void procesarYMigrarArchivoGarantias(String nombreArchivo) throws IOException {
-		File file = new File("\\\\10.150.102.63\\std\\Layouts\\" + nombreArchivo);
+	public void procesarYMigrarArchivoComisiones(String nombreArchivo) throws IOException {
+		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
 		String fechaCorteFin = "";
 		
 		System.out.print(nombreArchivo);
@@ -856,7 +856,7 @@ public class CostoNetoFinanciadoController {
 				// Acumulación de datos para batch insert
 				List<Object[]> dataToInsert = new ArrayList<>();
 				int totalRecords = 0;
-				int idProceso = obtenerSiguienteIdProcesoGarantias();
+				int idProceso = obtenerSiguienteIdProcesoComisiones();
 
 				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 					Row row = sheet.getRow(i);
@@ -871,13 +871,13 @@ public class CostoNetoFinanciadoController {
 						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
 					}
 
-					// Obtener el valor de la segunda celda (String)
+					// Obtener el valor de la tercera celda (float)
 					Cell cell1 = row.getCell(1);
-					String valor2 = "";
-					if (cell1 != null && cell1.getCellType() == CellType.STRING) {
-						valor2 = cell1.getStringCellValue();
+					float valor2 = 0;
+					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
+						valor2 = (float) cell1.getNumericCellValue();
 					}
-
+					
 					// Obtener el valor de la tercera celda (float)
 					Cell cell2 = row.getCell(2);
 					float valor3 = 0;
@@ -885,28 +885,21 @@ public class CostoNetoFinanciadoController {
 						valor3 = (float) cell2.getNumericCellValue();
 					}
 
-					// Obtener el valor de la cuarta celda (String)
+					// Obtener el valor de la quinta celda (Date)
 					Cell cell3 = row.getCell(3);
 					String valor4 = "";
-					if (cell3 != null && cell3.getCellType() == CellType.STRING) {
-						valor4 = cell3.getStringCellValue();
-					}
-
-					// Obtener el valor de la quinta celda (Date)
-					Cell cell4 = row.getCell(4);
-					String valor5 = "";
-					if (cell4 != null && cell4.getCellType() == CellType.NUMERIC
-							&& DateUtil.isCellDateFormatted(cell4)) {
-						Date date = cell4.getDateCellValue();
+					if (cell3 != null && cell3.getCellType() == CellType.NUMERIC
+							&& DateUtil.isCellDateFormatted(cell3)) {
+						Date date = cell3.getDateCellValue();
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 						LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-						valor5 = localDate.format(formatter);
+						valor4 = localDate.format(formatter);
 					}
 					
-					int valor6 = idProceso;
+					int valor5 = idProceso;
 
 					// Acumulamos los datos para el batch
-					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5, valor6});
+					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5});
 					totalRecords++;
 				}
 				
@@ -919,14 +912,14 @@ public class CostoNetoFinanciadoController {
 				//Date fechaCorte = (Date) firstRow[4];
 				//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				//LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-				fechaCorteFin = (String) firstRow[4];
+				fechaCorteFin = (String) firstRow[3];
 				
 
 				// Insertar los datos en la base de datos
-				insertarEnBaseDeDatosGarantias(dataToInsert);
+				insertarEnBaseDeDatosComisiones(dataToInsert);
 
 				// Insertar datos de control en la tabla de control
-				insertarDatosDeControlGarantias(idProceso, totalRecords, fechaCorteFin);
+				insertarDatosDeControlComisiones(idProceso, totalRecords, fechaCorteFin);
 
 			} finally {
 				if (workbook != null) {
@@ -938,18 +931,18 @@ public class CostoNetoFinanciadoController {
 
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
-	private void insertarEnBaseDeDatosGarantias(List<Object[]> dataToInsert) {
-		String sql = "INSERT INTO TBL_GARANTIA_EPRC (I_NumCredito, VC_TipoGarantia, DC_MontoGarantia, VC_CalidadGarantia, DT_FechaCorte, I_IdProceso) VALUES (?, ?, ?, ?, ?, ?)";
+	private void insertarEnBaseDeDatosComisiones(List<Object[]> dataToInsert) {
+		String sql = "INSERT INTO TBL_COMISIONES_CREDITOS (I_CREDITO, D_Costo_Comisiones, D_Ingresos_Comisiones, DT_FECHA_CORTE, I_IdProceso) VALUES (?, ?, ?, ?, ?)";
 
 		// Ejecutar el batch insert usando JdbcTemplate
 		jdbcTemplate.batchUpdate(sql, dataToInsert);
 	}
 
 	// Método para insertar datos de control en la tabla de control
-	private void insertarDatosDeControlGarantias(int idProceso, int totalRecords, String fechaCorteFin) {
+	private void insertarDatosDeControlComisiones(int idProceso, int totalRecords, String fechaCorteFin) {
 		
-		String sql1 = "SELECT * FROM TBL_CONTROL_GARANTIAS WHERE DT_FechaCorte = ? ";
-		String sql2 = "INSERT INTO TBL_CONTROL_GARANTIAS (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+		String sql1 = "SELECT * FROM TBL_CONTROL_COMISIONES WHERE DT_FechaCorte = ? ";
+		String sql2 = "INSERT INTO TBL_CONTROL_COMISIONES (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 
 		// Ejecutar el SELECT y obtener una lista de resultados
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
@@ -963,7 +956,7 @@ public class CostoNetoFinanciadoController {
 		    int idProc = (Integer) row.get("PK_IdProcesoComision");
 
 		    // Lógica para realizar el UPDATE
-		    String sqlUpdate = "UPDATE TBL_CONTROL_GARANTIAS SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+		    String sqlUpdate = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
 
 		    // Ejecutar el UPDATE con los nuevos valores
 		    jdbcTemplate.update(sqlUpdate, idProc);
@@ -992,8 +985,8 @@ public class CostoNetoFinanciadoController {
 	}
 	
 	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProcesoGarantias() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_GARANTIAS";
+    private int obtenerSiguienteIdProcesoComisiones() {
+        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
     

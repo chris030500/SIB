@@ -297,7 +297,7 @@ function obtListadoArchivos(url) {
                         closeOnEsc: false,
                     });
 
-                    fetch(getAbsolutePath() + 'procesarArchivoComisiones', {
+                    fetch(getAbsolutePath() + 'procesarArchivoFactura', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -448,7 +448,7 @@ function obtListadoArchivosComisiones(url) {
 						closeOnEsc: false,
 					});
 
-					fetch(getAbsolutePath() + 'procesarArchivo', {
+					fetch(getAbsolutePath() + 'procesarArchivoComisiones', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json'
