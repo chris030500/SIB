@@ -67,7 +67,7 @@ import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-
+ 
 @Controller
 @RequestMapping("/contabilidad")
 public class ConfiguracionContabilidadController {
@@ -383,85 +383,7 @@ public class ConfiguracionContabilidadController {
         String url = configService.obtenerUrlCSO().get(0).getVc_valor_propiedad();
         return url.toString();
     }
- 
-    @PostMapping("/subirArchivo")
-    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
-            @RequestParam("idFolio") String idFolio) {
- 
-        String mensaje = "";
-        ArrayList<String> respuesta = new ArrayList<String>();
-        List<Configuracion> bases = configService.obtenerUrlFactura();
-        try {
-            if (files.length > 0) {
-                for (MultipartFile file : files) {
-                    byte[] bytes = file.getBytes();
-                    String folderPath = bases.get(0).getVc_valor_propiedad();
-                    Path folder = Paths.get(folderPath);
- 
-                    Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
-                    Files.write(nuevoPath, bytes);
- 
-                    mensaje = "Se agrego archivo correctamente.";
-                    logger.info(mensaje);
-                }
-            } else {
-                mensaje = "No subio archivo.";
-                logger.info(mensaje);
-            }
-            respuesta.add(mensaje);
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            logger.error("--" + e.getMessage());
-            mensaje = e.getMessage();
-            respuesta.add(mensaje);
-            return ResponseEntity.ok(respuesta);
-        }
-    }
- 
-    @GetMapping("/listaArchivos")
-    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder() throws IOException {
- 
-        try {
-            List<Configuracion> bases = configService.obtenerUrlFactura();
-            String folderPath = bases.get(0).getVc_valor_propiedad();
-            Path folder = Paths.get(folderPath);
- 
-            List<ArchivoOfertasAutomaticas> listaArchivos = new ArrayList<>();
- 
-            // Listar los archivos en la carpeta
-            Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
-                    archivos.setNombreArchivo(file.getFileName().toString());
-                    archivos.setPesoArchivo((attrs.size() / 1024) + " KB");
- 
-                    logger.info("Nombre:" + archivos.getNombreArchivo());
-                    logger.info("tamaño:" + archivos.getPesoArchivo());
-                    long millis = attrs.creationTime().toMillis();
-                    FileTime fileTime = FileTime.fromMillis(millis);
-                    LocalDate fechaCreacion = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    String fechaFormateada = fechaCreacion.toString();
-                    archivos.setFechaCreacion(fechaFormateada);
- 
-                    long fechaModificacion = attrs.lastModifiedTime().toMillis();
-                    FileTime fileTimeMod = FileTime.fromMillis(fechaModificacion);
-                    LocalDate fechaMod = fileTimeMod.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    String fechaFormateadaMod = fechaMod.toString();
-                    archivos.setFechaModifacion(fechaFormateadaMod);
- 
-                    logger.info("fecha de creacion:" + fechaFormateada);
-                    logger.info("fecha de Modificacion:" + fechaFormateadaMod);
-                    archivos.setRutaArchivo(bases.get(0).getVc_valor_propiedad() + file.getFileName().toString());
-                    listaArchivos.add(archivos);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-            return ResponseEntity.ok(listaArchivos);
-        } catch (Exception e) {
-            logger.error("Error:" + e.getMessage());
-            return null;
-        }
-    }
+    
 	public int obtUsuario() {
 
 		try {

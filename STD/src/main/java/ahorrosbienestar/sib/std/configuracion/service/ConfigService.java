@@ -94,4 +94,8 @@ public class ConfigService {
     public List<Configuracion>  obtenerUrlFactura() {
         return iConfiguracionRepository.obtenerUrlFactura();
     }
+    
+    public List<Configuracion>  obtenerUrlComisiones() {
+        return iConfiguracionRepository.obtenerUrlComisiones();
+    }
 }
