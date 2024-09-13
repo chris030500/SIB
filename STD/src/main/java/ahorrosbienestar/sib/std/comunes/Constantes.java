@@ -181,6 +181,7 @@ public class Constantes {
 	
 	//catalogos configuracion contabilidad
 	public static final int CAT_CONCEPTOS = 27;
+	public static final int CAT_COSTOS = 28;
 	public static final int ESTATUS_BC = 1;
 	
 	//constantes reportes de contabilidad 
@@ -196,12 +197,14 @@ public class Constantes {
 	public static final String ERROR_GUARDAR = "Error al guardar los datos:";
 	public static final String PROCESO_CNF_OK = "Termino el procesamiento de información. Favor de Generar el reporte y validar la información. ";
 	public static final String VOBO_OK = "Se registro el vo.bo de la información procesada. ";
+	public static final String PRORRATEO = "Se realizo el proceso de prorrateo.";
 	public static final String REPORTE_HIST = "&parametros=?proceso=";
 	
 	
 	// Proceso a ejecutar Contabilidad 
 	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
 	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
+	public static final String PROCESO_PRORRATEO = "{call SIB.PROCESO_PRORRATEO (?,?,?)}";
 	public static final String PROCESO_EPRC = "{call SP_PROCESAR_CALCULO_EPRC (?,?,?)}";
 	public static final String PROCESO_VOBO_OK_EPRC = "{call SIB.SP_PROCESO_VOBO_OK_EPRC (?,?,?)}";
 	

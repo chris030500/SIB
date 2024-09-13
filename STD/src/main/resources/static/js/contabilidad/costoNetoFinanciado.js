@@ -46,14 +46,15 @@ function submitForm(idEvento) {
 
 
 				$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-
+				 bloquearPantalla(1);
+				$("button").prop("disabled", true);
 				fetch(form.action, {
 					method: 'POST',
 					body: formData
 				})
 					.then(response => {
 						if (!response.ok) {
-							throw new Error('Network response was not ok');
+							throw new Error('Error, comuniquese con el administrador o intente mas tarde.');
 						}
 
 						return response.json();
@@ -72,9 +73,8 @@ function submitForm(idEvento) {
 						// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 						$button.html('Guardar');
 						tablaProcesos();
-
-
-
+						$("button").prop("disabled", false);
+						 bloquearPantalla(2);
 					});
 
 			}
@@ -105,7 +105,8 @@ function submitBtn(idBotton, num) {
 	// Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 	//Array.from(form.elements).forEach(element => element.disabled = true);
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-
+	$("button").prop("disabled", true);
+	   bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	fetch(form.action, {
 		method: 'POST',
@@ -113,7 +114,7 @@ function submitBtn(idBotton, num) {
 	})
 		.then(response => {
 			if (!response.ok) {
-				throw new Error('Network response was not ok');
+				throw new Error('Error, comuniquese con el administrador o intente mas tarde.');
 			}
 
 			return response.json();
@@ -122,7 +123,7 @@ function submitBtn(idBotton, num) {
 			//if(data.listaCatalogo.length > 0){
 			//   pintarTabla(data.listaCatalogo,tblConfiguracion);
 			//}
-			mostrarAlertar(data.message, "success");
+			mostrarAlertar(data.message, "success",num);
 
 			switch (num) {
 				case 1:
@@ -143,10 +144,11 @@ function submitBtn(idBotton, num) {
 		})
 		.catch(error => {
 			console.log('Error:', error);
-			mostrarAlertar(data.message, "danger");
+			mostrarAlertarGastos("Error al mostrar información en pantalla, favor de comunicarse con el administrador del sistema.","danger",num);
 			// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 		})
 		.finally(() => {
+			   bloquearPantalla(2);
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			switch (num) {
 				case 1:
@@ -158,6 +160,7 @@ function submitBtn(idBotton, num) {
 				default:
 					break;
 			}
+				 $("button").prop("disabled", false);
 		});
 }
 
@@ -187,7 +190,7 @@ function pintarTabla(listaDatos, tablaPintar) {
 	tablaPintar.rows.add(registrosTotales).draw();
 
 }
-
+/*
 function validarDatos(formData) {
 	let esVacio = false;
 	let txtError = "";
@@ -213,7 +216,7 @@ function validarDatos(formData) {
 	}
 
 	return esVacio;
-}
+}*/
 
 // Función para validar si un campo está vacío
 function mayorCero(value) {
@@ -304,7 +307,7 @@ function btnReporteHistorico(idBotton) {
 	// Mostrar el overlay con el spinner y deshabilitar los elementos del formulario
 	//Array.from(form.elements).forEach(element => element.disabled = true);
 	$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
-
+	 bloquearPantalla(1);
 	// Usa fetch para enviar una solicitud POST con los datos del formulario
 	
 	console.log(form.action)
@@ -340,7 +343,10 @@ function btnReporteHistorico(idBotton) {
 		.finally(() => {
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			$button.html('<i class="fa-sharp fa-solid fa-file-arrow-down"></i>');
+			bloquearPantalla(2);
 		});
 }
+
+
 
 

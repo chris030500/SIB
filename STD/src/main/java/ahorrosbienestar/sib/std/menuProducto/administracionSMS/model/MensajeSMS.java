@@ -28,6 +28,9 @@ public class MensajeSMS {
 
     @Column(name = "I_USUARIO_MOD")
     private Integer idUsuarioModificacion;
+    
+    @Column(name = "FK_ID_PROCES_SMS")
+    private Integer idProceso;
 
     public int getId() {
         return id;
@@ -84,5 +87,14 @@ public class MensajeSMS {
     public void setIdUsuarioModificacion(Integer idUsuarioModificacion) {
         this.idUsuarioModificacion = idUsuarioModificacion;
     }
+
+	public Integer getIdProceso() {
+		return idProceso;
+	}
+
+	public void setIdProceso(Integer idProceso) {
+		this.idProceso = idProceso;
+	}
+    
 }
 
