@@ -499,7 +499,7 @@ $(document).ready(function() {
     listaPuestosActivos();
     listaPuestosDepurar();
     listaSucursalesActivos();
-    listaConveniosDepurar();
+    listaSucursalesDepurar();
     
      // Escuchar el evento de cambio en el select de estados
     $('#opcionesEstado').change(function() {

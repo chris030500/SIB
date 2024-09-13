@@ -201,7 +201,6 @@ var url = "";
                 municipio.nombre_municipio,
                 (municipio.usuario_modifico == null ? '---' : municipio.usuario_modifico), // Usuario que modificó
                 (municipio.fecha_modifico == null ? '----/--/--' : fechaFormateada), // Fecha de modificación
-                (municipio.indicador_anterior == null ? '-' : municipio.indicador_anterior),
                 botonesDeshabilitar, // Botón para deshabilitar (indicador de depurar)
             ]).draw(false); // Redibujar la tabla
 			 

@@ -29,14 +29,16 @@ public class MunicipiosRepubService {
     		
     	       MunicipiosRepub municipio = iMunicipiosRepubRepository.findByIdEstadoAndIdMunicipio(idEstado, idMunicipio).orElse(null);
     	       
+    	       
     	        if (municipio != null) {
     	        	
     	        	LocalDateTime currentDateTime = LocalDateTime.now();
+    	        	municipio.setI_valor_anterior(municipio.getI_indicador_depurar());
     	        	
     	        	municipio.setI_indicador_depurar(indicadorDepurar);
     	        	municipio.setDt_fecha_modifico(currentDateTime);
     	        	municipio.setI_usuario_modifico(idUsuario);
-    	        	municipio.setI_indicador_depurar_anterior(0);
+    	        	
     	        
     	            return iMunicipiosRepubRepository.save(municipio);
     	        }
