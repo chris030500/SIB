@@ -1,8 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +28,11 @@ public class ConveniosNominaService {
     	
         ConveniosNomina convenioNomina = iConvenioNominaRepository.findById(idConvenio).orElse(null);
         if (convenioNomina != null) {
-        	LocalDate today = LocalDate.now();
-        	Date currentDay = Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        	LocalDateTime currentDateTime = LocalDateTime.now();
+        	convenioNomina.setI_valor_anterior(convenioNomina.getI_indicador_depurar());
         	
             convenioNomina.setI_indicador_depurar(indicadorDepurar); // Actualizar el campo i_indicador_depurar
-            convenioNomina.setDt_fecha_modifico(currentDay); // Actualizar el campo dt_fecha_modifico
+            convenioNomina.setDt_fecha_modifico(currentDateTime); // Actualizar el campo dt_fecha_modifico
             convenioNomina.setI_usuario_modifico(idUsuario); // Actualizar el campo i_usuario_modifico
             return iConvenioNominaRepository.save(convenioNomina); // Guardar el convenio actualizado en la base de datos
         }
