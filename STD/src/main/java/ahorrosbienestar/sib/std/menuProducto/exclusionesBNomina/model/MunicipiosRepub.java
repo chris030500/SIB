@@ -36,8 +36,8 @@ public class MunicipiosRepub {
 	@Column( name = "DT_FECHA_MODIFICO" )
 	private LocalDateTime dt_fecha_modifico;
 	
-	@Column( name = "I_INDICADOR_DEPURAR_ANTERIOR" )
-	private Integer i_indicador_depurar_anterior;
+	@Column( name = "I_VALOR_ANTERIOR" )
+	private Integer i_valor_anterior;
 
 	public Integer getPk_i_municipio_cobertura() {
 		return pk_i_municipio_cobertura;
@@ -95,12 +95,12 @@ public class MunicipiosRepub {
 		this.dt_fecha_modifico = dt_fecha_modifico;
 	}
 
-	public Integer getI_indicador_depurar_anterior() {
-		return i_indicador_depurar_anterior;
+	public Integer getI_valor_anterior() {
+		return i_valor_anterior;
 	}
 
-	public void setI_indicador_depurar_anterior(Integer i_indicador_depurar_anterior) {
-		this.i_indicador_depurar_anterior = i_indicador_depurar_anterior;
+	public void setI_valor_anterior(Integer i_valor_anterior) {
+		this.i_valor_anterior = i_valor_anterior;
 	}
 
 	@Override
@@ -108,6 +108,7 @@ public class MunicipiosRepub {
 		return "MunicipiosRepub [pk_i_municipio_cobertura=" + pk_i_municipio_cobertura + ", i_estado_id=" + i_estado_id
 				+ ", i_municipio_id=" + i_municipio_id + ", vc_nombre=" + vc_nombre + ", i_indicador_depurar="
 				+ i_indicador_depurar + ", i_usuario_modifico=" + i_usuario_modifico + ", dt_fecha_modifico="
-				+ dt_fecha_modifico + ", i_indicador_depurar_anterior=" + i_indicador_depurar_anterior + "]";
+				+ dt_fecha_modifico + ", i_valor_anterior=" + i_valor_anterior + "]";
 	}
+	
 }
