@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -71,7 +73,11 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.contabilidad.configuracion.model.ConfigAdviserBC;
 import ahorrosbienestar.sib.std.contabilidad.configuracion.repository.IConfigAdviserBC;
+import ahorrosbienestar.sib.std.contabilidad.configuracion.repository.IProductosCreditoConf;
 import ahorrosbienestar.sib.std.contabilidad.configuracion.service.ProductosCreditoService;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfiguracionProductosConceptos;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IConfiguracionProductosConceptos;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IDetalleFactura;
 import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IProcesosHistCostoNetoFinanciado;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -108,20 +114,60 @@ public class CostoNetoFinanciadoController {
 	private IConfigAdviserBC iConfigAdviserBC;
 
 	@Autowired
+	private IProductosCreditoConf iProductosCreditoConf;
+	
+	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
-
+	
 	@Autowired
+	private IDetalleFactura iDetalleFactura;
+	
+	@Autowired 
 	private ProductosCreditoService productosCreditoService;
-
-	@Autowired
-	JdbcTemplate jdbcTemplate;
-
+	
 	@Autowired
 	private ConfigService configService;
+	@Autowired
+	private IConfiguracionProductosConceptos iConfiguracionProductosConceptos;
+	
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
 	List<Usuario> usuario = null;
 
 	private String rutaDireccion = "";
+	
+	@GetMapping("/costoNetoFinanciado")
+	public String costoNetoFinanciado(Model model) throws IOException {
+		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
+		LocalDate fechaSistema = LocalDate.now();
+		try {
+			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
+				ObjectMapper objectMapper = new ObjectMapper();
+				String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
+				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
+						//objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
+				
+				model.addAttribute("listaHistProceso", listaHistProceso);
+				model.addAttribute("fechaSistema", fechaSistema);
+				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
+				model.addAttribute("lista_BC", listaBCJson);
+				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
+				model.addAttribute("cat_conceptos", iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
+				model.addAttribute("cat_costo_unitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+				model.addAttribute("costoBuro", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 1));
+				model.addAttribute("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
+
+			} else {
+				rutaDireccion = Constantes.RUTA_ERROR;
+			}
+			return rutaDireccion;
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			return null;
+		}
+
+	}
 
 	@GetMapping("/listaArchivosFactura")
 	public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder() throws IOException {
@@ -281,37 +327,6 @@ public class CostoNetoFinanciadoController {
 		}
 	}
 
-	@GetMapping("/costoNetoFinanciado")
-	public String costoNetoFinanciado(Model model) throws IOException {
-		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
-		LocalDate fechaSistema = LocalDate.now();
-		try {
-			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				String listaHistProceso = objectMapper
-						.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
-				String listaBCJson = objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
-
-				model.addAttribute("listaHistProceso", listaHistProceso);
-				model.addAttribute("fechaSistema", fechaSistema);
-				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
-				model.addAttribute("lista_BC", listaBCJson);
-				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
-				model.addAttribute("cat_conceptos", iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
-				model.addAttribute("cat_costo_unitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
-				model.addAttribute("costoBuro", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 1));
-				model.addAttribute("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
-
-			} else {
-				rutaDireccion = Constantes.RUTA_ERROR;
-			}
-			return rutaDireccion;
-		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			return null;
-		}
-
-	}
 
 	@PostMapping("/guardar-voboProceso")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
@@ -637,45 +652,173 @@ public class CostoNetoFinanciadoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+	
+	@PostMapping("/guardar-ConfiguracionGasto")
+	public ResponseEntity<Map<String, Object>> guardarConfiguracion(@RequestParam Map<String, String> params) {
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			int codProd = Integer.parseInt(params.get("confProd"));
+			int estatus=1;
 
+
+			// guardar los datos que existen
+			Set<Integer> conceptosEnFormulario = new HashSet<>();
+			 // Iterar sobre las entradas del Map
+	        for (Map.Entry<String, String> entry : params.entrySet()) {
+	        	
+	        	  String key = entry.getKey();
+		          String value = entry.getValue();
+	        	 
+	            if (!key.equals("confProd") && !key.equals("tblConfConceptos_length") && !key.equals("total")) {
+	            	 int conceptoFormulario = Integer.parseInt(value);
+	                 conceptosEnFormulario.add(conceptoFormulario); // Agregar concepto al Set
+	            	
+	            	ConfiguracionProductosConceptos registro = iConfiguracionProductosConceptos.existeRegistro(codProd,Integer.parseInt(value));
+	            	//si es null es alta
+	            	if(registro == null) {
+	            		ConfiguracionProductosConceptos configuracion = new ConfiguracionProductosConceptos();
+		            	configuracion.setProducto(codProd);
+		            	configuracion.setConcepto(Integer.parseInt(value));
+		            	//configuracion.setConcepto(0)
+		            	iConfiguracionProductosConceptos.save(configuracion);
+	            	}else {
+	            		// si no es null es modificacion
+	            		registro.setEstatus(estatus);
+	            		iConfiguracionProductosConceptos.save(registro);
+	            	}	            	
+	            }
+	           
+	        }
+			List<ConfiguracionProductosConceptos> registros =iConfiguracionProductosConceptos.obtenerXproducto(codProd);
+	        // Después de iterar sobre los datos del formulario, iterar sobre la lista de registros existentes
+	        for (ConfiguracionProductosConceptos registro : registros) {
+	        	ConfiguracionProductosConceptos confActualizar = new ConfiguracionProductosConceptos();
+	            if (!conceptosEnFormulario.contains(registro.getConcepto())) {
+	                // Si el concepto no está en el formulario, actualizar el estatus a 2
+	                registro.setEstatus(2);
+	                confActualizar = iConfiguracionProductosConceptos.save(registro);
+	            }
+	        }
+			
+			
+			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
+			
+
+			
+			// Crear un NumberFormat para la localización deseada
+	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+	        
+	        // Parsear el monto inicial y final
+	       
+	        Number montoInicial = format.parse(params.get("montoInicial"));
+	        Number montoFinal = format.parse(params.get("montoFinal")); 
+	        
+	        int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(),montoFinal.doubleValue(),params.get("Productos"),Integer.parseInt(params.get("Concepto")));
+	        if(existe == 0) {
+	        
+	        
+	        //si es igual a 0 es un alta si es mayor a 0 es una actualizacion. 
+	        if(Integer.parseInt(params.get("gastoIde")) > 0) {
+	        	 Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
+	        	 obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
+	        	 obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
+	        	 obtConfiguracion.get().setProductos(params.get("Productos"));
+	        	 obtConfiguracion.get().setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+	        	 obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
+	        	 obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
+	        	 configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
+	        	 
+	             if (configAdviserBC != null && configAdviserBC.getId() != 0) {
+	                 response.put("listaCatalogo", iConfigAdviserBC.findAll());
+	                 response.put("message", "Se actualizo correctamente");
+	                 return ResponseEntity.ok(response);
+	             } else {
+	                 throw new Exception("Error al guardar los datos");
+	             }
+	        	 
+	        }else {
+	        	configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
+	        	configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
+				configAdviserBC.setProductos(params.get("Productos"));
+				configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+				configAdviserBC.setMontoInicial(montoInicial.doubleValue());
+				configAdviserBC.setMontoFinal(montoFinal.doubleValue());
+				configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
+				ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
+				
+				   if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
+		                response.put("listaCatalogo", iConfigAdviserBC.findAll());
+		                response.put("message", "Se registraron datos correctamente");
+		                return ResponseEntity.ok(response);
+		            } else {
+		                throw new Exception("Error al guardar los datos");
+		            }
+				
+	        }
+	        }else {
+	        	response.put("listaCatalogo", iConfigAdviserBC.findAll());
+                response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
+                return ResponseEntity.ok(response);
+	        }
+		 } catch (NumberFormatException e) {
+				logger.error("Error:"+e.getMessage());
+				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			 } catch (IllegalArgumentException e) {
+				 logger.error("Error:"+e.getMessage());
+				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			 } catch (Exception e) {
+				 logger.error("Error:"+e.getMessage());
+				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			 }
+	}
+	
+	
+	
 	@PostMapping("/obtener-gastos")
 	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data) {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			// Obtén el valor como Object
-			Object procesoIdObj = data.get("identificador");
-			Integer tipoProceso = null;
-
-			// Verifica si procesoIdObj es una instancia de Number
-			if (procesoIdObj instanceof Number) {
-				tipoProceso = ((Number) procesoIdObj).intValue();
-			} else if (procesoIdObj != null) {
-				// Convierte a Integer si no es una instancia de Number
-				tipoProceso = Integer.parseInt(procesoIdObj.toString());
-			}
-
-			Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
-
-			if (!obtConfiguracion.isEmpty()) {
-				response.put("gastoDatos", obtConfiguracion);
-				return ResponseEntity.ok(response);
-			} else {
-				throw new Exception("Error al guardar los datos");
-			}
-
-		} catch (NumberFormatException e) {
-			logger.error("Error:" + e.getMessage());
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (IllegalArgumentException e) {
-			logger.error("Error:" + e.getMessage());
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	        Object procesoIdObj = data.get("identificador");
+	        Integer tipoProceso = null;
+	        
+	        // Verifica si procesoIdObj es una instancia de Number
+	        if (procesoIdObj instanceof Number) {
+	            tipoProceso = ((Number) procesoIdObj).intValue();
+	        } else if (procesoIdObj != null) {
+	            // Convierte a Integer si no es una instancia de Number
+	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
+	        }
+	        
+	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
+	        response.put("gastoDatos", obtConfiguracion);
+        	response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
+            return ResponseEntity.ok(response);
+	        /*if (!obtConfiguracion.isEmpty()) {
+	        	//response.put("gastoDatos", obtConfiguracion);
+	        	//response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFactura());
+                //return ResponseEntity.ok(response);
+	        }else {
+	        	  throw new Exception("Error al guardar los datos");
+            }*/
+			
+		 } catch (NumberFormatException e) {
+				logger.error("Error:"+e.getMessage());
+				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			 } catch (IllegalArgumentException e) {
+				 logger.error("Error:"+e.getMessage());
+				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			 } catch (Exception e) {
+				 logger.error("Error:"+e.getMessage());
+				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			 }
 	}
 
 	@PostMapping("/procesar-prorrateo")
