@@ -27,15 +27,16 @@
 			<div class="p-4 border rounded-3 mb-4">
 				<ul class="nav nav-pills" id="pntConf" role="tablist">
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link active" id="params-tab"
-							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">
-							<i class="bi bi-1-circle"></i> Gastos</button>
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="paso2-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="false" tabindex="-1">
+							<i class="bi bi-1-circle"></i> Cargar Layout </button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link" id="paso2-tab" data-bs-toggle="tab"
-							type="button" role="tab" aria-selected="false" tabindex="-1">
-							<i class="bi bi-2-circle"></i> Cargar Factura / Prorrateo </button>
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="params-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="true">
+							<i class="bi bi-2-circle"></i> Configurar Gastos / Prorrateo</button>
 					</li>
+
 					<li class="nav-item" role="presentation">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="costoNeto-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">
@@ -43,74 +44,7 @@
 					</li>
 				</ul>
 			</div>
-			<div id="pant-tabs">
-				<div id="params-tab1" class="opciones" style="display: block;" for="1">
-					<input type="hidden" id="lista_BC" name="lista_BC" th:value="${lista_BC}">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Gastos para monto amortizado</legend>
-						<div id="mensajeCostoAmortizado"></div>
-						<form th:action="@{/contabilidad/guardar-Costos}" method="post" id="procesarForm">
-							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-2">
-									<label><b>Costo Unitario BC: </b></label>
-								</div>
-								<div class="col-md-2">
-									<input type="number" class="form-control" id="costoBC" min="0" step="1"
-										th:required="true" name="costo_unitario_BC" th:value="${costoBuro}">
-								</div>
-								<div class="col-md-2">
-									<label><b>Costo Unitario Adviser: </b></label>
-								</div>
-								<div class="col-md-2">
-									<input type="number" class="form-control" id="costoAdvicer" min="0" step="1"
-										th:required="true" name="costo_unitario_Adviser" th:value="${costoAdviser}">
-								</div>
-								<div class="col-md-3">
-
-									<button type="button" id="btnGuardarCostos" class="btn btn-success"
-										onclick="costos(this)">
-										Guardar
-									</button>
-
-								</div>
-							</div>
-						</form>
-						<div class="row" style="margin-top : 15px ">
-							<div class="col-lg-4">
-								<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
-									title="Agregar" data-bs-target="#registroCatalogo" aria-controls="table-datatable"
-									type="button" data-tooltip="Add" onclick="limpiarFormulario()">
-									<i class="fa fa-plus-circle"></i> Gastos por Productos
-								</button>
-							</div>
-							<div class="col-lg-4"></div>
-							<div class="col-lg-4"></div>
-						</div>
-						<div class="row" style="margin-top : 15px ">
-							<input type="hidden" id="listaGastos" name="listaGastos">
-							<form id="actualizacionGastos" th:action="@{/contabilidad/obtener-gastos}" method="post">
-								<div class="table-responsive">
-									<table class="table table-sm table-striped" id="tblConfiguracion">
-										<thead>
-											<tr>
-												<th>Concepto</th>
-												<th>Producto</th>
-												<th>Monto Inicial</th>
-												<th>Monto Final</th>
-												<th>Estatus</th>
-												<th style="text-align: center;">Acciones</th>
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</form>
-						</div>
-					</fieldset>
-				</div>
-			</div>
-			<div id="paso2-tab1" class="opciones" style="display: none;" for="2">
+			<div id="paso2-tab1" class="opciones" style="display: block;" for="1">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Carga Layout</legend>
 					<div class="row" style="margin-top : 15px">
@@ -136,24 +70,89 @@
 						</div>
 					</div>
 				</fieldset>
+			</div>
+			<div id="pant-tabs">
+				<div id="params-tab1" class="opciones" style="display: none;" for="2">
+					<input type="hidden" id="lista_BC" name="lista_BC" th:value="${lista_BC}">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Gastos para monto amortizado</legend>
+						<div id="mensajeCostoAmortizado"></div>
+						<!--<form th:action="@{/contabilidad/guardar-Costos}" method="post" id="procesarForm">
+							<div class="row" style="margin-top : 15px ">
+								<div class="col-md-2">
+									<label><b>Costo Unitario BC: </b></label>
+								</div>
+								<div class="col-md-2">
+									<input type="number" class="form-control" id="costoBC" min="0" step="1"
+										th:required="true" name="costo_unitario_BC" th:value="${costoBuro}">
+								</div>
+								<div class="col-md-2">
+									<label><b>Costo Unitario Adviser: </b></label>
+								</div>
+								<div class="col-md-2">
+									<input type="number" class="form-control" id="costoAdvicer" min="0" step="1"
+										th:required="true" name="costo_unitario_Adviser" th:value="${costoAdviser}">
+								</div>
+								<div class="col-md-3">
 
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Proceso Prorrateo</legend>
-					<div id="mensajeProrrateo"></div>
-					<div class="row" style="margin-top : 5px ">
-						<div class="col-md-2">
-							<label><b>Procesar Prorrateo:</b></label>
+									<button type="button" id="btnGuardarCostos" class="btn btn-success"
+										onclick="costos(this)">
+										Guardar
+									</button>
+
+								</div>
+							</div>
+						</form>-->
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-lg-4">
+								<!--<button class="btn btn-secundary bg-info text-white" tabindex="0" data-bs-toggle="modal"
+									title="Agregar" data-bs-target="#registroCatalogo" aria-controls="table-datatable"
+									type="button" data-tooltip="Add" onclick="limpiarFormulario()">
+									<i class="fa fa-plus-circle"></i> Gastos por Productos
+								</button>-->
+							</div>
+							<div class="col-lg-4"></div>
+							<div class="col-lg-4"></div>
 						</div>
-						<div class="col-md-3">
-							<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
-								<button type="button" id="btnProrrateo" class="btn btn-success"
-									onclick="submitFormGastos(this,3)">
-									<i class="bi bi-diagram-3-fill"></i>
-								</button>
+						<div class="row" style="margin-top : 15px ">
+							<input type="hidden" id="listaGastos" name="listaGastos">
+							<form id="actualizacionGastos" th:action="@{/contabilidad/obtener-gastos}" method="post">
+								<div class="table-responsive">
+									<table class="table table-sm table-striped" id="tblConfiguracion">
+										<thead>
+											<tr>
+												<th>Producto</th>
+												<th>Monto Inicial</th>
+												<th>Monto Final</th>
+												<th>Estatus</th>
+												<th style="text-align: center;">Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
 							</form>
 						</div>
-					</div>
-				</fieldset>
+					</fieldset>
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Proceso Prorrateo</legend>
+						<div id="mensajeProrrateo"></div>
+						<div class="row" style="margin-top : 5px ">
+							<div class="col-md-2">
+								<label><b>Procesar Prorrateo:</b></label>
+							</div>
+							<div class="col-md-3">
+								<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
+									<button type="button" id="btnProrrateo" class="btn btn-success"
+										onclick="submitFormGastos(this,3)">
+										<i class="bi bi-diagram-3-fill"></i>
+									</button>
+								</form>
+							</div>
+						</div>
+					</fieldset>
+				</div>
 			</div>
 			<div id="costoNeto-tab1" class="opciones" style="display: none;" for="3">
 				<div id="divConfiguracion" class="" style="margin-top : 15px ">
@@ -364,6 +363,67 @@
 				</div>
 			</div>
 			<!--Ctalogo-->
+			<!--Configurar Conceptos de Facturas-->
+			<div class="modal fade" id="confConceptoFacturas" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-xl modal-dialog-centered">
+					<div class="modal-content">
+						<fieldset class="border p-2">
+							<div class="modal-header">
+								<div class="col-md-11">
+									<legend class="float-none w-auto p-2">Gastos por producto</legend>
+								</div>
+								<div class="col-md-1">
+									<button type="button" class="btn-close" onclick="cerrarModal(this)"
+										data-dismiss="modal" aria-label="Close"></button>
+								</div>
+
+							</div>
+							<div class="modal-body">
+								<div id="alertaGastoCatalogoConfig"></div>
+								<form th:action="@{/contabilidad/guardar-ConfiguracionGasto}" method="post"
+									id="configuracionFormGasto">
+									<input type="hidden" id="confProd" name="confProd">
+									<div class="row">
+										<table class="table table-bordered table-striped" style="width: 100%;"
+											id="tblConfConceptos">
+
+											<thead>
+												<tr>
+													<th>
+														<input type="checkbox" class="custom-control-input" name="total"
+															id="idTodos"
+															onclick="activarInactivar()" />
+													</th>
+													<th>Folio Factura</th>
+													<th>Concepto</th>
+													<th>Catidad</th>
+													<th>Descripcion</th>
+													<th>Precio Unitario</th>
+													<th>Total</th>
+													<th>Fecha Emision</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+
+										</table>
+									</div>
+									<div class="row" style="margin-top : 15px ">
+										<div class="col-md-6"></div>
+										<div class="col-md-6 d-flex justify-content-end">
+											<button type="button" id="btnProcesandoConf" class="btn btn-success"
+												onclick="submitFormGastos(this,4)">
+												Guardar Configuración
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<!--Facturas-->
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
