@@ -10,9 +10,10 @@ var opcion = "";
 var tblConfiguracion;
 var tblProcesoGeneradorCNF;
 var tblProcesoGeneradorEPRC;
+var tblConfConceptos;
 
 $(document).ready(function() {
-	
+	adjuntarFiles();
 	tblConfiguracion = $("#tblConfiguracion").DataTable({
 		"language": {
 			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
@@ -52,6 +53,16 @@ $(document).ready(function() {
         	"type": "string" // Ordenación como string
     	}]
 	});
+	
+	tblConfConceptos = $("#tblConfConceptos").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
 
 });
 
@@ -61,9 +72,7 @@ function ocultarMostrar(divA) {
 	$('.opciones').hide();
 	$("#"+navOpcion).show();
 	
-	if (navOpcion == "paso2-tab1"){
-		adjuntarFiles()
-	}
+	
 }
 
 document.getElementById("uploadFormFactura").addEventListener("submit", function(event) {
@@ -229,7 +238,7 @@ function adjuntarFiles() {
     url = "";
     url = getAbsolutePath() + listarArchivos;
     obtListadoArchivos(url);
-    document.getElementById("fileUpload").value = "";
+    document.getElementById("fileUploadFactura").value = "";
 }
 
 var listarArchivosComisiones = "listaArchivosComisiones";
@@ -242,19 +251,7 @@ function adjuntarFilesComisiones() {
  
 function obtListadoArchivos(url) {
     // Mostrar SweetAlert con spinner
-    swal({
-        title: "Consultando información",
-        content: {
-            element: "div",
-            attributes: {
-                innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-                style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-            },
-        },
-        buttons: false,
-        closeOnClickOutside: false,
-        closeOnEsc: false,
-    });
+    bloquearPantalla(1); 
 
     $.getJSON(url, {}, function(data) {
         // Ocultar SweetAlert después de cargar los datos
@@ -486,6 +483,3 @@ function obtListadoArchivosComisiones(url) {
 		swal("Error", "No se pudo obtener la lista de archivos.", "error");
 	});
 }
-
-
-	

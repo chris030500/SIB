@@ -88,6 +88,7 @@ public class ConfiguracionContabilidadController {
  
     @Autowired
     private ArchivosFoliosService archivosFoliosService;
+
 	
 	@Autowired 
 	private ProductosCreditoService productosCreditoService;
@@ -423,4 +424,91 @@ public class ConfiguracionContabilidadController {
 		
 		
 	}
+    public void procesarYMigrarArchivo(String nombreArchivo) throws IOException {
+
+        try {
+            List<Object[]> dataToInsert = new ArrayList<>();
+
+            // Inicializa el DocumentBuilder
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Carga el archivo XML
+            File file = new File("\\\\10.150.102.63\\std\\Facturas\\" + nombreArchivo);
+            Document document = builder.parse(file);
+
+            // Normaliza el documento (remueve nodos vacíos y espacios)
+            document.getDocumentElement().normalize();
+
+            // Obtiene el elemento raíz
+            Element root = document.getDocumentElement();
+            System.out.println("Elemento raíz: " + root.getNodeName());
+
+            // Obtiene los nodos del "Comprobante"
+            NodeList comprobanteList = document.getElementsByTagName("cfdi:Comprobante");
+
+            // Itera sobre los nodos de "Comprobante"
+            for (int i = 0; i < comprobanteList.getLength(); i++) {
+                Node comprobanteNode = comprobanteList.item(i);
+
+                if (comprobanteNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element comprobanteElement = (Element) comprobanteNode;
+
+                    String folio = comprobanteElement.getAttribute("Folio");
+                    String fecha = comprobanteElement.getAttribute("Fecha");
+                    String descuento = comprobanteElement.getAttribute("Descuento");
+                    String total = comprobanteElement.getAttribute("Total");
+
+                    // Emisor
+                    Element emisorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Emisor").item(0);
+                    String emisorRFC = emisorElement.getAttribute("Rfc");
+                    String emisorNombre = emisorElement.getAttribute("Nombre");
+
+                    // Receptor
+                    Element receptorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Receptor").item(0);
+                    String receptorRFC = receptorElement.getAttribute("Rfc");
+                    String receptorNombre = receptorElement.getAttribute("Nombre");
+                    
+                    System.out.print(folio);
+
+                    // Insertar en TBL_DETALLE_FACTURA
+                    String sql1 = "INSERT INTO TBL_DETALLE_FACTURA (PK_I_Folio, DT_Fecha_Emision, DC_Descuento, DC_Total, VC_Emisor_RFC, VC_Emisor_Nombre, VC_Receptor_RFC, VC_Receptor_Nombre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    jdbcTemplate.update(sql1, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre);
+
+                    // Lee los conceptos
+                    NodeList conceptosList = comprobanteElement.getElementsByTagName("cfdi:Concepto");
+                    for (int j = 0; j < conceptosList.getLength(); j++) {
+                        Element conceptoElement = (Element) conceptosList.item(j);
+                        String concepto = conceptoElement.getAttribute("NoIdentificacion");
+                        String cantidad = conceptoElement.getAttribute("Cantidad");
+                        String descripcion = conceptoElement.getAttribute("Descripcion");
+                        String oi = conceptoElement.getAttribute("ObjetoImp");
+                        String um = conceptoElement.getAttribute("ClaveUnidad");
+                        String punit = conceptoElement.getAttribute("ValorUnitario");
+                        String subtotalStr = conceptoElement.getAttribute("Importe");
+                        String descStr = conceptoElement.getAttribute("Descuento");
+
+                        // Convertir las cadenas a números
+                        double subtotal = Double.parseDouble(subtotalStr.isEmpty() ? "0.00" : subtotalStr);
+                        double desc = descStr.isEmpty() ? 0.00 : Double.parseDouble(descStr);
+
+                        // Realizar la resta
+                        double totalConcepto = subtotal - desc;
+
+                        // Agregar a la lista para TBL_FACTURA
+                        dataToInsert.add(new Object[] {cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio});
+                    }
+                }
+            }
+
+            // Insertar en TBL_FACTURA usando batchUpdate
+            String sql2 = "INSERT INTO TBL_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.batchUpdate(sql2, dataToInsert);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+   
+
 }

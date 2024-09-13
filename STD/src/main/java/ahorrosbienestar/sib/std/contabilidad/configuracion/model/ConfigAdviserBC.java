@@ -13,7 +13,7 @@ public class ConfigAdviserBC {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PK_ID_CB_ADVISER", nullable = false)
+	@Column(name = "PK_ID", nullable = false)
 	private int id;
 
 	@Column(name = "I_CONCEPTO", nullable = false)
