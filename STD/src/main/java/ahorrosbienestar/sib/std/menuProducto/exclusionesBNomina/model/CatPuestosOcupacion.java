@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +28,10 @@ public class CatPuestosOcupacion {
 	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	@Column( name = "DT_FECHA_MODIFICO" )
-	private Date dt_fecha_modifico;
+	private LocalDateTime dt_fecha_modifico;
+	
+	@Column( name = "I_VALOR_ANTERIOR" )
+	private Integer i_valor_anterior;
 
 	public Integer getPk_i_puesto_ocupacion_id() {
 		return pk_i_puesto_ocupacion_id;
@@ -62,21 +65,28 @@ public class CatPuestosOcupacion {
 		this.i_usuario_modifico = i_usuario_modifico;
 	}
 
-	public Date getDt_fecha_modifico() {
+	public LocalDateTime getDt_fecha_modifico() {
 		return dt_fecha_modifico;
 	}
 
-	public void setDt_fecha_modifico(Date dt_fecha_modifico) {
+	public void setDt_fecha_modifico(LocalDateTime dt_fecha_modifico) {
 		this.dt_fecha_modifico = dt_fecha_modifico;
+	}
+
+	public Integer getI_valor_anterior() {
+		return i_valor_anterior;
+	}
+
+	public void setI_valor_anterior(Integer i_valor_anterior) {
+		this.i_valor_anterior = i_valor_anterior;
 	}
 
 	@Override
 	public String toString() {
 		return "CatPuestosOcupacion [pk_i_puesto_ocupacion_id=" + pk_i_puesto_ocupacion_id + ", vc_descripcion="
 				+ vc_descripcion + ", i_indicador_depurar=" + i_indicador_depurar + ", i_usuario_modifico="
-				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + "]";
+				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + ", i_valor_anterior="
+				+ i_valor_anterior + "]";
 	}
-	
-	
 
 }

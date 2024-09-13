@@ -280,11 +280,11 @@ public class ExclusionesBasesNominaController {
 		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 		Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
-		CatPuestosOcupacion updatedPuestos = puestosOcupacionService.actualizarIndicadorPuestosOcupacion(idPuesto, indicadorDepurar, idUsuario);
+		CatPuestosOcupacion updatedPuesto = puestosOcupacionService.actualizarIndicadorPuestosOcupacion(idPuesto, indicadorDepurar, idUsuario);
 	
-		if (updatedPuestos != null) {
+		if (updatedPuesto != null) {
 			Map<String, Object> response = new HashMap<>();
-			response.put("puesto", updatedPuestos);
+			response.put("puesto", updatedPuesto);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

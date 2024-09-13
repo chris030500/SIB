@@ -1,8 +1,6 @@
 package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -28,16 +26,16 @@ public class CatPuestosOcupacionService {
 	
     public CatPuestosOcupacion actualizarIndicadorPuestosOcupacion(Integer idPuesto, Integer indicadorDepurar, Integer idUsuario) {
     	
-        CatPuestosOcupacion puestos = iCatPuestosOcupacionRepository.findById(idPuesto).orElse(null);
-        if (puestos != null) {
+        CatPuestosOcupacion puesto = iCatPuestosOcupacionRepository.findById(idPuesto).orElse(null);
+        if (puesto != null) {
         	
-        	LocalDate today = LocalDate.now();
-        	Date currentDay = Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        	LocalDateTime currentDateTime = LocalDateTime.now();
+        	puesto.setI_valor_anterior(puesto.getI_indicador_depurar());
         	
-            puestos.setI_indicador_depurar(indicadorDepurar); // Actualizar el campo i_indicador_depurar
-            puestos.setDt_fecha_modifico(currentDay); // Actualizar el campo dt_fecha_modifico
-            puestos.setI_usuario_modifico(idUsuario); // Actualizar el campo i_usuario_modifico
-            return iCatPuestosOcupacionRepository.save(puestos); // Guardar el convenio actualizado en la base de datos
+            puesto.setI_indicador_depurar(indicadorDepurar); // Actualizar el campo i_indicador_depurar
+            puesto.setDt_fecha_modifico(currentDateTime); // Actualizar el campo dt_fecha_modifico
+            puesto.setI_usuario_modifico(idUsuario); // Actualizar el campo i_usuario_modifico
+            return iCatPuestosOcupacionRepository.save(puesto); // Guardar el convenio actualizado en la base de datos
         }
         
         return null; 
