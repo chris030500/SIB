@@ -13,9 +13,7 @@ var tblProcesoGeneradorEPRC;
 var tblConfConceptos;
 
 $(document).ready(function() {
-
 	adjuntarFiles();
-	
 	tblConfiguracion = $("#tblConfiguracion").DataTable({
 		"language": {
 			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
@@ -73,6 +71,7 @@ function ocultarMostrar(divA) {
 	
 	$('.opciones').hide();
 	$("#"+navOpcion).show();
+	
 	
 }
 
@@ -239,7 +238,7 @@ function adjuntarFiles() {
     url = "";
     url = getAbsolutePath() + listarArchivos;
     obtListadoArchivos(url);
-    document.getElementById("fileUpload").value = "";
+    document.getElementById("fileUploadFactura").value = "";
 }
 
 var listarArchivosComisiones = "listaArchivosComisiones";

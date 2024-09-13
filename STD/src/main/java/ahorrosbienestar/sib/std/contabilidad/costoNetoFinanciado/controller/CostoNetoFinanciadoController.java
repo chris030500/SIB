@@ -136,6 +136,38 @@ public class CostoNetoFinanciadoController {
 	List<Usuario> usuario = null;
 
 	private String rutaDireccion = "";
+	
+	@GetMapping("/costoNetoFinanciado")
+	public String costoNetoFinanciado(Model model) throws IOException {
+		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
+		LocalDate fechaSistema = LocalDate.now();
+		try {
+			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
+				ObjectMapper objectMapper = new ObjectMapper();
+				String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
+				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
+						//objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
+				
+				model.addAttribute("listaHistProceso", listaHistProceso);
+				model.addAttribute("fechaSistema", fechaSistema);
+				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
+				model.addAttribute("lista_BC", listaBCJson);
+				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
+				model.addAttribute("cat_conceptos", iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
+				model.addAttribute("cat_costo_unitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+				model.addAttribute("costoBuro", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 1));
+				model.addAttribute("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
+
+			} else {
+				rutaDireccion = Constantes.RUTA_ERROR;
+			}
+			return rutaDireccion;
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			return null;
+		}
+
+	}
 
 	@GetMapping("/listaArchivosFactura")
 	public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder() throws IOException {
@@ -295,37 +327,6 @@ public class CostoNetoFinanciadoController {
 		}
 	}
 
-	@GetMapping("/costoNetoFinanciado")
-	public String costoNetoFinanciado(Model model) throws IOException {
-		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
-		LocalDate fechaSistema = LocalDate.now();
-		try {
-			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
-				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
-						//objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
-				
-				model.addAttribute("listaHistProceso", listaHistProceso);
-				model.addAttribute("fechaSistema", fechaSistema);
-				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
-				model.addAttribute("lista_BC", listaBCJson);
-				model.addAttribute("cat_productos", productosCreditoService.obtProductos());
-				model.addAttribute("cat_conceptos", iCatalogoRepository.generarOpciones(Constantes.CAT_CONCEPTOS));
-				model.addAttribute("cat_costo_unitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
-				model.addAttribute("costoBuro", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 1));
-				model.addAttribute("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
-
-			} else {
-				rutaDireccion = Constantes.RUTA_ERROR;
-			}
-			return rutaDireccion;
-		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			return null;
-		}
-
-	}
 
 	@PostMapping("/guardar-voboProceso")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {

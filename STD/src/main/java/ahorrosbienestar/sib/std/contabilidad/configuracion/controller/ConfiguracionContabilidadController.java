@@ -424,33 +424,6 @@ public class ConfiguracionContabilidadController {
 		
 		
 	}
-    
-    @PostMapping("/procesarArchivoFactura")
-	public ResponseEntity<Map<String, Object>> procesarArchivo(@RequestBody Map<String, String> request) {
-		String nombreArchivo = request.get("nombreArchivo");
-
-		try {
-			// Aquí agregas la lógica para procesar el archivo
-			procesarYMigrarArchivo(nombreArchivo);
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", true);
-			return ResponseEntity.ok(response);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", "Error al procesar el archivo: " + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
-	}
-
     public void procesarYMigrarArchivo(String nombreArchivo) throws IOException {
 
         try {
@@ -536,77 +509,6 @@ public class ConfiguracionContabilidadController {
             e.printStackTrace();
         }
     }
-    
-    @PostMapping("/cargarPdf")
-    public ResponseEntity<Map<String, String>> uploadPdf(@RequestParam("pdf") MultipartFile file,
-                                                        @RequestParam("nombreArchivo") String nombreArchivo) {
-
-        String UPLOAD_DIR = "\\\\10.150.102.63\\std\\PDF\\";
-        
-        // Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
-        if (nombreArchivo.toLowerCase().endsWith(".xml")) {
-            nombreArchivo = nombreArchivo.substring(0, nombreArchivo.lastIndexOf(".")) + ".pdf";
-        }
-
-        System.out.println("Subiendo archivo: " + nombreArchivo);
-        System.out.println("Ruta destino: " + UPLOAD_DIR);
-
-        if (file.isEmpty() || !file.getContentType().equals("application/pdf")) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "El archivo debe ser un PDF.");
-            System.out.println("Error: archivo vacío o no es PDF.");
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-
-        try {
-            // Guardar el archivo directamente en la ruta especificada
-            Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
-            System.out.println("Guardando archivo en: " + filePath.toString());
-            file.transferTo(filePath);
-
-            Map<String, String> successResponse = new HashMap<>();
-            successResponse.put("message", "Archivo PDF cargado exitosamente.");
-            return ResponseEntity.ok().body(successResponse);
-            
-        } catch (IOException e) {
-            System.out.println("Error al guardar el archivo: " + e.getMessage());
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Error al cargar el archivo.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
-    
-    @GetMapping("/verPdf")
-    public ResponseEntity<Resource> viewPdf(@RequestParam("nombreArchivo") String nombreArchivo) {
-    	
-    	String UPLOAD_DIR = "\\\\10.150.102.63\\std\\PDF\\";
-    	
-    	// Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
-        if (nombreArchivo.toLowerCase().endsWith(".xml")) {
-            nombreArchivo = nombreArchivo.substring(0, nombreArchivo.lastIndexOf(".")) + ".pdf";
-        }
-    	
-        try {
-            // Crear la ruta completa al archivo PDF
-            Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
-            System.out.print(filePath);
-            Resource resource = new UrlResource(filePath.toUri());
-            System.out.print(resource);
-
-            if (resource.exists() && resource.isReadable()) {
-                // Establecer el encabezado de respuesta para mostrar el archivo en el navegador
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                        .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                        .body(resource);
-            } else {
-                // Archivo no encontrado
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
-            // Error al manejar el archivo
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+   
 
 }
