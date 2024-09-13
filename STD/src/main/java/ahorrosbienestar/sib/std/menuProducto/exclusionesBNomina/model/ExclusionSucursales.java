@@ -32,6 +32,9 @@ public class ExclusionSucursales {
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column( name = "DT_FECHA_MODIFICO" )
 	private LocalDateTime dt_fecha_modifico;
+	
+	@Column( name = "I_VALOR_ANTERIOR" )
+	private Integer i_valor_anterior;
 
 	public Integer getPk_i_sucursal_id() {
 		return pk_i_sucursal_id;
@@ -81,10 +84,20 @@ public class ExclusionSucursales {
 		this.dt_fecha_modifico = dt_fecha_modifico;
 	}
 
+	public Integer getI_valor_anterior() {
+		return i_valor_anterior;
+	}
+
+	public void setI_valor_anterior(Integer i_valor_anterior) {
+		this.i_valor_anterior = i_valor_anterior;
+	}
+
 	@Override
 	public String toString() {
-		return "Sucursales [pk_i_sucursal_id=" + pk_i_sucursal_id + ", vc_nombre=" + vc_nombre + ", c_estatus="
+		return "ExclusionSucursales [pk_i_sucursal_id=" + pk_i_sucursal_id + ", vc_nombre=" + vc_nombre + ", c_estatus="
 				+ c_estatus + ", i_indicador_depurar=" + i_indicador_depurar + ", i_usuario_modifico="
-				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + "]";
+				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + ", i_valor_anterior="
+				+ i_valor_anterior + "]";
 	}
+	
 }

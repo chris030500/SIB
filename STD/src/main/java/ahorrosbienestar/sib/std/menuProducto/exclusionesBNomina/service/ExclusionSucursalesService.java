@@ -29,6 +29,7 @@ public class ExclusionSucursalesService {
         ExclusionSucursales sucursal = iExclusionSucursalesRepository.findById(idSucursal).orElse(null);
         if (sucursal != null) {
         	LocalDateTime currentDateTime = LocalDateTime.now();
+        	sucursal.setI_valor_anterior(sucursal.getI_indicador_depurar());
         	
             sucursal.setI_indicador_depurar(indicadorDepurar); // Actualizar el campo i_indicador_depurar
             sucursal.setDt_fecha_modifico(currentDateTime); // Actualizar el campo dt_fecha_modifico
