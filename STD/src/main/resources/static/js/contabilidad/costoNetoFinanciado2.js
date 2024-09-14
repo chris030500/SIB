@@ -82,6 +82,11 @@ function submitFormGastos(idEvento, num) {
 							pintarTablaGastos(data.listaCatalogo, tblConfiguracion, 1);
 						}
 						break;
+					case 4:
+						if(data.listaConfiguracion>0){
+							console.log()
+						}
+						break;
 					default:
 						break;
 				}
@@ -225,11 +230,11 @@ function pintarTablaGastos(listaDatos, tablaPintar, num) {
 		switch (num) {
 			case 1:
 				btnsActualizar = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " title='Configurar Gastos Factura' data-bs-target='#' aria-controls='table-datatable' type='button'"
 					+ " onclick='editarParametros(this)' id="
 					+ opt.id
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-tools'></i></button>";
+					+ " <i class='fa fa-cogs'></i></button>";
 
 				registrosTotales.push([
 					opt.vc_descripcion,
@@ -464,40 +469,49 @@ function editarParametros(idBotton) {
 			return response.json();
 		})
 		.then(data => {
-			/*const conceptoslc = document.getElementById('slcConcepto');
-			const productoslc = document.getElementById('slcProducto');
-			const imontoInicial = document.getElementById('montoInicial');
-			const imontoFinal = document.getElementById('montoFinal');
-			const slcCostoU = document.getElementById('slcCostoUnitario');
-			const gasto = document.getElementById('gastoIde');*/
-			checkAll.checked = false;
+			
 			pintarTablaGastos(data.listaDetalleFactura, tblConfConceptos, 2);
-			/*conceptoslc.selectedIndex = data.gastoDatos.concepto;
-			productoslc.value = data.gastoDatos.productos;
-			imontoInicial.value = data.gastoDatos.montoInicial;
-			imontoFinal.value = data.gastoDatos.montoFinal;
-			slcCostoU.selectedIndex = data.gastoDatos.concepto;
-			slcCostoU.disabled = true;
-			gasto.value = data.gastoDatos.id;*/
-
-
-
-
-
-
+			marcarCheckConceptoFactura(data.listaConfiguracionProducto);
+			
 		})
 		.catch(error => {
 			console.log('Error:', error);
-			mostrarAlertarGastos(data.message, "danger");
+			mostrarAlertarGastos(data.message, "danger",2);
 		})
 		.finally(() => {
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
-			$button.html('<i class="bi bi-tools"></i>');
+			$button.html('<i class="fa fa-cogs"></i>');
 			$('#confConceptoFacturas').modal('show');
 			bloquearPantalla(2);
 		});
 }
 
+function marcarCheckConceptoFactura(listaConfiguracion){
+	
+	checkAll.checked = false;
+	// Seleccionar todos los checkboxes dentro de la tabla tblConfConceptos
+    const checkboxes = document.querySelectorAll("#tblConfConceptos .item-inputCheck");
+ 
+	checkboxes.forEach((checkbox) => {
+		
+		  // Buscar si el id del checkbox existe en la lista proporcionada
+        //let elementoValido = listaConfiguracion.find(item => item.concepto == checkbox.id);
+        
+        listaConfiguracion.forEach(item => {
+			if(item.concepto == checkbox.id && item.estatus==1){
+				 checkbox.checked = true;
+			}
+
+        });
+      
+        // Aquí puedes realizar alguna acción con cada checkbox
+       // console.log(checkbox.value + ": " + (checkbox.checked ? "Checked" : "Unchecked"));
+        
+        // Ejemplo: marcar todos los checkboxes
+        //checkbox.checked = true; // o false para desmarcar
+    });
+	
+}
 
 function bloquearPantalla(num) {
 

@@ -120,9 +120,6 @@ function submitBtn(idBotton, num) {
 			return response.json();
 		})
 		.then(data => {
-			//if(data.listaCatalogo.length > 0){
-			//   pintarTabla(data.listaCatalogo,tblConfiguracion);
-			//}
 			mostrarAlertar(data.message, "success",num);
 
 			switch (num) {
@@ -173,7 +170,7 @@ function pintarTabla(listaDatos, tablaPintar) {
 	$.each(listaDatos, function(idx, opt) {
 
 		var btnsReporte = " <button name='btnHist' class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='modal'"
-			+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+			+ " title='Generar Reporte' data-bs-target='#' aria-controls='table-datatable' type='button'"
 			+ " onclick='btnReporteHistorico(this)' id="
 			+ opt.proceso
 			+ " data-tooltip='Add'>"
@@ -327,9 +324,6 @@ function btnReporteHistorico(idBotton) {
 			return response.json();
 		})
 		.then(data => {
-			//if(data.listaCatalogo.length > 0){
-			//   pintarTabla(data.listaCatalogo,tblConfiguracion);
-			//}
 			mostrarAlertar(data.message, "success");
 			window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + data.urlReporte);
 			window.focus();
