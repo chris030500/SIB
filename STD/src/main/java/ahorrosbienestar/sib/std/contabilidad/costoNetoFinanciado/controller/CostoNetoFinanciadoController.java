@@ -693,74 +693,19 @@ public class CostoNetoFinanciadoController {
 			List<ConfiguracionProductosConceptos> registros =iConfiguracionProductosConceptos.obtenerXproducto(codProd);
 	        // Después de iterar sobre los datos del formulario, iterar sobre la lista de registros existentes
 	        for (ConfiguracionProductosConceptos registro : registros) {
-	        	ConfiguracionProductosConceptos confActualizar = new ConfiguracionProductosConceptos();
-	            if (!conceptosEnFormulario.contains(registro.getConcepto())) {
+	        	if (!conceptosEnFormulario.contains(registro.getConcepto())) {
 	                // Si el concepto no está en el formulario, actualizar el estatus a 2
 	                registro.setEstatus(2);
-	                confActualizar = iConfiguracionProductosConceptos.save(registro);
+	                iConfiguracionProductosConceptos.save(registro);
 	            }
 	        }
 			
-			
-			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
-			
-
-			
-			// Crear un NumberFormat para la localización deseada
-	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
-	        
-	        // Parsear el monto inicial y final
-	       
-	        Number montoInicial = format.parse(params.get("montoInicial"));
-	        Number montoFinal = format.parse(params.get("montoFinal")); 
-	        
-	        int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(),montoFinal.doubleValue(),params.get("Productos"),Integer.parseInt(params.get("Concepto")));
-	        if(existe == 0) {
+	        List<ConfiguracionProductosConceptos> listaActualizada =iConfiguracionProductosConceptos.obtenerXproducto(codProd);
 	        
 	        
-	        //si es igual a 0 es un alta si es mayor a 0 es una actualizacion. 
-	        if(Integer.parseInt(params.get("gastoIde")) > 0) {
-	        	 Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
-	        	 obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
-	        	 obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
-	        	 obtConfiguracion.get().setProductos(params.get("Productos"));
-	        	 obtConfiguracion.get().setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
-	        	 obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
-	        	 obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
-	        	 configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
-	        	 
-	             if (configAdviserBC != null && configAdviserBC.getId() != 0) {
-	                 response.put("listaCatalogo", iConfigAdviserBC.findAll());
-	                 response.put("message", "Se actualizo correctamente");
-	                 return ResponseEntity.ok(response);
-	             } else {
-	                 throw new Exception("Error al guardar los datos");
-	             }
-	        	 
-	        }else {
-	        	configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
-	        	configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
-				configAdviserBC.setProductos(params.get("Productos"));
-				configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
-				configAdviserBC.setMontoInicial(montoInicial.doubleValue());
-				configAdviserBC.setMontoFinal(montoFinal.doubleValue());
-				configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
-				ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
-				
-				   if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
-		                response.put("listaCatalogo", iConfigAdviserBC.findAll());
-		                response.put("message", "Se registraron datos correctamente");
-		                return ResponseEntity.ok(response);
-		            } else {
-		                throw new Exception("Error al guardar los datos");
-		            }
-				
-	        }
-	        }else {
-	        	response.put("listaCatalogo", iConfigAdviserBC.findAll());
-                response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
-                return ResponseEntity.ok(response);
-	        }
+	        response.put("listaConfiguracion", listaActualizada);
+            response.put("message", "Se Actualizo la información correctamente");
+            return ResponseEntity.ok(response);
 		 } catch (NumberFormatException e) {
 				logger.error("Error:"+e.getMessage());
 				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
@@ -782,6 +727,7 @@ public class CostoNetoFinanciadoController {
 	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data) {
 		Map<String, Object> response = new HashMap<>();
 		try {
+			
 			// Obtén el valor como Object
 	        Object procesoIdObj = data.get("identificador");
 	        Integer tipoProceso = null;
@@ -793,19 +739,14 @@ public class CostoNetoFinanciadoController {
 	            // Convierte a Integer si no es una instancia de Number
 	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
 	        }
-	        
-	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
-	        response.put("gastoDatos", obtConfiguracion);
-        	response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
-            return ResponseEntity.ok(response);
-	        /*if (!obtConfiguracion.isEmpty()) {
-	        	//response.put("gastoDatos", obtConfiguracion);
-	        	//response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFactura());
-                //return ResponseEntity.ok(response);
-	        }else {
-	        	  throw new Exception("Error al guardar los datos");
-            }*/
 			
+			
+			List<ConfiguracionProductosConceptos> listaConfiguracionProducto =iConfiguracionProductosConceptos.obtenerXproducto(tipoProceso);
+
+	        response.put("listaConfiguracionProducto", listaConfiguracionProducto);
+	        response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
+            return ResponseEntity.ok(response);
+	
 		 } catch (NumberFormatException e) {
 				logger.error("Error:"+e.getMessage());
 				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
