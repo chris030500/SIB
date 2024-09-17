@@ -299,13 +299,12 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 function listaPuestosActivos() {
     var divPuestosActivos = $('#puestosActivos');
 
-    // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
         url: getAbsolutePath() + obtenerPuestosOcupacionActivos,
         type: "GET",
         dataType: "JSON",
         success: function(res) {
-            // Iterar sobre los datos recibidos y agregar opciones al select
+            
             $.each(res.puestosActivos, function(index, puesto) {
                 
                 
@@ -323,7 +322,6 @@ function listaPuestosActivos() {
                     puestoSeleccionado = $(this);  // Guardar el puesto seleccionado
                 });
 
-                // Agregar la opción al select
                divPuestosActivos.append(div);
             });
         },
@@ -336,13 +334,12 @@ function listaPuestosActivos() {
 function listaPuestosDepurar() {
     var divPuestosDepurar = $('#puestosDepurar');
 
-    // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
         url: getAbsolutePath() + obtenerPuestosOcupacionDepurar,
         type: "GET",
         dataType: "JSON",
         success: function(res) {
-            // Iterar sobre los datos recibidos y agregar 
+            
             $.each(res.puestosDepurar, function(index, puesto) {
                 
                 var div = $("<div>")
@@ -350,10 +347,9 @@ function listaPuestosDepurar() {
                 .text(puesto.desc_puesto)
                 .attr("puesto-id", puesto.id_puesto);
                 
-                // Añadir evento de clic para seleccionar el convenio
                 div.on("click", function() {
-                    $(".puestoD").removeClass("selected border-primary"); // Remover selección previa
-                    $(this).addClass("selected border-primary");  // Añadir clase selected
+                    $(".puestoD").removeClass("selected border-primary"); 
+                    $(this).addClass("selected border-primary");  
                     
                     var idPuesto = $(this).attr("puesto-id");
                     puestoSeleccionado = $(this); 
@@ -376,6 +372,7 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
+                    
 					if (indicadorDepurar === 1) {
                         swal(
 							'¡Guardado exitoso!',
@@ -399,6 +396,7 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 							swal.close(); 
 						}, 2000);
                     }
+                    
 				},
 				error: function(xhr, status, error) {
                     
@@ -432,13 +430,12 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 function listaSucursalesActivos() {
     var divSucursalesActivos = $('#sucursalesActivos');
 
-    // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
         url: getAbsolutePath() + obtenerSucursalesActivos,
         type: "GET",
         dataType: "JSON",
         success: function(res) {
-            // Iterar sobre los datos recibidos y agregar opciones al select
+            
             $.each(res.sucursalesActivos, function(index, sucursal) {
                 
                 
@@ -448,15 +445,13 @@ function listaSucursalesActivos() {
                	.attr("sucursal-id", sucursal.id_sucursal);
                 
                 div.on("click", function() {
-                    $(".sucursalA").removeClass("selected border-primary"); // Remover selección previa
-                    $(this).addClass("selected border-primary");  // Añadir clase selected
+                    $(".sucursalA").removeClass("selected border-primary"); 
+                    $(this).addClass("selected border-primary"); 
                     
-                    // Obtener el ID del convenio seleccionado
                     var idSucursal = $(this).attr("sucursal-id");
-                    sucursalSeleccionado = $(this);  // Guardar la sucursal seleccionada
+                    sucursalSeleccionado = $(this); 
                 });
 
-                // Agregar la opción al select
                divSucursalesActivos.append(div);
             });
         },
@@ -469,13 +464,12 @@ function listaSucursalesActivos() {
 function listaSucursalesDepurar() {
     var divSucursalesDepurar = $('#sucursalesDepurar');
 
-    // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
         url: getAbsolutePath() + obtenerSucursalesDepurar,
         type: "GET",
         dataType: "JSON",
         success: function(res) {
-            // Iterar sobre los datos recibidos y agregar 
+     
             $.each(res.sucursalesDepurar, function(index, sucursal) {
                 
                 var div = $("<div>")
@@ -484,8 +478,8 @@ function listaSucursalesDepurar() {
                 .attr("sucursal-id", sucursal.id_sucursal);
                 
                 div.on("click", function() {
-                    $(".sucursalD").removeClass("selected border-primary"); // Remover selección previa
-                    $(this).addClass("selected border-primary");  // Añadir clase selected
+                    $(".sucursalD").removeClass("selected border-primary"); 
+                    $(this).addClass("selected border-primary");  
                     
                     var idSucursal = $(this).attr("sucursal-id");
                     sucursalSeleccionado = $(this); 
