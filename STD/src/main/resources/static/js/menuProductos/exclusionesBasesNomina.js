@@ -448,8 +448,8 @@ function listaSucursalesActivos() {
                	.attr("sucursal-id", sucursal.id_sucursal);
                 
                 div.on("click", function() {
-                    $(".sucursalA").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".sucursalA").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     // Obtener el ID del convenio seleccionado
                     var idSucursal = $(this).attr("sucursal-id");
@@ -484,8 +484,8 @@ function listaSucursalesDepurar() {
                 .attr("sucursal-id", sucursal.id_sucursal);
                 
                 div.on("click", function() {
-                    $(".sucursalD").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".sucursalD").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     var idSucursal = $(this).attr("sucursal-id");
                     sucursalSeleccionado = $(this); 
@@ -508,10 +508,56 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
-					console.log("Actualización exitosa.")
+                    
+					if (indicadorDepurar === 1) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Sucursales a Excluir.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Sucursales Activas.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
 				},
 				error: function(xhr, status, error) {
-					console.error("Error actualizar sucursal: " + error);
+                    
+					if (indicadorDepurar === 1) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Sucursales a Excluir.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Sucursales Activas.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
 				}
 			});
 }
@@ -617,8 +663,19 @@ $("#btnAddRightSucursal").on("click", function() {
         
         $("#sucursalesDepurar").append(sucursalSeleccionado);  // Mover al contenedor de depurar
         updateIndicadorSucursal(idSucursal, 1);
-        sucursalSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
        	sucursalSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+        swal(
+			'¡Alerta!',
+			"Debe de seleccionar una sucursal.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
     }
 });
 
@@ -629,8 +686,19 @@ $("#btnAddLeftSucursal").on("click", function() {
         
         $("#sucursalesActivos").append(sucursalSeleccionado);  // Mover al contenedor de activos
         updateIndicadorSucursal(idSucursal, 0);
-        sucursalSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         sucursalSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+       swal(
+			'¡Alerta!',
+			"Debe de seleccionar una sucursal.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
     }
 });
 
