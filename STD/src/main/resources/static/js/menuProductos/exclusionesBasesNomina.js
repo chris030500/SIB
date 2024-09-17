@@ -2,8 +2,8 @@ var obtenerEstados = "exclusiones/getEstados";
 var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarIndicadorMunicipios = "exclusiones/actualizarIndicadorMunicipios";
 var obtenerConvenios = "exclusiones/getConveniosNomina";
-var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos";
-var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar";
+var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos?descConvenio=";
+var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar?descConvenio=";
 var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
@@ -157,25 +157,30 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
 	});
 }
 
-function listaConveniosActivos() {
-    var divConveniosActivos = $('#conveniosActivos');
-    
-    $.ajax({
-        url: getAbsolutePath() + obtenerConveniosActivos,
-        type: "GET",
-        dataType: "JSON",
-        success: function(res) {
-            // Iterar sobre los datos recibidos y agregar 
-            $.each(res.conveniosActivos, function(index, convenio) {
-                
-                var div = $("<div>")
+//Funcion para buscar convenio activo
+function search_convenioActivo(cadena) {
+	var divConveniosActivos = $('#conveniosActivos');
+	
+	// Limpiar el contenido actual antes de agregar nuevos resultados
+    divConveniosActivos.empty();
+
+	$.ajax({
+		url: getAbsolutePath() + obtenerConveniosActivos + cadena,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+            var convenios = res.conveniosActivos
+            
+			for (var i = 0; i < convenios.length; i++) {
+				
+				var div = $("<div>")
                 .addClass("convenioA border")
-                .text(convenio.desc_convenio)
-                .attr("convenio-id", convenio.id_convenio);
+                .text(convenios[i].desc_convenio)
+                .attr("convenio-id", convenios[i].id_convenio);
                 
                 div.on("click", function() {
-                    $(".convenioA").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".convenioA").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     // Obtener el ID del convenio seleccionado
                     var idConvenio = $(this).attr("convenio-id");
@@ -184,48 +189,49 @@ function listaConveniosActivos() {
                 });
 
                divConveniosActivos.append(div);
-            });
-        },
-        error: function(error) {
-            console.error("Error al obtener los convenios activos: " + error);
-        }
-    });
+			}
+
+		}
+	});
 }
 
-function listaConveniosDepurar() {
-    var divConveniosActivos = $('#conveniosDepurar');
+//Funcion para buscar convenio depurar
+function search_convenioDepurar(cadena) {
+	var divConveniosDepurar = $('#conveniosDepurar');
+	
+	// Limpiar el contenido actual antes de agregar nuevos resultados
+    divConveniosDepurar.empty();
 
-    // Hacer la solicitud AJAX para obtener los estados
-    $.ajax({
-        url: getAbsolutePath() + obtenerConveniosDepurar,
-        type: "GET",
-        dataType: "JSON",
-        success: function(res) {
-            // Iterar sobre los datos recibidos y agregar opciones al select
-            $.each(res.conveniosDepurar, function(index, convenio) {
-                
-                var div = $("<div>")
-                .addClass("convenioD border")
-                .text(convenio.desc_convenio)
-                .attr("convenio-id", convenio.id_convenio);
+	$.ajax({
+		url: getAbsolutePath() + obtenerConveniosDepurar + cadena,
+		type: "GET",
+		dataType: "JSON",
+		success: function(res) {
+            
+            var convenios = res.conveniosDepurar
+            
+			for (var i = 0; i < convenios.length; i++) {
+				
+				var div = $("<div>")
+                .addClass("convenioA border")
+                .text(convenios[i].desc_convenio)
+                .attr("convenio-id", convenios[i].id_convenio);
                 
                 div.on("click", function() {
-                    $(".convenioD").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".convenioA").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     // Obtener el ID del convenio seleccionado
                     var idConvenio = $(this).attr("convenio-id");
-                    convenioSeleccionado = $(this);  // Guardar el puesto seleccionado
+                    convenioSeleccionado = $(this);
+                    
                 });
 
-                // Agregar la opción al select
-               divConveniosActivos.append(div);
-            });
-        },
-        error: function(error) {
-            console.error("Error al obtener los convenios depurar: " + error);
-        }
-    });
+               divConveniosDepurar.append(div);
+			}
+
+		}
+	});
 }
 
 function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
@@ -236,10 +242,56 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
-					console.log("Actualización exitosa.")
+					if (indicadorDepurar === 1) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Convenios a Excluir.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Convenios Activos.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
 				},
 				error: function(xhr, status, error) {
-					console.error("Error actualizar convenio: " + error);
+                    
+                    if (indicadorDepurar === 1) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Convenios a Excluir.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Convenios Activos.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+
 				}
 			});
 }
@@ -419,6 +471,53 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 			});
 }
 
+// Evento para mover el convenio seleccionado de Activos a Depurar
+$("#btnAddRightConvenio").on("click", function() {
+    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosActivos") {
+        var idConvenio = convenioSeleccionado.attr('convenio-id');
+       
+        updateIndicadorConvenio(idConvenio, 1);
+        $("#conveniosDepurar").append(convenioSeleccionado);  // Mover al contenedor de depurar
+        convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
+        convenioSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+        swal(
+			'¡Alerta!',
+			"Debe de seleccionar un convenio.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
+        
+    }
+});
+
+// Evento para mover el convenio seleccionado de Depurar a Activos
+$("#btnAddLeftConvenio").on("click", function() {
+    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosDepurar") {
+        var idConvenio = convenioSeleccionado.attr('convenio-id');
+        
+         updateIndicadorConvenio(idConvenio, 0);
+         $("#conveniosActivos").append(convenioSeleccionado);  // Mover al contenedor de activos
+        convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
+        convenioSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+        swal(
+			'¡Alerta!',
+			"Debe de seleccionar un convenio.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
+    }
+});
+
 // Evento para mover el puesto seleccionado de Activos a Depurar
 $("#btnAddRightPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
@@ -443,29 +542,6 @@ $("#btnAddLeftPuesto").on("click", function() {
     }
 });
 
-// Evento para mover el convenio seleccionado de Activos a Depurar
-$("#btnAddRightConvenio").on("click", function() {
-    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosActivos") {
-        var idConvenio = convenioSeleccionado.attr('convenio-id');
-        
-        $("#conveniosDepurar").append(convenioSeleccionado);  // Mover al contenedor de depurar
-        updateIndicadorConvenio(idConvenio, 1);
-        convenioSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
-        convenioSeleccionado = null;  // Limpiar la variable
-    }
-});
-
-// Evento para mover el convenio seleccionado de Depurar a Activos
-$("#btnAddLeftConvenio").on("click", function() {
-    if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosDepurar") {
-        var idConvenio = convenioSeleccionado.attr('convenio-id');
-        
-        $("#conveniosActivos").append(convenioSeleccionado);  // Mover al contenedor de activos
-         updateIndicadorConvenio(idConvenio, 0);
-        convenioSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
-        convenioSeleccionado = null;  // Limpiar la variable
-    }
-});
 
 // Evento para mover la sucursal seleccionada de Activos a Depurar
 $("#btnAddRightSucursal").on("click", function() {
@@ -494,8 +570,8 @@ $("#btnAddLeftSucursal").on("click", function() {
 
 $(document).ready(function() {
     listaEstados();
-    listaConveniosActivos();
-    listaConveniosDepurar();
+    search_convenioActivo("");
+    search_convenioDepurar("");
     listaPuestosActivos();
     listaPuestosDepurar();
     listaSucursalesActivos();

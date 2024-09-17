@@ -154,11 +154,11 @@ public class ExclusionesBasesNominaController {
 	}
     
 	@RequestMapping(value = { "/getConveniosNominaActivos" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getConveniosNominaActivos() {
+	public ResponseEntity<Map<String, Object>> getConveniosNominaActivos(@RequestParam("descConvenio") String descConvenio) {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		List<Map<String, Object>> conveniosActivos = conveniosNominaService.getConveniosNominaActivos();
+		List<Map<String, Object>> conveniosActivos = conveniosNominaService.getConveniosNominaActivos(descConvenio);
 		
 		try {
 			if (conveniosActivos != null && !conveniosActivos.isEmpty()) {
@@ -177,11 +177,11 @@ public class ExclusionesBasesNominaController {
 	}
 	
 	@RequestMapping(value = { "/getConveniosNominaDepurar" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getConveniosNominaDepurar() {
+	public ResponseEntity<Map<String, Object>> getConveniosNominaDepurar(@RequestParam("descConvenio") String descConvenio) {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		List<Map<String, Object>> conveniosDepurar = conveniosNominaService.getConveniosNominaDepurar();
+		List<Map<String, Object>> conveniosDepurar = conveniosNominaService.getConveniosNominaDepurar(descConvenio);
 		
 		try {
 			if (conveniosDepurar != null && !conveniosDepurar.isEmpty()) {

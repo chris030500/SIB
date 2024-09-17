@@ -16,12 +16,12 @@ public class ConveniosNominaService {
 	@Autowired
 	private IConveniosNominaRepository iConvenioNominaRepository;
 	
-	public List<Map<String, Object>> getConveniosNominaActivos() {
-		return iConvenioNominaRepository.getConveniosNominaActivos();
+	public List<Map<String, Object>> getConveniosNominaActivos(String descCovenio) {
+		return iConvenioNominaRepository.getConveniosNominaActivos(descCovenio);
 	}
 	
-	public List<Map<String, Object>> getConveniosNominaDepurar() {
-		return iConvenioNominaRepository.getConveniosNominaDepurar();
+	public List<Map<String, Object>> getConveniosNominaDepurar(String descConvenio) {
+		return iConvenioNominaRepository.getConveniosNominaDepurar(descConvenio);
 	}
 	
     public ConveniosNomina actualizarIndicadorConveniosNomina(Integer idConvenio, Integer indicadorDepurar, Integer idUsuario) {
