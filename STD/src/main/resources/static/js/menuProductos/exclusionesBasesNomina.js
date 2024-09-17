@@ -315,8 +315,8 @@ function listaPuestosActivos() {
                	.attr("puesto-id", puesto.id_puesto);
                 
                 div.on("click", function() {
-                    $(".puestoA").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".puestoA").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     // Obtener el ID del convenio seleccionado
                     var idPuesto = $(this).attr("puesto-id");
@@ -352,8 +352,8 @@ function listaPuestosDepurar() {
                 
                 // Añadir evento de clic para seleccionar el convenio
                 div.on("click", function() {
-                    $(".puestoD").removeClass("selected"); // Remover selección previa
-                    $(this).addClass("selected");  // Añadir clase selected
+                    $(".puestoD").removeClass("selected border-primary"); // Remover selección previa
+                    $(this).addClass("selected border-primary");  // Añadir clase selected
                     
                     var idPuesto = $(this).attr("puesto-id");
                     puestoSeleccionado = $(this); 
@@ -376,10 +376,55 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
-					console.log("Actualización exitosa.")
+					if (indicadorDepurar === 1) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Puestos a Excluir.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Guardado exitoso!',
+							"Se ha guardado correctamente en la lista de Puestos Activos.",
+							"success"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
 				},
 				error: function(xhr, status, error) {
-					console.error("Error actualizar puesto: " + error);
+                    
+					if (indicadorDepurar === 1) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Puestos a Excluir.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
+                    
+                    if (indicadorDepurar === 0) {
+                        swal(
+							'¡Error!',
+							"Ha ocurrido un error al guardar el convenio en la lista de Puestos Activos.",
+							"error"
+						)
+
+						setTimeout(function() {
+							swal.close(); 
+						}, 2000);
+                    }
 				}
 			});
 }
@@ -523,10 +568,21 @@ $("#btnAddRightPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
         
-        $("#puestosDepurar").append(puestoSeleccionado);  // Mover al contenedor de depurar
         updateIndicadorPuesto(idPuesto, 1);
-        puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        $("#puestosDepurar").append(puestoSeleccionado);  // Mover al contenedor de depurar
+        puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+      	swal(
+			'¡Alerta!',
+			"Debe de seleccionar un puesto.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
     }
 });
 
@@ -535,10 +591,21 @@ $("#btnAddLeftPuesto").on("click", function() {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosDepurar") {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
         
-        $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
         updateIndicadorPuesto(idPuesto, 0);
-        puestoSeleccionado.removeClass("selected");  // Remover la selección después de moverlo
+        $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
+        puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
+    } else {
+        
+       	swal(
+			'¡Alerta!',
+			"Debe de seleccionar un puesto.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); 
+		}, 2000);
     }
 });
 
