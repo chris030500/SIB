@@ -98,6 +98,7 @@ public class ParametrosConfigController {
 				model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
 				model.addAttribute("permiso_reglas",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_REGLAS_ASIGNACION,userDetails.getUsername()));
 				model.addAttribute("permiso_admin_sms",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_SMS,userDetails.getUsername()));
+				model.addAttribute("permiso_exclusiones", configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EXCLUSION_NOMINA, userDetails.getUsername()));
 				model.addAttribute("lista_param_conf",configuraciones);
 				
 				rutaDireccion = "menuProductos/inicioParametros";
