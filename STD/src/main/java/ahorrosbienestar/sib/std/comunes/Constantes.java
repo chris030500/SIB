@@ -88,6 +88,7 @@ public class Constantes {
     public static final String CONTROLLER_JASPER_CONF = "generarReporte";
     //NOMBRES DE REPORTES
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
+    public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";

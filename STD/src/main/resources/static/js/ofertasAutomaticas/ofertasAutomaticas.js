@@ -1168,6 +1168,39 @@ function descargarArchivoAsignaciones(sucursal){
 	peticionPost(5, url);
 }
 
+var reporteExtraccionAsignaciones = "reporteExtraccionAsignaciones";
+
+function descargaRptAsignaciones() {
+	
+	url = getAbsolutePath() + reporteExtraccionAsignaciones;
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+	
+}
 
 /**
  * Modal de alertas
