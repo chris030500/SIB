@@ -319,7 +319,6 @@ function listaPuestosActivos() {
                     $(".puestoA").removeClass("selected border-primary"); // Remover selección previa
                     $(this).addClass("selected border-primary");  // Añadir clase selected
                     
-                    // Obtener el ID del convenio seleccionado
                     var idPuesto = $(this).attr("puesto-id");
                     puestoSeleccionado = $(this);  // Guardar el puesto seleccionado
                 });
