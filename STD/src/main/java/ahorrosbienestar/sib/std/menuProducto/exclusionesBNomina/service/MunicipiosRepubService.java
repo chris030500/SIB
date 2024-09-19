@@ -44,8 +44,9 @@ public class MunicipiosRepubService {
     	        }
     		
     	} catch (Exception e) {
-			System.err.println("Ocurrió un error: " + e.getMessage());
-			e.printStackTrace();
+    		
+    		System.err.println("Ocurrió un error: " + e.getMessage());
+			
 		}
     	
     	return null;

@@ -132,25 +132,43 @@ public class ExclusionesBasesNominaController {
 			@RequestParam("idMunicipio") Integer idMunicipio,
 			@RequestParam("indicadorDepurar") Integer indicadorDepurar) {
 		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			
+			if (principal instanceof UserDetails) {
+				
+				userDetails = (UserDetails) principal;
+				
+			}
+			
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
-		MunicipiosRepub updatedMunicipio = municipiosRepubService.actualizarIndicadorMunicipiosRepub(idEstado, idMunicipio, indicadorDepurar, idUsuario);
-		if (updatedMunicipio != null) {
+			MunicipiosRepub updatedMunicipio = municipiosRepubService.actualizarIndicadorMunicipiosRepub(idEstado, idMunicipio, indicadorDepurar, idUsuario);
 			
-			Map<String, Object> response = new HashMap<>();
-			response.put("municipio", updatedMunicipio);
+			if (updatedMunicipio != null) {
+				
+				response.put("municipio", updatedMunicipio);
+				
+				return new ResponseEntity<>(response, HttpStatus.OK);
+				
+			} else {
+				
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
 			
-			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
 			
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+	        response.put(Constantes.MENSAJE_DE_ERROR, e.getMessage());
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
 	}
     
 	@RequestMapping(value = { "/getConveniosNominaActivos" }, method = RequestMethod.GET)

@@ -33,7 +33,7 @@ public interface IMunicipiosRepubRepository extends JpaRepository<MunicipiosRepu
 	List<Map<String, Object>> getMunicipiosConCobertura();
 	
     @Query(value = "SELECT PK_I_MUNICIPIO_COBERTURA, I_ESTADO_ID, I_MUNICIPIO_ID, VC_NOMBRE, I_INDICADOR_DEPURAR, "
-    		+ "I_USUARIO_MODIFICO, DT_FECHA_MODIFICO, I_INDICADOR_DEPURAR_ANTERIOR "
+    		+ "I_USUARIO_MODIFICO, DT_FECHA_MODIFICO, I_VALOR_ANTERIOR "
     		+ "FROM SIB.TBL_MUNICIPIOS_REPUB "
     		+ "WHERE I_ESTADO_ID = :idEstado "
     		+ "AND I_MUNICIPIO_ID = :idMunicipio ", nativeQuery = true)
