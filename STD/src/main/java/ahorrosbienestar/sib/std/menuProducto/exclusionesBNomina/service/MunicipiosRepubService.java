@@ -4,14 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
 import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository.IMunicipiosRepubRepository;
 
 @Service
 public class MunicipiosRepubService {
+	
+	private static final Logger logger = Logger.getLogger(MunicipiosRepubService.class);
 	
 	@Autowired
 	private IMunicipiosRepubRepository iMunicipiosRepubRepository;
@@ -45,7 +49,7 @@ public class MunicipiosRepubService {
     		
     	} catch (Exception e) {
     		
-    		System.err.println("Ocurrió un error: " + e.getMessage());
+    		logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			
 		}
     	
