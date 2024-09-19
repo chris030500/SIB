@@ -1136,7 +1136,7 @@ public class CostoNetoFinanciadoController {
     
     
     public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
-		File file = new File("\\\\10.150.102.63\\std\\Layouts\\" + nombreArchivo);
+		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
 		String fechaCorteFin = "";
 		
 		System.out.print(nombreArchivo);
