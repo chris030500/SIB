@@ -110,12 +110,13 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
 		url: getAbsolutePath() + servicioURL,
 		type: "GET",
 		success: function(response) {
+            
    
             if (response.municipio.i_indicador_depurar === 1) {
                 
                	swal(
 					'¡Guardado exitoso!',
-					"Los datos se han guardado correctamente.",
+					"Se ha guardado el municipio de " + response.municipio.vc_nombre + " correctamente.",
 					"success"
 				)
 
@@ -129,7 +130,7 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
                 
                	swal(
 					'¡Eliminado exitoso!',
-					"Se ha deshabilitado exitosamente",
+					"Se ha deshabilitado el municipio de " + response.municipio.vc_nombre + " exitosamente",
 					"success"
 				)
 
@@ -242,10 +243,11 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
+                    
 					if (indicadorDepurar === 1) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Convenios a Excluir.",
+							"Se ha guardado el convenio " + response.convenio.vc_descripcion + " correctamente en la lista de Convenios a Excluir.",
 							"success"
 						)
 
@@ -257,7 +259,7 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
                     if (indicadorDepurar === 0) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Convenios Activos.",
+							"Se ha guardado el convenio " + response.convenio.vc_descripcion +  " correctamente en la lista de Convenios Activos.",
 							"success"
 						)
 
@@ -373,10 +375,11 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 				type: "GET",
 				success: function(response) {
                     
+                    
 					if (indicadorDepurar === 1) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Puestos a Excluir.",
+							"Se ha guardado el puesto " + response.puesto.vc_descripcion + " correctamente en la lista de Puestos a Excluir.",
 							"success"
 						)
 
@@ -388,7 +391,7 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
                     if (indicadorDepurar === 0) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Puestos Activos.",
+							"Se ha guardado el puesto " + response.puesto.vc_descripcion + " correctamente en la lista de Puestos Activos.",
 							"success"
 						)
 
@@ -506,7 +509,7 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 					if (indicadorDepurar === 1) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Sucursales a Excluir.",
+							"Se ha guardado la sucursal " + response.sucursal.vc_nombre + " correctamente en la lista de Sucursales a Excluir.",
 							"success"
 						)
 
@@ -518,7 +521,7 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
                     if (indicadorDepurar === 0) {
                         swal(
 							'¡Guardado exitoso!',
-							"Se ha guardado correctamente en la lista de Sucursales Activas.",
+							"Se ha guardado la sucursal " + response.sucursal.vc_nombre + " correctamente en la lista de Sucursales Activas.",
 							"success"
 						)
 
