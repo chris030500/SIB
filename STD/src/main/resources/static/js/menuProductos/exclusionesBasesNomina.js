@@ -235,6 +235,13 @@ function search_convenioDepurar(cadena) {
 	});
 }
 
+function limpiarDivConvenio() {
+    
+    $("#conveniosDepurar").empty();
+    $("#conveniosActivos").empty();
+    
+}
+
 function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
     
     var servicioURL = actualizarIndicadorConvenios + "?idConvenio=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
@@ -253,6 +260,9 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 
 						setTimeout(function() {
 							swal.close(); 
+							limpiarDivConvenio();
+							search_convenioDepurar("");
+							search_convenioActivo("");
 						}, 2000);
                     }
                     
@@ -265,6 +275,9 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 
 						setTimeout(function() {
 							swal.close(); 
+							limpiarDivConvenio();
+							search_convenioDepurar("");
+							search_convenioActivo("");
 						}, 2000);
                     }
 				},
@@ -365,6 +378,14 @@ function listaPuestosDepurar() {
     });
 }
 
+function limpiarDivPuestos() {
+    
+    $("#puestosDepurar").empty();
+    $("#puestosActivos").empty();
+    
+}
+
+
 function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
     
     var servicioURL = actualizarIndicadorPuestos + "?idPuesto=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
@@ -384,6 +405,9 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 
 						setTimeout(function() {
 							swal.close(); 
+							limpiarDivPuestos();
+							listaPuestosActivos();
+							listaPuestosDepurar();
 						}, 2000);
                     }
                     
@@ -396,6 +420,9 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 
 						setTimeout(function() {
 							swal.close(); 
+							limpiarDivPuestos();
+							listaPuestosActivos();
+							listaPuestosDepurar();
 						}, 2000);
                     }
                     
@@ -496,6 +523,13 @@ function listaSucursalesDepurar() {
     });
 }
 
+function limpiarDivSucursales() {
+    
+    $("#sucursalesDepurar").empty();
+    $("#sucursalesActivos").empty();
+    
+}
+
 function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
     
     var servicioURL = actualizarIndicadorSucursales + "?idSucursal=" + Number(idSucursal) + "&indicadorDepurar=" + indicadorDepurar;
@@ -514,6 +548,9 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 
 						setTimeout(function() {
 							swal.close(); 
+							limpiarDivSucursales();
+							listaSucursalesActivos();
+							listaSucursalesDepurar();
 						}, 2000);
                     }
                     
@@ -525,7 +562,10 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 						)
 
 						setTimeout(function() {
-							swal.close(); 
+							swal.close();
+							limpiarDivSucursales();
+							listaSucursalesActivos();
+							listaSucursalesDepurar(); 
 						}, 2000);
                     }
 				},
@@ -558,13 +598,13 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 			});
 }
 
+
 // Evento para mover el convenio seleccionado de Activos a Depurar
 $("#btnAddRightConvenio").on("click", function() {
     if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosActivos") {
         var idConvenio = convenioSeleccionado.attr('convenio-id');
        
         updateIndicadorConvenio(idConvenio, 1);
-        $("#conveniosDepurar").append(convenioSeleccionado);  // Mover al contenedor de depurar
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
     } else {
@@ -588,7 +628,6 @@ $("#btnAddLeftConvenio").on("click", function() {
         var idConvenio = convenioSeleccionado.attr('convenio-id');
         
          updateIndicadorConvenio(idConvenio, 0);
-         $("#conveniosActivos").append(convenioSeleccionado);  // Mover al contenedor de activos
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
     } else {
@@ -611,7 +650,6 @@ $("#btnAddRightPuesto").on("click", function() {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
         
         updateIndicadorPuesto(idPuesto, 1);
-        $("#puestosDepurar").append(puestoSeleccionado);  // Mover al contenedor de depurar
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     } else {
@@ -634,7 +672,6 @@ $("#btnAddLeftPuesto").on("click", function() {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
         
         updateIndicadorPuesto(idPuesto, 0);
-        $("#puestosActivos").append(puestoSeleccionado);  // Mover al contenedor de activos
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     } else {
@@ -657,7 +694,7 @@ $("#btnAddRightSucursal").on("click", function() {
     if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesActivos") {
         var idSucursal = sucursalSeleccionado.attr('sucursal-id');
         
-        $("#sucursalesDepurar").append(sucursalSeleccionado);  // Mover al contenedor de depurar
+        //$("#sucursalesDepurar").append(sucursalSeleccionado);  // Mover al contenedor de depurar
         updateIndicadorSucursal(idSucursal, 1);
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
        	sucursalSeleccionado = null;  // Limpiar la variable
@@ -680,7 +717,7 @@ $("#btnAddLeftSucursal").on("click", function() {
     if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesDepurar") {
         var idSucursal = sucursalSeleccionado.attr('sucursal-id');
         
-        $("#sucursalesActivos").append(sucursalSeleccionado);  // Mover al contenedor de activos
+        //$("#sucursalesActivos").append(sucursalSeleccionado);  // Mover al contenedor de activos
         updateIndicadorSucursal(idSucursal, 0);
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         sucursalSeleccionado = null;  // Limpiar la variable
