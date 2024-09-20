@@ -18,7 +18,7 @@ public interface IMunicipiosRepubRepository extends JpaRepository<MunicipiosRepu
 	@Query( value = "SELECT T1.I_MUNICIPIO_ID AS id_municipio, T1.VC_NOMBRE AS nombre_municipio "
 			+ "FROM SIB.TBL_MUNICIPIOS_REPUB T1 "
 			+ "WHERE T1.I_ESTADO_ID = :idEstado "
-			+ "AND T1.I_INDICADOR_DEPURAR = 0", nativeQuery = true)
+			+ "AND T1.I_INDICADOR_DEPURAR = 1", nativeQuery = true)
 	List<Map<String, Object>> getMunicipiosRepub(@Param("idEstado") Integer idEstado);
 	
 	@Query( value = "SELECT T1.I_ESTADO_ID AS id_estado, T1.I_MUNICIPIO_ID AS id_municipio, "
@@ -28,7 +28,7 @@ public interface IMunicipiosRepubRepository extends JpaRepository<MunicipiosRepu
 			+ "FROM SIB.TBL_MUNICIPIOS_REPUB T1 "
 			+ "INNER JOIN SIB.TBL_ESTADOS_REPUB T2 ON T1.I_ESTADO_ID = T2.PK_I_ESTADO_ID "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS T3 ON T1.I_USUARIO_MODIFICO = T3.PK_ID_USUARIO "
-			+ "WHERE T1.I_INDICADOR_DEPURAR = 1 "
+			+ "WHERE T1.I_INDICADOR_DEPURAR = 0 "
 			+ "ORDER BY T2.VC_NOMBRE, T1.VC_NOMBRE ", nativeQuery = true)
 	List<Map<String, Object>> getMunicipiosConCobertura();
 	
