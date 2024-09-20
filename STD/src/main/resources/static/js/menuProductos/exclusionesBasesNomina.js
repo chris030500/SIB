@@ -598,6 +598,19 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 			});
 }
 
+function swalValidarSeleccion(seccion) {
+    
+	swal(
+		'¡Alerta!',
+		"Debe de seleccionar un " + seccion,
+		"error"
+	)
+
+	setTimeout(function() {
+		swal.close(); 
+	}, 2000);
+}
+
 
 // Evento para mover el convenio seleccionado de Activos a Depurar
 $("#btnAddRightConvenio").on("click", function() {
@@ -608,17 +621,7 @@ $("#btnAddRightConvenio").on("click", function() {
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
     } else {
-        
-        swal(
-			'¡Alerta!',
-			"Debe de seleccionar un convenio.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
-        
+        swalValidarSeleccion("convenio.");
     }
 });
 
@@ -631,16 +634,7 @@ $("#btnAddLeftConvenio").on("click", function() {
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
     } else {
-        
-        swal(
-			'¡Alerta!',
-			"Debe de seleccionar un convenio.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
+        swalValidarSeleccion("convenio.");
     }
 });
 
@@ -653,16 +647,7 @@ $("#btnAddRightPuesto").on("click", function() {
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     } else {
-        
-      	swal(
-			'¡Alerta!',
-			"Debe de seleccionar un puesto.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
+        swalValidarSeleccion("puesto.")
     }
 });
 
@@ -675,16 +660,7 @@ $("#btnAddLeftPuesto").on("click", function() {
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
     } else {
-        
-       	swal(
-			'¡Alerta!',
-			"Debe de seleccionar un puesto.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
+        swalValidarSeleccion("puesto.")
     }
 });
 
@@ -699,16 +675,7 @@ $("#btnAddRightSucursal").on("click", function() {
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
        	sucursalSeleccionado = null;  // Limpiar la variable
     } else {
-        
-        swal(
-			'¡Alerta!',
-			"Debe de seleccionar una sucursal.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
+        swalValidarSeleccion("sucursal.")
     }
 });
 
@@ -722,16 +689,7 @@ $("#btnAddLeftSucursal").on("click", function() {
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         sucursalSeleccionado = null;  // Limpiar la variable
     } else {
-        
-       swal(
-			'¡Alerta!',
-			"Debe de seleccionar una sucursal.",
-			"error"
-		)
-
-		setTimeout(function() {
-			swal.close(); 
-		}, 2000);
+        swalValidarSeleccion("sucursal.")
     }
 });
 
