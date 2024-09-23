@@ -189,7 +189,7 @@ var url = "";
 			// Crear los botones de acción según el valor de indicador_depurar
 			var botonesDeshabilitar = "<button class='btn btn-xs btn-danger' tabindex='0' " +
                 "title='Remover municipio' type='button' " +
-                "onclick='updateMunicipios(" + municipio.id_estado + ", " + municipio.id_municipio + ", " + 0 + ")'" +
+                "onclick='updateMunicipios(" + municipio.id_estado + ", " + municipio.id_municipio + ", " + 1 + ")'" +
                 "id=" + municipio.id_municipio +
                 " for=" + municipio.indicador_depurar + ">" +
                 "<i class='bi bi-dash'></i>" +

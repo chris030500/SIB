@@ -95,7 +95,7 @@ document.getElementById('btnAgregar').addEventListener('click', function() {
     // Verificar que ambos valores están seleccionados
     if (idEstado && idMunicipio) {
         // Llamar a la función para actualizar
-       updateMunicipios(idEstado, idMunicipio, 1);
+       updateMunicipios(idEstado, idMunicipio, 0);
     } else {
         alert('Por favor, seleccione un estado y un municipio.');
     }
@@ -112,7 +112,7 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
 		success: function(response) {
             
    
-            if (response.municipio.i_indicador_depurar === 1) {
+            if (response.municipio.i_indicador_depurar === 0) {
                 
                	swal(
 					'¡Guardado exitoso!',
@@ -126,7 +126,7 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
                 
             }
             
-            if (response.municipio.i_indicador_depurar === 0) {
+            if (response.municipio.i_indicador_depurar === 1) {
                 
                	swal(
 					'¡Eliminado exitoso!',
