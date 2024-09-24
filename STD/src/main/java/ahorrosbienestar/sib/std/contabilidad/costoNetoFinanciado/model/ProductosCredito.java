@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.configuracion.model;
+package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
