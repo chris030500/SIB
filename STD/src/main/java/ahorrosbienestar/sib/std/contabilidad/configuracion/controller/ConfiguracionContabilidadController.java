@@ -250,46 +250,6 @@ public class ConfiguracionContabilidadController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 	}
-	@PostMapping("/obtener-gastos1")
-	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data){		
-		Map<String, Object> response = new HashMap<>();
-		try {
-			// Obtén el valor como Object
-	        Object procesoIdObj = data.get("identificador");
-	        Integer tipoProceso = null;
-	        
-	        // Verifica si procesoIdObj es una instancia de Number
-	        if (procesoIdObj instanceof Number) {
-	            tipoProceso = ((Number) procesoIdObj).intValue();
-	        } else if (procesoIdObj != null) {
-	            // Convierte a Integer si no es una instancia de Number
-	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
-	        }
-	        
-	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
-	        
-	        if (!obtConfiguracion.isEmpty()) {
-	        	response.put("gastoDatos", obtConfiguracion);
-                return ResponseEntity.ok(response);
-	        }else {
-	        	  throw new Exception("Error al guardar los datos");
-            }
-			
-		 } catch (NumberFormatException e) {
-			 	logger.error("Error:"+e.getMessage());
-	            response.put("message", "Formato de número incorrecto: " + e.getMessage());
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-	        } catch (IllegalArgumentException e) {
-	        	logger.error("Error:"+e.getMessage());
-	        	response.put("message", "Error en los parámetros: " + e.getMessage());
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-	        } catch (Exception e) {
-	        	logger.error("Error:"+e.getMessage());
-	            response.put("message", "Error al guardar los datos: " + e.getMessage());
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	        }
-	}
-	
 	
 	@PostMapping("/procesar-prorrateo1")
 	public ResponseEntity<Map<String, Object>> procesarProrrateo(@RequestParam Map<String, String> params){

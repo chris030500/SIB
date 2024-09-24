@@ -31,20 +31,12 @@ function submitFormEPRC(idEvento) {
 		}).then(resultado => {
 			if (resultado) {
 				const $button = $(idEvento);
-
-				// Selecciona el formulario más cercano al botón clickeado
 				const $form = $(idEvento).closest('form');
-
-				// Obtén el ID del formulario
 				const formId = $form.attr('id');
-
-				// Obtén el formulario
 				const form = document.getElementById(formId);
-
-				// Crea un objeto FormData con el formulario
 				const formData = new FormData(form);
 
-
+				// Cambiar el texto del botón a "Procesando"
 				$button.html('<i class="fas fa-cog fa-spin" id="spinnerIcon"></i> Procesando..');
 
 				fetch(form.action, {
@@ -55,32 +47,41 @@ function submitFormEPRC(idEvento) {
 						if (!response.ok) {
 							throw new Error('Network response was not ok');
 						}
-
-						return response.json();
+						return response.text(); // Cambia a text() para ver el contenido primero
 					})
 					.then(data => {
-
-						document.getElementById('listaHistProcesoEPRC').value = data.listaHistProceso;
-						mostrarAlertar(data.message, "success");
-
+						// Aquí revisamos si data es un string vacío o undefined
+						if (data) {
+							try {
+								const jsonData = JSON.parse(data); // Intenta parsear el JSON
+								document.getElementById('listaHistProcesoEPRC').value = jsonData.listaHistProcesoEPRC;
+								mostrarAlertar(jsonData.message, "success");
+							} catch (parseError) {
+								console.error('Error al parsear JSON:', parseError);
+								mostrarAlertar('Error al procesar la respuesta del servidor.', "danger");
+							}
+						} else {
+							console.error('Respuesta vacía del servidor.');
+							mostrarAlertar('No se recibió ninguna respuesta válida del servidor.', "danger");
+						}
 					})
 					.catch(error => {
 						console.log('Error:', error);
-						mostrarAlertar(data.message, "danger");
+						mostrarAlertar('Ocurrió un error al procesar la solicitud: ' + error.message, "danger");
 					})
+
 					.finally(() => {
-						// Ocultar el overlay con el spinner y habilitar los elementos del formulario
+						// Restaurar el texto original del botón
 						$button.html('Guardar');
+
+						// Llamar a la función para actualizar la tabla de procesos
 						tablaProcesos();
-
-
-
 					});
-
 			}
 		});
 	}
 }
+
 
 function submitBtnEPRC(idBotton, num) {
 
@@ -439,8 +440,6 @@ function adjuntarFiles() {
 }
 
 function obtListadoArchivos(url) {
-	
-	console.log(url);
 	// Mostrar SweetAlert con spinner
 	swal({
 		title: "Consultando información",
@@ -505,18 +504,25 @@ function obtListadoArchivos(url) {
 						},
 						body: JSON.stringify({ nombreArchivo: fileName })
 					})
-						.then(response => response.json())
+						.then(response => {
+							if (!response.ok) {
+								return response.json().then(errorData => {
+									throw new Error(errorData.error || "Error desconocido"); // Cambiar aquí
+								});
+							}
+							return response.json();
+						})
 						.then(data => {
 							swal.close();
 							if (data.success) {
 								swal("Éxito", "El archivo se procesó correctamente.", "success");
 							} else {
-								swal("Error", "Hubo un problema al procesar el archivo.", "error");
+								swal("Error", data.error || "Hubo un problema al procesar el archivo.", "error"); // Cambiar aquí
 							}
 						})
 						.catch(error => {
 							swal.close();
-							swal("Error", "No se pudo procesar el archivo.", "error");
+							swal("Error", error.message, "error");
 							console.error('Error al procesar el archivo:', error);
 						});
 				};
