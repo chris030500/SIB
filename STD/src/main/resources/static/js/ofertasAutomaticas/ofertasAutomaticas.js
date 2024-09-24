@@ -1058,7 +1058,13 @@ function cargatblProcesoG(){
 					+ " onclick='mostrarGestiones()' id="
 					+ opt.pk_id_gestion
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-journals'></i></button>";
+					+ " <i class='bi bi-journals'></i></button>"
+					
+					var btnReporte= " <button type='button' class='btn btn-info btn-sm' tabindex='0' "
+					+ "title='Ver Extracción de Asignaciones.' aria-controls='table-datatable' onclick='descargaRptAsignaciones()'"
+					+ "data-tooltip='Add'>"
+					+ "<i class='bi bi-download'></i>"
+					+ "</button>";
 
 
 					
@@ -1068,7 +1074,7 @@ function cargatblProcesoG(){
       				,opt.vc_hora_inicio_proceso
       				,opt.vc_hora_fin_proceso
       				,opt.vc_periodo_ejecucion_proceso
-      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones:btnsActualizar+btnEjecutar]).draw(false); 
+      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones+btnReporte:btnsActualizar+btnEjecutar]).draw(false); 
       		}
 		
    		});
