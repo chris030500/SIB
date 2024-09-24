@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -115,28 +116,28 @@ public class CostoNetoFinanciadoController {
 
 	@Autowired
 	private IProductosCreditoConf iProductosCreditoConf;
-	
+
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
-	
+
 	@Autowired
 	private IDetalleFactura iDetalleFactura;
-	
-	@Autowired 
+
+	@Autowired
 	private ProductosCreditoService productosCreditoService;
-	
+
 	@Autowired
 	private ConfigService configService;
 	@Autowired
 	private IConfiguracionProductosConceptos iConfiguracionProductosConceptos;
-	
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
 	List<Usuario> usuario = null;
 
 	private String rutaDireccion = "";
-	
+
 	@GetMapping("/costoNetoFinanciado")
 	public String costoNetoFinanciado(Model model) throws IOException {
 		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
@@ -144,10 +145,11 @@ public class CostoNetoFinanciadoController {
 		try {
 			if (validarAcceso(Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO) == 1) {
 				ObjectMapper objectMapper = new ObjectMapper();
-				String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
+				String listaHistProceso = objectMapper
+						.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
 				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
-						//objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
-				
+				// objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
+
 				model.addAttribute("listaHistProceso", listaHistProceso);
 				model.addAttribute("fechaSistema", fechaSistema);
 				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
@@ -326,7 +328,6 @@ public class CostoNetoFinanciadoController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-
 
 	@PostMapping("/guardar-voboProceso")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
@@ -523,7 +524,6 @@ public class CostoNetoFinanciadoController {
 
 	}
 
-
 	/**
 	 * Pantalla Costos
 	 * 
@@ -653,171 +653,174 @@ public class CostoNetoFinanciadoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
-	
+
 	@PostMapping("/guardar-ConfiguracionGasto")
 	public ResponseEntity<Map<String, Object>> guardarConfiguracion(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
-		
+
 		try {
 			int codProd = Integer.parseInt(params.get("confProd"));
-			int estatus=1;
-
+			int estatus = 1;
 
 			// guardar los datos que existen
 			Set<Integer> conceptosEnFormulario = new HashSet<>();
-			 // Iterar sobre las entradas del Map
-	        for (Map.Entry<String, String> entry : params.entrySet()) {
-	        	
-	        	  String key = entry.getKey();
-		          String value = entry.getValue();
-	        	 
-	            if (!key.equals("confProd") && !key.equals("tblConfConceptos_length") && !key.equals("total")) {
-	            	 int conceptoFormulario = Integer.parseInt(value);
-	                 conceptosEnFormulario.add(conceptoFormulario); // Agregar concepto al Set
-	            	
-	            	ConfiguracionProductosConceptos registro = iConfiguracionProductosConceptos.existeRegistro(codProd,Integer.parseInt(value));
-	            	//si es null es alta
-	            	if(registro == null) {
-	            		ConfiguracionProductosConceptos configuracion = new ConfiguracionProductosConceptos();
-		            	configuracion.setProducto(codProd);
-		            	configuracion.setConcepto(Integer.parseInt(value));
-		            	//configuracion.setConcepto(0)
-		            	iConfiguracionProductosConceptos.save(configuracion);
-	            	}else {
-	            		// si no es null es modificacion
-	            		registro.setEstatus(estatus);
-	            		iConfiguracionProductosConceptos.save(registro);
-	            	}	            	
-	            }
-	           
-	        }
-			List<ConfiguracionProductosConceptos> registros =iConfiguracionProductosConceptos.obtenerXproducto(codProd);
-	        // Después de iterar sobre los datos del formulario, iterar sobre la lista de registros existentes
-	        for (ConfiguracionProductosConceptos registro : registros) {
-	        	ConfiguracionProductosConceptos confActualizar = new ConfiguracionProductosConceptos();
-	            if (!conceptosEnFormulario.contains(registro.getConcepto())) {
-	                // Si el concepto no está en el formulario, actualizar el estatus a 2
-	                registro.setEstatus(2);
-	                confActualizar = iConfiguracionProductosConceptos.save(registro);
-	            }
-	        }
-			
-			
-			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
-			
+			// Iterar sobre las entradas del Map
+			for (Map.Entry<String, String> entry : params.entrySet()) {
 
-			
+				String key = entry.getKey();
+				String value = entry.getValue();
+
+				if (!key.equals("confProd") && !key.equals("tblConfConceptos_length") && !key.equals("total")) {
+					int conceptoFormulario = Integer.parseInt(value);
+					conceptosEnFormulario.add(conceptoFormulario); // Agregar concepto al Set
+
+					ConfiguracionProductosConceptos registro = iConfiguracionProductosConceptos.existeRegistro(codProd,
+							Integer.parseInt(value));
+					// si es null es alta
+					if (registro == null) {
+						ConfiguracionProductosConceptos configuracion = new ConfiguracionProductosConceptos();
+						configuracion.setProducto(codProd);
+						configuracion.setConcepto(Integer.parseInt(value));
+						// configuracion.setConcepto(0)
+						iConfiguracionProductosConceptos.save(configuracion);
+					} else {
+						// si no es null es modificacion
+						registro.setEstatus(estatus);
+						iConfiguracionProductosConceptos.save(registro);
+					}
+				}
+
+			}
+			List<ConfiguracionProductosConceptos> registros = iConfiguracionProductosConceptos
+					.obtenerXproducto(codProd);
+			// Después de iterar sobre los datos del formulario, iterar sobre la lista de
+			// registros existentes
+			for (ConfiguracionProductosConceptos registro : registros) {
+				ConfiguracionProductosConceptos confActualizar = new ConfiguracionProductosConceptos();
+				if (!conceptosEnFormulario.contains(registro.getConcepto())) {
+					// Si el concepto no está en el formulario, actualizar el estatus a 2
+					registro.setEstatus(2);
+					confActualizar = iConfiguracionProductosConceptos.save(registro);
+				}
+			}
+
+			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
+
 			// Crear un NumberFormat para la localización deseada
-	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
-	        
-	        // Parsear el monto inicial y final
-	       
-	        Number montoInicial = format.parse(params.get("montoInicial"));
-	        Number montoFinal = format.parse(params.get("montoFinal")); 
-	        
-	        int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(),montoFinal.doubleValue(),params.get("Productos"),Integer.parseInt(params.get("Concepto")));
-	        if(existe == 0) {
-	        
-	        
-	        //si es igual a 0 es un alta si es mayor a 0 es una actualizacion. 
-	        if(Integer.parseInt(params.get("gastoIde")) > 0) {
-	        	 Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
-	        	 obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
-	        	 obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
-	        	 obtConfiguracion.get().setProductos(params.get("Productos"));
-	        	 obtConfiguracion.get().setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
-	        	 obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
-	        	 obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
-	        	 configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
-	        	 
-	             if (configAdviserBC != null && configAdviserBC.getId() != 0) {
-	                 response.put("listaCatalogo", iConfigAdviserBC.findAll());
-	                 response.put("message", "Se actualizo correctamente");
-	                 return ResponseEntity.ok(response);
-	             } else {
-	                 throw new Exception("Error al guardar los datos");
-	             }
-	        	 
-	        }else {
-	        	configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
-	        	configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,Integer.parseInt(params.get("Concepto"))));
-				configAdviserBC.setProductos(params.get("Productos"));
-				configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
-				configAdviserBC.setMontoInicial(montoInicial.doubleValue());
-				configAdviserBC.setMontoFinal(montoFinal.doubleValue());
-				configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
-				ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
-				
-				   if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
-		                response.put("listaCatalogo", iConfigAdviserBC.findAll());
-		                response.put("message", "Se registraron datos correctamente");
-		                return ResponseEntity.ok(response);
-		            } else {
-		                throw new Exception("Error al guardar los datos");
-		            }
-				
-	        }
-	        }else {
-	        	response.put("listaCatalogo", iConfigAdviserBC.findAll());
-                response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
-                return ResponseEntity.ok(response);
-	        }
-		 } catch (NumberFormatException e) {
-				logger.error("Error:"+e.getMessage());
-				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			 } catch (IllegalArgumentException e) {
-				 logger.error("Error:"+e.getMessage());
-				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
-				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			 } catch (Exception e) {
-				 logger.error("Error:"+e.getMessage());
-				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
-				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-			 }
+			NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+
+			// Parsear el monto inicial y final
+
+			Number montoInicial = format.parse(params.get("montoInicial"));
+			Number montoFinal = format.parse(params.get("montoFinal"));
+
+			int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(), montoFinal.doubleValue(),
+					params.get("Productos"), Integer.parseInt(params.get("Concepto")));
+			if (existe == 0) {
+
+				// si es igual a 0 es un alta si es mayor a 0 es una actualizacion.
+				if (Integer.parseInt(params.get("gastoIde")) > 0) {
+					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC
+							.findById(Integer.parseInt(params.get("gastoIde")));
+					obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
+					obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository
+							.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get("Concepto"))));
+					obtConfiguracion.get().setProductos(params.get("Productos"));
+					obtConfiguracion.get()
+							.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+					obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
+					obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
+					configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
+
+					if (configAdviserBC != null && configAdviserBC.getId() != 0) {
+						response.put("listaCatalogo", iConfigAdviserBC.findAll());
+						response.put("message", "Se actualizo correctamente");
+						return ResponseEntity.ok(response);
+					} else {
+						throw new Exception("Error al guardar los datos");
+					}
+
+				} else {
+					configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
+					configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,
+							Integer.parseInt(params.get("Concepto"))));
+					configAdviserBC.setProductos(params.get("Productos"));
+					configAdviserBC
+							.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+					configAdviserBC.setMontoInicial(montoInicial.doubleValue());
+					configAdviserBC.setMontoFinal(montoFinal.doubleValue());
+					configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
+					ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
+
+					if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
+						response.put("listaCatalogo", iConfigAdviserBC.findAll());
+						response.put("message", "Se registraron datos correctamente");
+						return ResponseEntity.ok(response);
+					} else {
+						throw new Exception("Error al guardar los datos");
+					}
+
+				}
+			} else {
+				response.put("listaCatalogo", iConfigAdviserBC.findAll());
+				response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
+				return ResponseEntity.ok(response);
+			}
+		} catch (NumberFormatException e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (IllegalArgumentException e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
-	
+
 	@PostMapping("/obtener-gastos")
 	public ResponseEntity<Map<String, Object>> obtGastos(@RequestBody Map<String, Object> data) {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			// Obtén el valor como Object
-	        Object procesoIdObj = data.get("identificador");
-	        Integer tipoProceso = null;
-	        
-	        // Verifica si procesoIdObj es una instancia de Number
-	        if (procesoIdObj instanceof Number) {
-	            tipoProceso = ((Number) procesoIdObj).intValue();
-	        } else if (procesoIdObj != null) {
-	            // Convierte a Integer si no es una instancia de Number
-	            tipoProceso = Integer.parseInt(procesoIdObj.toString());
-	        }
-	        
-	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
-	        response.put("gastoDatos", obtConfiguracion);
-        	response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
-            return ResponseEntity.ok(response);
-	        /*if (!obtConfiguracion.isEmpty()) {
-	        	//response.put("gastoDatos", obtConfiguracion);
-	        	//response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFactura());
-                //return ResponseEntity.ok(response);
-	        }else {
-	        	  throw new Exception("Error al guardar los datos");
-            }*/
-			
-		 } catch (NumberFormatException e) {
-				logger.error("Error:"+e.getMessage());
-				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			 } catch (IllegalArgumentException e) {
-				 logger.error("Error:"+e.getMessage());
-				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
-				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			 } catch (Exception e) {
-				 logger.error("Error:"+e.getMessage());
-				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
-				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-			 }
+			Object procesoIdObj = data.get("identificador");
+			Integer tipoProceso = null;
+
+			// Verifica si procesoIdObj es una instancia de Number
+			if (procesoIdObj instanceof Number) {
+				tipoProceso = ((Number) procesoIdObj).intValue();
+			} else if (procesoIdObj != null) {
+				// Convierte a Integer si no es una instancia de Number
+				tipoProceso = Integer.parseInt(procesoIdObj.toString());
+			}
+
+			Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(tipoProceso);
+			response.put("gastoDatos", obtConfiguracion);
+			response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
+			return ResponseEntity.ok(response);
+			/*
+			 * if (!obtConfiguracion.isEmpty()) { //response.put("gastoDatos",
+			 * obtConfiguracion); //response.put("listaDetalleFactura",
+			 * iDetalleFactura.obtDetalleFactura()); //return ResponseEntity.ok(response);
+			 * }else { throw new Exception("Error al guardar los datos"); }
+			 */
+
+		} catch (NumberFormatException e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (IllegalArgumentException e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 
 	@PostMapping("/procesar-prorrateo")
@@ -923,151 +926,142 @@ public class CostoNetoFinanciadoController {
 	@PostMapping("/procesarArchivoComisiones")
 	public ResponseEntity<Map<String, Object>> procesarArchivoComisiones(@RequestBody Map<String, String> request) {
 		String nombreArchivo = request.get("nombreArchivo");
+		Map<String, Object> response = new HashMap<>();
 
 		if (nombreArchivo.contains("layout_comisiones")) {
-
 			try {
-				// Aquí agregas la lógica para procesar el archivo
+				// Procesar archivo comisiones
 				procesarYMigrarArchivoComisiones(nombreArchivo);
-
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				response.put("error", e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
 				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
 				response.put("error", e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
-
 		} else {
-
 			try {
-				// Aquí agregas la lógica para procesar el archivo
+				// Procesar archivo etapas
 				procesarYMigrarArchivoEtapas(nombreArchivo);
-
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				response.put("error",  e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
 				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
 				response.put("error", e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 		}
 	}
-	
+
 	public void procesarYMigrarArchivoComisiones(String nombreArchivo) throws IOException {
 		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
-		String fechaCorteFin = "";
-		
-		System.out.print(nombreArchivo);
-
 		if (!file.exists()) {
 			throw new IOException("El archivo no existe en la ruta especificada.");
 		}
 
+		List<String> errores = new ArrayList<>(); // Para almacenar errores
+
 		try (FileInputStream fis = new FileInputStream(file)) {
 			Workbook workbook = null;
-			try {
-				if (nombreArchivo.endsWith("xlsx")) {
-					workbook = new XSSFWorkbook(fis);
-				} else if (nombreArchivo.endsWith("xls")) {
-					workbook = new HSSFWorkbook(fis);
-				} else {
-					throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+			if (nombreArchivo.endsWith("xlsx")) {
+				workbook = new XSSFWorkbook(fis);
+			} else if (nombreArchivo.endsWith("xls")) {
+				workbook = new HSSFWorkbook(fis);
+			} else {
+				throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+			}
+
+			Sheet sheet = workbook.getSheetAt(0);
+			List<Object[]> dataToInsert = new ArrayList<>();
+			int totalRecords = 0;
+			int idProceso = obtenerSiguienteIdProcesoComisiones();
+			String fechaCorteFin = "";
+
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				if (row == null) {
+					errores.add("Fila " + (i + 1) + ": La fila está vacía.");
+					continue; // Saltar filas vacías
 				}
 
-				Sheet sheet = workbook.getSheetAt(0);
-
-				// Acumulación de datos para batch insert
-				List<Object[]> dataToInsert = new ArrayList<>();
-				int totalRecords = 0;
-				int idProceso = obtenerSiguienteIdProcesoComisiones();
-
-				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-					Row row = sheet.getRow(i);
-					if (row == null) {
+				try {
+					// Leer celdas
+					BigInteger valor1 = BigInteger.ZERO;
+					Cell cell0 = row.getCell(0);
+					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
+						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
+					} else {
+						errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
 						continue;
 					}
 
-					// Obtener el valor de la primera celda (BigInteger)
-					Cell cell0 = row.getCell(0);
-					BigInteger valor1 = BigInteger.ZERO;
-					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-					}
-
-					// Obtener el valor de la tercera celda (float)
-					Cell cell1 = row.getCell(1);
 					float valor2 = 0;
+					Cell cell1 = row.getCell(1);
 					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
 						valor2 = (float) cell1.getNumericCellValue();
-					}
-					
-					// Obtener el valor de la tercera celda (float)
-					Cell cell2 = row.getCell(2);
-					float valor3 = 0;
-					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC) {
-						valor3 = (float) cell2.getNumericCellValue();
+					} else {
+						errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
+						continue;
 					}
 
-					// Obtener el valor de la quinta celda (Date)
-					Cell cell3 = row.getCell(3);
+					float valor3 = 0;
+					Cell cell2 = row.getCell(2);
+					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC) {
+						valor3 = (float) cell2.getNumericCellValue();
+					} else {
+						errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser numérico).");
+						continue;
+					}
+
 					String valor4 = "";
+					Cell cell3 = row.getCell(3);
 					if (cell3 != null && cell3.getCellType() == CellType.NUMERIC
 							&& DateUtil.isCellDateFormatted(cell3)) {
 						Date date = cell3.getDateCellValue();
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+						LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 						valor4 = localDate.format(formatter);
+					} else {
+						errores.add("Fila " + (i + 1) + ", Columna D: Valor no válido (debe ser una fecha).");
+						continue;
 					}
-					
+
 					int valor5 = idProceso;
-
-					// Acumulamos los datos para el batch
-					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5});
+					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5 });
 					totalRecords++;
-				}
-				
-				Object[] firstRow = dataToInsert.get(0);
-				System.out.print(firstRow[0]);
-				System.out.print(firstRow[1]);
-				System.out.print(firstRow[2]);
-				System.out.print(firstRow[3]);
-				System.out.print(firstRow[4]);
-				//Date fechaCorte = (Date) firstRow[4];
-				//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				//LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-				fechaCorteFin = (String) firstRow[3];
-				
-
-				// Insertar los datos en la base de datos
-				insertarEnBaseDeDatosComisiones(dataToInsert);
-
-				// Insertar datos de control en la tabla de control
-				insertarDatosDeControlComisiones(idProceso, totalRecords, fechaCorteFin);
-
-			} finally {
-				if (workbook != null) {
-					workbook.close();
+				} catch (Exception e) {
+					errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
 				}
 			}
+
+			// Verifica si hay errores
+			if (!errores.isEmpty()) {
+				throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+			}
+
+			if (!dataToInsert.isEmpty()) {
+				Object[] firstRow = dataToInsert.get(0);
+				fechaCorteFin = (String) firstRow[3];
+
+				// Inserción en la base de datos
+				insertarEnBaseDeDatosComisiones(dataToInsert);
+				insertarDatosDeControlComisiones(idProceso, totalRecords, fechaCorteFin);
+			}
+		} catch (Exception e) {
+			System.err.println("Error al procesar el archivo: " + e.getMessage());
+			throw e; // Lanza la excepción para manejarla en otro lugar
 		}
 	}
 
@@ -1082,7 +1076,7 @@ public class CostoNetoFinanciadoController {
 
 	// Método para insertar datos de control en la tabla de control
 	private void insertarDatosDeControlComisiones(int idProceso, int totalRecords, String fechaCorteFin) {
-		
+
 		String sql1 = "SELECT * FROM TBL_CONTROL_COMISIONES WHERE DT_FechaCorte = ? ";
 		String sql2 = "INSERT INTO TBL_CONTROL_COMISIONES (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -1091,29 +1085,30 @@ public class CostoNetoFinanciadoController {
 
 		// Validar si se encontró algún resultado
 		if (!result.isEmpty()) {
-		    // Extraer el primer registro (ya que esperas un solo resultado)
-		    Map<String, Object> row = result.get(0);
+			// Extraer el primer registro (ya que esperas un solo resultado)
+			Map<String, Object> row = result.get(0);
 
-		    // Obtener los valores del registro
-		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+			// Obtener los valores del registro
+			int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		    // Lógica para realizar el UPDATE
-		    String sqlUpdate = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+			// Lógica para realizar el UPDATE
+			String sqlUpdate = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
 
-		    // Ejecutar el UPDATE con los nuevos valores
-		    jdbcTemplate.update(sqlUpdate, idProc);
+			// Ejecutar el UPDATE con los nuevos valores
+			jdbcTemplate.update(sqlUpdate, idProc);
 
-		    System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
-		    
-		 // Definir los valores de control
+			System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
+
+			// Definir los valores de control
 			String estatusProceso = "A";
 			Date fechaProceso = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		    
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
+					fechaCorteFin);
+
 		} else {
 			// Definir los valores de control
 			String estatusProceso = "A";
@@ -1122,24 +1117,21 @@ public class CostoNetoFinanciadoController {
 			String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
+					fechaCorteFin);
 		}
 	}
-	
+
 	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProcesoComisiones() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
-    }
-    
-    
-    
-    
-    public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
+	private int obtenerSiguienteIdProcesoComisiones() {
+		String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
+		return jdbcTemplate.queryForObject(sql, Integer.class);
+	}
+
+	public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
 		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
 		String fechaCorteFin = "";
-		
-		System.out.print(nombreArchivo);
+		List<String> errores = new ArrayList<>(); // Para almacenar errores
 
 		if (!file.exists()) {
 			throw new IOException("El archivo no existe en la ruta especificada.");
@@ -1157,8 +1149,6 @@ public class CostoNetoFinanciadoController {
 				}
 
 				Sheet sheet = workbook.getSheetAt(0);
-
-				// Acumulación de datos para batch insert
 				List<Object[]> dataToInsert = new ArrayList<>();
 				int totalRecords = 0;
 				int idProceso = obtenerSiguienteIdProcesoEtapas();
@@ -1166,63 +1156,78 @@ public class CostoNetoFinanciadoController {
 				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 					Row row = sheet.getRow(i);
 					if (row == null) {
+						errores.add("Fila " + (i + 1) + ": La fila está vacía.");
 						continue;
 					}
 
-					// Obtener el valor de la primera celda (BigInteger)
-					Cell cell0 = row.getCell(0);
-					BigInteger valor1 = BigInteger.ZERO;
-					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-					}
+					try {
+						// Obtener el valor de la primera celda (BigInteger)
+						Cell cell0 = row.getCell(0);
+						BigInteger valor1 = BigInteger.ZERO;
+						if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
+							valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
+						} else {
+							errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
+							continue;
+						}
 
-					// Obtener el valor de la tercera celda (float)
-					Cell cell1 = row.getCell(1);
-					int valor2 = 0;
-					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
-						valor2 = (int) cell1.getNumericCellValue();
-					}
+						// Obtener el valor de la segunda celda (int)
+						Cell cell1 = row.getCell(1);
+						int valor2 = 0;
+						if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
+							valor2 = (int) cell1.getNumericCellValue();
+						} else {
+							errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
+							continue;
+						}
 
-					// Obtener el valor de la quinta celda (Date)
-					Cell cell2 = row.getCell(2);
-					String valor3 = "";
-					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC
-							&& DateUtil.isCellDateFormatted(cell2)) {
-						Date date = cell2.getDateCellValue();
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-						valor3 = localDate.format(formatter);
-					}
-					
-					int valor4 = idProceso;
+						// Obtener el valor de la tercera celda (fecha)
+						Cell cell2 = row.getCell(2);
+						String valor3 = "";
+						if (cell2 != null && cell2.getCellType() == CellType.NUMERIC
+								&& DateUtil.isCellDateFormatted(cell2)) {
+							Date date = cell2.getDateCellValue();
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+							LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+							valor3 = localDate.format(formatter);
+						} else {
+							errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
+							continue;
+						}
 
-					// Acumulamos los datos para el batch
-					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4});
-					totalRecords++;
+						int valor4 = idProceso;
+
+						// Acumulamos los datos para el batch
+						dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4 });
+						totalRecords++;
+					} catch (Exception e) {
+						errores.add("Error en la fila " + (i + 1) + ": " + e.getMessage());
+					}
 				}
-				
-				Object[] firstRow = dataToInsert.get(0);
-				System.out.print(firstRow[0]);
-				System.out.print(firstRow[1]);
-				System.out.print(firstRow[2]);
-				System.out.print(firstRow[3]);
-				//Date fechaCorte = (Date) firstRow[4];
-				//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				//LocalDate localDate = fechaCorte.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-				fechaCorteFin = (String) firstRow[2];
-				
 
-				// Insertar los datos en la base de datos
-				insertarEnBaseDeDatosEtapas(dataToInsert);
+				// Verifica si hay errores
+				if (!errores.isEmpty()) {
+					throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+				}
 
-				// Insertar datos de control en la tabla de control
-				insertarDatosDeControlEtapas(idProceso, totalRecords, fechaCorteFin);
+				if (!dataToInsert.isEmpty()) {
+					Object[] firstRow = dataToInsert.get(0);
+					fechaCorteFin = (String) firstRow[2];
 
+					// Insertar los datos en la base de datos
+					insertarEnBaseDeDatosEtapas(dataToInsert);
+
+					// Insertar datos de control en la tabla de control
+					insertarDatosDeControlEtapas(idProceso, totalRecords, fechaCorteFin);
+				}
 			} finally {
 				if (workbook != null) {
 					workbook.close();
 				}
 			}
+		} catch (Exception e) {
+			System.err.println("Error al procesar el archivo: " + e.getMessage());
+			throw e; // Lanza la excepción para manejarla en otro lugar
 		}
 	}
 
@@ -1237,7 +1242,7 @@ public class CostoNetoFinanciadoController {
 
 	// Método para insertar datos de control en la tabla de control
 	private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
-		
+
 		String sql1 = "SELECT * FROM TBL_CONTROL_ETAPA WHERE DT_FechaCorte = ? ";
 		String sql2 = "INSERT INTO TBL_CONTROL_ETAPA (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -1246,29 +1251,30 @@ public class CostoNetoFinanciadoController {
 
 		// Validar si se encontró algún resultado
 		if (!result.isEmpty()) {
-		    // Extraer el primer registro (ya que esperas un solo resultado)
-		    Map<String, Object> row = result.get(0);
+			// Extraer el primer registro (ya que esperas un solo resultado)
+			Map<String, Object> row = result.get(0);
 
-		    // Obtener los valores del registro
-		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+			// Obtener los valores del registro
+			int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		    // Lógica para realizar el UPDATE
-		    String sqlUpdate = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+			// Lógica para realizar el UPDATE
+			String sqlUpdate = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
 
-		    // Ejecutar el UPDATE con los nuevos valores
-		    jdbcTemplate.update(sqlUpdate, idProc);
+			// Ejecutar el UPDATE con los nuevos valores
+			jdbcTemplate.update(sqlUpdate, idProc);
 
-		    System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
-		    
-		 // Definir los valores de control
+			System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
+
+			// Definir los valores de control
 			String estatusProceso = "A";
 			Date fechaProceso = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		    
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
+					fechaCorteFin);
+
 		} else {
 			// Definir los valores de control
 			String estatusProceso = "A";
@@ -1277,18 +1283,17 @@ public class CostoNetoFinanciadoController {
 			String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
+					fechaCorteFin);
 		}
-		
 
-		
 	}
 
 	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProcesoEtapas() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
-    }
+	private int obtenerSiguienteIdProcesoEtapas() {
+		String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
+		return jdbcTemplate.queryForObject(sql, Integer.class);
+	}
 
 	public void procesarYMigrarArchivoFacturas(String nombreArchivo) throws IOException {
 
