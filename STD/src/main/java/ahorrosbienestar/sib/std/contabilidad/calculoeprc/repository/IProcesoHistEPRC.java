@@ -1,16 +1,16 @@
-package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository;
+package ahorrosbienestar.sib.std.contabilidad.calculoeprc.repository;
 
-import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ProcesosHistCostoNetoFinanciado;
+import ahorrosbienestar.sib.std.contabilidad.calculoeprc.model.EPRC;
 
-@Repository
-public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<ProcesosHistCostoNetoFinanciado, Integer> {
 
+
+
+public interface IProcesoHistEPRC extends JpaRepository<EPRC, Integer> {
 	@Query(value = "select PK_ID_PROCESO as proceso "
 			+ ",case MONTH(t1.DT_FECHA_CORTE) "
 			+ "when 1 then 'Enero' "
@@ -29,14 +29,9 @@ public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<Procesos
 			+ ",case when t1.DT_FECHA_CORTE is not null then DATE_FORMAT(t1.DT_FECHA_CORTE, '%Y-%m-%d') else  COALESCE(t1.DT_FECHA_CORTE, '0000-00-00') end fecha_corte "
 			+ ",case when t3.VC_NOMBRE_USUARIO is not null then t3.VC_NOMBRE_USUARIO else COALESCE(t3.VC_NOMBRE_USUARIO , '--.--') end usuario_vobo "
 			+ ",case when t1.DT_FECHA_REGISTRO_VOBO is not null then DATE_FORMAT(t1.DT_FECHA_REGISTRO_VOBO, '%Y-%m-%d') else COALESCE(t1.DT_FECHA_REGISTRO_VOBO, '0000-00-00') end fecha_registro_vobo "
-			+ "from SIB.TBL_REG_PROCESO_MNF t1 "
+			+ "from SIB.TBL_REG_PROCESO_EPRC t1 "
 			+ "left join SIB.TBL_CAT_USUARIOS t3 on t3.PK_ID_USUARIO = t1.I_USUARIO_VOBO "
 			+ "where t1.I_VOBO = 1 and I_ACTIVO=1 "
 			+ "order by t1.PK_ID_PROCESO desc", nativeQuery = true) 
-	public List<ProcesosHistCostoNetoFinanciado> obtProcesoCNF();
-
-	@Query(value="select DT_FECHA_CORTE  from SIB.TBL_CREDITOS_COSTO_NETO_FINANCIADO "
-			+ "GROUP BY DT_FECHA_CORTE", nativeQuery = true)
-	public LocalDate obtFechaCierre();
-	
+	public List<EPRC> obtProcesoEPRC();
 }

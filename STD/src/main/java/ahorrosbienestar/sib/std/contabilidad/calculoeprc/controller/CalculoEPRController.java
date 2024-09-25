@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.calculoEPRC.controller;
+package ahorrosbienestar.sib.std.contabilidad.calculoeprc.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,7 +55,7 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.contabilidad.calculoEPRC.repository.IProcesoHistEPRC;
+import ahorrosbienestar.sib.std.contabilidad.calculoeprc.repository.IProcesoHistEPRC;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;

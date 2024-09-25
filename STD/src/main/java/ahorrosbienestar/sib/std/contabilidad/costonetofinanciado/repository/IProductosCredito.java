@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository;
+package ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ProductosCredito;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.model.ProductosCredito;
 
 
 
