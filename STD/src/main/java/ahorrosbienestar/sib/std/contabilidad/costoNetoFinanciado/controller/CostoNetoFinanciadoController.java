@@ -1046,7 +1046,7 @@ public class CostoNetoFinanciadoController {
 
 	// Método para obtener el siguiente ID de proceso
 	private int obtenerSiguienteIdProcesoComisiones() {
-	    return jdbcTemplate.queryForObject(Constantes.OBTENER_Siguiente_ID_PROCESO_COMISIONES, Integer.class);
+	    return jdbcTemplate.queryForObject(Constantes.OBTENER_SIGUIENTE_ID_PROCESO_COMISIONES, Integer.class);
 	}
 
 
