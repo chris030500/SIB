@@ -30,11 +30,11 @@
 						<div class="col-lg-10">
 						</div>
 						<div class="col-lg-2">
-							<label>Ver Documentos</label>
-							<button class='btn btn-info' tabindex='0' data-bs-toggle='modal' title='Adjuntar Archivos'
+							<label>Subir Layouts:</label>
+							<button class='btn btn-primary' tabindex='0' data-bs-toggle='modal' title='Adjuntar Archivos'
 								data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'
 								onclick='adjuntarFiles(2)' data-tooltip='Add'>
-								<i class='bi bi-files'></i>
+								<i class='fa fa-upload'></i>
 							</button>
 						</div>
 					</div>
@@ -134,10 +134,18 @@
 				<div class="modal-dialog modal-xl modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
+							<div class="modal-header">
+								<div class="col-md-11">
+									<legend class="float-none w-auto p-2">Cargar Layout</legend>
+								</div>
+								<div class="col-md-1">
+									<button type="button" class="btn-close" onclick="cerrarModal(this)"
+										data-dismiss="modal" aria-label="Close"></button>
+								</div>
+							</div>
 							<div class="modal-body">
 								<div id="layout-tab1" class="">
 									<fieldset class="border p-2">
-										<legend class="float-none w-auto p-2">Carga Layout</legend>
 										<div class="row" style="margin-top : 15px ">
 											<div class="col-12">
 												<form id="uploadForm" enctype="multipart/form-data">
@@ -164,13 +172,7 @@
 								</div>
 
 							</div>
-							<div class="modal-footer">
-								<h1 style="text-align: center; font-size: 12px; font-weight: bold; color: black;"
-									id="lblCargaAdjunto"></h1>
-								<button type="button" class="btn btn-primary" id="btnGuardarFile">Guardar</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCerrarAdjunto">Cerrar</button>
-							</div>
+							
 						</fieldset>
 					</div>
 				</div>

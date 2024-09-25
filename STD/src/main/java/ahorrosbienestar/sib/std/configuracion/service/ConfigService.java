@@ -98,4 +98,8 @@ public class ConfigService {
     public List<Configuracion>  obtenerUrlComisiones() {
         return iConfiguracionRepository.obtenerUrlComisiones();
     }
+    
+    public List<Configuracion>  obtenerUrlPDF() {
+        return iConfiguracionRepository.obtenerUrlPDF();
+    }
 }
