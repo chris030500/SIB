@@ -224,6 +224,10 @@ public class Constantes {
 	public static final String UPDATE_CONTROL_COMISIONES = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision = ?";
 	public static final String OBTENER_Siguiente_ID_PROCESO_COMISIONES = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
 
+	//Mensajes 
+	public static final String MSN_ERROR_GUARDAR_DATOS = "Error al guardar los datos";
+
+	
 	private Constantes() {
 
 	}
