@@ -194,8 +194,8 @@ public class Constantes {
 
 	// Proceso a ejecutar Contabilidad
 	public static final String PROCESO_COSTO_NETO_FINANCIADO = "{call SIB.SP_COSTO_NETO_FINANCIADO (?,?,?)}";
-	public static final String PROCESO_VOBO_OK = "{call SIB.PROCESO_VOBO_OK (?,?,?)}";
-	public static final String PROCESO_PRORRATEO = "{call SIB.PROCESO_PRORRATEO (?,?,?)}";
+	public static final String PROCESO_VOBO_OK = "{call SIB.SP_PROCESO_VOBO_OK (?,?,?)}";
+	public static final String PROCESO_PRORRATEO = "{call SIB.SP_PROCESO_PRORRATEO (?,?,?)}";
 	public static final String PROCESO_EPRC = "{call SP_PROCESAR_CALCULO_EPRC (?,?,?)}";
 	public static final String PROCESO_VOBO_OK_EPRC = "{call SIB.SP_PROCESO_VOBO_OK_EPRC (?,?,?)}";
 
@@ -224,6 +224,10 @@ public class Constantes {
 	public static final String UPDATE_CONTROL_COMISIONES = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision = ?";
 	public static final String OBTENER_SIGUIENTE_ID_PROCESO_COMISIONES = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
 
+	//Mensajes 
+	public static final String MSN_ERROR_GUARDAR_DATOS = "Error al guardar los datos";
+
+	
 	private Constantes() {
 
 	}

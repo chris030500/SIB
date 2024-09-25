@@ -21,7 +21,15 @@ $(document).ready(function() {
 		'aoColumnDefs': [{
 			'bSortable': false,
 			'aTargets': [-1] /* 1st one, start by the right */
-		}]
+		}],
+		"columnDefs": [{
+			"targets": 1, // Índice de la columna de fecha
+			"type": "string" // Ordenación como string
+		},
+        {
+            "targets": -1, // Última columna (índice -1)
+            "className": "text-center" // Clase para centrar el texto
+        }]
 	});
 
 	tblProcesoGeneradorCNF = $("#tblProcesoGeneradorCNF").DataTable({
@@ -36,7 +44,11 @@ $(document).ready(function() {
 		"columnDefs": [{
 			"targets": 1, // Índice de la columna de fecha
 			"type": "string" // Ordenación como string
-		}]
+		},
+        {
+            "targets": -1, // Última columna (índice -1)
+            "className": "text-center" // Clase para centrar el texto
+        }]
 	});
 
 	tblProcesoGeneradorEPRC = $("#tblProcesoGeneradorEPRC").DataTable({

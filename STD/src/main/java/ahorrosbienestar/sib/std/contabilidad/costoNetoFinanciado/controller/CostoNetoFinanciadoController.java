@@ -510,7 +510,7 @@ public class CostoNetoFinanciadoController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
 					opcionesMenuService.buscarRelacionController(rutaController));
@@ -553,7 +553,7 @@ public class CostoNetoFinanciadoController {
 				return ResponseEntity.ok(response);
 
 			} else {
-				throw new Exception("Error al guardar los datos");
+				throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
 			}
 
 		} catch (NumberFormatException e) {
@@ -607,7 +607,7 @@ public class CostoNetoFinanciadoController {
 						response.put("message", "Se actualizo correctamente");
 						return ResponseEntity.ok(response);
 					} else {
-						throw new Exception("Error al guardar los datos");
+						throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
 					}
 
 				} else {
@@ -627,7 +627,7 @@ public class CostoNetoFinanciadoController {
 						response.put("message", "Se registraron datos correctamente");
 						return ResponseEntity.ok(response);
 					} else {
-						throw new Exception("Error al guardar los datos");
+						throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
 					}
 
 				}
@@ -658,6 +658,9 @@ public class CostoNetoFinanciadoController {
 		try {
 			int codProd = Integer.parseInt(params.get("confProd"));
 			int estatus = 1;
+			
+			Date fechaProceso = new Date();
+		
 
 			// guardar los datos que existen
 			Set<Integer> conceptosEnFormulario = new HashSet<>();
@@ -677,11 +680,15 @@ public class CostoNetoFinanciadoController {
 	            		ConfiguracionProductosConceptos configuracion = new ConfiguracionProductosConceptos();
 		            	configuracion.setProducto(codProd);
 		            	configuracion.setConcepto(Integer.parseInt(value));
+		            	configuracion.setI_usuario_registra(obtUsuario());
+		            	configuracion.setDt_fecha_registro(fechaProceso);
 		            	//configuracion.setConcepto(0)
 		            	iConfiguracionProductosConceptos.save(configuracion);
 	            	}else {
 	            		// si no es null es modificacion
 	            		registro.setEstatus(estatus);
+	            		registro.setI_usuario_registra(obtUsuario());
+	            		registro.setDt_fecha_registro(fechaProceso);
 	            		iConfiguracionProductosConceptos.save(registro);
 	            	}	            	
 	            }
@@ -693,6 +700,8 @@ public class CostoNetoFinanciadoController {
 	        	if (!conceptosEnFormulario.contains(registro.getConcepto())) {
 	                // Si el concepto no está en el formulario, actualizar el estatus a 2
 	                registro.setEstatus(2);
+	                registro.setI_usuario_registra(obtUsuario());
+            		registro.setDt_fecha_registro(fechaProceso);
 	                iConfiguracionProductosConceptos.save(registro);
 	            }
 	        }
@@ -761,42 +770,10 @@ public class CostoNetoFinanciadoController {
 	public ResponseEntity<Map<String, Object>> procesarProrrateo(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		try {
-			Connection connection = null;
-			CallableStatement callableStatement = null;
-			String errorMessage = null;
-			int estatusProceso = 0;
-
-			try {
-				connection = jdbcTemplate.getDataSource().getConnection();
-				callableStatement = connection.prepareCall(Constantes.PROCESO_PRORRATEO);
-				callableStatement.setInt(1, obtUsuario());
-				callableStatement.registerOutParameter(2, Types.VARCHAR);
-				callableStatement.registerOutParameter(3, Types.INTEGER);
-				callableStatement.execute();
-				errorMessage = callableStatement.getString(2);
-				estatusProceso = callableStatement.getInt(3);
-			} catch (SQLException e) {
-				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-			} finally {
-				if (callableStatement != null) {
-					try {
-						callableStatement.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-					}
-				}
-				if (connection != null) {
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar la conexión: " + e.getMessage());
-					}
-				}
-			}
-			response.put("estatusProceso", estatusProceso);
-			response.put("message", (errorMessage == null) ? Constantes.PRORRATEO : errorMessage);
-			return ResponseEntity.ok(response);
+			Map<String, Object> resultadoProrrateo = ejecutarProrrateo();
+	        response.put("estatusProceso", resultadoProrrateo.get("estatusProceso"));
+	        response.put("message", resultadoProrrateo.get("message"));
+	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
 			logger.error("Error:" + e.getMessage());
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
@@ -811,6 +788,47 @@ public class CostoNetoFinanciadoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+	
+	private Map<String, Object> ejecutarProrrateo() {
+	    Map<String, Object> resultado = new HashMap<>();
+	    Connection connection = null;
+	    CallableStatement callableStatement = null;
+	    String errorMessage = null;
+	    int estatusProceso = 0;
+
+	    try {
+	        connection = jdbcTemplate.getDataSource().getConnection();
+	        callableStatement = connection.prepareCall(Constantes.PROCESO_PRORRATEO);
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+	    } catch (SQLException e) {
+	        logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	    } finally {
+	        if (callableStatement != null) {
+	            try {
+	                callableStatement.close();
+	            } catch (SQLException e) {
+	                logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+	            }
+	        }
+	        if (connection != null) {
+	            try {
+	                connection.close();
+	            } catch (SQLException e) {
+	                logger.error("Error al cerrar la conexión: " + e.getMessage());
+	            }
+	        }
+	    }
+
+	    resultado.put("estatusProceso", estatusProceso);
+	    resultado.put("message", (errorMessage == null) ? Constantes.PRORRATEO : errorMessage);
+	    return resultado;
+	}
 
 	public int obtUsuario() {
 
@@ -820,7 +838,7 @@ public class CostoNetoFinanciadoController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 			return usuario.get(0).getPk_id_usuario();
 

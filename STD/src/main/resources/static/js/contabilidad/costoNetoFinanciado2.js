@@ -430,6 +430,17 @@ function limpiarFormulario() {
 }
 
 function editarParametros(idBotton) {
+	
+	const nombreP = $('#lblProd');
+	// Encuentra el <tr> más cercano al botón clicado
+    var fila = $(idBotton).closest('tr');
+    // Encuentra el primer <td> dentro del <tr> y su valor
+    var nombreProducto = fila.find('td:first').text();
+    // Actualiza el contenido del <legend> con el texto original + el nombre del producto
+    nombreP.text(nombreProducto);
+	
+	
+	
 	const $button = $(idBotton);
 
 	// Selecciona el formulario más cercano al botón clickeado
@@ -482,7 +493,7 @@ function editarParametros(idBotton) {
 			// Ocultar el overlay con el spinner y habilitar los elementos del formulario
 			$button.html('<i class="fa fa-cogs"></i>');
 			$('#confConceptoFacturas').modal('show');
-			bloquearPantalla(2);
+			bloquearPantalla(2);			
 		});
 }
 

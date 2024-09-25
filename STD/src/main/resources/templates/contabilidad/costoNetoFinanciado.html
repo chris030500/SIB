@@ -162,7 +162,7 @@
 							</div>
 							<div class="col-md-3">
 								<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
-									<button type="button" id="btnProrrateo" class="btn btn-success"
+									<button type="button" id="btnProrrateo" class="btn btn-primary" title="Ejecutar proceso de prorrateo"
 										onclick="submitFormGastos(this,3)">
 										<i class="bi bi-diagram-3-fill"></i>
 									</button>
@@ -294,7 +294,7 @@
 						<fieldset class="border p-2">
 							<div class="modal-header">
 								<div class="col-md-11">
-									<legend class="float-none w-auto p-2">Gastos por producto</legend>
+									<legend class="float-none w-auto p-2">Gastos por producto: </legend>
 								</div>
 								<div class="col-md-1">
 									<button type="button" class="btn-close" onclick="cerrarModal(this)"
@@ -443,7 +443,7 @@
 						<fieldset class="border p-2">
 							<div class="modal-header">
 								<div class="col-md-11">
-									<legend class="float-none w-auto p-2">Gastos por producto</legend>
+									<legend class="float-none w-auto p-2">Gastos por producto:  <span id="lblProd"></span></legend>
 								</div>
 								<div class="col-md-1">
 									<button type="button" class="btn-close" onclick="cerrarModal(this)"
