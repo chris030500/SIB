@@ -15,7 +15,9 @@ public interface IConfiguracionProductosConceptos extends JpaRepository<Configur
 	@Query(value = "select PK_ID, "
 			+ "FK_ID_PRODUCTO, "
 			+ "FK_ID_CONCEPTO, "
-			+ "I_ESTATUS from SIB.TBL_CAT_CONF_CONCEPTOS_PRORRATEOS "
+			+ "I_ESTATUS, "
+			+ "I_USUARIO_REGISTRA, "
+			+ "DT_FECHA_REGISTRO from SIB.TBL_CAT_CONF_CONCEPTOS_PRORRATEOS "
 			+ "where FK_ID_PRODUCTO =:codProd", nativeQuery = true)
 	public List<ConfiguracionProductosConceptos> obtenerXproducto(int codProd);
 

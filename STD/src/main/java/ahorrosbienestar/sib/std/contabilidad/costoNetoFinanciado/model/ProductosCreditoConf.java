@@ -27,9 +27,6 @@ public class ProductosCreditoConf {
 
 	@Column(name = "D_MONTO_FINAL", columnDefinition = "decimal(12,2)")
 	private Double montoFinal;
-	
-	@Column(name = "I_CONFIGURACION")
-	private int i_configuracion;
 
 	public int getId() {
 		return id;
@@ -70,14 +67,5 @@ public class ProductosCreditoConf {
 	public void setMontoFinal(Double montoFinal) {
 		this.montoFinal = montoFinal;
 	}
-
-	public int getI_configuracion() {
-		return i_configuracion;
-	}
-
-	public void setI_configuracion(int i_configuracion) {
-		this.i_configuracion = i_configuracion;
-	} 
-
 
 }
