@@ -198,15 +198,12 @@ public class CalculoEPRController {
 	@PostMapping("/procesar-EPRC")
 	public ResponseEntity<Map<String, Object>> procesarCostoNetoFinaciado(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
-		System.out.print("SI");
 		try {
 			Connection connection = null;
 			CallableStatement callableStatement = null;
 			String errorMessage = null;
 			int estatusProceso = 0;
-			System.out.print("SII");
 			try {
-				System.out.print("SIII");
 				connection = jdbcTemplate.getDataSource().getConnection();
 				callableStatement = connection.prepareCall(Constantes.PROCESO_EPRC);
 				callableStatement.setInt(1, obtUsuario());
@@ -216,16 +213,13 @@ public class CalculoEPRController {
 				errorMessage = callableStatement.getString(2);
 				estatusProceso = callableStatement.getInt(3);
 			} catch (SQLException e) {
-				System.out.print("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
 				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
 				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
 			} finally {
-				System.out.print("SIIII");
 				if (callableStatement != null) {
 					try {
 						callableStatement.close();
 					} catch (SQLException e) {
-						System.out.print("Error al cerrar el CallableStatement: " + e.getMessage());
 						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
 					}
 				}
@@ -233,15 +227,11 @@ public class CalculoEPRController {
 					try {
 						connection.close();
 					} catch (SQLException e) {
-						System.out.print("Error al cerrar la conexión: " + e.getMessage());
 						logger.error("Error al cerrar la conexión: " + e.getMessage());
 					}
 				}
 			}
 
-			System.out.print("FIN");
-			System.out.print(errorMessage);
-			System.out.print(estatusProceso);
 			response.put("message", (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
 			response.put("estatusProceso", estatusProceso);
 			return ResponseEntity.ok(response);
@@ -395,15 +385,12 @@ public class CalculoEPRController {
 				// Convierte a Integer si no es una instancia de Number
 				tipoProceso = Integer.parseInt(procesoIdObj.toString());
 			}
-			System.out.println("Tipo Proceso: " + tipoProceso);
 			LocalDate fechaActual = LocalDate.now();
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_EPRC_HIST);
 
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
 					+ datosReporte.getPk_id_reporte() + Constantes.REPORTE_HIST + tipoProceso + "&tipoDocumento="
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
-
-			System.out.println(reporteURL);
 
 			response.put("urlReporte", reporteURL);
 			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
@@ -473,7 +460,10 @@ public class CalculoEPRController {
 	}
 
 	public void procesarYMigrarArchivoGarantias(String nombreArchivo) throws IOException {
-	    File file = new File("\\\\10.150.102.63\\std\\Garantias\\" + nombreArchivo);
+		List<Configuracion> bases = configService.obtenerUrlLayout();
+        String folderPath = bases.get(0).getVc_valor_propiedad();
+        
+	    File file = new File(folderPath + nombreArchivo);
 	    if (!file.exists()) {
 	        throw new IOException("El archivo no existe en la ruta especificada.");
 	    }
@@ -581,7 +571,6 @@ public class CalculoEPRController {
 	            }
 	        }
 	    } catch (Exception e) {
-	        System.err.println("Error al procesar el archivo: " + e.getMessage());
 	        throw e; // Lanza la excepción para manejarla en otro lugar
 	    }
 	}
@@ -590,69 +579,47 @@ public class CalculoEPRController {
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
 	private void insertarEnBaseDeDatosGarantias(List<Object[]> dataToInsert) {
-		String sql = "INSERT INTO TBL_GARANTIA_EPRC (I_NumCredito, VC_TipoGarantia, DC_MontoGarantia, VC_CalidadGarantia, DT_FechaCorte, I_IdProceso) VALUES (?, ?, ?, ?, ?, ?)";
-
-		// Ejecutar el batch insert usando JdbcTemplate
-		jdbcTemplate.batchUpdate(sql, dataToInsert);
+	    // Usar la constante SQL para la inserción
+	    jdbcTemplate.batchUpdate(Constantes.SQL_INSERTAR_GARANTIAS, dataToInsert);
 	}
 
-	// Método para insertar datos de control en la tabla de control
 	private void insertarDatosDeControlGarantias(int idProceso, int totalRecords, String fechaCorteFin) {
-		
-		String sql1 = "SELECT * FROM TBL_CONTROL_GARANTIAS WHERE DT_FechaCorte = ? ";
-		String sql2 = "INSERT INTO TBL_CONTROL_GARANTIAS (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+	    // Usar las constantes SQL para las consultas
+	    List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SQL_SELECCIONAR_CONTROL_GARANTIAS, fechaCorteFin);
 
-		// Ejecutar el SELECT y obtener una lista de resultados
-		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+	    if (!result.isEmpty()) {
+	        Map<String, Object> row = result.get(result.size() - 1);
+	        int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		// Validar si se encontró algún resultado
-		if (!result.isEmpty()) {
-		    // Extraer el primer registro (ya que esperas un solo resultado)
-		    Map<String, Object> row = result.get(0);
+	        // Usar constante SQL para actualizar el estatus
+	        jdbcTemplate.update(Constantes.SQL_ACTUALIZAR_ESTATUS_CONTROL_GARANTIAS, idProc);
+	    }
 
-		    // Obtener los valores del registro
-		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+	    // Definir los valores de control
+	    String estatusProceso = "A";
+	    Date fechaProceso = new Date();
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    String fechaProcesoStr = dateFormat.format(fechaProceso);
 
-		    // Lógica para realizar el UPDATE
-		    String sqlUpdate = "UPDATE TBL_CONTROL_GARANTIAS SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
-
-		    // Ejecutar el UPDATE con los nuevos valores
-		    jdbcTemplate.update(sqlUpdate, idProc);
-
-		    System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
-		    
-		 // Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		    
-		} else {
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		}
+	    // Usar constante SQL para la inserción de control
+	    jdbcTemplate.update(Constantes.SQL_INSERTAR_CONTROL_GARANTIAS, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
 	}
-	
-	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProcesoGarantias() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_GARANTIAS";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
-    }
+
+	private int obtenerSiguienteIdProcesoGarantias() {
+	    // Usar la constante SQL para obtener el siguiente ID
+	    return jdbcTemplate.queryForObject(Constantes.SQL_OBTENER_SIGUIENTE_ID_PROCESO_GARANTIAS, Integer.class);
+	}
+
     
     
     
     
     public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
-		File file = new File("\\\\10.150.102.63\\std\\Garantias\\" + nombreArchivo);
+    	
+    	List<Configuracion> bases = configService.obtenerUrlLayout();
+        String folderPath = bases.get(0).getVc_valor_propiedad();
+    	
+		File file = new File(folderPath + nombreArchivo);
 		String fechaCorteFin = "";
 		List<String> errores = new ArrayList<>(); // Para almacenar errores
 
@@ -756,66 +723,42 @@ public class CalculoEPRController {
 
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
-	private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
-		String sql = "INSERT INTO TBL_CAMBIO_ETAPA (I_CREDITOID, I_TIPO_ETAPA, DT_FECHA_CORTE, I_IDPROCESO) VALUES (?, ?, ?, ?)";
-
-		// Ejecutar el batch insert usando JdbcTemplate
-		jdbcTemplate.batchUpdate(sql, dataToInsert);
-	}
+    private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
+        // Usar la constante en lugar de la consulta en línea
+        jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
+    }
 
 	// Método para insertar datos de control en la tabla de control
-	private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
-		
-		String sql1 = "SELECT * FROM TBL_CONTROL_ETAPA WHERE DT_FechaCorte = ? ";
-		String sql2 = "INSERT INTO TBL_CONTROL_ETAPA (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+    private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
+        // Ejecutar el SELECT y obtener una lista de resultados
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
 
-		// Ejecutar el SELECT y obtener una lista de resultados
-		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+        // Validar si se encontró algún resultado
+        if (!result.isEmpty()) {
+            // Extraer el primer registro
+            Map<String, Object> row = result.get(result.size() - 1);
 
-		// Validar si se encontró algún resultado
-		if (!result.isEmpty()) {
-		    // Extraer el primer registro (ya que esperas un solo resultado)
-		    Map<String, Object> row = result.get(result.size() - 1);
+            // Obtener los valores del registro
+            int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		    // Obtener los valores del registro
-		    int idProc = (Integer) row.get("PK_IdProcesoComision");
+            // Ejecutar el UPDATE con la constante
+            jdbcTemplate.update(Constantes.UPDATE_CONTROL_ETAPA, idProc);
+        }
 
-		    // Lógica para realizar el UPDATE
-		    String sqlUpdate = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+        // Definir los valores de control
+        String estatusProceso = "A";
+        Date fechaProceso = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
-		    // Ejecutar el UPDATE con los nuevos valores
-		    jdbcTemplate.update(sqlUpdate, idProc);
-
-		    System.out.println("Registro con I_IdProceso = " + idProc + " actualizado.");
-		    
-		 // Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		    
-		} else {
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
-		}
-		
-
-		
-	}
-
-	// Método para obtener el siguiente ID de proceso
-    private int obtenerSiguienteIdProcesoEtapas() {
-        String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        // Ejecutar la inserción de control con la constante
+        jdbcTemplate.update(Constantes.INSERT_CONTROL_ETAPA, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
     }
+
+
+	private int obtenerSiguienteIdProcesoEtapas() {
+	    // Usar la constante en lugar de la consulta en línea
+	    return jdbcTemplate.queryForObject(Constantes.SELECT_NEXT_ID_PROCESO, Integer.class);
+	}
 
 }

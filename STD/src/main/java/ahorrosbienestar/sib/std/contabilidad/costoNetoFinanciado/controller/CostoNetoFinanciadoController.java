@@ -479,7 +479,6 @@ public class CostoNetoFinanciadoController {
 				// Convierte a Integer si no es una instancia de Number
 				tipoProceso = Integer.parseInt(procesoIdObj.toString());
 			}
-			System.out.println("Tipo Proceso: " + tipoProceso);
 			LocalDate fechaActual = LocalDate.now();
 			ReporteJasper datosReporte = iReporteRepository
 					.buscarReporte(Constantes.REPORTE_COSTO_NETO_FINANCIADO_HIST);
@@ -910,7 +909,11 @@ public class CostoNetoFinanciadoController {
 	}
 
 	public void procesarYMigrarArchivoComisiones(String nombreArchivo) throws IOException {
-		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
+		
+		List<Configuracion> bases = configService.obtenerUrlComisiones();
+		String folderPath = bases.get(0).getVc_valor_propiedad();
+		
+		File file = new File(folderPath + nombreArchivo);
 		if (!file.exists()) {
 			throw new IOException("El archivo no existe en la ruta especificada.");
 		}
@@ -1012,68 +1015,56 @@ public class CostoNetoFinanciadoController {
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
 	private void insertarEnBaseDeDatosComisiones(List<Object[]> dataToInsert) {
-		String sql = "INSERT INTO TBL_COMISIONES_CREDITOS (I_CREDITO, D_Costo_Comisiones, D_Ingresos_Comisiones, DT_FECHA_CORTE, I_IdProceso) VALUES (?, ?, ?, ?, ?)";
-
-		// Ejecutar el batch insert usando JdbcTemplate
-		jdbcTemplate.batchUpdate(sql, dataToInsert);
+	    // Usar la constante para la consulta
+	    jdbcTemplate.batchUpdate(Constantes.INSERTAR_COMISIONES, dataToInsert);
 	}
 
 	// Método para insertar datos de control en la tabla de control
 	private void insertarDatosDeControlComisiones(int idProceso, int totalRecords, String fechaCorteFin) {
 
-		String sql1 = "SELECT * FROM TBL_CONTROL_COMISIONES WHERE DT_FechaCorte = ? ";
-		String sql2 = "INSERT INTO TBL_CONTROL_COMISIONES (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+	    // Usar la constante para la consulta
+	    List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_COMISIONES, fechaCorteFin);
 
-		// Ejecutar el SELECT y obtener una lista de resultados
-		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+	    // Validar si se encontró algún resultado
+	    if (!result.isEmpty()) {
+	        Map<String, Object> row = result.get(result.size() - 1);
+	        int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		// Validar si se encontró algún resultado
-		if (!result.isEmpty()) {
-			// Extraer el primer registro (ya que esperas un solo resultado)
-			Map<String, Object> row = result.get(0);
+	        // Usar la constante para la consulta de actualización
+	        jdbcTemplate.update(Constantes.UPDATE_CONTROL_COMISIONES, idProc);
 
-			// Obtener los valores del registro
-			int idProc = (Integer) row.get("PK_IdProcesoComision");
+	        // Definir los valores de control
+	        String estatusProceso = "A";
+	        Date fechaProceso = new Date();
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
-			// Lógica para realizar el UPDATE
-			String sqlUpdate = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+	        // Usar la constante para la inserción de control
+	        jdbcTemplate.update(Constantes.INSERTAR_CONTROL_COMISIONES, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
 
-			// Ejecutar el UPDATE con los nuevos valores
-			jdbcTemplate.update(sqlUpdate, idProc);
+	    } else {
+	        String estatusProceso = "A";
+	        Date fechaProceso = new Date();
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
-			System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
-
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
-					fechaCorteFin);
-
-		} else {
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
-					fechaCorteFin);
-		}
+	        // Usar la constante para la inserción de control
+	        jdbcTemplate.update(Constantes.INSERTAR_CONTROL_COMISIONES, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+	    }
 	}
 
 	// Método para obtener el siguiente ID de proceso
 	private int obtenerSiguienteIdProcesoComisiones() {
-		String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
-		return jdbcTemplate.queryForObject(sql, Integer.class);
+	    return jdbcTemplate.queryForObject(Constantes.OBTENER_Siguiente_ID_PROCESO_COMISIONES, Integer.class);
 	}
 
+
 	public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
-		File file = new File("\\\\10.150.102.63\\std\\Comisiones\\" + nombreArchivo);
+		
+		List<Configuracion> bases = configService.obtenerUrlComisiones();
+		String folderPath = bases.get(0).getVc_valor_propiedad();
+		
+		File file = new File(folderPath + nombreArchivo);
 		String fechaCorteFin = "";
 		List<String> errores = new ArrayList<>(); // Para almacenar errores
 
@@ -1178,181 +1169,151 @@ public class CostoNetoFinanciadoController {
 	// Método para insertar los datos en la base de datos usando batch insert con
 	// JdbcTemplate
 	private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
-		String sql = "INSERT INTO TBL_CAMBIO_ETAPA (I_CREDITOID, I_TIPO_ETAPA, DT_FECHA_CORTE, I_IDPROCESO) VALUES (?, ?, ?, ?)";
-
-		// Ejecutar el batch insert usando JdbcTemplate
-		jdbcTemplate.batchUpdate(sql, dataToInsert);
-	}
+        // Usar la constante en lugar de la consulta en línea
+        jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
+    }
 
 	// Método para insertar datos de control en la tabla de control
-	private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
+    private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
+        // Ejecutar el SELECT y obtener una lista de resultados
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
 
-		String sql1 = "SELECT * FROM TBL_CONTROL_ETAPA WHERE DT_FechaCorte = ? ";
-		String sql2 = "INSERT INTO TBL_CONTROL_ETAPA (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
+        // Validar si se encontró algún resultado
+        if (!result.isEmpty()) {
+            // Extraer el primer registro
+            Map<String, Object> row = result.get(result.size() - 1);
 
-		// Ejecutar el SELECT y obtener una lista de resultados
-		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql1, fechaCorteFin);
+            // Obtener los valores del registro
+            int idProc = (Integer) row.get("PK_IdProcesoComision");
 
-		// Validar si se encontró algún resultado
-		if (!result.isEmpty()) {
-			// Extraer el primer registro (ya que esperas un solo resultado)
-			Map<String, Object> row = result.get(0);
+            // Ejecutar el UPDATE con la constante
+            jdbcTemplate.update(Constantes.UPDATE_CONTROL_ETAPA, idProc);
+        }
 
-			// Obtener los valores del registro
-			int idProc = (Integer) row.get("PK_IdProcesoComision");
+        // Definir los valores de control
+        String estatusProceso = "A";
+        Date fechaProceso = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
-			// Lógica para realizar el UPDATE
-			String sqlUpdate = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision= ?";
+        // Ejecutar la inserción de control con la constante
+        jdbcTemplate.update(Constantes.INSERT_CONTROL_ETAPA, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso, fechaCorteFin);
+    }
 
-			// Ejecutar el UPDATE con los nuevos valores
-			jdbcTemplate.update(sqlUpdate, idProc);
 
-			System.out.println("Registro con I_IdProceso = " + idProceso + " actualizado.");
-
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
-					fechaCorteFin);
-
-		} else {
-			// Definir los valores de control
-			String estatusProceso = "A";
-			Date fechaProceso = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			String fechaProcesoStr = dateFormat.format(fechaProceso);
-
-			// Ejecutar la inserción de control
-			jdbcTemplate.update(sql2, idProceso, totalRecords, fechaProcesoStr, obtUsuario(), estatusProceso,
-					fechaCorteFin);
-		}
-
-	}
-
-	// Método para obtener el siguiente ID de proceso
 	private int obtenerSiguienteIdProcesoEtapas() {
-		String sql = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
-		return jdbcTemplate.queryForObject(sql, Integer.class);
+	    // Usar la constante en lugar de la consulta en línea
+	    return jdbcTemplate.queryForObject(Constantes.SELECT_NEXT_ID_PROCESO, Integer.class);
 	}
 
 	public void procesarYMigrarArchivoFacturas(String nombreArchivo) throws IOException {
 
-		try {
-			List<Object[]> dataToInsert = new ArrayList<>();
+	    try {
+	        List<Object[]> dataToInsert = new ArrayList<>();
 
-			// Inicializa el DocumentBuilder
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
+	        // Inicializa el DocumentBuilder
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder builder = factory.newDocumentBuilder();
 
-			// Carga el archivo XML
-			File file = new File("\\\\10.150.102.63\\std\\Facturas\\" + nombreArchivo);
-			Document document = builder.parse(file);
+	        // Carga el archivo XML
+	        List<Configuracion> bases = configService.obtenerUrlFactura();
+	        String folderPath = bases.get(0).getVc_valor_propiedad();
 
-			// Normaliza el documento (remueve nodos vacíos y espacios)
-			document.getDocumentElement().normalize();
+	        File file = new File(folderPath + nombreArchivo);
+	        Document document = builder.parse(file);
 
-			// Obtiene el elemento raíz
-			Element root = document.getDocumentElement();
-			System.out.println("Elemento raíz: " + root.getNodeName());
+	        // Normaliza el documento (remueve nodos vacíos y espacios)
+	        document.getDocumentElement().normalize();
 
-			// Obtiene los nodos del "Comprobante"
-			NodeList comprobanteList = document.getElementsByTagName("cfdi:Comprobante");
+	        // Obtiene el elemento raíz
+	        Element root = document.getDocumentElement();
 
-			// Itera sobre los nodos de "Comprobante"
-			for (int i = 0; i < comprobanteList.getLength(); i++) {
-				Node comprobanteNode = comprobanteList.item(i);
+	        // Obtiene los nodos del "Comprobante"
+	        NodeList comprobanteList = document.getElementsByTagName("cfdi:Comprobante");
 
-				if (comprobanteNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element comprobanteElement = (Element) comprobanteNode;
+	        // Itera sobre los nodos de "Comprobante"
+	        for (int i = 0; i < comprobanteList.getLength(); i++) {
+	            Node comprobanteNode = comprobanteList.item(i);
 
-					String folio = comprobanteElement.getAttribute("Folio");
-					String fecha = comprobanteElement.getAttribute("Fecha");
-					String descuento = comprobanteElement.getAttribute("Descuento");
-					String total = comprobanteElement.getAttribute("Total");
+	            if (comprobanteNode.getNodeType() == Node.ELEMENT_NODE) {
+	                Element comprobanteElement = (Element) comprobanteNode;
 
-					// Emisor
-					Element emisorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Emisor").item(0);
-					String emisorRFC = emisorElement.getAttribute("Rfc");
-					String emisorNombre = emisorElement.getAttribute("Nombre");
+	                String folio = comprobanteElement.getAttribute("Folio");
+	                String fecha = comprobanteElement.getAttribute("Fecha");
+	                String descuento = comprobanteElement.getAttribute("Descuento");
+	                String total = comprobanteElement.getAttribute("Total");
 
-					// Receptor
-					Element receptorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Receptor")
-							.item(0);
-					String receptorRFC = receptorElement.getAttribute("Rfc");
-					String receptorNombre = receptorElement.getAttribute("Nombre");
+	                // Emisor
+	                Element emisorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Emisor").item(0);
+	                String emisorRFC = emisorElement.getAttribute("Rfc");
+	                String emisorNombre = emisorElement.getAttribute("Nombre");
 
-					System.out.print(folio);
+	                // Receptor
+	                Element receptorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Receptor").item(0);
+	                String receptorRFC = receptorElement.getAttribute("Rfc");
+	                String receptorNombre = receptorElement.getAttribute("Nombre");
 
-					// Insertar en TBL_DETALLE_FACTURA
-					String sql1 = "INSERT INTO TBL_DETALLE_FACTURA (PK_I_Folio, DT_Fecha_Emision, DC_Descuento, DC_Total, VC_Emisor_RFC, VC_Emisor_Nombre, VC_Receptor_RFC, VC_Receptor_Nombre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-					jdbcTemplate.update(sql1, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC,
-							receptorNombre);
+	                // Insertar en TBL_DETALLE_FACTURA usando la constante de consulta
+	                jdbcTemplate.update(Constantes.INSERT_DETALLE_FACTURA, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre);
 
-					// Lee los conceptos
-					NodeList conceptosList = comprobanteElement.getElementsByTagName("cfdi:Concepto");
-					for (int j = 0; j < conceptosList.getLength(); j++) {
-						Element conceptoElement = (Element) conceptosList.item(j);
-						String concepto = conceptoElement.getAttribute("NoIdentificacion");
-						String cantidad = conceptoElement.getAttribute("Cantidad");
-						String descripcion = conceptoElement.getAttribute("Descripcion");
-						String oi = conceptoElement.getAttribute("ObjetoImp");
-						String um = conceptoElement.getAttribute("ClaveUnidad");
-						String punit = conceptoElement.getAttribute("ValorUnitario");
-						String subtotalStr = conceptoElement.getAttribute("Importe");
-						String descStr = conceptoElement.getAttribute("Descuento");
+	                // Lee los conceptos
+	                NodeList conceptosList = comprobanteElement.getElementsByTagName("cfdi:Concepto");
+	                for (int j = 0; j < conceptosList.getLength(); j++) {
+	                    Element conceptoElement = (Element) conceptosList.item(j);
+	                    String concepto = conceptoElement.getAttribute("NoIdentificacion");
+	                    String cantidad = conceptoElement.getAttribute("Cantidad");
+	                    String descripcion = conceptoElement.getAttribute("Descripcion");
+	                    String oi = conceptoElement.getAttribute("ObjetoImp");
+	                    String um = conceptoElement.getAttribute("ClaveUnidad");
+	                    String punit = conceptoElement.getAttribute("ValorUnitario");
+	                    String subtotalStr = conceptoElement.getAttribute("Importe");
+	                    String descStr = conceptoElement.getAttribute("Descuento");
 
-						// Convertir las cadenas a números
-						double subtotal = Double.parseDouble(subtotalStr.isEmpty() ? "0.00" : subtotalStr);
-						double desc = descStr.isEmpty() ? 0.00 : Double.parseDouble(descStr);
+	                    // Convertir las cadenas a números
+	                    double subtotal = Double.parseDouble(subtotalStr.isEmpty() ? "0.00" : subtotalStr);
+	                    double desc = descStr.isEmpty() ? 0.00 : Double.parseDouble(descStr);
 
-						// Realizar la resta
-						double totalConcepto = subtotal - desc;
+	                    // Realizar la resta
+	                    double totalConcepto = subtotal - desc;
 
-						// Agregar a la lista para TBL_FACTURA
-						dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc,
-								totalConcepto, folio });
-					}
-				}
-			}
+	                    // Agregar a la lista para TBL_FACTURA
+	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio });
+	                }
+	            }
+	        }
 
-			// Insertar en TBL_FACTURA usando batchUpdate
-			String sql2 = "INSERT INTO TBL_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.batchUpdate(sql2, dataToInsert);
+	        // Insertar en TBL_FACTURA usando batchUpdate con la constante de consulta
+	        jdbcTemplate.batchUpdate(Constantes.INSERT_FACTURA, dataToInsert);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
 
 	@PostMapping("/cargarPdf")
 	public ResponseEntity<Map<String, String>> uploadPdf(@RequestParam("pdf") MultipartFile file,
 			@RequestParam("nombreArchivo") String nombreArchivo) {
+		
+		List<Configuracion> bases = configService.obtenerUrlPDF();
+		String folderPath = bases.get(0).getVc_valor_propiedad();
 
-		String UPLOAD_DIR = "\\\\10.150.102.63\\std\\PDF\\";
+		String UPLOAD_DIR = folderPath;
 
 		// Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
 		if (nombreArchivo.toLowerCase().endsWith(".xml")) {
 			nombreArchivo = nombreArchivo.substring(0, nombreArchivo.lastIndexOf(".")) + ".pdf";
 		}
 
-		System.out.println("Subiendo archivo: " + nombreArchivo);
-		System.out.println("Ruta destino: " + UPLOAD_DIR);
-
 		if (file.isEmpty() || !file.getContentType().equals("application/pdf")) {
 			Map<String, String> errorResponse = new HashMap<>();
 			errorResponse.put("error", "El archivo debe ser un PDF.");
-			System.out.println("Error: archivo vacío o no es PDF.");
 			return ResponseEntity.badRequest().body(errorResponse);
 		}
 
 		try {
 			// Guardar el archivo directamente en la ruta especificada
 			Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
-			System.out.println("Guardando archivo en: " + filePath.toString());
 			file.transferTo(filePath);
 
 			Map<String, String> successResponse = new HashMap<>();
@@ -1360,7 +1321,6 @@ public class CostoNetoFinanciadoController {
 			return ResponseEntity.ok().body(successResponse);
 
 		} catch (IOException e) {
-			System.out.println("Error al guardar el archivo: " + e.getMessage());
 			Map<String, String> errorResponse = new HashMap<>();
 			errorResponse.put("error", "Error al cargar el archivo.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -1370,7 +1330,10 @@ public class CostoNetoFinanciadoController {
 	@GetMapping("/verPdf")
 	public ResponseEntity<Resource> viewPdf(@RequestParam("nombreArchivo") String nombreArchivo) {
 
-		String UPLOAD_DIR = "\\\\10.150.102.63\\std\\PDF\\";
+		List<Configuracion> bases = configService.obtenerUrlPDF();
+		String folderPath = bases.get(0).getVc_valor_propiedad();
+
+		String UPLOAD_DIR = folderPath;
 
 		// Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
 		if (nombreArchivo.toLowerCase().endsWith(".xml")) {
@@ -1380,9 +1343,7 @@ public class CostoNetoFinanciadoController {
 		try {
 			// Crear la ruta completa al archivo PDF
 			Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
-			System.out.print(filePath);
 			Resource resource = new UrlResource(filePath.toUri());
-			System.out.print(resource);
 
 			if (resource.exists() && resource.isReadable()) {
 				// Establecer el encabezado de respuesta para mostrar el archivo en el navegador
