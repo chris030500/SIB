@@ -23,14 +23,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -72,14 +71,14 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.contabilidad.configuracion.model.ConfigAdviserBC;
-import ahorrosbienestar.sib.std.contabilidad.configuracion.repository.IConfigAdviserBC;
-import ahorrosbienestar.sib.std.contabilidad.configuracion.repository.IProductosCreditoConf;
-import ahorrosbienestar.sib.std.contabilidad.configuracion.service.ProductosCreditoService;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfigAdviserBC;
 import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfiguracionProductosConceptos;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IConfigAdviserBC;
 import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IConfiguracionProductosConceptos;
 import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IDetalleFactura;
 import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IProcesosHistCostoNetoFinanciado;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IProductosCreditoConf;
+import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.service.ProductosCreditoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -592,8 +591,7 @@ public class CostoNetoFinanciadoController {
 
 				// si es igual a 0 es un alta si es mayor a 0 es una actualizacion.
 				if (Integer.parseInt(params.get("gastoIde")) > 0) {
-					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC
-							.findById(Integer.parseInt(params.get("gastoIde")));
+					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
 					obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
 					obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository
 							.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get("Concepto"))));
