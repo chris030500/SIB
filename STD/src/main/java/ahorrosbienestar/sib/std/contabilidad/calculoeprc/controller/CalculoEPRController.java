@@ -567,8 +567,6 @@ public class CalculoEPRController {
 	    }
 	}
 
-
-	// Método para insertar los datos en la base de datos usando batch insert con JdbcTemplate
 	private void insertarEnBaseDeDatosGarantias(List<Object[]> dataToInsert) {
 	    // Usar la constante SQL para la inserción
 	    jdbcTemplate.batchUpdate(Constantes.SQL_INSERTAR_GARANTIAS, dataToInsert);
@@ -619,6 +617,7 @@ public class CalculoEPRController {
 	        
 	        List<Object[]> dataToInsert = new ArrayList<>();
 	        List<String> errores = new ArrayList<>();
+	        int totalRecords = 0;
 	        int idProceso = obtenerSiguienteIdProcesoEtapas();
 
 	        for (int i = 1; i <= workbook.getSheetAt(0).getLastRowNum(); i++) {
@@ -686,7 +685,7 @@ public class CalculoEPRController {
 
 	private void verificarErrores(List<String> errores) {
 	    if (!errores.isEmpty()) {
-	    	throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	        throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
 	    }
 	}
 
@@ -699,7 +698,6 @@ public class CalculoEPRController {
 	    }
 	}
 
-	// Método para insertar los datos en la base de datos usando batch insert con JdbcTemplate
     private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
         // Usar la constante en lugar de la consulta en línea
         jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
