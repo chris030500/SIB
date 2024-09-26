@@ -135,10 +135,10 @@ public class CostoNetoFinanciadoController {
 
 	List<Usuario> usuario = null;
 
-	private String rutaDireccion = "";
 
 	@GetMapping("/costoNetoFinanciado")
 	public String costoNetoFinanciado(Model model) throws IOException {
+		String rutaDireccion = "";
 		rutaDireccion = Constantes.CONTABILIDAD_COSTO_NETO_FINANCIADO;
 		LocalDate fechaSistema = LocalDate.now();
 		try {
@@ -147,7 +147,7 @@ public class CostoNetoFinanciadoController {
 				String listaHistProceso = objectMapper
 						.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
 				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
-				// objectMapper.writeValueAsString(iConfigAdviserBC.findAll());
+				
 
 				model.addAttribute("listaHistProceso", listaHistProceso);
 				model.addAttribute("fechaSistema", fechaSistema);
@@ -164,7 +164,7 @@ public class CostoNetoFinanciadoController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			return null;
 		}
 
@@ -210,7 +210,7 @@ public class CostoNetoFinanciadoController {
 			});
 			return ResponseEntity.ok(listaArchivos);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			return null;
 		}
 	}
@@ -255,7 +255,7 @@ public class CostoNetoFinanciadoController {
 			});
 			return ResponseEntity.ok(listaArchivos);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			return null;
 		}
 	}
@@ -321,58 +321,71 @@ public class CostoNetoFinanciadoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("--" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		}
+	}
+	private Map<String, Object> ejecutarProcesoVoBo() {
+	    Map<String, Object> result = new HashMap<>();
+	    Connection connection = null;
+	    CallableStatement callableStatement = null;
+	    String errorMessage = null;
+	    int estatusProceso = 0;
+
+	    try {
+	        connection = jdbcTemplate.getDataSource().getConnection();
+	        callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK);
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+	    } catch (SQLException e) {
+	        logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
+	        errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
+	    } finally {
+	        if (callableStatement != null) {
+	            try {
+	                callableStatement.close();
+	            } catch (SQLException e) {
+	                logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
+	            }
+	        }
+	        if (connection != null) {
+	            try {
+	                connection.close();
+	            } catch (SQLException e) {
+	                logger.error(Constantes.ERROR_BD_CON + e.getMessage());
+	            }
+	        }
+	    }
+
+	    result.put("errorMessage", errorMessage);
+	    result.put("estatusProceso", estatusProceso);
+	    return result;
 	}
 
 	@PostMapping("/guardar-voboProceso")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		try {
-			Connection connection = null;
-			CallableStatement callableStatement = null;
-			String errorMessage = null;
-			int estatusProceso = 0;
+			 // Llamar al método que ejecuta el procedimiento almacenado
+	        Map<String, Object> procesoResult = ejecutarProcesoVoBo();
+	        String errorMessage = (String) procesoResult.get("errorMessage");
+	        int estatusProceso = (int) procesoResult.get("estatusProceso");
 
-			try {
-				connection = jdbcTemplate.getDataSource().getConnection();
-				callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK);
-				callableStatement.setInt(1, obtUsuario());
-				callableStatement.registerOutParameter(2, Types.VARCHAR);
-				callableStatement.registerOutParameter(3, Types.INTEGER);
-				callableStatement.execute();
-				errorMessage = callableStatement.getString(2);
-				estatusProceso = callableStatement.getInt(3);
-			} catch (SQLException e) {
-				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-			} finally {
-				if (callableStatement != null) {
-					try {
-						callableStatement.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-					}
-				}
-				if (connection != null) {
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar la conexión: " + e.getMessage());
-					}
-				}
-			}
+	        // Convertir lista de procesos a JSON
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
 
-			ObjectMapper objectMapper = new ObjectMapper();
-			String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
-
-			response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
-			response.put("estatusProceso", estatusProceso);
-			response.put("listaHistProceso", listaHistProceso);
-			return ResponseEntity.ok(response);
+	        // Poner datos en la respuesta
+	        response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
+	        response.put("estatusProceso", estatusProceso);
+	        response.put("listaHistProceso", listaHistProceso);
+	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -404,21 +417,21 @@ public class CostoNetoFinanciadoController {
 				errorMessage = callableStatement.getString(2);
 				estatusProceso = callableStatement.getInt(3);
 			} catch (SQLException e) {
-				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+				logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
+				errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
 			} finally {
 				if (callableStatement != null) {
 					try {
 						callableStatement.close();
 					} catch (SQLException e) {
-						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+						logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
 					}
 				}
 				if (connection != null) {
 					try {
 						connection.close();
 					} catch (SQLException e) {
-						logger.error("Error al cerrar la conexión: " + e.getMessage());
+						logger.error(Constantes.ERROR_BD_CON + e.getMessage());
 					}
 				}
 			}
@@ -516,7 +529,7 @@ public class CostoNetoFinanciadoController {
 					opcionesMenuService.buscarRelacionController(rutaController));
 
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			return 0;
 		}
 
@@ -531,8 +544,6 @@ public class CostoNetoFinanciadoController {
 	@PostMapping("/guardar-Costos")
 	public ResponseEntity<Map<String, Object>> guardarCostos(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
-		// Convertir la lista a JSON
-		// ObjectMapper objectMapper = new ObjectMapper();
 
 		try {
 			// Crear un NumberFormat para la localización deseada
@@ -548,7 +559,7 @@ public class CostoNetoFinanciadoController {
 				response.put("costoBC", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 1));
 				response.put("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
 				response.put("catcostounitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
-				// response.put("catcostounitario",iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
+
 				response.put("message", "Datos guardados correctamente");
 				return ResponseEntity.ok(response);
 
@@ -557,7 +568,7 @@ public class CostoNetoFinanciadoController {
 			}
 
 		} catch (NumberFormatException e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
@@ -637,15 +648,15 @@ public class CostoNetoFinanciadoController {
 				return ResponseEntity.ok(response);
 			}
 		} catch (NumberFormatException e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
@@ -713,15 +724,15 @@ public class CostoNetoFinanciadoController {
             response.put("message", "Se Actualizo la información correctamente");
             return ResponseEntity.ok(response);
 		 } catch (NumberFormatException e) {
-				logger.error("Error:"+e.getMessage());
+				logger.error(Constantes.ERROR_LOG+e.getMessage());
 				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (IllegalArgumentException e) {
-				 logger.error("Error:"+e.getMessage());
+				 logger.error(Constantes.ERROR_LOG+e.getMessage());
 				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (Exception e) {
-				 logger.error("Error:"+e.getMessage());
+				 logger.error(Constantes.ERROR_LOG+e.getMessage());
 				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			 }
@@ -752,15 +763,15 @@ public class CostoNetoFinanciadoController {
             return ResponseEntity.ok(response);
 	
 		 } catch (NumberFormatException e) {
-				logger.error("Error:"+e.getMessage());
+				logger.error(Constantes.ERROR_LOG+e.getMessage());
 				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (IllegalArgumentException e) {
-				 logger.error("Error:"+e.getMessage());
+				 logger.error(Constantes.ERROR_LOG+e.getMessage());
 				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (Exception e) {
-				 logger.error("Error:"+e.getMessage());
+				 logger.error(Constantes.ERROR_LOG+e.getMessage());
 				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			 }
@@ -775,15 +786,15 @@ public class CostoNetoFinanciadoController {
 	        response.put("message", resultadoProrrateo.get("message"));
 	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
@@ -806,21 +817,21 @@ public class CostoNetoFinanciadoController {
 	        errorMessage = callableStatement.getString(2);
 	        estatusProceso = callableStatement.getInt(3);
 	    } catch (SQLException e) {
-	        logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
+	        errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
 	    } finally {
 	        if (callableStatement != null) {
 	            try {
 	                callableStatement.close();
 	            } catch (SQLException e) {
-	                logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+	                logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
 	            }
 	        }
 	        if (connection != null) {
 	            try {
 	                connection.close();
 	            } catch (SQLException e) {
-	                logger.error("Error al cerrar la conexión: " + e.getMessage());
+	                logger.error(Constantes.ERROR_BD_CON + e.getMessage());
 	            }
 	        }
 	    }
@@ -843,7 +854,7 @@ public class CostoNetoFinanciadoController {
 			return usuario.get(0).getPk_id_usuario();
 
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
 			return 0;
 		}
 
