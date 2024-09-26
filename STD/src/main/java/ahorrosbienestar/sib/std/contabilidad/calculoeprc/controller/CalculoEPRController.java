@@ -94,24 +94,21 @@ public class CalculoEPRController {
     private ConfigService configService;
 
 	List<Usuario> usuario = null;
-
-	private String rutaDireccion = "";
 	
 	@PostMapping("/subirArchivoEPRC")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
             @RequestParam("idFolio") String idFolio) {
  
         String mensaje = "";
-        ArrayList<String> respuesta = new ArrayList<String>();
+        ArrayList<String> respuesta = new ArrayList<>();
         List<Configuracion> bases = configService.obtenerUrlLayout();
         try {
             if (files.length > 0) {
                 for (MultipartFile file : files) {
                     byte[] bytes = file.getBytes();
                     String folderPath = bases.get(0).getVc_valor_propiedad();
-                    Path folder = Paths.get(folderPath);
  
-                    Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+                    Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
                     Files.write(nuevoPath, bytes);
  
                     mensaje = "Se agrego archivo correctamente.";
@@ -143,6 +140,7 @@ public class CalculoEPRController {
  
             // Listar los archivos en la carpeta
             Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+            	@Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
                     archivos.setNombreArchivo(file.getFileName().toString());
@@ -171,14 +169,14 @@ public class CalculoEPRController {
             });
             return ResponseEntity.ok(listaArchivos);
         } catch (Exception e) {
-            logger.error("Error:" + e.getMessage());
+            logger.error(e.getMessage());
             return null;
         }
     }
 
 	@GetMapping("/calculoEPRC")
 	public String calculoEPRC(Model model) throws IOException {
-		rutaDireccion = Constantes.CONTABILIDAD_CALCULO_EPRC;
+		String rutaDireccion = Constantes.CONTABILIDAD_CALCULO_EPRC;
 		try {
 			if (validarAcceso(Constantes.CONTABILIDAD_CALCULO_EPRC) == 1) {
 				ObjectMapper objectMapper = new ObjectMapper();
@@ -189,63 +187,66 @@ public class CalculoEPRController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(e.getMessage());
 			return null;
 		}
 
 	}
+	
+	private Map<String, Object> ejecutarProcedimientoEPRC() {
+	    Map<String, Object> result = new HashMap<>();
+	    String errorMessage = "";
+	    int estatusProceso = 0;
+	    
+	    try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+	         CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_EPRC)) {
+	        
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+	        
+	    } catch (SQLException e) {
+	        logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	    }
+	    
+	    result.put("errorMessage", errorMessage);
+	    result.put("estatusProceso", estatusProceso);
+	    return result;
+	}
+
 
 	@PostMapping("/procesar-EPRC")
 	public ResponseEntity<Map<String, Object>> procesarCostoNetoFinaciado(@RequestParam Map<String, String> params) {
-		Map<String, Object> response = new HashMap<>();
-		try {
-			Connection connection = null;
-			CallableStatement callableStatement = null;
-			String errorMessage = null;
-			int estatusProceso = 0;
-			try {
-				connection = jdbcTemplate.getDataSource().getConnection();
-				callableStatement = connection.prepareCall(Constantes.PROCESO_EPRC);
-				callableStatement.setInt(1, obtUsuario());
-				callableStatement.registerOutParameter(2, Types.VARCHAR);
-				callableStatement.registerOutParameter(3, Types.INTEGER);
-				callableStatement.execute();
-				errorMessage = callableStatement.getString(2);
-				estatusProceso = callableStatement.getInt(3);
-			} catch (SQLException e) {
-				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-			} finally {
-				if (callableStatement != null) {
-					try {
-						callableStatement.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-					}
-				}
-				if (connection != null) {
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar la conexión: " + e.getMessage());
-					}
-				}
-			}
-
-			response.put("message", (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
-			response.put("estatusProceso", estatusProceso);
-			return ResponseEntity.ok(response);
-		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    try {
+	        Map<String, Object> resultado = ejecutarProcedimientoEPRC();
+	        String errorMessage = (String) resultado.get("errorMessage");
+	        int estatusProceso = (int) resultado.get("estatusProceso");
+	        
+	        response.put("message", (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
+	        response.put("estatusProceso", estatusProceso);
+	        return ResponseEntity.ok(response);
+	        
+	    } catch (NumberFormatException e) {
+	        response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        
+	    } catch (IllegalArgumentException e) {
+	        response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        
+	    } catch (Exception e) {
+	        response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
 
 	public int validarAcceso(String rutaController) {
 
@@ -261,7 +262,7 @@ public class CalculoEPRController {
 					opcionesMenuService.buscarRelacionController(rutaController));
 
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(e.getMessage());
 			return 0;
 		}
 
@@ -312,57 +313,61 @@ public class CalculoEPRController {
 		}
 	}
 
+	private Map<String, Object> ejecutarProcedimientoVoBo() {
+	    Map<String, Object> result = new HashMap<>();
+	    String errorMessage = null;
+	    int estatusProceso = 0;
+
+	    try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+	         CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK_EPRC)) {
+	        
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+
+	    } catch (SQLException e) {
+	        logger.error("Error al ejecutar el procedimiento almacenado: ", e);
+	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	    }
+
+	    result.put("errorMessage", errorMessage);
+	    result.put("estatusProceso", estatusProceso);
+	    return result;
+	}
+
 	@PostMapping("/guardar-voboProcesoEPRC")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
 	    Map<String, Object> response = new HashMap<>();
+	    
 	    try {
-	        Connection connection = null;
-	        CallableStatement callableStatement = null;
-	        String errorMessage = null;
-	        int estatusProceso = 0;
-
-	        try {
-	            connection = jdbcTemplate.getDataSource().getConnection();
-	            callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK_EPRC);
-	            callableStatement.setInt(1, obtUsuario());
-	            callableStatement.registerOutParameter(2, Types.VARCHAR);
-	            callableStatement.registerOutParameter(3, Types.INTEGER);
-	            callableStatement.execute();
-	            errorMessage = callableStatement.getString(2);
-	            estatusProceso = callableStatement.getInt(3);
-	        } catch (SQLException e) {
-	            logger.error("Error al ejecutar el procedimiento almacenado: ", e);
-	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-	        } finally {
-	            if (callableStatement != null) {
-	                try {
-	                    callableStatement.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar el CallableStatement: ", e);
-	                }
-	            }
-	            if (connection != null) {
-	                try {
-	                    connection.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar la conexión: ", e);
-	                }
-	            }
-	        }
-
+	        // Ejecutar procedimiento almacenado
+	        Map<String, Object> resultado = ejecutarProcedimientoVoBo();
+	        String errorMessage = (String) resultado.get("errorMessage");
+	        int estatusProceso = (int) resultado.get("estatusProceso");
+	        
+	        // Obtener historial de procesos
 	        ObjectMapper objectMapper = new ObjectMapper();
 	        String listaHistProcesoEPRC = objectMapper.writeValueAsString(iProcesosHistEPRC.obtProcesoEPRC());
-
+	        
+	        // Construir respuesta
 	        response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
 	        response.put("estatusProceso", estatusProceso);
 	        response.put("listaHistProcesoEPRC", listaHistProcesoEPRC);
+	        
 	        return ResponseEntity.ok(response);
+
 	    } catch (NumberFormatException e) {
 	        response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
+
 	    } catch (IllegalArgumentException e) {
 	        response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
+
 	    } catch (Exception e) {
 	        response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
