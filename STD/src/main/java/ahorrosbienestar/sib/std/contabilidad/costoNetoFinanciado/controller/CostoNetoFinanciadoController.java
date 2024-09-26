@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.controller;
+package ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,14 +71,14 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfigAdviserBC;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfiguracionProductosConceptos;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IConfigAdviserBC;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IConfiguracionProductosConceptos;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IDetalleFactura;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IProcesosHistCostoNetoFinanciado;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository.IProductosCreditoConf;
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.service.ProductosCreditoService;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.model.ConfigAdviserBC;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.model.ConfiguracionProductosConceptos;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository.IConfigAdviserBC;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository.IConfiguracionProductosConceptos;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository.IDetalleFactura;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository.IProcesosHistCostoNetoFinanciado;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository.IProductosCreditoConf;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.service.ProductosCreditoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ArchivoOfertasAutomaticas;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -1064,7 +1064,7 @@ public class CostoNetoFinanciadoController {
 
 	// Método para obtener el siguiente ID de proceso
 	private int obtenerSiguienteIdProcesoComisiones() {
-	    return jdbcTemplate.queryForObject(Constantes.OBTENER_SIGUIENTE_ID_PROCESO_COMISIONES, Integer.class);
+	    return jdbcTemplate.queryForObject(Constantes.OBTENER_Siguiente_ID_PROCESO_COMISIONES, Integer.class);
 	}
 
 

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.service;
+package ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.service;
 
 import org.springframework.stereotype.Service;
 

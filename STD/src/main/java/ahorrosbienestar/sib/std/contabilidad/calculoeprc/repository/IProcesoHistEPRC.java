@@ -1,11 +1,11 @@
-package ahorrosbienestar.sib.std.contabilidad.calculoEPRC.repository;
+package ahorrosbienestar.sib.std.contabilidad.calculoeprc.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import ahorrosbienestar.sib.std.contabilidad.calculoEPRC.model.EPRC;
+import ahorrosbienestar.sib.std.contabilidad.calculoeprc.model.EPRC;
 
 
 

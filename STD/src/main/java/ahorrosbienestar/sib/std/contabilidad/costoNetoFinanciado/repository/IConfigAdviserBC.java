@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.repository;
+package ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.contabilidad.costoNetoFinanciado.model.ConfigAdviserBC;
+import ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.model.ConfigAdviserBC;
 
 
 

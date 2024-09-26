@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contabilidad.calculoEPRC.model;
+package ahorrosbienestar.sib.std.contabilidad.calculoeprc.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
