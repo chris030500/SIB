@@ -182,6 +182,7 @@ public class CostoNetoFinanciadoController {
 
 			// Listar los archivos en la carpeta
 			Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
 					archivos.setNombreArchivo(file.getFileName().toString());
@@ -227,6 +228,7 @@ public class CostoNetoFinanciadoController {
 
 			// Listar los archivos en la carpeta
 			Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
 					archivos.setNombreArchivo(file.getFileName().toString());
@@ -265,16 +267,15 @@ public class CostoNetoFinanciadoController {
 			@RequestParam("idFolio") String idFolio) {
 
 		String mensaje = "";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		ArrayList<String> respuesta = new ArrayList<>();
 		List<Configuracion> bases = configService.obtenerUrlFactura();
 		try {
 			if (files.length > 0) {
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
 					String folderPath = bases.get(0).getVc_valor_propiedad();
-					Path folder = Paths.get(folderPath);
 
-					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+					Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
 					mensaje = Constantes.MSN_OK_LAYOUT;
@@ -306,9 +307,8 @@ public class CostoNetoFinanciadoController {
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
 					String folderPath = bases.get(0).getVc_valor_propiedad();
-					Path folder = Paths.get(folderPath);
 
-					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+					Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
 					mensaje = Constantes.MSN_OK_LAYOUT;
@@ -917,107 +917,108 @@ public class CostoNetoFinanciadoController {
 	}
 
 	public void procesarYMigrarArchivoComisiones(String nombreArchivo) throws IOException {
-		
-		List<Configuracion> bases = configService.obtenerUrlComisiones();
-		String folderPath = bases.get(0).getVc_valor_propiedad();
-		
-		File file = new File(folderPath + nombreArchivo);
-		if (!file.exists()) {
-			throw new IOException("El archivo no existe en la ruta especificada.");
-		}
+	    List<Configuracion> bases = configService.obtenerUrlComisiones();
+	    String folderPath = bases.get(0).getVc_valor_propiedad();
+	    
+	    File file = new File(folderPath + nombreArchivo);
+	    if (!file.exists()) {
+	        throw new IOException("El archivo no existe en la ruta especificada.");
+	    }
 
-		List<String> errores = new ArrayList<>(); // Para almacenar errores
+	    List<String> errores = new ArrayList<>();
+	    List<Object[]> dataToInsert = new ArrayList<>();
+	    int idProceso = obtenerSiguienteIdProcesoComisiones();
+	    
+	    try (FileInputStream fis = new FileInputStream(file);
+	         Workbook workbook = crearWorkbook(fis, nombreArchivo)) {
+	        
+	        Sheet sheet = workbook.getSheetAt(0);
+	        procesarFilas(sheet, dataToInsert, errores, idProceso);
+	        
+	        if (!errores.isEmpty()) {
+	            throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	        }
+	        
+	        if (!dataToInsert.isEmpty()) {
+	            String fechaCorteFin = (String) dataToInsert.get(0)[3];
+	            insertarEnBaseDeDatosComisiones(dataToInsert);
+	            insertarDatosDeControlComisiones(idProceso, dataToInsert.size(), fechaCorteFin);
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error al procesar el archivo: " + e.getMessage());
+	        throw e; // Lanza la excepción para manejarla en otro lugar
+	    }
+	}
 
-		try (FileInputStream fis = new FileInputStream(file)) {
-			Workbook workbook = null;
-			if (nombreArchivo.endsWith("xlsx")) {
-				workbook = new XSSFWorkbook(fis);
-			} else if (nombreArchivo.endsWith("xls")) {
-				workbook = new HSSFWorkbook(fis);
-			} else {
-				throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
-			}
+	private Workbook crearWorkbook(FileInputStream fis, String nombreArchivo) throws IOException {
+	    if (nombreArchivo.endsWith("xlsx")) {
+	        return new XSSFWorkbook(fis);
+	    } else if (nombreArchivo.endsWith("xls")) {
+	        return new HSSFWorkbook(fis);
+	    } else {
+	        throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+	    }
+	}
 
-			Sheet sheet = workbook.getSheetAt(0);
-			List<Object[]> dataToInsert = new ArrayList<>();
-			int totalRecords = 0;
-			int idProceso = obtenerSiguienteIdProcesoComisiones();
-			String fechaCorteFin = "";
+	private void procesarFilas(Sheet sheet, List<Object[]> dataToInsert, List<String> errores, int idProceso) {
+	    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+	        Row row = sheet.getRow(i);
+	        if (row == null) {
+	            errores.add("Fila " + (i + 1) + ": La fila está vacía.");
+	            continue;
+	        }
 
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					errores.add("Fila " + (i + 1) + ": La fila está vacía.");
-					continue; // Saltar filas vacías
-				}
+	        try {
+	            Object[] valores = leerValoresFila(row, i, errores);
+	            if (valores != null) {
+	                dataToInsert.add(new Object[] { valores[0], valores[1], valores[2], valores[3], idProceso });
+	            }
+	        } catch (Exception e) {
+	            errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
+	        }
+	    }
+	}
 
-				try {
-					// Leer celdas
-					BigInteger valor1 = BigInteger.ZERO;
-					Cell cell0 = row.getCell(0);
-					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
-						continue;
-					}
+	private Object[] leerValoresFila(Row row, int filaIndex, List<String> errores) {
+	    BigInteger valor1 = leerCeldaNumerica(row.getCell(0), "A", filaIndex, errores);
+	    float valor2 = leerCeldaNumericaFloat(row.getCell(1), "B", filaIndex, errores);
+	    float valor3 = leerCeldaNumericaFloat(row.getCell(2), "C", filaIndex, errores);
+	    String valor4 = leerCeldaFecha(row.getCell(3), filaIndex, errores);
+	    
+	    if (valor1 == null || valor2 == -1 || valor3 == -1 || valor4 == null) {
+	        return null; // Hay errores
+	    }
+	    return new Object[] { valor1, valor2, valor3, valor4 };
+	}
 
-					float valor2 = 0;
-					Cell cell1 = row.getCell(1);
-					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
-						valor2 = (float) cell1.getNumericCellValue();
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
-						continue;
-					}
+	private BigInteger leerCeldaNumerica(Cell cell, String columna, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return BigInteger.valueOf((long) cell.getNumericCellValue());
+	    } else {
+	        errores.add("Fila " + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        return null;
+	    }
+	}
 
-					float valor3 = 0;
-					Cell cell2 = row.getCell(2);
-					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC) {
-						valor3 = (float) cell2.getNumericCellValue();
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser numérico).");
-						continue;
-					}
+	private float leerCeldaNumericaFloat(Cell cell, String columna, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return (float) cell.getNumericCellValue();
+	    } else {
+	        errores.add("Fila " + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        return -1; // Indica error
+	    }
+	}
 
-					String valor4 = "";
-					Cell cell3 = row.getCell(3);
-					if (cell3 != null && cell3.getCellType() == CellType.NUMERIC
-							&& DateUtil.isCellDateFormatted(cell3)) {
-						Date date = cell3.getDateCellValue();
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-						valor4 = localDate.format(formatter);
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna D: Valor no válido (debe ser una fecha).");
-						continue;
-					}
-
-					int valor5 = idProceso;
-					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5 });
-					totalRecords++;
-				} catch (Exception e) {
-					errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
-				}
-			}
-
-			// Verifica si hay errores
-			if (!errores.isEmpty()) {
-				throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
-			}
-
-			if (!dataToInsert.isEmpty()) {
-				Object[] firstRow = dataToInsert.get(0);
-				fechaCorteFin = (String) firstRow[3];
-
-				// Inserción en la base de datos
-				insertarEnBaseDeDatosComisiones(dataToInsert);
-				insertarDatosDeControlComisiones(idProceso, totalRecords, fechaCorteFin);
-			}
-		} catch (Exception e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
-			throw e; // Lanza la excepción para manejarla en otro lugar
-		}
+	private String leerCeldaFecha(Cell cell, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	        Date date = cell.getDateCellValue();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	        return localDate.format(formatter);
+	    } else {
+	        errores.add("Fila " + (filaIndex + 1) + ", Columna D: Valor no válido (debe ser una fecha).");
+	        return null; // Indica error
+	    }
 	}
 
 	// Método para insertar los datos en la base de datos usando batch insert con
