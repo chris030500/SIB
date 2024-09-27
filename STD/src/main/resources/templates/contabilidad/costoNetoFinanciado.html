@@ -329,8 +329,8 @@
 											<select class="form-control" id="slcProducto" name="Productos">
 												<option value="0">Seleccione</option>
 												<option th:each="producto : ${cat_productos}"
-													th:value="${producto.i_producto_creditoid}"
-													th:text="${producto.vc_descripcion_producto}">
+													th:value="${producto.productocreditoid}"
+													th:text="${producto.descripcionproducto}">
 												</option>
 											</select>
 										</div>
