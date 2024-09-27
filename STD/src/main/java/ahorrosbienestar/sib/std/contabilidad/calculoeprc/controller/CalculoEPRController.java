@@ -451,7 +451,7 @@ public class CalculoEPRController {
 				response.put("success", true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error("Error al procesar el archivo:", e);
 				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
 				response.put("error", "Error al procesar el archivo: " + e.getMessage());
