@@ -696,14 +696,14 @@ public class CostoNetoFinanciadoController {
 	            		ConfiguracionProductosConceptos configuracion = new ConfiguracionProductosConceptos();
 		            	configuracion.setProducto(codProd);
 		            	configuracion.setConcepto(Integer.parseInt(value));
-		            	configuracion.setI_usuario_registra(obtUsuario());
-		            	configuracion.setDt_fecha_registro(fechaProceso);
+		            	configuracion.setUsuarioregistra(obtUsuario());
+		            	configuracion.setFecharegistro(fechaProceso);
 		            	iConfiguracionProductosConceptos.save(configuracion);
 	            	}else {
 	            		// si no es null es modificacion
 	            		registro.setEstatus(estatus);
-	            		registro.setI_usuario_registra(obtUsuario());
-	            		registro.setDt_fecha_registro(fechaProceso);
+	            		registro.setUsuarioregistra(obtUsuario());
+	            		registro.setFecharegistro(fechaProceso);
 	            		iConfiguracionProductosConceptos.save(registro);
 	            	}	            	
 	            }
@@ -715,8 +715,8 @@ public class CostoNetoFinanciadoController {
 	        	if (!conceptosEnFormulario.contains(registro.getConcepto())) {
 	                // Si el concepto no está en el formulario, actualizar el estatus a 2
 	                registro.setEstatus(2);
-	                registro.setI_usuario_registra(obtUsuario());
-            		registro.setDt_fecha_registro(fechaProceso);
+	                registro.setUsuarioregistra(obtUsuario());
+            		registro.setFecharegistro(fechaProceso);
 	                iConfiguracionProductosConceptos.save(registro);
 	            }
 	        }

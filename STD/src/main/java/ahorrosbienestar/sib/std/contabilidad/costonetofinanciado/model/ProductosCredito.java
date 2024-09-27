@@ -7,37 +7,37 @@ import javax.persistence.Id;
 @Entity
 public class ProductosCredito {
 	@Id
-	@Column(name = "I_PRODUCTO_CREDITOID")
-	private int i_producto_creditoid; 
+	@Column(name = "PRODUCTOCREDITOID")
+	private int productocreditoid; 
 	
-	@Column(name = "VC_DESCRIPCION_PRODUCTO")
-	private String vc_descripcion_producto;
+	@Column(name = "DESCRIPCIONPRODUCTO")
+	private String descripcionproducto;
 	
-	@Column(name = "C_ESTATUS")
-	private String c_estatus;
+	@Column(name = "ESTATUS")
+	private String estatus;
 
-	public int getI_producto_creditoid() {
-		return i_producto_creditoid;
+	public int getProductocreditoid() {
+		return productocreditoid;
 	}
 
-	public void setI_producto_creditoid(int i_producto_creditoid) {
-		this.i_producto_creditoid = i_producto_creditoid;
+	public void setProductocreditoid(int productocreditoid) {
+		this.productocreditoid = productocreditoid;
 	}
 
-	public String getVc_descripcion_producto() {
-		return vc_descripcion_producto;
+	public String getDescripcionproducto() {
+		return descripcionproducto;
 	}
 
-	public void setVc_descripcion_producto(String vc_descripcion_producto) {
-		this.vc_descripcion_producto = vc_descripcion_producto;
+	public void setDescripcionproducto(String descripcionproducto) {
+		this.descripcionproducto = descripcionproducto;
 	}
 
-	public String getC_estatus() {
-		return c_estatus;
+	public String getEstatus() {
+		return estatus;
 	}
 
-	public void setC_estatus(String c_estatus) {
-		this.c_estatus = c_estatus;
+	public void setEstatus(String estatus) {
+		this.estatus = estatus;
 	}
-	
+
 }

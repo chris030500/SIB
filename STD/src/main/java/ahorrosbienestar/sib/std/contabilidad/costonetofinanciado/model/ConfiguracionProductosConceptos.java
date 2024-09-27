@@ -29,10 +29,10 @@ public class ConfiguracionProductosConceptos {
 	private int estatus=1;
 	
 	@Column(name = "I_USUARIO_REGISTRA")
-	private Integer i_usuario_registra;
+	private Integer usuarioregistra;
 
 	@Column(name = "DT_FECHA_REGISTRO")
-    private Date dt_fecha_registro;
+    private Date fecharegistro;
 	
 	public int getId() {
 		return id;
@@ -66,20 +66,22 @@ public class ConfiguracionProductosConceptos {
 		this.estatus = estatus;
 	}
 
-	public Integer getI_usuario_registra() {
-		return i_usuario_registra;
+	public Integer getUsuarioregistra() {
+		return usuarioregistra;
 	}
 
-	public void setI_usuario_registra(Integer i_usuario_registra) {
-		this.i_usuario_registra = i_usuario_registra;
+	public void setUsuarioregistra(Integer usuarioregistra) {
+		this.usuarioregistra = usuarioregistra;
 	}
 
-	public Date getDt_fecha_registro() {
-		return dt_fecha_registro;
+	public Date getFecharegistro() {
+		return fecharegistro;
 	}
 
-	public void setDt_fecha_registro(Date dt_fecha_registro) {
-		this.dt_fecha_registro = dt_fecha_registro;
+	public void setFecharegistro(Date fecharegistro) {
+		this.fecharegistro = fecharegistro;
 	}
+
+	
 	
 }
