@@ -1,11 +1,14 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +17,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
@@ -31,14 +34,16 @@ import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsig
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.MensajeSMSService;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoAsignacionService;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoSMSService;
 import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.adminSMSService;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
 import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
+import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoSMS;
 
-@Controller
 @RequestMapping("mensajes")
+@RestController
 public class AdminSMSController {
 
 	@Autowired
@@ -58,6 +63,9 @@ public class AdminSMSController {
 	
 	@Autowired 
 	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private ProcesoSMSService procesoSMSService;
 
 	private static final Logger logger = Logger.getLogger(AdminSMSController.class);
 	private static final String nombreReporte = "rpt_sms";
@@ -167,7 +175,7 @@ public class AdminSMSController {
 
 			// Procesar la respuesta si es necesario
 			String responseBody = response.getBody();
-			System.out.println("Respuesta del servidor: " + responseBody);
+			//System.out.println("Respuesta del servidor: " + responseBody);
 			return ResponseEntity.status(response.getStatusCode()).body(responseBody);
 
 		} catch (Exception e) {
@@ -179,9 +187,9 @@ public class AdminSMSController {
 	}
 
 	@PostMapping("/sendSMSMasivo")
-	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes) {
-		System.out.println("Cuerpo de la solicitud recibido:");
-		System.out.println(envioMensajes);
+	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes, HttpServletRequest request) {
+		//System.out.println("Cuerpo de la solicitud recibido:");
+		//System.out.println(envioMensajes);
 
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -189,6 +197,10 @@ public class AdminSMSController {
 		String server = "";
 
 		try {
+
+			ProcesoSMS savedProce = procesoSMSService.saveProce();
+            int procesoId = savedProce.getProcesoID();
+			
 			List<ConfiguracionSistema> credenciales = configuracionService.obtenerConfiguraciones();
 
 			ConfiguracionSistema conf9 = credenciales.get(9);
@@ -197,13 +209,21 @@ public class AdminSMSController {
 			ConfiguracionSistema conf12 = credenciales.get(12);
 
 			server = conf11.getConfiguracion();
+			InetAddress inetAddress = InetAddress.getLocalHost();
+            String ipAddress = inetAddress.getHostAddress();
+            System.out.println("La IP del servidor es: " + ipAddress);
+            System.out.println("La IP del servidor es: " + request.getServerName());
 
 			Parametros parametros = new Parametros();
 			parametros.setMail(conf9.getConfiguracion());
 			parametros.setPassword(conf10.getConfiguracion());
 			parametros.setId(conf12.getConfiguracion());
 			parametros.setMensajes(envioMensajes);
-
+			parametros.setRespuesta("http://" + ipAddress + ":" + request.getServerPort() + "/STD/api/respuestaSMS");
+			parametros.setProceso(procesoId);
+			
+			System.out.println("La IP del servidor es: " + parametros.getRespuesta());
+			
 			// Configurar encabezados
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -216,19 +236,21 @@ public class AdminSMSController {
 
 			// Procesar la respuesta si es necesario
 			String responseBody = response.getBody();
-			System.out.println("Respuesta del servidor: " + responseBody);
+			//System.out.println("Respuesta del servidor: " + responseBody);
 			
 			if (response.getStatusCode().is2xxSuccessful()) {
 	            // Realizar otra acción aquí
 				 // Actualizar el estado de los mensajes
-                List<Integer> idsMensajes = envioMensajes.stream()
+				List<Integer> idsMensajes = envioMensajes.parallelStream()
                         .map(EnvioMensajes::getIdMensaje)
                         .collect(Collectors.toList());
 
                 // Llamar al servicio para actualizar los mensajes con los IDs obtenidos
-                mensajeService.actualizarEstadoMensajes(idsMensajes);
+                mensajeService.actualizarEstadoMensajes(procesoId, idsMensajes);
                 
-                System.out.println("La respuesta fue exitosa, los mensajes han sido actualizados...");
+                procesoSMSService.actualizarMensaje(procesoId);
+                
+                //System.out.println("La respuesta fue exitosa, los mensajes han sido actualizados...");
             
 	        }
 			
@@ -262,4 +284,21 @@ public class AdminSMSController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
+	
+	@PostMapping("/respuestaSMS")
+    public ResponseEntity<String> receiveSoapResponse(@RequestBody String response) {
+        try {
+            // Aquí puedes procesar la respuesta recibida
+            System.out.println("Respuesta SOAP recibida: " + response);
+            
+            // Realizar cualquier acción adicional según la respuesta recibida
+            // Por ejemplo, actualizar el estado de la base de datos, enviar notificaciones, etc.
+
+            return ResponseEntity.ok("Respuesta recibida y procesada.");
+        } catch (Exception e) {
+            logger.error("Error al procesar la respuesta SOAP: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar la respuesta.");
+        }
+    }
+	
 }
