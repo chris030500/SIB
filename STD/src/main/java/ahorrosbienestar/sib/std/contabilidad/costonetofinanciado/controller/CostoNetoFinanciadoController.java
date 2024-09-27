@@ -90,6 +90,9 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/contabilidad")
 public class CostoNetoFinanciadoController {
+	
+	private static final String ERROR_PROCESAR_ARCHIVO = "Error al procesar el archivo: ";
+	
 	private static final Logger logger = Logger.getLogger(CostoNetoFinanciadoController.class);
 
 	@Autowired
@@ -300,7 +303,7 @@ public class CostoNetoFinanciadoController {
 			@RequestParam("idFolio") String idFolio) {
 
 		String mensaje = "";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		ArrayList<String> respuesta = new ArrayList<>();
 		List<Configuracion> bases = configService.obtenerUrlComisiones();
 		try {
 			if (files.length > 0) {
@@ -860,13 +863,13 @@ public class CostoNetoFinanciadoController {
 			response.put(Constantes.MENSAJE_OK, true);
 			return ResponseEntity.ok(response);
 		} catch (IOException e) {
-			logger.error("Error al procesar el archivo: ", e);
+			logger.error(ERROR_PROCESAR_ARCHIVO, e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, Constantes.ERROR_PROCESAR_ARCHIVO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			logger.error("Error al procesar el archivo: ", e);
+			logger.error(ERROR_PROCESAR_ARCHIVO, e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, e.getMessage());
@@ -886,12 +889,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -903,12 +906,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR,  e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -945,7 +948,6 @@ public class CostoNetoFinanciadoController {
 	            insertarDatosDeControlComisiones(idProceso, dataToInsert.size(), fechaCorteFin);
 	        }
 	    } catch (Exception e) {
-	        System.err.println("Error al procesar el archivo: " + e.getMessage());
 	        throw e; // Lanza la excepción para manejarla en otro lugar
 	    }
 	}
@@ -1170,7 +1172,6 @@ public class CostoNetoFinanciadoController {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
 			throw e; // Lanza la excepción para manejarla en otro lugar
 		}
 	}
@@ -1295,7 +1296,7 @@ public class CostoNetoFinanciadoController {
 	        jdbcTemplate.batchUpdate(Constantes.INSERT_FACTURA, dataToInsert);
 
 	    } catch (Exception e) {
-	    	logger.error("Error al procesar el archivo: ", e);
+	    	logger.error(ERROR_PROCESAR_ARCHIVO, e);
 	    }
 	}
 
