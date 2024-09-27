@@ -421,25 +421,25 @@ public class CalculoEPRController {
 		if(nombreArchivo.contains("layout_garantias")) {
 			
 			try {
-				// Aquí agregas la lógica para procesar el archivo
-				procesarYMigrarArchivoGarantias(nombreArchivo);
+	            // Aquí agregas la lógica para procesar el archivo
+	            procesarYMigrarArchivoGarantias(nombreArchivo);
 
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", true);
-				return ResponseEntity.ok(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", e.getMessage());
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-			}
+	            Map<String, Object> response = new HashMap<>();
+	            response.put("success", true);
+	            return ResponseEntity.ok(response);
+	        } catch (IOException e) {
+	            logger.error("Error al procesar el archivo: ", e);
+	            Map<String, Object> response = new HashMap<>();
+	            response.put("success", false);
+	            response.put("error", "Error al procesar el archivo: " + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        } catch (Exception e) {
+	            logger.error("Error inesperado: ", e);
+	            Map<String, Object> response = new HashMap<>();
+	            response.put("success", false);
+	            response.put("error", e.getMessage());
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
 			
 		} else {
 			
@@ -451,13 +451,13 @@ public class CalculoEPRController {
 				response.put("success", true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
 				response.put("error", "Error al procesar el archivo: " + e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				Map<String, Object> response = new HashMap<>();
 				response.put("success", false);
 				response.put("error", e.getMessage());
@@ -617,7 +617,6 @@ public class CalculoEPRController {
 	        
 	        List<Object[]> dataToInsert = new ArrayList<>();
 	        List<String> errores = new ArrayList<>();
-	        int totalRecords = 0;
 	        int idProceso = obtenerSiguienteIdProcesoEtapas();
 
 	        for (int i = 1; i <= workbook.getSheetAt(0).getLastRowNum(); i++) {
@@ -702,8 +701,7 @@ public class CalculoEPRController {
         // Usar la constante en lugar de la consulta en línea
         jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
     }
-
-	// Método para insertar datos de control en la tabla de control
+    
     private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
         // Ejecutar el SELECT y obtener una lista de resultados
         List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
