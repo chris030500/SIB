@@ -861,13 +861,13 @@ public class CostoNetoFinanciadoController {
 			response.put(Constantes.MENSAJE_OK, true);
 			return ResponseEntity.ok(response);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Error al procesar el archivo: ", e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, Constantes.ERROR_PROCESAR_ARCHIVO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al procesar el archivo: ", e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, e.getMessage());
@@ -887,12 +887,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -904,12 +904,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR,  e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error al procesar el archivo: ", e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -1295,7 +1295,7 @@ public class CostoNetoFinanciadoController {
 	        jdbcTemplate.batchUpdate(Constantes.INSERT_FACTURA, dataToInsert);
 
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	logger.error("Error al procesar el archivo: ", e);
 	    }
 	}
 
