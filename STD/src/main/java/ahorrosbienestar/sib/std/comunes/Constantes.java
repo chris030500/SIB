@@ -270,6 +270,7 @@ public class Constantes {
 	//Mensajes Costo Neto
 	public static final String MSN_ACTUALIZAR_INFO = "Se Actualizo la información correctamente";
 	public static final String MSN_PARAMS_INFO = "Los parametros seleccionados ya estan registrados en la BD.";
+	public static final String MSN_GUARDAR_OK = "Datos guardados correctamente.";
 	private Constantes() {
 
 	}

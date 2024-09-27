@@ -359,10 +359,10 @@ public class CostoNetoFinanciadoController {
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		try {
-			 // Llamar al método que ejecuta el procedimiento almacenado
+			 
 	        Map<String, Object> procesoResult = ejecutarProcesoVoBo();
-	        String errorMessage = (String) procesoResult.get("errorMessage");
-	        int estatusProceso = (int) procesoResult.get("estatusProceso");
+	        String errorMessage = (String) procesoResult.get(Constantes.PRM_ERROR_MENSAJE);
+	        int estatusProceso = (int) procesoResult.get(Constantes.PRM_ESTATUSPROCESO);
 
 	        // Convertir lista de procesos a JSON
 	        ObjectMapper objectMapper = new ObjectMapper();
@@ -566,12 +566,11 @@ public class CostoNetoFinanciadoController {
 				response.put("costoAdviser", iCatalogoRepository.obtDescripcion(Constantes.CAT_COSTOS, 2));
 				response.put("catcostounitario", iCatalogoRepository.generarOpciones(Constantes.CAT_COSTOS));
 
-				response.put("message", "Datos guardados correctamente");
-				return ResponseEntity.ok(response);
+				response.put(Constantes.PRM_MESSAGE, Constantes.MSN_GUARDAR_OK);
+				
 
-			} else {
-				throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
-			}
+			} 
+			return ResponseEntity.ok(response);
 
 		} catch (NumberFormatException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
