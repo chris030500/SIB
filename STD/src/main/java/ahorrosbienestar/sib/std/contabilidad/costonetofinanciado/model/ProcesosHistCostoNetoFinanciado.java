@@ -10,17 +10,17 @@ public class ProcesosHistCostoNetoFinanciado {
     @Column(name = "PROCESO")
     private int proceso;
 
-    @Column(name = "MES_PROCESO")
-    private String mes_proceso;
+    @Column(name = "MESPROCESO")
+    private String mesproceso;
 
-    @Column(name = "FECHA_CORTE")
-    private String fecha_corte;
+    @Column(name = "FECHACORTE")
+    private String fechacorte;
 
-    @Column(name = "USUARIO_VOBO")
-    private String usuario_vobo;
+    @Column(name = "USUARIOVOBO")
+    private String usuariovobo;
 
-    @Column(name = "FECHA_REGISTRO_VOBO")
-    private String fecha_registro_vobo;
+    @Column(name = "FECHAREGISTROVOBO")
+    private String fecharegistrovobo;
 
 	public int getProceso() {
 		return proceso;
@@ -30,38 +30,35 @@ public class ProcesosHistCostoNetoFinanciado {
 		this.proceso = proceso;
 	}
 
-	public String getMes_proceso() {
-		return mes_proceso;
+	public String getMesproceso() {
+		return mesproceso;
 	}
 
-	public void setMes_proceso(String mes_proceso) {
-		this.mes_proceso = mes_proceso;
+	public void setMesproceso(String mesproceso) {
+		this.mesproceso = mesproceso;
 	}
 
-	public String getFecha_corte() {
-		return fecha_corte;
+	public String getFechacorte() {
+		return fechacorte;
 	}
 
-	public void setFecha_corte(String fecha_corte) {
-		this.fecha_corte = fecha_corte;
+	public void setFechacorte(String fechacorte) {
+		this.fechacorte = fechacorte;
 	}
 
-	public String getUsuario_vobo() {
-		return usuario_vobo;
+	public String getUsuariovobo() {
+		return usuariovobo;
 	}
 
-	public void setUsuario_vobo(String usuario_vobo) {
-		this.usuario_vobo = usuario_vobo;
+	public void setUsuariovobo(String usuariovobo) {
+		this.usuariovobo = usuariovobo;
 	}
 
-	public String getFecha_registro_vobo() {
-		return fecha_registro_vobo;
+	public String getFecharegistrovobo() {
+		return fecharegistrovobo;
 	}
 
-	public void setFecha_registro_vobo(String fecha_registro_vobo) {
-		this.fecha_registro_vobo = fecha_registro_vobo;
+	public void setFecharegistrovobo(String fecharegistrovobo) {
+		this.fecharegistrovobo = fecharegistrovobo;
 	}
-
-
-	
 }

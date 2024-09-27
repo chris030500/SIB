@@ -149,7 +149,7 @@ public class CostoNetoFinanciadoController {
 				String listaBCJson = objectMapper.writeValueAsString(iProductosCreditoConf.findAll());
 				
 
-				model.addAttribute("listaHistProceso", listaHistProceso);
+				model.addAttribute(Constantes.PRM_LISTA_PROCESOS, listaHistProceso);
 				model.addAttribute("fechaSistema", fechaSistema);
 				model.addAttribute("fechaCierre", iProcesosHistCostoNetoFinanciado.obtFechaCierre());
 				model.addAttribute("lista_BC", listaBCJson);
@@ -277,11 +277,11 @@ public class CostoNetoFinanciadoController {
 					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
-					mensaje = "Se agrego archivo correctamente.";
+					mensaje = Constantes.MSN_OK_LAYOUT;
 					logger.info(mensaje);
 				}
 			} else {
-				mensaje = "No subio archivo.";
+				mensaje = Constantes.MSN_KO_LAYOUT;
 				logger.info(mensaje);
 			}
 			respuesta.add(mensaje);
@@ -311,11 +311,11 @@ public class CostoNetoFinanciadoController {
 					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
-					mensaje = "Se agrego archivo correctamente.";
+					mensaje = Constantes.MSN_OK_LAYOUT;
 					logger.info(mensaje);
 				}
 			} else {
-				mensaje = "No subio archivo.";
+				mensaje = Constantes.MSN_KO_LAYOUT;
 				logger.info(mensaje);
 			}
 			respuesta.add(mensaje);
@@ -347,24 +347,11 @@ public class CostoNetoFinanciadoController {
 	        logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
 	        errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
 	    } finally {
-	        if (callableStatement != null) {
-	            try {
-	                callableStatement.close();
-	            } catch (SQLException e) {
-	                logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
-	            }
-	        }
-	        if (connection != null) {
-	            try {
-	                connection.close();
-	            } catch (SQLException e) {
-	                logger.error(Constantes.ERROR_BD_CON + e.getMessage());
-	            }
-	        }
+	    	 closeResources(callableStatement, connection);
 	    }
 
-	    result.put("errorMessage", errorMessage);
-	    result.put("estatusProceso", estatusProceso);
+	    result.put(Constantes.PRM_ERROR_MENSAJE, errorMessage);
+	    result.put(Constantes.PRM_ESTATUSPROCESO, estatusProceso);
 	    return result;
 	}
 
@@ -382,71 +369,90 @@ public class CostoNetoFinanciadoController {
 	        String listaHistProceso = objectMapper.writeValueAsString(iProcesosHistCostoNetoFinanciado.obtProcesoCNF());
 
 	        // Poner datos en la respuesta
-	        response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
-	        response.put("estatusProceso", estatusProceso);
-	        response.put("listaHistProceso", listaHistProceso);
+	        response.put(Constantes.PRM_MESSAGE, (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
+	        response.put(Constantes.PRM_ESTATUSPROCESO, estatusProceso);
+	        response.put(Constantes.PRM_LISTA_PROCESOS, listaHistProceso);
 	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+	/**
+	 * 
+	 * @return
+	 */
+	private Map<String, Object> executeCostoNetoFinanciadoProcedure() {
+	    Map<String, Object> response = new HashMap<>();
+	    Connection connection = null;
+	    CallableStatement callableStatement = null;
+	    String errorMessage = null;
+	    int estatusProceso = 0;
+	    
+	    try {
+	        connection = jdbcTemplate.getDataSource().getConnection();
+	        callableStatement = connection.prepareCall(Constantes.PROCESO_COSTO_NETO_FINANCIADO);
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+	    } catch (SQLException e) {
+	        logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
+	        errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
+	    } finally {
+	        closeResources(callableStatement, connection);
+	    }
+
+	    response.put(Constantes.PRM_MESSAGE, (errorMessage == null) ? Constantes.PROCESO_CNF_OK : errorMessage);
+	    response.put(Constantes.PRM_ESTATUSPROCESO, estatusProceso);
+	    return response;
+	}
+/**
+ * 
+ * @param callableStatement
+ * @param connection
+ */
+	private void closeResources(CallableStatement callableStatement, Connection connection) {
+	    if (callableStatement != null) {
+	        try {
+	            callableStatement.close();
+	        } catch (SQLException e) {
+	            logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
+	        }
+	    }
+	    if (connection != null) {
+	        try {
+	            connection.close();
+	        } catch (SQLException e) {
+	            logger.error(Constantes.ERROR_BD_CON + e.getMessage());
+	        }
+	    }
+	}
+	
 
 	@PostMapping("/procesar-costoNetoFinanciado")
 	public ResponseEntity<Map<String, Object>> procesarCostoNetoFinaciado(@RequestParam Map<String, String> params) {
 		Map<String, Object> response = new HashMap<>();
 		try {
-			Connection connection = null;
-			CallableStatement callableStatement = null;
-			String errorMessage = null;
-			int estatusProceso = 0;
-
-			try {
-				connection = jdbcTemplate.getDataSource().getConnection();
-				callableStatement = connection.prepareCall(Constantes.PROCESO_COSTO_NETO_FINANCIADO);
-				callableStatement.setInt(1, obtUsuario());
-				callableStatement.registerOutParameter(2, Types.VARCHAR);
-				callableStatement.registerOutParameter(3, Types.INTEGER);
-				callableStatement.execute();
-				errorMessage = callableStatement.getString(2);
-				estatusProceso = callableStatement.getInt(3);
-			} catch (SQLException e) {
-				logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
-				errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
-			} finally {
-				if (callableStatement != null) {
-					try {
-						callableStatement.close();
-					} catch (SQLException e) {
-						logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
-					}
-				}
-				if (connection != null) {
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						logger.error(Constantes.ERROR_BD_CON + e.getMessage());
-					}
-				}
-			}
-
-			response.put("message", (errorMessage == null) ? Constantes.PROCESO_CNF_OK : errorMessage);
-			response.put("estatusProceso", estatusProceso);
-			return ResponseEntity.ok(response);
+			Map<String, Object> dbResponse = executeCostoNetoFinanciadoProcedure();
+	        response.putAll(dbResponse);
+	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -462,17 +468,17 @@ public class CostoNetoFinanciadoController {
 					+ datosReporte.getPk_id_reporte() + "&parametros=" + "&tipoDocumento="
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
-			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(Constantes.PRM_URL_REPORTE, reporteURL);
+			response.put(Constantes.PRM_MESSAGE, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -500,17 +506,17 @@ public class CostoNetoFinanciadoController {
 					+ datosReporte.getPk_id_reporte() + Constantes.REPORTE_HIST + tipoProceso + "&tipoDocumento="
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
-			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(Constantes.PRM_URL_REPORTE, reporteURL);
+			response.put(Constantes.PRM_MESSAGE, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -569,15 +575,15 @@ public class CostoNetoFinanciadoController {
 
 		} catch (NumberFormatException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			logger.error("Error:" + e.getMessage());
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			logger.error(Constantes.ERROR_LOG + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -593,71 +599,68 @@ public class CostoNetoFinanciadoController {
 
 			// Parsear el monto inicial y final
 
-			Number montoInicial = format.parse(params.get("montoInicial"));
-			Number montoFinal = format.parse(params.get("montoFinal"));
+			Number montoInicial = format.parse(params.get(Constantes.PRM_MONTOINICIAL));
+			Number montoFinal = format.parse(params.get(Constantes.PRM_MONTOFINAL));
 
 			int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(), montoFinal.doubleValue(),
-					params.get("Productos"), Integer.parseInt(params.get("Concepto")));
+					params.get(Constantes.PRM_PRODUCTOS), Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
 			if (existe == 0) {
 
 				// si es igual a 0 es un alta si es mayor a 0 es una actualizacion.
-				if (Integer.parseInt(params.get("gastoIde")) > 0) {
-					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get("gastoIde")));
-					obtConfiguracion.get().setConcepto(Integer.parseInt(params.get("Concepto")));
+				if (Integer.parseInt(params.get(Constantes.PRM_GASTOID)) > 0) {
+					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get(Constantes.PRM_GASTOID)));
+					obtConfiguracion.get().setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
 					obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository
-							.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get("Concepto"))));
-					obtConfiguracion.get().setProductos(params.get("Productos"));
+							.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
+					obtConfiguracion.get().setProductos(params.get(Constantes.PRM_PRODUCTOS));
 					obtConfiguracion.get()
-							.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+							.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
 					obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
 					obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
 					configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
 
 					if (configAdviserBC != null && configAdviserBC.getId() != 0) {
-						response.put("listaCatalogo", iConfigAdviserBC.findAll());
-						response.put("message", "Se actualizo correctamente");
-						return ResponseEntity.ok(response);
-					} else {
-						throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
+						response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
+						response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
+						
 					}
 
 				} else {
-					configAdviserBC.setConcepto(Integer.parseInt(params.get("Concepto")));
+					configAdviserBC.setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
 					configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,
-							Integer.parseInt(params.get("Concepto"))));
-					configAdviserBC.setProductos(params.get("Productos"));
+							Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
+					configAdviserBC.setProductos(params.get(Constantes.PRM_PRODUCTOS));
 					configAdviserBC
-							.setDescripcionProducto(productosCreditoService.descProducto(params.get("Productos")));
+							.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
 					configAdviserBC.setMontoInicial(montoInicial.doubleValue());
 					configAdviserBC.setMontoFinal(montoFinal.doubleValue());
 					configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
 					ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
 
 					if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
-						response.put("listaCatalogo", iConfigAdviserBC.findAll());
-						response.put("message", "Se registraron datos correctamente");
-						return ResponseEntity.ok(response);
-					} else {
-						throw new Exception(Constantes.MSN_ERROR_GUARDAR_DATOS);
-					}
+						response.put( Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
+						response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
+						
+					} 
 
 				}
+				return ResponseEntity.ok(response);
 			} else {
-				response.put("listaCatalogo", iConfigAdviserBC.findAll());
-				response.put("message", "Los parametros seleccionados ya estan registrados en la BD.");
+				response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
+				response.put(Constantes.PRM_MESSAGE, Constantes.MSN_PARAMS_INFO);
 				return ResponseEntity.ok(response);
 			}
 		} catch (NumberFormatException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -667,7 +670,7 @@ public class CostoNetoFinanciadoController {
 		Map<String, Object> response = new HashMap<>();
 
 		try {
-			int codProd = Integer.parseInt(params.get("confProd"));
+			int codProd = Integer.parseInt(params.get(Constantes.PRM_CONF_PROD));
 			int estatus = 1;
 			
 			Date fechaProceso = new Date();
@@ -681,7 +684,7 @@ public class CostoNetoFinanciadoController {
 	        	  String key = entry.getKey();
 		          String value = entry.getValue();
 	        	 
-	            if (!key.equals("confProd") && !key.equals("tblConfConceptos_length") && !key.equals("total")) {
+	            if (!key.equals(Constantes.PRM_CONF_PROD) && !key.equals(Constantes.PRM_TBL_CONF) && !key.equals(Constantes.PRM_TBL_TOTAL)) {
 	            	 int conceptoFormulario = Integer.parseInt(value);
 	                 conceptosEnFormulario.add(conceptoFormulario); // Agregar concepto al Set
 	            	
@@ -693,7 +696,6 @@ public class CostoNetoFinanciadoController {
 		            	configuracion.setConcepto(Integer.parseInt(value));
 		            	configuracion.setI_usuario_registra(obtUsuario());
 		            	configuracion.setDt_fecha_registro(fechaProceso);
-		            	//configuracion.setConcepto(0)
 		            	iConfiguracionProductosConceptos.save(configuracion);
 	            	}else {
 	            		// si no es null es modificacion
@@ -720,20 +722,20 @@ public class CostoNetoFinanciadoController {
 	        List<ConfiguracionProductosConceptos> listaActualizada =iConfiguracionProductosConceptos.obtenerXproducto(codProd);
 	        
 	        
-	        response.put("listaConfiguracion", listaActualizada);
-            response.put("message", "Se Actualizo la información correctamente");
+	        response.put(Constantes.PRM_LISTA_CONFIGURACION_CONCEPTOS, listaActualizada);
+            response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
             return ResponseEntity.ok(response);
 		 } catch (NumberFormatException e) {
 				logger.error(Constantes.ERROR_LOG+e.getMessage());
-				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
+				response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (IllegalArgumentException e) {
 				 logger.error(Constantes.ERROR_LOG+e.getMessage());
-				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+				 response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (Exception e) {
 				 logger.error(Constantes.ERROR_LOG+e.getMessage());
-				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+				 response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			 }
 	}
@@ -744,7 +746,7 @@ public class CostoNetoFinanciadoController {
 		try {
 			
 			// Obtén el valor como Object
-	        Object procesoIdObj = data.get("identificador");
+	        Object procesoIdObj = data.get(Constantes.PRM_IDENTIFICADOR);
 	        Integer tipoProceso = null;
 	        
 	        // Verifica si procesoIdObj es una instancia de Number
@@ -758,21 +760,21 @@ public class CostoNetoFinanciadoController {
 			
 			List<ConfiguracionProductosConceptos> listaConfiguracionProducto =iConfiguracionProductosConceptos.obtenerXproducto(tipoProceso);
 
-	        response.put("listaConfiguracionProducto", listaConfiguracionProducto);
-	        response.put("listaDetalleFactura", iDetalleFactura.obtDetalleFacturaMod());
+	        response.put(Constantes.PRM_LISTA_PROD, listaConfiguracionProducto);
+	        response.put(Constantes.PRM_LISTA_DETFACTURA, iDetalleFactura.obtDetalleFacturaMod());
             return ResponseEntity.ok(response);
 	
 		 } catch (NumberFormatException e) {
 				logger.error(Constantes.ERROR_LOG+e.getMessage());
-				response.put("message", Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
+				response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO+ e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (IllegalArgumentException e) {
 				 logger.error(Constantes.ERROR_LOG+e.getMessage());
-				 response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+				 response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			 } catch (Exception e) {
 				 logger.error(Constantes.ERROR_LOG+e.getMessage());
-				 response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+				 response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 				 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			 }
 	}
@@ -782,20 +784,20 @@ public class CostoNetoFinanciadoController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			Map<String, Object> resultadoProrrateo = ejecutarProrrateo();
-	        response.put("estatusProceso", resultadoProrrateo.get("estatusProceso"));
-	        response.put("message", resultadoProrrateo.get("message"));
+	        response.put(Constantes.PRM_ESTATUSPROCESO, resultadoProrrateo.get(Constantes.PRM_ESTATUSPROCESO));
+	        response.put(Constantes.PRM_MESSAGE, resultadoProrrateo.get(Constantes.PRM_MESSAGE));
 	        return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
 			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -820,24 +822,11 @@ public class CostoNetoFinanciadoController {
 	        logger.error(Constantes.ERROR_LOG_PROCESO + e.getMessage());
 	        errorMessage = Constantes.ERROR_LOG_PROCESO + e.getMessage();
 	    } finally {
-	        if (callableStatement != null) {
-	            try {
-	                callableStatement.close();
-	            } catch (SQLException e) {
-	                logger.error(Constantes.ERROR_BD_CERRAR + e.getMessage());
-	            }
-	        }
-	        if (connection != null) {
-	            try {
-	                connection.close();
-	            } catch (SQLException e) {
-	                logger.error(Constantes.ERROR_BD_CON + e.getMessage());
-	            }
-	        }
+	    	 closeResources(callableStatement, connection);
 	    }
 
-	    resultado.put("estatusProceso", estatusProceso);
-	    resultado.put("message", (errorMessage == null) ? Constantes.PRORRATEO : errorMessage);
+	    resultado.put(Constantes.PRM_ESTATUSPROCESO, estatusProceso);
+	    resultado.put(Constantes.PRM_MESSAGE, (errorMessage == null) ? Constantes.PRORRATEO : errorMessage);
 	    return resultado;
 	}
 
@@ -862,67 +851,67 @@ public class CostoNetoFinanciadoController {
 
 	@PostMapping("/procesarArchivoFactura")
 	public ResponseEntity<Map<String, Object>> procesarArchivo(@RequestBody Map<String, String> request) {
-		String nombreArchivo = request.get("nombreArchivo");
+		String nombreArchivo = request.get(Constantes.PRM_NOMBRE_ARCHIVO);
 
 		try {
 			// Aquí agregas la lógica para procesar el archivo
 			procesarYMigrarArchivoFacturas(nombreArchivo);
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("success", true);
+			response.put(Constantes.MENSAJE_OK, true);
 			return ResponseEntity.ok(response);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", "Error al procesar el archivo: " + e.getMessage());
+			response.put(Constantes.MENSAJE_OK, false);
+			response.put(Constantes.MENSAJE_ERROR, Constantes.ERROR_PROCESAR_ARCHIVO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Map<String, Object> response = new HashMap<>();
-			response.put("success", false);
-			response.put("error", e.getMessage());
+			response.put(Constantes.MENSAJE_OK, false);
+			response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 
 	@PostMapping("/procesarArchivoComisiones")
 	public ResponseEntity<Map<String, Object>> procesarArchivoComisiones(@RequestBody Map<String, String> request) {
-		String nombreArchivo = request.get("nombreArchivo");
+		String nombreArchivo = request.get(Constantes.PRM_NOMBRE_ARCHIVO);
 		Map<String, Object> response = new HashMap<>();
 
 		if (nombreArchivo.contains("layout_comisiones")) {
 			try {
 				// Procesar archivo comisiones
 				procesarYMigrarArchivoComisiones(nombreArchivo);
-				response.put("success", true);
+				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				response.put("success", false);
-				response.put("error", e.getMessage());
+				response.put(Constantes.MENSAJE_OK, false);
+				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
 				e.printStackTrace();
-				response.put("success", false);
-				response.put("error", e.getMessage());
+				response.put(Constantes.MENSAJE_OK, false);
+				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 		} else {
 			try {
 				// Procesar archivo etapas
 				procesarYMigrarArchivoEtapas(nombreArchivo);
-				response.put("success", true);
+				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
 				e.printStackTrace();
-				response.put("success", false);
-				response.put("error",  e.getMessage());
+				response.put(Constantes.MENSAJE_OK, false);
+				response.put(Constantes.MENSAJE_ERROR,  e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
 				e.printStackTrace();
-				response.put("success", false);
-				response.put("error", e.getMessage());
+				response.put(Constantes.MENSAJE_OK, false);
+				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 		}
@@ -1325,9 +1314,9 @@ public class CostoNetoFinanciadoController {
 			nombreArchivo = nombreArchivo.substring(0, nombreArchivo.lastIndexOf(".")) + ".pdf";
 		}
 
-		if (file.isEmpty() || !file.getContentType().equals("application/pdf")) {
+		if (file.isEmpty() || !file.getContentType().equals(Constantes.PRM_TIPOCONTENT_PDF)) {
 			Map<String, String> errorResponse = new HashMap<>();
-			errorResponse.put("error", "El archivo debe ser un PDF.");
+			errorResponse.put(Constantes.MENSAJE_ERROR,Constantes.MSN_ERROR_ARCHIVO_INCORRECTO_PDF);
 			return ResponseEntity.badRequest().body(errorResponse);
 		}
 
@@ -1337,12 +1326,12 @@ public class CostoNetoFinanciadoController {
 			file.transferTo(filePath);
 
 			Map<String, String> successResponse = new HashMap<>();
-			successResponse.put("message", "Archivo PDF cargado exitosamente.");
+			successResponse.put(Constantes.PRM_MESSAGE, Constantes.MSN_OK_ARCHIVO);
 			return ResponseEntity.ok().body(successResponse);
 
 		} catch (IOException e) {
 			Map<String, String> errorResponse = new HashMap<>();
-			errorResponse.put("error", "Error al cargar el archivo.");
+			errorResponse.put(Constantes.MENSAJE_ERROR, Constantes.MSN_ERROR_CARGA_ARCHIVO);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 		}
 	}
@@ -1369,7 +1358,7 @@ public class CostoNetoFinanciadoController {
 				// Establecer el encabezado de respuesta para mostrar el archivo en el navegador
 				return ResponseEntity.ok()
 						.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-						.header(HttpHeaders.CONTENT_TYPE, "application/pdf").body(resource);
+						.header(HttpHeaders.CONTENT_TYPE, Constantes.PRM_TIPOCONTENT_PDF).body(resource);
 			} else {
 				// Archivo no encontrado
 				return ResponseEntity.notFound().build();

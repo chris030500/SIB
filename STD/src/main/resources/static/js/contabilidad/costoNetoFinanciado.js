@@ -177,10 +177,10 @@ function pintarTabla(listaDatos, tablaPintar) {
 			+ " <i class='fa-sharp fa-solid fa-file-arrow-down'></i></button>";
 
 		registrosTotales.push([
-			opt.mes_proceso,
-			opt.fecha_corte,
-			opt.usuario_vobo,
-			opt.fecha_registro_vobo,
+			opt.mesproceso,
+			opt.fechacorte,
+			opt.usuariovobo,
+			opt.fecharegistrovobo,
 			btnsReporte
 		]);
 	});

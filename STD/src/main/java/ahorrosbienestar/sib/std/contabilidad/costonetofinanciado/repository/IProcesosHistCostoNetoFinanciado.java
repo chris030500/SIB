@@ -25,18 +25,17 @@ public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<Procesos
 			+ "when 10 then 'Octubre' "
 			+ "when 11 then 'Noviembre' "
 			+ "when 12 then 'Diciembre' "
-			+ "END mes_proceso "
-			+ ",case when t1.DT_FECHA_CORTE is not null then DATE_FORMAT(t1.DT_FECHA_CORTE, '%Y-%m-%d') else  COALESCE(t1.DT_FECHA_CORTE, '0000-00-00') end fecha_corte "
-			+ ",case when t3.VC_NOMBRE_USUARIO is not null then t3.VC_NOMBRE_USUARIO else COALESCE(t3.VC_NOMBRE_USUARIO , '--.--') end usuario_vobo "
-			+ ",case when t1.DT_FECHA_REGISTRO_VOBO is not null then DATE_FORMAT(t1.DT_FECHA_REGISTRO_VOBO, '%Y-%m-%d') else COALESCE(t1.DT_FECHA_REGISTRO_VOBO, '0000-00-00') end fecha_registro_vobo "
+			+ "END mesproceso "
+			+ ",case when t1.DT_FECHA_CORTE is not null then DATE_FORMAT(t1.DT_FECHA_CORTE, '%Y-%m-%d') else  COALESCE(t1.DT_FECHA_CORTE, '0000-00-00') end fechacorte "
+			+ ",case when t3.VC_NOMBRE_USUARIO is not null then t3.VC_NOMBRE_USUARIO else COALESCE(t3.VC_NOMBRE_USUARIO , '--.--') end usuariovobo "
+			+ ",case when t1.DT_FECHA_REGISTRO_VOBO is not null then DATE_FORMAT(t1.DT_FECHA_REGISTRO_VOBO, '%Y-%m-%d') else COALESCE(t1.DT_FECHA_REGISTRO_VOBO, '0000-00-00') end fecharegistrovobo "
 			+ "from SIB.TBL_REG_PROCESO_MNF t1 "
 			+ "left join SIB.TBL_CAT_USUARIOS t3 on t3.PK_ID_USUARIO = t1.I_USUARIO_VOBO "
 			+ "where t1.I_VOBO = 1 and I_ACTIVO=1 "
 			+ "order by t1.PK_ID_PROCESO desc", nativeQuery = true) 
 	public List<ProcesosHistCostoNetoFinanciado> obtProcesoCNF();
 
-	@Query(value="select DT_FECHA_CORTE  from SIB.TBL_CREDITOS_COSTO_NETO_FINANCIADO "
-			+ "GROUP BY DT_FECHA_CORTE", nativeQuery = true)
+	@Query(value="select max(DT_FECHA_CORTE) DT_FECHA_CORTE from SIB.TBL_IFRS9_CIERRE_MES ", nativeQuery = true)
 	public LocalDate obtFechaCierre();
 	
 }
