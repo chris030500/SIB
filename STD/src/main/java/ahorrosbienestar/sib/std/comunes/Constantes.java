@@ -231,7 +231,45 @@ public class Constantes {
 	public static final String ERROR_LOG_PROCESO ="Error al ejecutar el procedimiento almacenado: ";
 	public static final String ERROR_BD_CON ="Error al cerrar la conexión: ";
 	public static final String ERROR_BD_CERRAR ="Error al cerrar el CallableStatement: ";
+	public static final String ERROR_PROCESAR_ARCHIVO ="Error al procesar el archivo: ";
 	
+	
+	
+	//nombres parametros costo Neto financiado
+	public static final String PRM_LISTACATALOGO = "listaCatalogo";
+	public static final String PRM_MESSAGE = "message";
+	public static final String PRM_MONTOINICIAL = "montoInicial";
+	public static final String PRM_MONTOFINAL = "montoFinal";
+	public static final String PRM_PRODUCTOS = "Productos";
+	public static final String PRM_CONCEPTOS = "Concepto";
+	public static final String PRM_GASTOID = "gastoIde";
+	public static final String PRM_CONF_PROD = "confProd";
+	public static final String PRM_TBL_CONF = "tblConfConceptos_length";
+	public static final String PRM_TBL_TOTAL = "total";
+	public static final String PRM_LISTA_PROD = "listaConfiguracionProducto";
+	public static final String PRM_LISTA_DETFACTURA = "listaDetalleFactura";
+	public static final String PRM_IDENTIFICADOR = "identificador";
+	public static final String PRM_ESTATUSPROCESO = "estatusProceso";
+	public static final String PRM_LISTA_CONFIGURACION_CONCEPTOS = "listaConfiguracion";
+	public static final String PRM_URL_REPORTE = "urlReporte";
+	public static final String PRM_LISTA_PROCESOS = "listaHistProceso";
+	public static final String PRM_ERROR_MENSAJE ="errorMessage";
+	
+	
+	//parametros subir factura
+	public static final String PRM_NOMBRE_ARCHIVO = "nombreArchivo";
+	public static final String PRM_TIPOCONTENT_PDF = "application/pdf";
+	
+	
+	//mensajes carga de layout y facturas
+	public static final String MSN_ERROR_ARCHIVO_INCORRECTO_PDF = "El archivo debe ser un PDF.";
+	public static final String MSN_OK_ARCHIVO = "Archivo PDF cargado exitosamente.";
+	public static final String MSN_ERROR_CARGA_ARCHIVO = "Error al cargar el archivo.";
+	public static final String MSN_OK_LAYOUT = "Se agrego archivo correctamente.";
+	public static final String MSN_KO_LAYOUT = "No subio archivo.";
+	//Mensajes Costo Neto
+	public static final String MSN_ACTUALIZAR_INFO = "Se Actualizo la información correctamente";
+	public static final String MSN_PARAMS_INFO = "Los parametros seleccionados ya estan registrados en la BD.";
 	private Constantes() {
 
 	}
