@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.contabilidad.calculoeprc.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -67,6 +68,24 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/contabilidad")
 public class CalculoEPRController {
+	private static final String ERROR_MESSAGE = "Error al ejecutar el procedimiento almacenado: ";
+	
+	private static final String ERROR_MESSAGE_KEY = "errorMessage";
+	
+	private static final String ESTATUS_PROCESO_KEY = "estatusProceso";
+	
+	private static final String MESSAGE_KEY = "message";
+	
+	private static final String SUCCESS_KEY = "success";
+	
+	private static final String ERROR_FILE_PROCESSING = "Error al procesar el archivo: ";
+	
+	private static final String ERROR_KEY = "error";
+	
+	private static final String COLUMN_PREFIX = ", Columna ";
+	
+	private static final String ROW_PREFIX = "Fila ";
+	
 	private static final Logger logger = Logger.getLogger(CalculoEPRController.class);
 
 	@Autowired
@@ -96,6 +115,18 @@ public class CalculoEPRController {
 	List<Usuario> usuario = null;
 	
 	String format = "yyyy-MM-dd";
+	
+	public static class FileProcessingException extends RuntimeException implements Serializable {
+        private static final long serialVersionUID = 1L; // o cualquier número que elijas
+
+        public FileProcessingException(String message) {
+            super(message);
+        }
+
+        public FileProcessingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 	
 	@PostMapping("/subirArchivoEPRC")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
@@ -212,12 +243,12 @@ public class CalculoEPRController {
 	        estatusProceso = callableStatement.getInt(3);
 	        
 	    } catch (SQLException e) {
-	        logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        logger.error(ERROR_MESSAGE + e.getMessage());
+	        errorMessage = ERROR_MESSAGE + e.getMessage();
 	    }
 	    
-	    result.put("errorMessage", errorMessage);
-	    result.put("estatusProceso", estatusProceso);
+	    result.put(ERROR_MESSAGE_KEY, errorMessage);
+	    result.put(ESTATUS_PROCESO_KEY, estatusProceso);
 	    return result;
 	}
 
@@ -228,23 +259,23 @@ public class CalculoEPRController {
 	    
 	    try {
 	        Map<String, Object> resultado = ejecutarProcedimientoEPRC();
-	        String errorMessage = (String) resultado.get("errorMessage");
-	        int estatusProceso = (int) resultado.get("estatusProceso");
+	        String errorMessage = (String) resultado.get(ERROR_MESSAGE_KEY);
+	        int estatusProceso = (int) resultado.get(ESTATUS_PROCESO_KEY);
 	        
-	        response.put("message", (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
-	        response.put("estatusProceso", estatusProceso);
+	        response.put(MESSAGE_KEY, (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
+	        response.put(ESTATUS_PROCESO_KEY, estatusProceso);
 	        return ResponseEntity.ok(response);
 	        
 	    } catch (NumberFormatException e) {
-	        response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	        
 	    } catch (IllegalArgumentException e) {
-	        response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	        
 	    } catch (Exception e) {
-	        response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
@@ -301,16 +332,16 @@ public class CalculoEPRController {
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
 			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(MESSAGE_KEY, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -332,12 +363,12 @@ public class CalculoEPRController {
 	        estatusProceso = callableStatement.getInt(3);
 
 	    } catch (SQLException e) {
-	        logger.error("Error al ejecutar el procedimiento almacenado: ", e);
-	        errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        logger.error(ERROR_MESSAGE, e);
+	        errorMessage = ERROR_MESSAGE + e.getMessage();
 	    }
 
-	    result.put("errorMessage", errorMessage);
-	    result.put("estatusProceso", estatusProceso);
+	    result.put(ERROR_MESSAGE_KEY, errorMessage);
+	    result.put(ESTATUS_PROCESO_KEY, estatusProceso);
 	    return result;
 	}
 
@@ -348,30 +379,30 @@ public class CalculoEPRController {
 	    try {
 	        // Ejecutar procedimiento almacenado
 	        Map<String, Object> resultado = ejecutarProcedimientoVoBo();
-	        String errorMessage = (String) resultado.get("errorMessage");
-	        int estatusProceso = (int) resultado.get("estatusProceso");
+	        String errorMessage = (String) resultado.get(ERROR_MESSAGE_KEY);
+	        int estatusProceso = (int) resultado.get(ESTATUS_PROCESO_KEY);
 	        
 	        // Obtener historial de procesos
 	        ObjectMapper objectMapper = new ObjectMapper();
 	        String listaHistProcesoEPRC = objectMapper.writeValueAsString(iProcesosHistEPRC.obtProcesoEPRC());
 	        
 	        // Construir respuesta
-	        response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
-	        response.put("estatusProceso", estatusProceso);
+	        response.put(MESSAGE_KEY, (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
+	        response.put(ESTATUS_PROCESO_KEY, estatusProceso);
 	        response.put("listaHistProcesoEPRC", listaHistProcesoEPRC);
 	        
 	        return ResponseEntity.ok(response);
 
 	    } catch (NumberFormatException e) {
-	        response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
 
 	    } catch (IllegalArgumentException e) {
-	        response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
 
 	    } catch (Exception e) {
-	        response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
@@ -400,16 +431,16 @@ public class CalculoEPRController {
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
 			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(MESSAGE_KEY, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -425,19 +456,19 @@ public class CalculoEPRController {
 	            procesarYMigrarArchivoGarantias(nombreArchivo);
 
 	            Map<String, Object> response = new HashMap<>();
-	            response.put("success", true);
+	            response.put(SUCCESS_KEY, true);
 	            return ResponseEntity.ok(response);
 	        } catch (IOException e) {
-	            logger.error("Error al procesar el archivo: ", e);
+	            logger.error(ERROR_FILE_PROCESSING, e);
 	            Map<String, Object> response = new HashMap<>();
-	            response.put("success", false);
-	            response.put("error", "Error al procesar el archivo: " + e.getMessage());
+	            response.put(SUCCESS_KEY, false);
+	            response.put(ERROR_KEY, ERROR_FILE_PROCESSING + e.getMessage());
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	        } catch (Exception e) {
 	            logger.error("Error inesperado: ", e);
 	            Map<String, Object> response = new HashMap<>();
-	            response.put("success", false);
-	            response.put("error", e.getMessage());
+	            response.put(SUCCESS_KEY, false);
+	            response.put(ERROR_KEY, e.getMessage());
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	        }
 			
@@ -448,19 +479,19 @@ public class CalculoEPRController {
 				procesarYMigrarArchivoEtapas(nombreArchivo);
 
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", true);
+				response.put(SUCCESS_KEY, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_FILE_PROCESSING, e);
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				response.put(SUCCESS_KEY, false);
+				response.put(ERROR_KEY, ERROR_FILE_PROCESSING + e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				logger.error("Error al procesar el archivo: ", e);
+				logger.error(ERROR_FILE_PROCESSING, e);
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", e.getMessage());
+				response.put(SUCCESS_KEY, false);
+				response.put(ERROR_KEY, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 		}
@@ -487,7 +518,7 @@ public class CalculoEPRController {
 	        }
 
 	        if (!errores.isEmpty()) {
-	            throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	            throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
 	        }
 
 	        if (!dataToInsert.isEmpty()) {
@@ -496,7 +527,8 @@ public class CalculoEPRController {
 	            insertarDatosDeControlGarantias(idProceso, dataToInsert.size(), fechaCorteFin);
 	        }
 	    } catch (Exception e) {
-	        throw e; // Lanza la excepción para manejarla en otro lugar
+	    	logger.error("Se produjo un error: ", e);
+	        throw new FileProcessingException("Error procesando la operación", e); // Lanza una excepción dedicada
 	    }
 	}
 
@@ -518,7 +550,7 @@ public class CalculoEPRController {
 
 	private void procesarFila(Row row, int idProceso, int filaIndex, List<Object[]> dataToInsert, List<String> errores) {
 	    if (row == null) {
-	        errores.add("Fila " + (filaIndex + 1) + ": La fila está vacía.");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + ": La fila está vacía.");
 	        return;
 	    }
 
@@ -541,7 +573,7 @@ public class CalculoEPRController {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 	        return BigInteger.valueOf((long) cell.getNumericCellValue());
 	    } else {
-	        errores.add("Fila " + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser numérico).");
 	        return BigInteger.ZERO; // Valor predeterminado
 	    }
 	}
@@ -550,7 +582,7 @@ public class CalculoEPRController {
 	    if (cell != null && cell.getCellType() == CellType.STRING) {
 	        return cell.getStringCellValue();
 	    } else {
-	        errores.add("Fila " + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser texto).");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser texto).");
 	        return ""; // Valor predeterminado
 	    }
 	}
@@ -562,7 +594,7 @@ public class CalculoEPRController {
 	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	        return localDate.format(formatter);
 	    } else {
-	        errores.add("Fila " + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser una fecha).");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser una fecha).");
 	        return ""; // Valor predeterminado
 	    }
 	}
@@ -627,7 +659,7 @@ public class CalculoEPRController {
 	        insertarDatosSiExistente(dataToInsert, idProceso);
 
 	    } catch (Exception e) {
-	        logger.error("Error al procesar el archivo: " + e.getMessage(), e);
+	        logger.error(ERROR_FILE_PROCESSING + e.getMessage(), e);
 	        throw e; // Lanza la excepción para manejarla en otro lugar
 	    }
 	}
@@ -644,7 +676,7 @@ public class CalculoEPRController {
 
 	private void procesarFila(Row row, List<Object[]> dataToInsert, List<String> errores, int idProceso, int rowIndex) {
 	    if (row == null) {
-	        errores.add("Fila " + (rowIndex + 1) + ": La fila está vacía.");
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ": La fila está vacía.");
 	        return;
 	    }
 
@@ -665,7 +697,7 @@ public class CalculoEPRController {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 	        return BigInteger.valueOf((long) cell.getNumericCellValue());
 	    } else {
-	        errores.add("Fila " + (rowIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser numérico).");
 	        return null;
 	    }
 	}
@@ -677,14 +709,14 @@ public class CalculoEPRController {
 	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	        return localDate.format(formatter);
 	    } else {
-	        errores.add("Fila " + (rowIndex + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
 	        return null;
 	    }
 	}
 
 	private void verificarErrores(List<String> errores) {
 	    if (!errores.isEmpty()) {
-	        throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	        throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
 	    }
 	}
 
