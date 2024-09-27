@@ -35,8 +35,7 @@ public interface IProcesosHistCostoNetoFinanciado extends JpaRepository<Procesos
 			+ "order by t1.PK_ID_PROCESO desc", nativeQuery = true) 
 	public List<ProcesosHistCostoNetoFinanciado> obtProcesoCNF();
 
-	@Query(value="select DT_FECHA_CORTE  from SIB.TBL_CREDITOS_COSTO_NETO_FINANCIADO "
-			+ "GROUP BY DT_FECHA_CORTE", nativeQuery = true)
+	@Query(value="select max(DT_FECHA_CORTE) DT_FECHA_CORTE from SIB.TBL_IFRS9_CIERRE_MES ", nativeQuery = true)
 	public LocalDate obtFechaCierre();
 	
 }
