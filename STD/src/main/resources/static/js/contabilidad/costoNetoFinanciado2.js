@@ -248,20 +248,20 @@ function pintarTablaGastos(listaDatos, tablaPintar, num) {
 			case 2:
 				console.log("--");
 				btnsActualizar = "<input type='checkbox' class='item-inputCheck' name='checkbox_"
-					+ opt.vc_concepto
+					+ opt.concepto
 					+ "' id='"
-					+ opt.i_id
+					+ opt.id
 					+ "'/>";
 
 				registrosTotales.push([
 					btnsActualizar,
-					opt.i_folio,
-					opt.vc_concepto,
-					opt.i_cantidad,
-					opt.vc_descripcion,
-					opt.d_precio_unitario,
-					opt.d_total,
-					opt.dt_fecha_emision
+					opt.folio,
+					opt.concepto,
+					opt.cantidad,
+					opt.descripcion,
+					opt.preciounitario,
+					opt.total,
+					opt.fechaemision
 				]);
 
 				break;
