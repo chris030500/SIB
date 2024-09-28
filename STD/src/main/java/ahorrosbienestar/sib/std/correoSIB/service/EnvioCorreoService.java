@@ -1,13 +1,12 @@
 package ahorrosbienestar.sib.std.correoSIB.service;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,6 @@ import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-
-import javax.mail.util.ByteArrayDataSource;
-import javax.activation.DataSource;
 
 
 @Service
@@ -68,7 +64,7 @@ public class EnvioCorreoService {
 				
 			}
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.ERROR_LOG+e.getMessage());
 		}
 	}
 		
@@ -81,7 +77,7 @@ public class EnvioCorreoService {
 		    correo.setText(mensaje);
 		    mailSender.send(correo);
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.ERROR_LOG+e.getMessage());
 		}
 		
 	     
@@ -100,7 +96,7 @@ public class EnvioCorreoService {
 			
 			mailSender.send(message);
 		} catch (MessagingException e) {
-			logger.info("Error:"+e.getMessage());
+			logger.info(Constantes.ERROR_LOG+e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -152,7 +148,7 @@ public class EnvioCorreoService {
 			}
 						
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.ERROR_LOG+e.getMessage());
 		}
 	}
 	
@@ -182,7 +178,7 @@ public class EnvioCorreoService {
 			
 						
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.ERROR_LOG+e.getMessage());
 		}
 	}
 	

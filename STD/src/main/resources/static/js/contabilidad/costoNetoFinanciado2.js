@@ -237,10 +237,10 @@ function pintarTablaGastos(listaDatos, tablaPintar, num) {
 					+ " <i class='fa fa-cogs'></i></button>";
 
 				registrosTotales.push([
-					opt.vc_descripcion,
+					opt.descripcion,
 					opt.montoInicial,
 					opt.montoFinal,
-					(opt.c_estatus == 'A' ? "Activo" : "Inactivo"),
+					(opt.estatus == 'A' ? "Activo" : "Inactivo"),
 					btnsActualizar
 				]);
 

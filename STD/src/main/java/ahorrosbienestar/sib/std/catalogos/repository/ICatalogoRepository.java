@@ -16,7 +16,7 @@ public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer>{
 	public List<Catalogo> generarOpciones(@Param ( "id_group" ) Integer id);
 	
 	@Query(value = "SELECT V_VALOR FROM TBL_OPC_BUSQUEDA WHERE I_ID_GRUPO =:id_group and I_OPCION =:i_opcion ", nativeQuery = true)
-	public String obtDescripcion(@Param ( "id_group" ) Integer id,@Param ( "i_opcion" ) Integer i_opcion);
+	public String obtDescripcion(@Param ( "id_group" ) Integer id,@Param ( "i_opcion" ) Integer opcion);
 
 	@Modifying
 	@Transactional

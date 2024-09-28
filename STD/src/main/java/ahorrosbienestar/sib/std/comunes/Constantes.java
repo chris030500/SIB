@@ -223,11 +223,11 @@ public class Constantes {
 	public static final String SELECT_CONTROL_COMISIONES = "SELECT * FROM TBL_CONTROL_COMISIONES WHERE DT_FechaCorte = ?";
 	public static final String INSERTAR_CONTROL_COMISIONES = "INSERT INTO TBL_CONTROL_COMISIONES (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 	public static final String UPDATE_CONTROL_COMISIONES = "UPDATE TBL_CONTROL_COMISIONES SET VC_Estatus = 'I' WHERE PK_IdProcesoComision = ?";
-	public static final String OBTENER_Siguiente_ID_PROCESO_COMISIONES = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
+	public static final String OBTENER_SIGUIENTE_ID_PROCESO_COMISIONES = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_COMISIONES";
 
 	//Mensajes 
 	public static final String MSN_ERROR_GUARDAR_DATOS = "Error al guardar los datos";
-	public static final String ERROR_LOG = "Error:";
+	public static final String ERROR_LOG = "Error: ";
 	public static final String ERROR_LOG_PROCESO ="Error al ejecutar el procedimiento almacenado: ";
 	public static final String ERROR_BD_CON ="Error al cerrar la conexión: ";
 	public static final String ERROR_BD_CERRAR ="Error al cerrar el CallableStatement: ";
