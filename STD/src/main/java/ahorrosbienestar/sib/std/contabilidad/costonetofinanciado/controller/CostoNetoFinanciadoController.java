@@ -102,6 +102,8 @@ public class CostoNetoFinanciadoController {
 	
 	private static final String COLUMN_PREFIX = ", Columna ";
 	
+	private static final String INVALID_VALUE_MESSAGE = ": Valor no válido (debe ser numérico).";
+	
 	private static final Logger logger = Logger.getLogger(CostoNetoFinanciadoController.class);
 
 	@Autowired
@@ -1018,7 +1020,7 @@ public class CostoNetoFinanciadoController {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 	        return BigInteger.valueOf((long) cell.getNumericCellValue());
 	    } else {
-	        errores.add(ROW_PREFIX + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
 	        return null;
 	    }
 	}
@@ -1027,7 +1029,7 @@ public class CostoNetoFinanciadoController {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 	        return (float) cell.getNumericCellValue();
 	    } else {
-	        errores.add(ROW_PREFIX + (filaIndex + 1) + ", Columna " + columna + ": Valor no válido (debe ser numérico).");
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
 	        return -1; // Indica error
 	    }
 	}
@@ -1150,7 +1152,7 @@ public class CostoNetoFinanciadoController {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 	        return BigInteger.valueOf((long) cell.getNumericCellValue());
 	    } else {
-	        errores.add(ROW_PREFIX + (rowIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser numérico).");
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
 	        return null;
 	    }
 	}
@@ -1158,7 +1160,7 @@ public class CostoNetoFinanciadoController {
 	private String obtenerValorCeldaFecha(Cell cell, List<String> errores, int rowIndex) {
 	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 	        Date date = cell.getDateCellValue();
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	        return localDate.format(formatter);
 	    } else {
@@ -1186,8 +1188,7 @@ public class CostoNetoFinanciadoController {
         // Usar la constante en lugar de la consulta en línea
         jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
     }
-
-	// Método para insertar datos de control en la tabla de control
+	
     private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
         // Ejecutar el SELECT y obtener una lista de resultados
         List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
