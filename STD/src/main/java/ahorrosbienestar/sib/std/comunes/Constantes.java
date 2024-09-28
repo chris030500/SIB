@@ -227,7 +227,7 @@ public class Constantes {
 
 	//Mensajes 
 	public static final String MSN_ERROR_GUARDAR_DATOS = "Error al guardar los datos";
-	public static final String ERROR_LOG = "Error:";
+	public static final String ERROR_LOG = "Error: ";
 	public static final String ERROR_LOG_PROCESO ="Error al ejecutar el procedimiento almacenado: ";
 	public static final String ERROR_BD_CON ="Error al cerrar la conexión: ";
 	public static final String ERROR_BD_CERRAR ="Error al cerrar el CallableStatement: ";

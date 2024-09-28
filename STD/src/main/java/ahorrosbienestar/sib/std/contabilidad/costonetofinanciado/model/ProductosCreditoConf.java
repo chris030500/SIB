@@ -17,10 +17,10 @@ public class ProductosCreditoConf {
 	private int id;
 	
 	@Column(name = "VC_DESCRIPCION")
-	private String vc_descripcion;
+	private String descripcion;
 	
 	@Column(name = "C_ESTATUS")
-	private String c_estatus;
+	private String estatus;
 	
 	@Column(name = "D_MONTO_INICIAL", columnDefinition = "decimal(12,2)")
 	private Double montoInicial;
@@ -36,20 +36,20 @@ public class ProductosCreditoConf {
 		this.id = id;
 	}
 
-	public String getVc_descripcion() {
-		return vc_descripcion;
+	public String getDescripcion() {
+		return descripcion;
 	}
 
-	public void setVc_descripcion(String vc_descripcion) {
-		this.vc_descripcion = vc_descripcion;
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
-	public String getC_estatus() {
-		return c_estatus;
+	public String getEstatus() {
+		return estatus;
 	}
 
-	public void setC_estatus(String c_estatus) {
-		this.c_estatus = c_estatus;
+	public void setEstatus(String estatus) {
+		this.estatus = estatus;
 	}
 
 	public Double getMontoInicial() {
