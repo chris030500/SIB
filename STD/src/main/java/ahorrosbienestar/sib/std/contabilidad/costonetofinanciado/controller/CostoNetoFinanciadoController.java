@@ -614,79 +614,91 @@ public class CostoNetoFinanciadoController {
 
 	@PostMapping("/guardar-CatalogoBC")
 	public ResponseEntity<Map<String, Object>> guardarCatalogoBC(@RequestParam Map<String, String> params) {
-		Map<String, Object> response = new HashMap<>();
-		try {
-			ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
+	    Map<String, Object> response = new HashMap<>();
+	    try {
+	        ConfigAdviserBC configAdviserBC;
+	        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
 
-			// Crear un NumberFormat para la localización deseada
-			NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+	        // Parsear montos
+	        Number montoInicial = format.parse(params.get(Constantes.PRM_MONTOINICIAL));
+	        Number montoFinal = format.parse(params.get(Constantes.PRM_MONTOFINAL));
 
-			// Parsear el monto inicial y final
+	        // Verificar si ya existe la configuración
+	        int existe = verificarExistenciaConfiguracion(montoInicial, montoFinal, params);
+	        if (existe == 0) {
+	            // Guardar o actualizar configuración
+	            configAdviserBC = guardarOActualizarConfiguracion(montoInicial, montoFinal, params);
+	            if (configAdviserBC != null && configAdviserBC.getId() != 0) {
+	                response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
+	                response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
+	                return ResponseEntity.ok(response);
+	            }
+	        } else {
+	            response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
+	            response.put(Constantes.PRM_MESSAGE, Constantes.MSN_PARAMS_INFO);
+	            return ResponseEntity.ok(response);
+	        }
+	    } catch (NumberFormatException e) {
+	        return manejarExcepcion(response, Constantes.ERROR_FORMATO_NUMERICO, e, HttpStatus.BAD_REQUEST);
+	    } catch (IllegalArgumentException e) {
+	        return manejarExcepcion(response, Constantes.ERROR_PARAMETROS, e, HttpStatus.BAD_REQUEST);
+	    } catch (Exception e) {
+	        return manejarExcepcion(response, Constantes.ERROR_GUARDAR, e, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	}
 
-			Number montoInicial = format.parse(params.get(Constantes.PRM_MONTOINICIAL));
-			Number montoFinal = format.parse(params.get(Constantes.PRM_MONTOFINAL));
-
-			int existe = iConfigAdviserBC.existeConfiguracion(montoInicial.doubleValue(), montoFinal.doubleValue(),
-					params.get(Constantes.PRM_PRODUCTOS), Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
-			if (existe == 0) {
-
-				// si es igual a 0 es un alta si es mayor a 0 es una actualizacion.
-				if (Integer.parseInt(params.get(Constantes.PRM_GASTOID)) > 0) {
-					Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get(Constantes.PRM_GASTOID)));
-					obtConfiguracion.get().setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
-					obtConfiguracion.get().setDescripcionConcepto(iCatalogoRepository
-							.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
-					obtConfiguracion.get().setProductos(params.get(Constantes.PRM_PRODUCTOS));
-					obtConfiguracion.get()
-							.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
-					obtConfiguracion.get().setMontoInicial(montoInicial.doubleValue());
-					obtConfiguracion.get().setMontoFinal(montoFinal.doubleValue());
-					configAdviserBC = iConfigAdviserBC.save(obtConfiguracion.get());
-
-					if (configAdviserBC != null && configAdviserBC.getId() != 0) {
-						response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
-						response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
-						
-					}
-
-				} else {
-					configAdviserBC.setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
-					configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS,
-							Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
-					configAdviserBC.setProductos(params.get(Constantes.PRM_PRODUCTOS));
-					configAdviserBC
-							.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
-					configAdviserBC.setMontoInicial(montoInicial.doubleValue());
-					configAdviserBC.setMontoFinal(montoFinal.doubleValue());
-					configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
-					ConfigAdviserBC guardaConfigAdviserBC = iConfigAdviserBC.save(configAdviserBC);
-
-					if (guardaConfigAdviserBC != null && guardaConfigAdviserBC.getId() != 0) {
-						response.put( Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
-						response.put(Constantes.PRM_MESSAGE, Constantes.MSN_ACTUALIZAR_INFO);
-						
-					} 
-
-				}
-				return ResponseEntity.ok(response);
-			} else {
-				response.put(Constantes.PRM_LISTACATALOGO, iConfigAdviserBC.findAll());
-				response.put(Constantes.PRM_MESSAGE, Constantes.MSN_PARAMS_INFO);
-				return ResponseEntity.ok(response);
-			}
-		} catch (NumberFormatException e) {
-			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (IllegalArgumentException e) {
-			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_PARAMETROS + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			logger.error(Constantes.ERROR_LOG + e.getMessage());
-			response.put(Constantes.PRM_MESSAGE, Constantes.ERROR_GUARDAR + e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	
+	private int verificarExistenciaConfiguracion(Number montoInicial, Number montoFinal, Map<String, String> params) {
+	    return iConfigAdviserBC.existeConfiguracion(
+	        montoInicial.doubleValue(),
+	        montoFinal.doubleValue(),
+	        params.get(Constantes.PRM_PRODUCTOS),
+	        Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))
+	    );
+	}
+	
+	private ConfigAdviserBC guardarOActualizarConfiguracion(Number montoInicial, Number montoFinal, Map<String, String> params) {
+	    ConfigAdviserBC configAdviserBC;
+	    if (Integer.parseInt(params.get(Constantes.PRM_GASTOID)) > 0) {
+	        Optional<ConfigAdviserBC> obtConfiguracion = iConfigAdviserBC.findById(Integer.parseInt(params.get(Constantes.PRM_GASTOID)));
+	        if (obtConfiguracion.isPresent()) {
+	            configAdviserBC = actualizarConfiguracion(obtConfiguracion.get(), montoInicial, montoFinal, params);
+	        } else {
+	            throw new IllegalArgumentException(Constantes.ERROR_CONFIGURACION_NO_ENCONTRADA);
+	        }
+	    } else {
+	        configAdviserBC = nuevaConfiguracion(montoInicial, montoFinal, params);
+	    }
+	    return configAdviserBC;
+	}
+	
+	private ConfigAdviserBC actualizarConfiguracion(ConfigAdviserBC configAdviserBC, Number montoInicial, Number montoFinal, Map<String, String> params) {
+	    configAdviserBC.setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
+	    configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
+	    configAdviserBC.setProductos(params.get(Constantes.PRM_PRODUCTOS));
+	    configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
+	    configAdviserBC.setMontoInicial(montoInicial.doubleValue());
+	    configAdviserBC.setMontoFinal(montoFinal.doubleValue());
+	    return iConfigAdviserBC.save(configAdviserBC);
+	}
+	
+	private ConfigAdviserBC nuevaConfiguracion(Number montoInicial, Number montoFinal, Map<String, String> params) {
+	    ConfigAdviserBC configAdviserBC = new ConfigAdviserBC();
+	    configAdviserBC.setConcepto(Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS)));
+	    configAdviserBC.setDescripcionConcepto(iCatalogoRepository.obtDescripcion(Constantes.CAT_CONCEPTOS, Integer.parseInt(params.get(Constantes.PRM_CONCEPTOS))));
+	    configAdviserBC.setProductos(params.get(Constantes.PRM_PRODUCTOS));
+	    configAdviserBC.setDescripcionProducto(productosCreditoService.descProducto(params.get(Constantes.PRM_PRODUCTOS)));
+	    configAdviserBC.setMontoInicial(montoInicial.doubleValue());
+	    configAdviserBC.setMontoFinal(montoFinal.doubleValue());
+	    configAdviserBC.setEstatus(Constantes.ESTATUS_BC);
+	    return iConfigAdviserBC.save(configAdviserBC);
+	}
+	
+	private ResponseEntity<Map<String, Object>> manejarExcepcion(Map<String, Object> response, String mensajeError, Exception e, HttpStatus status) {
+	    logger.error(Constantes.ERROR_LOG + e.getMessage());
+	    response.put(Constantes.PRM_MESSAGE, mensajeError + e.getMessage());
+	    return ResponseEntity.status(status).body(response);
 	}
 
 	@PostMapping("/guardar-ConfiguracionGasto")
