@@ -7,6 +7,7 @@ var tblPlantillasSMS;
 var tblParamsAsig;
 var tblClienteBloqueados;
 var tblMensajesGenerados;
+var tblMunicipiosConCobertura;
 $(document).ready(function() {
 	
 	tblReglasAsignacion = $("#tblReglasAsignacion").DataTable({
@@ -63,6 +64,16 @@ $(document).ready(function() {
             'aTargets': [-1] /* 1st one, start by the right */
         }
     	]
+	});
+	
+	tblMunicipiosConCobertura = $("#tblMunicipiosConCobertura").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
 	});
 	
 });

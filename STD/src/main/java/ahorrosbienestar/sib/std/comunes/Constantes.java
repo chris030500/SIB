@@ -32,84 +32,90 @@ public class Constantes {
 	
 
 	// Ejemplo de constantes para tipo de Mensaje
-	public static final String MENSAJE_ERROR = "error";
-	public static final String MENSAJE_OK = "success";
+    public static final String MENSAJE_ERROR = "error"; 
+    public static final String MENSAJE_OK = "success"; 
 
-	// Identificar de mensaje
-	public static final String TEXTO_MNS = "mensaje";
-	public static final String TIPO_MNS = "tipo";
-	public static final String ENVIA_CORREOS = "envio";
-	public static final String URL_REPORTE = "reporte";
+    //Identificar de mensaje
+    public static final String TEXTO_MNS = "mensaje";
+    public static final String TIPO_MNS = "tipo";
+    public static final String ENVIA_CORREOS = "envio";
+    public static final String URL_REPORTE = "reporte";
 
-	// Ejemplo de constantes para descripcion de Mensajes
-	public static final String REGISTRO_OK = "Se Registro Correctamente.";
-	public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
-	public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
-	public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
-	public static final String REPORTE_KO = "Se Presento error al Generar el reporte, Intente mas tarde.";
+    // Ejemplo de constantes para descripcion de Mensajes
+    public static final String REGISTRO_OK = "Se Registro Correctamente.";
+    public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
+    public static final String ACTUALIZACION_ERROR = "Error al procesar. Intente mas tarde.";
+    public static final String REPORTE_OK = "Se Genero el reporte Correctamente.";
+    public static final String REPORTE_KO = "Se Presento error al Generar el reporte, Intente mas tarde.";
 
-	// Mensajes Bases de Gestion
-	public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
-	public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
+    //Mensajes Bases de Gestion
+    public static final String ASIGNACION_OK = "Termino el proceso de Asignacion Gestiones.";
+    public static final String SMS_OK = "Termino el proceso de Generacion de SMS";
 
-	// Mensajes Reglas de asignacion
-	public static final String REGLA_ERROR_DUPLICADO = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
-	public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
-	public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
+    //Mensajes Reglas de asignacion
+    public static final String REGLA_ERROR_DUPLICADO = "Existe Registro para Tipo de Cliente y Tipo de Cartera Seleccionado.";
+    public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
+    public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
 
-	// Mensajes plantillas de SMS
-	public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
-	public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
-
+  	//Mensajes plantillas de SMS
+    public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
+    public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
+ 
+   
 	// Mensajes Error
 	public static final String TEXTO_KO = "Error: $error, Comuniquece con el administrador del sistema.";
 
-	// identificadores en mensaje de error
-	public static final String IDENTIFICADOR_ERROR = "$error";
-
-	// Ejemplo de constantes para descripcion de Errores
-	public static final String DESC_ERROR_ESTATUS_REGLA = "Solo se permite tener una Regla de Asignacion Activa.";
-
-	// PERMISOS DE PANTALLAS
-	public static final String USUARIOS_DESBLOQUEO = "usuarioDesbloqueo";
-	public static final String USUARIOS_ADMIN_OFERTAS = "usuarioAdmin";
-	public static final String USUARIOS_REGLAS_ASIGNACION = "usuarioReglasAsignacion";
-	public static final String USUARIOS_SMS = "usuarioSMS";
-	public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
-	public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
-	public static final String USUARIO_TELEFONOS = "usuariosTelefonos";
-	public static final String USUARIO_COD_ACCION_TELEFONO = "usuariosCodigosAccionR";
-	public static final String USUARIO_CONSULTA = "usuarioConsulta";
-
-	// PROPIEDAD DEL CONTROLLER DEL REPORTE
-	public static final String CONTROLLER_JASPER_CONF = "generarReporte";
-	// NOMBRES DE REPORTES
-	public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
-
-	// NOMBRE DE PANTALLAS
-	public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
-
-	// MENSAJES DE BASES
-	public static final String MENSAJE_BASE_NOMINA = "Se proceso Base Nomina.";
-	public static final String MENSAJE_BASE_FIDELIDAD = "Se proceso Base Fidelidad.";
-	public static final String MENSAJE_BASE_PROSPECTOR = "Se proceso Base Prospector.";
-	public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
-	public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
-	public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
-
-	// TIPOS DE BUSQUEDA CITA Y VENCIDOS
+	
+	//identificadores en mensaje de error
+    public static final String IDENTIFICADOR_ERROR = "$error";
+    
+    // Ejemplo de constantes para descripcion de Errores
+    public static final String DESC_ERROR_ESTATUS_REGLA = "Solo se permite tener una Regla de Asignacion Activa.";
+    
+    //PERMISOS DE PANTALLAS
+    public static final String USUARIOS_DESBLOQUEO = "usuarioDesbloqueo";
+    public static final String USUARIOS_ADMIN_OFERTAS = "usuarioAdmin";
+    public static final String USUARIOS_REGLAS_ASIGNACION = "usuarioReglasAsignacion";
+    public static final String USUARIOS_SMS = "usuarioSMS";
+    public static final String USUARIO_EJECUCION_GESTION = "usuarioEjecutaGestion";
+    public static final String USUARIO_EJECUCION_BASE = "usuarioGeneraBases";
+    public static final String USUARIO_TELEFONOS = "usuariosTelefonos";
+    public static final String USUARIO_COD_ACCION_TELEFONO = "usuariosCodigosAccionR";
+    public static final String USUARIO_CONSULTA = "usuarioConsulta";
+    public static final String USUARIO_EXCLUSION_NOMINA = "usuarioExclusionesNomina";
+    
+    //PROPIEDAD DEL CONTROLLER DEL REPORTE
+    public static final String CONTROLLER_JASPER_CONF = "generarReporte";
+    //NOMBRES DE REPORTES
+    public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
+    public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
+    
+    //NOMBRE DE PANTALLAS
+    public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
+    
+    //MENSAJES DE BASES
+    public static final String MENSAJE_BASE_NOMINA = "Se proceso Base Nomina.";
+    public static final String MENSAJE_BASE_FIDELIDAD = "Se proceso Base Fidelidad.";
+    public static final String MENSAJE_BASE_PROSPECTOR = "Se proceso Base Prospector.";
+    public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
+    public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
+    public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
+    
+    
+    //TIPOS DE BUSQUEDA CITA Y VENCIDOS
 	public static final int BUSQUEDA_POR_USUARIO = 1;
-
-	// MENSAJES SEGUIMIENTOS
+	
+	//MENSAJES SEGUIMIENTOS 
 	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
 	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
 	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
-
-	// CATALOGOS DE PANTALLAS
+    
+	//CATALOGOS DE PANTALLAS
 	public static final int CATALOGO_GESTION = 14;
 	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
-
-	// PROCESO A EJECUTAR
+	
+	
+	//PROCESO A EJECUTAR
 	public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
 	public static final String PROCESO_REASIGNACION = "{call SIB.SP_REASIG_X_FAL_SEGUIMIENTO (?)}";
 	public static final String PROCESO_SMS = "{call SIB.SP_GENERAR_SMS(?)}";
