@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.repository;
+package ahorrosbienestar.sib.std.correosib.repository;
 
 public class IEnvioCorreo {
 

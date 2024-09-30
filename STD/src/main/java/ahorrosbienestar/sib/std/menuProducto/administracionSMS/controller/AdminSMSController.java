@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.controller;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -27,20 +27,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.EnvioMensajes;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.Parametros;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsignacion;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.MensajeSMSService;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoAsignacionService;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.ProcesoSMSService;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.adminSMSService;
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.EnvioMensajes;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.Parametros;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.ProcesoAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.adminSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.service.MensajeSMSService;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.service.ProcesoAsignacionService;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.service.ProcesoSMSService;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.service.adminSMSService;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.ProcesoSMS;
 
 @RequestMapping("mensajes")
 @RestController

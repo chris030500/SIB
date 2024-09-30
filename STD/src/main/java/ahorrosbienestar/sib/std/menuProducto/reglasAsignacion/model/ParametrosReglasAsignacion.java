@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model;
+package ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model;
 
 import java.time.LocalDate;
 

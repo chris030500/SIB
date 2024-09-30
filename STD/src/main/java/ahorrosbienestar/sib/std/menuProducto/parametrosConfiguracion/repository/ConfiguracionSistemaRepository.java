@@ -1,11 +1,11 @@
-package ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.repository;
+package ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.model.ConfiguracionSistema;
 
 
 @Repository

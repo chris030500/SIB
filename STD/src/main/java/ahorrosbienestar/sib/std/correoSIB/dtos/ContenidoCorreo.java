@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.dtos;
+package ahorrosbienestar.sib.std.correosib.dtos;
 
 public class ContenidoCorreo {
 	

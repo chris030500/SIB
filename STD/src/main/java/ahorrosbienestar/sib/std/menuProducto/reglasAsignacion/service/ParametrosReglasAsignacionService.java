@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service;
+package ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.repository.IParametrosReglasAsignacionRepository;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model.ParametrosReglasAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.repository.IParametrosReglasAsignacionRepository;
 
 @Service
 public class ParametrosReglasAsignacionService {

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.service;
+package ahorrosbienestar.sib.std.correosib.service;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
+import ahorrosbienestar.sib.std.correosib.dtos.ContenidoCorreo;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;

@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.service;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository.IMensajeSMSRepository;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository.IMensajeSMSRepository;
 
 @Service
 public class MensajeSMSService {

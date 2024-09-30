@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.model;
 
 import java.util.List;
 

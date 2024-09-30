@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.model;
+package ahorrosbienestar.sib.std.correosib.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
