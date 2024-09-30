@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
+import ahorrosbienestar.sib.std.menuproducto.conf.controller.ParametrosConfigController;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.sccb.expedientes.model.ExpedienteCredito;

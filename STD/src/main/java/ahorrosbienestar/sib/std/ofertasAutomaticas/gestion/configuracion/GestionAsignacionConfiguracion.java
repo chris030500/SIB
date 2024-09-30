@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.support.CronTrigger;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
+import ahorrosbienestar.sib.std.correosib.service.EnvioCorreoService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.dto.ValidarEjecutarCronBase;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.InformacionService;
 
