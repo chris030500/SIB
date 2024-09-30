@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.jcraft.jsch.*;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.conf.controller.ParametrosConfigController;
+import ahorrosbienestar.sib.std.menuproducto.conf.controller.ParametrosConfigController;
 
 import java.io.ByteArrayOutputStream;
 
