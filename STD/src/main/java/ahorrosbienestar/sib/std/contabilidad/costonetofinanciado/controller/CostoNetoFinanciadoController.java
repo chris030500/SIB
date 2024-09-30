@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.contabilidad.costonetofinanciado.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -90,6 +91,19 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/contabilidad")
 public class CostoNetoFinanciadoController {
+	
+	private static final String ERROR_PROCESAR_ARCHIVO = "Error al procesar el archivo: ";
+	
+	private static final String ROW_PREFIX = "Fila ";
+	
+	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
+	
+	private static final String ERROR_FILE_PROCESSING = "Error al procesar el archivo: ";
+	
+	private static final String COLUMN_PREFIX = ", Columna ";
+	
+	private static final String INVALID_VALUE_MESSAGE = ": Valor no válido (debe ser numérico).";
+	
 	private static final Logger logger = Logger.getLogger(CostoNetoFinanciadoController.class);
 
 	@Autowired
@@ -134,7 +148,18 @@ public class CostoNetoFinanciadoController {
 	JdbcTemplate jdbcTemplate;
 
 	List<Usuario> usuario = null;
+	
+	public static class FileProcessingException extends RuntimeException implements Serializable {
+        private static final long serialVersionUID = 1L; // o cualquier número que elijas
 
+        public FileProcessingException(String message) {
+            super(message);
+        }
+
+        public FileProcessingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
 	@GetMapping("/costoNetoFinanciado")
 	public String costoNetoFinanciado(Model model) throws IOException {
@@ -182,6 +207,7 @@ public class CostoNetoFinanciadoController {
 
 			// Listar los archivos en la carpeta
 			Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
 					archivos.setNombreArchivo(file.getFileName().toString());
@@ -227,6 +253,7 @@ public class CostoNetoFinanciadoController {
 
 			// Listar los archivos en la carpeta
 			Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
 					archivos.setNombreArchivo(file.getFileName().toString());
@@ -265,16 +292,15 @@ public class CostoNetoFinanciadoController {
 			@RequestParam("idFolio") String idFolio) {
 
 		String mensaje = "";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		ArrayList<String> respuesta = new ArrayList<>();
 		List<Configuracion> bases = configService.obtenerUrlFactura();
 		try {
 			if (files.length > 0) {
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
 					String folderPath = bases.get(0).getVc_valor_propiedad();
-					Path folder = Paths.get(folderPath);
 
-					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+					Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
 					mensaje = Constantes.MSN_OK_LAYOUT;
@@ -299,16 +325,15 @@ public class CostoNetoFinanciadoController {
 			@RequestParam("idFolio") String idFolio) {
 
 		String mensaje = "";
-		ArrayList<String> respuesta = new ArrayList<String>();
+		ArrayList<String> respuesta = new ArrayList<>();
 		List<Configuracion> bases = configService.obtenerUrlComisiones();
 		try {
 			if (files.length > 0) {
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
 					String folderPath = bases.get(0).getVc_valor_propiedad();
-					Path folder = Paths.get(folderPath);
 
-					Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+					Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
 					Files.write(nuevoPath, bytes);
 
 					mensaje = Constantes.MSN_OK_LAYOUT;
@@ -872,13 +897,13 @@ public class CostoNetoFinanciadoController {
 			response.put(Constantes.MENSAJE_OK, true);
 			return ResponseEntity.ok(response);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(ERROR_PROCESAR_ARCHIVO, e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, Constantes.ERROR_PROCESAR_ARCHIVO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ERROR_PROCESAR_ARCHIVO, e);
 			Map<String, Object> response = new HashMap<>();
 			response.put(Constantes.MENSAJE_OK, false);
 			response.put(Constantes.MENSAJE_ERROR, e.getMessage());
@@ -898,12 +923,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -915,12 +940,12 @@ public class CostoNetoFinanciadoController {
 				response.put(Constantes.MENSAJE_OK, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR,  e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ERROR_PROCESAR_ARCHIVO, e);
 				response.put(Constantes.MENSAJE_OK, false);
 				response.put(Constantes.MENSAJE_ERROR, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -929,117 +954,116 @@ public class CostoNetoFinanciadoController {
 	}
 
 	public void procesarYMigrarArchivoComisiones(String nombreArchivo) throws IOException {
-		
-		List<Configuracion> bases = configService.obtenerUrlComisiones();
-		String folderPath = bases.get(0).getVc_valor_propiedad();
-		
-		File file = new File(folderPath + nombreArchivo);
-		if (!file.exists()) {
-			throw new IOException("El archivo no existe en la ruta especificada.");
-		}
+	    List<Configuracion> bases = configService.obtenerUrlComisiones();
+	    String folderPath = bases.get(0).getVc_valor_propiedad();
+	    
+	    File file = new File(folderPath + nombreArchivo);
+	    if (!file.exists()) {
+	        throw new IOException("El archivo no existe en la ruta especificada.");
+	    }
 
-		List<String> errores = new ArrayList<>(); // Para almacenar errores
-
-		try (FileInputStream fis = new FileInputStream(file)) {
-			Workbook workbook = null;
-			if (nombreArchivo.endsWith("xlsx")) {
-				workbook = new XSSFWorkbook(fis);
-			} else if (nombreArchivo.endsWith("xls")) {
-				workbook = new HSSFWorkbook(fis);
-			} else {
-				throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
-			}
-
-			Sheet sheet = workbook.getSheetAt(0);
-			List<Object[]> dataToInsert = new ArrayList<>();
-			int totalRecords = 0;
-			int idProceso = obtenerSiguienteIdProcesoComisiones();
-			String fechaCorteFin = "";
-
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					errores.add("Fila " + (i + 1) + ": La fila está vacía.");
-					continue; // Saltar filas vacías
-				}
-
-				try {
-					// Leer celdas
-					BigInteger valor1 = BigInteger.ZERO;
-					Cell cell0 = row.getCell(0);
-					if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-						valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
-						continue;
-					}
-
-					float valor2 = 0;
-					Cell cell1 = row.getCell(1);
-					if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
-						valor2 = (float) cell1.getNumericCellValue();
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
-						continue;
-					}
-
-					float valor3 = 0;
-					Cell cell2 = row.getCell(2);
-					if (cell2 != null && cell2.getCellType() == CellType.NUMERIC) {
-						valor3 = (float) cell2.getNumericCellValue();
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser numérico).");
-						continue;
-					}
-
-					String valor4 = "";
-					Cell cell3 = row.getCell(3);
-					if (cell3 != null && cell3.getCellType() == CellType.NUMERIC
-							&& DateUtil.isCellDateFormatted(cell3)) {
-						Date date = cell3.getDateCellValue();
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-						valor4 = localDate.format(formatter);
-					} else {
-						errores.add("Fila " + (i + 1) + ", Columna D: Valor no válido (debe ser una fecha).");
-						continue;
-					}
-
-					int valor5 = idProceso;
-					dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5 });
-					totalRecords++;
-				} catch (Exception e) {
-					errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
-				}
-			}
-
-			// Verifica si hay errores
-			if (!errores.isEmpty()) {
-				throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
-			}
-
-			if (!dataToInsert.isEmpty()) {
-				Object[] firstRow = dataToInsert.get(0);
-				fechaCorteFin = (String) firstRow[3];
-
-				// Inserción en la base de datos
-				insertarEnBaseDeDatosComisiones(dataToInsert);
-				insertarDatosDeControlComisiones(idProceso, totalRecords, fechaCorteFin);
-			}
-		} catch (Exception e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
-			throw e; // Lanza la excepción para manejarla en otro lugar
-		}
+	    List<String> errores = new ArrayList<>();
+	    List<Object[]> dataToInsert = new ArrayList<>();
+	    int idProceso = obtenerSiguienteIdProcesoComisiones();
+	    
+	    try (FileInputStream fis = new FileInputStream(file);
+	         Workbook workbook = crearWorkbook(fis, nombreArchivo)) {
+	        
+	        Sheet sheet = workbook.getSheetAt(0);
+	        procesarFilas(sheet, dataToInsert, errores, idProceso);
+	        
+	        if (!errores.isEmpty()) {
+	            throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	        }
+	        
+	        if (!dataToInsert.isEmpty()) {
+	            String fechaCorteFin = (String) dataToInsert.get(0)[3];
+	            insertarEnBaseDeDatosComisiones(dataToInsert);
+	            insertarDatosDeControlComisiones(idProceso, dataToInsert.size(), fechaCorteFin);
+	        }
+	    } catch (Exception e) {
+	    	logger.error("Se produjo un error: ", e);
+		    throw new FileProcessingException("Error procesando la operación", e); // Lanza una excepción dedicada
+	    }
 	}
 
-	// Método para insertar los datos en la base de datos usando batch insert con
-	// JdbcTemplate
+	private Workbook crearWorkbook(FileInputStream fis, String nombreArchivo) throws IOException {
+	    if (nombreArchivo.endsWith("xlsx")) {
+	        return new XSSFWorkbook(fis);
+	    } else if (nombreArchivo.endsWith("xls")) {
+	        return new HSSFWorkbook(fis);
+	    } else {
+	        throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+	    }
+	}
+
+	private void procesarFilas(Sheet sheet, List<Object[]> dataToInsert, List<String> errores, int idProceso) {
+	    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+	        Row row = sheet.getRow(i);
+	        if (row == null) {
+	            errores.add(ROW_PREFIX + (i + 1) + ": La fila está vacía.");
+	            continue;
+	        }
+
+	        try {
+	            Object[] valores = leerValoresFila(row, i, errores);
+	            if (valores != null) {
+	                dataToInsert.add(new Object[] { valores[0], valores[1], valores[2], valores[3], idProceso });
+	            }
+	        } catch (Exception e) {
+	            errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
+	        }
+	    }
+	}
+
+	private Object[] leerValoresFila(Row row, int filaIndex, List<String> errores) {
+	    BigInteger valor1 = leerCeldaNumerica(row.getCell(0), "A", filaIndex, errores);
+	    float valor2 = leerCeldaNumericaFloat(row.getCell(1), "B", filaIndex, errores);
+	    float valor3 = leerCeldaNumericaFloat(row.getCell(2), "C", filaIndex, errores);
+	    String valor4 = leerCeldaFecha(row.getCell(3), filaIndex, errores);
+	    
+	    if (valor1 == null || valor2 == -1 || valor3 == -1 || valor4 == null) {
+	        return null; // Hay errores
+	    }
+	    return new Object[] { valor1, valor2, valor3, valor4 };
+	}
+
+	private BigInteger leerCeldaNumerica(Cell cell, String columna, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return BigInteger.valueOf((long) cell.getNumericCellValue());
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
+	        return null;
+	    }
+	}
+
+	private float leerCeldaNumericaFloat(Cell cell, String columna, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return (float) cell.getNumericCellValue();
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
+	        return -1; // Indica error
+	    }
+	}
+
+	private String leerCeldaFecha(Cell cell, int filaIndex, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	        Date date = cell.getDateCellValue();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
+	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	        return localDate.format(formatter);
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + ", Columna D: Valor no válido (debe ser una fecha).");
+	        return null; // Indica error
+	    }
+	}
+
+
 	private void insertarEnBaseDeDatosComisiones(List<Object[]> dataToInsert) {
 	    // Usar la constante para la consulta
 	    jdbcTemplate.batchUpdate(Constantes.INSERTAR_COMISIONES, dataToInsert);
 	}
 
-	// Método para insertar datos de control en la tabla de control
 	private void insertarDatosDeControlComisiones(int idProceso, int totalRecords, String fechaCorteFin) {
 
 	    // Usar la constante para la consulta
@@ -1056,7 +1080,7 @@ public class CostoNetoFinanciadoController {
 	        // Definir los valores de control
 	        String estatusProceso = "A";
 	        Date fechaProceso = new Date();
-	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 	        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 	        // Usar la constante para la inserción de control
@@ -1065,7 +1089,7 @@ public class CostoNetoFinanciadoController {
 	    } else {
 	        String estatusProceso = "A";
 	        Date fechaProceso = new Date();
-	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 	        String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 	        // Usar la constante para la inserción de control
@@ -1073,127 +1097,110 @@ public class CostoNetoFinanciadoController {
 	    }
 	}
 
-	// Método para obtener el siguiente ID de proceso
 	private int obtenerSiguienteIdProcesoComisiones() {
 	    return jdbcTemplate.queryForObject(Constantes.OBTENER_SIGUIENTE_ID_PROCESO_COMISIONES, Integer.class);
 	}
 
 
 	public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
-		
-		List<Configuracion> bases = configService.obtenerUrlComisiones();
-		String folderPath = bases.get(0).getVc_valor_propiedad();
-		
-		File file = new File(folderPath + nombreArchivo);
-		String fechaCorteFin = "";
-		List<String> errores = new ArrayList<>(); // Para almacenar errores
+	    List<Configuracion> bases = configService.obtenerUrlComisiones();
+	    String folderPath = bases.get(0).getVc_valor_propiedad();
+	    File file = new File(folderPath + nombreArchivo);
+	    
+	    if (!file.exists()) {
+	        throw new IOException("El archivo no existe en la ruta especificada.");
+	    }
 
-		if (!file.exists()) {
-			throw new IOException("El archivo no existe en la ruta especificada.");
-		}
+	    try (FileInputStream fis = new FileInputStream(file);
+	         Workbook workbook = obtenerWorkbook(nombreArchivo, fis)) {
+	        
+	        List<Object[]> dataToInsert = new ArrayList<>();
+	        List<String> errores = new ArrayList<>();
+	        int idProceso = obtenerSiguienteIdProcesoEtapas();
 
-		try (FileInputStream fis = new FileInputStream(file)) {
-			Workbook workbook = null;
-			try {
-				if (nombreArchivo.endsWith("xlsx")) {
-					workbook = new XSSFWorkbook(fis);
-				} else if (nombreArchivo.endsWith("xls")) {
-					workbook = new HSSFWorkbook(fis);
-				} else {
-					throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
-				}
+	        for (int i = 1; i <= workbook.getSheetAt(0).getLastRowNum(); i++) {
+	            procesarFila(workbook.getSheetAt(0).getRow(i), dataToInsert, errores, idProceso, i);
+	        }
 
-				Sheet sheet = workbook.getSheetAt(0);
-				List<Object[]> dataToInsert = new ArrayList<>();
-				int totalRecords = 0;
-				int idProceso = obtenerSiguienteIdProcesoEtapas();
+	        verificarErrores(errores);
+	        insertarDatosSiExistente(dataToInsert, idProceso);
 
-				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-					Row row = sheet.getRow(i);
-					if (row == null) {
-						errores.add("Fila " + (i + 1) + ": La fila está vacía.");
-						continue;
-					}
-
-					try {
-						// Obtener el valor de la primera celda (BigInteger)
-						Cell cell0 = row.getCell(0);
-						BigInteger valor1 = BigInteger.ZERO;
-						if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-							valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
-							continue;
-						}
-
-						// Obtener el valor de la segunda celda (int)
-						Cell cell1 = row.getCell(1);
-						int valor2 = 0;
-						if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
-							valor2 = (int) cell1.getNumericCellValue();
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
-							continue;
-						}
-
-						// Obtener el valor de la tercera celda (fecha)
-						Cell cell2 = row.getCell(2);
-						String valor3 = "";
-						if (cell2 != null && cell2.getCellType() == CellType.NUMERIC
-								&& DateUtil.isCellDateFormatted(cell2)) {
-							Date date = cell2.getDateCellValue();
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-							LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-							valor3 = localDate.format(formatter);
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
-							continue;
-						}
-
-						int valor4 = idProceso;
-
-						// Acumulamos los datos para el batch
-						dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4 });
-						totalRecords++;
-					} catch (Exception e) {
-						errores.add("Error en la fila " + (i + 1) + ": " + e.getMessage());
-					}
-				}
-
-				// Verifica si hay errores
-				if (!errores.isEmpty()) {
-					throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
-				}
-
-				if (!dataToInsert.isEmpty()) {
-					Object[] firstRow = dataToInsert.get(0);
-					fechaCorteFin = (String) firstRow[2];
-
-					// Insertar los datos en la base de datos
-					insertarEnBaseDeDatosEtapas(dataToInsert);
-
-					// Insertar datos de control en la tabla de control
-					insertarDatosDeControlEtapas(idProceso, totalRecords, fechaCorteFin);
-				}
-			} finally {
-				if (workbook != null) {
-					workbook.close();
-				}
-			}
-		} catch (Exception e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
-			throw e; // Lanza la excepción para manejarla en otro lugar
-		}
+	    } catch (Exception e) {
+	        logger.error(ERROR_FILE_PROCESSING + e.getMessage(), e);
+	        throw e; // Lanza la excepción para manejarla en otro lugar
+	    }
 	}
 
-	// Método para insertar los datos en la base de datos usando batch insert con
-	// JdbcTemplate
+	private Workbook obtenerWorkbook(String nombreArchivo, FileInputStream fis) throws IOException {
+	    if (nombreArchivo.endsWith("xlsx")) {
+	        return new XSSFWorkbook(fis);
+	    } else if (nombreArchivo.endsWith("xls")) {
+	        return new HSSFWorkbook(fis);
+	    } else {
+	        throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+	    }
+	}
+
+	private void procesarFila(Row row, List<Object[]> dataToInsert, List<String> errores, int idProceso, int rowIndex) {
+	    if (row == null) {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ": La fila está vacía.");
+	        return;
+	    }
+
+	    try {
+	        BigInteger valor1 = obtenerValorCeldaNumerica(row.getCell(0), "A", errores, rowIndex);
+	        int valor2 = obtenerValorCeldaNumerica(row.getCell(1), "B", errores, rowIndex).intValue();
+	        String valor3 = obtenerValorCeldaFecha(row.getCell(2), errores, rowIndex);
+	        
+	        if (valor1 != null && valor3 != null) {
+	            dataToInsert.add(new Object[]{valor1, valor2, valor3, idProceso});
+	        }
+	    } catch (Exception e) {
+	        errores.add("Error en la fila " + (rowIndex + 1) + ": " + e.getMessage());
+	    }
+	}
+
+	private BigInteger obtenerValorCeldaNumerica(Cell cell, String columna, List<String> errores, int rowIndex) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return BigInteger.valueOf((long) cell.getNumericCellValue());
+	    } else {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + COLUMN_PREFIX + columna + INVALID_VALUE_MESSAGE);
+	        return null;
+	    }
+	}
+
+	private String obtenerValorCeldaFecha(Cell cell, List<String> errores, int rowIndex) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	        Date date = cell.getDateCellValue();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
+	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	        return localDate.format(formatter);
+	    } else {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
+	        return null;
+	    }
+	}
+
+	private void verificarErrores(List<String> errores) {
+	    if (!errores.isEmpty()) {
+	        throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	    }
+	}
+
+	private void insertarDatosSiExistente(List<Object[]> dataToInsert, int idProceso) {
+	    if (!dataToInsert.isEmpty()) {
+	        Object[] firstRow = dataToInsert.get(0);
+	        String fechaCorteFin = (String) firstRow[2];
+	        insertarEnBaseDeDatosEtapas(dataToInsert);
+	        insertarDatosDeControlEtapas(idProceso, dataToInsert.size(), fechaCorteFin);
+	    }
+	}
+
 	private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
         // Usar la constante en lugar de la consulta en línea
         jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
     }
-
-	// Método para insertar datos de control en la tabla de control
+	
     private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
         // Ejecutar el SELECT y obtener una lista de resultados
         List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
@@ -1213,7 +1220,7 @@ public class CostoNetoFinanciadoController {
         // Definir los valores de control
         String estatusProceso = "A";
         Date fechaProceso = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
         String fechaProcesoStr = dateFormat.format(fechaProceso);
 
         // Ejecutar la inserción de control con la constante
@@ -1244,9 +1251,6 @@ public class CostoNetoFinanciadoController {
 
 	        // Normaliza el documento (remueve nodos vacíos y espacios)
 	        document.getDocumentElement().normalize();
-
-	        // Obtiene el elemento raíz
-	        Element root = document.getDocumentElement();
 
 	        // Obtiene los nodos del "Comprobante"
 	        NodeList comprobanteList = document.getElementsByTagName("cfdi:Comprobante");
@@ -1306,7 +1310,7 @@ public class CostoNetoFinanciadoController {
 	        jdbcTemplate.batchUpdate(Constantes.INSERT_FACTURA, dataToInsert);
 
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	logger.error(ERROR_PROCESAR_ARCHIVO, e);
 	    }
 	}
 
@@ -1318,7 +1322,7 @@ public class CostoNetoFinanciadoController {
 		List<Configuracion> bases = configService.obtenerUrlPDF();
 		String folderPath = bases.get(0).getVc_valor_propiedad();
 
-		String UPLOAD_DIR = folderPath;
+		String upload = folderPath;
 
 		// Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
 		if (nombreArchivo.toLowerCase().endsWith(".xml")) {
@@ -1333,7 +1337,7 @@ public class CostoNetoFinanciadoController {
 
 		try {
 			// Guardar el archivo directamente en la ruta especificada
-			Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
+			Path filePath = Paths.get(upload).resolve(nombreArchivo);
 			file.transferTo(filePath);
 
 			Map<String, String> successResponse = new HashMap<>();
@@ -1353,7 +1357,7 @@ public class CostoNetoFinanciadoController {
 		List<Configuracion> bases = configService.obtenerUrlPDF();
 		String folderPath = bases.get(0).getVc_valor_propiedad();
 
-		String UPLOAD_DIR = folderPath;
+		String upload = folderPath;
 
 		// Si el nombre del archivo termina en .xml, lo cambiamos a .pdf
 		if (nombreArchivo.toLowerCase().endsWith(".xml")) {
@@ -1362,7 +1366,7 @@ public class CostoNetoFinanciadoController {
 
 		try {
 			// Crear la ruta completa al archivo PDF
-			Path filePath = Paths.get(UPLOAD_DIR).resolve(nombreArchivo).normalize();
+			Path filePath = Paths.get(upload).resolve(nombreArchivo).normalize();
 			Resource resource = new UrlResource(filePath.toUri());
 
 			if (resource.exists() && resource.isReadable()) {

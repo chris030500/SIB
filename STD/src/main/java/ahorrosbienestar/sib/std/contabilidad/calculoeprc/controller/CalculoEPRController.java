@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.contabilidad.calculoeprc.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -67,6 +68,24 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/contabilidad")
 public class CalculoEPRController {
+	private static final String ERROR_MESSAGE = "Error al ejecutar el procedimiento almacenado: ";
+	
+	private static final String ERROR_MESSAGE_KEY = "errorMessage";
+	
+	private static final String ESTATUS_PROCESO_KEY = "estatusProceso";
+	
+	private static final String MESSAGE_KEY = "message";
+	
+	private static final String SUCCESS_KEY = "success";
+	
+	private static final String ERROR_FILE_PROCESSING = "Error al procesar el archivo: ";
+	
+	private static final String ERROR_KEY = "error";
+	
+	private static final String COLUMN_PREFIX = ", Columna ";
+	
+	private static final String ROW_PREFIX = "Fila ";
+	
 	private static final Logger logger = Logger.getLogger(CalculoEPRController.class);
 
 	@Autowired
@@ -94,24 +113,35 @@ public class CalculoEPRController {
     private ConfigService configService;
 
 	List<Usuario> usuario = null;
+	
+	String format = "yyyy-MM-dd";
+	
+	public static class FileProcessingException extends RuntimeException implements Serializable {
+        private static final long serialVersionUID = 1L; // o cualquier número que elijas
 
-	private String rutaDireccion = "";
+        public FileProcessingException(String message) {
+            super(message);
+        }
+
+        public FileProcessingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 	
 	@PostMapping("/subirArchivoEPRC")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
             @RequestParam("idFolio") String idFolio) {
  
         String mensaje = "";
-        ArrayList<String> respuesta = new ArrayList<String>();
+        ArrayList<String> respuesta = new ArrayList<>();
         List<Configuracion> bases = configService.obtenerUrlLayout();
         try {
             if (files.length > 0) {
                 for (MultipartFile file : files) {
                     byte[] bytes = file.getBytes();
                     String folderPath = bases.get(0).getVc_valor_propiedad();
-                    Path folder = Paths.get(folderPath);
  
-                    Path nuevoPath = Paths.get(folderPath + "/" + file.getOriginalFilename());
+                    Path nuevoPath = Paths.get(folderPath + file.getOriginalFilename());
                     Files.write(nuevoPath, bytes);
  
                     mensaje = "Se agrego archivo correctamente.";
@@ -143,6 +173,7 @@ public class CalculoEPRController {
  
             // Listar los archivos en la carpeta
             Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+            	@Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
                     archivos.setNombreArchivo(file.getFileName().toString());
@@ -171,14 +202,14 @@ public class CalculoEPRController {
             });
             return ResponseEntity.ok(listaArchivos);
         } catch (Exception e) {
-            logger.error("Error:" + e.getMessage());
+            logger.error(e.getMessage());
             return null;
         }
     }
 
 	@GetMapping("/calculoEPRC")
 	public String calculoEPRC(Model model) throws IOException {
-		rutaDireccion = Constantes.CONTABILIDAD_CALCULO_EPRC;
+		String rutaDireccion = Constantes.CONTABILIDAD_CALCULO_EPRC;
 		try {
 			if (validarAcceso(Constantes.CONTABILIDAD_CALCULO_EPRC) == 1) {
 				ObjectMapper objectMapper = new ObjectMapper();
@@ -189,63 +220,66 @@ public class CalculoEPRController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(e.getMessage());
 			return null;
 		}
 
 	}
+	
+	private Map<String, Object> ejecutarProcedimientoEPRC() {
+	    Map<String, Object> result = new HashMap<>();
+	    String errorMessage = "";
+	    int estatusProceso = 0;
+	    
+	    try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+	         CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_EPRC)) {
+	        
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+	        
+	    } catch (SQLException e) {
+	        logger.error(ERROR_MESSAGE + e.getMessage());
+	        errorMessage = ERROR_MESSAGE + e.getMessage();
+	    }
+	    
+	    result.put(ERROR_MESSAGE_KEY, errorMessage);
+	    result.put(ESTATUS_PROCESO_KEY, estatusProceso);
+	    return result;
+	}
+
 
 	@PostMapping("/procesar-EPRC")
 	public ResponseEntity<Map<String, Object>> procesarCostoNetoFinaciado(@RequestParam Map<String, String> params) {
-		Map<String, Object> response = new HashMap<>();
-		try {
-			Connection connection = null;
-			CallableStatement callableStatement = null;
-			String errorMessage = null;
-			int estatusProceso = 0;
-			try {
-				connection = jdbcTemplate.getDataSource().getConnection();
-				callableStatement = connection.prepareCall(Constantes.PROCESO_EPRC);
-				callableStatement.setInt(1, obtUsuario());
-				callableStatement.registerOutParameter(2, Types.VARCHAR);
-				callableStatement.registerOutParameter(3, Types.INTEGER);
-				callableStatement.execute();
-				errorMessage = callableStatement.getString(2);
-				estatusProceso = callableStatement.getInt(3);
-			} catch (SQLException e) {
-				logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-				errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-			} finally {
-				if (callableStatement != null) {
-					try {
-						callableStatement.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-					}
-				}
-				if (connection != null) {
-					try {
-						connection.close();
-					} catch (SQLException e) {
-						logger.error("Error al cerrar la conexión: " + e.getMessage());
-					}
-				}
-			}
-
-			response.put("message", (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
-			response.put("estatusProceso", estatusProceso);
-			return ResponseEntity.ok(response);
-		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    try {
+	        Map<String, Object> resultado = ejecutarProcedimientoEPRC();
+	        String errorMessage = (String) resultado.get(ERROR_MESSAGE_KEY);
+	        int estatusProceso = (int) resultado.get(ESTATUS_PROCESO_KEY);
+	        
+	        response.put(MESSAGE_KEY, (errorMessage.isEmpty()) ? Constantes.PROCESO_CNF_OK : errorMessage);
+	        response.put(ESTATUS_PROCESO_KEY, estatusProceso);
+	        return ResponseEntity.ok(response);
+	        
+	    } catch (NumberFormatException e) {
+	        response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        
+	    } catch (IllegalArgumentException e) {
+	        response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        
+	    } catch (Exception e) {
+	        response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
 
 	public int validarAcceso(String rutaController) {
 
@@ -255,13 +289,13 @@ public class CalculoEPRController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+			return iRelRolOpcionesRepository.validarAcceso(usuarios.get(0).getRol_idRol().getPk_id_rol(),
 					opcionesMenuService.buscarRelacionController(rutaController));
 
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error(e.getMessage());
 			return 0;
 		}
 
@@ -275,9 +309,9 @@ public class CalculoEPRController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
-			return usuario.get(0).getPk_id_usuario();
+			return usuarios.get(0).getPk_id_usuario();
 
 		} catch (Exception e) {
 			logger.error("Error:" + e.getMessage());
@@ -298,73 +332,77 @@ public class CalculoEPRController {
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
 			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(MESSAGE_KEY, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
+	}
+
+	private Map<String, Object> ejecutarProcedimientoVoBo() {
+	    Map<String, Object> result = new HashMap<>();
+	    String errorMessage = null;
+	    int estatusProceso = 0;
+
+	    try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+	         CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK_EPRC)) {
+	        
+	        callableStatement.setInt(1, obtUsuario());
+	        callableStatement.registerOutParameter(2, Types.VARCHAR);
+	        callableStatement.registerOutParameter(3, Types.INTEGER);
+	        callableStatement.execute();
+	        
+	        errorMessage = callableStatement.getString(2);
+	        estatusProceso = callableStatement.getInt(3);
+
+	    } catch (SQLException e) {
+	        logger.error(ERROR_MESSAGE, e);
+	        errorMessage = ERROR_MESSAGE + e.getMessage();
+	    }
+
+	    result.put(ERROR_MESSAGE_KEY, errorMessage);
+	    result.put(ESTATUS_PROCESO_KEY, estatusProceso);
+	    return result;
 	}
 
 	@PostMapping("/guardar-voboProcesoEPRC")
 	public ResponseEntity<Map<String, Object>> guardarVoBo(@RequestParam Map<String, String> params) {
 	    Map<String, Object> response = new HashMap<>();
+	    
 	    try {
-	        Connection connection = null;
-	        CallableStatement callableStatement = null;
-	        String errorMessage = null;
-	        int estatusProceso = 0;
-
-	        try {
-	            connection = jdbcTemplate.getDataSource().getConnection();
-	            callableStatement = connection.prepareCall(Constantes.PROCESO_VOBO_OK_EPRC);
-	            callableStatement.setInt(1, obtUsuario());
-	            callableStatement.registerOutParameter(2, Types.VARCHAR);
-	            callableStatement.registerOutParameter(3, Types.INTEGER);
-	            callableStatement.execute();
-	            errorMessage = callableStatement.getString(2);
-	            estatusProceso = callableStatement.getInt(3);
-	        } catch (SQLException e) {
-	            logger.error("Error al ejecutar el procedimiento almacenado: ", e);
-	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-	        } finally {
-	            if (callableStatement != null) {
-	                try {
-	                    callableStatement.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar el CallableStatement: ", e);
-	                }
-	            }
-	            if (connection != null) {
-	                try {
-	                    connection.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar la conexión: ", e);
-	                }
-	            }
-	        }
-
+	        // Ejecutar procedimiento almacenado
+	        Map<String, Object> resultado = ejecutarProcedimientoVoBo();
+	        String errorMessage = (String) resultado.get(ERROR_MESSAGE_KEY);
+	        int estatusProceso = (int) resultado.get(ESTATUS_PROCESO_KEY);
+	        
+	        // Obtener historial de procesos
 	        ObjectMapper objectMapper = new ObjectMapper();
 	        String listaHistProcesoEPRC = objectMapper.writeValueAsString(iProcesosHistEPRC.obtProcesoEPRC());
-
-	        response.put("message", (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
-	        response.put("estatusProceso", estatusProceso);
+	        
+	        // Construir respuesta
+	        response.put(MESSAGE_KEY, (errorMessage == null) ? Constantes.VOBO_OK : errorMessage);
+	        response.put(ESTATUS_PROCESO_KEY, estatusProceso);
 	        response.put("listaHistProcesoEPRC", listaHistProcesoEPRC);
+	        
 	        return ResponseEntity.ok(response);
+
 	    } catch (NumberFormatException e) {
-	        response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
+
 	    } catch (IllegalArgumentException e) {
-	        response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 	        return ResponseEntity.badRequest().body(response);
+
 	    } catch (Exception e) {
-	        response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+	        response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
@@ -393,16 +431,16 @@ public class CalculoEPRController {
 					+ datosReporte.getVc_extension() + "&identificadorDoc=" + fechaActual;
 
 			response.put("urlReporte", reporteURL);
-			response.put("message", (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
+			response.put(MESSAGE_KEY, (reporteURL.length() > 0) ? Constantes.REPORTE_OK : Constantes.REPORTE_KO);
 			return ResponseEntity.ok(response);
 		} catch (NumberFormatException e) {
-			response.put("message", Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_FORMATO_NUMERICO + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (IllegalArgumentException e) {
-			response.put("message", Constantes.ERROR_PARAMETROS + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_PARAMETROS + e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (Exception e) {
-			response.put("message", Constantes.ERROR_GUARDAR + e.getMessage());
+			response.put(MESSAGE_KEY, Constantes.ERROR_GUARDAR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
@@ -414,25 +452,25 @@ public class CalculoEPRController {
 		if(nombreArchivo.contains("layout_garantias")) {
 			
 			try {
-				// Aquí agregas la lógica para procesar el archivo
-				procesarYMigrarArchivoGarantias(nombreArchivo);
+	            // Aquí agregas la lógica para procesar el archivo
+	            procesarYMigrarArchivoGarantias(nombreArchivo);
 
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", true);
-				return ResponseEntity.ok(response);
-			} catch (IOException e) {
-				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", e.getMessage());
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-			}
+	            Map<String, Object> response = new HashMap<>();
+	            response.put(SUCCESS_KEY, true);
+	            return ResponseEntity.ok(response);
+	        } catch (IOException e) {
+	            logger.error(ERROR_FILE_PROCESSING, e);
+	            Map<String, Object> response = new HashMap<>();
+	            response.put(SUCCESS_KEY, false);
+	            response.put(ERROR_KEY, ERROR_FILE_PROCESSING + e.getMessage());
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	        } catch (Exception e) {
+	            logger.error("Error inesperado: ", e);
+	            Map<String, Object> response = new HashMap<>();
+	            response.put(SUCCESS_KEY, false);
+	            response.put(ERROR_KEY, e.getMessage());
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
 			
 		} else {
 			
@@ -441,143 +479,126 @@ public class CalculoEPRController {
 				procesarYMigrarArchivoEtapas(nombreArchivo);
 
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", true);
+				response.put(SUCCESS_KEY, true);
 				return ResponseEntity.ok(response);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(ERROR_FILE_PROCESSING, e);
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", "Error al procesar el archivo: " + e.getMessage());
+				response.put(SUCCESS_KEY, false);
+				response.put(ERROR_KEY, ERROR_FILE_PROCESSING + e.getMessage());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ERROR_FILE_PROCESSING, e);
 				Map<String, Object> response = new HashMap<>();
-				response.put("success", false);
-				response.put("error", e.getMessage());
+				response.put(SUCCESS_KEY, false);
+				response.put(ERROR_KEY, e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 			}
 		}
 	}
 
 	public void procesarYMigrarArchivoGarantias(String nombreArchivo) throws IOException {
-		List<Configuracion> bases = configService.obtenerUrlLayout();
-        String folderPath = bases.get(0).getVc_valor_propiedad();
-        
+	    List<Configuracion> bases = configService.obtenerUrlLayout();
+	    String folderPath = bases.get(0).getVc_valor_propiedad();
+	    
 	    File file = new File(folderPath + nombreArchivo);
-	    if (!file.exists()) {
-	        throw new IOException("El archivo no existe en la ruta especificada.");
-	    }
-
+	    verificarArchivoExistente(file);
+	    
 	    List<String> errores = new ArrayList<>(); // Para almacenar errores
+	    List<Object[]> dataToInsert = new ArrayList<>();
 	    String fechaCorteFin = "";
+	    
+	    try (FileInputStream fis = new FileInputStream(file); Workbook workbook = obtenerWorkbook(nombreArchivo, fis)) {
+	        Sheet sheet = workbook.getSheetAt(0);
+	        int idProceso = obtenerSiguienteIdProcesoGarantias();
+	        
+	        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+	            Row row = sheet.getRow(i);
+	            procesarFila(row, idProceso, i, dataToInsert, errores);
+	        }
 
-	    try (FileInputStream fis = new FileInputStream(file)) {
-	        Workbook workbook = null;
-	        try {
-	            if (nombreArchivo.endsWith("xlsx")) {
-	                workbook = new XSSFWorkbook(fis);
-	            } else if (nombreArchivo.endsWith("xls")) {
-	                workbook = new HSSFWorkbook(fis);
-	            } else {
-	                throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
-	            }
+	        if (!errores.isEmpty()) {
+	            throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	        }
 
-	            Sheet sheet = workbook.getSheetAt(0);
-	            List<Object[]> dataToInsert = new ArrayList<>();
-	            int totalRecords = 0;
-	            int idProceso = obtenerSiguienteIdProcesoGarantias();
-
-	            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-	                Row row = sheet.getRow(i);
-	                if (row == null) {
-	                    errores.add("Fila " + (i + 1) + ": La fila está vacía.");
-	                    continue;
-	                }
-
-	                try {
-	                    // Leer celdas
-	                    BigInteger valor1 = BigInteger.ZERO;
-	                    Cell cell0 = row.getCell(0);
-	                    if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-	                        valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-	                    } else {
-	                        errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
-	                        continue;
-	                    }
-
-	                    String valor2 = "";
-	                    Cell cell1 = row.getCell(1);
-	                    if (cell1 != null && cell1.getCellType() == CellType.STRING) {
-	                        valor2 = cell1.getStringCellValue();
-	                    } else {
-	                        errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser texto).");
-	                        continue;
-	                    }
-
-	                    float valor3 = 0;
-	                    Cell cell2 = row.getCell(2);
-	                    if (cell2 != null && cell2.getCellType() == CellType.NUMERIC) {
-	                        valor3 = (float) cell2.getNumericCellValue();
-	                    } else {
-	                        errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser numérico).");
-	                        continue;
-	                    }
-
-	                    String valor4 = "";
-	                    Cell cell3 = row.getCell(3);
-	                    if (cell3 != null && cell3.getCellType() == CellType.STRING) {
-	                        valor4 = cell3.getStringCellValue();
-	                    } else {
-	                        errores.add("Fila " + (i + 1) + ", Columna D: Valor no válido (debe ser texto).");
-	                        continue;
-	                    }
-
-	                    String valor5 = "";
-	                    Cell cell4 = row.getCell(4);
-	                    if (cell4 != null && cell4.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell4)) {
-	                        Date date = cell4.getDateCellValue();
-	                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	                        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	                        valor5 = localDate.format(formatter);
-	                    } else {
-	                        errores.add("Fila " + (i + 1) + ", Columna E: Valor no válido (debe ser una fecha).");
-	                        continue;
-	                    }
-
-	                    int valor6 = idProceso;
-	                    dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4, valor5, valor6 });
-	                    totalRecords++;
-	                } catch (Exception e) {
-	                    errores.add(String.format("Error en la fila %d: %s", i + 1, e.getMessage()));
-	                }
-	            }
-
-	            // Verifica si hay errores
-	            if (!errores.isEmpty()) {
-	                throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
-	            }
-
-	            if (!dataToInsert.isEmpty()) {
-	                Object[] firstRow = dataToInsert.get(0);
-	                fechaCorteFin = (String) firstRow[4];
-
-	                // Inserción en la base de datos
-	                insertarEnBaseDeDatosGarantias(dataToInsert);
-	                insertarDatosDeControlGarantias(idProceso, totalRecords, fechaCorteFin);
-	            }
-	        } finally {
-	            if (workbook != null) {
-	                workbook.close();
-	            }
+	        if (!dataToInsert.isEmpty()) {
+	            fechaCorteFin = (String) dataToInsert.get(0)[4];
+	            insertarEnBaseDeDatosGarantias(dataToInsert);
+	            insertarDatosDeControlGarantias(idProceso, dataToInsert.size(), fechaCorteFin);
 	        }
 	    } catch (Exception e) {
-	        throw e; // Lanza la excepción para manejarla en otro lugar
+	    	logger.error("Se produjo un error: ", e);
+	        throw new FileProcessingException("Error procesando la operación", e); // Lanza una excepción dedicada
 	    }
 	}
 
+	private void verificarArchivoExistente(File file) throws IOException {
+	    if (!file.exists()) {
+	        throw new IOException("El archivo no existe en la ruta especificada.");
+	    }
+	}
 
-	// Método para insertar los datos en la base de datos usando batch insert con
-	// JdbcTemplate
+	private Workbook obtenerWorkbookEta(String nombreArchivo, FileInputStream fis) throws IOException {
+	    if (nombreArchivo.endsWith("xlsx")) {
+	        return new XSSFWorkbook(fis);
+	    } else if (nombreArchivo.endsWith("xls")) {
+	        return new HSSFWorkbook(fis);
+	    } else {
+	        throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+	    }
+	}
+
+	private void procesarFila(Row row, int idProceso, int filaIndex, List<Object[]> dataToInsert, List<String> errores) {
+	    if (row == null) {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + ": La fila está vacía.");
+	        return;
+	    }
+
+	    try {
+	        BigInteger valor1 = obtenerValorNumerico(row.getCell(0), filaIndex, "A", errores);
+	        String valor2 = obtenerValorTexto(row.getCell(1), filaIndex, "B", errores);
+	        float valor3 = obtenerValorNumerico(row.getCell(2), filaIndex, "C", errores).floatValue();
+	        String valor4 = obtenerValorTexto(row.getCell(3), filaIndex, "D", errores);
+	        String valor5 = obtenerValorFecha(row.getCell(4), filaIndex, "E", errores);
+	        
+	        if (errores.isEmpty()) {
+	            dataToInsert.add(new Object[]{valor1, valor2, valor3, valor4, valor5, idProceso});
+	        }
+	    } catch (Exception e) {
+	        errores.add(String.format("Error en la fila %d: %s", filaIndex + 1, e.getMessage()));
+	    }
+	}
+
+	private BigInteger obtenerValorNumerico(Cell cell, int filaIndex, String columna, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return BigInteger.valueOf((long) cell.getNumericCellValue());
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser numérico).");
+	        return BigInteger.ZERO; // Valor predeterminado
+	    }
+	}
+
+	private String obtenerValorTexto(Cell cell, int filaIndex, String columna, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.STRING) {
+	        return cell.getStringCellValue();
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser texto).");
+	        return ""; // Valor predeterminado
+	    }
+	}
+
+	private String obtenerValorFecha(Cell cell, int filaIndex, String columna, List<String> errores) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	        Date date = cell.getDateCellValue();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	        return localDate.format(formatter);
+	    } else {
+	        errores.add(ROW_PREFIX + (filaIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser una fecha).");
+	        return ""; // Valor predeterminado
+	    }
+	}
+
 	private void insertarEnBaseDeDatosGarantias(List<Object[]> dataToInsert) {
 	    // Usar la constante SQL para la inserción
 	    jdbcTemplate.batchUpdate(Constantes.SQL_INSERTAR_GARANTIAS, dataToInsert);
@@ -598,7 +619,7 @@ public class CalculoEPRController {
 	    // Definir los valores de control
 	    String estatusProceso = "A";
 	    Date fechaProceso = new Date();
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 	    String fechaProcesoStr = dateFormat.format(fechaProceso);
 
 	    // Usar constante SQL para la inserción de control
@@ -614,121 +635,105 @@ public class CalculoEPRController {
     
     
     
-    public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
-    	
-    	List<Configuracion> bases = configService.obtenerUrlLayout();
-        String folderPath = bases.get(0).getVc_valor_propiedad();
-    	
-		File file = new File(folderPath + nombreArchivo);
-		String fechaCorteFin = "";
-		List<String> errores = new ArrayList<>(); // Para almacenar errores
+	public void procesarYMigrarArchivoEtapas(String nombreArchivo) throws IOException {
+	    List<Configuracion> bases = configService.obtenerUrlLayout();
+	    String folderPath = bases.get(0).getVc_valor_propiedad();
+	    File file = new File(folderPath + nombreArchivo);
+	    
+	    if (!file.exists()) {
+	        throw new IOException("El archivo no existe en la ruta especificada.");
+	    }
 
-		if (!file.exists()) {
-			throw new IOException("El archivo no existe en la ruta especificada.");
-		}
+	    try (FileInputStream fis = new FileInputStream(file);
+	         Workbook workbook = obtenerWorkbookEta(nombreArchivo, fis)) {
+	        
+	        List<Object[]> dataToInsert = new ArrayList<>();
+	        List<String> errores = new ArrayList<>();
+	        int idProceso = obtenerSiguienteIdProcesoEtapas();
 
-		try (FileInputStream fis = new FileInputStream(file)) {
-			Workbook workbook = null;
-			try {
-				if (nombreArchivo.endsWith("xlsx")) {
-					workbook = new XSSFWorkbook(fis);
-				} else if (nombreArchivo.endsWith("xls")) {
-					workbook = new HSSFWorkbook(fis);
-				} else {
-					throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
-				}
+	        for (int i = 1; i <= workbook.getSheetAt(0).getLastRowNum(); i++) {
+	            procesarFila(workbook.getSheetAt(0).getRow(i), dataToInsert, errores, idProceso, i);
+	        }
 
-				Sheet sheet = workbook.getSheetAt(0);
-				List<Object[]> dataToInsert = new ArrayList<>();
-				int totalRecords = 0;
-				int idProceso = obtenerSiguienteIdProcesoEtapas();
+	        verificarErrores(errores);
+	        insertarDatosSiExistente(dataToInsert, idProceso);
 
-				for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-					Row row = sheet.getRow(i);
-					if (row == null) {
-						errores.add("Fila " + (i + 1) + ": La fila está vacía.");
-						continue;
-					}
-
-					try {
-						// Obtener el valor de la primera celda (BigInteger)
-						Cell cell0 = row.getCell(0);
-						BigInteger valor1 = BigInteger.ZERO;
-						if (cell0 != null && cell0.getCellType() == CellType.NUMERIC) {
-							valor1 = BigInteger.valueOf((long) cell0.getNumericCellValue());
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna A: Valor no válido (debe ser numérico).");
-							continue;
-						}
-
-						// Obtener el valor de la segunda celda (int)
-						Cell cell1 = row.getCell(1);
-						int valor2 = 0;
-						if (cell1 != null && cell1.getCellType() == CellType.NUMERIC) {
-							valor2 = (int) cell1.getNumericCellValue();
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna B: Valor no válido (debe ser numérico).");
-							continue;
-						}
-
-						// Obtener el valor de la tercera celda (fecha)
-						Cell cell2 = row.getCell(2);
-						String valor3 = "";
-						if (cell2 != null && cell2.getCellType() == CellType.NUMERIC
-								&& DateUtil.isCellDateFormatted(cell2)) {
-							Date date = cell2.getDateCellValue();
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-							LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-							valor3 = localDate.format(formatter);
-						} else {
-							errores.add("Fila " + (i + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
-							continue;
-						}
-
-						int valor4 = idProceso;
-
-						// Acumulamos los datos para el batch
-						dataToInsert.add(new Object[] { valor1, valor2, valor3, valor4 });
-						totalRecords++;
-					} catch (Exception e) {
-						errores.add("Error en la fila " + (i + 1) + ": " + e.getMessage());
-					}
-				}
-
-				// Verifica si hay errores
-				if (!errores.isEmpty()) {
-					throw new RuntimeException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
-				}
-
-				if (!dataToInsert.isEmpty()) {
-					Object[] firstRow = dataToInsert.get(0);
-					fechaCorteFin = (String) firstRow[2];
-
-					// Insertar los datos en la base de datos
-					insertarEnBaseDeDatosEtapas(dataToInsert);
-
-					// Insertar datos de control en la tabla de control
-					insertarDatosDeControlEtapas(idProceso, totalRecords, fechaCorteFin);
-				}
-			} finally {
-				if (workbook != null) {
-					workbook.close();
-				}
-			}
-		} catch (Exception e) {
-			System.err.println("Error al procesar el archivo: " + e.getMessage());
-			throw e; // Lanza la excepción para manejarla en otro lugar
-		}
+	    } catch (Exception e) {
+	        logger.error(ERROR_FILE_PROCESSING + e.getMessage(), e);
+	        throw e; // Lanza la excepción para manejarla en otro lugar
+	    }
 	}
 
-	// Método para insertar los datos en la base de datos usando batch insert con
-	// JdbcTemplate
+	private Workbook obtenerWorkbook(String nombreArchivo, FileInputStream fis) throws IOException {
+	    if (nombreArchivo.endsWith("xlsx")) {
+	        return new XSSFWorkbook(fis);
+	    } else if (nombreArchivo.endsWith("xls")) {
+	        return new HSSFWorkbook(fis);
+	    } else {
+	        throw new IOException("Formato de archivo no soportado. Solo se aceptan archivos .xlsx y .xls.");
+	    }
+	}
+
+	private void procesarFila(Row row, List<Object[]> dataToInsert, List<String> errores, int idProceso, int rowIndex) {
+	    if (row == null) {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ": La fila está vacía.");
+	        return;
+	    }
+
+	    try {
+	        BigInteger valor1 = obtenerValorCeldaNumerica(row.getCell(0), "A", errores, rowIndex);
+	        int valor2 = obtenerValorCeldaNumerica(row.getCell(1), "B", errores, rowIndex).intValue();
+	        String valor3 = obtenerValorCeldaFecha(row.getCell(2), errores, rowIndex);
+	        
+	        if (valor1 != null && valor3 != null) {
+	            dataToInsert.add(new Object[]{valor1, valor2, valor3, idProceso});
+	        }
+	    } catch (Exception e) {
+	        errores.add("Error en la fila " + (rowIndex + 1) + ": " + e.getMessage());
+	    }
+	}
+
+	private BigInteger obtenerValorCeldaNumerica(Cell cell, String columna, List<String> errores, int rowIndex) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+	        return BigInteger.valueOf((long) cell.getNumericCellValue());
+	    } else {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + COLUMN_PREFIX + columna + ": Valor no válido (debe ser numérico).");
+	        return null;
+	    }
+	}
+
+	private String obtenerValorCeldaFecha(Cell cell, List<String> errores, int rowIndex) {
+	    if (cell != null && cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	        Date date = cell.getDateCellValue();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	        return localDate.format(formatter);
+	    } else {
+	        errores.add(ROW_PREFIX + (rowIndex + 1) + ", Columna C: Valor no válido (debe ser una fecha).");
+	        return null;
+	    }
+	}
+
+	private void verificarErrores(List<String> errores) {
+	    if (!errores.isEmpty()) {
+	        throw new FileProcessingException("Errores encontrados en el archivo:\n" + String.join("\n", errores));
+	    }
+	}
+
+	private void insertarDatosSiExistente(List<Object[]> dataToInsert, int idProceso) {
+	    if (!dataToInsert.isEmpty()) {
+	        Object[] firstRow = dataToInsert.get(0);
+	        String fechaCorteFin = (String) firstRow[2];
+	        insertarEnBaseDeDatosEtapas(dataToInsert);
+	        insertarDatosDeControlEtapas(idProceso, dataToInsert.size(), fechaCorteFin);
+	    }
+	}
+
     private void insertarEnBaseDeDatosEtapas(List<Object[]> dataToInsert) {
         // Usar la constante en lugar de la consulta en línea
         jdbcTemplate.batchUpdate(Constantes.INSERT_CAMBIO_ETAPA, dataToInsert);
     }
-
-	// Método para insertar datos de control en la tabla de control
+    
     private void insertarDatosDeControlEtapas(int idProceso, int totalRecords, String fechaCorteFin) {
         // Ejecutar el SELECT y obtener una lista de resultados
         List<Map<String, Object>> result = jdbcTemplate.queryForList(Constantes.SELECT_CONTROL_ETAPA, fechaCorteFin);
@@ -748,7 +753,7 @@ public class CalculoEPRController {
         // Definir los valores de control
         String estatusProceso = "A";
         Date fechaProceso = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
         String fechaProcesoStr = dateFormat.format(fechaProceso);
 
         // Ejecutar la inserción de control con la constante

@@ -66,7 +66,6 @@ function submitFormEPRC(idEvento) {
 						}
 					})
 					.catch(error => {
-						console.log('Error:', error);
 						mostrarAlertar('Ocurrió un error al procesar la solicitud: ' + error.message, "danger");
 					})
 
@@ -144,7 +143,6 @@ function submitBtnEPRC(idBotton, num) {
 			// Maneja la respuesta aquí (por ejemplo, muestra un mensaje al usuario)
 		})
 		.catch(error => {
-			console.log('Error:', error);
 			mostrarAlertar(error.message || "Ocurrió un error al procesar la solicitud.", "danger");
 			// Maneja el error aquí (por ejemplo, muestra un mensaje de error al usuario)
 		})
@@ -171,19 +169,18 @@ function pintarTabla(listaDatos, tablaPintar) {
 	tablaPintar.clear().draw();
 	$.each(listaDatos, function(idx, opt) {
 
-
 		var btnsReporte = " <button name='btnHist' class='btn btn-success btn-sm' tabindex='0' data-bs-toggle='modal'"
-			+ " title='Actualizar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+			+ " title='Generar Reporte' data-bs-target='#' aria-controls='table-datatable' type='button'"
 			+ " onclick='btnReporteHistorico(this)' id="
 			+ opt.proceso
 			+ " data-tooltip='Add'>"
 			+ " <i class='fa-sharp fa-solid fa-file-arrow-down'></i></button>";
 
 		registrosTotales.push([
-			opt.mes_proceso,
-			opt.fecha_corte,
-			opt.usuario_vobo,
-			opt.fecha_registro_vobo,
+			opt.mesproceso,
+			opt.fechacorte,
+			opt.usuariovobo,
+			opt.fecharegistrovobo,
 			btnsReporte
 		]);
 	});
