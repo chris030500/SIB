@@ -220,7 +220,7 @@ function mayorCero(value) {
 	return value.trim() > 0;
 }
 
-function limpiarAlerta() {
+function limpiarAlerta1() {
 	// Obtener el contenedor de alertas
 	const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 
@@ -233,6 +233,7 @@ function cerrarModal(button) {
 	let modal = button.closest('.modal');
 	let modalId = modal.getAttribute('id');
 	$('#' + modalId).modal('hide');
+	limpiarAlerta(opcionLimpiarMns);
 
 }
 
@@ -254,7 +255,7 @@ function toggleProcessingButton(isProcessing) {
 }
 
 function mostrarAlertar(msnError, tipoError) {
-	limpiarAlerta();
+	limpiarAlerta1();
 
 	// Obtener el contenedor de alertas
 	const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
