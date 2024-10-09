@@ -110,34 +110,19 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
 		url: getAbsolutePath() + servicioURL,
 		type: "GET",
 		success: function(response) {
+            var mensaje =  response.municipio.i_indicador_depurar === 0 ? 
+            `Se ha guardado el municipio de ${response.municipio.vc_nombre} correctamente.` : 
+            `Se ha deshabilitado el municipio de ${response.municipio.vc_nombre} exitosamente.`;
             
-   
+            
             if (response.municipio.i_indicador_depurar === 0) {
                 
-               	swal(
-					'¡Guardado exitoso!',
-					"Se ha guardado el municipio de " + response.municipio.vc_nombre + " correctamente.",
-					"success"
-				)
-
-				setTimeout(function() {
-					swal.close(); // Cierra el SweetAlert
-				}, 2000);
-                
+                showSwal('¡Guardado exitoso!', mensaje, 'success');  
             }
             
             if (response.municipio.i_indicador_depurar === 1) {
                 
-               	swal(
-					'¡Eliminado exitoso!',
-					"Se ha deshabilitado el municipio de " + response.municipio.vc_nombre + " exitosamente",
-					"success"
-				)
-
-				setTimeout(function() {
-					swal.close(); // Cierra el SweetAlert
-				}, 2000);
-                
+                showSwal('¡Eliminado exitoso!', mensaje, 'success');
             }
             
 			$('#opcionesMunicipio').empty();
@@ -145,15 +130,8 @@ function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
 			listaMunicipiosConCobertura();
 		},
 		error: function(xhr, status, error) {
-			swal(
-				'Error!',
-				"Hubo un problema al guardar los datos.",
-				"error"
-			)
-
-			setTimeout(function() {
-				swal.close(); // Cierra el SweetAlert
-			}, 2000);
+            
+            showSwal('Error!', `Hubo un problema al guardar los datos.`, 'error');
 		}
 	});
 }
@@ -251,64 +229,34 @@ function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
 				type: "GET",
 				success: function(response) {
                     
-					if (indicadorDepurar === 1) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado el convenio " + response.convenio.vc_descripcion + " correctamente en la lista de Convenios a Excluir.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-							limpiarDivConvenio();
-							search_convenioDepurar("");
-							search_convenioActivo("");
-						}, 2000);
-                    }
+                    var mensaje = indicadorDepurar === 1 ?
+                    `Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios a Excluir.` : 
+                	`Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios Activos.`;
                     
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado el convenio " + response.convenio.vc_descripcion +  " correctamente en la lista de Convenios Activos.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-							limpiarDivConvenio();
-							search_convenioDepurar("");
-							search_convenioActivo("");
-						}, 2000);
-                    }
+                    showSwal('¡Guardado exitoso!', mensaje, 'success');
+                    
+                    setTimeout(function() { 
+						limpiarDivConvenio();
+						search_convenioDepurar("");
+						search_convenioActivo("");
+					}, 2000);
 				},
 				error: function(xhr, status, error) {
                     
-                    if (indicadorDepurar === 1) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Convenios a Excluir.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
+                    var mensaje = indicadorDepurar === 1 ? 
+                    `Ha ocurrido un error al guardar el convenio en la lista de Convenios a Excluir.` :
+                    `Ha ocurrido un error al guardar el convenio en la lista de Convenios Activos.`;
                     
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Convenios Activos.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
-
+                    showSwal('¡Error!', mensaje, 'error');
 				}
 			});
+}
+
+function showSwal(titulo, mensaje, tipo) {
+    swal(titulo, mensaje, tipo);
+    setTimeout(() => {
+    	swal.close();
+    }, 2000);
 }
 
 function listaPuestosActivos() {
@@ -394,64 +342,25 @@ function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
-                    
-                    
-					if (indicadorDepurar === 1) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado el puesto " + response.puesto.vc_descripcion + " correctamente en la lista de Puestos a Excluir.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-							limpiarDivPuestos();
-							listaPuestosActivos();
-							listaPuestosDepurar();
-						}, 2000);
-                    }
-                    
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado el puesto " + response.puesto.vc_descripcion + " correctamente en la lista de Puestos Activos.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-							limpiarDivPuestos();
-							listaPuestosActivos();
-							listaPuestosDepurar();
-						}, 2000);
-                    }
+                    var mensaje = indicadorDepurar === 1 ? 
+                    `Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos a Excluir.` : 
+                	`Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos Activos.`;
+                	
+                	showSwal('¡Guardado exitoso!', mensaje, 'success');
+                	
+                	setTimeout(function() {
+                        limpiarDivPuestos();
+						listaPuestosActivos();
+						listaPuestosDepurar();
+                    }, 2000);
                     
 				},
 				error: function(xhr, status, error) {
+                    var mensaje = indicadorDepurar === 1 ?
+                    `Ha ocurrido un error al guardar el convenio en la lista de Puestos a Excluir.` :
+                    `Ha ocurrido un error al guardar el convenio en la lista de Puestos Activos.`;
                     
-					if (indicadorDepurar === 1) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Puestos a Excluir.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
-                    
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Puestos Activos.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
+                    showSwal('¡Error!', mensaje, 'error');
 				}
 			});
 }
@@ -538,62 +447,23 @@ function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
 				url: getAbsolutePath() + servicioURL,
 				type: "GET",
 				success: function(response) {
+                    var mensaje = indicadorDepurar === 1 ? 
+                    `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales a Excluir.` :
+                    `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales Activas.`;
                     
-					if (indicadorDepurar === 1) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado la sucursal " + response.sucursal.vc_nombre + " correctamente en la lista de Sucursales a Excluir.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-							limpiarDivSucursales();
-							listaSucursalesActivos();
-							listaSucursalesDepurar();
-						}, 2000);
-                    }
-                    
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Guardado exitoso!',
-							"Se ha guardado la sucursal " + response.sucursal.vc_nombre + " correctamente en la lista de Sucursales Activas.",
-							"success"
-						)
-
-						setTimeout(function() {
-							swal.close();
-							limpiarDivSucursales();
-							listaSucursalesActivos();
-							listaSucursalesDepurar(); 
-						}, 2000);
-                    }
+                    showSwal('¡Guardado exitoso!', mensaje, 'success');
+                    setTimeout(function() {
+                        limpiarDivSucursales();
+						listaSucursalesActivos();
+						listaSucursalesDepurar();
+                    }, 2000);
 				},
 				error: function(xhr, status, error) {
+                    var mensaje = indicadorDepurar === 1 ?
+                    `Ha ocurrido un error al guardar el convenio en la lista de Sucursales a Excluir.` :
+                    `Ha ocurrido un error al guardar el convenio en la lista de Sucursales Activas.`;
                     
-					if (indicadorDepurar === 1) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Sucursales a Excluir.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
-                    
-                    if (indicadorDepurar === 0) {
-                        swal(
-							'¡Error!',
-							"Ha ocurrido un error al guardar el convenio en la lista de Sucursales Activas.",
-							"error"
-						)
-
-						setTimeout(function() {
-							swal.close(); 
-						}, 2000);
-                    }
+                    showSwal('¡Error!', mensaje, 'error');
 				}
 			});
 }
