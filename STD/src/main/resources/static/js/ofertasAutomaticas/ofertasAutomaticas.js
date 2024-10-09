@@ -1063,7 +1063,7 @@ function cargatblProcesoG(){
 					var btnReporte= " <button type='button' class='btn btn-info btn-sm' tabindex='0' "
 					+ "title='Ver Extracción de Asignaciones.' aria-controls='table-datatable' onclick='descargaRptAsignaciones()'"
 					+ "data-tooltip='Add'>"
-					+ "<i class='bi bi-download'></i>"
+					+ "<i class='bi bi-filetype-xls'></i>"
 					+ "</button>";
 
 
