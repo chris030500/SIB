@@ -2,6 +2,7 @@
 /**
 *
 */
+const opcionLimpiarMns = 999;
 const checkAll = document.getElementById("idTodos");
 $(document).ready(function() {
 
@@ -306,8 +307,8 @@ function validarDatosGastos(formData, num) {
 
 			if (isChecked) {
 				esVacio = false;
-			} else {
-				esVacio = true;
+			} else { //es vacio, muestra mensaje en pantalla y permite actualizar el registro para no considerar ningun concepto para para prorrateo al prpducto. 
+				esVacio = false;
 				txtError += `No ha seleccionado concepto.<br>`;
 			}
 
@@ -352,6 +353,13 @@ function limpiarAlerta(num) {
 			// Obtener el contenedor de alertas
 			alertaSMS = document.getElementById('alertaGastoCatalogoConfig');
 			break;
+		case 999:
+				document.getElementById('liveAlertPlaceholder').innerHTML = '';
+				document.getElementById('mensajeCostoAmortizado').innerHTML = '';
+				document.getElementById('mensajeProrrateo').innerHTML = '';
+				document.getElementById('alertaGastoCatalogoConfig').innerHTML = '';
+				
+			break;
 	}
 	alertaSMS.innerHTML = '';
 
@@ -362,6 +370,7 @@ function cerrarModal(button) {
 	let modal = button.closest('.modal');
 	let modalId = modal.getAttribute('id');
 	$('#' + modalId).modal('hide');
+	limpiarAlerta(opcionLimpiarMns);
 
 }
 
