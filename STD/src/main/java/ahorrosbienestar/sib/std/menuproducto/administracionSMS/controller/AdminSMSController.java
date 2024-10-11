@@ -188,7 +188,8 @@ public class AdminSMSController {
 
 	@PostMapping("/sendSMSMasivo")
 	public ResponseEntity<String> manejarDatosDesdeFrontend(@RequestBody List<EnvioMensajes> envioMensajes, HttpServletRequest request) {
-		
+		//System.out.println("Cuerpo de la solicitud recibido:");
+		//System.out.println(envioMensajes);
 
 		RestTemplate restTemplate = new RestTemplate();
 
