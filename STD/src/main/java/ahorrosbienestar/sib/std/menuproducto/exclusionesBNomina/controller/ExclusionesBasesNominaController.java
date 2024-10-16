@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.controller;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.CatPuestosOcupacion;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosNomina;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ExclusionSucursales;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.CatPuestosOcupacionService;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ConveniosNominaService;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.EstadosRepubService;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.ExclusionSucursalesService;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service.MunicipiosRepubService;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.CatPuestosOcupacion;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.ConveniosNomina;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.ExclusionSucursales;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.MunicipiosRepub;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service.CatPuestosOcupacionService;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service.ConveniosNominaService;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service.EstadosRepubService;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service.ExclusionSucursalesService;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service.MunicipiosRepubService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 

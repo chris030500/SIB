@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.MunicipiosRepub;
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository.IMunicipiosRepubRepository;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.MunicipiosRepub;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.repository.IMunicipiosRepubRepository;
 
 @Service
 public class MunicipiosRepubService {

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model;
 
 import java.time.LocalDateTime;
 
@@ -10,21 +10,18 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table( name = "TBL_MUNICIPIOS_REPUB" )
-public class MunicipiosRepub {
+@Table( name = "TBL_EXCLUSION_SUCURSALES" )
+public class ExclusionSucursales {
 	
 	@Id
-	@Column( name = "PK_I_MUNICIPIO_COBERTURA" )
-	private Integer pk_i_municipio_cobertura;
-	
-	@Column( name = "I_ESTADO_ID" )
-	private Integer i_estado_id;
-	
-	@Column( name = "I_MUNICIPIO_ID" )
-	private Integer i_municipio_id;
+	@Column( name = "PK_I_SUCURSAL_ID" )
+	private Integer pk_i_sucursal_id;
 	
 	@Column( name = "VC_NOMBRE" )
 	private String vc_nombre;
+	
+	@Column( name = "C_ESTATUS" )
+	private char c_estatus;
 	
 	@Column( name = "I_INDICADOR_DEPURAR" )
 	private Integer i_indicador_depurar;
@@ -39,28 +36,12 @@ public class MunicipiosRepub {
 	@Column( name = "I_VALOR_ANTERIOR" )
 	private Integer i_valor_anterior;
 
-	public Integer getPk_i_municipio_cobertura() {
-		return pk_i_municipio_cobertura;
+	public Integer getPk_i_sucursal_id() {
+		return pk_i_sucursal_id;
 	}
 
-	public void setPk_i_municipio_cobertura(Integer pk_i_municipio_cobertura) {
-		this.pk_i_municipio_cobertura = pk_i_municipio_cobertura;
-	}
-
-	public Integer getI_estado_id() {
-		return i_estado_id;
-	}
-
-	public void setI_estado_id(Integer i_estado_id) {
-		this.i_estado_id = i_estado_id;
-	}
-
-	public Integer getI_municipio_id() {
-		return i_municipio_id;
-	}
-
-	public void setI_municipio_id(Integer i_municipio_id) {
-		this.i_municipio_id = i_municipio_id;
+	public void setPk_i_sucursal_id(Integer pk_i_sucursal_id) {
+		this.pk_i_sucursal_id = pk_i_sucursal_id;
 	}
 
 	public String getVc_nombre() {
@@ -69,6 +50,14 @@ public class MunicipiosRepub {
 
 	public void setVc_nombre(String vc_nombre) {
 		this.vc_nombre = vc_nombre;
+	}
+
+	public char getC_estatus() {
+		return c_estatus;
+	}
+
+	public void setC_estatus(char c_estatus) {
+		this.c_estatus = c_estatus;
 	}
 
 	public Integer getI_indicador_depurar() {
@@ -105,10 +94,10 @@ public class MunicipiosRepub {
 
 	@Override
 	public String toString() {
-		return "MunicipiosRepub [pk_i_municipio_cobertura=" + pk_i_municipio_cobertura + ", i_estado_id=" + i_estado_id
-				+ ", i_municipio_id=" + i_municipio_id + ", vc_nombre=" + vc_nombre + ", i_indicador_depurar="
-				+ i_indicador_depurar + ", i_usuario_modifico=" + i_usuario_modifico + ", dt_fecha_modifico="
-				+ dt_fecha_modifico + ", i_valor_anterior=" + i_valor_anterior + "]";
+		return "ExclusionSucursales [pk_i_sucursal_id=" + pk_i_sucursal_id + ", vc_nombre=" + vc_nombre + ", c_estatus="
+				+ c_estatus + ", i_indicador_depurar=" + i_indicador_depurar + ", i_usuario_modifico="
+				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + ", i_valor_anterior="
+				+ i_valor_anterior + "]";
 	}
 	
 }

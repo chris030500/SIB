@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.CatPuestosOcupacion;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.CatPuestosOcupacion;
 
 @Repository
 public interface ICatPuestosOcupacionRepository extends JpaRepository<CatPuestosOcupacion, Integer> {

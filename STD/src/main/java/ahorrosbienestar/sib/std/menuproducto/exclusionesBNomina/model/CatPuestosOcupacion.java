@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model;
 
 import java.time.LocalDateTime;
 
@@ -10,15 +10,12 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table( name = "TBL_CONVENIOS_NOMINA" )
-public class ConveniosNomina {
+@Table ( name = "TBL_CAT_PUESTOS_OCUPACION" )
+public class CatPuestosOcupacion {
 	
-	@Id
-	@Column( name = "PK_I_CONVENIO_NOMINA_ID" )
-	private Integer pk_i_convenio_nomina_id;
-	
-	@Column( name = "I_INSIST_NOMINA_ID" )
-	private Integer i_insist_nomina_id;
+	@Id()
+	@Column( name = "PK_I_PUESTO_OCUPACION_ID" )
+	private Integer pk_i_puesto_ocupacion_id;
 	
 	@Column( name = "VC_DESCRIPCION" )
 	private String vc_descripcion;
@@ -36,20 +33,12 @@ public class ConveniosNomina {
 	@Column( name = "I_VALOR_ANTERIOR" )
 	private Integer i_valor_anterior;
 
-	public Integer getPk_i_convenio_nomina_id() {
-		return pk_i_convenio_nomina_id;
+	public Integer getPk_i_puesto_ocupacion_id() {
+		return pk_i_puesto_ocupacion_id;
 	}
 
-	public void setPk_i_convenio_nomina_id(Integer pk_i_convenio_nomina_id) {
-		this.pk_i_convenio_nomina_id = pk_i_convenio_nomina_id;
-	}
-
-	public Integer getI_insist_nomina_id() {
-		return i_insist_nomina_id;
-	}
-
-	public void setI_insist_nomina_id(Integer i_insist_nomina_id) {
-		this.i_insist_nomina_id = i_insist_nomina_id;
+	public void setPk_i_puesto_ocupacion_id(Integer pk_i_puesto_ocupacion_id) {
+		this.pk_i_puesto_ocupacion_id = pk_i_puesto_ocupacion_id;
 	}
 
 	public String getVc_descripcion() {
@@ -94,10 +83,10 @@ public class ConveniosNomina {
 
 	@Override
 	public String toString() {
-		return "ConveniosNomina [pk_i_convenio_nomina_id=" + pk_i_convenio_nomina_id + ", i_insist_nomina_id="
-				+ i_insist_nomina_id + ", vc_descripcion=" + vc_descripcion + ", i_indicador_depurar="
-				+ i_indicador_depurar + ", i_usuario_modifico=" + i_usuario_modifico + ", dt_fecha_modifico="
-				+ dt_fecha_modifico + ", i_valor_anterior=" + i_valor_anterior + "]";
+		return "CatPuestosOcupacion [pk_i_puesto_ocupacion_id=" + pk_i_puesto_ocupacion_id + ", vc_descripcion="
+				+ vc_descripcion + ", i_indicador_depurar=" + i_indicador_depurar + ", i_usuario_modifico="
+				+ i_usuario_modifico + ", dt_fecha_modifico=" + dt_fecha_modifico + ", i_valor_anterior="
+				+ i_valor_anterior + "]";
 	}
-	
+
 }

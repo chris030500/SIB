@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.service;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.service;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository.IEstadosRepubRepository;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.repository.IEstadosRepubRepository;
 
 @Service
 public class EstadosRepubService {

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model;
 
 import java.util.Date;
 

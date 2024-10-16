@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository;
+package ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosNomina;
+import ahorrosbienestar.sib.std.menuproducto.exclusionesBNomina.model.ConveniosNomina;
 
 
 @Repository
