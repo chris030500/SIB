@@ -33,6 +33,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1108,5 +1109,24 @@ public class indexOfertasAutoController {
 		
 	}
 	
+	@RequestMapping(value = { "/reporteExtraccionAsignaciones" }, method = RequestMethod.GET)
+	public ResponseEntity<?> reporteExtraccionAsignaciones() {
 
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_EXTRACCION_ASIGNACIONES);
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=" +"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=ExtraccionAsiganciones";
+					
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+			
+		} catch (Exception e) {
+			
+			logger.error("Error:"+e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+	}
+	
 }

@@ -53,6 +53,10 @@
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="bloqueados-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Clientes Bloqueados</button>
 					</li>
+					<li class="new-item" role="presentation" th:if="${permiso_exclusiones == 1 || permiso_admin == 1}">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="exclusiones-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Parámetros de Exclusión de Nómina</button>
+					</li>
 				</ul>
 			</div>
 
@@ -542,7 +546,215 @@
                     </div>
                 </fieldset>
             </div>
-            </div>
+		<div id="exclusiones-tab1" style="display: none;" for="6">
+			<fieldset class="border p-2">
+				<legend class="w-auto p-2">Parámetros de Exclusión de Nómina</legend>
+				<div class="border rounded-3 mb-4">
+					<ul class="nav nav-pills justify-content-center" id="pntConf" role="tablist">
+						<li class="nav-item col-3 d-flex justify-content-center" role="presentation"
+							th:if="${permiso_admin == 1 || permiso_exclusiones == 1}">
+							<button onclick="ocultarMostrarExclusiones(this)" class="nav-link active" id="municipios-tab"
+								data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Municipios con
+								cobertura
+							</button>
+						</li>
+						<li class="nav-item col-3 d-flex justify-content-center" role="presentation"
+							th:if="${permiso_exclusiones == 1 || permiso_admin == 1}">
+							<button onclick="ocultarMostrarExclusiones(this)" class="nav-link" id="convenios-tab"
+								data-bs-toggle="tab" type="button" role="tab" aria-selected="false">Convenios</button>
+						</li>
+						<li class="nav-item col-3 d-flex justify-content-center" role="presentation"
+							th:if="${permiso_exclusiones == 1 || permiso_admin == 1}">
+							<button onclick="ocultarMostrarExclusiones(this)" class="nav-link" id="puestos-tab"
+								data-bs-toggle="tab" type="button" role="tab" aria-selected="false">Puestos</button>
+						</li>
+						<li class="nav-item col-3 d-flex justify-content-center" role="presentation"
+							th:if="${permiso_exclusiones == 1 || permiso_admin == 1}">
+							<button onclick="ocultarMostrarExclusiones(this)" class="nav-link" id="sucursales-tab"
+								data-bs-toggle="tab" type="button" role="tab" aria-selected="false">Sucursales</button>
+						</li>
+					</ul>
+				</div>
+				<div id="exclusiones-tabs">
+					<div class="row my-3">
+						<div class="col-lg-4"></div>
+						<div id="spinner-container" class="col-lg-4 d-flex justify-content-center"></div>
+						<div class="col-lg-4"></div>
+					</div>
+					<!-- Tab 1: Municipios con cobertura -->
+					<div id="municipios-tab1" class="" for="7" style="display: none;">
+						<fieldset class="border p-2">
+							<legend class="w-auto p-2">Municipios con cobertura</legend>
+							<div class="row my-3">
+								<form>
+									<div class="row p-4">
+										<div class="col-5">
+											<div class="row justify-content-center">
+												<label class="col-4 form-label">Estado:</label>
+												<div class="col-8">
+													<select id="opcionesEstado" class="form-select">
+														<!-- Opciones aquí -->
+													</select>
+												</div>
+											</div>
+										</div>
+										<div id="divMunicipios" class="col-5">
+											<div class="row justify-content-center">
+												<label class="col-4 form-label">Municipio:</label>
+												<div class="col-8">
+													<select id="opcionesMunicipio" class="form-select"></select>
+												</div>
+											</div>
+										</div>
+										<div class="col-2">
+											<button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+												title="Agregar" type="button" id="btnAgregar">
+												<i class="bi bi-plus-lg"></i>
+											</button>
+										</div>
+									</div>
+								</form>
+								<div class="table-responsive">
+									<table class="table table-bordered text-center small" id="tblMunicipiosConCobertura">
+										<thead class="text-white" style="background-color: #0D6EFD; font-weight: bold;">
+											<tr>
+												<th>Estado</th>
+												<th>Municipio</th>
+												<th>Usuario Modifico</th>
+												<th>Fecha Actualización</th>
+												<th>Deshabilitar</th>
+												
+											</tr>
+										</thead>
+										<tbody>
+											<!-- Datos aquí -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<!-- Tab 2: Convenios -->
+					<div id="convenios-tab1" class="" for="8" style="display: none;">
+						<fieldset class="border p-2">
+							<legend class="w-auto p-2">Convenios</legend>
+							<div class="row my-3 text-center">
+								<div class="col-1"></div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Convenios Activos</div>
+									<div class="py-2">
+										<input type="search" class="form-control" name="searchConvenioActivo"
+										placeholder="Buscar Convenio..." onkeyup="search_convenioActivo(this.value);">
+									</div>
+									<div id="conveniosActivos">
+										
+									</div>
+									
+								</div>
+								<div class="col-1 d-flex flex-column justify-content-center align-items-center">
+									<button class="btn btn-primary mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Agregar" type="button" id="btnAddRightConvenio">
+										<i class="bi bi-chevron-right"></i>
+									</button>
+									<button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Regresar" type="button" id="btnAddLeftConvenio">
+										<i class="bi bi-chevron-left"></i>
+									</button>
+								</div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Convenios a Excluir</div>
+									<div class="py-2">
+										<input type="search" class="form-control" name="searchConvenioDepurar"
+										placeholder="Buscar Convenio..." onkeyup="search_convenioDepurar(this.value);">
+									</div>
+									<div id="conveniosDepurar">
+										
+									</div>
+									
+								</div>
+								<div class="col-1"></div>
+							</div>
+						</fieldset>
+					</div>
+					<!-- Tab 3: Puestos -->
+					<div id="puestos-tab1" class="" for="9" style="display: none;">
+						<fieldset class="border p-2">
+							<legend class="w-auto p-2">Puestos</legend>
+							<div class="row my-3 text-center">
+								<div class="col-1"></div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Puestos Activos</div>
+									<div id="puestosActivos">
+										
+									</div>
+									
+								</div>
+								<div class="col-1 d-flex flex-column justify-content-center align-items-center">
+									<button class="btn btn-primary mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Agregar" type="button" id="btnAddRightPuesto">
+										<i class="bi bi-chevron-right"></i>
+									</button>
+									<button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Regresar" type="button" id="btnAddLeftPuesto">
+										<i class="bi bi-chevron-left"></i>
+									</button>
+								</div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Puestos a Excluir</div>
+									<div id="puestosDepurar">
+										
+									</div>
+									
+								</div>
+								<div class="col-1"></div>
+							</div>
+						</fieldset>
+					</div>
+					<!-- Tab 4: Sucursales -->
+					<div id="sucursales-tab1" class="" for="10" style="display: none;">
+						<fieldset class="border p-2">
+							<legend class="w-auto p-2">Sucursales</legend>
+							<div class="row my-3 text-center">
+								<div class="col-1"></div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Sucursales Activas</div>
+									<div id="sucursalesActivos">
+										
+									</div>
+									
+								</div>
+								<div class="col-1 d-flex flex-column justify-content-center align-items-center">
+									<button class="btn btn-primary mb-2" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Agregar" type="button" id="btnAddRightSucursal">
+										<i class="bi bi-chevron-right"></i>
+									</button>
+									<button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top"
+										title="Regresar" type="button" id="btnAddLeftSucursal">
+										<i class="bi bi-chevron-left"></i>
+									</button>
+								</div>
+								<div class="col-4 border border-2 overflow-auto" style="height: 500px;">
+									
+									<div class="title">Sucursales a Excluir</div>
+									<div id="sucursalesDepurar">
+										
+									</div>
+									
+								</div>
+								<div class="col-1"></div>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		
+		</div>
  
             <!--Modal Alta Plantilla SMS-->
             <div class="modal fade" id="altaPlantilla" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -801,6 +1013,7 @@
         <script th:src="@{/js/menuProductos/plantillasSMS.js}"></script>
         <script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
         <script th:src="@{/js/menuProductos/clientesBloqueados.js}"></script>
+        <script th:src="@{/js/menuProductos/exclusionesBasesNomina.js}"></script>
         <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
