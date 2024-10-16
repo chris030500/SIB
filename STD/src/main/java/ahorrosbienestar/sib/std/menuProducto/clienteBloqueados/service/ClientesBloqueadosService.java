@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.service;
+package ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
-import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.model.ClientesBloqueados;
-import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.repository.IClientesBloqueadosRepository;
+import ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.model.ClientesBloqueados;
+import ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.repository.IClientesBloqueadosRepository;
 
 @Service
 public class ClientesBloqueadosService {

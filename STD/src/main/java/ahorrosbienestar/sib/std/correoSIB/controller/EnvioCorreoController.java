@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.controller;
+package ahorrosbienestar.sib.std.correosib.controller;
 
 public class EnvioCorreoController {
 

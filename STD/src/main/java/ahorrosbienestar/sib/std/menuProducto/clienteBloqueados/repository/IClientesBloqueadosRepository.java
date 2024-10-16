@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.repository;
+package ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.model.ClientesBloqueados;
+import ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.model.ClientesBloqueados;
 
 @Repository
 public interface IClientesBloqueadosRepository extends JpaRepository<ClientesBloqueados, Integer> {

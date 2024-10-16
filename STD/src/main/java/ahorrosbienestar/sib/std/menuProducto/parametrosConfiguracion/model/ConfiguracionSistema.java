@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model;
+package ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

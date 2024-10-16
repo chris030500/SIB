@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.service;
+package ahorrosbienestar.sib.std.menuproducto.plantillasSMS.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.model.PlantillasSMS;
-import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.repository.IPlantillasSMSRespository;
+import ahorrosbienestar.sib.std.menuproducto.plantillasSMS.model.PlantillasSMS;
+import ahorrosbienestar.sib.std.menuproducto.plantillasSMS.repository.IPlantillasSMSRespository;
 
 @Service
 public class PlantillasSMSService {

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.model;
+package ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.model;
 
 import java.time.LocalDate;
 

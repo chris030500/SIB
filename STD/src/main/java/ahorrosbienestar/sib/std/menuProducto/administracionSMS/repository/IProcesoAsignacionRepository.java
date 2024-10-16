@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.ProcesoAsignacion;
 
 @Repository
 public interface IProcesoAsignacionRepository extends JpaRepository<ProcesoAsignacion, Integer>{

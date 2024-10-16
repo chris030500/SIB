@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.controller;
+package ahorrosbienestar.sib.std.menuproducto.plantillasSMS.controller;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.model.PlantillasSMS;
-import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.service.PlantillasSMSService;
+import ahorrosbienestar.sib.std.menuproducto.plantillasSMS.model.PlantillasSMS;
+import ahorrosbienestar.sib.std.menuproducto.plantillasSMS.service.PlantillasSMSService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.service.BasesService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.clasificacionBases.model.ClasificacionBases;

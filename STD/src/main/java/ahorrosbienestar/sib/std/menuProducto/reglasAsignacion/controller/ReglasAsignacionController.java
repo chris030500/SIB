@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.controller;
+package ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.controller;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglas;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ParametrosReglasAsignacion;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ReglasAsignacion;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ParametrosReglasAsignacionService;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ParametrosReglasService;
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.service.ReglasAsignacionService;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model.ParametrosReglas;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model.ParametrosReglasAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model.ReglasAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.service.ParametrosReglasAsignacionService;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.service.ParametrosReglasService;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.service.ReglasAsignacionService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.controller;
+package ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.model.ClientesBloqueados;
-import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.service.ClientesBloqueadosService;
+import ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.model.ClientesBloqueados;
+import ahorrosbienestar.sib.std.menuproducto.clienteBloqueados.service.ClientesBloqueadosService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 

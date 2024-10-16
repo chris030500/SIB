@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.correoSIB.service;
+package ahorrosbienestar.sib.std.correosib.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.correoSIB.dtos.ContenidoCorreo;
+import ahorrosbienestar.sib.std.correosib.dtos.ContenidoCorreo;
 
 @Service
 public class EnvioCorreoContenidoService {

@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.service;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository.IAdminSMSRepository;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.adminSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository.IAdminSMSRepository;
 import lombok.AllArgsConstructor;
 
 @Service

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.model;
+package ahorrosbienestar.sib.std.menuproducto.plantillasSMS.model;
 
 import java.time.LocalDate;
 

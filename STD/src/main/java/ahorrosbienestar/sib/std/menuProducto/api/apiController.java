@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.api;
+package ahorrosbienestar.sib.std.menuproducto.api;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ahorrosbienestar.sib.std.correoSIB.service.EnvioCorreoService;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.MensajeSMSService;
+import ahorrosbienestar.sib.std.correosib.service.EnvioCorreoService;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.service.MensajeSMSService;
 
 @RestController
 @RequestMapping("/api/respuestaSMS")

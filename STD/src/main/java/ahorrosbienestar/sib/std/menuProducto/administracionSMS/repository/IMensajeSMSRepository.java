@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.MensajeSMS;
 
 import org.springframework.data.repository.query.Param;
 

@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.service;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository.IProcesoSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.ProcesoSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository.IProcesoSMS;
 
 @Service
 public class ProcesoSMSService {

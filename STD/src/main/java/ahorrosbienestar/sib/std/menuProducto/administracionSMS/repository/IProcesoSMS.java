@@ -1,8 +1,8 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.ProcesoSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.ProcesoSMS;
 
 public interface IProcesoSMS extends JpaRepository<ProcesoSMS, Integer> {
 

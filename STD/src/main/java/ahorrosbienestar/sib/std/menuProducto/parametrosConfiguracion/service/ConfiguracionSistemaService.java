@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service;
+package ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.repository.ConfiguracionSistemaRepository;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.repository.ConfiguracionSistemaRepository;
 
 @Service
 public class ConfiguracionSistemaService {

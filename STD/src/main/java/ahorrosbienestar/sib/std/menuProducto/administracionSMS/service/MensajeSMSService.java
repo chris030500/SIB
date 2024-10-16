@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.service;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.MensajeSMS;
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository.IMensajeSMSRepository;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.MensajeSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository.IMensajeSMSRepository;
 
 @Service
 public class MensajeSMSService {
@@ -28,14 +28,14 @@ public class MensajeSMSService {
 		return null; // Devolver null si no se encuentra el mensaje con el ID dado
 	}
 
-	/*public MensajeSMS inactivarMensaje(int id, int estatus) {
+	public MensajeSMS inactivarMensaje(int id, int estatus) {
 		MensajeSMS mensajeExistente = mensajeSMSRepository.findById(id).orElse(null);
 		if (mensajeExistente != null) {
 			mensajeExistente.setEstatus(estatus); // Actualizar el campo de mensaje
 			return mensajeSMSRepository.save(mensajeExistente); // Guardar el mensaje actualizado en la base de datos
 		}
 		return null; // Devolver null si no se encuentra el mensaje con el ID dado
-	}*/
+	}
 
 	@Transactional
 	public void actualizarEstadoMensajes(int id, List<Integer> idsMensajes) {

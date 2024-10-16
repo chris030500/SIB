@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.controller;
+package ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 
 
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.model.ConfiguracionSistema;
-import ahorrosbienestar.sib.std.menuProducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.model.ConfiguracionSistema;
+import ahorrosbienestar.sib.std.menuproducto.parametrosConfiguracion.service.ConfiguracionSistemaService;
 
 @Controller
 @RequestMapping("/configuraciones")

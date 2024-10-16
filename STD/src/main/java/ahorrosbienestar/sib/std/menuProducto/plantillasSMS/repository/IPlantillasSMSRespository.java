@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.repository;
+package ahorrosbienestar.sib.std.menuproducto.plantillasSMS.repository;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.model.PlantillasSMS;
+import ahorrosbienestar.sib.std.menuproducto.plantillasSMS.model.PlantillasSMS;
 
 @Repository
 public interface IPlantillasSMSRespository extends JpaRepository<PlantillasSMS, Integer>{

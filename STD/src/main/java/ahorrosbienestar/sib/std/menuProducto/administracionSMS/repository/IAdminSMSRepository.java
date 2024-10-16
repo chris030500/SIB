@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.repository;
+package ahorrosbienestar.sib.std.menuproducto.administracionSMS.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.administracionSMS.model.adminSMS;
+import ahorrosbienestar.sib.std.menuproducto.administracionSMS.model.adminSMS;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,8 +20,7 @@ public interface IAdminSMSRepository extends JpaRepository<adminSMS, Integer> {
 			+ "FROM VW_ASIGNACION_OFERTAS "
 			+ "WHERE VC_NOMBRECOMPLETO LIKE %:cliente% "
 			+ "AND PK_ID_PROCESO LIKE %:proce% "
-			+ "AND VC_NOMBRESUCURSAL LIKE %:sucur% "
-			+ "AND I_ESTATUS_SMS = 1", nativeQuery = true)
+			+ "AND VC_NOMBRESUCURSAL LIKE %:sucur%", nativeQuery = true)
 	public List<adminSMS> obtenerMensajes(
 			@Param("cliente") String cliente, 
 			@Param("sucur") String sucur, 

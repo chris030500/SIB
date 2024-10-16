@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.repository;
+package ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model.ReglasAsignacion;
+import ahorrosbienestar.sib.std.menuproducto.reglasAsignacion.model.ReglasAsignacion;
 
 
 @Repository

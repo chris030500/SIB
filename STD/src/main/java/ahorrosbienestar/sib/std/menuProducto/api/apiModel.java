@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.api;
+package ahorrosbienestar.sib.std.menuproducto.api;
 
 public class apiModel {
     private String response;
