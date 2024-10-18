@@ -125,20 +125,6 @@ public class AdminSMSController {
 		}
 	}
 
-	@RequestMapping(value = "/inactivarSMS", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> inactivarMensaje(@RequestParam("id") int id,
-			@RequestParam("estatus") int estatus) {
-
-		MensajeSMS mensajeActualizado = mensajeService.inactivarMensaje(id, estatus);
-		if (mensajeActualizado != null) {
-			Map<String, Object> response = new HashMap<>();
-			response.put("mensaje", mensajeActualizado);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
 	@RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
 	public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje,
 			@RequestParam("telefono") String telefono) {

@@ -20,7 +20,8 @@ public interface IAdminSMSRepository extends JpaRepository<adminSMS, Integer> {
 			+ "FROM VW_ASIGNACION_OFERTAS "
 			+ "WHERE VC_NOMBRECOMPLETO LIKE %:cliente% "
 			+ "AND PK_ID_PROCESO LIKE %:proce% "
-			+ "AND VC_NOMBRESUCURSAL LIKE %:sucur%", nativeQuery = true)
+			+ "AND VC_NOMBRESUCURSAL LIKE %:sucur% "
+			+ "AND I_ESTATUS_SMS = 1", nativeQuery = true)
 	public List<adminSMS> obtenerMensajes(
 			@Param("cliente") String cliente, 
 			@Param("sucur") String sucur, 

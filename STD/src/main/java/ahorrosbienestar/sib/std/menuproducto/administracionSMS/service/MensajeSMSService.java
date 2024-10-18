@@ -28,15 +28,6 @@ public class MensajeSMSService {
 		return null; // Devolver null si no se encuentra el mensaje con el ID dado
 	}
 
-	public MensajeSMS inactivarMensaje(int id, int estatus) {
-		MensajeSMS mensajeExistente = mensajeSMSRepository.findById(id).orElse(null);
-		if (mensajeExistente != null) {
-			mensajeExistente.setEstatus(estatus); // Actualizar el campo de mensaje
-			return mensajeSMSRepository.save(mensajeExistente); // Guardar el mensaje actualizado en la base de datos
-		}
-		return null; // Devolver null si no se encuentra el mensaje con el ID dado
-	}
-
 	@Transactional
 	public void actualizarEstadoMensajes(int id, List<Integer> idsMensajes) {
 		for (int i = 0; i < idsMensajes.size(); i += BATCH_SIZE) {
