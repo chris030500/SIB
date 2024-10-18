@@ -47,20 +47,20 @@
 			<div id="paso2-tab1" class="opciones" style="display: block;" for="1">
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Layouts</legend>
-					
+
 					<!-- Columna para el botón Ver Documentos -->
 					<div class="row" style="margin-top : 15px">
-							<div class="col-md-2">
-								<label>Subir Layouts:</label>
-							</div>
-							<div class="col-md-10">
-								<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal"
-									title="Adjuntar Archivos" data-bs-target="#modalAdjuntosComisiones"
-									aria-controls="table-datatable" type="button" onclick="adjuntarFilesComisiones(2)"
-									data-tooltip="Add">
-									<i class="fa fa-upload"></i>
-								</button>
-							</div>
+						<div class="col-md-2">
+							<label>Subir Layouts:</label>
+						</div>
+						<div class="col-md-10">
+							<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal"
+								title="Adjuntar Archivos" data-bs-target="#modalAdjuntosComisiones"
+								aria-controls="table-datatable" type="button" onclick="adjuntarFilesComisiones(2)"
+								data-tooltip="Add">
+								<i class="fa fa-upload"></i>
+							</button>
+						</div>
 					</div>
 				</fieldset>
 				<fieldset class="border p-2">
@@ -162,8 +162,8 @@
 							</div>
 							<div class="col-md-3">
 								<form th:action="@{/contabilidad/procesar-prorrateo}" method="post" id="procesarPro">
-									<button type="button" id="btnProrrateo" class="btn btn-primary" title="Ejecutar proceso de prorrateo"
-										onclick="submitFormGastos(this,3)">
+									<button type="button" id="btnProrrateo" class="btn btn-primary"
+										title="Ejecutar proceso de prorrateo" onclick="submitFormGastos(this,3)">
 										<i class="bi bi-diagram-3-fill"></i>
 									</button>
 								</form>
@@ -190,7 +190,7 @@
 								</label>
 							</div>
 
-							
+
 						</div>
 						<div id="liveAlertPlaceholder"></div>
 						<div class="row" style="margin-top : 5px ">
@@ -443,7 +443,8 @@
 						<fieldset class="border p-2">
 							<div class="modal-header">
 								<div class="col-md-11">
-									<legend class="float-none w-auto p-2">Gastos por producto:  <span id="lblProd"></span></legend>
+									<legend class="float-none w-auto p-2">Gastos por producto: <span
+											id="lblProd"></span></legend>
 								</div>
 								<div class="col-md-1">
 									<button type="button" class="btn-close" onclick="cerrarModal(this)"
@@ -464,8 +465,7 @@
 												<tr>
 													<th>
 														<input type="checkbox" class="custom-control-input" name="total"
-															id="idTodos"
-															onclick="activarInactivar()" />
+															id="idTodos" onclick="activarInactivar()" />
 													</th>
 													<th>Folio Factura</th>
 													<th>Concepto</th>
@@ -497,6 +497,26 @@
 				</div>
 			</div>
 			<!--Facturas-->
+			<!-- Modal para Conceptos -->
+			<div class="modal fade" id="conceptosModal" tabindex="-1" role="dialog" aria-labelledby="conceptosLabel"
+				aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="conceptosLabel">Conceptos del Archivo</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div id="conceptosContent">Aquí irán los conceptos...</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">

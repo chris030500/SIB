@@ -26,10 +26,10 @@ $(document).ready(function() {
 			"targets": 1, // Índice de la columna de fecha
 			"type": "string" // Ordenación como string
 		},
-        {
-            "targets": -1, // Última columna (índice -1)
-            "className": "text-center" // Clase para centrar el texto
-        }]
+		{
+			"targets": -1, // Última columna (índice -1)
+			"className": "text-center" // Clase para centrar el texto
+		}]
 	});
 
 	tblProcesoGeneradorCNF = $("#tblProcesoGeneradorCNF").DataTable({
@@ -45,10 +45,10 @@ $(document).ready(function() {
 			"targets": 1, // Índice de la columna de fecha
 			"type": "string" // Ordenación como string
 		},
-        {
-            "targets": -1, // Última columna (índice -1)
-            "className": "text-center" // Clase para centrar el texto
-        }]
+		{
+			"targets": -1, // Última columna (índice -1)
+			"className": "text-center" // Clase para centrar el texto
+		}]
 	});
 
 	tblProcesoGeneradorEPRC = $("#tblProcesoGeneradorEPRC").DataTable({
@@ -279,10 +279,10 @@ function obtListadoArchivos(url) {
 
 				const fileInfo = document.createElement("div");
 				fileInfo.innerHTML = `
-                    <strong>${archivo.nombreArchivo}</strong><br>
-                    <small><i class="fas fa-calendar-alt"></i> Creado: ${archivo.fechaCreacion}</small><br>
-                    <small><i class="fas fa-edit"></i> Modificado: ${archivo.fechaModifacion}</small>
-                `;
+                            <strong>${archivo.nombreArchivo}</strong><br>
+                            <small><i class="fas fa-calendar-alt"></i> Creado: ${archivo.fechaCreacion}</small><br>
+                            <small><i class="fas fa-edit"></i> Modificado: ${archivo.fechaModifacion}</small>
+                        `;
 
 				// Botón "Procesar"
 				const processButton = document.createElement("button");
@@ -348,12 +348,12 @@ function obtListadoArchivos(url) {
 						// Enviar el archivo al servidor
 						fetch(getAbsolutePath() + 'cargarPdf', {
 							method: 'POST',
-							body: formData // Asegúrate de usar FormData para enviar archivos
+							body: formData
 						})
-							.then(response => response.text()) // Cambia .json() a .text() para respuestas de texto plano
+							.then(response => response.text())
 							.then(data => {
 								swal.close();
-								swal("Éxito", data, "success"); // Mostrar el mensaje tal como se recibe
+								swal("Éxito", data, "success");
 							})
 							.catch(error => {
 								swal.close();
@@ -365,24 +365,30 @@ function obtListadoArchivos(url) {
 					input.click();
 				};
 
+				// Botón "Conceptos"
+				const conceptosButton = document.createElement("button");
+				conceptosButton.className = "btn btn-info btn-sm";
+				conceptosButton.innerHTML = `<i class="fas fa-info-circle"></i> Conceptos`;
+				conceptosButton.onclick = function() {
+					cargarConceptos(archivo);
+				};
+
 				// Botón "Descargar/Mostrar PDF"
 				const viewButton = document.createElement("button");
 				viewButton.className = "btn btn-danger btn-sm";
 				viewButton.innerHTML = `<i class="fas fa-file-pdf"></i> Abrir PDF`;
 				viewButton.onclick = function() {
-					// Modificar la extensión del archivo de .xml a .pdf si es necesario
 					let archivoNombre = archivo.nombreArchivo;
 					if (archivoNombre.toLowerCase().endsWith('.xml')) {
 						archivoNombre = archivoNombre.slice(0, -4) + '.pdf';
 					}
-
-					// Abrir el archivo PDF en una nueva ventana
 					window.open(getAbsolutePath() + 'verPdf?nombreArchivo=' + encodeURIComponent(archivoNombre), '_blank');
 				};
 
 				li.appendChild(fileInfo);
 				li.appendChild(processButton);
 				li.appendChild(uploadButton);
+				li.appendChild(conceptosButton); // Agregar el botón "Conceptos"
 				li.appendChild(viewButton);
 				fileList.appendChild(li);
 			});
@@ -395,6 +401,23 @@ function obtListadoArchivos(url) {
 	}).fail(function() {
 		swal("Error", "No se pudo obtener la lista de archivos.", "error");
 	});
+}
+
+// Función para cargar conceptos en el modal
+function cargarConceptos(archivo) {
+	const conceptosContent = document.getElementById("conceptosContent");
+	conceptosContent.innerHTML = `<p>Cargando conceptos para ${archivo.nombreArchivo}...</p>`;
+
+	// Simulación de carga de conceptos (reemplaza esto con tu lógica real)
+	setTimeout(() => {
+		conceptosContent.innerHTML = `
+                    <p><strong>Concepto 1:</strong> Descripción del concepto 1</p>
+                    <p><strong>Concepto 2:</strong> Descripción del concepto 2</p>
+                    <p><strong>Concepto 3:</strong> Descripción del concepto 3</p>
+                `;
+		// Abrir el modal
+		$('#conceptosModal').modal('show');
+	}, 1000); // Simulando un retraso de 1 segundo
 }
 
 function obtListadoArchivosComisiones(url) {
@@ -504,4 +527,3 @@ function obtListadoArchivosComisiones(url) {
 		swal("Error", "No se pudo obtener la lista de archivos.", "error");
 	});
 }
-
