@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1232,6 +1233,11 @@ public class CostoNetoFinanciadoController {
 	    // Usar la constante en lugar de la consulta en línea
 	    return jdbcTemplate.queryForObject(Constantes.SELECT_NEXT_ID_PROCESO, Integer.class);
 	}
+	
+	private String obtenerConceptos() {
+	    // Usar la constante en lugar de la consulta en línea
+	    return jdbcTemplate.queryForObject(Constantes.SELECT_CONCEPTOS, String.class);
+	}
 
 	public void procesarYMigrarArchivoFacturas(String nombreArchivo) throws IOException {
 
@@ -1254,6 +1260,14 @@ public class CostoNetoFinanciadoController {
 
 	        // Obtiene los nodos del "Comprobante"
 	        NodeList comprobanteList = document.getElementsByTagName("cfdi:Comprobante");
+	        
+	        String conceptos = obtenerConceptos();
+	        
+	        String[] partes = conceptos.split(";");
+	        
+	        System.out.print("Pruebas" + partes);
+	        
+	        int estatus = 0;
 
 	        // Itera sobre los nodos de "Comprobante"
 	        for (int i = 0; i < comprobanteList.getLength(); i++) {
@@ -1276,9 +1290,10 @@ public class CostoNetoFinanciadoController {
 	                Element receptorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Receptor").item(0);
 	                String receptorRFC = receptorElement.getAttribute("Rfc");
 	                String receptorNombre = receptorElement.getAttribute("Nombre");
+	                LocalDate fechaSistema = LocalDate.now();
 
 	                // Insertar en TBL_DETALLE_FACTURA usando la constante de consulta
-	                jdbcTemplate.update(Constantes.INSERT_DETALLE_FACTURA, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre);
+	                jdbcTemplate.update(Constantes.INSERT_DETALLE_FACTURA, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre, obtUsuario(), fechaSistema, 1);
 
 	                // Lee los conceptos
 	                NodeList conceptosList = comprobanteElement.getElementsByTagName("cfdi:Concepto");
@@ -1299,9 +1314,15 @@ public class CostoNetoFinanciadoController {
 
 	                    // Realizar la resta
 	                    double totalConcepto = subtotal - desc;
+	                    
+	                    boolean encontrado = Arrays.stream(partes).anyMatch(parte -> parte.equals(concepto));
+	                    
+	                    if (encontrado) {
+	                        estatus = 1;
+	                    }
 
 	                    // Agregar a la lista para TBL_FACTURA
-	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio });
+	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio, estatus });
 	                }
 	            }
 	        }
