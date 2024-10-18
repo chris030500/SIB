@@ -137,7 +137,7 @@ public class AdminSMSController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-	}*/
+	}*/ 
 
 	@RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
 	public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje,
