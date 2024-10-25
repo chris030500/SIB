@@ -366,12 +366,12 @@ function obtListadoArchivos(url) {
 				};
 
 				// Botón "Conceptos"
-				const conceptosButton = document.createElement("button");
-				conceptosButton.className = "btn btn-info btn-sm";
-				conceptosButton.innerHTML = `<i class="fas fa-info-circle"></i> Conceptos`;
-				conceptosButton.onclick = function() {
-					cargarConceptos(archivo);
-				};
+				//const conceptosButton = document.createElement("button");
+				//conceptosButton.className = "btn btn-info btn-sm";
+				//conceptosButton.innerHTML = `<i class="fas fa-info-circle"></i> Conceptos`;
+				//conceptosButton.onclick = function() {
+					//cargarConceptos(archivo);
+				//};
 
 				// Botón "Descargar/Mostrar PDF"
 				const viewButton = document.createElement("button");
@@ -388,7 +388,7 @@ function obtListadoArchivos(url) {
 				li.appendChild(fileInfo);
 				li.appendChild(processButton);
 				li.appendChild(uploadButton);
-				li.appendChild(conceptosButton); // Agregar el botón "Conceptos"
+				//li.appendChild(conceptosButton); // Agregar el botón "Conceptos"
 				li.appendChild(viewButton);
 				fileList.appendChild(li);
 			});
