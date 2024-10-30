@@ -1058,7 +1058,13 @@ function cargatblProcesoG(){
 					+ " onclick='mostrarGestiones()' id="
 					+ opt.pk_id_gestion
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-journals'></i></button>";
+					+ " <i class='bi bi-journals'></i></button>"
+					
+					var btnReporte= " <button type='button' class='btn btn-info btn-sm' tabindex='0' "
+					+ "title='Ver Extracción de Asignaciones.' aria-controls='table-datatable' onclick='descargaRptAsignaciones()'"
+					+ "data-tooltip='Add'>"
+					+ "<i class='bi bi-filetype-xls'></i>"
+					+ "</button>";
 
 
 					
@@ -1068,7 +1074,7 @@ function cargatblProcesoG(){
       				,opt.vc_hora_inicio_proceso
       				,opt.vc_hora_fin_proceso
       				,opt.vc_periodo_ejecucion_proceso
-      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones:btnsActualizar+btnEjecutar]).draw(false); 
+      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones+btnReporte:btnsActualizar+btnEjecutar]).draw(false); 
       		}
 		
    		});
@@ -1168,6 +1174,39 @@ function descargarArchivoAsignaciones(sucursal){
 	peticionPost(5, url);
 }
 
+var reporteExtraccionAsignaciones = "reporteExtraccionAsignaciones";
+
+function descargaRptAsignaciones() {
+	
+	url = getAbsolutePath() + reporteExtraccionAsignaciones;
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+	
+}
 
 /**
  * Modal de alertas

@@ -217,15 +217,10 @@ function llenarTablaSeguimiento() {
 			$.each(respuesta.lista, function(idx, opt) {
 				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
 				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID + "\")'><i class='fas fa-paper-plane'></i></button>";
-				var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
-				var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
 				var botones = "";
 
 				if (opt.estMensaje == 1) {
-					botones = botonesEditar + " " + botonesEnviar + " " + botonesInactivar;
-				}
-				if (opt.estMensaje == 0) {
-					botones = botonesEditar + " " + botonesActivar;
+					botones = botonesEditar + " " + botonesEnviar;
 				}
 				if (opt.estMensaje == 2) {
 					botones = "El mensaje esta siendo procesado por el proveedor";
@@ -233,7 +228,6 @@ function llenarTablaSeguimiento() {
 				if (opt.estMensaje == 3) {
 					botones = "El mensaje ya se envio";
 				}
-				
 
 				// Agregar el telefono y el mensaje a los arrays correspondientes
 				var mensaje = {
@@ -304,52 +298,6 @@ function guardarCambios() {
 			console.error("Error al enviar los datos: " + error);
 		}
 	});
-}
-
-function inactivarSMS(mensajeID, estatus) {
-	servicioURL = "mensajes/inactivarSMS?id=" + mensajeID + "&estatus=" + estatus
-	var tituloAlerta = "";
-	var textoAlerta = "";
-	var confirmButton = "";
-
-	if (estatus === 0) {
-		tituloAlerta = "¿Estás seguro de inactivar el mensaje?";
-		textoAlerta = "¡El mensaje se inactivará y no sera tomado encuenta para el envio masivo!";
-		confirmButton = "Inactivar";
-	} else if (estatus === 1) {
-		tituloAlerta = "¿Estás seguro de activar el mensaje?";
-		textoAlerta = "¡El mensaje se activará y sera tomado encuenta para el envio masivo!";
-		confirmButton = "Activar";
-	}
-
-	swal({
-		title: tituloAlerta,
-		text: textoAlerta,
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		cancelButtonText: 'Cancelar',
-		confirmButtonText: confirmButton,
-	}).then((result) => {
-		if (result.value) {
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "GET",
-				success: function(response) {
-					swal(
-						"¡Procesado!",
-						"El estatus del mensaje ha sido actualizado.",
-						"success"
-					)
-					llenarTablaSeguimiento();
-				},
-				error: function(xhr, status, error) {
-					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
-					console.error("Error al enviar los datos: " + error);
-				}
-			});
-		}
-	})
 }
 
 function enviarSMS(telefono, mensaje, mensajeID) {

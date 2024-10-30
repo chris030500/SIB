@@ -125,7 +125,7 @@ public class AdminSMSController {
 		}
 	}
 
-	@RequestMapping(value = "/inactivarSMS", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/inactivarSMS", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> inactivarMensaje(@RequestParam("id") int id,
 			@RequestParam("estatus") int estatus) {
 
@@ -137,7 +137,7 @@ public class AdminSMSController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-	}
+	}*/ 
 
 	@RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
 	public ResponseEntity<String> sendMensaje(@RequestParam("mensaje") String mensaje,
