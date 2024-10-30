@@ -1116,7 +1116,7 @@ public class indexOfertasAutoController {
 		try {
 			
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_EXTRACCION_ASIGNACIONES);
-			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=" +"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=ExtraccionAsiganciones";
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=" +"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=CallCenterSucursales";
 					
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
