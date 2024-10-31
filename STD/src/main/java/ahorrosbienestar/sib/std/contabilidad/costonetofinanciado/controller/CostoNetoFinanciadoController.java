@@ -1276,11 +1276,12 @@ public class CostoNetoFinanciadoController {
 	                Element receptorElement = (Element) comprobanteElement.getElementsByTagName("cfdi:Receptor").item(0);
 	                String receptorRFC = receptorElement.getAttribute("Rfc");
 	                String receptorNombre = receptorElement.getAttribute("Nombre");
+	                LocalDate fechaSistema = LocalDate.now();
 
 	                // Insertar en TBL_DETALLE_FACTURA usando la constante de consulta
-	                jdbcTemplate.update(Constantes.INSERT_DETALLE_FACTURA, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre);
+	                jdbcTemplate.update(Constantes.INSERT_DETALLE_FACTURA, folio, fecha, descuento, total, emisorRFC, emisorNombre, receptorRFC, receptorNombre, obtUsuario(), fechaSistema, 1);
 
-	                // Lee los conceptos
+	             // Lee los conceptos
 	                NodeList conceptosList = comprobanteElement.getElementsByTagName("cfdi:Concepto");
 	                for (int j = 0; j < conceptosList.getLength(); j++) {
 	                    Element conceptoElement = (Element) conceptosList.item(j);

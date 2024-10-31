@@ -216,11 +216,12 @@ public class Constantes {
 	public static final String INSERT_CONTROL_ETAPA = "INSERT INTO TBL_CONTROL_ETAPA (PK_IdProcesoComision, I_NumReg, DT_FechaProceso, I_Usuario, VC_Estatus, DT_FechaCorte) VALUES (?, ?, ?, ?, ?, ?)";
 	public static final String UPDATE_CONTROL_ETAPA = "UPDATE TBL_CONTROL_ETAPA SET VC_Estatus = 'I' WHERE PK_IdProcesoComision = ?";
 	public static final String SELECT_NEXT_ID_PROCESO = "SELECT COALESCE(MAX(PK_IdProcesoComision), 0) + 1 FROM TBL_CONTROL_ETAPA";
- 
+	public static final String SELECT_CONCEPTOS = "SELECT VC_VALOR_PROPIEDAD FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'conceptosFactura';";
+
 	// Facturas
-	public static final String INSERT_DETALLE_FACTURA = "INSERT INTO TBL_DETALLE_FACTURA (PK_I_Folio, DT_Fecha_Emision, DC_Descuento, DC_Total, VC_Emisor_RFC, VC_Emisor_Nombre, VC_Receptor_RFC, VC_Receptor_Nombre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-	public static final String INSERT_FACTURA = "INSERT INTO TBL_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
- 
+	public static final String INSERT_DETALLE_FACTURA = "INSERT INTO TBL_FACTURA (PK_I_Folio, DT_Fecha_Emision, DC_Descuento, DC_Total, VC_Emisor_RFC, VC_Emisor_Nombre, VC_Receptor_RFC, VC_Receptor_Nombre, VC_Usuario, DT_Fecha_Registro, I_Estatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	public static final String INSERT_FACTURA = "INSERT INTO TBL_DETALLE_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 	// Comisiones
 	public static final String INSERTAR_COMISIONES = "INSERT INTO TBL_COMISIONES_CREDITOS (I_CREDITO, D_Costo_Comisiones, D_Ingresos_Comisiones, DT_FECHA_CORTE, I_IdProceso) VALUES (?, ?, ?, ?, ?)";
 	public static final String SELECT_CONTROL_COMISIONES = "SELECT * FROM TBL_CONTROL_COMISIONES WHERE DT_FechaCorte = ?";
