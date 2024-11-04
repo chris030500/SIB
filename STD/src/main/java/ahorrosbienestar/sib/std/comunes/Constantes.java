@@ -220,7 +220,7 @@ public class Constantes {
 
 	// Facturas
 	public static final String INSERT_DETALLE_FACTURA = "INSERT INTO TBL_FACTURA (PK_I_Folio, DT_Fecha_Emision, DC_Descuento, DC_Total, VC_Emisor_RFC, VC_Emisor_Nombre, VC_Receptor_RFC, VC_Receptor_Nombre, VC_Usuario, DT_Fecha_Registro, I_Estatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	public static final String INSERT_FACTURA = "INSERT INTO TBL_DETALLE_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio, I_Estatus_Conceptos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	public static final String INSERT_FACTURA = "INSERT INTO TBL_DETALLE_FACTURA (DC_Cantidad, VC_Concepto, VC_Descripcion, VC_Oi, VC_Um, DC_Precio_Unit, DC_Sub_Total, DC_Descuento, DC_Total, FK_Folio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	// Comisiones
 	public static final String INSERTAR_COMISIONES = "INSERT INTO TBL_COMISIONES_CREDITOS (I_CREDITO, D_Costo_Comisiones, D_Ingresos_Comisiones, DT_FECHA_CORTE, I_IdProceso) VALUES (?, ?, ?, ?, ?)";
