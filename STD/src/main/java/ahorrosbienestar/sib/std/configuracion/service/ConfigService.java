@@ -2,7 +2,6 @@ package ahorrosbienestar.sib.std.configuracion.service;
  
 import java.util.List;
  
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
  
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -12,8 +11,8 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 public class ConfigService {
  
     private IConfiguracionRepository iConfiguracionRepository;
- 
-    @Autowired
+
+
     public ConfigService(IConfiguracionRepository iConfiguracionRepository) {
         this.iConfiguracionRepository = iConfiguracionRepository;
     }
@@ -93,6 +92,10 @@ public class ConfigService {
  
     public List<Configuracion>  obtenerUrlFactura() {
         return iConfiguracionRepository.obtenerUrlFactura();
+    }
+    
+    public List<Configuracion>  obtenerConceptosExclu() {
+        return iConfiguracionRepository.obtenerConceptosExclu();
     }
     
     public List<Configuracion>  obtenerUrlComisiones() {
