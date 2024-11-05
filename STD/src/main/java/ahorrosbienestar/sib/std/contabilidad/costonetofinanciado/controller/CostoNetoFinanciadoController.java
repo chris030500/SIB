@@ -1306,6 +1306,8 @@ public class CostoNetoFinanciadoController {
 
 	                    // Realizar la resta
 	                    double totalConcepto = subtotal - desc;
+	                    double cantidadVal = Double.parseDouble(cantidad);
+	                    double punitDes = totalConcepto / cantidadVal;
 	                    
 	                    for (String part : parts) {
 	                    	if (concepto.equals(part)) {
@@ -1317,7 +1319,7 @@ public class CostoNetoFinanciadoController {
 	                    }
 
 	                    // Agregar a la lista para TBL_FACTURA
-	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio, estatus });
+	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, punitDes, subtotal, desc, totalConcepto, folio, estatus });
 	                }
 	            }
 	        }
