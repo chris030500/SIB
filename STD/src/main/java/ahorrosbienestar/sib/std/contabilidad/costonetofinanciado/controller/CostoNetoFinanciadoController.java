@@ -1245,6 +1245,11 @@ public class CostoNetoFinanciadoController {
 	        // Carga el archivo XML
 	        List<Configuracion> bases = configService.obtenerUrlFactura();
 	        String folderPath = bases.get(0).getVc_valor_propiedad();
+	        
+	        //Cargar conceptos a excluir
+	        List<Configuracion> exclusiones = configService.obtenerConceptosExclu();
+	        String conceptosExcuir = exclusiones.get(0).getVc_valor_propiedad();
+	        String[] parts = conceptosExcuir.split(";");
 
 	        File file = new File(folderPath + nombreArchivo);
 	        Document document = builder.parse(file);
@@ -1257,6 +1262,7 @@ public class CostoNetoFinanciadoController {
 
 	        // Itera sobre los nodos de "Comprobante"
 	        for (int i = 0; i < comprobanteList.getLength(); i++) {
+	        	int estatus = 1;
 	            Node comprobanteNode = comprobanteList.item(i);
 
 	            if (comprobanteNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -1300,9 +1306,18 @@ public class CostoNetoFinanciadoController {
 
 	                    // Realizar la resta
 	                    double totalConcepto = subtotal - desc;
+	                    
+	                    for (String part : parts) {
+	                    	if (concepto.equals(part)) {
+	                    		estatus = 0;
+	                    		break;
+	                    	}else {
+	                    		estatus = 1;
+	                    	}
+	                    }
 
 	                    // Agregar a la lista para TBL_FACTURA
-	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio });
+	                    dataToInsert.add(new Object[] { cantidad, concepto, descripcion, oi, um, punit, subtotal, desc, totalConcepto, folio, estatus });
 	                }
 	            }
 	        }

@@ -108,4 +108,7 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
     
     @Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'urlPDF';", nativeQuery = true)
     public List<Configuracion> obtenerUrlPDF();
+    
+    @Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'conceptosFactura';", nativeQuery = true)
+    public List<Configuracion> obtenerConceptosExclu();
 }
