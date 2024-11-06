@@ -16,7 +16,7 @@ public interface IDetalleFactura extends JpaRepository<DetalleFacturaMod,Integer
             + "t1.VC_Concepto as concepto, "
             + "t1.DC_Cantidad as cantidad, "
             + "t1.VC_Descripcion as descripcion, "
-            + "t1.DC_Precio_Unit as preciounitario, "
+            + "case when t1.DC_Descuento>0 then t1.DC_Precio_Unit_Desc else t1.DC_Precio_Unit end as preciounitario, "
             + "t1.DC_Total as total, "
             + "DATE_FORMAT(t2.DT_Fecha_Emision, '%Y-%m-%d') as fechaemision "
             + "FROM SIB.TBL_FACTURA t2 "
