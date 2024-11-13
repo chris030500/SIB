@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-24-0002 Historico de Operaciones -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Reporte Operaciones Inusuales</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divGenerarReporte" class="container">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Generar Reporte</legend>
+					<div id="divTodos" class="container">
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-md-3">
+								<label class="col-form-label">Tipo Producto</label>
+								<select class="form-control" id="idTipoProducto">
+									<option value="0">Seleccione</option>
+									<option th:each="listaTipoProducto : ${cat_tipo_producto}"
+										th:value="${listaTipoProducto.i_opcion}" th:text="${listaTipoProducto.v_valor}">
+									</option>
+								</select>
+							</div>
+							<div class="col-md-3" style="display: none;">
+								<label class="col-form-label">Colocación:</label>
+								<select class="form-control" id="selectColocacion">
+									<option value="0">Seleccione</option>
+									<option th:each="listaProductosColocacion : ${cat_productos_colocacion}"
+										th:value="${listaProductosColocacion.pk_i_produc_credito_id}" th:text="${listaProductosColocacion.vc_descripcion}">
+									</option>
+								</select>
+							</div>
+							<div class="col-md-3" style="display: none;">
+								<label class="col-form-label">Captación:</label>
+								<select class="form-control" id="selectCaptación">
+									<option value="0">Seleccione</option>
+									<option th:each="listaProductosCaptacion : ${cat_productos_captacion}"
+										th:value="${listaProductosCaptacion.pk_i_tipo_cuenta_id}" th:text="${listaProductosCaptacion.vc_descripcion}">
+									</option>
+								</select>
+							</div>
+							<div class="col-md-3">
+								<label class="col-form-label"> Fecha de inicio</label>
+								<input class="form-control" type="date" id="startDate" placeholder="Fecha desde" required>
+							</div>
+							<div class="col-md-3">
+								<label class="col-form-label"> Fecha de fin</label>
+								<input class="form-control" type="date" id="endDate" placeholder="Fecha hasta" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label class="col-form-label">Cliente</label>
+								<input type="search" class="form-control" id="searchCustomer" list="customerOption"
+									autocomplete="off" placeholder="Buscar cliente">
+								<datalist id="customerOption"></datalist>
+							</div>
+							<!--<div id="spinnerClientes" class="col-sm-1"
+								style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
+								<div class="spinner-border" style="color: #0dcaf0;">
+								</div>
+							</div>-->
+
+						</div>
+					</div>
+					<div class="row" style="margin-top : 15px; text-align: center;">
+						<div class="col-md-8"></div>
+						<div class="col-md-4">
+							<button class="btn btn-primary" title="Generar Reporte" data-bs-target="#"
+								aria-controls="table-datatable" type="button" data-tooltip="Add"
+								onclick="generarReporte()">
+								<i class="bi bi-filetype-exe"></i>
+							</button>
+						</div>
+					</div>
+				</fieldset>
+
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/prevencion/reporteOperacionesInusuales.js}"></script>
+	</th:block>
+</body>
+
+</html>

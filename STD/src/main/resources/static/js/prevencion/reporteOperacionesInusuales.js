@@ -1,0 +1,202 @@
+window.onload = function(){
+  var fecha = new Date(); //Fecha actual
+  var mes = fecha.getMonth()+1; //obteniendo mes
+  var dia = fecha.getDate(); //obteniendo dia
+  var ano = fecha.getFullYear(); //obteniendo año
+  if(dia<10)
+    dia='0'+dia; //agrega cero si el menor de 10
+  if(mes<10)
+    mes='0'+mes //agrega cero si el menor de 10
+  document.getElementById('startDate').value=ano+"-"+mes+"-"+dia;
+  document.getElementById('endDate').value=ano+"-"+mes+"-"+dia;
+}
+
+// Funcion para obtener la liga absoluta
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+// Variables | validacion de la liga absoluta
+var urlPrincipal = getAbsolutePath();
+var newUrlBase = urlPrincipal.replace("/prevencion", "");
+var url = "";
+var mensajeError = "Datos incorrectos, favor de validar.";
+
+function validateDates(startDate, endDate) {
+	
+	url = "";
+	var result = false;
+	var contador = 0;
+	/*
+	var fechaInicio = Date.parse(fecha1);
+	var fechaFin = Date.parse(fecha2);
+	*/
+	
+	if(document.getElementById("startDate").value < document.getElementById("endDate").value){
+		mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
+		document.getElementById("endDate").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(document.getElementById("startDate").value > document.getElementById("endDate").value){
+		mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
+		document.getElementById("startDate").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+
+	// @ts-ignore
+	if (document.getElementById("idTipoProducto").value > 0) {
+		document.getElementById("idTipoProducto").style.borderColor = "";
+		// @ts-ignore
+		var rptOA = newUrlBase + "generarRptOperacionesInusuales?idReporte=" + document.getElementById("idReportePLD").value;
+		//console.log(rptOA);
+		result = false;
+	} else {
+		mensajeError = "Debe seleccionar un reporte";
+		document.getElementById("idReportePLD").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+
+	// @ts-ignore
+	if (document.getElementById("extReportePLD").value > 0) {
+		document.getElementById("extReportePLD").style.borderColor = "";
+		// @ts-ignore
+		//url = url + rptOA+document.getElementById("extReportePLD").value;
+		result = false;
+	} else {
+		mensajeError = "Debe seleccionar la extension del reporte.";
+		document.getElementById("extReportePLD").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(contador == 0){
+		document.getElementById("dtFechaInicio").style.borderColor = "";
+		document.getElementById("dtFechaFin").style.borderColor = "";
+		// @ts-ignore
+		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+	
+		result = false;
+	}else{
+		
+		result = true;
+	}
+
+	/*if (result == true) {
+		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
+		document.getElementById("dtFechaFin").style.borderColor = "#F70707";
+		
+	} else {
+		document.getElementById("dtFechaInicio").style.borderColor = "";
+		document.getElementById("dtFechaFin").style.borderColor = "";
+		// @ts-ignore
+		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+		//console.log(url);
+	}*/
+	return result;
+}
+
+var urlCompleta;
+
+function generarReporte() {
+
+	// @ts-ignore
+	if (valVacio(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value) == false) {
+		peticionPost(urlCompleta);
+
+	} else {
+
+		swal({
+			title: "",
+			text: mensajeError,
+			icon: "warning",
+		});
+	}
+
+}
+
+
+function peticionPost(urlServicio) {
+	//console.log(urlServicio);
+	$.ajax({
+		url: urlServicio,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+
+			//console.log(urlReporte);
+			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+	});
+}
+
+/**
+* Lista clientes
+*/
+var buscarCliente = document.getElementById('buscarCliente');
+var spinner = document.getElementById("spinnerClientes");
+var clienteValue = 0;
+var timerId;
+
+
+// Función para realizar la llamada al servicio después de un retraso
+function debouncedListaClientes() {
+	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
+	timerId = setTimeout(listaClientes, 500); // Establecer un nuevo temporizador
+}
+
+function listaClientes() {
+	var buscar = buscarCliente.value;
+	$.ajax({
+		url: newUrlBase + "lista_numero_cliente?valor=" + buscar,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opciones = document.getElementById('opcionCliente');
+			opciones.innerHTML = '';
+			respuesta.lista.forEach(function(cliente) {
+				var option = document.createElement('option');
+				option.setAttribute('data-value', cliente.i_clienteid);
+				option.value = cliente.clienteinfo;
+				opciones.appendChild(option);
+			});
+			if (respuesta.lista[0]) {
+				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+			}
+			console.log(clienteValue);
+		}
+	});
+}
+
+buscarCliente.addEventListener('input', debouncedListaClientes);
+
+buscarCliente.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	listaClientes();
+});
+/**
+ * Fin
+ */

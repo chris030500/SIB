@@ -173,7 +173,11 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
-    //nombres reportes PLD
+	//constantes Prevención PLD
+	public static final String PLD_REPORTE_OPEACIONES_INUSUALES = "prevencion/reporteOperacionesInusuales";
+	public static final int PLD_CAT_TIPO_PRODUCTO = 29;
+	
+    //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
 	
 	
