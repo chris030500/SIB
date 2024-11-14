@@ -1,3 +1,35 @@
+var tipoProductoSelected = "";
+var productoSelected = "";
+var idProducto = 0;
+var isCliente = false;
+var isProducto = false;
+var clienteValue = 0;
+
+$(document).ready(function() {
+  $("#selectTipoProducto").change(function(){
+    tipoProductoSelected = $("#selectTipoProducto").val();
+    
+   if(tipoProductoSelected > 0) {
+     switch(tipoProductoSelected) {
+       case "1":
+         $("#divProductosColocacion").show();
+         $("#divProductosCaptacion").hide();
+         break;
+       case "2":
+         $("#divProductosColocacion").hide();
+         $("#divProductosCaptacion").show();
+         break;
+       case "3":
+         $("#divProductosColocacion").hide();
+         $("#divProductosCaptacion").hide();
+         isProducto = true;
+         break;
+     }
+   }
+   
+  });
+});
+
 window.onload = function(){
   var fecha = new Date(); //Fecha actual
   var mes = fecha.getMonth()+1; //obteniendo mes
@@ -11,7 +43,6 @@ window.onload = function(){
   document.getElementById('endDate').value=ano+"-"+mes+"-"+dia;
 }
 
-// Funcion para obtener la liga absoluta
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -23,91 +54,92 @@ var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/prevencion", "");
 var url = "";
 var mensajeError = "Datos incorrectos, favor de validar.";
-
-function validateDates(startDate, endDate) {
-	
-	url = "";
-	var result = false;
-	var contador = 0;
-	/*
-	var fechaInicio = Date.parse(fecha1);
-	var fechaFin = Date.parse(fecha2);
-	*/
-	
-	if(document.getElementById("startDate").value < document.getElementById("endDate").value){
-		mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
-		document.getElementById("endDate").style.borderColor = "#F70707";
-		contador = contador + 1;
-		result = true;
-	}
-	
-	if(document.getElementById("startDate").value > document.getElementById("endDate").value){
-		mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
-		document.getElementById("startDate").style.borderColor = "#F70707";
-		contador = contador + 1;
-		result = true;
-	}
-
-	// @ts-ignore
-	if (document.getElementById("idTipoProducto").value > 0) {
-		document.getElementById("idTipoProducto").style.borderColor = "";
-		// @ts-ignore
-		var rptOA = newUrlBase + "generarRptOperacionesInusuales?idReporte=" + document.getElementById("idReportePLD").value;
-		//console.log(rptOA);
-		result = false;
-	} else {
-		mensajeError = "Debe seleccionar un reporte";
-		document.getElementById("idReportePLD").style.borderColor = "#F70707";
-		contador = contador + 1;
-		result = true;
-	}
-
-	// @ts-ignore
-	if (document.getElementById("extReportePLD").value > 0) {
-		document.getElementById("extReportePLD").style.borderColor = "";
-		// @ts-ignore
-		//url = url + rptOA+document.getElementById("extReportePLD").value;
-		result = false;
-	} else {
-		mensajeError = "Debe seleccionar la extension del reporte.";
-		document.getElementById("extReportePLD").style.borderColor = "#F70707";
-		contador = contador + 1;
-		result = true;
-	}
-	
-	if(contador == 0){
-		document.getElementById("dtFechaInicio").style.borderColor = "";
-		document.getElementById("dtFechaFin").style.borderColor = "";
-		// @ts-ignore
-		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
-	
-		result = false;
-	}else{
-		
-		result = true;
-	}
-
-	/*if (result == true) {
-		document.getElementById("dtFechaInicio").style.borderColor = "#F70707";
-		document.getElementById("dtFechaFin").style.borderColor = "#F70707";
-		
-	} else {
-		document.getElementById("dtFechaInicio").style.borderColor = "";
-		document.getElementById("dtFechaFin").style.borderColor = "";
-		// @ts-ignore
-		urlCompleta = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
-		//console.log(url);
-	}*/
-	return result;
-}
-
 var urlCompleta;
 
+function validateDates(startDate, endDate) {
+  	//var fechaInicio = Date.parse(startDate);
+	//var fechaFin = Date.parse(endDate);
+
+	var result = false;
+  
+  if(endDate < startDate) {
+    mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
+    $("#endDate").css("border-color", "#F70707");
+    result = true;
+  }
+  
+  if(startDate > endDate) {
+    mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
+    $("#startDate").css("border-color", "#F70707");
+    result = true;
+  }
+  
+  productType();
+  
+  return result;
+}
+
+function getProduct(select) {
+  
+  var selectValue = document.getElementById(select).value;;
+  
+  if(selectValue > 0) {
+    idProducto = selectValue;
+    isProducto = true;
+  }
+  /*$("#"+select).change(function() {
+    productoSelected = $("#"+select).val();
+    
+    if(productoSelected > 0) {
+      idProducto = productoSelected;
+      isProducto = true;
+      console.log(idProducto);
+    }
+  });*/
+}
+
+function productType(){
+  var select = "";
+  
+  switch(tipoProductoSelected) {
+    case "1":
+      select = "selectColocacion";
+      console.log("Colocacion:");
+      console.log(select);
+      getProduct(select);
+      break;
+    case "2":
+      select = "selectCaptacion";
+      console.log("Captación:");
+      console.log(select);
+      getProduct(select);
+      break;
+  }
+  
+}
+
+
+
 function generarReporte() {
+  
+  	console.log($("#startDate").val());
+  	console.log($("#endDate").val());
+  	console.log(clienteValue);
+  	console.log(idProducto);
+  	console.log(isCliente);
+  	console.log(isProducto);
 
 	// @ts-ignore
-	if (valVacio(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value) == false) {
+	if (validateDates($("#startDate").val(), $("#endDate").val()) == false) {
+    	urlCompleta = urlPrincipal + "generarRptOperacionesInusuales?fechaInicio=" + $("#startDate").val()
+    	+ "&fechaFin=" + $("#endDate").val() 
+    	+ "&noCliente=" + clienteValue
+    	+ "&idProducto=" + idProducto 
+    	+ "&isCliente=" + isCliente 
+    	+ "&isProducto=" + isProducto;
+    	
 		peticionPost(urlCompleta);
+		
 
 	} else {
 
@@ -119,7 +151,6 @@ function generarReporte() {
 	}
 
 }
-
 
 function peticionPost(urlServicio) {
 	//console.log(urlServicio);
@@ -156,9 +187,8 @@ function peticionPost(urlServicio) {
 /**
 * Lista clientes
 */
-var buscarCliente = document.getElementById('buscarCliente');
-var spinner = document.getElementById("spinnerClientes");
-var clienteValue = 0;
+var buscarCliente = document.getElementById('searchCustomer');
+//var spinner = document.getElementById("spinnerClientes");
 var timerId;
 
 
@@ -175,7 +205,7 @@ function listaClientes() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			var opciones = document.getElementById('opcionCliente');
+			var opciones = document.getElementById('customerOption');
 			opciones.innerHTML = '';
 			respuesta.lista.forEach(function(cliente) {
 				var option = document.createElement('option');
@@ -184,7 +214,8 @@ function listaClientes() {
 				opciones.appendChild(option);
 			});
 			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid     
+				isCliente = true;           
 			}
 			console.log(clienteValue);
 		}

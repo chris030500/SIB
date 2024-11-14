@@ -88,6 +88,20 @@ public class RptOperacionesInusualesController {
 			@RequestParam("idProducto") Integer idProducto,
 			@RequestParam("isCliente") Boolean isCliente,
 			@RequestParam("isProducto") Boolean isProducto) {
+		
+		String paramProduct;
+		String paramCustomer;
+		
+		if(noCliente == 0) {
+			paramCustomer = "~NoCliente=";
+		} else {
+			paramCustomer = "~NoCliente=" + noCliente;
+		}
+		if(idProducto == 0) {
+			paramProduct = "~ProductoID=";
+		} else {
+			paramProduct = "~ProductoID=" + idProducto;
+		}
 
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
@@ -95,7 +109,7 @@ public class RptOperacionesInusualesController {
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
 					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + fechaInicio + "~FechaFin="
-					+ fechaFin + "~NoCliente=" + noCliente + "~ProductoID=" + idProducto + "~FiltroXnoCliente=" 
+					+ fechaFin + paramCustomer + paramProduct + "~FiltroXnoCliente=" 
 					+ isCliente + "~FiltroXproductoID=" + isProducto + "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=PLD";
 
 			respuesta.add(reporteURL);

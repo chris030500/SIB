@@ -32,14 +32,14 @@
 						<div class="row" style="margin-top : 15px ">
 							<div class="col-md-3">
 								<label class="col-form-label">Tipo Producto</label>
-								<select class="form-control" id="idTipoProducto">
+								<select class="form-control" id="selectTipoProducto">
 									<option value="0">Seleccione</option>
 									<option th:each="listaTipoProducto : ${cat_tipo_producto}"
 										th:value="${listaTipoProducto.i_opcion}" th:text="${listaTipoProducto.v_valor}">
 									</option>
 								</select>
 							</div>
-							<div class="col-md-3" style="display: none;">
+							<div id="divProductosColocacion" class="col-md-3" style="display: none;">
 								<label class="col-form-label">Colocación:</label>
 								<select class="form-control" id="selectColocacion">
 									<option value="0">Seleccione</option>
@@ -48,9 +48,9 @@
 									</option>
 								</select>
 							</div>
-							<div class="col-md-3" style="display: none;">
+							<div id="divProductosCaptacion" class="col-md-3" style="display: none;">
 								<label class="col-form-label">Captación:</label>
-								<select class="form-control" id="selectCaptación">
+								<select class="form-control" id="selectCaptacion">
 									<option value="0">Seleccione</option>
 									<option th:each="listaProductosCaptacion : ${cat_productos_captacion}"
 										th:value="${listaProductosCaptacion.pk_i_tipo_cuenta_id}" th:text="${listaProductosCaptacion.vc_descripcion}">
