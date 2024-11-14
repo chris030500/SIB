@@ -7,13 +7,18 @@ var clienteValue = 0;
 
 $(document).ready(function() {
   $("#selectTipoProducto").change(function(){
+    
+    cleanFields();
+    defaultView();
     tipoProductoSelected = $("#selectTipoProducto").val();
+    console.log(tipoProductoSelected);
     
    if(tipoProductoSelected > 0) {
      switch(tipoProductoSelected) {
        case "1":
          $("#divProductosColocacion").show();
          $("#divProductosCaptacion").hide();
+         
          break;
        case "2":
          $("#divProductosColocacion").hide();
@@ -25,10 +30,14 @@ $(document).ready(function() {
          isProducto = true;
          break;
      }
-   }
-   
+   }    
   });
 });
+
+function defaultView() {
+   $("#divProductosColocacion").hide();
+   $("#divProductosCaptacion").hide();
+}
 
 window.onload = function(){
   var fecha = new Date(); //Fecha actual
@@ -57,8 +66,6 @@ var mensajeError = "Datos incorrectos, favor de validar.";
 var urlCompleta;
 
 function validateDates(startDate, endDate) {
-  	//var fechaInicio = Date.parse(startDate);
-	//var fechaFin = Date.parse(endDate);
 
 	var result = false;
   
@@ -87,15 +94,6 @@ function getProduct(select) {
     idProducto = selectValue;
     isProducto = true;
   }
-  /*$("#"+select).change(function() {
-    productoSelected = $("#"+select).val();
-    
-    if(productoSelected > 0) {
-      idProducto = productoSelected;
-      isProducto = true;
-      console.log(idProducto);
-    }
-  });*/
 }
 
 function productType(){
@@ -118,18 +116,8 @@ function productType(){
   
 }
 
-
-
 function generarReporte() {
-  
-  	console.log($("#startDate").val());
-  	console.log($("#endDate").val());
-  	console.log(clienteValue);
-  	console.log(idProducto);
-  	console.log(isCliente);
-  	console.log(isProducto);
 
-	// @ts-ignore
 	if (validateDates($("#startDate").val(), $("#endDate").val()) == false) {
     	urlCompleta = urlPrincipal + "generarRptOperacionesInusuales?fechaInicio=" + $("#startDate").val()
     	+ "&fechaFin=" + $("#endDate").val() 
@@ -140,7 +128,6 @@ function generarReporte() {
     	
 		peticionPost(urlCompleta);
 		
-
 	} else {
 
 		swal({
@@ -150,6 +137,29 @@ function generarReporte() {
 		});
 	}
 
+}
+
+function cleanView() {
+  $("#selectTipoProducto").val("0");
+  
+  cleanFields();
+  defaultView();
+}
+
+function cleanVariables() {
+  idProducto = 0;
+  clienteValue = 0;
+  isCliente = false;
+  isProducto = false;
+}
+
+function cleanFields() {
+  $("#selectColocacion").val("0");
+  $("#selectCaptacion").val("0");
+  $("#customerOption").val("");
+  $("#searchCustomer").val("");
+  
+  cleanVariables();
 }
 
 function peticionPost(urlServicio) {
@@ -167,12 +177,10 @@ function peticionPost(urlServicio) {
 		success: function(respuesta) {
 
 			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-
-			//console.log(urlReporte);
-			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
 			window.open(urlReporte);
 			window.focus();
+			
+			cleanView();
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
@@ -188,14 +196,13 @@ function peticionPost(urlServicio) {
 * Lista clientes
 */
 var buscarCliente = document.getElementById('searchCustomer');
-//var spinner = document.getElementById("spinnerClientes");
 var timerId;
 
 
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
-	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
-	timerId = setTimeout(listaClientes, 500); // Establecer un nuevo temporizador
+	clearTimeout(timerId); 
+	timerId = setTimeout(listaClientes, 500);
 }
 
 function listaClientes() {
@@ -214,7 +221,7 @@ function listaClientes() {
 				opciones.appendChild(option);
 			});
 			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].i_clienteid; // Aquí asumo que deseas guardar el primer valor de i_clienteid     
+				clienteValue = respuesta.lista[0].i_clienteid;   
 				isCliente = true;           
 			}
 			console.log(clienteValue);
@@ -228,6 +235,3 @@ buscarCliente.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	listaClientes();
 });
-/**
- * Fin
- */
