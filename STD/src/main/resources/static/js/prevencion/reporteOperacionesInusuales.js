@@ -10,8 +10,8 @@ $(document).ready(function() {
     
     cleanFields();
     defaultView();
+  
     tipoProductoSelected = $("#selectTipoProducto").val();
-    console.log(tipoProductoSelected);
     
    if(tipoProductoSelected > 0) {
      switch(tipoProductoSelected) {
@@ -32,12 +32,15 @@ $(document).ready(function() {
      }
    }    
   });
+  getCheck();
 });
 
 function defaultView() {
    $("#divProductosColocacion").hide();
    $("#divProductosCaptacion").hide();
 }
+
+function 
 
 window.onload = function(){
   var fecha = new Date(); //Fecha actual
@@ -67,7 +70,7 @@ var urlCompleta;
 
 function validateDates(startDate, endDate) {
 
-	var result = false;
+  var result = false;
   
   if(endDate < startDate) {
     mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
@@ -81,9 +84,34 @@ function validateDates(startDate, endDate) {
     result = true;
   }
   
+  if(isCliente == false && isProducto == false) {
+    mensajeError = "Debes de seleccionar un filtro de búsqueda por tipo producto o cliente.";
+    result = true;
+  }
+  
   productType();
   
   return result;
+}
+
+function getCheck() {
+  var checkbox = document.getElementById('customerCheck');
+  var divCustomerSearch = document.getElementById('divCustomerSearch');
+  var isChecked = checkbox.checked; 
+  
+  checkbox.addEventListener('change', () => {
+    if (isChecked == false) {
+      isCliente = true;
+      divCustomerSearch.style.display = "none";
+      isChecked = true;
+      console.log(isChecked);
+    } else {
+      clienteValue = 0;
+      divCustomerSearch.style.display = "block";
+      isChecked = false;
+      console.log(isChecked);
+    }
+  });
 }
 
 function getProduct(select) {
@@ -102,14 +130,12 @@ function productType(){
   switch(tipoProductoSelected) {
     case "1":
       select = "selectColocacion";
-      console.log("Colocacion:");
-      console.log(select);
+      
       getProduct(select);
       break;
     case "2":
       select = "selectCaptacion";
-      console.log("Captación:");
-      console.log(select);
+
       getProduct(select);
       break;
   }
