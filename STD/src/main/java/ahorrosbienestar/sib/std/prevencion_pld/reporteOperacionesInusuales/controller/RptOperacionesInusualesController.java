@@ -60,11 +60,12 @@ public class RptOperacionesInusualesController {
 	@Autowired
 	private ProductoColocacionService productoColocacionService;
 	
-	private String rutaDireccion = "";
 	
 	@GetMapping("/reporteOperacionesInusuales")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
+			
+			String rutaDireccion;
 					
 			if (validarAcceso() == 1) {
 				model.addAttribute("cat_tipo_producto", iCatalogoRepository.generarOpciones(Constantes.PLD_CAT_TIPO_PRODUCTO));
