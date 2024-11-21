@@ -10,30 +10,30 @@ import javax.persistence.Table;
 public class ProductoColocacion {
 	@Id
 	@Column(name = "PK_I_PRODUC_CREDITO_ID")
-	private Integer pk_i_produc_credito_id;
+	private Integer pkIProducCreditoId;
 	
 	@Column(name = "VC_DESCRIPCION")
-	private String vc_descripcion;
+	private String vcDescripcion;
 
-	public Integer getPk_i_produc_credito_id() {
-		return pk_i_produc_credito_id;
+	public Integer getPkIProducCreditoId() {
+		return pkIProducCreditoId;
 	}
 
-	public void setPk_i_produc_credito_id(Integer pk_i_produc_credito_id) {
-		this.pk_i_produc_credito_id = pk_i_produc_credito_id;
+	public void setPkIProducCreditoId(Integer pkIProducCreditoId) {
+		this.pkIProducCreditoId = pkIProducCreditoId;
 	}
 
-	public String getVc_descripcion() {
-		return vc_descripcion;
+	public String getVcDescripcion() {
+		return vcDescripcion;
 	}
 
-	public void setVc_descripcion(String vc_descripcion) {
-		this.vc_descripcion = vc_descripcion;
+	public void setVcDescripcion(String vcDescripcion) {
+		this.vcDescripcion = vcDescripcion;
 	}
 
 	@Override
 	public String toString() {
-		return "ProductosCredito [pk_i_produc_credito_id=" + pk_i_produc_credito_id + ", vc_descripcion="
-				+ vc_descripcion + "]";
+		return "ProductoColocacion [pkIProducCreditoId=" + pkIProducCreditoId + ", vcDescripcion=" + vcDescripcion
+				+ "]";
 	}
 }
