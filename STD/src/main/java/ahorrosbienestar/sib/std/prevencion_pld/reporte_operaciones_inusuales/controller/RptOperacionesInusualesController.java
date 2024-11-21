@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.prevencion_pld.reporteOperacionesInusuales.controller;
+package ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.prevencion_pld.reporteOperacionesInusuales.service.ProductoCaptacionService;
-import ahorrosbienestar.sib.std.prevencion_pld.reporteOperacionesInusuales.service.ProductoColocacionService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoCaptacionService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoColocacionService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -132,5 +132,4 @@ public class RptOperacionesInusualesController {
 			return 0;
 		}
 	}
-
 }

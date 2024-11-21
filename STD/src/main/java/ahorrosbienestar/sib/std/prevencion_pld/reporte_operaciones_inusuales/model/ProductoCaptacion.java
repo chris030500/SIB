@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.prevencion_pld.reporteOperacionesInusuales.model;
+package ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TBL_TIPOS_CUENTAS")
 public class ProductoCaptacion {
-	
 	@Id
 	@Column(name = "PK_I_TIPO_CUENTA_ID")
 	private Integer pk_i_tipo_cuenta_id;
