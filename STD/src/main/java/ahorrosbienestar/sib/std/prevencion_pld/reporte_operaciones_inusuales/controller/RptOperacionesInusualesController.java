@@ -97,19 +97,32 @@ public class RptOperacionesInusualesController {
 		paramCustomer = (noCliente == 0) ? "~NoCliente=" : "~NoCliente=" + noCliente;
 		paramProduct = idProducto.isEmpty() ? "~ProductoID=" : "~ProductoID=" + idProducto;
 
-		ArrayList<String> respuesta = new ArrayList<String>();
+		List<String> respuesta = new ArrayList<>();
+		
 		try {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO);
 			
-			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
-					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + fechaInicio + "~FechaFin="
-					+ fechaFin + paramCustomer + paramProduct + "~isCustomer=" 
-					+ isCliente + "~isProduct=" + isProducto + "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=PLD";
+			StringBuilder reporteURL = new StringBuilder();
+			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
+			.append(datosReporte.getPk_id_reporte())
+			.append("&parametros=?FechaInicio=")
+			.append(fechaInicio)
+			.append("~FechaFin=")
+			.append(fechaFin)
+			.append(paramCustomer)
+			.append(paramProduct)
+			.append("~isCustomer=")
+			.append(isCliente)
+			.append("~isProduct=")
+			.append(isProducto)
+			.append("&tipoDocumento=")
+			.append(datosReporte.getVc_extension())
+			.append("&identificadorDoc=PLD");
 
-			respuesta.add(reporteURL);
+			respuesta.add(reporteURL.toString());
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error("Error: " + e.getMessage());
 			respuesta.add(e.getMessage());
 			return ResponseEntity.ok(respuesta);
 		}
