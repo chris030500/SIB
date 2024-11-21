@@ -1,46 +1,87 @@
-var tipoProductoSelected = "";
 var productoSelected = "";
-var idProducto = 0;
+var idProducto = "";
 var isCliente = false;
 var isProducto = false;
 var clienteValue = 0;
+var mensajeError = "Datos incorrectos, favor de validar.";
+var urlCompleta;
+var buscarCliente = document.getElementById('searchCustomer');
+var timerId;
 
-$(document).ready(function() {
-  $("#selectTipoProducto").change(function(){
-    
-    cleanFields();
-    defaultView();
+function customerSearchSelect() {
+  var select = document.getElementById('selectBusquedaCliente');
   
-    tipoProductoSelected = $("#selectTipoProducto").val();
+  select.addEventListener('change', () => {
+    var selectValue = parseInt(select.value);
+    console.log(selectValue);
     
-   if(tipoProductoSelected > 0) {
-     switch(tipoProductoSelected) {
-       case "1":
-         $("#divProductosColocacion").show();
-         $("#divProductosCaptacion").hide();
-         
-         break;
-       case "2":
-         $("#divProductosColocacion").hide();
-         $("#divProductosCaptacion").show();
-         break;
-       case "3":
-         $("#divProductosColocacion").hide();
-         $("#divProductosCaptacion").hide();
-         isProducto = true;
-         break;
-     }
-   }    
+    var div = document.getElementById('divCustomerSearch');
+    
+    if (selectValue > 0) {
+      switch (selectValue) {
+        case 1:
+          div.style.display = "block";
+          break;
+        case 2:
+          div.style.display = "none";
+          clienteValue = 0;
+          isCliente = true;
+          break;
+      }
+    }
   });
-  getCheck();
-});
-
-function defaultView() {
-   $("#divProductosColocacion").hide();
-   $("#divProductosCaptacion").hide();
 }
 
-function 
+function getProduct(idSelect) {
+  
+  var select = document.getElementById(idSelect);
+  
+  select.addEventListener('change', () => {
+    var selectedOptions = Array.from(select.selectedOptions);
+    var values = selectedOptions.map(option => option.value);
+    
+    idProducto = values.join(',');
+    isProducto = true;
+    
+    console.log('Valores seleccionados: ', idProducto);
+  });
+}
+
+function typeProductSelect() {
+  var select = document.getElementById('selectTipoProducto');
+  
+  select.addEventListener('change', () => {
+    var selectValue = parseInt(select.value);
+    console.log(selectValue);
+    
+    var divProductosColocacion = document.getElementById('divProductosColocacion');
+    var divProductoCaptacion = document.getElementById('divProductosCaptacion');
+    
+    if (selectValue > 0) {
+   
+      switch (selectValue) {
+        case 1:
+          divProductosColocacion.style.display = "block";
+          divProductoCaptacion.style.display = "none";
+          getProduct('selectColocacion');
+          break;
+        case 2:
+          divProductosColocacion.style.display = "none";
+          divProductoCaptacion.style.display = "block";  
+          getProduct('selectCaptacion');
+          break;        
+        case 3:
+          divProductosColocacion.style.display = "none";
+          divProductoCaptacion.style.display = "none";
+          idProducto = "0";
+          isProducto = true;
+          break;
+      }
+      
+    }
+    
+  });
+}
 
 window.onload = function(){
   var fecha = new Date(); //Fecha actual
@@ -60,13 +101,6 @@ function getAbsolutePath() {
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
-
-// Variables | validacion de la liga absoluta
-var urlPrincipal = getAbsolutePath();
-var newUrlBase = urlPrincipal.replace("/prevencion", "");
-var url = "";
-var mensajeError = "Datos incorrectos, favor de validar.";
-var urlCompleta;
 
 function validateDates(startDate, endDate) {
 
@@ -89,63 +123,13 @@ function validateDates(startDate, endDate) {
     result = true;
   }
   
-  productType();
-  
   return result;
-}
-
-function getCheck() {
-  var checkbox = document.getElementById('customerCheck');
-  var divCustomerSearch = document.getElementById('divCustomerSearch');
-  var isChecked = checkbox.checked; 
-  
-  checkbox.addEventListener('change', () => {
-    if (isChecked == false) {
-      isCliente = true;
-      divCustomerSearch.style.display = "none";
-      isChecked = true;
-      console.log(isChecked);
-    } else {
-      clienteValue = 0;
-      divCustomerSearch.style.display = "block";
-      isChecked = false;
-      console.log(isChecked);
-    }
-  });
-}
-
-function getProduct(select) {
-  
-  var selectValue = document.getElementById(select).value;;
-  
-  if(selectValue > 0) {
-    idProducto = selectValue;
-    isProducto = true;
-  }
-}
-
-function productType(){
-  var select = "";
-  
-  switch(tipoProductoSelected) {
-    case "1":
-      select = "selectColocacion";
-      
-      getProduct(select);
-      break;
-    case "2":
-      select = "selectCaptacion";
-
-      getProduct(select);
-      break;
-  }
-  
 }
 
 function generarReporte() {
 
 	if (validateDates($("#startDate").val(), $("#endDate").val()) == false) {
-    	urlCompleta = urlPrincipal + "generarRptOperacionesInusuales?fechaInicio=" + $("#startDate").val()
+    	urlCompleta = getAbsolutePath() + "generarRptOperacionesInusuales?fechaInicio=" + $("#startDate").val()
     	+ "&fechaFin=" + $("#endDate").val() 
     	+ "&noCliente=" + clienteValue
     	+ "&idProducto=" + idProducto 
@@ -166,30 +150,62 @@ function generarReporte() {
 }
 
 function cleanView() {
-  $("#selectTipoProducto").val("0");
+  /*$("#divProductosColocacion").hide();
+  $("#divProductosCaptacion").hide();
+  $("#divCustomerSearch").hide();*/
+  
+  const divsToHide = [
+    "divProductosColocacion",
+    "divProductosCaptacion",
+    "divCustomerSearch"
+  ];
+
+  divsToHide.forEach(id => {
+    const div = document.getElementById(id);
+    if (div) {
+      div.style.display = "none";
+    }
+  });
   
   cleanFields();
-  defaultView();
+  cleanVariables();
 }
 
 function cleanVariables() {
-  idProducto = 0;
+  idProducto = "";
   clienteValue = 0;
   isCliente = false;
   isProducto = false;
 }
 
 function cleanFields() {
+  /*$("#selectTipoProducto").val("0");
   $("#selectColocacion").val("0");
   $("#selectCaptacion").val("0");
+  $("#selectBusquedaCliente").val("0");
   $("#customerOption").val("");
-  $("#searchCustomer").val("");
+  $("#searchCustomer").val("");*/
   
-  cleanVariables();
+  const fieldsToClear = [
+    "selectTipoProducto",
+    "selectColocacion",
+    "selectCaptacion",
+    "selectBusquedaCliente",
+    "customerOption",
+    "searchCustomer"
+  ];
+  
+    // Iterar sobre cada ID y limpiar su valor
+  fieldsToClear.forEach(id => {
+    const field = document.getElementById(id); // Obtener el campo por su ID
+    if (field) {
+      // Si es un <select>, asignar "0"; si no, asignar cadena vacía
+      field.value = field.tagName === "SELECT" ? "0" : "";
+    }
+  });
 }
 
 function peticionPost(urlServicio) {
-	//console.log(urlServicio);
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
@@ -218,13 +234,6 @@ function peticionPost(urlServicio) {
 	});
 }
 
-/**
-* Lista clientes
-*/
-var buscarCliente = document.getElementById('searchCustomer');
-var timerId;
-
-
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
 	clearTimeout(timerId); 
@@ -233,6 +242,9 @@ function debouncedListaClientes() {
 
 function listaClientes() {
 	var buscar = buscarCliente.value;
+	var urlPrincipal = getAbsolutePath();
+	var newUrlBase = urlPrincipal.replace("/prevencion", "");
+	
 	$.ajax({
 		url: newUrlBase + "lista_numero_cliente?valor=" + buscar,
 		type: "GET",
@@ -260,4 +272,9 @@ buscarCliente.addEventListener('input', debouncedListaClientes);
 buscarCliente.addEventListener('input', function() {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	listaClientes();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  typeProductSelect();
+  customerSearchSelect();
 });

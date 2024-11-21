@@ -68,6 +68,7 @@ public class RptOperacionesInusualesController {
 					
 			if (validarAcceso() == 1) {
 				model.addAttribute("cat_tipo_producto", iCatalogoRepository.generarOpciones(Constantes.PLD_CAT_TIPO_PRODUCTO));
+				model.addAttribute("cat_busqueda_cliente", iCatalogoRepository.generarOpciones(Constantes.PLD_CAT_BUSQUEDA_CLIENTE));
 				model.addAttribute("cat_productos_captacion", productoCaptacionService.getProductosCaptacion());
 				model.addAttribute("cat_productos_colocacion", productoColocacionService.getProductosColocacion());
 				rutaDireccion = Constantes.PLD_REPORTE_OPEACIONES_INUSUALES;
@@ -85,23 +86,15 @@ public class RptOperacionesInusualesController {
 	public ResponseEntity<?> reporteOperacionesInusuales(@RequestParam("fechaInicio") String fechaInicio, 
 			@RequestParam("fechaFin") String fechaFin,
 			@RequestParam("noCliente") Integer noCliente,
-			@RequestParam("idProducto") Integer idProducto,
+			@RequestParam("idProducto") String idProducto,
 			@RequestParam("isCliente") Boolean isCliente,
 			@RequestParam("isProducto") Boolean isProducto) {
 		
 		String paramProduct;
 		String paramCustomer;
 		
-		if(noCliente == 0) {
-			paramCustomer = "~NoCliente=";
-		} else {
-			paramCustomer = "~NoCliente=" + noCliente;
-		}
-		if(idProducto == 0) {
-			paramProduct = "~ProductoID=";
-		} else {
-			paramProduct = "~ProductoID=" + idProducto;
-		}
+		paramCustomer = (noCliente == 0) ? "~NoCliente=" : "~NoCliente=" + noCliente;
+		paramProduct = idProducto.isEmpty() ? "~ProductoID=" : "~ProductoID=" + idProducto;
 
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
@@ -109,8 +102,8 @@ public class RptOperacionesInusualesController {
 			
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
 					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + fechaInicio + "~FechaFin="
-					+ fechaFin + paramCustomer + paramProduct + "~FiltroXnoCliente=" 
-					+ isCliente + "~FiltroXproductoID=" + isProducto + "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=PLD";
+					+ fechaFin + paramCustomer + paramProduct + "~isCustomer=" 
+					+ isCliente + "~isProduct=" + isProducto + "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=PLD";
 
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
