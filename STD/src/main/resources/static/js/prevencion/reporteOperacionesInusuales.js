@@ -33,7 +33,6 @@ function customerSearchSelect() {
 }
 
 function getProduct(idSelect) {
-  
   var select = document.getElementById(idSelect);
   
   select.addEventListener('change', () => {
@@ -118,11 +117,6 @@ function validateDates(startDate, endDate) {
     result = true;
   }
   
-  if(isCliente == false && isProducto == false) {
-    mensajeError = "Debes de seleccionar un filtro de búsqueda por tipo producto o cliente.";
-    result = true;
-  }
-  
   return result;
 }
 
@@ -150,10 +144,6 @@ function generarReporte() {
 }
 
 function cleanView() {
-  /*$("#divProductosColocacion").hide();
-  $("#divProductosCaptacion").hide();
-  $("#divCustomerSearch").hide();*/
-  
   const divsToHide = [
     "divProductosColocacion",
     "divProductosCaptacion",
@@ -179,13 +169,6 @@ function cleanVariables() {
 }
 
 function cleanFields() {
-  /*$("#selectTipoProducto").val("0");
-  $("#selectColocacion").val("0");
-  $("#selectCaptacion").val("0");
-  $("#selectBusquedaCliente").val("0");
-  $("#customerOption").val("");
-  $("#searchCustomer").val("");*/
-  
   const fieldsToClear = [
     "selectTipoProducto",
     "selectColocacion",
