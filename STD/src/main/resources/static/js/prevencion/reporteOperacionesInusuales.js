@@ -7,6 +7,7 @@ var mensajeError = "Datos incorrectos, favor de validar.";
 var urlCompleta;
 var buscarCliente = document.getElementById('searchCustomer');
 var timerId;
+var idEstatus = null;
 
 function customerSearchSelect() {
   var select = document.getElementById('selectBusquedaCliente');
@@ -101,6 +102,24 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+function getReporteJasper() {
+  var url = getAbsolutePath() + "getReporteJasper";
+  
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "JSON",
+    success: function (res) {
+      //var idEstatus = res.iEstatusControlReporte;
+      idEstatus = res.iEstatusControlReporte;
+      console.log(idEstatus);
+    },
+    error: function () {
+      console.error("Error al obtener el reporte.");
+    }
+  });
+}
+
 function validateDates(startDate, endDate) {
 
   var result = false;
@@ -121,7 +140,6 @@ function validateDates(startDate, endDate) {
 }
 
 function generarReporte() {
-
 	if (validateDates($("#startDate").val(), $("#endDate").val()) == false) {
     	urlCompleta = getAbsolutePath() + "generarRptOperacionesInusuales?fechaInicio=" + $("#startDate").val()
     	+ "&fechaFin=" + $("#endDate").val() 
@@ -131,6 +149,7 @@ function generarReporte() {
     	+ "&isProducto=" + isProducto;
     	
 		peticionPost(urlCompleta);
+		controlPeticiones(1);
 		
 	} else {
 
@@ -188,8 +207,29 @@ function cleanFields() {
   });
 }
 
+function controlPeticiones(idEstatus) {
+  
+  var url = getAbsolutePath() + "inactivarReporteJasper?estatus=" + idEstatus;
+  
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "JSON",
+    success: function (res) {
+      console.log("Estatus reporte Jasper: " + res.reporteJasper.iEstatusAnteriorControlReporte);
+    }
+  });
+}
+
 function peticionPost(urlServicio) {
-	$.ajax({
+  if (idEstatus === 1) {
+    swal({
+      title: "Error, ",
+      text: "Alguien más está generando el reporte, inténtelo más tarde.",
+      icon: "warning",
+    });
+  } else {
+    $.ajax({
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
@@ -206,6 +246,7 @@ function peticionPost(urlServicio) {
 			window.focus();
 			
 			cleanView();
+			controlPeticiones(0);
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
@@ -215,6 +256,7 @@ function peticionPost(urlServicio) {
 			});
 		}
 	});
+  }
 }
 
 // Función para realizar la llamada al servicio después de un retraso
@@ -260,4 +302,5 @@ buscarCliente.addEventListener('input', function() {
 document.addEventListener('DOMContentLoaded', () => {
   typeProductSelect();
   customerSearchSelect();
+  getReporteJasper();
 });
