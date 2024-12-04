@@ -2,10 +2,13 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.co
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +24,8 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.model.ControlReporteJasper;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ControlReporteJasperService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoCaptacionService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoColocacionService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -59,6 +64,9 @@ public class RptOperacionesInusualesController {
 	
 	@Autowired
 	private ProductoColocacionService productoColocacionService;
+	
+	@Autowired
+	private ControlReporteJasperService reporteJasperService;
 	
 	
 	@GetMapping("/reporteOperacionesInusuales")
@@ -127,6 +135,30 @@ public class RptOperacionesInusualesController {
 			return ResponseEntity.ok(respuesta);
 		}
 
+	}
+	
+	@RequestMapping(value = "/inactivarReporteJasper", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> inactivar(@RequestParam("estatus") int estatus) {
+
+		ControlReporteJasper reporteJasperActualizado = reporteJasperService.inactivarReporteJasper(Constantes.PLD_CONTROL_REPORTE_JASPER, estatus);
+		if (reporteJasperActualizado != null) {
+			Map<String, Object> response = new HashMap<>();
+			response.put("reporteJasper", reporteJasperActualizado);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@RequestMapping(value = "/getReporteJasper", method = RequestMethod.GET)
+	public ResponseEntity<?> getReporteJasper() {
+
+		ControlReporteJasper reporteJasper = reporteJasperService.getReporteJasper(Constantes.PLD_CONTROL_REPORTE_JASPER);
+		if (reporteJasper != null) {
+			return new ResponseEntity<>(reporteJasper, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	public int validarAcceso() {

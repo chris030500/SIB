@@ -177,6 +177,7 @@ public class Constantes {
 	public static final String PLD_REPORTE_OPEACIONES_INUSUALES = "prevencion/reporteOperacionesInusuales";
 	public static final int PLD_CAT_TIPO_PRODUCTO = 29;
 	public static final int PLD_CAT_BUSQUEDA_CLIENTE = 30;
+	public static final int PLD_CONTROL_REPORTE_JASPER = 1;
 	
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
