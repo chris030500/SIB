@@ -83,11 +83,13 @@ public class Constantes {
     public static final String USUARIO_TELEFONOS = "usuariosTelefonos";
     public static final String USUARIO_COD_ACCION_TELEFONO = "usuariosCodigosAccionR";
     public static final String USUARIO_CONSULTA = "usuarioConsulta";
+    public static final String USUARIO_EXCLUSION_NOMINA = "usuarioExclusionesNomina";
     
     //PROPIEDAD DEL CONTROLLER DEL REPORTE
     public static final String CONTROLLER_JASPER_CONF = "generarReporte";
     //NOMBRES DE REPORTES
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
+    public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
