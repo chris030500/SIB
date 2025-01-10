@@ -175,6 +175,10 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
+	//constantes solicitud credito
+	public static final String SOLICITUD_CREDITO_DESEMBOLSADOS = "solicitudCredito/creditosDesembolsados";
+	public static final String SOLICITUD_CREDITO_AUTORIZADOS = "solicitudCredito/solicitudesAutorizadas";
+	
 	
     private Constantes() {
         

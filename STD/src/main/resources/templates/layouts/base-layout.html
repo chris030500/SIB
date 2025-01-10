@@ -416,6 +416,30 @@
 					</ul>
 				</li>
 				<!-- Fin SCCB -->
+				
+				<!-- Solicitud de Crédito -->
+				<li  style="display:none;"  class="nav-item" th:id="13">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-solicitudCredito"
+						data-bs-toggle="collapse">
+						<i class="bi bi-credit-card"></i><span>Solicitud de Crédito</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-solicitudCredito" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						
+						<li th:id="M_O38" class="nav-item" style="display:none;">
+							<a th:href="@{/solicitudCredito/creditosDesembolsados}">
+								<i class="bi bi-envelope-paper"></i><span>Créditos Desembolsados</span>
+							</a>
+						</li>
+						
+						<li th:id="M_O39" class="nav-item" style="display:none;">
+							<a th:href="@{/solicitudCredito/solicitudesAutorizadas}">
+								<i class="bi bi-cash"></i><span>Solicitudes Autorizadas</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Solicitud de Crédito -->
 
 			</ul>
 
