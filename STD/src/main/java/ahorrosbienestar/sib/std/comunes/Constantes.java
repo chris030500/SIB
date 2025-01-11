@@ -179,6 +179,11 @@ public class Constantes {
 	public static final String SOLICITUD_CREDITO_DESEMBOLSADOS = "solicitudCredito/creditosDesembolsados";
 	public static final String SOLICITUD_CREDITO_AUTORIZADOS = "solicitudCredito/solicitudesAutorizadas";
 	
+	//permisos de pantallas Solicitud Crédito
+	public static final String USUARIO_ADMIN_SOLICITUD_CREDITO = "usrAdmin";
+	public static final String USUARIO_ADMIN_MARKETING = "usrAdminMarketing";
+	public static final String USUARIOS_EDITOR_MARKETING = "usrEditorMarketing";
+	
 	
     private Constantes() {
         

@@ -65,11 +65,46 @@
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<tbody>
-											
+											<tr th:each="configuracion, configuracionStat : ${lista_configuraciones}" th:if="${configuracion.tipoConfig == 2}">
+												<td th:text="${configuracion.descripcionConfiguracion}"></td>
+												<td>
+													<div th:switch="${configuracion.descTipoConfig}">
+														<input th:case="'number'" type="number" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+															
+														<input th:case="'text'" type="text" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+														
+														<input th:case="'password'" type="password" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+													</div>
+												</td>
+											</tr>
+											<tr th:each="configuracion, configuracionStat : ${lista_configuraciones}" th:if="${configuracion.tipoConfig == 4}">
+												<td th:text="${configuracion.descripcionConfiguracion}"></td>
+												<td>
+													<div th:switch="${configuracion.descTipoConfig}">
+														<input th:case="'text'" type="text" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															readonly>
+													</div>
+												</td>
+											</tr>
 										</tbody>
 									</table>
 								</div>
-								<button type="submit" onclick="" class="btn btn-primary mt-4">Guardar cambios</button>
+								<button type="submit" onclick="saveCredenciales(event)" class="btn btn-primary mt-4">Guardar cambios</button>
 							</form>
 						</div>
 					</fieldset>
