@@ -21,4 +21,12 @@ public class ConfiguracionCredencialesService {
 	public int searchConfiguracion(String nombreConfig, String username) {
 		return credencialesRepository.searchConfiguracion(nombreConfig, username);
 	}
+	
+	public List<ConfiguracionCredenciales> getDatosCalixta() {
+		return credencialesRepository.getDatosCalixta();
+	}
+	
+	public void saveCredencialesCalixta(List<ConfiguracionCredenciales> credenciales) {
+		credencialesRepository.saveAll(credenciales);
+	}
 }

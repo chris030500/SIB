@@ -61,7 +61,7 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Datos conexión al servicio de Calixta</legend>
 						<div class="row" style="margin-top : 15px ">
-							<form id="CredencialesForm">
+							<form th:action="@{/solicitudCredito/guardarCredenciales}" method="post" id="credencialesForm">
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<tbody>
@@ -104,7 +104,7 @@
 										</tbody>
 									</table>
 								</div>
-								<button type="submit" onclick="saveCredenciales(event)" class="btn btn-primary mt-4">Guardar cambios</button>
+								<button type="submit" class="btn btn-primary mt-4">Guardar cambios</button>
 							</form>
 						</div>
 					</fieldset>
