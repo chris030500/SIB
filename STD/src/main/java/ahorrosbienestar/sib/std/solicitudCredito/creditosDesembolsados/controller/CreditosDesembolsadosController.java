@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.ConfiguracionCredenciales;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.ConfiguracionCredencialesService;
+import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.Credenciales;
+import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.CredencialesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -43,7 +43,7 @@ public class CreditosDesembolsadosController {
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
-	private ConfiguracionCredencialesService configuracionesService;
+	private CredencialesService configuracionesService;
 	
 	private String rutaDireccion = "";
 	
@@ -56,7 +56,7 @@ public class CreditosDesembolsadosController {
 					userDetails = (UserDetails) principal;
 			}
 			if (validarAcceso() == 1) {
-				List<ConfiguracionCredenciales> configuraciones = configuracionesService.getCredenciales();
+				List<Credenciales> configuraciones = configuracionesService.getCredenciales();
 				model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_SOLICITUD_CREDITO, userDetails.getUsername()));
 				model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
 				model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
@@ -76,14 +76,14 @@ public class CreditosDesembolsadosController {
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
 		
-		List<ConfiguracionCredenciales> credencialesCalixta = configuracionesService.getDatosCalixta();
-		List<ConfiguracionCredenciales> updatedCredenciales = new ArrayList<>();
+		List<Credenciales> credencialesCalixta = configuracionesService.getDatosCalixta();
+		List<Credenciales> updatedCredenciales = new ArrayList<>();
 		
 		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
 			
-			ConfiguracionCredenciales calixta = credencialesCalixta.stream()
+			Credenciales calixta = credencialesCalixta.stream()
 					.filter(c -> c.getNombreConfiguracion().equalsIgnoreCase(key))
 					.findFirst()
 					.orElse(null);

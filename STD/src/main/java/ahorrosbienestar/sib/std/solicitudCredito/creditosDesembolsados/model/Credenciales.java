@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_CONFIGURACION_SOLICITUD_CREDITO")
-public class ConfiguracionCredenciales {
+public class Credenciales {
 	
 	@Id
 	@Column(name = "PK_I_CONFIG_SOLCRE")

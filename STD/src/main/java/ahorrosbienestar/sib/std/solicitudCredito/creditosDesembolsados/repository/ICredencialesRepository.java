@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.ConfiguracionCredenciales;
+import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.Credenciales;
 
 @Repository
-public interface IConfiguracionCredencialesRepository extends JpaRepository<ConfiguracionCredenciales, Integer> {
+public interface ICredencialesRepository extends JpaRepository<Credenciales, Integer> {
 	
 	@Query(value = "SELECT COUNT(*) FROM SIB.TBL_CONFIGURACION_SOLICITUD_CREDITO "
 			+ "WHERE VC_NOMBRE_CONFIG LIKE %:nombreConfig% "
@@ -17,6 +17,6 @@ public interface IConfiguracionCredencialesRepository extends JpaRepository<Conf
 	public int searchConfiguracion(String nombreConfig,String username);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_CONFIGURACION_SOLICITUD_CREDITO WHERE I_TIPO_CONFIG = 2", nativeQuery = true)
-	public List<ConfiguracionCredenciales> getDatosCalixta();
+	public List<Credenciales> getDatosCalixta();
 
 }
