@@ -178,6 +178,7 @@ public class Constantes {
 	//constantes solicitud credito
 	public static final String SOLICITUD_CREDITO_DESEMBOLSADOS = "solicitudCredito/creditosDesembolsados";
 	public static final String SOLICITUD_CREDITO_AUTORIZADOS = "solicitudCredito/solicitudesAutorizadas";
+	public static final int SOLICITUD_CREDITO_CAT_MESES = 31;
 	
 	//permisos de pantallas Solicitud Crédito
 	public static final String USUARIO_ADMIN_SOLICITUD_CREDITO = "usrAdmin";

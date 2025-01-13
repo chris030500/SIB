@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -45,6 +47,9 @@ public class CreditosDesembolsadosController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
@@ -64,11 +69,14 @@ public class CreditosDesembolsadosController {
 					userDetails = (UserDetails) principal;
 			}
 			if (validarAcceso() == 1) {
+				int mesActual = LocalDate.now().getMonthValue();
 				List<Credenciales> configuraciones = configuracionesService.getCredenciales();
 				model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_SOLICITUD_CREDITO, userDetails.getUsername()));
 				model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
 				model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
 				model.addAttribute("lista_configuraciones", configuraciones);
+				model.addAttribute("mesActual", mesActual);
+				model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.SOLICITUD_CREDITO_CAT_MESES));
 				rutaDireccion = Constantes.SOLICITUD_CREDITO_DESEMBOLSADOS;
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;

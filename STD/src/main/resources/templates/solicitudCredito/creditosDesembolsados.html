@@ -146,10 +146,12 @@
 								<div class="row mb-3 align-items-center">
 									<label for="mes-calendario" class="form-label">Mes calendario:</label>
 									<select class="form-select w-50" id="mes-calendario">
-										<option value="" selected>Selecciona una opción</option>
-										<option value="enero">Enero</option>
-										<option value="febrero">Febrero</option>
-										<option value="marzo">Marzo</option>
+										<option value="0" selected>Selecciona una opción</option>
+										<option th:each="meses : ${cat_meses}"
+											th:value="${meses.i_opcion}"
+											th:text="${meses.v_valor}"
+											th:selected="${meses.i_opcion == mesActual}">
+										</option>
 									</select>
 								</div>
 								<div class="row mb-4 align-items-center">
