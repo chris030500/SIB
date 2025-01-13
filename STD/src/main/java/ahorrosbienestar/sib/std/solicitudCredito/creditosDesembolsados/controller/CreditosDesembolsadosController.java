@@ -124,6 +124,42 @@ public class CreditosDesembolsadosController {
 		}
 	}
 	
+    @PostMapping("/guardar-plantilla")
+    @ResponseBody
+    public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
+    	
+        try {
+        	
+            String tipoCredito = (String) payload.get("tipoCredito");
+            Integer isCampania = (Integer) payload.get("isCampania");
+            String texto = (String) payload.get("texto");
+            
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			
+			if (principal instanceof UserDetails) {
+				
+				userDetails = (UserDetails) principal;
+				
+			}
+			
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+            
+            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(tipoCredito, isCampania, idUsuario, texto);
+            
+            if (updatedConfig != null) {
+                return ResponseEntity.ok(updatedConfig);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
+            }
+        } catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
+        }
+    }
+	
 	public int validarAcceso() {
 		
 		try {

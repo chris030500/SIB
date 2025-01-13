@@ -123,6 +123,40 @@ function getPlantillaByTipoCredito(tipoCredito, isCampania){
 	})
 }
 
+function actualizarPlantilla(tipoCredito, isCampania, texto) {
+    const payload = {
+        tipoCredito: tipoCredito,
+        isCampania: isCampania,
+        texto: texto,
+    };
+
+    fetch("/STD/solicitudCredito/guardar-plantilla", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("Error al actualizar la plantilla");
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Plantilla actualizada: ", data);
+        swal("¡Guardado exitoso!", "La plantilla se guardó correctamente.", "success");
+       	setTimeout(function() {
+			swal.close(); // Cierra el SweetAlert
+		}, 2000);
+		location.reload();
+    })
+    .catch((error) => {
+        console.error("Error al actualizar la plantilla:", error);
+        swal("Error", "Ocurrió un problema al guardar la plantilla. Inténtalo de nuevo.", "error");
+    });
+}
+
 document.getElementById("select-tipo-credito").addEventListener("change", function () {
     const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
     console.log("Opción seleccionada:", selectedValue);
@@ -142,4 +176,30 @@ document.getElementById("select-tipo-credito").addEventListener("change", functi
 	}
 
 });
+
+document.getElementById("plantillasForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    const tipoCredito = document.getElementById("select-tipo-credito").value;
+    const texto = document.getElementById("plantilla-texto-enviar").value;
+
+    // Determina el valor de isCampania
+    const isCampania = tipoCredito === "" ? 1 : 0;
+
+    // Validaciones
+    if (!texto.trim()) {
+        swal("Error", "El texto del mensaje no puede estar vacío.", "error");
+        return;
+    }
+
+    if (tipoCredito === "0") {
+        swal("Error", "Por favor selecciona un tipo de crédito válido.", "error");
+        return;
+    }
+
+    // Llama a la función para actualizar la plantilla
+    actualizarPlantilla(tipoCredito, isCampania, texto);
+});
+
+
 

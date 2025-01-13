@@ -17,5 +17,4 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 			+ "AND FK_VC_ESTATUS_SOLCRE = 'D' "
 			+ "AND I_IND_SOLCRE_CAMPANIA = :isCampania ", nativeQuery = true)
 	public Optional<ConfiguracionSMS> getCurrentSmsConfig(String tipoCredito, Integer isCampania);
-
 }
