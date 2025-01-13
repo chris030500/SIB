@@ -3,11 +3,13 @@ package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.controll
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,12 +19,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.Credenciales;
+import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.CredencialesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -44,6 +49,9 @@ public class CreditosDesembolsadosController {
 	
 	@Autowired
 	private CredencialesService configuracionesService;
+	
+	@Autowired
+	private ConfiguracionSMSService configuracionSMSService;
 	
 	private String rutaDireccion = "";
 	
@@ -102,6 +110,18 @@ public class CreditosDesembolsadosController {
 
 	    // Devolver el objeto JSON
 	    return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/obtener-plantilla")
+	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
+		
+		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(tipoCredito, isCampania);
+		
+		if (configuracionSMS.isPresent()) {
+			return ResponseEntity.ok(configuracionSMS.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
+		}
 	}
 	
 	public int validarAcceso() {

@@ -98,3 +98,48 @@ document.getElementById("credencialesForm").addEventListener("submit", function 
 		}, 2000);
     });
 });
+
+function getPlantillaByTipoCredito(tipoCredito, isCampania){
+	
+	fetch(`/STD/solicitudCredito/obtener-plantilla?tipoCredito=${tipoCredito}&isCampania=${isCampania}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		}
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Error en la respuesta del servidor");
+		}
+		 return response.json();
+	})
+	.then((data) => {
+		console.log("Configuracion SMS: ", data);
+		const texto = data?.mensaje || "No hay texto disponible.";
+		document.getElementById("plantilla-texto-enviar").value = texto;
+	})
+	.catch((error) => {
+		console.error("Error al obtener las configuraciones SMS:", error);
+	})
+}
+
+document.getElementById("select-tipo-credito").addEventListener("change", function () {
+    const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
+    console.log("Opción seleccionada:", selectedValue);
+    
+    switch(selectedValue) {
+		case "N":
+			getPlantillaByTipoCredito(selectedValue, 0);
+			break;
+		case "O":
+			getPlantillaByTipoCredito(selectedValue, 0);
+			break;
+		case "":
+			getPlantillaByTipoCredito(selectedValue, 1);
+			break;
+		case "0":
+			document.getElementById("plantilla-texto-enviar").value = '';
+	}
+
+});
+
