@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.marketing.controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,31 @@ public class CreditosDesembolsadosController {
 
 	    // Devolver el objeto JSON
 	    return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/plantillas-SMS")
+	public ResponseEntity<Map<String, Object>> getAllSMSConfig() {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getAllSMSConfig();
+			
+			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
+				respuesta.put("plantillas", plantillasSMS);
+				return ResponseEntity.ok(respuesta);
+			} else  {
+				respuesta.put("plantillas", Collections.emptyList());
+				return ResponseEntity.ok(respuesta);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
 	}
 	
 	@GetMapping("/obtener-plantilla")

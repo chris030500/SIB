@@ -15,7 +15,7 @@ function ocultarMostrar(divEl) {
 			console.log("Parametros");
 			break;
 		case "2":
-			//obtTblReglas();
+			listaPlantillas();
 			break;
 		case "3":
 			//obtTblPlantillas();
@@ -157,7 +157,7 @@ function actualizarPlantilla(tipoCredito, isCampania, texto) {
     });
 }
 
-document.getElementById("select-tipo-credito").addEventListener("change", function () {
+/*document.getElementById("select-tipo-credito").addEventListener("change", function () {
     const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
     console.log("Opción seleccionada:", selectedValue);
     
@@ -199,7 +199,7 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
 
     // Llama a la función para actualizar la plantilla
     actualizarPlantilla(tipoCredito, isCampania, texto);
-});
+});*/
 
 
 

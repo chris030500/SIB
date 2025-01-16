@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "TBL_CONFIG_SMS")
 public class ConfiguracionSMS {
@@ -48,15 +50,18 @@ public class ConfiguracionSMS {
 	@Column(name = "I_IND_ACTIVO")
 	private Integer activo;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDateTime fechaRegistro;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_MODIFICACION")
 	private LocalDateTime fechaModificacion;
 	
 	@Column(name = "I_USR_MODIFICA")
 	private Integer userModifica;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_BAJA")
 	private LocalDateTime fechaBaja;
 

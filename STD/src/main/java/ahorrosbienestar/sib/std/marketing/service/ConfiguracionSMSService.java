@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.marketing.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -21,6 +23,10 @@ public class ConfiguracionSMSService {
 	
 	public Optional<ConfiguracionSMS> getCurrentSMSConfig(String tipoCredito, Integer isCampania) {
 		return configSMSRepository.getCurrentSmsConfig(tipoCredito, isCampania);
+	}
+	
+	public List<Map<String, Object>> getAllSMSConfig() {
+		return configSMSRepository.getAllSMSConfig();
 	}
 	
 	public ConfiguracionSMS updateCurrentSMSText(String tipoCredito, Integer isCampania, Integer idUsuario, String texto) {

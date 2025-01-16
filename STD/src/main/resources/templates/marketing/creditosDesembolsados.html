@@ -109,7 +109,7 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 15px ">
-							<form id="plantillasForm">
+							<!--<form id="plantillasForm">
 								<div class="mb-3">
 									<label for="tipo-credito" class="form-label">Tipo de crédito:</label>
 									<select class="form-select w-50" id="select-tipo-credito">
@@ -126,7 +126,24 @@
 								<div class="text-end">
 									<button type="submit" class="btn btn-primary">Guardar</button>
 								</div>
-							</form>
+							</form>-->
+							<div class="table-responsive">
+								<table class="table table-sm" style="width: 100%;" id="tblPlantillas">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Tipo Crédito</th>
+											<th>Mensaje</th>
+											<th>Usuario Registra</th>
+											<th>Fecha Registro</th>
+											<th>Usuario Modifica</th>
+											<th>Fecha Modificación</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
 						</div>
 					</fieldset>
 				</div>
@@ -241,6 +258,8 @@
 		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
         <script th:src="@{/js/marketing/creditosDesembolsados.js}"></script>
+        <script th:src="@{/js/marketing/dataTableConfigMarketing.js}"></script>
+        <script th:src="@{/js/marketing/fillDataTableConfig.js}"></script>
         <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
