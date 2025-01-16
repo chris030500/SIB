@@ -101,7 +101,7 @@ document.getElementById("credencialesForm").addEventListener("submit", function 
 
 function getPlantillaByTipoCredito(tipoCredito, isCampania){
 	
-	fetch(`/STD/solicitudCredito/obtener-plantilla?tipoCredito=${tipoCredito}&isCampania=${isCampania}`, {
+	fetch(`/STD/marketing/obtener-plantilla?tipoCredito=${tipoCredito}&isCampania=${isCampania}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -130,7 +130,7 @@ function actualizarPlantilla(tipoCredito, isCampania, texto) {
         texto: texto,
     };
 
-    fetch("/STD/solicitudCredito/guardar-plantilla", {
+    fetch("/STD/marketing/guardar-plantilla", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

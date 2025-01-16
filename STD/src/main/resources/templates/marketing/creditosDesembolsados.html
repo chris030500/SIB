@@ -61,7 +61,7 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Datos conexión al servicio de Calixta</legend>
 						<div class="row" style="margin-top : 15px ">
-							<form th:action="@{/solicitudCredito/guardarCredenciales}" method="post" id="credencialesForm">
+							<form th:action="@{/marketing/guardarCredenciales}" method="post" id="credencialesForm">
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<tbody>
@@ -142,7 +142,16 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
 						<div class="row" style="margin-top : 15px ">
-							<form id="GestionForm">
+							<form id="gestionForm">
+								<div class="row mb-3 align-items-center">
+									<label for="tipo-credito" class="form-label">Tipo de crédito</label>
+									<select class="form-select w-50" id="select-tipo-credito">
+										<option value="0" selected>Selecciona una opción</option>
+										<option value="N">Nuevos</option>
+										<option value="O">Renovados</option>
+										<option value="">Campañas</option>
+									</select>
+								</div>
 								<div class="row mb-3 align-items-center">
 									<label for="mes-calendario" class="form-label">Mes calendario:</label>
 									<select class="form-select w-50" id="mes-calendario">
@@ -237,7 +246,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/solicitudCredito/creditosDesembolsados.js}"></script>
+        <script th:src="@{/js/marketing/creditosDesembolsados.js}"></script>
         <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>

@@ -175,13 +175,12 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
-	//constantes solicitud credito
-	public static final String SOLICITUD_CREDITO_DESEMBOLSADOS = "solicitudCredito/creditosDesembolsados";
-	public static final String SOLICITUD_CREDITO_AUTORIZADOS = "solicitudCredito/solicitudesAutorizadas";
-	public static final int SOLICITUD_CREDITO_CAT_MESES = 31;
+	//constantes marketing
+	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
+	public static final int MARKETING_CAT_MESES = 31;
 	
-	//permisos de pantallas Solicitud Crédito
-	public static final String USUARIO_ADMIN_SOLICITUD_CREDITO = "usrAdmin";
+	//permisos de pantallas marketing
+	public static final String USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS = "usrAdmin";
 	public static final String USUARIO_ADMIN_MARKETING = "usrAdminMarketing";
 	public static final String USUARIOS_EDITOR_MARKETING = "usrEditorMarketing";
 	

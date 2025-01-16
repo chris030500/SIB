@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.controller;
+package ahorrosbienestar.sib.std.marketing.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
+import ahorrosbienestar.sib.std.marketing.model.Credenciales;
+import ahorrosbienestar.sib.std.marketing.service.ConfiguracionSMSService;
+import ahorrosbienestar.sib.std.marketing.service.CredencialesService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.ConfiguracionSMS;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.Credenciales;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.ConfiguracionSMSService;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service.CredencialesService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
-@RequestMapping("solicitudCredito")
+@RequestMapping("marketing")
 public class CreditosDesembolsadosController {
 	
 	private static final Logger logger = Logger.getLogger(CreditosDesembolsadosController.class);
@@ -71,13 +71,13 @@ public class CreditosDesembolsadosController {
 			if (validarAcceso() == 1) {
 				int mesActual = LocalDate.now().getMonthValue();
 				List<Credenciales> configuraciones = configuracionesService.getCredenciales();
-				model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_SOLICITUD_CREDITO, userDetails.getUsername()));
+				model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS, userDetails.getUsername()));
 				model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
 				model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
 				model.addAttribute("lista_configuraciones", configuraciones);
 				model.addAttribute("mesActual", mesActual);
-				model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.SOLICITUD_CREDITO_CAT_MESES));
-				rutaDireccion = Constantes.SOLICITUD_CREDITO_DESEMBOLSADOS;
+				model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.MARKETING_CAT_MESES));
+				rutaDireccion = Constantes.MARKETING_CREDITOS_DESEMBOLSADOS;
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
 			}
@@ -167,7 +167,14 @@ public class CreditosDesembolsadosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
     }
-	
+    
+    /*public ResponseEntity<?> getGestionMensaje(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
+    	
+    	Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(tipoCredito, isCampania);
+    	
+    	Integer idConfigSMS = configuracionSMS.get().getIdConfig();
+    }*/
+    
 	public int validarAcceso() {
 		
 		try {
@@ -178,7 +185,7 @@ public class CreditosDesembolsadosController {
 			}
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.SOLICITUD_CREDITO_DESEMBOLSADOS));
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.MARKETING_CREDITOS_DESEMBOLSADOS));
 				
 				
 		} catch (Exception e) {

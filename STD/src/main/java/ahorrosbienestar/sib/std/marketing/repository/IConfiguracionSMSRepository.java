@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.repository;
+package ahorrosbienestar.sib.std.marketing.repository;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.ConfiguracionSMS;
+import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
 
 @Repository
 public interface IConfiguracionSMSRepository extends JpaRepository<ConfiguracionSMS, Integer> {
@@ -17,4 +17,5 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 			+ "AND FK_VC_ESTATUS_SOLCRE = 'D' "
 			+ "AND I_IND_SOLCRE_CAMPANIA = :isCampania ", nativeQuery = true)
 	public Optional<ConfiguracionSMS> getCurrentSmsConfig(String tipoCredito, Integer isCampania);
+
 }

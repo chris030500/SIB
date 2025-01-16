@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model;
+package ahorrosbienestar.sib.std.marketing.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,16 +1,16 @@
-package ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.service;
+package ahorrosbienestar.sib.std.marketing.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.model.Credenciales;
-import ahorrosbienestar.sib.std.solicitudCredito.creditosDesembolsados.repository.ICredencialesRepository;
+import ahorrosbienestar.sib.std.marketing.model.Credenciales;
+import ahorrosbienestar.sib.std.marketing.repository.ICredencialesRepository;
 
 @Service
 public class CredencialesService {
-
+	
 	@Autowired
 	private ICredencialesRepository credencialesRepository;
 	
@@ -29,4 +29,5 @@ public class CredencialesService {
 	public void saveCredencialesCalixta(List<Credenciales> credenciales) {
 		credencialesRepository.saveAll(credenciales);
 	}
+
 }
