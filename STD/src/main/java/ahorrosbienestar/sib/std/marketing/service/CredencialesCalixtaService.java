@@ -5,16 +5,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.marketing.model.Credenciales;
-import ahorrosbienestar.sib.std.marketing.repository.ICredencialesRepository;
+import ahorrosbienestar.sib.std.marketing.model.CredencialesCalixta;
+import ahorrosbienestar.sib.std.marketing.repository.ICredencialesCalixtaRepository;
 
 @Service
-public class CredencialesService {
+public class CredencialesCalixtaService {
 	
 	@Autowired
-	private ICredencialesRepository credencialesRepository;
+	private ICredencialesCalixtaRepository credencialesRepository;
 	
-	public List<Credenciales> getCredenciales() {
+	public List<CredencialesCalixta> getCredenciales() {
 		return credencialesRepository.findAll();
 	}
 	
@@ -22,11 +22,11 @@ public class CredencialesService {
 		return credencialesRepository.searchConfiguracion(nombreConfig, username);
 	}
 	
-	public List<Credenciales> getDatosCalixta() {
+	public List<CredencialesCalixta> getDatosCalixta() {
 		return credencialesRepository.getDatosCalixta();
 	}
 	
-	public void saveCredencialesCalixta(List<Credenciales> credenciales) {
+	public void saveCredencialesCalixta(List<CredencialesCalixta> credenciales) {
 		credencialesRepository.saveAll(credenciales);
 	}
 

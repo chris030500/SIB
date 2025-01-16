@@ -86,13 +86,7 @@
 															th:name="${configuracion.nombreConfiguracion}"
 															th:value="${configuracion.valorConfiguracion}"
 															th:required="true">
-													</div>
-												</td>
-											</tr>
-											<tr th:each="configuracion, configuracionStat : ${lista_configuraciones}" th:if="${configuracion.tipoConfig == 4}">
-												<td th:text="${configuracion.descripcionConfiguracion}"></td>
-												<td>
-													<div th:switch="${configuracion.descTipoConfig}">
+															
 														<input th:case="'text'" type="text" class="form-control"
 															autocomplete="off" placeholder="Buscar Usuario"
 															th:name="${configuracion.nombreConfiguracion}"

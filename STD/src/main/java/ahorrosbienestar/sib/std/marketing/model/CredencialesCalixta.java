@@ -6,11 +6,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TBL_CONFIGURACION_SOLICITUD_CREDITO")
-public class Credenciales {
+@Table(name = "TBL_CONFIGURACION_DESEMBOLSADOS_MARKETING")
+public class CredencialesCalixta {
 	
 	@Id
-	@Column(name = "PK_I_CONFIG_SOLCRE")
+	@Column(name = "PK_I_CONFIG")
 	private Integer pkConfiguracion;
 	
 	@Column(name = "VC_DESC_CONFIG")
