@@ -15,8 +15,8 @@ function listaPlantillas(){
 			 console.log(opt);
 		 var botonesEditar = "";
 			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
-					+ " onclick='editarPlantilla("
+					+ " title='Editar Plantilla' data-bs-target='#editPlantillaModal' aria-controls='table-datatable' type='button'"
+					+ " onclick='editPlantilla("
 					+ opt.idConfig
 					+ ")' id="
 					+ opt.idConfig

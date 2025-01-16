@@ -147,6 +147,18 @@ public class CreditosDesembolsadosController {
 	}
 	
 	@GetMapping("/obtener-plantilla")
+	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+		
+		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
+		
+		if (configuracionSMS.isPresent()) {
+			return ResponseEntity.ok(configuracionSMS.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
+		}
+	}
+	
+	/*@GetMapping("/obtener-plantilla")
 	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
 		
 		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(tipoCredito, isCampania);
@@ -156,9 +168,9 @@ public class CreditosDesembolsadosController {
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
 		}
-	}
+	}*/
 	
-    @PostMapping("/guardar-plantilla")
+    /*@PostMapping("/guardar-plantilla")
     @ResponseBody
     public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
     	
@@ -192,7 +204,7 @@ public class CreditosDesembolsadosController {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
-    }
+    }*/
     
     /*public ResponseEntity<?> getGestionMensaje(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
     	

@@ -13,12 +13,12 @@ import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
 @Repository
 public interface IConfiguracionSMSRepository extends JpaRepository<ConfiguracionSMS, Integer> {
 	
-	@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
+	/*@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
 			+ "WHERE FK_VC_TP_CREDITO = :tipoCredito "
 			+ "AND I_IND_ACTIVO = 1 "
 			+ "AND FK_VC_ESTATUS_SOLCRE = 'D' "
 			+ "AND I_IND_SOLCRE_CAMPANIA = :isCampania ", nativeQuery = true)
-	public Optional<ConfiguracionSMS> getCurrentSmsConfig(String tipoCredito, Integer isCampania);
+	public Optional<ConfiguracionSMS> getCurrentSmsConfig(String tipoCredito, Integer isCampania);*/
 	
 	@Query( value = "SELECT T1.PK_ID_CONFIG_SMS AS idConfig, "
 			+ "CASE WHEN T1.FK_VC_TP_CREDITO = 'N' THEN 'Nuevo' "
@@ -36,5 +36,9 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 			+ "WHERE T1.FK_VC_ESTATUS_SOLCRE = 'D' "
 			+ "AND T1.I_IND_ACTIVO = 1 ", nativeQuery = true)
 	public List<Map<String, Object>> getAllSMSConfig();
+	
+	@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
+			+ "WHERE PK_ID_CONFIG_SMS = :idSMSConfig ", nativeQuery = true )
+	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Integer idSMSConfig);
 
 }

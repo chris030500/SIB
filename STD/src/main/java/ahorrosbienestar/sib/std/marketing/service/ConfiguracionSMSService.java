@@ -21,15 +21,19 @@ public class ConfiguracionSMSService {
 	@Autowired
 	private IConfiguracionSMSRepository configSMSRepository;
 	
-	public Optional<ConfiguracionSMS> getCurrentSMSConfig(String tipoCredito, Integer isCampania) {
+	/*public Optional<ConfiguracionSMS> getCurrentSMSConfig(String tipoCredito, Integer isCampania) {
 		return configSMSRepository.getCurrentSmsConfig(tipoCredito, isCampania);
+	}*/
+	
+	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Integer idSMSConfig) {
+		return configSMSRepository.getCurrentSMSConfig(idSMSConfig);
 	}
 	
 	public List<Map<String, Object>> getAllSMSConfig() {
 		return configSMSRepository.getAllSMSConfig();
 	}
 	
-	public ConfiguracionSMS updateCurrentSMSText(String tipoCredito, Integer isCampania, Integer idUsuario, String texto) {
+	/*public ConfiguracionSMS updateCurrentSMSText(String tipoCredito, Integer isCampania, Integer idUsuario, String texto) {
 		try {
 			ConfiguracionSMS configuracionSMS = configSMSRepository.getCurrentSmsConfig(tipoCredito, isCampania).orElse(null);
 			
@@ -46,5 +50,5 @@ public class ConfiguracionSMSService {
 		}
 		
 		return null;
-	}
+	}*/
 }

@@ -99,7 +99,36 @@ document.getElementById("credencialesForm").addEventListener("submit", function 
     });
 });
 
-function getPlantillaByTipoCredito(tipoCredito, isCampania){
+function editPlantilla(idSMSConfig){
+	
+	fetch(`/STD/marketing/obtener-plantilla?idSMSConfig=${idSMSConfig}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		}
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Error en la respuesta del servidor");
+		}
+		 return response.json();
+	})
+	.then((data) => {
+		console.log("Configuracion SMS: ", data);
+		const texto = data?.mensaje || "No hay texto disponible.";
+		document.getElementById("plantilla-texto-enviar").value = texto;
+		if (data.activo === 1) {
+			document.getElementById("select-estatus-plantilla").value = 1;
+		} else {
+			document.getElementById("select-estatus-plantilla").value = 2;
+		}
+	})
+	.catch((error) => {
+		console.error("Error al obtener las configuraciones SMS:", error);
+	})
+}
+
+/*function getPlantillaByTipoCredito(tipoCredito, isCampania){
 	
 	fetch(`/STD/marketing/obtener-plantilla?tipoCredito=${tipoCredito}&isCampania=${isCampania}`, {
 		method: "GET",
@@ -121,7 +150,7 @@ function getPlantillaByTipoCredito(tipoCredito, isCampania){
 	.catch((error) => {
 		console.error("Error al obtener las configuraciones SMS:", error);
 	})
-}
+}*/
 
 function actualizarPlantilla(tipoCredito, isCampania, texto) {
     const payload = {
