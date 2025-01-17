@@ -116,11 +116,15 @@ function editPlantilla(idSMSConfig){
 	.then((data) => {
 		console.log("Configuracion SMS: ", data);
 		const texto = data?.mensaje || "No hay texto disponible.";
+		const id = data.idConfig;
+		const estatus = data.activo;
 		document.getElementById("plantilla-texto-enviar").value = texto;
-		if (data.activo === 1) {
+		document.getElementById("id-plantilla-sms").value = id;
+		
+		if (estatus == 1) {
 			document.getElementById("select-estatus-plantilla").value = 1;
 		} else {
-			document.getElementById("select-estatus-plantilla").value = 2;
+			document.getElementById("select-estatus-plantilla").value = 0;
 		}
 	})
 	.catch((error) => {
@@ -152,11 +156,12 @@ function editPlantilla(idSMSConfig){
 	})
 }*/
 
-function actualizarPlantilla(tipoCredito, isCampania, texto) {
+function actualizarPlantilla(idSMSConfig, texto, estatus) {
+	
     const payload = {
-        tipoCredito: tipoCredito,
-        isCampania: isCampania,
+        idSMSConfig: Number(idSMSConfig),
         texto: texto,
+        estatus: Number(estatus)
     };
 
     fetch("/STD/marketing/guardar-plantilla", {
@@ -204,16 +209,16 @@ function actualizarPlantilla(tipoCredito, isCampania, texto) {
 			document.getElementById("plantilla-texto-enviar").value = '';
 	}
 
-});
+});*/
 
 document.getElementById("plantillasForm").addEventListener("submit", function (event) {
     event.preventDefault(); // Evita la recarga de la página
 
-    const tipoCredito = document.getElementById("select-tipo-credito").value;
+    const idSMSConfig = document.getElementById("id-plantilla-sms").value;
     const texto = document.getElementById("plantilla-texto-enviar").value;
-
-    // Determina el valor de isCampania
-    const isCampania = tipoCredito === "" ? 1 : 0;
+    const estatus = document.getElementById("select-estatus-plantilla").value;
+    
+    console.log("Tipo variable estatus: " + typeof(estatus) + "\nTipo variable idSMSConfig: " + typeof(idSMSConfig) + "\nTipo variable texto: " + typeof(texto));
 
     // Validaciones
     if (!texto.trim()) {
@@ -221,14 +226,14 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
         return;
     }
 
-    if (tipoCredito === "0") {
-        swal("Error", "Por favor selecciona un tipo de crédito válido.", "error");
+    if (estatus === "") {
+        swal("Error", "Por favor seleccionar un estatus válido.", "error");
         return;
     }
 
     // Llama a la función para actualizar la plantilla
-    actualizarPlantilla(tipoCredito, isCampania, texto);
-});*/
+    actualizarPlantilla(idSMSConfig, texto, estatus);
+});
 
 
 

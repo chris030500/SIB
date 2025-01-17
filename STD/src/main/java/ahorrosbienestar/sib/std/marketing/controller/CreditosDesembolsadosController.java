@@ -170,15 +170,15 @@ public class CreditosDesembolsadosController {
 		}
 	}*/
 	
-    /*@PostMapping("/guardar-plantilla")
+    @PostMapping("/guardar-plantilla")
     @ResponseBody
     public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
-            String tipoCredito = (String) payload.get("tipoCredito");
-            Integer isCampania = (Integer) payload.get("isCampania");
+            Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
             String texto = (String) payload.get("texto");
+            Integer estatus = (Integer) payload.get("estatus");
             
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -193,7 +193,7 @@ public class CreditosDesembolsadosController {
 			
 			Integer idUsuario = usuario.get(0).getPk_id_usuario();
             
-            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(tipoCredito, isCampania, idUsuario, texto);
+            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
             
             if (updatedConfig != null) {
                 return ResponseEntity.ok(updatedConfig);
@@ -204,7 +204,7 @@ public class CreditosDesembolsadosController {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
-    }*/
+    }
     
     /*public ResponseEntity<?> getGestionMensaje(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
     	

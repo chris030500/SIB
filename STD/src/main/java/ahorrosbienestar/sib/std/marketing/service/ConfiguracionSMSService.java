@@ -33,13 +33,14 @@ public class ConfiguracionSMSService {
 		return configSMSRepository.getAllSMSConfig();
 	}
 	
-	/*public ConfiguracionSMS updateCurrentSMSText(String tipoCredito, Integer isCampania, Integer idUsuario, String texto) {
+	public ConfiguracionSMS updateCurrentSMSText(Integer idSMSConfig, Integer idUsuario, String texto, Integer status) {
 		try {
-			ConfiguracionSMS configuracionSMS = configSMSRepository.getCurrentSmsConfig(tipoCredito, isCampania).orElse(null);
+			ConfiguracionSMS configuracionSMS = configSMSRepository.getCurrentSMSConfig(idSMSConfig).orElse(null);
 			
 			if (configuracionSMS != null) {
 				LocalDateTime currentDateTime = LocalDateTime.now();
 				configuracionSMS.setMensaje(texto);
+				configuracionSMS.setActivo(status);
 				configuracionSMS.setFechaModificacion(currentDateTime);
 				configuracionSMS.setUserModifica(idUsuario);
 				
@@ -50,5 +51,5 @@ public class ConfiguracionSMSService {
 		}
 		
 		return null;
-	}*/
+	}
 }

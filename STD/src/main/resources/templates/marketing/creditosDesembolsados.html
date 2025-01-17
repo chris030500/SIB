@@ -257,21 +257,25 @@
 						<div class="modal-body">
 							<form id="plantillasForm">
 								<div class="mb-3">
+									<label for="id-plantilla" class="form-label">ID:</label>
+									<input type="number" class="form-control" id="id-plantilla-sms" rows="4" readonly>
+								</div>
+								<div class="mb-3">
 									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
 									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
 								</div>
 								<div class="mb-3">
 									<label for="estatus-plantilla" class="form-label">Estatus:</label>
 									<select class="form-select w-50" id="select-estatus-plantilla">
-										<option value="0" selected>Selecciona una opción</option>
+										<option value="" selected>Selecciona una opción</option>
 										<option value="1">ACTIVO</option>
-										<option value="2">INACTIVO</option>
+										<option value="0">INACTIVO</option>
 									</select>
 								</div>
+								<div class="text-end">
+									<button type="submit" class="btn btn-primary">Guardar cambios</button>
+								</div>
 							</form>
-							<div class="modal-footer">
-								<button type="submit" class="btn btn-primary">Guardar cambios</button>
-							</div>
 						</div>
 					</div>
 				</div>

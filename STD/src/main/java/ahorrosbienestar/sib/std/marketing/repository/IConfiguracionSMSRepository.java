@@ -33,8 +33,7 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 			+ "FROM SIB.TBL_CONFIG_SMS T1 "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS T2 ON T2.PK_ID_USUARIO = T1.I_USR_REGISTRA "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS T3 ON T3.PK_ID_USUARIO = T1.I_USR_MODIFICA "
-			+ "WHERE T1.FK_VC_ESTATUS_SOLCRE = 'D' "
-			+ "AND T1.I_IND_ACTIVO = 1 ", nativeQuery = true)
+			+ "WHERE T1.FK_VC_ESTATUS_SOLCRE = 'D' ", nativeQuery = true)
 	public List<Map<String, Object>> getAllSMSConfig();
 	
 	@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
