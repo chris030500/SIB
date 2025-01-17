@@ -48,7 +48,7 @@ function listaPlantillas(){
 			 console.log(opt);
 		 var botonesEditar = "";
 			 		var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs me-1' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Editar Proceso Envío' data-bs-target='#editPlantillaModal' aria-controls='table-datatable' type='button'"
+					+ " title='Editar Proceso Envío' data-bs-target='#editProcessModal' aria-controls='table-datatable' type='button'"
 					+ " onclick='editProcess("
 					+ opt.pkIdProceso
 					+ ")' id="

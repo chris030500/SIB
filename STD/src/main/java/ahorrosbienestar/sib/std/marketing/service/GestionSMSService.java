@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.marketing.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,10 @@ public class GestionSMSService {
 	
 	public List<Map<String, Object>> getAllGestionesSMS() {
 		return gestionRepository.getAllGestionesSMS();
+	}
+	
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer idProcess) {
+		return gestionRepository.getCurrentProcessSMS(idProcess);
 	}
 
 }
