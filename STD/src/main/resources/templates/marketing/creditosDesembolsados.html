@@ -153,7 +153,7 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
 						<div class="row" style="margin-top : 15px ">
-							<form id="gestionForm">
+							<!--<form id="gestionForm">
 								<div class="row mb-3 align-items-center">
 									<label for="tipo-credito" class="form-label">Tipo de crédito</label>
 									<select class="form-select w-50" id="select-tipo-credito">
@@ -193,7 +193,24 @@
 									<button type="button" class="btn btn-primary me-2">Pausar</button>
 									<button type="button" class="btn btn-primary">Reanudar</button>
 								</div>
-							</form>
+							</form>-->
+							<div class="table-responsive">
+								<table class="table table-sm" style="width: 100%;" id="tblGestionSMS">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Fecha Inicial</th>
+											<th>Fecha Final</th>
+											<th>Máximo SMS</th>
+											<th>SMS Por enviar</th>
+											<th>SMS Enviados</th>
+											<th>Estatus Proceso</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
 						</div>
 					</fieldset>
 				</div>

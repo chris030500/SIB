@@ -18,7 +18,7 @@ function ocultarMostrar(divEl) {
 			listaPlantillas();
 			break;
 		case "3":
-			//obtTblPlantillas();
+			listaGestiones();
 			break;
 		case "5":
 			//obtTblClienteB();

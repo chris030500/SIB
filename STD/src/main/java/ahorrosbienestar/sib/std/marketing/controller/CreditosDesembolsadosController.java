@@ -30,6 +30,7 @@ import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.marketing.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.marketing.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.marketing.service.CredencialesCalixtaService;
+import ahorrosbienestar.sib.std.marketing.service.GestionSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -58,6 +59,9 @@ public class CreditosDesembolsadosController {
 	
 	@Autowired
 	private ConfiguracionSMSService configuracionSMSService;
+	
+	@Autowired
+	private GestionSMSService gestionService;
 	
 	private String rutaDireccion = "";
 	
@@ -206,12 +210,30 @@ public class CreditosDesembolsadosController {
         }
     }
     
-    /*public ResponseEntity<?> getGestionMensaje(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
-    	
-    	Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(tipoCredito, isCampania);
-    	
-    	Integer idConfigSMS = configuracionSMS.get().getIdConfig();
-    }*/
+	@GetMapping("/gestion-SMS")
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> gestionesSMS = gestionService.getAllGestionesSMS();
+			
+			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
+				respuesta.put("gestiones", gestionesSMS);
+				return ResponseEntity.ok(respuesta);
+			} else  {
+				respuesta.put("gestiones", Collections.emptyList());
+				return ResponseEntity.ok(respuesta);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
+	}
     
 	public int validarAcceso() {
 		
