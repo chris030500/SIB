@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
+
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Créditos Desembolsados</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="credenciales-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Credenciales</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="gestion-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Gestión del mensaje</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="frecuencia-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Frecuencia de Envío de Mensaje</button>
+					</li>
+				</ul>
+			</div>
+
+			<div id="pant-tabs">
+				 <div class="row" style="margin-top : 15px ">
+					<div class="col-lg-4"></div>
+					<div id="spinner-container" class="col-lg-4 d-flex justify-content-center"></div>
+					<div class="col-lg-4"></div>
+				</div>
+				<!-- Credenciales -->
+				<div id="credenciales-tab1" class="" style="display:none;" for="1">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Datos conexión al servicio de Calixta</legend>
+						<div class="row" style="margin-top : 15px ">
+							<form th:action="@{/marketing/guardarCredenciales}" method="post" id="credencialesForm">
+								<div class="table-responsive">
+									<table class="table table-bordered">
+										<tbody>
+											<!--<tr th:each="configuracion, configuracionStat : ${lista_configuraciones}" th:if="${configuracion.tipoConfig == 2}">
+												<td th:text="${configuracion.descripcionConfiguracion}"></td>
+												<td>
+													<div th:switch="${configuracion.descTipoConfig}">
+														<input th:case="'number'" type="number" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+															
+														<input th:case="'text'" type="text" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+														
+														<input th:case="'password'" type="password" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															th:required="true">
+															
+														<input th:case="'text'" type="text" class="form-control"
+															autocomplete="off" placeholder="Buscar Usuario"
+															th:name="${configuracion.nombreConfiguracion}"
+															th:value="${configuracion.valorConfiguracion}"
+															readonly>
+													</div>
+												</td>
+											</tr>-->
+										</tbody>
+									</table>
+								</div>
+								<button type="submit" class="btn btn-primary mt-4">Guardar cambios</button>
+							</form>
+						</div>
+					</fieldset>
+				</div>
+				<!-- Fin de credenciales -->
+				<!-- Plantillas -->
+				<div id="plantillas-tab1" class="" style="display:none;" for="2">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
+						<div class="row" style="margin-top : 15px ">
+							<!--<form id="plantillasForm">
+								<div class="mb-3">
+									<label for="tipo-credito" class="form-label">Tipo de crédito:</label>
+									<select class="form-select w-50" id="select-tipo-credito">
+										<option value="0" selected>Selecciona una opción</option>
+										<option value="N">Nuevos</option>
+										<option value="O">Renovados</option>
+										<option value="">Campañas</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
+									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
+								</div>
+								<div class="text-end">
+									<button type="submit" class="btn btn-primary">Guardar</button>
+								</div>
+							</form>-->
+							<div class="table-responsive">
+								<table class="table table-sm" style="width: 100%;" id="tblPlantillas">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Tipo Crédito</th>
+											<th>Mensaje</th>
+											<th>Usuario Registra</th>
+											<th>Fecha Registro</th>
+											<th>Usuario Modifica</th>
+											<th>Fecha Modificación</th>
+											<th style="text-align: center;">Acciones</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<!-- Fin de plantillas -->
+				<!-- Gestión SMS -->
+				<div id="gestion-tab1" class="" style="display:none;" for="3">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
+						<div class="row" style="margin-top : 15px ">
+							<form id="gestionForm">
+								<div class="row mb-3 align-items-center">
+									<label for="tipo-credito" class="form-label">Tipo de crédito</label>
+									<select class="form-select w-50" id="select-tipo-credito">
+										<option value="0" selected>Selecciona una opción</option>
+										<option value="N">Nuevos</option>
+										<option value="O">Renovados</option>
+										<option value="">Campañas</option>
+									</select>
+								</div>
+								<div class="row mb-3 align-items-center">
+									<label for="mes-calendario" class="form-label">Mes calendario:</label>
+									<select class="form-select w-50" id="mes-calendario">
+										<option value="0" selected>Selecciona una opción</option>
+										<!--<option th:each="meses : ${cat_meses}"
+											th:value="${meses.i_opcion}"
+											th:text="${meses.v_valor}"
+											th:selected="${meses.i_opcion == mesActual}">
+										</option>-->
+									</select>
+								</div>
+								<div class="row mb-4 align-items-center">
+									<div class="col-md-4">
+										<label for="maximo-sms" class="form-label">Máximo SMS:</label>
+										<input type="text" class="form-control" id="maximo-sms" placeholder="xxx" style="width: 60px;">
+									</div>
+									<div class="col-md-4">
+										<label for="por-enviar" class="form-label">Por enviar:</label>
+										<input type="text" class="form-control" id="por-enviar" style="width: 60px;" readonly>
+									</div>
+									<div class="col-md-4">
+										<label for="enviados" class="form-label">Enviados:</label>
+										<input type="text" class="form-control" id="enviados" style="width: 60px;" readonly>
+									</div>
+								</div>
+								<div class="text-center">
+									<button type="button" class="btn btn-primary me-2">Guardar</button>
+									<button type="button" class="btn btn-primary me-2">Pausar</button>
+									<button type="button" class="btn btn-primary">Reanudar</button>
+								</div>
+							</form>
+						</div>
+					</fieldset>
+				</div>
+				<!-- Fin de Gestión SMS -->
+				<!-- Frecuencia de envío -->
+				<div id="frecuencia-tab1" class="" style="display:none;" for="3">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Frecuencia de Envío de Mensaje</legend>
+						<div class="row" style="margin-top : 15px ">
+							<form id="frecuenciaForm">
+								<!-- Primer horario -->
+								<div class="mb-3">
+									<h5>Lunes a Viernes</h5>
+								</div>
+								<div class="row mb-4 align-items-center">
+									<div class="col-md-4">
+										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
+										<input type="text" class="form-control" id="hora-inicio" style="width: 60px;" readonly>
+									</div>
+									<div class="col-md-4">
+										<label for="hora-fin" class="form-label">Hora Fin:</label>
+										<input type="text" class="form-control" id="hora-fin" style="width: 60px;" readonly>
+									</div>
+									<div class="col-md-4">
+										<label for="hora-fin" class="form-label">Recurrencia:</label>
+										<input type="text" class="form-control" id="recurrencia" style="width: 60px;" readonly>
+									</div>
+								</div>
+								<!-- Segundo horario -->
+								<div class="mb-3">
+									<h5>Sábado</h5>
+								</div>
+								<div class="row mb-4 align-items-center">
+									<div class="col-md-4">
+										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
+										<input type="text" class="form-control" id="hora-inicio" style="width: 60px;" readonly>
+									</div>
+									<div class="col-md-4">
+										<label for="hora-fin" class="form-label">Hora Fin:</label>
+										<input type="text" class="form-control" id="hora-fin" style="width: 60px;" readonly>
+									</div>
+									<div class="col-md-4">
+										<label for="hora-fin" class="form-label">Recurrencia:</label>
+										<input type="text" class="form-control" id="recurrencia" style="width: 60px;" readonly>
+									</div>
+								</div>
+							</form>
+						</div>
+					</fieldset>
+				</div>
+				<!-- Fin de frecuencia de envío -->
+			</div>
+			
+			<!-- Modal Plantillas -->
+			<div class="modal fade" id="editPlantillaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Editar Plantilla SMS</h5>
+						</div>
+						<div class="modal-body">
+							<form id="plantillasForm">
+								<div class="mb-3">
+									<label for="id-plantilla" class="form-label">ID:</label>
+									<input type="number" class="form-control" id="id-plantilla-sms" rows="4" readonly>
+								</div>
+								<div class="mb-3">
+									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
+									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
+								</div>
+								<div class="mb-3">
+									<label for="estatus-plantilla" class="form-label">Estatus:</label>
+									<select class="form-select w-50" id="select-estatus-plantilla">
+										<option value="" selected>Selecciona una opción</option>
+										<option value="1">ACTIVO</option>
+										<option value="0">INACTIVO</option>
+									</select>
+								</div>
+								<div class="text-end">
+									<button type="submit" class="btn btn-primary">Guardar cambios</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Fin Modal Plantillas -->
+		</div>
+    </section>
+    <th:block layout:fragment="page-scripts">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
+        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+        <script th:src="@{/js/marketing/dataTableConfigMarketing.js}"></script>
+        <script th:src="@{/js/marketing/fillDataTableConfig.js}"></script>
+        <script th:src="@{/js/marketing/creditosDesembolsados.js}"></script>
+        <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
+    </th:block>
+</body>
+
+
+</html>

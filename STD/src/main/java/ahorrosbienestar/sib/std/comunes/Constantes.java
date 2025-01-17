@@ -184,6 +184,9 @@ public class Constantes {
 	public static final String USUARIO_ADMIN_MARKETING = "usrAdminMarketing";
 	public static final String USUARIOS_EDITOR_MARKETING = "usrEditorMarketing";
 	
+	//constantes credito
+	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
+	
 	
     private Constantes() {
         
