@@ -274,6 +274,23 @@ function editProcess(idSMSProcess){
 	})
 }
 
+function modalProcess(estatus) {
+	
+	const tittleModal = document.getElementById("process-modal-tittle");
+	const textModal = document.getElementById("process-modal-text");
+	
+	if (estatus == 4) {
+		tittleModal.innerText = "Pausar proceso de envío SMS";
+		textModal.innerText = "¿Estás seguro de pausar el envío de SMS? \n Una vez realizando está acción se dentendrá el envío de SMS.";
+		console.log(tittleModal.innerText + "\n" + textModal.value);
+	}
+	
+	if (estatus == 6) {
+		tittleModal.innerText = "Reanudar proceso de envío de SMS";
+		textModal.innerText = "¿Estás seguro de reanudar el envío de SMS? \n Una vez realizando está acción se dentonará el envío de SMS.";
+	} 
+}
+
 
 
 
