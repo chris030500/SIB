@@ -58,13 +58,15 @@ function listaPlantillas(){
 		var botonesPausar = "";
 			 		var botonesPausar = "<button class='btn btn-secundary bg-success text-white btn-xs me-1' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Pausar Proceso Envío' data-bs-target='#statusProcessModal' aria-controls='table-datatable' type='button'"
-					+ " onclick='modalProcess(4)' id="
+					+ " onclick='modalProcess("
+					+ opt.pkIdProceso + ", 4)'"
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pause-fill'></i></button>";
 		var botonesReanudar = "";
 			 		var botonesReanudar = "<button class='btn btn-secundary bg-danger text-white btn-xs me-1' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Reanudar Proceso Envío' data-bs-target='#statusProcessModal' aria-controls='table-datatable' type='button'"
-					+ " onclick='modalProcess(6)' id="
+					+ " onclick='modalProcess("
+					+ opt.pkIdProceso + ", 6)'"
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-play-fill'></i></button>";
 				
