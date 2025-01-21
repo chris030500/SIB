@@ -99,9 +99,9 @@ function getAbsolutePath() {
 
 function editPlantilla(idSMSConfig){
 	
-	console.log(getAbsolutePath());
+	var url = getAbsolutePath() + "marketing/obtener-plantilla?idSMSConfig=" + idSMSConfig;
 	
-	fetch(`/STD/marketing/obtener-plantilla?idSMSConfig=${idSMSConfig}`, {
+	fetch(url, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -158,13 +158,15 @@ function editPlantilla(idSMSConfig){
 
 function actualizarPlantilla(idSMSConfig, texto, estatus) {
 	
+	var url = getAbsolutePath() + "marketing/guardar-plantilla";
+	
     const payload = {
         idSMSConfig: Number(idSMSConfig),
         texto: texto,
         estatus: Number(estatus)
     };
 
-    fetch("/STD/marketing/guardar-plantilla", {
+    fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -237,7 +239,9 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
 
 function editProcess(idSMSProcess){
 	
-	fetch(`/STD/marketing/obtener-gestion?idSMSProcess=${idSMSProcess}`, {
+	var url = getAbsolutePath() + "marketing/obtener-gestion?idSMSProcess=" + idSMSProcess;
+	
+	fetch(url, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -295,12 +299,14 @@ function modalProcess(idProcess ,estatus) {
 
 function actualizarProceso(idSMSProceso, estatus) {
 	
+	var url = getAbsolutePath() + "marketing/actualizar-gestion-sms";
+	
     const payload = {
         idSMSProceso: Number(idSMSProceso),
         estatus: Number(estatus)
     };
 
-    fetch("/STD/marketing/actualizar-gestion-sms", {
+    fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
