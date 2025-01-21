@@ -13,7 +13,7 @@ function ocultarMostrar(divEl) {
 			listaPlantillas();
 			break;
 		case "3":
-			//listaGestiones();
+			listaGestiones();
 			break;
 		default:
 			break;

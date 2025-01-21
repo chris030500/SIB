@@ -28,6 +28,7 @@ import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.Configuraci
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -53,6 +54,9 @@ public class SolicitudesAutorizadasController {
 	
 	@Autowired
 	private ConfiguracionSMSCreditoService configuracionSMSService;
+	
+	@Autowired
+	private ProcesoEnvioSMSService gestionService;
 	
 	private String rutaDireccion = "";
 	
@@ -179,6 +183,31 @@ public class SolicitudesAutorizadasController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
     }
+    
+	@GetMapping("/gestion-SMS")
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> gestionesSMS = gestionService.getAllGestionesSMS();
+			
+			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
+				respuesta.put("gestiones", gestionesSMS);
+				return ResponseEntity.ok(respuesta);
+			} else  {
+				respuesta.put("gestiones", Collections.emptyList());
+				return ResponseEntity.ok(respuesta);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
+	}
 	
 	public int validarAcceso() {
 		
