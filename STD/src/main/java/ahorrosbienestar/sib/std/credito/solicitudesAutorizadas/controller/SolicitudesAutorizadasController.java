@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -133,6 +136,18 @@ public class SolicitudesAutorizadasController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 		
+	}
+	
+	@GetMapping("/obtener-plantilla")
+	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+		
+		Optional<ConfiguracionSMSCredito> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
+		
+		if (configuracionSMS.isPresent()) {
+			return ResponseEntity.ok(configuracionSMS.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
+		}
 	}
 	
 	public int validarAcceso() {

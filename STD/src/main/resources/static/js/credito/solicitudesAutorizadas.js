@@ -90,3 +90,44 @@ document.getElementById("credencialesForm").addEventListener("submit", function 
 		}, 2000);
     });
 });
+
+function getAbsolutePath() {
+
+	return window.location.href.substring(0,window.location.href.indexOf("STD/")+4);
+
+}
+
+function editPlantilla(idSMSConfig){
+	
+	var url = getAbsolutePath() + "credito/obtener-plantilla?idSMSConfig=" + idSMSConfig;
+	
+	fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		}
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Error en la respuesta del servidor");
+		}
+		 return response.json();
+	})
+	.then((data) => {
+		console.log("Configuracion SMS: ", data);
+		const texto = data?.mensaje || "No hay texto disponible.";
+		const id = data.idConfig;
+		const estatus = data.activo;
+		document.getElementById("plantilla-texto-enviar").value = texto;
+		document.getElementById("id-plantilla-sms").value = id;
+		
+		if (estatus == 1) {
+			document.getElementById("select-estatus-plantilla").value = 1;
+		} else {
+			document.getElementById("select-estatus-plantilla").value = 0;
+		}
+	})
+	.catch((error) => {
+		console.error("Error al obtener las configuraciones SMS:", error);
+	})
+}
