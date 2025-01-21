@@ -233,3 +233,63 @@ function editProcess(idSMSProcess){
 		console.error("Error al obtener las configuraciones SMS:", error);
 	})
 }
+
+function modalProcess(idProcess ,estatus) {
+	
+	const tittleModal = document.getElementById("process-modal-tittle");
+	const textModal = document.getElementById("process-modal-text");
+	
+	if (estatus == 4) {
+		tittleModal.innerText = "Pausar proceso de envío SMS";
+		textModal.innerText = "¿Estás seguro de pausar el envío de SMS? \n Una vez realizando está acción se dentendrá el envío de SMS.";
+		console.log(tittleModal.innerText + "\n" + textModal.value);
+		getModalForm(idProcess, estatus);
+	}
+	
+	if (estatus == 6) {
+		tittleModal.innerText = "Reanudar proceso de envío de SMS";
+		textModal.innerText = "¿Estás seguro de reanudar el envío de SMS? \n Una vez realizando está acción se dentonará el envío de SMS.";
+		getModalForm(idProcess, estatus);
+	} 
+}
+
+function actualizarProceso(idSMSProceso, estatus) {
+	
+	var url = getAbsolutePath() + "credito/actualizar-gestion-sms";
+	
+    const payload = {
+        idSMSProceso: Number(idSMSProceso),
+        estatus: Number(estatus)
+    };
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("Error al actualizar el estatus del proceso.");
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Proceso actualizado: ", data);
+		location.reload();
+    })
+    .catch((error) => {
+        console.error("Error al actualizar el proceso SMS:", error);
+        swal("Error", "Ocurrió un problema al actualizar el proceso de envío. Inténtalo de nuevo.", "error");
+    });
+}
+
+function getModalForm(idSMSProceso, estatus) {
+	document.getElementById("changeStatusProcessForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    // Llama a la función para actualizar la plantilla
+    actualizarProceso(idSMSProceso, estatus);
+});	
+}

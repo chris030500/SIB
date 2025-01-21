@@ -300,6 +300,28 @@
 				</div>
 			</div>
 			<!-- Fin Modal editar Gestión SMS -->
+			<!-- Modal Cambio de estatus proceso -->
+			<div class="modal fade" id="statusProcessModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title fw-bold" id="process-modal-tittle"></h5>
+						</div>
+						<div class="modal-body">
+							<form id="changeStatusProcessForm">
+								<div class="mb-3">
+									<p id="process-modal-text"></p>
+								</div>
+								<div class="text-end">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+									<button type="submit" class="btn btn-primary">Aceptar</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Fin Modal estatus proceso -->
 		</div>
     </section>
     <th:block layout:fragment="page-scripts">

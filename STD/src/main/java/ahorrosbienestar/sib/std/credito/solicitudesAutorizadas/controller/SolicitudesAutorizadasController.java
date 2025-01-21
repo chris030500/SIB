@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvioSMS;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
@@ -220,6 +221,41 @@ public class SolicitudesAutorizadasController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
 		}
 	}
+	
+    @PostMapping("/actualizar-gestion-sms")
+    @ResponseBody
+    public ResponseEntity<?> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
+    	
+        try {
+        	
+            Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
+            Integer estatus = (Integer) payload.get("estatus");
+            
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			
+			if (principal instanceof UserDetails) {
+				
+				userDetails = (UserDetails) principal;
+				
+			}
+			
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+            
+            ProcesoEnvioSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
+            
+            if (updatedGestionSMS != null) {
+                return ResponseEntity.ok(updatedGestionSMS);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
+            }
+        } catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
+        }
+    }
 	
 	public int validarAcceso() {
 		
