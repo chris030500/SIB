@@ -192,3 +192,44 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
     // Llama a la función para actualizar la plantilla
     actualizarPlantilla(idSMSConfig, texto, estatus);
 });
+
+function editProcess(idSMSProcess){
+	
+	var url = getAbsolutePath() + "credito/obtener-gestion?idSMSProcess=" + idSMSProcess;
+	
+	fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		}
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Error en la respuesta del servidor");
+		}
+		 return response.json();
+	})
+	.then((data) => {
+		console.log("Gestión SMS: ", data);
+		const idProceso = data.idProceso;
+		const tipoCredito = data.tipoCredito;
+		const fechaInicial = data.fechaInicial;
+		const fechaFinal = data.fechaFinal;
+		const numSMS = data.numSMS;
+		const limiteSMS = data.limiteSMS;
+		
+		document.getElementById("id-gestion-sms").value = idProceso;
+		document.getElementById("fecha-inicial-gestion").value = fechaInicial;
+		document.getElementById("fecha-final-gestion").value = fechaFinal;
+		document.getElementById("maximo-sms").value = numSMS;
+		
+		if (limiteSMS == 1) {
+			document.getElementById("select-limite-sms").value = 1;
+		} else {
+			document.getElementById("select-limite-sms").value = 0;
+		}
+	})
+	.catch((error) => {
+		console.error("Error al obtener las configuraciones SMS:", error);
+	})
+}

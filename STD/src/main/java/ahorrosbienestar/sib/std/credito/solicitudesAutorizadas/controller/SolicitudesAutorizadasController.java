@@ -209,6 +209,18 @@ public class SolicitudesAutorizadasController {
 		
 	}
 	
+	@GetMapping("/obtener-gestion")
+	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+		
+		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(idSMSProcess);
+		
+		if (gestionSMS.isPresent()) {
+			return ResponseEntity.ok(gestionSMS.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
+		}
+	}
+	
 	public int validarAcceso() {
 		
 		try {
