@@ -1,8 +1,3 @@
-// @ts-nocheck
-/**
-*
-*/
-
 var id = "";
 var idDiv = "";
 var opcion = "";
@@ -19,9 +14,6 @@ function ocultarMostrar(divEl) {
 			break;
 		case "3":
 			listaGestiones();
-			break;
-		case "5":
-			//obtTblClienteB();
 			break;
 		default:
 			break;
@@ -99,7 +91,15 @@ document.getElementById("credencialesForm").addEventListener("submit", function 
     });
 });
 
+function getAbsolutePath() {
+
+	return window.location.href.substring(0,window.location.href.indexOf("STD/")+4);
+
+}
+
 function editPlantilla(idSMSConfig){
+	
+	console.log(getAbsolutePath());
 	
 	fetch(`/STD/marketing/obtener-plantilla?idSMSConfig=${idSMSConfig}`, {
 		method: "GET",

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.marketing.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.marketing.model.GestionSMS;
@@ -51,6 +52,9 @@ public class CreditosDesembolsadosController {
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
@@ -83,6 +87,11 @@ public class CreditosDesembolsadosController {
 				model.addAttribute("lista_configuraciones", configuraciones);
 				model.addAttribute("mesActual", mesActual);
 				model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.MARKETING_CAT_MESES));
+				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
+				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
+				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
+				model.addAttribute("hora_fin_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_FIN_SEMANA));
+				model.addAttribute("recurrencia_envio_sms", iConfiguracionRepository.buscarPropiedad(Constantes.RECURRENCIA_SMS));
 				rutaDireccion = Constantes.MARKETING_CREDITOS_DESEMBOLSADOS;
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
@@ -247,25 +256,6 @@ public class CreditosDesembolsadosController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
 		}
 	}
-    
-	public int validarAcceso() {
-		
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.MARKETING_CREDITOS_DESEMBOLSADOS));
-				
-				
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return 0;
-		}					
-	}
 	
     @PostMapping("/actualizar-gestion-sms")
     @ResponseBody
@@ -301,5 +291,24 @@ public class CreditosDesembolsadosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
         }
     }
-
+    
+	public int validarAcceso() {
+		
+		try {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+			}
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.MARKETING_CREDITOS_DESEMBOLSADOS));
+				
+				
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			return 0;
+		}					
+	}
+	
 }

@@ -178,6 +178,11 @@ public class Constantes {
 	//constantes marketing
 	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
 	public static final int MARKETING_CAT_MESES = 31;
+	public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
+	public static final String HORA_FIN_SEMANAL = "HORA_FIN_SEMANAL_SMS";
+	public static final String HORA_INICIO_FIN_SEMANA = "HORA_INICIO_FIN_SEMANA_SMS";
+	public static final String HORA_FIN_FIN_SEMANA = "HORA_FIN_FIN_SEMANA_SMS";
+	public static final String RECURRENCIA_SMS = "RECURRENCIA_ENVIO_SMS";
 	
 	//permisos de pantallas marketing
 	public static final String USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS = "usrAdmin";
