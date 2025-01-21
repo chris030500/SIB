@@ -10,7 +10,7 @@ function ocultarMostrar(divEl) {
 			console.log("Credenciales calixta");
 			break;
 		case "2":
-			//listaPlantillas();
+			listaPlantillas();
 			break;
 		case "3":
 			//listaGestiones();

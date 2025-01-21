@@ -2,12 +2,14 @@ package ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -44,6 +47,9 @@ public class SolicitudesAutorizadasController {
 	
 	@Autowired
 	private ConfiguracionCalixtaService calixtaService;
+	
+	@Autowired
+	private ConfiguracionSMSCreditoService configuracionSMSService;
 	
 	private String rutaDireccion = "";
 	
@@ -102,6 +108,31 @@ public class SolicitudesAutorizadasController {
 
 	    // Devolver el objeto JSON
 	    return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/plantillas-SMS")
+	public ResponseEntity<Map<String, Object>> getAllSMSConfig() {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getAllSMSConfig();
+			
+			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
+				respuesta.put("plantillas", plantillasSMS);
+				return ResponseEntity.ok(respuesta);
+			} else  {
+				respuesta.put("plantillas", Collections.emptyList());
+				return ResponseEntity.ok(respuesta);
+			}
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
 	}
 	
 	public int validarAcceso() {
