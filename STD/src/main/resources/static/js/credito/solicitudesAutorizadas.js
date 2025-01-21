@@ -131,3 +131,64 @@ function editPlantilla(idSMSConfig){
 		console.error("Error al obtener las configuraciones SMS:", error);
 	})
 }
+
+function actualizarPlantilla(idSMSConfig, texto, estatus) {
+	
+	var url = getAbsolutePath() + "credito/guardar-plantilla";
+	
+    const payload = {
+        idSMSConfig: Number(idSMSConfig),
+        texto: texto,
+        estatus: Number(estatus)
+    };
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("Error al actualizar la plantilla");
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Plantilla actualizada: ", data);
+        swal("¡Guardado exitoso!", "La plantilla se guardó correctamente.", "success");
+       	setTimeout(function() {
+			swal.close(); // Cierra el SweetAlert
+		}, 2000);
+		location.reload();
+    })
+    .catch((error) => {
+        console.error("Error al actualizar la plantilla:", error);
+        swal("Error", "Ocurrió un problema al guardar la plantilla. Inténtalo de nuevo.", "error");
+    });
+}
+
+document.getElementById("plantillasForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    const idSMSConfig = document.getElementById("id-plantilla-sms").value;
+    const texto = document.getElementById("plantilla-texto-enviar").value;
+    const estatus = document.getElementById("select-estatus-plantilla").value;
+    
+    console.log("Tipo variable estatus: " + typeof(estatus) + "\nTipo variable idSMSConfig: " + typeof(idSMSConfig) + "\nTipo variable texto: " + typeof(texto));
+
+    // Validaciones
+    if (!texto.trim()) {
+        swal("Error", "El texto del mensaje no puede estar vacío.", "error");
+        return;
+    }
+
+    if (estatus === "") {
+        swal("Error", "Por favor seleccionar un estatus válido.", "error");
+        return;
+    }
+
+    // Llama a la función para actualizar la plantilla
+    actualizarPlantilla(idSMSConfig, texto, estatus);
+});
