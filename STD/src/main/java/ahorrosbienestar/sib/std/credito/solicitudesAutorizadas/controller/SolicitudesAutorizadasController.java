@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvioSMS;
@@ -48,6 +49,9 @@ public class SolicitudesAutorizadasController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
+	
+	@Autowired
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
@@ -68,6 +72,11 @@ public class SolicitudesAutorizadasController {
 			if (validarAcceso() == 1) {
 				List<ConfiguracionCalixta> credencialesCalixta = calixtaService.getCredenciales();
 				model.addAttribute("credenciales_calixta", credencialesCalixta);
+				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
+				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
+				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
+				model.addAttribute("hora_fin_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_FIN_SEMANA));
+				model.addAttribute("recurrencia_envio_sms", iConfiguracionRepository.buscarPropiedad(Constantes.RECURRENCIA_SMS));
 				
 				rutaDireccion = Constantes.CREDITO_SOLICITUDES_AUTORIZADAS;
 			} else {
