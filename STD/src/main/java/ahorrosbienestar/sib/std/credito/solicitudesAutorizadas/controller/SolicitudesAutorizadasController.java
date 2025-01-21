@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
+import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -33,12 +35,25 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
 	
+	@Autowired
+	private ConfiguracionCalixtaService calixtaService;
+	
 	private String rutaDireccion = "";
 	
 	@GetMapping("/solicitudesAutorizadas")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
+			
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+					userDetails = (UserDetails) principal;
+			}
+			
 			if (validarAcceso() == 1) {
+				List<ConfiguracionCalixta> credencialesCalixta = calixtaService.getCredenciales();
+				model.addAttribute("credenciales_calixta", credencialesCalixta);
+				
 				rutaDireccion = Constantes.CREDITO_SOLICITUDES_AUTORIZADAS;
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;

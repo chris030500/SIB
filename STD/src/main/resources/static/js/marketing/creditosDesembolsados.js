@@ -7,7 +7,7 @@ function ocultarMostrar(divEl) {
 	opcion = "#pant-tabs" + " #" + idDiv;
 	switch ($(opcion).attr("for")) {
 		case "1":
-			console.log("Parametros");
+			console.log("Credenciales calixta");
 			break;
 		case "2":
 			listaPlantillas();

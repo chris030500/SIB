@@ -65,36 +65,36 @@
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<tbody>
-											<!--<tr th:each="configuracion, configuracionStat : ${lista_configuraciones}" th:if="${configuracion.tipoConfig == 2}">
-												<td th:text="${configuracion.descripcionConfiguracion}"></td>
+											<tr th:each="calixta, calixtaStat : ${credenciales_calixta}" th:if="${calixta.tipoConfig == 2}">
+												<td th:text="${calixta.descripcionConfiguracion}"></td>
 												<td>
-													<div th:switch="${configuracion.descTipoConfig}">
+													<div th:switch="${calixta.descTipoConfig}">
 														<input th:case="'number'" type="number" class="form-control"
 															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${configuracion.nombreConfiguracion}"
-															th:value="${configuracion.valorConfiguracion}"
+															th:name="${calixta.nombreConfiguracion}"
+															th:value="${calixta.valorConfiguracion}"
 															th:required="true">
 															
 														<input th:case="'text'" type="text" class="form-control"
 															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${configuracion.nombreConfiguracion}"
-															th:value="${configuracion.valorConfiguracion}"
+															th:name="${calixta.nombreConfiguracion}"
+															th:value="${calixta.valorConfiguracion}"
 															th:required="true">
 														
 														<input th:case="'password'" type="password" class="form-control"
 															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${configuracion.nombreConfiguracion}"
-															th:value="${configuracion.valorConfiguracion}"
+															th:name="${calixta.nombreConfiguracion}"
+															th:value="${calixta.valorConfiguracion}"
 															th:required="true">
 															
 														<input th:case="'text'" type="text" class="form-control"
 															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${configuracion.nombreConfiguracion}"
-															th:value="${configuracion.valorConfiguracion}"
+															th:name="${calixta.nombreConfiguracion}"
+															th:value="${calixta.valorConfiguracion}"
 															readonly>
 													</div>
 												</td>
-											</tr>-->
+											</tr>
 										</tbody>
 									</table>
 								</div>
@@ -292,9 +292,9 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/marketing/dataTableConfigMarketing.js}"></script>
-        <script th:src="@{/js/marketing/fillDataTableConfig.js}"></script>
-        <script th:src="@{/js/marketing/creditosDesembolsados.js}"></script>
+        <!--<script th:src="@{/js/marketing/dataTableConfigMarketing.js}"></script>
+        <script th:src="@{/js/marketing/fillDataTableConfig.js}"></script>-->
+        <script th:src="@{/js/credito/solicitudesAutorizadas.js}"></script>
         <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
