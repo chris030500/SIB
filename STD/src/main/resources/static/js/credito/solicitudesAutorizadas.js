@@ -42,3 +42,51 @@ function mostrarOcultarDiv(divA) {
 	});
 
 }
+
+document.getElementById("credencialesForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita que el formulario recargue la página automáticamente
+
+    const form = event.target; // Obtén el formulario que disparó el evento
+    const editableInputs = form.querySelectorAll("input:not([readonly])"); // Inputs editables dentro del formulario
+
+    const formData = {};
+    editableInputs.forEach(input => {
+        formData[input.name] = input.value; // Almacena el valor usando el atributo "name" como clave
+    });
+
+    console.log(formData); // Solo para depuración, verifica que tengas los datos correctos
+
+    fetch(form.action, { // Usa el atributo action del formulario
+        method: form.method, // Usa el atributo method del formulario
+        headers: {
+            "Content-Type": "application/json" // Especifica que enviarás datos en formato JSON
+        },
+        body: JSON.stringify(formData) // Convierte el objeto `formData` a JSON
+    })
+    .then(response => response.json()) // Procesa la respuesta como JSON
+    .then(data => {
+        console.log("Respuesta del servidor:", data);
+        swal(
+			"¡Guardado exitoso!",
+			"Los datos se han guardado correctamente.",
+			"success"
+		)
+
+		setTimeout(function() {
+			swal.close(); // Cierra el SweetAlert
+		}, 2000);
+		location.reload();
+    })
+    .catch(error => {
+        console.error("Hubo un problema con el fetch:", error);
+        swal(
+			"¡Error!",
+			"Ocurrió un error al guardar las credenciales. Intenta nuevamente.",
+			"error"
+		)
+
+		setTimeout(function() {
+			swal.close(); // Cierra el SweetAlert
+		}, 2000);
+    });
+});

@@ -1,16 +1,23 @@
 package ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
@@ -63,6 +70,38 @@ public class SolicitudesAutorizadasController {
 			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
 			return null;
 		}
+	}
+	
+	@PostMapping("/guardarCredenciales")
+	@ResponseBody
+	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
+		
+		List<ConfiguracionCalixta> credencialesCalixta = calixtaService.getDatosCalixta();
+		List<ConfiguracionCalixta> updatedCredenciales = new ArrayList<>();
+		
+		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			
+			ConfiguracionCalixta calixta = credencialesCalixta.stream()
+					.filter(c -> c.getNombreConfiguracion().equalsIgnoreCase(key))
+					.findFirst()
+					.orElse(null);
+			
+			if (calixta != null) {
+				calixta.setValorConfiguracion(value);
+				updatedCredenciales.add(calixta);
+			}
+		}
+		
+		calixtaService.saveCredencialesCalixta(updatedCredenciales);
+		
+	    // Crear un objeto JSON con la respuesta
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Credenciales guardadas con éxito");
+
+	    // Devolver el objeto JSON
+	    return ResponseEntity.ok(response);
 	}
 	
 	public int validarAcceso() {
