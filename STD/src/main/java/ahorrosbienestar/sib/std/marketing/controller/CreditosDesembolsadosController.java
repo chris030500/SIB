@@ -221,13 +221,13 @@ public class CreditosDesembolsadosController {
     }
     
 	@GetMapping("/gestion-SMS")
-	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(@RequestParam String tipoCredito) {
 		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> gestionesSMS = gestionService.getAllGestionesSMS();
+			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(tipoCredito);
 			
 			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
 				respuesta.put("gestiones", gestionesSMS);

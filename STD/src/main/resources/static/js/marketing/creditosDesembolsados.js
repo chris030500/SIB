@@ -13,7 +13,7 @@ function ocultarMostrar(divEl) {
 			listaPlantillas();
 			break;
 		case "3":
-			listaGestiones();
+			//listaGestiones();
 			break;
 		default:
 			break;
@@ -193,25 +193,30 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
     });
 }
 
-/*document.getElementById("select-tipo-credito").addEventListener("change", function () {
+document.getElementById("select-tipo-credito").addEventListener("change", function () {
     const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
+    const divTblGestionSMS = document.getElementById("div-tblGestionSMS");
     console.log("Opción seleccionada:", selectedValue);
     
     switch(selectedValue) {
 		case "N":
-			getPlantillaByTipoCredito(selectedValue, 0);
+			divTblGestionSMS.hidden = false;
+			listaGestiones(selectedValue);
 			break;
 		case "O":
-			getPlantillaByTipoCredito(selectedValue, 0);
+			divTblGestionSMS.hidden = false;
+			listaGestiones(selectedValue);
 			break;
 		case "":
-			getPlantillaByTipoCredito(selectedValue, 1);
+			divTblGestionSMS.hidden = false;
+			listaGestiones(selectedValue);
 			break;
 		case "0":
-			document.getElementById("plantilla-texto-enviar").value = '';
+			console.log("No es una opción válida.");
+			divTblGestionSMS.hidden = true;
 	}
 
-});*/
+});
 
 document.getElementById("plantillasForm").addEventListener("submit", function (event) {
     event.preventDefault(); // Evita la recarga de la página
@@ -335,8 +340,12 @@ function getModalForm(idSMSProceso, estatus) {
 
     // Llama a la función para actualizar la plantilla
     actualizarProceso(idSMSProceso, estatus);
-});	
+	});	
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+	document.getElementById("div-tblGestionSMS").hidden = true;
+})
 
 
 

@@ -23,8 +23,8 @@ public class GestionSMSService {
 	@Autowired
 	private IGestionSMSRepository gestionRepository;
 	
-	public List<Map<String, Object>> getAllGestionesSMS() {
-		return gestionRepository.getAllGestionesSMS();
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(String tipoCredito) {
+		return gestionRepository.getGestionesSMSByTipoCredito(tipoCredito);
 	}
 	
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer idProcess) {

@@ -1,5 +1,5 @@
 var getPlantillasSMS = "marketing/plantillas-SMS";
-var getGestionesSMS = "marketing/gestion-SMS";
+var getGestionesSMS = "marketing/gestion-SMS?tipoCredito=";
 var botones = "";
 
 function getAbsolutePath() {
@@ -40,8 +40,8 @@ function listaPlantillas(){
 	 }); 
  }
  
- function listaGestiones(){
-	 url = getAbsolutePath() + getGestionesSMS;
+ function listaGestiones(tipoCredito){
+	 url = getAbsolutePath() + getGestionesSMS + tipoCredito;
 	 $.getJSON(url, {}, function(data) {
 		 tblGestionesSMS.clear().draw();
 		 $.each(data.gestiones, function(idx, opt) {
@@ -74,8 +74,8 @@ function listaPlantillas(){
 			 	
 			 tblGestionesSMS.row.add([
 				 opt.pkIdProceso,
-				 opt.fechaInicial, 
-				 opt.fechaFinal,
+				 opt.mes, 
+				 opt.tipoCredito,
 				 opt.numSmsEnviar, 
 				 opt.numSmsPendientes,
 				 opt.numSmsEnvios,
