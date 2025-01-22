@@ -74,7 +74,7 @@ function listaPlantillas(){
 			 	
 			 tblGestionesSMS.row.add([
 				 opt.pkIdProceso,
-				 opt.mes, 
+				 opt.nomMes, 
 				 opt.tipoCredito,
 				 opt.numSmsEnviar, 
 				 opt.numSmsPendientes,

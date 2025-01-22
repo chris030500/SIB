@@ -5,16 +5,25 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.marketing.model.GestionSMS;
 
 @Repository
 public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer> {
 	
+	@Modifying
+	@Transactional
+	@Query(value = "SET lc_time_names = 'es_ES'", nativeQuery = true)
+	void setLocaleSpanish();
+
+	
 	@Query(value = "SELECT T1.PK_PROCESOID AS pkIdProceso, "
 			+ "DATE_FORMAT(T1.DT_FECHA_INICIAL, '%m') AS mes, "
+			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
 			+ "IFNULL(T3.VC_DESCRIPCION, 'CAMPAÑA') AS tipoCredito, "
 			+ "T1.I_SMS_ENVIAR AS numSmsEnviar, "
 			+ "T1.I_SMS_PEND_ENVIAR AS numSmsPendientes, "

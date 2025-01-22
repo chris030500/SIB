@@ -24,6 +24,7 @@ public class GestionSMSService {
 	private IGestionSMSRepository gestionRepository;
 	
 	public List<Map<String, Object>> getGestionesSMSByTipoCredito(String tipoCredito) {
+		gestionRepository.setLocaleSpanish(); // Configurar el idioma
 		return gestionRepository.getGestionesSMSByTipoCredito(tipoCredito);
 	}
 	
