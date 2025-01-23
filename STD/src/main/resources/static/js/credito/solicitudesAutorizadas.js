@@ -132,6 +132,26 @@ function editPlantilla(idSMSConfig){
 	})
 }
 
+document.getElementById("select-comodines-plantilla").addEventListener("change", function () {
+	const selectedValue = this.value; // Obtener el valor seleccionado
+    const textarea = document.getElementById('plantilla-texto-enviar');
+    
+    console.log(selectedValue);
+   
+    if (selectedValue && textarea.value.indexOf(selectedValue) === -1) {
+        // Agregar el valor al textarea en la posición actual del cursor
+        const cursorPos = textarea.selectionStart;
+        const textBefore = textarea.value.substring(0, cursorPos);
+        const textAfter = textarea.value.substring(cursorPos);
+        textarea.value = `${textBefore}${selectedValue}${textAfter}`;
+        
+        // Restaurar el cursor después de la inserción
+        textarea.selectionStart = textarea.selectionEnd = cursorPos + selectedValue.length;
+    } else {
+		swal("Error", "El " + selectedValue + " ya fue insertado en la plantilla.", "error");
+	}
+});
+
 function actualizarPlantilla(idSMSConfig, texto, estatus) {
 	
 	var url = getAbsolutePath() + "credito/guardar-plantilla";

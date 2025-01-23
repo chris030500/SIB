@@ -23,7 +23,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div>
-							<h2 style="text-align:center">Créditos Desembolsados</h2>
+							<h2 style="text-align:center">Solicitudes Autorizadas</h2>
 						</div>
 					</div>
 				</div>
@@ -109,36 +109,17 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 15px ">
-							<!--<form id="plantillasForm">
-								<div class="mb-3">
-									<label for="tipo-credito" class="form-label">Tipo de crédito:</label>
-									<select class="form-select w-50" id="select-tipo-credito">
-										<option value="0" selected>Selecciona una opción</option>
-										<option value="N">Nuevos</option>
-										<option value="O">Renovados</option>
-										<option value="">Campañas</option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
-									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
-								</div>
-								<div class="text-end">
-									<button type="submit" class="btn btn-primary">Guardar</button>
-								</div>
-							</form>-->
 							<div class="table-responsive">
 								<table class="table table-sm" style="width: 100%; text-align: center;" id="tblPlantillas">
 									<thead>
 										<tr>
 											<th>ID</th>
-											<th>Tipo Crédito</th>
 											<th>Mensaje</th>
 											<th>Usuario Registra</th>
 											<th>Fecha Registro</th>
 											<th>Usuario Modifica</th>
 											<th>Fecha Modificación</th>
-											<th style="text-align: center;">Acciones</th>
+											<th>Acciones</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -225,20 +206,30 @@
 			
 			<!-- Modal Plantillas -->
 			<div class="modal fade" id="editPlantillaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">Editar Plantilla SMS</h5>
+							<h5 class="modal-title fw-bold" id="exampleModalLabel">Editar Plantilla SMS</h5>
 						</div>
 						<div class="modal-body">
 							<form id="plantillasForm">
 								<div class="mb-3">
 									<label for="id-plantilla" class="form-label">ID:</label>
-									<input type="number" class="form-control" id="id-plantilla-sms" rows="4" readonly>
+									<input type="number" class="form-control w-50" id="id-plantilla-sms" rows="4" readonly>
 								</div>
-								<div class="mb-3">
-									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
-									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
+								<div class="row mb-3">
+									<div class="col-md-8">
+										<label for="texto-enviar" class="form-label">Texto a enviar:</label>
+										<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
+									</div>
+									<div class="col-md-4">
+										<label for="select-comodines-plantilla" class="form-label">Comodines:</label>
+										<select class="form-select" id="select-comodines-plantilla">
+											<option value="" selected>Selecciona una opción</option>
+											<option value="#TIT">Titular</option>
+											<option value="#SOL">No. Solicitud</option>
+										</select>
+									</div>
 								</div>
 								<div class="mb-3">
 									<label for="estatus-plantilla" class="form-label">Estatus:</label>
@@ -249,6 +240,7 @@
 									</select>
 								</div>
 								<div class="text-end">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 									<button type="submit" class="btn btn-primary">Guardar cambios</button>
 								</div>
 							</form>

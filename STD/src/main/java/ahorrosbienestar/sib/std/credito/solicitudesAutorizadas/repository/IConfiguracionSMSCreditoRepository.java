@@ -14,7 +14,6 @@ import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.Configuraci
 public interface IConfiguracionSMSCreditoRepository extends JpaRepository<ConfiguracionSMSCredito, Integer> {
 	
 	@Query( value = "SELECT T1.PK_ID_CONFIG_SMS AS idConfig, "
-			+ "T1.FK_VC_TP_CREDITO AS tipoCredito, "
 			+ "T1.VC_MENSAJE_ENVIAR AS mensaje, "
 			+ "T2.VC_NOMBRE_USUARIO AS userRegistra, "
 			+ "DATE_FORMAT(T1.DT_FECHA_REGISTRO, '%d-%m-%Y %H:%i:%s') AS fechaRegistro, "

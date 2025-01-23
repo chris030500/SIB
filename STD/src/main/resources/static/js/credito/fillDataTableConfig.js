@@ -28,7 +28,6 @@ function listaPlantillas(){
 			 	
 			 tblPlantillasSMS.row.add([
 				 opt.idConfig,
-				 opt.tipoCredito,
 				 opt.mensaje, 
 				 opt.userRegistra,
 				 opt.fechaRegistro, 
