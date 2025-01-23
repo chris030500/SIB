@@ -24,6 +24,7 @@ public class ProcesoEnvioSMSService {
 	private IProcesoEnvioSMSRepository gestionRepository;
 	
 	public List<Map<String, Object>> getAllGestionesSMS() {
+		gestionRepository.setLocaleSpanish();
 		return gestionRepository.getAllGestionesSMS();
 	}
 	
