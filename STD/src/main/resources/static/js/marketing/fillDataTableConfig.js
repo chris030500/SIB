@@ -71,6 +71,7 @@ function listaPlantillas(){
 					+ opt.pkIdProceso
 					+ ")' id="
 					+ opt.pkIdProceso
+					+ " " + (deshabilitar ? "disabled" : "")
 					+ " data-tooltip='Add'>"
 					+ " <i class='fa-solid fa-pen-to-square'></i></button>";
 			var botonesPausar = "";
