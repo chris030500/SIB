@@ -45,16 +45,18 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 	public List<Map<String, Object>> getGestionesSMSByTipoCredito(String tipoCredito);
 	
 	@Query(value = "SELECT T1.PK_PROCESOID AS idProceso, "
-			+ "T3.VC_DESCRIPCION AS tipoCredito, "
-			+ "T1.DT_FECHA_INICIAL AS fechaInicial, "
-			+ "T1.DT_FECHA_FINAL AS fechaFinal, "
-			+ "T1.I_SMS_ENVIAR AS numSMS, "
-			+ "T2.I_IND_LIM_ENVIO_SMS AS limiteSMS "
+			+ "T1.FK_ID_CONFIG_SMS AS idConfigMensual, "
+			+ "IFNULL(T4.VC_DESCRIPCION, 'CAMPAÑA') AS tipoCredito, "
+			+ "DATE_FORMAT(T1.DT_FECHA_INICIAL, '%m') AS mes, "
+			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
+			+ "T2.I_NUM_ENVIOS_SMS AS numSMS, "
+			+ "T2.I_IND_LIM_ENVIO_SMS AS limiteSMS, "
+			+ "T2.VC_MENSAJE_ENVIAR AS mensaje "
 			+ "FROM SIB.TBL_PROCESO_ENVIO_SMS T1 "
-			+ "INNER JOIN SIB.TBL_CONFIG_SMS T2 ON T2.PK_ID_CONFIG_SMS = T1.FK_ID_CONFIG_SMS "
-			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T3 "
-			+ "ON T3.PK_VC_TP_CREDITO = T2.FK_VC_TP_CREDITO "
-			+ "WHERE T2.I_TP_PROCESO = 1 "
+			+ "INNER JOIN SIB.TBL_CONFIG_SMS_MENSUAL T2 ON T2.PK_ID_CONFIG_SMS_MENSUAL = T1.FK_ID_CONFIG_SMS "
+			+ "INNER JOIN SIB.TBL_CONFIG_SMS T3 ON T3.PK_ID_CONFIG_SMS = T2.FK_ID_CONFIG_SMS "
+			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T4.PK_VC_TP_CREDITO = T3.FK_VC_TP_CREDITO "
+			+ "WHERE T3.I_TP_PROCESO = 1 "
 			+ "AND T1.PK_PROCESOID = :idProcess", nativeQuery = true)
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer idProcess);
 
