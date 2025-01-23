@@ -25,6 +25,7 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 			+ "DATE_FORMAT(T1.DT_FECHA_INICIAL, '%m') AS mes, "
 			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
 			+ "IFNULL(T4.VC_DESCRIPCION, 'CAMPAÑA') AS tipoCredito, "
+			+ "T2.VC_MENSAJE_ENVIAR AS mensajeSMS, "
 			+ "T1.I_SMS_ENVIAR AS numSmsEnviar, "
 			+ "T1.I_SMS_PEND_ENVIAR AS numSmsPendientes, "
 			+ "T1.I_SMS_ENVIOS AS numSmsEnvios, "
