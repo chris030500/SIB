@@ -261,6 +261,7 @@ function editProcess(idSMSProcess){
 	.then((data) => {
 		console.log("Gestión SMS: ", data);
 		const idProceso = data.idProceso;
+		const idConfigMensual = data.idConfigMensual
 		const tipoCredito = data.tipoCredito;
 		const mes = data.nomMes
 		const mensajeSMS = data.mensaje;
@@ -268,6 +269,7 @@ function editProcess(idSMSProcess){
 		const limiteSMS = data.limiteSMS;
 		
 		document.getElementById("id-gestion-sms").value = idProceso;
+		document.getElementById("id-config-mensual").value = idConfigMensual;
 		document.getElementById("mes-gestion").value = mes;
 		document.getElementById("tipo-credito-gestion").value = tipoCredito;
 		document.getElementById("sms-gestion").value = mensajeSMS;
@@ -283,6 +285,61 @@ function editProcess(idSMSProcess){
 		console.error("Error al obtener las configuraciones SMS:", error);
 	})
 }
+
+function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
+	
+	var url = getAbsolutePath() + "marketing/actualizar-configuracion-mensual";
+	
+    const payload = {
+        idSMSConfigMensual: Number(idSMSConfigMensual),
+        limiteSMS: Number(limiteSMS),
+        maxSMS: Number(maxSMS)
+    };
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("Error al actualizar la gestión del mensaje.");
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Plantilla actualizada: ", data);
+        swal("¡Guardado exitoso!", "La gestión del mensaje se guardó correctamente.", "success");
+       	setTimeout(function() {
+			swal.close(); // Cierra el SweetAlert
+		}, 2000);
+		location.reload();
+    })
+    .catch((error) => {
+        console.error("Error al actualizar la gestión del mensaje:", error);
+        swal("Error", "Ocurrió un problema al guardar la gestión del mensaje. Inténtalo de nuevo.", "error");
+    });
+}
+
+document.getElementById("gestionSMSForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
+    const limiteSMS = document.getElementById("select-limite-sms").value;
+    const maxSMS = document.getElementById("maximo-sms").value;
+    
+    console.log("idSMSConfigMensual: " + typeof(idSMSConfigMensual) + "\nlimiteSMS: " + typeof(limiteSMS) + "\nmaxSMS: " + typeof("maxSMS"))
+    
+    // Validaciones
+    if (limiteSMS === "") {
+        swal("Error", "Por favor seleccionar una opción válida.", "error");
+        return;
+    }
+
+    actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
+});
 
 function modalProcess(idProcess ,estatus) {
 	
@@ -305,7 +362,7 @@ function modalProcess(idProcess ,estatus) {
 
 function actualizarProceso(idSMSProceso, estatus) {
 	
-	var url = getAbsolutePath() + "marketing/actualizar-gestion-sms";
+	var url = getAbsolutePath() + "marketing/actualizar-estatus-gestion";
 	
     const payload = {
         idSMSProceso: Number(idSMSProceso),
