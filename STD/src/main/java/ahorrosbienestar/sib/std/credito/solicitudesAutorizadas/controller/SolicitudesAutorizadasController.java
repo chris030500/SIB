@@ -31,6 +31,8 @@ import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvi
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
+import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMSMensual;
+import ahorrosbienestar.sib.std.marketing.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -62,6 +64,9 @@ public class SolicitudesAutorizadasController {
 	
 	@Autowired
 	private ProcesoEnvioSMSService gestionService;
+	
+	@Autowired
+	private ConfiguracionSMSMensualService configMensualService;
 	
 	private String rutaDireccion = "";
 	
@@ -230,6 +235,42 @@ public class SolicitudesAutorizadasController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
 		}
 	}
+	
+    @PostMapping("/actualizar-configuracion-mensual")
+    @ResponseBody
+    public ResponseEntity<?> updateConfigMensual(@RequestBody Map<String, Object> payload) {
+    	
+        try {
+        	
+            Integer idSMSProceso = (Integer) payload.get("idSMSConfigMensual");
+            Integer limiteSMS  = (Integer) payload.get("limiteSMS");
+            Integer maxSMS = (Integer) payload.get("maxSMS");
+            
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			
+			if (principal instanceof UserDetails) {
+				
+				userDetails = (UserDetails) principal;
+				
+			}
+			
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+            
+            ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
+            
+            if (updatedConfigMensual != null) {
+                return ResponseEntity.ok(updatedConfigMensual);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
+            }
+        } catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
+        }
+    }
 	
     @PostMapping("/actualizar-gestion-sms")
     @ResponseBody
