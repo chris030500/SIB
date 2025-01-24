@@ -232,15 +232,16 @@ function editProcess(idSMSProcess){
 	.then((data) => {
 		console.log("Gestión SMS: ", data);
 		const idProceso = data.idProceso;
-		const tipoCredito = data.tipoCredito;
-		const fechaInicial = data.fechaInicial;
-		const fechaFinal = data.fechaFinal;
+		const idConfigMensual = data.idConfigMensual
+		const mes = data.nomMes
+		const mensajeSMS = data.mensaje;
 		const numSMS = data.numSMS;
 		const limiteSMS = data.limiteSMS;
 		
 		document.getElementById("id-gestion-sms").value = idProceso;
-		document.getElementById("fecha-inicial-gestion").value = fechaInicial;
-		document.getElementById("fecha-final-gestion").value = fechaFinal;
+		document.getElementById("id-config-mensual").value = idConfigMensual;
+		document.getElementById("mes-gestion").value = mes;
+		document.getElementById("sms-gestion").value = mensajeSMS;
 		document.getElementById("maximo-sms").value = numSMS;
 		
 		if (limiteSMS == 1) {
