@@ -272,7 +272,7 @@ public class SolicitudesAutorizadasController {
         }
     }
 	
-    @PostMapping("/actualizar-gestion-sms")
+    @PostMapping("/actualizar-estatus-gestion")
     @ResponseBody
     public ResponseEntity<?> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
     	

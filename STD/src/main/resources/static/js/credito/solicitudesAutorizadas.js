@@ -332,7 +332,7 @@ function modalProcess(idProcess ,estatus) {
 
 function actualizarProceso(idSMSProceso, estatus) {
 	
-	var url = getAbsolutePath() + "credito/actualizar-gestion-sms";
+	var url = getAbsolutePath() + "credito/actualizar-estatus-gestion";
 	
     const payload = {
         idSMSProceso: Number(idSMSProceso),
