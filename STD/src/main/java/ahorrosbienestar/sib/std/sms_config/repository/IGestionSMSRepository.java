@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.marketing.repository;
+package ahorrosbienestar.sib.std.sms_config.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ahorrosbienestar.sib.std.marketing.model.GestionSMS;
+import ahorrosbienestar.sib.std.sms_config.model.GestionSMS;
 
 @Repository
 public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer> {

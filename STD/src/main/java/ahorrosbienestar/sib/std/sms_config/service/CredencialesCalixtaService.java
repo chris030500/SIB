@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.marketing.service;
+package ahorrosbienestar.sib.std.sms_config.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.marketing.model.CredencialesCalixta;
-import ahorrosbienestar.sib.std.marketing.repository.ICredencialesCalixtaRepository;
+import ahorrosbienestar.sib.std.sms_config.model.CredencialesCalixta;
+import ahorrosbienestar.sib.std.sms_config.repository.ICredencialesCalixtaRepository;
 
 @Service
 public class CredencialesCalixtaService {

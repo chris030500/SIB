@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.marketing.service;
+package ahorrosbienestar.sib.std.sms_config.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.marketing.model.ConfiguracionSMS;
-import ahorrosbienestar.sib.std.marketing.repository.IConfiguracionSMSRepository;
+import ahorrosbienestar.sib.std.sms_config.model.ConfiguracionSMS;
+import ahorrosbienestar.sib.std.sms_config.repository.IConfiguracionSMSRepository;
 
 @Service
 public class ConfiguracionSMSService {

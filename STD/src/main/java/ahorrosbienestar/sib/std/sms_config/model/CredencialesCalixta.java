@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.marketing.model;
+package ahorrosbienestar.sib.std.sms_config.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
