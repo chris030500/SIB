@@ -23,7 +23,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div>
-							<h2 style="text-align:center">Créditos Desembolsados</h2>
+							<h2 style="text-align:center">Configuración de SMS Créditos Desembolsados</h2>
 						</div>
 					</div>
 				</div>
@@ -31,19 +31,19 @@
 
 			<div class="p-4 border rounded-3 mb-4">
 				<ul class="nav nav-pills" id="pntConf" role="tablist">
-					<li class="nav-item" role="presentation">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 						<button onclick="ocultarMostrar(this)" class="nav-link active" id="credenciales-tab"
 							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Credenciales</button>
 					</li>
-					<li class="nav-item" role="presentation">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas</button>
 					</li>
-					<li class="nav-item" role="presentation">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1}">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="gestion-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Gestión del mensaje</button>
 					</li>
-					<li class="nav-item" role="presentation">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="frecuencia-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Frecuencia de Envío de Mensaje</button>
 					</li>
@@ -57,7 +57,7 @@
 					<div class="col-lg-4"></div>
 				</div>
 				<!-- Credenciales -->
-				<div id="credenciales-tab1" class="" style="display:none;" for="1">
+				<div id="credenciales-tab1" class="" style="display:none;" for="1" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Datos conexión al servicio de Calixta</legend>
 						<div class="row" style="margin-top : 15px ">
@@ -105,7 +105,7 @@
 				</div>
 				<!-- Fin de credenciales -->
 				<!-- Plantillas -->
-				<div id="plantillas-tab1" class="" style="display:none;" for="2">
+				<div id="plantillas-tab1" class="" style="display:none;" for="2" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 15px ">
@@ -149,7 +149,7 @@
 				</div>
 				<!-- Fin de plantillas -->
 				<!-- Gestión SMS -->
-				<div id="gestion-tab1" class="" style="display:none;" for="3">
+				<div id="gestion-tab1" class="" style="display:none;" for="3" th:if="${permiso_admin == 1}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
 						<div class="row" style="margin-top : 15px ">
@@ -184,7 +184,7 @@
 				</div>
 				<!-- Fin de Gestión SMS -->
 				<!-- Frecuencia de envío -->
-				<div id="frecuencia-tab1" class="" style="display:none;" for="3">
+				<div id="frecuencia-tab1" class="" style="display:none;" for="4" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Frecuencia de Envío de Mensaje</legend>
 						<div class="row" style="margin-top : 15px ">

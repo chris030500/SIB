@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.marketing.creditosdesembolsados.service.ConfigCreditosDesembolsadosService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
@@ -68,22 +69,24 @@ public class CreditosDesembolsadosController {
 	@Autowired
 	private GestionSMSService gestionService;
 	
+	@Autowired
+	private ConfigCreditosDesembolsadosService configService;
+	
 	private String rutaDireccion = "";
 	
 	@GetMapping("/creditosDesembolsados")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
-			/*Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
 			if (principal instanceof UserDetails) {
 					userDetails = (UserDetails) principal;
-			}*/
+			}
 			if (validarAcceso() == 1) {
-				//int mesActual = LocalDate.now().getMonthValue();
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(1);
-				//model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS, userDetails.getUsername()));
-				//model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
-				//model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
+				
+				model.addAttribute("permiso_admin", configService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
+				model.addAttribute("permiso_editor", configService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
 				model.addAttribute("credenciales", credenciales);
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
