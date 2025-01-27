@@ -33,8 +33,8 @@ import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.Configura
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.sms_config.model.ConfiguracionSMSMensual;
-import ahorrosbienestar.sib.std.sms_config.service.ConfiguracionSMSMensualService;
+import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
+import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 

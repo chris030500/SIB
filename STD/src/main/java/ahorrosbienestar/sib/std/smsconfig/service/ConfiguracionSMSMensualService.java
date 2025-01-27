@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.sms_config.service;
+package ahorrosbienestar.sib.std.smsconfig.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.sms_config.model.ConfiguracionSMSMensual;
-import ahorrosbienestar.sib.std.sms_config.repository.IConfiguracionSMSMensualRepository;
+import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
+import ahorrosbienestar.sib.std.smsconfig.repository.IConfiguracionSMSMensualRepository;
 
 @Service
 public class ConfiguracionSMSMensualService {

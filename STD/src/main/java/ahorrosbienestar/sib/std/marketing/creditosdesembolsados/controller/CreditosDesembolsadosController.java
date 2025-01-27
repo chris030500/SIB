@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.marketing.controller;
+package ahorrosbienestar.sib.std.marketing.creditosdesembolsados.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -29,14 +29,14 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.sms_config.model.ConfiguracionSMS;
-import ahorrosbienestar.sib.std.sms_config.model.ConfiguracionSMSMensual;
-import ahorrosbienestar.sib.std.sms_config.model.CredencialesCalixta;
-import ahorrosbienestar.sib.std.sms_config.model.GestionSMS;
-import ahorrosbienestar.sib.std.sms_config.service.ConfiguracionSMSMensualService;
-import ahorrosbienestar.sib.std.sms_config.service.ConfiguracionSMSService;
-import ahorrosbienestar.sib.std.sms_config.service.CredencialesCalixtaService;
-import ahorrosbienestar.sib.std.sms_config.service.GestionSMSService;
+import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
+import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
+import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
+import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
+import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
+import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
+import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
+import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 

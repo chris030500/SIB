@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sms_config.model;
+package ahorrosbienestar.sib.std.smsconfig.model;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.sms_config.service;
+package ahorrosbienestar.sib.std.smsconfig.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.sms_config.model.GestionSMS;
-import ahorrosbienestar.sib.std.sms_config.repository.IGestionSMSRepository;
+import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
+import ahorrosbienestar.sib.std.smsconfig.repository.IGestionSMSRepository;
 
 @Service
 public class GestionSMSService {
