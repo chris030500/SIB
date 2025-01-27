@@ -6,80 +6,80 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TBL_CONFIGURACION_DESEMBOLSADOS_MARKETING")
+@Table(name = "TBL_CREDENCIALES_CALIXTA")
 public class CredencialesCalixta {
-	
+	 
 	@Id
-	@Column(name = "PK_I_CONFIG")
-	private Integer pkConfiguracion;
+	@Column(name = "PK_I_CREDENCIAL")
+	private Integer pkCredencial;
 	
-	@Column(name = "VC_DESC_CONFIG")
-	private String descripcionConfiguracion;
+	@Column(name = "VC_DESC_CREDENCIAL")
+	private String descripcionCredencial;
 	
-	@Column(name = "VC_VALOR_CONFIG", columnDefinition = "LONGTEXT")
-	private String valorConfiguracion;
+	@Column(name = "VC_VALOR_CREDENCIAL", columnDefinition = "LONGTEXT")
+	private String valorCredencial;
 	
-	@Column(name = "I_TIPO_CONFIG")
-	private Integer tipoConfig;
+	@Column(name = "I_TIPO_CREDENCIAL")
+	private Integer tipoCredencial;
 	
-	@Column(name = "VC_DESC_TIPO_CONFIG")
-	private String descTipoConfig;
+	@Column(name = "VC_DESC_TIPO_CREDENCIAL")
+	private String descTipoCredencial;
 	
-	@Column(name = "VC_NOMBRE_CONFIG")
-	private String nombreConfiguracion;
+	@Column(name = "VC_NOMBRE_CREDENCIAL")
+	private String nombreCredencial;
 
-	public Integer getPkConfiguracion() {
-		return pkConfiguracion;
+	public Integer getPkCredencial() {
+		return pkCredencial;
 	}
 
-	public void setPkConfiguracion(Integer pkConfiguracion) {
-		this.pkConfiguracion = pkConfiguracion;
+	public void setPkCredencial(Integer pkCredencial) {
+		this.pkCredencial = pkCredencial;
 	}
 
-	public String getDescripcionConfiguracion() {
-		return descripcionConfiguracion;
+	public String getDescripcionCredencial() {
+		return descripcionCredencial;
 	}
 
-	public void setDescripcionConfiguracion(String descripcionConfiguracion) {
-		this.descripcionConfiguracion = descripcionConfiguracion;
+	public void setDescripcionCredencial(String descripcionCredencial) {
+		this.descripcionCredencial = descripcionCredencial;
 	}
 
-	public String getValorConfiguracion() {
-		return valorConfiguracion;
+	public String getValorCredencial() {
+		return valorCredencial;
 	}
 
-	public void setValorConfiguracion(String valorConfiguracion) {
-		this.valorConfiguracion = valorConfiguracion;
+	public void setValorCredencial(String valorCredencial) {
+		this.valorCredencial = valorCredencial;
 	}
 
-	public Integer getTipoConfig() {
-		return tipoConfig;
+	public Integer getTipoCredencial() {
+		return tipoCredencial;
 	}
 
-	public void setTipoConfig(Integer tipoConfig) {
-		this.tipoConfig = tipoConfig;
+	public void setTipoCredencial(Integer tipoCredencial) {
+		this.tipoCredencial = tipoCredencial;
 	}
 
-	public String getDescTipoConfig() {
-		return descTipoConfig;
+	public String getDescTipoCredencial() {
+		return descTipoCredencial;
 	}
 
-	public void setDescTipoConfig(String descTipoConfig) {
-		this.descTipoConfig = descTipoConfig;
+	public void setDescTipoCredencial(String descTipoCredencial) {
+		this.descTipoCredencial = descTipoCredencial;
 	}
 
-	public String getNombreConfiguracion() {
-		return nombreConfiguracion;
+	public String getNombreCredencial() {
+		return nombreCredencial;
 	}
 
-	public void setNombreConfiguracion(String nombreConfiguracion) {
-		this.nombreConfiguracion = nombreConfiguracion;
+	public void setNombreCredencial(String nombreCredencial) {
+		this.nombreCredencial = nombreCredencial;
 	}
 
 	@Override
 	public String toString() {
-		return "ConfiguracionCredenciales [pkConfiguracion=" + pkConfiguracion + ", descripcionConfiguracion="
-				+ descripcionConfiguracion + ", valorConfiguracion=" + valorConfiguracion + ", tipoConfig=" + tipoConfig
-				+ ", descTipoConfig=" + descTipoConfig + ", nombreConfiguracion=" + nombreConfiguracion + "]";
+		return "CredencialesCalixta [pkCredencial=" + pkCredencial + ", descripcionCredencial=" + descripcionCredencial
+				+ ", valorCredencial=" + valorCredencial + ", tipoCredencial=" + tipoCredencial
+				+ ", descTipoCredencial=" + descTipoCredencial + ", nombreCredencial=" + nombreCredencial + "]";
 	}
 }

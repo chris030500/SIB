@@ -22,8 +22,8 @@ public class CredencialesCalixtaService {
 		return credencialesRepository.searchConfiguracion(nombreConfig, username);
 	}
 	
-	public List<CredencialesCalixta> getDatosCalixta() {
-		return credencialesRepository.getDatosCalixta();
+	public List<CredencialesCalixta> getDatosCalixta(Integer tipoCredencial) {
+		return credencialesRepository.getDatosCalixta(tipoCredencial);
 	}
 	
 	public void saveCredencialesCalixta(List<CredencialesCalixta> credenciales) {

@@ -62,7 +62,7 @@ public class CreditosDesembolsadosController {
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
-	private CredencialesCalixtaService configuracionesService;
+	private CredencialesCalixtaService credencialesService;
 	
 	@Autowired
 	private ConfiguracionSMSService configuracionSMSService;
@@ -78,20 +78,20 @@ public class CreditosDesembolsadosController {
 	@GetMapping("/creditosDesembolsados")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			/*Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
 			if (principal instanceof UserDetails) {
 					userDetails = (UserDetails) principal;
-			}
+			}*/
 			if (validarAcceso() == 1) {
-				int mesActual = LocalDate.now().getMonthValue();
-				List<CredencialesCalixta> configuraciones = configuracionesService.getCredenciales();
-				model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS, userDetails.getUsername()));
-				model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
-				model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
-				model.addAttribute("lista_configuraciones", configuraciones);
-				model.addAttribute("mesActual", mesActual);
-				model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.MARKETING_CAT_MESES));
+				//int mesActual = LocalDate.now().getMonthValue();
+				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(1);
+				//model.addAttribute("permiso_admin", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_CREDITOS_DESEMBOLSADOS, userDetails.getUsername()));
+				//model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
+				//model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
+				model.addAttribute("credenciales", credenciales);
+				//model.addAttribute("mesActual", mesActual);
+				//model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.MARKETING_CAT_MESES));
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
 				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
@@ -112,7 +112,7 @@ public class CreditosDesembolsadosController {
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
 		
-		List<CredencialesCalixta> credencialesCalixta = configuracionesService.getDatosCalixta();
+		List<CredencialesCalixta> credencialesCalixta = credencialesService.getDatosCalixta(1);
 		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
 		
 		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
@@ -120,17 +120,17 @@ public class CreditosDesembolsadosController {
 			String value = entry.getValue();
 			
 			CredencialesCalixta calixta = credencialesCalixta.stream()
-					.filter(c -> c.getNombreConfiguracion().equalsIgnoreCase(key))
+					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
 					.findFirst()
 					.orElse(null);
 			
 			if (calixta != null) {
-				calixta.setValorConfiguracion(value);
+				calixta.setValorCredencial(value);
 				updatedCredenciales.add(calixta);
 			}
 		}
 		
-		configuracionesService.saveCredencialesCalixta(updatedCredenciales);
+		credencialesService.saveCredencialesCalixta(updatedCredenciales);
 		
 	    // Crear un objeto JSON con la respuesta
 	    Map<String, String> response = new HashMap<>();
