@@ -29,6 +29,7 @@ public class GestionSMSService {
 	}
 	
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess) {
+		gestionRepository.setLocaleSpanish();
 		return gestionRepository.getCurrentProcessSMS(tipoProceso, idProcess);
 	}
 	

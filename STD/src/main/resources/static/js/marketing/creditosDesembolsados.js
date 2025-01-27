@@ -341,21 +341,20 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function (e
     actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
 });
 
-function modalProcess(idProcess ,estatus) {
+function modalProcess(idProcess ,estatus, month) {
 	
 	const tittleModal = document.getElementById("process-modal-tittle");
 	const textModal = document.getElementById("process-modal-text");
 	
 	if (estatus == 4) {
 		tittleModal.innerText = "Pausar proceso de envío SMS";
-		textModal.innerText = "¿Estás seguro de pausar el envío de SMS? \n Una vez realizando está acción se dentendrá el envío de SMS.";
-		console.log(tittleModal.innerText + "\n" + textModal.value);
+		textModal.innerHTML = "¿Estás seguro de pausar el envío de SMS para el mes de <strong>" + month + "</strong>?<br>Una vez realizando está acción se dentendrá el envío de SMS.";
 		getModalForm(idProcess, estatus);
 	}
 	
 	if (estatus == 6) {
 		tittleModal.innerText = "Reanudar proceso de envío de SMS";
-		textModal.innerText = "¿Estás seguro de reanudar el envío de SMS? \n Una vez realizando está acción se dentonará el envío de SMS.";
+		textModal.innerHTML = "¿Estás seguro de reanudar el envío de SMS el mes de <strong>" + month + "</strong>?<br>Una vez realizando está acción se dentonará el envío de SMS.";
 		getModalForm(idProcess, estatus);
 	} 
 }

@@ -83,7 +83,8 @@ function listaPlantillas(){
 			 	var botonesPausar = "<button class='btn btn-secundary bg-danger text-white btn-xs me-1' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Pausar Proceso Envío' data-bs-target='#statusProcessModal' aria-controls='table-datatable' type='button'"
 					+ " onclick='modalProcess("
-					+ opt.pkIdProceso + ", 4)'"
+					+ opt.pkIdProceso + ", 4, \""
+					+ opt.nomMes + "\")'"
 					+ " " + (deshabilitar ? "disabled" : "")
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-pause-fill'></i></button>";
@@ -92,7 +93,8 @@ function listaPlantillas(){
 			 	var botonesReanudar = "<button class='btn btn-secundary bg-success text-white btn-xs me-1' tabindex='0' data-bs-toggle='modal'"
 					+ " title='Reanudar Proceso Envío' data-bs-target='#statusProcessModal' aria-controls='table-datatable' type='button'"
 					+ " onclick='modalProcess("
-					+ opt.pkIdProceso + ", 6)'"
+					+ opt.pkIdProceso + ", 6, \""
+					+ opt.nomMes + "\")'"
 					+ " " + (deshabilitar ? "disabled" : "")
 					+ " data-tooltip='Add'>"
 					+ " <i class='bi bi-play-fill'></i></button>";
