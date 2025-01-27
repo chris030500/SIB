@@ -34,6 +34,7 @@ import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
+import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -67,6 +68,9 @@ public class SolicitudesAutorizadasController {
 	
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
+	
+	@Autowired
+	private DetalleGestionSMSService detalleService;
 	
 	private String rutaDireccion = "";
 	
@@ -297,6 +301,7 @@ public class SolicitudesAutorizadasController {
             GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
             
             if (updatedGestionSMS != null) {
+            	updateDetalleGestionSMS(idSMSProceso, estatus);
                 return ResponseEntity.ok(updatedGestionSMS);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
@@ -305,6 +310,14 @@ public class SolicitudesAutorizadasController {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
         }
+    }
+    
+    private void updateDetalleGestionSMS(Integer idProceeso, Integer estatus) {
+    	if (estatus == 4) {
+    		detalleService.updateEnviarMensaje(idProceeso, "N");
+    	} else {
+    		detalleService.updateEnviarMensaje(idProceeso, "S");
+    	}
     }
 	
 	public int validarAcceso() {
