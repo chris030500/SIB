@@ -23,7 +23,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div>
-							<h2 style="text-align:center">Solicitudes Autorizadas</h2>
+							<h2 style="text-align:center">Configuración SMS Solicitudes Autorizadas</h2>
 						</div>
 					</div>
 				</div>
@@ -65,32 +65,32 @@
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<tbody>
-											<tr th:each="calixta, calixtaStat : ${credenciales_calixta}" th:if="${calixta.tipoConfig == 2}">
-												<td th:text="${calixta.descripcionConfiguracion}"></td>
+											<tr th:each="calixta, calixtaStat : ${credenciales}">
+												<td th:text="${calixta.descripcionCredencial}"></td>
 												<td>
-													<div th:switch="${calixta.descTipoConfig}">
+													<div th:switch="${calixta.descTipoCredencial}">
 														<input th:case="'number'" type="number" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${calixta.nombreConfiguracion}"
-															th:value="${calixta.valorConfiguracion}"
+															autocomplete="off" placeholder="ID Cliente Calixta"
+															th:name="${calixta.nombreCredencial}"
+															th:value="${calixta.valorCredencial}"
 															th:required="true">
 															
 														<input th:case="'text'" type="text" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${calixta.nombreConfiguracion}"
-															th:value="${calixta.valorConfiguracion}"
+															autocomplete="off" placeholder="Usuario Calixta"
+															th:name="${calixta.nombreCredencial}"
+															th:value="${calixta.valorCredencial}"
 															th:required="true">
 														
 														<input th:case="'password'" type="password" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${calixta.nombreConfiguracion}"
-															th:value="${calixta.valorConfiguracion}"
+															autocomplete="off" placeholder="Password"
+															th:name="${calixta.nombreCredencial}"
+															th:value="${calixta.valorCredencial}"
 															th:required="true">
 															
-														<input th:case="'text'" type="text" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
-															th:name="${calixta.nombreConfiguracion}"
-															th:value="${calixta.valorConfiguracion}"
+														<input th:case="'readonly'" type="text" class="form-control"
+															autocomplete="off"
+															th:name="${calixta.nombreCredencial}"
+															th:value="${calixta.valorCredencial}"
 															readonly>
 													</div>
 												</td>
@@ -329,7 +329,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/credito/dataTableConfig.js}"></script>
+        <script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
         <script th:src="@{/js/credito/fillDataTableConfig.js}"></script>
         <script th:src="@{/js/credito/solicitudesAutorizadas.js}"></script>
     </th:block>

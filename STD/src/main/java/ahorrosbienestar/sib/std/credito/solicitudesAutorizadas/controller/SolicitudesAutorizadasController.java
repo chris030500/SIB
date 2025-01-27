@@ -25,16 +25,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionCalixta;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvioSMS;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionCalixtaService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
+import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
+import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -57,7 +57,7 @@ public class SolicitudesAutorizadasController {
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
-	private ConfiguracionCalixtaService calixtaService;
+	private CredencialesCalixtaService credencialesService;
 	
 	@Autowired
 	private ConfiguracionSMSCreditoService configuracionSMSService;
@@ -75,8 +75,8 @@ public class SolicitudesAutorizadasController {
 		try {
 			
 			if (validarAcceso() == 1) {
-				List<ConfiguracionCalixta> credencialesCalixta = calixtaService.getCredenciales();
-				model.addAttribute("credenciales_calixta", credencialesCalixta);
+				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
+				model.addAttribute("credenciales", credenciales);
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
 				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
@@ -98,25 +98,25 @@ public class SolicitudesAutorizadasController {
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
 		
-		List<ConfiguracionCalixta> credencialesCalixta = calixtaService.getDatosCalixta();
-		List<ConfiguracionCalixta> updatedCredenciales = new ArrayList<>();
+		List<CredencialesCalixta> credencialesCalixta = credencialesService.getDatosCalixta(2);
+		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
 		
 		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
 			String key = entry.getKey();
 			String value = entry.getValue();
 			
-			ConfiguracionCalixta calixta = credencialesCalixta.stream()
-					.filter(c -> c.getNombreConfiguracion().equalsIgnoreCase(key))
+			CredencialesCalixta calixta = credencialesCalixta.stream()
+					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
 					.findFirst()
 					.orElse(null);
 			
 			if (calixta != null) {
-				calixta.setValorConfiguracion(value);
+				calixta.setValorCredencial(value);
 				updatedCredenciales.add(calixta);
 			}
 		}
 		
-		calixtaService.saveCredencialesCalixta(updatedCredenciales);
+		credencialesService.saveCredencialesCalixta(updatedCredenciales);
 		
 	    // Crear un objeto JSON con la respuesta
 	    Map<String, String> response = new HashMap<>();
