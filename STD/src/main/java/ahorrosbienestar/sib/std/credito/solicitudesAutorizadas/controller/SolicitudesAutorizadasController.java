@@ -25,16 +25,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvioSMS;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
 import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
+import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
+import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -63,7 +63,7 @@ public class SolicitudesAutorizadasController {
 	private ConfiguracionSMSService configuracionSMSService;
 	
 	@Autowired
-	private ProcesoEnvioSMSService gestionService;
+	private GestionSMSService gestionService;
 	
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
@@ -206,7 +206,7 @@ public class SolicitudesAutorizadasController {
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> gestionesSMS = gestionService.getAllGestionesSMS();
+			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(2, "");
 			
 			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
 				respuesta.put("gestiones", gestionesSMS);
@@ -227,7 +227,7 @@ public class SolicitudesAutorizadasController {
 	@GetMapping("/obtener-gestion")
 	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
 		
-		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(idSMSProcess);
+		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(2, idSMSProcess);
 		
 		if (gestionSMS.isPresent()) {
 			return ResponseEntity.ok(gestionSMS.get());
@@ -294,7 +294,7 @@ public class SolicitudesAutorizadasController {
 			
 			Integer idUsuario = usuario.get(0).getPk_id_usuario();
             
-            ProcesoEnvioSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
+            GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
             
             if (updatedGestionSMS != null) {
                 return ResponseEntity.ok(updatedGestionSMS);

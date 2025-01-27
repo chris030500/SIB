@@ -40,10 +40,10 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 			+ "LEFT JOIN SIB.TBL_CONFIG_SMS_MENSUAL T2 ON T1.FK_ID_CONFIG_SMS = T2.PK_ID_CONFIG_SMS_MENSUAL "
 			+ "LEFT JOIN SIB.TBL_CONFIG_SMS T3 ON T2.FK_ID_CONFIG_SMS = T3.PK_ID_CONFIG_SMS "
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T3.FK_VC_TP_CREDITO = T4.PK_VC_TP_CREDITO "
-			+ "WHERE T1.I_TP_PROCESO = 1 "
+			+ "WHERE T1.I_TP_PROCESO = :tipoProceso "
 			+ "AND T3.FK_VC_TP_CREDITO = :tipoCredito "
 			+ "ORDER BY mes ASC ", nativeQuery = true)
-	public List<Map<String, Object>> getGestionesSMSByTipoCredito(String tipoCredito);
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito);
 	
 	@Query(value = "SELECT T1.PK_PROCESOID AS idProceso, "
 			+ "T1.FK_ID_CONFIG_SMS AS idConfigMensual, "
@@ -57,8 +57,8 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 			+ "INNER JOIN SIB.TBL_CONFIG_SMS_MENSUAL T2 ON T2.PK_ID_CONFIG_SMS_MENSUAL = T1.FK_ID_CONFIG_SMS "
 			+ "INNER JOIN SIB.TBL_CONFIG_SMS T3 ON T3.PK_ID_CONFIG_SMS = T2.FK_ID_CONFIG_SMS "
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T4.PK_VC_TP_CREDITO = T3.FK_VC_TP_CREDITO "
-			+ "WHERE T3.I_TP_PROCESO = 1 "
+			+ "WHERE T3.I_TP_PROCESO = :tipoProceso "
 			+ "AND T1.PK_PROCESOID = :idProcess", nativeQuery = true)
-	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer idProcess);
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess);
 
 }

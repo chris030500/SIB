@@ -23,13 +23,13 @@ public class GestionSMSService {
 	@Autowired
 	private IGestionSMSRepository gestionRepository;
 	
-	public List<Map<String, Object>> getGestionesSMSByTipoCredito(String tipoCredito) {
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito) {
 		gestionRepository.setLocaleSpanish(); // Configurar el idioma
-		return gestionRepository.getGestionesSMSByTipoCredito(tipoCredito);
+		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
 	}
 	
-	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer idProcess) {
-		return gestionRepository.getCurrentProcessSMS(idProcess);
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess) {
+		return gestionRepository.getCurrentProcessSMS(tipoProceso, idProcess);
 	}
 	
 	public GestionSMS updateProcessStatus(Integer idProcess, Integer status, Integer idUser) {

@@ -220,7 +220,7 @@ public class CreditosDesembolsadosController {
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(tipoCredito);
+			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(1, tipoCredito);
 			
 			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
 				respuesta.put("gestiones", gestionesSMS);
@@ -241,7 +241,7 @@ public class CreditosDesembolsadosController {
 	@GetMapping("/obtener-gestion")
 	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
 		
-		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(idSMSProcess);
+		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(1, idSMSProcess);
 		
 		if (gestionSMS.isPresent()) {
 			return ResponseEntity.ok(gestionSMS.get());
