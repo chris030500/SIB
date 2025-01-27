@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.marketing.creditosdesembolsados.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -51,9 +49,6 @@ public class CreditosDesembolsadosController {
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
-	
-	@Autowired
-	private ICatalogoRepository iCatalogoRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -90,8 +85,6 @@ public class CreditosDesembolsadosController {
 				//model.addAttribute("permiso_admin_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
 				//model.addAttribute("permiso_editor_marketing", configuracionesService.searchConfiguracion(Constantes.USUARIOS_EDITOR_MARKETING, userDetails.getUsername()));
 				model.addAttribute("credenciales", credenciales);
-				//model.addAttribute("mesActual", mesActual);
-				//model.addAttribute("cat_meses", iCatalogoRepository.generarOpciones(Constantes.MARKETING_CAT_MESES));
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
 				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
