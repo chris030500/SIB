@@ -29,8 +29,8 @@ public class ConfiguracionSMSService {
 		return configSMSRepository.getCurrentSMSConfig(idSMSConfig);
 	}
 	
-	public List<Map<String, Object>> getAllSMSConfig() {
-		return configSMSRepository.getAllSMSConfig();
+	public List<Map<String, Object>> getSMSConfigByStatusSolicitud(String statusSolicitud) {
+		return configSMSRepository.getSMSConfigByStatusSolicitud(statusSolicitud);
 	}
 	
 	public ConfiguracionSMS updateCurrentSMSText(Integer idSMSConfig, Integer idUsuario, String texto, Integer status) {

@@ -25,15 +25,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ConfiguracionSMSCredito;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.model.ProcesoEnvioSMS;
-import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ConfiguracionSMSCreditoService;
 import ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.service.ProcesoEnvioSMSService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
 import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
+import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
@@ -60,7 +60,7 @@ public class SolicitudesAutorizadasController {
 	private CredencialesCalixtaService credencialesService;
 	
 	@Autowired
-	private ConfiguracionSMSCreditoService configuracionSMSService;
+	private ConfiguracionSMSService configuracionSMSService;
 	
 	@Autowired
 	private ProcesoEnvioSMSService gestionService;
@@ -133,7 +133,7 @@ public class SolicitudesAutorizadasController {
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getAllSMSConfig();
+			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getSMSConfigByStatusSolicitud("A");
 			
 			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
 				respuesta.put("plantillas", plantillasSMS);
@@ -154,7 +154,7 @@ public class SolicitudesAutorizadasController {
 	@GetMapping("/obtener-plantilla")
 	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
 		
-		Optional<ConfiguracionSMSCredito> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
+		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
 		
 		if (configuracionSMS.isPresent()) {
 			return ResponseEntity.ok(configuracionSMS.get());
@@ -186,7 +186,7 @@ public class SolicitudesAutorizadasController {
 			
 			Integer idUsuario = usuario.get(0).getPk_id_usuario();
             
-            ConfiguracionSMSCredito updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
+            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
             
             if (updatedConfig != null) {
                 return ResponseEntity.ok(updatedConfig);

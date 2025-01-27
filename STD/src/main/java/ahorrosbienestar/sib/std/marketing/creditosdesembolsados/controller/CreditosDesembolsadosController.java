@@ -147,7 +147,7 @@ public class CreditosDesembolsadosController {
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getAllSMSConfig();
+			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getSMSConfigByStatusSolicitud("D");
 			
 			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
 				respuesta.put("plantillas", plantillasSMS);
@@ -176,19 +176,7 @@ public class CreditosDesembolsadosController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
 		}
 	}
-	
-	/*@GetMapping("/obtener-plantilla")
-	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam String tipoCredito, @RequestParam Integer isCampania) {
-		
-		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(tipoCredito, isCampania);
-		
-		if (configuracionSMS.isPresent()) {
-			return ResponseEntity.ok(configuracionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
-	}*/
-	
+
     @PostMapping("/guardar-plantilla")
     @ResponseBody
     public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
