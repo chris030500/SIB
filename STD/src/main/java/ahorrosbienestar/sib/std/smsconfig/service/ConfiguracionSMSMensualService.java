@@ -21,9 +21,16 @@ public class ConfiguracionSMSMensualService {
 			
 			ConfiguracionSMSMensual configMensual = confMensualRepository.findById(idConfigMensual).orElse(null);
 			
-			if (configMensual != null) {
+			if (configMensual != null && limiteSMS == 1) {
 				configMensual.setLimiteSMS(limiteSMS);
 				configMensual.setNumSMS(maximoSMS);
+				configMensual.setUserModifica(idUser);
+				
+				return confMensualRepository.save(configMensual);
+			}
+			
+			if (configMensual != null && limiteSMS == 0) {
+				configMensual.setLimiteSMS(limiteSMS);
 				configMensual.setUserModifica(idUser);
 				
 				return confMensualRepository.save(configMensual);

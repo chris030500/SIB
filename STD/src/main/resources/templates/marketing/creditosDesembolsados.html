@@ -70,25 +70,25 @@
 												<td>
 													<div th:switch="${credencial.descTipoCredencial}">
 														<input th:case="'number'" type="number" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
+															autocomplete="off" placeholder="ID Cliente"
 															th:name="${credencial.nombreCredencial}"
 															th:value="${credencial.valorCredencial}"
 															th:required="true">
 															
 														<input th:case="'text'" type="text" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
+															autocomplete="off" placeholder="User"
 															th:name="${credencial.nombreCredencial}"
 															th:value="${credencial.valorCredencial}"
 															th:required="true">
 														
 														<input th:case="'password'" type="password" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
+															autocomplete="off" placeholder="Password"
 															th:name="${credencial.nombreCredencial}"
 															th:value="${credencial.valorCredencial}"
 															th:required="true">
 															
 														<input th:case="'readonly'" type="text" class="form-control"
-															autocomplete="off" placeholder="Buscar Usuario"
+															autocomplete="off" style="background-color: #e9e9e9"
 															th:name="${credencial.nombreCredencial}"
 															th:value="${credencial.valorCredencial}"
 															readonly>
@@ -196,15 +196,15 @@
 								<div class="row mb-4 align-items-center">
 									<div class="col-md-4">
 										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
-										<input type="text" class="form-control" id="hora-inicio" style="width: 70px;" th:value="${hora_inicio_semanal}" readonly>
+										<input type="text" class="form-control" id="hora-inicio" style="width: 70px; background-color: #e9e9e9" th:value="${hora_inicio_semanal}" readonly>
 									</div>
 									<div class="col-md-4">
 										<label for="hora-fin" class="form-label">Hora Fin:</label>
-										<input type="text" class="form-control" id="hora-fin" style="width: 70px;" th:value="${hora_fin_semanal}" readonly>
+										<input type="text" class="form-control" id="hora-fin" style="width: 70px; background-color: #e9e9e9" th:value="${hora_fin_semanal}" readonly>
 									</div>
 									<div class="col-md-4">
 										<label for="hora-fin" class="form-label">Recurrencia:</label>
-										<input type="text" class="form-control" id="recurrencia" style="width: 70px;" th:value="${recurrencia_envio_sms}" readonly>
+										<input type="text" class="form-control" id="recurrencia" style="width: 70px; background-color: #e9e9e9" th:value="${recurrencia_envio_sms}" readonly>
 									</div>
 								</div>
 								<!-- Segundo horario -->
@@ -214,15 +214,15 @@
 								<div class="row mb-4 align-items-center">
 									<div class="col-md-4">
 										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
-										<input type="text" class="form-control" id="hora-inicio" style="width: 70px;" th:value="${hora_inicio_fin_semana}" readonly>
+										<input type="text" class="form-control" id="hora-inicio" style="width: 70px; background-color: #e9e9e9" th:value="${hora_inicio_fin_semana}" readonly>
 									</div>
 									<div class="col-md-4">
 										<label for="hora-fin" class="form-label">Hora Fin:</label>
-										<input type="text" class="form-control" id="hora-fin" style="width: 70px;" th:value="${hora_fin_fin_semana}" readonly>
+										<input type="text" class="form-control" id="hora-fin" style="width: 70px; background-color: #e9e9e9" th:value="${hora_fin_fin_semana}" readonly>
 									</div>
 									<div class="col-md-4">
 										<label for="hora-fin" class="form-label">Recurrencia:</label>
-										<input type="text" class="form-control" id="recurrencia" style="width: 70px;" th:value="${recurrencia_envio_sms}" readonly>
+										<input type="text" class="form-control" id="recurrencia" style="width: 70px; background-color: #e9e9e9" th:value="${recurrencia_envio_sms}" readonly>
 									</div>
 								</div>
 							</form>
@@ -243,7 +243,7 @@
 							<form id="plantillasForm">
 								<div class="mb-3">
 									<label for="id-plantilla" class="form-label">ID:</label>
-									<input type="number" class="form-control" id="id-plantilla-sms" rows="4" readonly>
+									<input type="number" class="form-control" id="id-plantilla-sms" rows="4" style="background-color: #e9e9e9" readonly>
 								</div>
 								<div class="mb-3">
 									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
@@ -278,11 +278,11 @@
 							<form id="gestionSMSForm">
 								<div class="mb-3">
 									<label for="id-gestion-sms" class="form-label">ID Gestión SMS:</label>
-									<input type="number" class="form-control" id="id-gestion-sms" rows="4" readonly>
+									<input type="number" class="form-control" id="id-gestion-sms" rows="4" style="background-color: #e9e9e9" readonly>
 								</div>
 								<div class="mb-3">
 									<label for="mes-gestion" class="form-label">Mes:</label>
-									<input type="text" class="form-control" id="mes-gestion" rows="4" readonly>
+									<input type="text" class="form-control" id="mes-gestion" rows="4" style="background-color: #e9e9e9" readonly>
 								</div>
 								<div class="mb-3" style="display: none;">
 									<label for="id-config-mensual" class="form-label">ID Configuración SMS Mensual:</label>
@@ -290,11 +290,11 @@
 								</div>
 								<div class="mb-3">
 									<label for="tipo-credito-gestion" class="form-label">Tipo crédito:</label>
-									<input type="text" class="form-control" id="tipo-credito-gestion" rows="4" readonly>
+									<input type="text" class="form-control" id="tipo-credito-gestion" rows="4" style="background-color: #e9e9e9" readonly>
 								</div>
 								<div class="mb-3">
 									<label for="sms-gestion" class="form-label">Mensaje SMS:</label>
-									<textarea type="text" class="form-control" id="sms-gestion" rows="4" readonly></textarea>
+									<textarea type="text" class="form-control" id="sms-gestion" rows="4" style="background-color: #e9e9e9" readonly></textarea>
 								</div>
 								<div class="mb-3">
 									<label for="limite-sms" class="form-label">Limite SMS:</label>
@@ -304,7 +304,7 @@
 										<option value="0">NO</option>
 									</select>
 								</div>
-								<div class="mb-3">
+								<div class="mb-3" id="divMaximoSMS">
 									<label for="maximo-sms" class="form-label">Máximo SMS:</label>
 									<input type="number" class="form-control" id="maximo-sms" rows="4">
 								</div>
