@@ -18,7 +18,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div>
-							<h2 style="text-align:center">Reportes Crédito</h2>
+							<h2 style="text-align:center">Reporte Consumo SMS</h2>
 						</div>
 					</div>
 				</div>
@@ -28,14 +28,6 @@
 					<legend class="float-none w-auto p-2">Generar Reporte</legend>
 					<div id="divTodos">
 						<div class="row" style="margin-top : 15px ">
-							<div class="col-md-4">
-								<label class="col-form-label">Reporte</label>
-								<select class="form-control" id="idReporteProducto">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${reportes_credito}" th:value="${listaReportes.i_opcion}"
-										th:text="${listaReportes.v_valor}"></option>
-								</select>
-							</div>
 							<div class="col-md-4">
 								<label class="col-form-label">Fecha Inicio:</label>
 								<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">

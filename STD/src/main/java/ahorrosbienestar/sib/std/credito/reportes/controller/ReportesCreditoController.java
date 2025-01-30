@@ -87,6 +87,25 @@ public class ReportesCreditoController {
 		}
 	}
 	
+	@RequestMapping(value = { "/listaCelClientes" }, method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> listaCelClientes(@RequestParam("valor") String valor) {
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		List<Map<String, Object>> lista = new ArrayList<Map<String, Object>>();
+		try {
+			lista = autorizadasService.getCustomerCellphones(valor);
+			logger.info("Se llenó la lista");
+			respuesta.put("lista", lista);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error: " + e.getMessage());
+			mensajeError = "Error: " + e.getMessage();
+			respuesta.put("error", mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
 	public int validarAcceso() {
 		
 		try {

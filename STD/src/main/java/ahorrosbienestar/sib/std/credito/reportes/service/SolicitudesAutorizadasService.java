@@ -17,4 +17,8 @@ public class SolicitudesAutorizadasService {
 	public List<Map<String, Object>> getClientes(String valor) {
 		return autorizadasRepository.getClientes(valor);
 	}
+	
+	public List<Map<String, Object>> getCustomerCellphones(String valor) {
+		return autorizadasRepository.getCustomerCellphones(valor);
+	}
 }
