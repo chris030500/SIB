@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.credito.reportes.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.reportes.service.SolicitudesAutorizadasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -39,7 +42,10 @@ public class ReportesCreditoController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
-	private ICatalogoRepository iCatalogoRepository;
+	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
@@ -54,7 +60,6 @@ public class ReportesCreditoController {
 		try {
 			
 			if(validarAcceso() == 1) {
-				model.addAttribute("reportes_credito", iCatalogoRepository.generarOpciones(Constantes.CREDITO_CAT_REPORTES));
 				rutaDireccion = Constantes.CREDITO_REPORTES;
 				
 			}else {
@@ -103,6 +108,49 @@ public class ReportesCreditoController {
 			mensajeError = "Error: " + e.getMessage();
 			respuesta.put("error", mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
+	
+	@RequestMapping(value = { "/generarRptConsumoSMS" }, method = RequestMethod.POST)
+	public ResponseEntity<?> reporteConsumoSMS(@RequestParam("fechaInicio") String fechaInicio, 
+			@RequestParam("fechaFin") String fechaFin, 
+			@RequestParam("idCliente") Integer idCliente, 
+			@RequestParam("telCelular") String telCelular) {
+		
+		String paramCustomer;
+		String paramCellphone;
+		
+		paramCustomer = (idCliente == 0) ? "~idCliente=" : "~idCliente=" + idCliente;
+		paramCellphone = (telCelular.equals("")) ? "~telCelular=" : "~telCelular=" + telCelular;
+		
+		List<String> respuesta = new ArrayList<>();
+		
+		try {
+			
+			LocalDate currentDate = LocalDate.now();
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_SMS_SOLICITUDES_AUTORIZADAS);
+			StringBuilder reporteURL = new StringBuilder();
+			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
+			.append(datosReporte.getPk_id_reporte())
+			.append("&parametros=?fechaInicio=")
+			.append(fechaInicio)
+			.append("~fechaFin=")
+			.append(fechaFin)
+			.append(paramCustomer)
+			.append(paramCellphone)
+			.append("&tipoDocumento=")
+			.append(datosReporte.getVc_extension())
+			.append("&identificadorDoc=")
+			.append(currentDate);
+			
+			respuesta.add(reporteURL.toString());
+			return ResponseEntity.ok(respuesta);
+			
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
 		}
 	}
 	
