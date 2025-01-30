@@ -198,7 +198,8 @@ public class Constantes {
 	
 	//constantes credito
 	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
-	public static final String CREDITO_REPORTE_SMS = "credito/reportes";
+	public static final String CREDITO_REPORTES = "credito/reportes";
+	public static final int CREDITO_CAT_REPORTES = 31;
 
     private Constantes() {
         

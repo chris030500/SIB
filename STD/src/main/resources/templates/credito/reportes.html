@@ -12,7 +12,7 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="border p-2 card">
+		<div class="container border p-2">
 			<div class="bg-info text-white">
 				<div class="row no-gutters">
 					<div class="col-md-2"></div>
@@ -27,35 +27,45 @@
 				<fieldset class="border p-2">
 					<legend class="float-none w-auto p-2">Generar Reporte</legend>
 					<div id="divTodos">
-							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-4">
-									<label class="col-form-label">Reporte</label>
-									<select class="form-control" id="idReporteProducto">
-										<option value="0">Seleccione</option>
-											<!--<option th:each="listaReportes : ${cat_reportes_produtos}" th:value="${listaReportes.i_opcion}"
-											th:text="${listaReportes.v_valor}"></option>-->
-										</select>
-								</div>
-								<div class="col-md-4">
-									<label class="col-form-label"> Fecha de inicio</label>
-									<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
-								</div>
-								<div class="col-md-4">
-									<label class="col-form-label"> Fecha de fin</label>
-									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
-								</div>
+						<div class="row" style="margin-top : 15px ">
+							<div class="col-md-4">
+								<label class="col-form-label">Reporte</label>
+								<select class="form-control" id="idReporteProducto">
+									<option value="0">Seleccione</option>
+									<option th:each="listaReportes : ${reportes_credito}" th:value="${listaReportes.i_opcion}"
+										th:text="${listaReportes.v_valor}"></option>
+								</select>
 							</div>
-						
-					</div>
-					<div class="row" style="margin-top : 15px;">
-						<div class="col-md-11"></div>
-						<div class="col-md-1 text-left">
-							<button class="btn btn-primary"  
-								title="Generar Reporte" data-bs-target="#"
-								aria-controls="table-datatable" type="button" data-tooltip="Add"
-								onclick="generarReporte()">
-								<i class="bi bi-filetype-exe"></i>
-							</button>
+							<div class="col-md-4">
+								<label class="col-form-label">Fecha Inicio:</label>
+								<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label">Fecha Fin:</label>
+								<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label">Cliente:</label>
+								<input type="search" class="form-control" id="searchCustomer" list="customerOption"
+									autocomplete="off" placeholder="Buscar cliente">
+								<datalist id="customerOption"></datalist>
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label">Celular:</label>
+								<input type="search" class="form-control" id="searchCellphone" list="cellphoneOption"
+									autocomplete="off" placeholder="Buscar celular">
+								<datalist id="cellphoneOption"></datalist>
+							</div>
+						</div>
+						<div class="row" style="margin-top : 15px; text-align: center;">
+							<div class="col-md-8"></div>
+							<div class="col-md-4">
+								<button class="btn btn-primary" title="Generar Reporte" data-bs-target="#"
+									aria-controls="table-datatable" type="button" data-tooltip="Add"
+									onclick="generarReporte()">
+									<i class="bi bi-filetype-exe"></i>
+								</button>
+							</div>
 						</div>
 					</div>
 				</fieldset>
@@ -69,7 +79,7 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/reporteProductos/reporteProducto.js}"></script>
+		<script th:src="@{/js/credito/reportes.js}"></script>
 	</th:block>
 </body>
 
