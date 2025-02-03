@@ -213,6 +213,24 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
     actualizarPlantilla(idSMSConfig, texto, estatus);
 });
 
+document.getElementById("select-limite-sms").addEventListener("change", function () {
+    const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
+    const divMaximoSMS = document.getElementById("divMaximoSMS");
+    console.log("Opción seleccionada:", selectedValue);
+    
+    switch(selectedValue) {
+		case "":
+			console.log("No es una opción válida.");
+			break;
+		case "1":
+			divMaximoSMS.hidden = false;
+			break;
+		case "0":
+			divMaximoSMS.hidden = true;
+	}
+
+});
+
 function editProcess(idSMSProcess){
 	
 	var url = getAbsolutePath() + "credito/obtener-gestion?idSMSProcess=" + idSMSProcess;
@@ -246,8 +264,10 @@ function editProcess(idSMSProcess){
 		
 		if (limiteSMS == 1) {
 			document.getElementById("select-limite-sms").value = 1;
+			document.getElementById("divMaximoSMS").hidden = false;
 		} else {
 			document.getElementById("select-limite-sms").value = 0;
+			document.getElementById("divMaximoSMS").hidden = true;
 		}
 	})
 	.catch((error) => {
