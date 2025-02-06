@@ -12,28 +12,37 @@ function debouncedListaClientes() {
 function listaClientes() {
 	var buscar = document.getElementById('searchCustomer').value;
 	var urlPrincipal = getAbsolutePath();
-	//var newUrlBase = urlPrincipal.replace("/credito", "");
+	var url = urlPrincipal + "listaClientes?valor=" + buscar;
 	
-	$.ajax({
-		url: urlPrincipal + "listaClientes?valor=" + buscar,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			console.log(respuesta);
+	fetch(url)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error en la petición: " + response.statusText);
+			}
+			return response.json();
+		})
+		.then(res => {
+			//console.log(res);
 			var opciones = document.getElementById('customerOption');
 			opciones.innerHTML = '';
-			respuesta.lista.forEach(function(cliente) {
-				var option = document.createElement('option');
-				option.setAttribute('data-value', cliente.idCliente);
-				option.value = cliente.clienteInfo;
-				opciones.appendChild(option);
-			});
-			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].idCliente;              
+			
+			if (res.length > 0) {
+				res.forEach(cliente => {
+					var option = document.createElement('option');
+					option.setAttribute('data-value', cliente.idCliente);
+					option.value = cliente.clienteInfo;
+					opciones.appendChild(option);
+				});
+				
+				clienteValue = res[0].idCliente;
+				//console.log(clienteValue);
+			} else {
+				console.warn("No se encontraron clientes.");
 			}
-			console.log(clienteValue);
-		}
-	});
+		})
+		.catch(error => {
+			console.log("Error al obtener clientes:", error);
+		});
 }
 
 document.getElementById('searchCustomer').addEventListener('input', debouncedListaClientes);
@@ -52,28 +61,37 @@ function debouncedListaCelClientes() {
 function listaCelClientes() {
 	var buscar = document.getElementById('searchCellphone').value;
 	var urlPrincipal = getAbsolutePath();
-	//var newUrlBase = urlPrincipal.replace("/credito", "");
+	var url = urlPrincipal + "listaCelClientes?valor=" + buscar;
 	
-	$.ajax({
-		url: urlPrincipal + "listaCelClientes?valor=" + buscar,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			console.log(respuesta);
+		fetch(url)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error en la petición: " + response.statusText);
+			}
+			return response.json();
+		})
+		.then(res => {
+			console.log(res);
 			var opciones = document.getElementById('cellphoneOption');
 			opciones.innerHTML = '';
-			respuesta.lista.forEach(function(cellphone) {
-				var option = document.createElement('option');
-				option.setAttribute('data-value', cellphone.telCelular);
-				option.value = cellphone.telCelular;
-				opciones.appendChild(option);
-			});
-			if (respuesta.lista[0]) {
-				celularValue = respuesta.lista[0].telCelular;              
+			
+			if (res.length > 0) {
+				res.forEach(cellphone => {
+					var option = document.createElement('option');
+					option.setAttribute('data-value', cellphone.telCelular);
+					option.value = cellphone.telCelular;
+					opciones.appendChild(option);
+				});
+				
+				celularValue = res[0].telCelular;
+				console.log(celularValue);
+			} else {
+				console.warn("No se encontraron celulares.");
 			}
-			console.log(celularValue);
-		}
-	});
+		})
+		.catch(error => {
+			console.log("Error al obtener celulares:", error);
+		});
 }
 
 document.getElementById('searchCellphone').addEventListener('input', debouncedListaCelClientes);

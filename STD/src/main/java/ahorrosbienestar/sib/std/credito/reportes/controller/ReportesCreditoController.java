@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +54,11 @@ public class ReportesCreditoController {
 	@Autowired
 	private SolicitudesAutorizadasService autorizadasService;
 	
-	private String rutaDireccion = "";
-	
 	@GetMapping("/reportes")
 	public String indexReportes(Model model) {
+		
 		try {
+			String rutaDireccion;
 			
 			if(validarAcceso() == 1) {
 				rutaDireccion = Constantes.CREDITO_REPORTES;
@@ -73,42 +74,52 @@ public class ReportesCreditoController {
 		}	
 	}
 	
-	@RequestMapping(value = { "/listaClientes" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaClientes(@RequestParam("valor") String valor) {
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		List<Map<String, Object>> lista = new ArrayList<Map<String, Object>>();
-		try {
-			lista = autorizadasService.getClientes(valor);
-			logger.info("Se llenó la lista");
-			respuesta.put("lista", lista);
-			return ResponseEntity.ok(respuesta);
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
+	@GetMapping("/listaClientes")
+	public ResponseEntity<?> listaClientes(@RequestParam("valor") String valor) {
+	    Map<String, Object> respuesta = new HashMap<>();
+	    String mensajeError = null;
+	    
+	    try {
+	        List<Map<String, Object>> listaClientes = autorizadasService.getClientes(valor);
+	        
+	        if (listaClientes.isEmpty()) {
+	            respuesta.put("mensaje", "No se encontraron clientes");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
+	        }
+
+	        logger.info("Se llenó la lista con {} clientes: " + listaClientes.size());
+	        return ResponseEntity.ok(listaClientes);
+	        
+	    } catch (Exception e) {
+	    	 mensajeError = "Error al obtener clientes: " + e.getMessage() + " " + e;
+	        logger.error(mensajeError);
+	        respuesta.put("error", mensajeError);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+	    }
 	}
 	
-	@RequestMapping(value = { "/listaCelClientes" }, method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> listaCelClientes(@RequestParam("valor") String valor) {
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		List<Map<String, Object>> lista = new ArrayList<Map<String, Object>>();
-		try {
-			lista = autorizadasService.getCustomerCellphones(valor);
-			logger.info("Se llenó la lista");
-			respuesta.put("lista", lista);
-			return ResponseEntity.ok(respuesta);
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
+	@GetMapping("/listaCelClientes")
+	public ResponseEntity<?> listaCelClientes(@RequestParam("valor") String valor) {
+	    Map<String, Object> respuesta = new HashMap<>();
+	    String mensajeError = null;
+	    
+	    try {
+	        List<Map<String, Object>> listaCelulares = autorizadasService.getCustomerCellphones(valor);
+	        
+	        if (listaCelulares.isEmpty()) {
+	            respuesta.put("mensaje", "No se encontraron clientes");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
+	        }
+
+	        logger.info("Se llenó la lista con {} telCelular: " + listaCelulares.size());
+	        return ResponseEntity.ok(listaCelulares);
+	        
+	    } catch (Exception e) {
+	    	 mensajeError = "Error al obtener clientes: " + e.getMessage() + " " + e;
+	        logger.error(mensajeError);
+	        respuesta.put("error", mensajeError);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+	    }
 	}
 	
 	@RequestMapping(value = { "/generarRptConsumoSMS" }, method = RequestMethod.POST)
@@ -157,14 +168,26 @@ public class ReportesCreditoController {
 	public int validarAcceso() {
 		
 		try {
+			// Obtener el usuario autenticado
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+			if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado.");
+	            return 0;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			UserDetails userDetails = (UserDetails) principal;
+			
+	        // Buscar usuario en la base de datos con Optional
+	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        if (usuario.isEmpty()) {
+	            logger.error("No se encontró el usuario en la base de datos.");
+	            return 0;
+	        }
 				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.CREDITO_REPORTES));
+			return iRelRolOpcionesRepository.validarAcceso(
+					usuario.get().getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(Constantes.CREDITO_REPORTES)
+			);
 				
 				
 		} catch (Exception e) {

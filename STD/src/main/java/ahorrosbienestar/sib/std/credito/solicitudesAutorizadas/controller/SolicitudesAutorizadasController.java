@@ -72,11 +72,10 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private DetalleGestionSMSService detalleService;
 	
-	private String rutaDireccion = "";
-	
 	@GetMapping("/solicitudesAutorizadas")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
+			String rutaDireccion;
 			
 			if (validarAcceso() == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
@@ -177,26 +176,32 @@ public class SolicitudesAutorizadasController {
             String texto = (String) payload.get("texto");
             Integer estatus = (Integer) payload.get("estatus");
             
+            // Obtener usuario autenticado
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
 			}
 			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			UserDetails userDetails = (UserDetails) principal;
 			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+			// Buscar usuario en la base de datos
+	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        if (usuario.isEmpty()) {
+	            logger.error("No se encontró el usuario en la base de datos.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	        }
+			
+			Integer idUsuario = usuario.get().getPk_id_usuario();
             
             ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
             
-            if (updatedConfig != null) {
-                return ResponseEntity.ok(updatedConfig);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
-            }
+            if (updatedConfig == null) {
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
+            } 
+            
+            return ResponseEntity.ok(updatedConfig);
+            
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
@@ -251,25 +256,30 @@ public class SolicitudesAutorizadasController {
             Integer maxSMS = (Integer) payload.get("maxSMS");
             
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
 			}
 			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			UserDetails userDetails = (UserDetails) principal;
 			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+			// Buscar usuario en la base de datos
+	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        if (usuario.isEmpty()) {
+	            logger.error("No se encontró el usuario en la base de datos.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	        }
+	        
+			Integer idUsuario = usuario.get().getPk_id_usuario();
             
             ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
             
-            if (updatedConfigMensual != null) {
-                return ResponseEntity.ok(updatedConfigMensual);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
+            if (updatedConfigMensual == null) {
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
             }
+            
+            return ResponseEntity.ok(updatedConfigMensual);
+            
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
@@ -286,26 +296,32 @@ public class SolicitudesAutorizadasController {
             Integer estatus = (Integer) payload.get("estatus");
             
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
 			}
 			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			UserDetails userDetails = (UserDetails) principal;
 			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+			// Buscar usuario en la base de datos
+	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        if (usuario.isEmpty()) {
+	            logger.error("No se encontró el usuario en la base de datos.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	        }
+			
+			Integer idUsuario = usuario.get().getPk_id_usuario();
             
             GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
             
-            if (updatedGestionSMS != null) {
-            	updateDetalleGestionSMS(idSMSProceso, estatus);
-                return ResponseEntity.ok(updatedGestionSMS);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
+            if (updatedGestionSMS == null) {
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
             }
+            
+        	updateDetalleGestionSMS(idSMSProceso, estatus);
+            return ResponseEntity.ok(updatedGestionSMS);
+            
+            
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
@@ -323,14 +339,25 @@ public class SolicitudesAutorizadasController {
 	public int validarAcceso() {
 		
 		try {
+			// Obtener el usuario autenticado
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+			if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado.");
+	            return 0;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+			UserDetails userDetails = (UserDetails) principal;
+			
+	        // Buscar usuario en la base de datos con Optional
+	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        if (usuario.isEmpty()) {
+	            logger.error("No se encontró el usuario en la base de datos.");
+	            return 0;
+	        }
 				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS));
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get().getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS)
+			);
 				
 				
 		} catch (Exception e) {
@@ -338,5 +365,4 @@ public class SolicitudesAutorizadasController {
 			return 0;
 		}					
 	}
-
 }
