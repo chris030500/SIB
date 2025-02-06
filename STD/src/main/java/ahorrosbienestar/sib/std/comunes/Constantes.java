@@ -31,6 +31,7 @@ public class Constantes {
 	
 	// constantes logger
 	public static final String MENSAJE_DE_ERROR = "Error";
+	public static final String MENSAJE_LOGGER_ERROR = "Error: ";
 	
 	// Ejemplo de constantes para tipo de Mensaje
     public static final String MENSAJE_ERROR = "error";
@@ -202,6 +203,10 @@ public class Constantes {
 	
 	//nombres reportes Crédito
 	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
+	
+	//Mensajes de error de autenticación
+	public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
+	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
 
     private Constantes() {
         

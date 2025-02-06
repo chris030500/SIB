@@ -53,8 +53,6 @@ public class ReportesCreditoController {
 	@Autowired
 	private SolicitudesAutorizadasService autorizadasService;
 	
-	private String logError = "Error: ";
-	
 	@GetMapping("/reportes")
 	public String indexReportes(Model model) {
 		
@@ -70,7 +68,7 @@ public class ReportesCreditoController {
 			
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return null;
 		}	
 	}
@@ -111,7 +109,7 @@ public class ReportesCreditoController {
 	        return ResponseEntity.ok(listaCelulares);
 	        
 	    } catch (Exception e) {
-	    	 mensajeError = "Error al obtener clientes: " + e.getMessage() + " " + e;
+	    	 mensajeError = "Error al obtener telCelulares: " + e.getMessage() + " " + e;
 	        logger.error(mensajeError);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
@@ -144,7 +142,7 @@ public class ReportesCreditoController {
 			 return ResponseEntity.ok(Collections.singletonList(reporteURL));
 			
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body(Collections.singletonList("Error al generar el reporte: " + e.getMessage()));
 		}
@@ -156,7 +154,7 @@ public class ReportesCreditoController {
 			// Obtener el usuario autenticado
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (!(principal instanceof UserDetails)) {
-	            logger.error("El usuario no está autenticado.");
+	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
 	            return 0;
 			}
 			
@@ -165,7 +163,7 @@ public class ReportesCreditoController {
 	        // Buscar usuario en la base de datos con Optional
 	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
 	        if (usuario.isEmpty()) {
-	            logger.error("No se encontró el usuario en la base de datos.");
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;
 	        }
 				
@@ -176,7 +174,7 @@ public class ReportesCreditoController {
 				
 				
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return 0;
 		}					
 	}
