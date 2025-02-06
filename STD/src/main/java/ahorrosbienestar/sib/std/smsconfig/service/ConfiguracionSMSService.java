@@ -21,10 +21,6 @@ public class ConfiguracionSMSService {
 	@Autowired
 	private IConfiguracionSMSRepository configSMSRepository;
 	
-	/*public Optional<ConfiguracionSMS> getCurrentSMSConfig(String tipoCredito, Integer isCampania) {
-		return configSMSRepository.getCurrentSmsConfig(tipoCredito, isCampania);
-	}*/
-	
 	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Integer idSMSConfig) {
 		return configSMSRepository.getCurrentSMSConfig(idSMSConfig);
 	}
