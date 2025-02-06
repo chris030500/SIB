@@ -72,6 +72,8 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private DetalleGestionSMSService detalleService;
 	
+	private String logError = "Error: ";
+	
 	@GetMapping("/solicitudesAutorizadas")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
@@ -92,7 +94,7 @@ public class SolicitudesAutorizadasController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+			logger.error(logError + e.getMessage());
 			return null;
 		}
 	}
@@ -146,9 +148,9 @@ public class SolicitudesAutorizadasController {
 				return ResponseEntity.ok(respuesta);
 			}
 		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
+			logger.error(logError + e.getMessage());
+			mensajeError = logError + e.getMessage();
+			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 		
@@ -203,7 +205,7 @@ public class SolicitudesAutorizadasController {
             return ResponseEntity.ok(updatedConfig);
             
         } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+        	logger.error(logError + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
     }
@@ -225,9 +227,9 @@ public class SolicitudesAutorizadasController {
 				return ResponseEntity.ok(respuesta);
 			}
 		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
+			logger.error(logError + e.getMessage());
+			mensajeError = logError + e.getMessage();
+			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 		
@@ -281,7 +283,7 @@ public class SolicitudesAutorizadasController {
             return ResponseEntity.ok(updatedConfigMensual);
             
         } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+        	logger.error(logError + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
         }
     }
@@ -323,7 +325,7 @@ public class SolicitudesAutorizadasController {
             
             
         } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+        	logger.error(logError + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
         }
     }
@@ -361,7 +363,7 @@ public class SolicitudesAutorizadasController {
 				
 				
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			logger.error(logError + e.getMessage());
 			return 0;
 		}					
 	}
