@@ -157,59 +157,48 @@ public class SolicitudesAutorizadasController {
 	}
 	
 	@GetMapping("/obtener-plantilla")
-	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
-		
-		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
-		
-		if (configuracionSMS.isPresent()) {
-			return ResponseEntity.ok(configuracionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
+	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+	    Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
+
+	    return configuracionSMS.map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
-    @PostMapping("/guardar-plantilla")
-    @ResponseBody
-    public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
-            String texto = (String) payload.get("texto");
-            Integer estatus = (Integer) payload.get("estatus");
-            
-            // Obtener usuario autenticado
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
+	@PostMapping("/guardar-plantilla")
+	@ResponseBody
+	public ResponseEntity<ConfiguracionSMS> updateSMSText(@RequestBody Map<String, Object> payload) {
+	    try {
+	        Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
+	        String texto = (String) payload.get("texto");
+	        Integer estatus = (Integer) payload.get("estatus");
+
+	        // Obtener usuario autenticado
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        if (!(principal instanceof UserDetails)) {
 	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-			// Buscar usuario en la base de datos
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+
+	        // Buscar usuario en la base de datos
 	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
 	        if (usuario.isEmpty()) {
 	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
-			
-			Integer idUsuario = usuario.get().getPk_id_usuario();
-            
-            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
-            
-            if (updatedConfig == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
-            } 
-            
-            return ResponseEntity.ok(updatedConfig);
-            
-        } catch (Exception e) {
-        	logger.error(logError + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
-        }
-    }
-    
+
+	        Integer idUsuario = usuario.get().getPk_id_usuario();
+
+	        ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
+
+	        return (updatedConfig != null) ? ResponseEntity.ok(updatedConfig) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	    } catch (Exception e) {
+	        logger.error(logError + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
+
 	@GetMapping("/gestion-SMS")
 	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
 		
@@ -236,20 +225,17 @@ public class SolicitudesAutorizadasController {
 	}
 	
 	@GetMapping("/obtener-gestion")
-	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
 		
 		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(2, idSMSProcess);
-		
-		if (gestionSMS.isPresent()) {
-			return ResponseEntity.ok(gestionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
+
+	    return gestionSMS.map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
     @PostMapping("/actualizar-configuracion-mensual")
     @ResponseBody
-    public ResponseEntity<?> updateConfigMensual(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<ConfiguracionSMSMensual> updateConfigMensual(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
@@ -260,7 +246,7 @@ public class SolicitudesAutorizadasController {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (!(principal instanceof UserDetails)) {
 	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 			
 			UserDetails userDetails = (UserDetails) principal;
@@ -269,7 +255,7 @@ public class SolicitudesAutorizadasController {
 	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
 	        if (usuario.isEmpty()) {
 	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 	        
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -277,20 +263,20 @@ public class SolicitudesAutorizadasController {
             ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
             
             if (updatedConfigMensual == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
             return ResponseEntity.ok(updatedConfigMensual);
             
         } catch (Exception e) {
         	logger.error(logError + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 	
     @PostMapping("/actualizar-estatus-gestion")
     @ResponseBody
-    public ResponseEntity<?> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<GestionSMS> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
@@ -300,7 +286,7 @@ public class SolicitudesAutorizadasController {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (!(principal instanceof UserDetails)) {
 	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 			
 			UserDetails userDetails = (UserDetails) principal;
@@ -309,7 +295,7 @@ public class SolicitudesAutorizadasController {
 	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
 	        if (usuario.isEmpty()) {
 	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -317,7 +303,7 @@ public class SolicitudesAutorizadasController {
             GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
             
             if (updatedGestionSMS == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
         	updateDetalleGestionSMS(idSMSProceso, estatus);
@@ -326,7 +312,7 @@ public class SolicitudesAutorizadasController {
             
         } catch (Exception e) {
         	logger.error(logError + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     
