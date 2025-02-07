@@ -133,7 +133,7 @@ public class CreditosDesembolsadosController {
 
     @PostMapping("/guardar-plantilla")
     @ResponseBody
-    public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<ConfiguracionSMS> updateSMSText(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
@@ -144,7 +144,7 @@ public class CreditosDesembolsadosController {
 	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -152,14 +152,14 @@ public class CreditosDesembolsadosController {
             ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
             
             if (updatedConfig == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
             return ResponseEntity.ok(updatedConfig);
             
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     
@@ -169,20 +169,17 @@ public class CreditosDesembolsadosController {
 	}
 	
 	@GetMapping("/obtener-gestion")
-	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
 		
 		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(1, idSMSProcess);
 		
-		if (gestionSMS.isPresent()) {
-			return ResponseEntity.ok(gestionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
+	    return gestionSMS.map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
     @PostMapping("/actualizar-configuracion-mensual")
     @ResponseBody
-    public ResponseEntity<?> updateConfigMensual(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<ConfiguracionSMSMensual> updateConfigMensual(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
@@ -193,7 +190,7 @@ public class CreditosDesembolsadosController {
 	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -201,20 +198,20 @@ public class CreditosDesembolsadosController {
             ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
             
             if (updatedConfigMensual == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
             return ResponseEntity.ok(updatedConfigMensual);
             
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 	
     @PostMapping("/actualizar-estatus-gestion")
     @ResponseBody
-    public ResponseEntity<?> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<GestionSMS> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
     	
         try {
         	
@@ -224,7 +221,7 @@ public class CreditosDesembolsadosController {
 	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -232,7 +229,7 @@ public class CreditosDesembolsadosController {
             GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
             
             if (updatedGestionSMS == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
         	updateDetalleGestionSMS(idSMSProceso, estatus);
@@ -240,7 +237,7 @@ public class CreditosDesembolsadosController {
             
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
     
