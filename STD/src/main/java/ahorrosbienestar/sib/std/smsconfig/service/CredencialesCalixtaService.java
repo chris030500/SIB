@@ -1,9 +1,14 @@
 package ahorrosbienestar.sib.std.smsconfig.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.smsconfig.repository.ICredencialesCalixtaRepository;
@@ -26,8 +31,33 @@ public class CredencialesCalixtaService {
 		return credencialesRepository.getDatosCalixta(tipoCredencial);
 	}
 	
-	public void saveCredencialesCalixta(List<CredencialesCalixta> credenciales) {
-		credencialesRepository.saveAll(credenciales);
+	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
+		
+		List<CredencialesCalixta> credencialesCalixta = credencialesRepository.getDatosCalixta(2);
+		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
+		
+		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			
+			CredencialesCalixta calixta = credencialesCalixta.stream()
+					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
+					.findFirst()
+					.orElse(null); 
+			
+			if (calixta != null) {
+				calixta.setValorCredencial(value);
+				updatedCredenciales.add(calixta);
+			}
+		}
+		
+		credencialesRepository.saveAll(updatedCredenciales);
+		
+	    // Crear un objeto JSON con la respuesta
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Credenciales guardadas con éxito");
+
+	    return ResponseEntity.ok(response);
 	}
 
 }

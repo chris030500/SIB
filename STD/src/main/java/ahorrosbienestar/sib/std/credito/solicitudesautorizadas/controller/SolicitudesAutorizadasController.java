@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.credito.solicitudesautorizadas.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -98,58 +97,12 @@ public class SolicitudesAutorizadasController {
 	@PostMapping("/guardarCredenciales")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
-		
-		List<CredencialesCalixta> credencialesCalixta = credencialesService.getDatosCalixta(2);
-		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
-		
-		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			
-			CredencialesCalixta calixta = credencialesCalixta.stream()
-					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
-					.findFirst()
-					.orElse(null);
-			
-			if (calixta != null) {
-				calixta.setValorCredencial(value);
-				updatedCredenciales.add(calixta);
-			}
-		}
-		
-		credencialesService.saveCredencialesCalixta(updatedCredenciales);
-		
-	    // Crear un objeto JSON con la respuesta
-	    Map<String, String> response = new HashMap<>();
-	    response.put("message", "Credenciales guardadas con éxito");
-
-	    // Devolver el objeto JSON
-	    return ResponseEntity.ok(response);
+		return credencialesService.saveCredencialesCalixta(credenciales);
 	}
 	
 	@GetMapping("/plantillas-SMS")
 	public ResponseEntity<Map<String, Object>> getAllSMSConfig() {
-		
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		
-		try {
-			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getSMSConfigByStatusSolicitud("A");
-			
-			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
-				respuesta.put("plantillas", plantillasSMS);
-				return ResponseEntity.ok(respuesta);
-			} else  {
-				respuesta.put("plantillas", Collections.emptyList());
-				return ResponseEntity.ok(respuesta);
-			}
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-			mensajeError = Constantes.MENSAJE_LOGGER_ERROR + e.getMessage();
-			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
-		
+		return configuracionSMSService.getAllSMSConfig("A");
 	}
 	
 	@GetMapping("/obtener-plantilla")
