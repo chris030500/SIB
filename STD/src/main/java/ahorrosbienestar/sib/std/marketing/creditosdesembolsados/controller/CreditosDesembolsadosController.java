@@ -39,6 +39,7 @@ import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("marketing")
@@ -47,7 +48,7 @@ public class CreditosDesembolsadosController {
 	private static final Logger logger = Logger.getLogger(CreditosDesembolsadosController.class);
 	
 	@Autowired
-	private IUsuarioRepository iUsuarioRepository;
+	private UsuarioService userService;
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -75,8 +76,6 @@ public class CreditosDesembolsadosController {
 	
 	@Autowired
 	private DetalleGestionSMSService detalleService;
-	
-	private String logError = "Error: ";
 	
 	@GetMapping("/creditosDesembolsados")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -108,7 +107,7 @@ public class CreditosDesembolsadosController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return null;
 		}
 	}
@@ -116,58 +115,12 @@ public class CreditosDesembolsadosController {
 	@PostMapping("/guardarCredenciales")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
-		
-		List<CredencialesCalixta> credencialesCalixta = credencialesService.getDatosCalixta(1);
-		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
-		
-		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			
-			CredencialesCalixta calixta = credencialesCalixta.stream()
-					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
-					.findFirst()
-					.orElse(null);
-			
-			if (calixta != null) {
-				calixta.setValorCredencial(value);
-				updatedCredenciales.add(calixta);
-			}
-		}
-		
-		credencialesService.saveCredencialesCalixta(updatedCredenciales);
-		
-	    // Crear un objeto JSON con la respuesta
-	    Map<String, String> response = new HashMap<>();
-	    response.put("message", "Credenciales guardadas con éxito");
-
-	    // Devolver el objeto JSON
-	    return ResponseEntity.ok(response);
+		return credencialesService.saveCredencialesCalixta(credenciales);
 	}
 	
 	@GetMapping("/plantillas-SMS")
 	public ResponseEntity<Map<String, Object>> getAllSMSConfig() {
-		
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		
-		try {
-			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getSMSConfigByStatusSolicitud("D");
-			
-			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
-				respuesta.put("plantillas", plantillasSMS);
-				return ResponseEntity.ok(respuesta);
-			} else  {
-				respuesta.put("plantillas", Collections.emptyList());
-				return ResponseEntity.ok(respuesta);
-			}
-		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
-			mensajeError = logError + e.getMessage();
-			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
-		
+		return configuracionSMSService.getAllSMSConfig("D");
 	}
 	
 	@GetMapping("/obtener-plantilla")
@@ -192,19 +145,10 @@ public class CreditosDesembolsadosController {
             String texto = (String) payload.get("texto");
             Integer estatus = (Integer) payload.get("estatus");
             
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if(!(principal instanceof UserDetails)) {
-	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
-	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Constantes.USUARIO_NO_ENCONTRADO);
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -218,7 +162,7 @@ public class CreditosDesembolsadosController {
             return ResponseEntity.ok(updatedConfig);
             
         } catch (Exception e) {
-        	logger.error(logError + e.getMessage());
+        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
         }
     }
@@ -240,8 +184,8 @@ public class CreditosDesembolsadosController {
 				return ResponseEntity.ok(respuesta);
 			}
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
-			mensajeError = logError + e.getMessage();
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_LOGGER_ERROR + e.getMessage();
 			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
@@ -270,19 +214,10 @@ public class CreditosDesembolsadosController {
             Integer limiteSMS  = (Integer) payload.get("limiteSMS");
             Integer maxSMS = (Integer) payload.get("maxSMS");
             
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
-	            logger.error("No se encontró el usuario en la base de datos.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Constantes.USUARIO_NO_ENCONTRADO);
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
@@ -310,16 +245,7 @@ public class CreditosDesembolsadosController {
             Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
             Integer estatus = (Integer) payload.get("estatus");
             
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error("El usuario no está autenticado.");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no está autenticado.");
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error("No se encontró el usuario en la base de datos.");
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
@@ -337,7 +263,7 @@ public class CreditosDesembolsadosController {
             return ResponseEntity.ok(updatedGestionSMS);
             
         } catch (Exception e) {
-        	logger.error(logError + e.getMessage());
+        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
         }
     }
@@ -353,18 +279,9 @@ public class CreditosDesembolsadosController {
 	public int validarAcceso() {
 		
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error("El usuario no está autenticado.");
-	            return 0;
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-	        // Buscar usuario en la base de datos con Optional
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
-	            logger.error("No se encontró el usuario en la base de datos.");
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;
 	        }
 				
@@ -373,7 +290,7 @@ public class CreditosDesembolsadosController {
 			);
 				
 		} catch (Exception e) {
-			logger.error(logError + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return 0;
 		}					
 	}
