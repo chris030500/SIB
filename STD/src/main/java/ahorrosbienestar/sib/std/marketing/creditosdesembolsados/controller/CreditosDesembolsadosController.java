@@ -120,14 +120,14 @@ public class CreditosDesembolsadosController {
 	}
 	
 	@GetMapping("/obtener-plantilla")
-	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
 		
 		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
 		
 		if (configuracionSMS.isPresent()) {
 			return ResponseEntity.ok(configuracionSMS.get());
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 	}
 
