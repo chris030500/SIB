@@ -109,24 +109,6 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
 						<div class="row" style="margin-top : 15px ">
-							<!--<form id="plantillasForm">
-								<div class="mb-3">
-									<label for="tipo-credito" class="form-label">Tipo de crédito:</label>
-									<select class="form-select w-50" id="select-tipo-credito">
-										<option value="0" selected>Selecciona una opción</option>
-										<option value="N">Nuevos</option>
-										<option value="O">Renovados</option>
-										<option value="">Campañas</option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label for="texto-enviar" class="form-label">Texto a enviar:</label>
-									<textarea class="form-control" id="plantilla-texto-enviar" rows="4" placeholder="Escribe el texto aquí..."></textarea>
-								</div>
-								<div class="text-end">
-									<button type="submit" class="btn btn-primary">Guardar</button>
-								</div>
-							</form>-->
 							<div class="table-responsive">
 								<table class="table table-sm" style="width: 100%; text-align: center;" id="tblPlantillas">
 									<thead>
@@ -349,12 +331,10 @@
         <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
-		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
         <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
         <script th:src="@{/js/marketing/dataTableConfigMarketing.js}"></script>
         <script th:src="@{/js/marketing/fillDataTableConfig.js}"></script>
         <script th:src="@{/js/marketing/creditosDesembolsados.js}"></script>
-        <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
 
