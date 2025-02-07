@@ -148,24 +148,32 @@ public class ReportesCreditoController {
 		}
 	}
 	
+	private Optional<Usuario> obtenerUsuarioAutenticado() {
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        if (!(principal instanceof UserDetails)) {
+	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+	            return Optional.empty();
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+	        return iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+
+	    } catch (Exception e) {
+	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+	        return Optional.empty();
+	    }
+	}
+
 	public int validarAcceso() {
 		
 		try {
 			// Obtener el usuario autenticado
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+			Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+			if (usuario.isEmpty()) {
+				logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;
 			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-	        // Buscar usuario en la base de datos con Optional
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
-	        if (usuario.isEmpty()) {
-	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return 0;
-	        }
 				
 			return iRelRolOpcionesRepository.validarAcceso(
 					usuario.get().getRol_idRol().getPk_id_rol(),

@@ -170,17 +170,8 @@ public class SolicitudesAutorizadasController {
 	        String texto = (String) payload.get("texto");
 	        Integer estatus = (Integer) payload.get("estatus");
 
-	        // Obtener usuario autenticado
-	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	        if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	        }
-
-	        UserDetails userDetails = (UserDetails) principal;
-
 	        // Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -240,17 +231,9 @@ public class SolicitudesAutorizadasController {
             Integer idSMSProceso = (Integer) payload.get("idSMSConfigMensual");
             Integer limiteSMS  = (Integer) payload.get("limiteSMS");
             Integer maxSMS = (Integer) payload.get("maxSMS");
-            
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
 			
 			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -280,17 +263,9 @@ public class SolicitudesAutorizadasController {
         	
             Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
             Integer estatus = (Integer) payload.get("estatus");
-            
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
 			
 			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -321,21 +296,28 @@ public class SolicitudesAutorizadasController {
     		detalleService.updateEnviarMensaje(idProceeso, "S");
     	}
     }
+    
+	private Optional<Usuario> obtenerUsuarioAutenticado() {
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        if (!(principal instanceof UserDetails)) {
+	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+	            return Optional.empty();
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+	        return iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+
+	    } catch (Exception e) {
+	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+	        return Optional.empty();
+	    }
+	}
 	
 	public int validarAcceso() {
 		
 		try {
-			// Obtener el usuario autenticado
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return 0;
-			}
-			
-			UserDetails userDetails = (UserDetails) principal;
-			
-	        // Buscar usuario en la base de datos con Optional
-	        Optional<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
+			Optional<Usuario> usuario = obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;
