@@ -1,8 +1,6 @@
 package ahorrosbienestar.sib.std.credito.solicitudesautorizadas.controller;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -141,27 +139,7 @@ public class SolicitudesAutorizadasController {
 
 	@GetMapping("/gestion-SMS")
 	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
-		
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		
-		try {
-			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(2, "");
-			
-			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
-				respuesta.put("gestiones", gestionesSMS);
-				return ResponseEntity.ok(respuesta);
-			} else  {
-				respuesta.put("gestiones", Collections.emptyList());
-				return ResponseEntity.ok(respuesta);
-			}
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-			mensajeError = Constantes.MENSAJE_LOGGER_ERROR + e.getMessage();
-			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
-		
+		return gestionService.getAllGestionesSMS(2, "");
 	}
 	
 	@GetMapping("/obtener-gestion")

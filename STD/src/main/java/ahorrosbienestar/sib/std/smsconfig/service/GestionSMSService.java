@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.smsconfig.service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
@@ -26,6 +30,25 @@ public class GestionSMSService {
 	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito) {
 		gestionRepository.setLocaleSpanish(); // Configurar el idioma
 		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
+	}
+	
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(Integer tipoProceso, String tipoCredito) {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> gestionesSMS = getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
+			
+			respuesta.put("gestiones", (gestionesSMS != null && !gestionesSMS.isEmpty()) ? gestionesSMS : Collections.emptyList());
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_LOGGER_ERROR + e.getMessage();
+			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
 	}
 	
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess) {
