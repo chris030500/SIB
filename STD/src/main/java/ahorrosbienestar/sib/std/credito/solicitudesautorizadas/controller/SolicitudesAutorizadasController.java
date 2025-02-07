@@ -3,7 +3,6 @@ package ahorrosbienestar.sib.std.credito.solicitudesautorizadas.controller;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -30,7 +28,6 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -41,9 +38,6 @@ public class SolicitudesAutorizadasController {
 	
 	@Autowired
 	private UsuarioService userService;
-	
-	@Autowired
-	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -101,9 +95,8 @@ public class SolicitudesAutorizadasController {
 	
 	@GetMapping("/obtener-plantilla")
 	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
-	    Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
 
-	    return configuracionSMS.map(ResponseEntity::ok)
+	    return configuracionSMSService.getCurrentSMSConfig(idSMSConfig).map(ResponseEntity::ok)
 	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
@@ -120,10 +113,8 @@ public class SolicitudesAutorizadasController {
 	
 	@GetMapping("/obtener-gestion")
 	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
-		
-		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(2, idSMSProcess);
 
-	    return gestionSMS.map(ResponseEntity::ok)
+	    return gestionService.getCurrentProcessSMS(2, idSMSProcess).map(ResponseEntity::ok)
 	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
@@ -140,22 +131,6 @@ public class SolicitudesAutorizadasController {
     }
 	
 	public int validarAcceso() {
-		
-		try {
-			Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        if (usuario.isEmpty()) {
-	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return 0;
-	        }
-				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get().getRol_idRol().getPk_id_rol(),
-					opcionesMenuService.buscarRelacionController(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS)
-			);
-				
-				
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-			return 0;
-		}					
+		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
 	}
 }

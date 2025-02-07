@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.reportes.service.SolicitudesAutorizadasService;
-import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
@@ -35,9 +32,6 @@ public class ReportesCreditoController {
 	
 	@Autowired
 	private UsuarioService userService;
-	
-	@Autowired
-	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -147,24 +141,6 @@ public class ReportesCreditoController {
 	}
 
 	public int validarAcceso() {
-		
-		try {
-			// Obtener el usuario autenticado
-			Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-			if (usuario.isEmpty()) {
-				logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return 0;
-			}
-				
-			return iRelRolOpcionesRepository.validarAcceso(
-					usuario.get().getRol_idRol().getPk_id_rol(),
-					opcionesMenuService.buscarRelacionController(Constantes.CREDITO_REPORTES)
-			);
-				
-				
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-			return 0;
-		}					
+		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_REPORTES);					
 	}
 }
