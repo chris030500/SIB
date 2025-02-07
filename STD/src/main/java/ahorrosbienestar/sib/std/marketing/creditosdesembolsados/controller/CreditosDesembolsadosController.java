@@ -32,16 +32,12 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("marketing")
 public class CreditosDesembolsadosController {
 	
 	private static final Logger logger = Logger.getLogger(CreditosDesembolsadosController.class);
-	
-	@Autowired
-	private UsuarioService userService;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -62,10 +58,10 @@ public class CreditosDesembolsadosController {
 	private GestionSMSService gestionService;
 	
 	@Autowired
-	private ConfigCreditosDesembolsadosService configService;
+	private  ConfigCreditosDesembolsadosService configService;
 	
 	@GetMapping("/creditosDesembolsados")
-	public String paramsConfiguracion(Model model) throws IOException {
+	public String indexCreditosDesembolsados(Model model) throws IOException {
 		try {
 			String rutaDireccion;
 			// Obtener usuario autenticado
@@ -153,7 +149,7 @@ public class CreditosDesembolsadosController {
     }
     
 	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.MARKETING_CREDITOS_DESEMBOLSADOS);
+		return configService.validarAcceso(opcionesMenuService, Constantes.MARKETING_CREDITOS_DESEMBOLSADOS);
 	}
 	
 }

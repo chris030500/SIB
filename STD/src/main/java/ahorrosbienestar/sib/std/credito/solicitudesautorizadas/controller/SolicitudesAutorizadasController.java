@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.credito.solicitudesautorizadas.service.SolicitudesAutorizadasService;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -28,16 +29,12 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("credito")
 public class SolicitudesAutorizadasController {
 	
 	private static final Logger logger = Logger.getLogger(SolicitudesAutorizadasController.class);
-	
-	@Autowired
-	private UsuarioService userService;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -57,8 +54,11 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
 	
+	@Autowired
+	private SolicitudesAutorizadasService solicitudesAutorizadasService;
+	
 	@GetMapping("/solicitudesAutorizadas")
-	public String paramsConfiguracion(Model model) throws IOException {
+	public String indexSolicitudesAutorizadas(Model model) throws IOException {
 		try {
 			String rutaDireccion;
 			
@@ -131,6 +131,6 @@ public class SolicitudesAutorizadasController {
     }
 	
 	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
+		return solicitudesAutorizadasService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
 	}
 }

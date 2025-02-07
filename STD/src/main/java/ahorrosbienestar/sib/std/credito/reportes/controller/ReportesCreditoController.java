@@ -18,20 +18,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.credito.reportes.service.SolicitudesAutorizadasService;
+import ahorrosbienestar.sib.std.credito.reportes.service.ReportesCreditoService;
+import ahorrosbienestar.sib.std.credito.reportes.service.SolicitudAutorizadaService;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("credito")
 public class ReportesCreditoController {
 	
 	private static final Logger logger = Logger.getLogger(ReportesCreditoController.class);
-	
-	@Autowired
-	private UsuarioService userService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -43,7 +40,10 @@ public class ReportesCreditoController {
 	private OpcionesMenuService opcionesMenuService;
 	
 	@Autowired
-	private SolicitudesAutorizadasService autorizadasService;
+	private SolicitudAutorizadaService autorizadasService;
+	
+	@Autowired
+	private ReportesCreditoService reporteCreditoService;
 	
 	@GetMapping("/reportes")
 	public String indexReportes(Model model) {
@@ -141,6 +141,6 @@ public class ReportesCreditoController {
 	}
 
 	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_REPORTES);					
+		return reporteCreditoService.validarAcceso(opcionesMenuService, Constantes.CREDITO_REPORTES);					
 	}
 }

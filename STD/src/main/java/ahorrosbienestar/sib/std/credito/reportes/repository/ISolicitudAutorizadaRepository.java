@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.credito.reportes.model.SolicitudesAutorizadas;
+import ahorrosbienestar.sib.std.credito.reportes.model.SolicitudAutorizada;
 
 @Repository
-public interface ISolicitudesAutorizadasRepository extends JpaRepository<SolicitudesAutorizadas, Integer> {
+public interface ISolicitudAutorizadaRepository extends JpaRepository<SolicitudAutorizada, Integer> {
 	
 	@Query(value = "SELECT T1.ClienteID AS idCliente, "
 			+ "CASE WHEN T2.I_ClienteID IS NULL THEN CONCAT(T1.ClienteID, ' - ', T1.SoloNombres) "

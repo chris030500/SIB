@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_AUTORIZADAS_PRODUCCION")
-public class SolicitudesAutorizadas {
+public class SolicitudAutorizada {
 	
 	@Id
 	@Column(name = "SolicitudCreditoID")
