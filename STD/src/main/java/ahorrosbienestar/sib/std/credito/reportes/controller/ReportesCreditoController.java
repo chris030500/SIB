@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +25,7 @@ import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("credito")
@@ -36,7 +34,7 @@ public class ReportesCreditoController {
 	private static final Logger logger = Logger.getLogger(ReportesCreditoController.class);
 	
 	@Autowired
-	private IUsuarioRepository iUsuarioRepository;
+	private UsuarioService userService;
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -147,29 +145,12 @@ public class ReportesCreditoController {
 	                .body(Collections.singletonList("Error al generar el reporte: " + e.getMessage()));
 		}
 	}
-	
-	private Optional<Usuario> obtenerUsuarioAutenticado() {
-	    try {
-	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	        if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return Optional.empty();
-	        }
-
-	        UserDetails userDetails = (UserDetails) principal;
-	        return iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
-
-	    } catch (Exception e) {
-	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-	        return Optional.empty();
-	    }
-	}
 
 	public int validarAcceso() {
 		
 		try {
 			// Obtener el usuario autenticado
-			Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+			Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 			if (usuario.isEmpty()) {
 				logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;

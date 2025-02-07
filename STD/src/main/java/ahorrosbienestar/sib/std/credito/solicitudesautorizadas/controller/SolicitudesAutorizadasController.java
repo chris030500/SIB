@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +35,7 @@ import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("credito")
@@ -46,7 +44,7 @@ public class SolicitudesAutorizadasController {
 	private static final Logger logger = Logger.getLogger(SolicitudesAutorizadasController.class);
 	
 	@Autowired
-	private IUsuarioRepository iUsuarioRepository;
+	private UsuarioService userService;
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -171,7 +169,7 @@ public class SolicitudesAutorizadasController {
 	        Integer estatus = (Integer) payload.get("estatus");
 
 	        // Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -233,7 +231,7 @@ public class SolicitudesAutorizadasController {
             Integer maxSMS = (Integer) payload.get("maxSMS");
 			
 			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -265,7 +263,7 @@ public class SolicitudesAutorizadasController {
             Integer estatus = (Integer) payload.get("estatus");
 			
 			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -296,28 +294,11 @@ public class SolicitudesAutorizadasController {
     		detalleService.updateEnviarMensaje(idProceeso, "S");
     	}
     }
-    
-	private Optional<Usuario> obtenerUsuarioAutenticado() {
-	    try {
-	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	        if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	            return Optional.empty();
-	        }
-
-	        UserDetails userDetails = (UserDetails) principal;
-	        return iUsuarioRepository.findByNombreUsuario(userDetails.getUsername()).stream().findFirst();
-
-	    } catch (Exception e) {
-	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-	        return Optional.empty();
-	    }
-	}
 	
 	public int validarAcceso() {
 		
 		try {
-			Optional<Usuario> usuario = obtenerUsuarioAutenticado();
+			Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return 0;
