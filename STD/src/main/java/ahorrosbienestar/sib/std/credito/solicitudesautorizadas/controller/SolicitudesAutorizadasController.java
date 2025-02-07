@@ -29,7 +29,6 @@ import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
-import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
@@ -64,9 +63,6 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
 	
-	@Autowired
-	private DetalleGestionSMSService detalleService;
-	
 	@GetMapping("/solicitudesAutorizadas")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
@@ -95,7 +91,7 @@ public class SolicitudesAutorizadasController {
 	@PostMapping("/guardarCredenciales")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
-		return credencialesService.saveCredencialesCalixta(credenciales);
+		return credencialesService.saveCredencialesCalixta(credenciales, 2);
 	}
 	
 	@GetMapping("/plantillas-SMS")
@@ -114,27 +110,7 @@ public class SolicitudesAutorizadasController {
 	@PostMapping("/guardar-plantilla")
 	@ResponseBody
 	public ResponseEntity<ConfiguracionSMS> updateSMSText(@RequestBody Map<String, Object> payload) {
-	    try {
-	        Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
-	        String texto = (String) payload.get("texto");
-	        Integer estatus = (Integer) payload.get("estatus");
-
-	        // Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        if (usuario.isEmpty()) {
-	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	        }
-
-	        Integer idUsuario = usuario.get().getPk_id_usuario();
-
-	        ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
-
-	        return (updatedConfig != null) ? ResponseEntity.ok(updatedConfig) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	    } catch (Exception e) {
-	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	    }
+		return configuracionSMSService.updateSMSText(payload);
 	}
 
 	@GetMapping("/gestion-SMS")
@@ -154,76 +130,13 @@ public class SolicitudesAutorizadasController {
     @PostMapping("/actualizar-configuracion-mensual")
     @ResponseBody
     public ResponseEntity<ConfiguracionSMSMensual> updateConfigMensual(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSProceso = (Integer) payload.get("idSMSConfigMensual");
-            Integer limiteSMS  = (Integer) payload.get("limiteSMS");
-            Integer maxSMS = (Integer) payload.get("maxSMS");
-			
-			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        if (usuario.isEmpty()) {
-	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	        }
-	        
-			Integer idUsuario = usuario.get().getPk_id_usuario();
-            
-            ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
-            
-            if (updatedConfigMensual == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            
-            return ResponseEntity.ok(updatedConfigMensual);
-            
-        } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    	return configMensualService.updateConfigMensual(payload);
     }
 	
     @PostMapping("/actualizar-estatus-gestion")
     @ResponseBody
     public ResponseEntity<GestionSMS> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
-            Integer estatus = (Integer) payload.get("estatus");
-			
-			// Buscar usuario en la base de datos
-	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        if (usuario.isEmpty()) {
-	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	        }
-			
-			Integer idUsuario = usuario.get().getPk_id_usuario();
-            
-            GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
-            
-            if (updatedGestionSMS == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            
-        	updateDetalleGestionSMS(idSMSProceso, estatus);
-            return ResponseEntity.ok(updatedGestionSMS);
-            
-            
-        } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    
-    private void updateDetalleGestionSMS(Integer idProceeso, Integer estatus) {
-    	if (estatus == 4) {
-    		detalleService.updateEnviarMensaje(idProceeso, "N");
-    	} else {
-    		detalleService.updateEnviarMensaje(idProceeso, "S");
-    	}
+    	return gestionService.updateEstatusProceso(payload);
     }
 	
 	public int validarAcceso() {

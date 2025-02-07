@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.repository.IConfiguracionSMSRepository;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Service
 public class ConfiguracionSMSService {
@@ -24,6 +26,9 @@ public class ConfiguracionSMSService {
 	
 	@Autowired
 	private IConfiguracionSMSRepository configSMSRepository;
+	
+    @Autowired
+    private UsuarioService userService;
 	
 	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Integer idSMSConfig) {
 		return configSMSRepository.getCurrentSMSConfig(idSMSConfig);
@@ -52,6 +57,32 @@ public class ConfiguracionSMSService {
 		
 		return null;
 	}
+	
+    public ResponseEntity<ConfiguracionSMS> updateSMSText(Map<String, Object> payload) {
+        try {
+            Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
+            String texto = (String) payload.get("texto");
+            Integer estatus = (Integer) payload.get("estatus");
+            
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
+	        if (usuario.isEmpty()) {
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	        }
+			
+			Integer idUsuario = usuario.get().getPk_id_usuario();
+            ConfiguracionSMS updatedConfig = updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
+            
+            if (updatedConfig == null) {
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            
+            return ResponseEntity.ok(updatedConfig); 
+        } catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 	
 	public ResponseEntity<Map<String, Object>> getAllSMSConfig(String statusSolicitud) {
 		

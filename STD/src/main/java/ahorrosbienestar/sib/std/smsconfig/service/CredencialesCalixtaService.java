@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.smsconfig.repository.ICredencialesCalixtaRepository;
@@ -31,9 +30,9 @@ public class CredencialesCalixtaService {
 		return credencialesRepository.getDatosCalixta(tipoCredencial);
 	}
 	
-	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
+	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(Map<String, String> credenciales, Integer tipoCredencial) {
 		
-		List<CredencialesCalixta> credencialesCalixta = credencialesRepository.getDatosCalixta(2);
+		List<CredencialesCalixta> credencialesCalixta = credencialesRepository.getDatosCalixta(tipoCredencial);
 		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
 		
 		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
