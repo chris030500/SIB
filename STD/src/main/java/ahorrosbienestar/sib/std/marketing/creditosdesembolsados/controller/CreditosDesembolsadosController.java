@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.marketing.creditosdesembolsados.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,6 @@ import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
