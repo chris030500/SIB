@@ -1,11 +1,10 @@
-var id = "";
-var idDiv = "";
-var opcion = "";
 function ocultarMostrar(divEl) {
-	id = $(divEl).attr("id");
-	idDiv = id + 1;
-	opcion = "#pant-tabs" + " #" + idDiv;
-	switch ($(opcion).attr("for")) {
+	const id = $(divEl).attr("id");
+	const idDiv = id + 1;
+	const opcion = "#pant-tabs" + " #" + idDiv;
+	const forValue = $(opcion).attr("for");
+	
+	switch (forValue) {
 		case "1":
 			console.log("Credenciales calixta");
 			break;
@@ -23,20 +22,17 @@ function ocultarMostrar(divEl) {
 }
 
 function mostrarOcultarDiv(divA) {
-	var opcion = document.getElementById(divA);
-	if (opcion != null) {
+	const opcion = document.getElementById(divA);
+	if (opcion) {
 		opcion.style.display = "block";
 	}
 
 	document.querySelectorAll('#pant-tabs div[style*="display: block;"]').forEach(function(checkElement) {
 		console.log("mostrar Datos");
-		if (divA != (checkElement.id)) {
-			var opcion2 = document.getElementById(checkElement.id);
-			if (opcion != null) {
-				opcion2.style.display = "none";
-			}
+		if (divA !== checkElement.id) {
+			checkElement.style.display = "none";
 		} else {
-			console.log(": Mostrar");
+			console.log("Mostrando: ", checkElement.id);
 		}
 
 	});
@@ -136,7 +132,7 @@ document.getElementById("select-comodines-plantilla").addEventListener("change",
 	const selectedValue = this.value; // Obtener el valor seleccionado
     const textarea = document.getElementById('plantilla-texto-enviar');
     
-    console.log(selectedValue);
+    //console.log(selectedValue);
    
     if (selectedValue && textarea.value.indexOf(selectedValue) === -1) {
         // Agregar el valor al textarea en la posición actual del cursor
@@ -181,7 +177,7 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
        	setTimeout(function() {
 			swal.close(); // Cierra el SweetAlert
 		}, 2000);
-		location.reload();
+		listaPlantillas();
     })
     .catch((error) => {
         console.error("Error al actualizar la plantilla:", error);
@@ -304,7 +300,7 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
        	setTimeout(function() {
 			swal.close(); // Cierra el SweetAlert
 		}, 2000);
-		location.reload();
+		listaGestiones();
     })
     .catch((error) => {
         console.error("Error al actualizar la gestión del mensaje:", error);
@@ -317,9 +313,7 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function (e
 
     const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
     const limiteSMS = document.getElementById("select-limite-sms").value;
-    const maxSMS = document.getElementById("maximo-sms").value;
-    
-    console.log("idSMSConfigMensual: " + typeof(idSMSConfigMensual) + "\nlimiteSMS: " + typeof(limiteSMS) + "\nmaxSMS: " + typeof("maxSMS"))
+    const maxSMS = document.getElementById("maximo-sms").valu
     
     // Validaciones
     if (limiteSMS === "") {
@@ -373,7 +367,7 @@ function actualizarProceso(idSMSProceso, estatus) {
     })
     .then((data) => {
         console.log("Proceso actualizado: ", data);
-		location.reload();
+		listaGestiones();
     })
     .catch((error) => {
         console.error("Error al actualizar el proceso SMS:", error);

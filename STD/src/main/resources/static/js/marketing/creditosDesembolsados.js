@@ -1,19 +1,15 @@
-var id = "";
-var idDiv = "";
-var opcion = "";
 function ocultarMostrar(divEl) {
-	id = $(divEl).attr("id");
-	idDiv = id + 1;
-	opcion = "#pant-tabs" + " #" + idDiv;
-	switch ($(opcion).attr("for")) {
+	const id = $(divEl).attr("id");
+	const idDiv = id + 1;
+	const opcion = "#pant-tabs" + " #" + idDiv;
+	const forValue = $(opcion).attr("for");
+	
+	switch (forValue) {
 		case "1":
 			console.log("Credenciales calixta");
 			break;
 		case "2":
 			listaPlantillas();
-			break;
-		case "3":
-			//listaGestiones();
 			break;
 		default:
 			break;
@@ -24,17 +20,14 @@ function ocultarMostrar(divEl) {
 
 function mostrarOcultarDiv(divA) {
 	var opcion = document.getElementById(divA);
-	if (opcion != null) {
+	if (opcion) {
 		opcion.style.display = "block";
 	}
 
 	document.querySelectorAll('#pant-tabs div[style*="display: block;"]').forEach(function(checkElement) {
 		console.log("mostrar Datos");
-		if (divA != (checkElement.id)) {
-			var opcion2 = document.getElementById(checkElement.id);
-			if (opcion != null) {
-				opcion2.style.display = "none";
-			}
+		if (divA !== checkElement.id) {
+			checkElement.style.display = "none";
 		} else {
 			console.log(": Mostrar");
 		}
@@ -156,6 +149,12 @@ function editPlantilla(idSMSConfig){
 	})
 }*/
 
+function cerrarModal(idModal) {
+	const modalElement = document.getElementById(idModal);
+	const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+}
+
 function actualizarPlantilla(idSMSConfig, texto, estatus) {
 	
 	var url = getAbsolutePath() + "marketing/guardar-plantilla";
@@ -185,7 +184,9 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
        	setTimeout(function() {
 			swal.close(); // Cierra el SweetAlert
 		}, 2000);
-		location.reload();
+		
+		cerrarModal("editPlantillaModal");
+		listaPlantillas();
     })
     .catch((error) => {
         console.error("Error al actualizar la plantilla:", error);
@@ -224,8 +225,6 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
     const idSMSConfig = document.getElementById("id-plantilla-sms").value;
     const texto = document.getElementById("plantilla-texto-enviar").value;
     const estatus = document.getElementById("select-estatus-plantilla").value;
-    
-    console.log("Tipo variable estatus: " + typeof(estatus) + "\nTipo variable idSMSConfig: " + typeof(idSMSConfig) + "\nTipo variable texto: " + typeof(texto));
 
     // Validaciones
     if (!texto.trim()) {
@@ -245,7 +244,7 @@ document.getElementById("plantillasForm").addEventListener("submit", function (e
 document.getElementById("select-limite-sms").addEventListener("change", function () {
     const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
     const divMaximoSMS = document.getElementById("divMaximoSMS");
-    console.log("Opción seleccionada:", selectedValue);
+    //console.log("Opción seleccionada:", selectedValue);
     
     switch(selectedValue) {
 		case "":
@@ -277,7 +276,7 @@ function editProcess(idSMSProcess){
 		 return response.json();
 	})
 	.then((data) => {
-		console.log("Gestión SMS: ", data);
+		//console.log("Gestión SMS: ", data);
 		const idProceso = data.idProceso;
 		const idConfigMensual = data.idConfigMensual
 		const tipoCredito = data.tipoCredito;
@@ -316,6 +315,8 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
         limiteSMS: Number(limiteSMS),
         maxSMS: Number(maxSMS)
     };
+    
+    const selectedValue = document.getElementById("select-tipo-credito").value;
 
     fetch(url, {
         method: "POST",
@@ -331,12 +332,16 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
         return response.json();
     })
     .then((data) => {
-        console.log("Plantilla actualizada: ", data);
+        //console.log("Plantilla actualizada: ", data);
         swal("¡Guardado exitoso!", "La gestión del mensaje se guardó correctamente.", "success");
        	setTimeout(function() {
 			swal.close(); // Cierra el SweetAlert
 		}, 2000);
-		location.reload();
+		
+		cerrarModal("editProcessModal");
+		//console.log("Select value: " + selectedValue);
+		listaGestiones(selectedValue);
+		
     })
     .catch((error) => {
         console.error("Error al actualizar la gestión del mensaje:", error);
@@ -388,6 +393,8 @@ function actualizarProceso(idSMSProceso, estatus) {
         idSMSProceso: Number(idSMSProceso),
         estatus: Number(estatus)
     };
+    
+    const selectedValue = document.getElementById("select-tipo-credito").value;
 
     fetch(url, {
         method: "POST",
@@ -404,7 +411,8 @@ function actualizarProceso(idSMSProceso, estatus) {
     })
     .then((data) => {
         console.log("Proceso actualizado: ", data);
-		location.reload();
+		cerrarModal("statusProcessModal");
+		listaGestiones(selectedValue);
     })
     .catch((error) => {
         console.error("Error al actualizar el proceso SMS:", error);
