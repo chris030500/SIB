@@ -35,18 +35,18 @@ public class GestionSMSService {
 	@Autowired
 	private DetalleGestionSMSService detalleService;
 	
-	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito) {
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, Integer isCampania, String tipoCredito) {
 		gestionRepository.setLocaleSpanish(); // Configurar el idioma
-		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
+		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, isCampania, tipoCredito);
 	}
 	
-	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(Integer tipoProceso, String tipoCredito) {
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(Integer tipoProceso, Integer isCampania, String tipoCredito) {
 		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;
 		
 		try {
-			List<Map<String, Object>> gestionesSMS = getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
+			List<Map<String, Object>> gestionesSMS = getGestionesSMSByTipoCredito(tipoProceso, isCampania, tipoCredito);
 			
 			respuesta.put("gestiones", (gestionesSMS != null && !gestionesSMS.isEmpty()) ? gestionesSMS : Collections.emptyList());
 			return ResponseEntity.ok(respuesta);

@@ -129,8 +129,8 @@ public class CreditosDesembolsadosController {
     }
     
 	@GetMapping("/gestion-SMS")
-	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(@RequestParam String tipoCredito) {
-		return gestionService.getAllGestionesSMS(1, tipoCredito);
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(@RequestParam Integer isCampania, @RequestParam String tipoCredito) {
+		return gestionService.getAllGestionesSMS(1, isCampania, tipoCredito);
 	}
 	
 	@GetMapping("/obtener-gestion")

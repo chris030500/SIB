@@ -108,7 +108,7 @@ public class SolicitudesAutorizadasController {
 
 	@GetMapping("/gestion-SMS")
 	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
-		return gestionService.getAllGestionesSMS(2, "");
+		return gestionService.getAllGestionesSMS(2, 2, "");
 	}
 	
 	@GetMapping("/obtener-gestion")
