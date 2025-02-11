@@ -41,6 +41,7 @@ public class ConfiguracionSMSMensualService {
 			
 			if (configMensual != null && limiteSMS == 0) {
 				configMensual.setLimiteSMS(limiteSMS);
+				configMensual.setNumSMS(0);
 				configMensual.setUserModifica(idUser);
 				
 				return confMensualRepository.save(configMensual);

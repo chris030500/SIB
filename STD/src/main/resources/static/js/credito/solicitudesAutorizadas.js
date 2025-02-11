@@ -178,7 +178,7 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
 			setTimeout(function() {
 				swal.close(); // Cierra el SweetAlert
 			}, 2000);
-			
+
 			cerrarModal("editPlantillaModal");
 			listaPlantillas();
 		})
@@ -250,7 +250,7 @@ function editProcess(idSMSProcess) {
 			const idConfigMensual = data.idConfigMensual
 			const mes = data.nomMes
 			const mensajeSMS = data.mensaje;
-			const numSMS = data.numSMS;
+			const numSMS = data?.numSMS || 0;
 			const limiteSMS = data.limiteSMS;
 
 			document.getElementById("id-gestion-sms").value = idProceso;
@@ -301,7 +301,7 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
 			setTimeout(function() {
 				swal.close(); // Cierra el SweetAlert
 			}, 2000);
-			
+
 			cerrarModal("editProcessModal");
 			listaGestiones();
 		})
@@ -316,7 +316,7 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 
 	const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
 	const limiteSMS = document.getElementById("select-limite-sms").value;
-	const maxSMS = document.getElementById("maximo-sms").valu
+	const maxSMS = document.getElementById("maximo-sms").value
 
 	// Validaciones
 	if (limiteSMS === "") {
