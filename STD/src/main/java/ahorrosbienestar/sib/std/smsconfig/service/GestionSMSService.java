@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.smsconfig.service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,11 +11,15 @@ import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.repository.IGestionSMSRepository;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Service
 public class GestionSMSService {
@@ -23,9 +29,34 @@ public class GestionSMSService {
 	@Autowired
 	private IGestionSMSRepository gestionRepository;
 	
-	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito) {
+    @Autowired
+    private UsuarioService userService;
+    
+	@Autowired
+	private DetalleGestionSMSService detalleService;
+	
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, Integer isCampania, String tipoCredito) {
 		gestionRepository.setLocaleSpanish(); // Configurar el idioma
-		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, tipoCredito);
+		return gestionRepository.getGestionesSMSByTipoCredito(tipoProceso, isCampania, tipoCredito);
+	}
+	
+	public ResponseEntity<Map<String, Object>> getAllGestionesSMS(Integer tipoProceso, Integer isCampania, String tipoCredito) {
+		
+		Map<String, Object> respuesta = new HashMap<>();
+		String mensajeError = null;
+		
+		try {
+			List<Map<String, Object>> gestionesSMS = getGestionesSMSByTipoCredito(tipoProceso, isCampania, tipoCredito);
+			
+			respuesta.put("gestiones", (gestionesSMS != null && !gestionesSMS.isEmpty()) ? gestionesSMS : Collections.emptyList());
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_LOGGER_ERROR + e.getMessage();
+			respuesta.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+		
 	}
 	
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess) {
@@ -33,7 +64,7 @@ public class GestionSMSService {
 		return gestionRepository.getCurrentProcessSMS(tipoProceso, idProcess);
 	}
 	
-	public GestionSMS updateProcessStatus(Integer idProcess, Integer status, Integer idUser) {
+	public GestionSMS updatedProcessStatus(Integer idProcess, Integer status, Integer idUser) {
 		try {
 			
 			GestionSMS procesoSMS = gestionRepository.findById(idProcess)
@@ -53,10 +84,46 @@ public class GestionSMSService {
 				}
 			} 
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 		}
 		
 		return null;
 	}
+	
+    public ResponseEntity<GestionSMS> updateEstatusProceso(Map<String, Object> payload) {
+        try {
+        	
+            Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
+            Integer estatus = (Integer) payload.get("estatus");
+            
+	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
+	        if (usuario.isEmpty()) {
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	        }
+			
+			Integer idUsuario = usuario.get().getPk_id_usuario();
+            GestionSMS updatedGestionSMS = updatedProcessStatus(idSMSProceso, estatus, idUsuario);
+            
+            if (updatedGestionSMS == null) {
+            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            
+        	updateDetalleGestionSMS(idSMSProceso, estatus);
+            return ResponseEntity.ok(updatedGestionSMS);
+            
+        } catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    private void updateDetalleGestionSMS(Integer idProceeso, Integer estatus) {
+    	if (estatus == 4) {
+    		detalleService.updateEnviarMensaje(idProceeso, "N");
+    	} else {
+    		detalleService.updateEnviarMensaje(idProceeso, "S");
+    	}
+    }
 
 }

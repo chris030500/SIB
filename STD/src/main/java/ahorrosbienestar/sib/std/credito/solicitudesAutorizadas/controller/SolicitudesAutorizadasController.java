@@ -1,19 +1,13 @@
 package ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -34,10 +27,8 @@ import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService;
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
-import ahorrosbienestar.sib.std.smsconfig.service.DetalleGestionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Controller
 @RequestMapping("credito")
@@ -46,10 +37,7 @@ public class SolicitudesAutorizadasController {
 	private static final Logger logger = Logger.getLogger(SolicitudesAutorizadasController.class);
 	
 	@Autowired
-	private IUsuarioRepository iUsuarioRepository;
-	
-	@Autowired
-	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	private UsuarioService userService;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -69,14 +57,10 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
 	
-	@Autowired
-	private DetalleGestionSMSService detalleService;
-	
-	private String rutaDireccion = "";
-	
 	@GetMapping("/solicitudesAutorizadas")
-	public String paramsConfiguracion(Model model) throws IOException {
+	public String indexSolicitudesAutorizadas(Model model) throws IOException {
 		try {
+			String rutaDireccion;
 			
 			if (validarAcceso() == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
@@ -93,7 +77,7 @@ public class SolicitudesAutorizadasController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return null;
 		}
 	}
@@ -101,242 +85,52 @@ public class SolicitudesAutorizadasController {
 	@PostMapping("/guardarCredenciales")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveCredencialesCalixta(@RequestBody Map<String, String> credenciales) {
-		
-		List<CredencialesCalixta> credencialesCalixta = credencialesService.getDatosCalixta(2);
-		List<CredencialesCalixta> updatedCredenciales = new ArrayList<>();
-		
-		for (Map.Entry<String, String> entry : credenciales.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			
-			CredencialesCalixta calixta = credencialesCalixta.stream()
-					.filter(c -> c.getNombreCredencial().equalsIgnoreCase(key))
-					.findFirst()
-					.orElse(null);
-			
-			if (calixta != null) {
-				calixta.setValorCredencial(value);
-				updatedCredenciales.add(calixta);
-			}
-		}
-		
-		credencialesService.saveCredencialesCalixta(updatedCredenciales);
-		
-	    // Crear un objeto JSON con la respuesta
-	    Map<String, String> response = new HashMap<>();
-	    response.put("message", "Credenciales guardadas con éxito");
-
-	    // Devolver el objeto JSON
-	    return ResponseEntity.ok(response);
+		return credencialesService.saveCredencialesCalixta(credenciales, 2);
 	}
 	
 	@GetMapping("/plantillas-SMS")
 	public ResponseEntity<Map<String, Object>> getAllSMSConfig() {
-		
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		
-		try {
-			List<Map<String, Object>> plantillasSMS = configuracionSMSService.getSMSConfigByStatusSolicitud("A");
-			
-			if (plantillasSMS != null && !plantillasSMS.isEmpty()) {
-				respuesta.put("plantillas", plantillasSMS);
-				return ResponseEntity.ok(respuesta);
-			} else  {
-				respuesta.put("plantillas", Collections.emptyList());
-				return ResponseEntity.ok(respuesta);
-			}
-		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
-		
+		return configuracionSMSService.getAllSMSConfig("A");
 	}
 	
 	@GetMapping("/obtener-plantilla")
-	public ResponseEntity<?> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
-		
-		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
-		
-		if (configuracionSMS.isPresent()) {
-			return ResponseEntity.ok(configuracionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
+	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+
+	    return configuracionSMSService.getCurrentSMSConfig(idSMSConfig).map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
-    @PostMapping("/guardar-plantilla")
-    @ResponseBody
-    public ResponseEntity<?> updateSMSText(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSConfig = (Integer) payload.get("idSMSConfig");
-            String texto = (String) payload.get("texto");
-            Integer estatus = (Integer) payload.get("estatus");
-            
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
-			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
-            
-            ConfiguracionSMS updatedConfig = configuracionSMSService.updateCurrentSMSText(idSMSConfig, idUsuario, texto, estatus);
-            
-            if (updatedConfig != null) {
-                return ResponseEntity.ok(updatedConfig);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración SMS con los parámetros proporcionados.");
-            }
-        } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la plantilla de SMS: " + e.getMessage());
-        }
-    }
-    
+	@PostMapping("/guardar-plantilla")
+	@ResponseBody
+	public ResponseEntity<ConfiguracionSMS> updateSMSText(@RequestBody Map<String, Object> payload) {
+		return configuracionSMSService.updateSMSText(payload);
+	}
+
 	@GetMapping("/gestion-SMS")
 	public ResponseEntity<Map<String, Object>> getAllGestionesSMS() {
-		
-		Map<String, Object> respuesta = new HashMap<>();
-		String mensajeError = null;
-		
-		try {
-			List<Map<String, Object>> gestionesSMS = gestionService.getGestionesSMSByTipoCredito(2, "");
-			
-			if (gestionesSMS != null && !gestionesSMS.isEmpty()) {
-				respuesta.put("gestiones", gestionesSMS);
-				return ResponseEntity.ok(respuesta);
-			} else  {
-				respuesta.put("gestiones", Collections.emptyList());
-				return ResponseEntity.ok(respuesta);
-			}
-		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-			mensajeError = "Error: " + e.getMessage();
-			respuesta.put("error", mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-		}
-		
+		return gestionService.getAllGestionesSMS(2, 2, "");
 	}
 	
 	@GetMapping("/obtener-gestion")
-	public ResponseEntity<?> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
-		
-		Optional<Map<String, Object>> gestionSMS = gestionService.getCurrentProcessSMS(2, idSMSProcess);
-		
-		if (gestionSMS.isPresent()) {
-			return ResponseEntity.ok(gestionSMS.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró la configuración SMS");
-		}
+	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+
+	    return gestionService.getCurrentProcessSMS(2, idSMSProcess).map(ResponseEntity::ok)
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 	
     @PostMapping("/actualizar-configuracion-mensual")
     @ResponseBody
-    public ResponseEntity<?> updateConfigMensual(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSProceso = (Integer) payload.get("idSMSConfigMensual");
-            Integer limiteSMS  = (Integer) payload.get("limiteSMS");
-            Integer maxSMS = (Integer) payload.get("maxSMS");
-            
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
-			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
-            
-            ConfiguracionSMSMensual updatedConfigMensual = configMensualService.updateConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
-            
-            if (updatedConfigMensual != null) {
-                return ResponseEntity.ok(updatedConfigMensual);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró una configuración mensual de SMS con los parámetros proporcionados.");
-            }
-        } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la configuración mensual de SMS: " + e.getMessage());
-        }
+    public ResponseEntity<ConfiguracionSMSMensual> updateConfigMensual(@RequestBody Map<String, Object> payload) {
+    	return configMensualService.updateConfigMensual(payload);
     }
 	
     @PostMapping("/actualizar-estatus-gestion")
     @ResponseBody
-    public ResponseEntity<?> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
-    	
-        try {
-        	
-            Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
-            Integer estatus = (Integer) payload.get("estatus");
-            
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
-			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
-            
-            GestionSMS updatedGestionSMS = gestionService.updateProcessStatus(idSMSProceso, estatus, idUsuario);
-            
-            if (updatedGestionSMS != null) {
-            	updateDetalleGestionSMS(idSMSProceso, estatus);
-                return ResponseEntity.ok(updatedGestionSMS);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un proceso SMS con los parámetros proporcionados.");
-            }
-        } catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el proceso de SMS: " + e.getMessage());
-        }
-    }
-    
-    private void updateDetalleGestionSMS(Integer idProceeso, Integer estatus) {
-    	if (estatus == 4) {
-    		detalleService.updateEnviarMensaje(idProceeso, "N");
-    	} else {
-    		detalleService.updateEnviarMensaje(idProceeso, "S");
-    	}
+    public ResponseEntity<GestionSMS> updateEstatusProceso(@RequestBody Map<String, Object> payload) {
+    	return gestionService.updateEstatusProceso(payload);
     }
 	
 	public int validarAcceso() {
-		
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS));
-				
-				
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return 0;
-		}					
+		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
 	}
-
 }

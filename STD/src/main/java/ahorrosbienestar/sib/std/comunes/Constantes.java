@@ -1,35 +1,37 @@
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
- 
-	// Constantes Rutas de Acceso
+	
+	//Constantes Rutas de Acceso
 	public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
 	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
 	public static final String RUTA_ERROR = "errores/error_403";
 	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
- 
-	// Rutas de Seguimiento
+	
+	
+	//Rutas de Seguimiento
 	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
 	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
 	public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
- 
-	// Constantes de usuarios
+	
+	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
 	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
- 
-	// Constantes de estatus
+	
+	
+	//Constantes de estatus
 	public static final int ACTIVO = 1;
- 
-	// Constantes tipo de Base
+	
+	//Constantes tipo de Base
 	public static final int FIDELIDAD = 2;
 	public static final int CAMPANAS_VIP = 3;
- 
-	// Constante mensajes y propiedades
+	
+	//Constante mensajes y propiedades 
 	public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
- 
+	
 	// constantes logger
 	public static final String MENSAJE_DE_ERROR = "Error";
-	
+	public static final String MENSAJE_LOGGER_ERROR = "Error: ";
  
 	//Ejemplo de constantes para tipo de Mensaje
 	public static final String MENSAJE_ERROR = "error";
@@ -264,6 +266,10 @@ public class Constantes {
 	
 	//nombres reportes Crédito
 	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
+	
+	//Mensajes de error de autenticación
+	public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
+	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
 	
 	//nombres parametros costo Neto financiado
 	public static final String PRM_LISTACATALOGO = "listaCatalogo";

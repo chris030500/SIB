@@ -13,13 +13,6 @@ import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 @Repository
 public interface IConfiguracionSMSRepository extends JpaRepository<ConfiguracionSMS, Integer> {
 	
-	/*@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
-			+ "WHERE FK_VC_TP_CREDITO = :tipoCredito "
-			+ "AND I_IND_ACTIVO = 1 "
-			+ "AND FK_VC_ESTATUS_SOLCRE = 'D' "
-			+ "AND I_IND_SOLCRE_CAMPANIA = :isCampania ", nativeQuery = true)
-	public Optional<ConfiguracionSMS> getCurrentSmsConfig(String tipoCredito, Integer isCampania);*/
-	
 	@Query( value = "SELECT T1.PK_ID_CONFIG_SMS AS idConfig, "
 			+ "CASE WHEN T1.FK_VC_TP_CREDITO = 'N' THEN 'Nuevo' "
 			+ "WHEN T1.FK_VC_TP_CREDITO = 'O' THEN 'Renovado' "
@@ -29,7 +22,10 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 			+ "T2.VC_NOMBRE_USUARIO AS userRegistra, "
 			+ "DATE_FORMAT(T1.DT_FECHA_REGISTRO, '%d-%m-%Y %H:%i:%s') AS fechaRegistro, "
 			+ "T3.VC_NOMBRE_USUARIO AS userModifica, "
-			+ "DATE_FORMAT(T1.DT_FECHA_MODIFICACION, '%d-%m-%Y %H:%i:%s') AS fechaModificacion "
+			+ "DATE_FORMAT(T1.DT_FECHA_MODIFICACION, '%d-%m-%Y %H:%i:%s') AS fechaModificacion, "
+			+ "CASE WHEN T1.I_IND_ACTIVO = 1 THEN 'ACTIVO' "
+			+ "ELSE 'INACTIVO' "
+			+ "END AS estatus "
 			+ "FROM SIB.TBL_CONFIG_SMS T1 "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS T2 ON T2.PK_ID_USUARIO = T1.I_USR_REGISTRA "
 			+ "LEFT JOIN SIB.TBL_CAT_USUARIOS T3 ON T3.PK_ID_USUARIO = T1.I_USR_MODIFICA "

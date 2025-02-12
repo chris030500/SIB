@@ -24,8 +24,13 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 	@Query(value = "SELECT T1.PK_PROCESOID AS pkIdProceso, "
 			+ "DATE_FORMAT(T1.DT_FECHA_INICIAL, '%m') AS mes, "
 			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
-			+ "IFNULL(T4.VC_DESCRIPCION, 'CAMPAÑA') AS tipoCredito, "
+			+ "CASE WHEN T1.I_TP_PROCESO = 2 AND T3.I_IND_SOLCRE_CAMPANIA = 2 AND T3.FK_VC_TP_CREDITO = '' THEN '' "
+			+ "WHEN T1.I_TP_PROCESO = 1 AND T3.I_IND_SOLCRE_CAMPANIA = 1 AND T3.FK_VC_TP_CREDITO = '' THEN 'CAMPAÑA' "
+			+ "ELSE T4.VC_DESCRIPCION END AS tipoCredito, "
 			+ "T2.VC_MENSAJE_ENVIAR AS mensajeSMS, "
+			+ "CASE WHEN T2.I_IND_LIM_ENVIO_SMS = 1 THEN 'SI' "
+			+ "ELSE 'NO' "
+			+ "END AS limiteSMS, "
 			+ "T1.I_SMS_ENVIAR AS numSmsEnviar, "
 			+ "T1.I_SMS_PEND_ENVIAR AS numSmsPendientes, "
 			+ "T1.I_SMS_ENVIOS AS numSmsEnvios, "
@@ -41,13 +46,16 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 			+ "LEFT JOIN SIB.TBL_CONFIG_SMS T3 ON T2.FK_ID_CONFIG_SMS = T3.PK_ID_CONFIG_SMS "
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T3.FK_VC_TP_CREDITO = T4.PK_VC_TP_CREDITO "
 			+ "WHERE T1.I_TP_PROCESO = :tipoProceso "
+			+ "AND T3.I_IND_SOLCRE_CAMPANIA = :isCampania "
 			+ "AND T3.FK_VC_TP_CREDITO = :tipoCredito "
 			+ "ORDER BY mes ASC ", nativeQuery = true)
-	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, String tipoCredito);
+	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, Integer isCampania, String tipoCredito);
 	
 	@Query(value = "SELECT T1.PK_PROCESOID AS idProceso, "
 			+ "T1.FK_ID_CONFIG_SMS AS idConfigMensual, "
-			+ "IFNULL(T4.VC_DESCRIPCION, 'CAMPAÑA') AS tipoCredito, "
+			+ "CASE WHEN T3.I_TP_PROCESO = 2 AND T3.I_IND_SOLCRE_CAMPANIA = 2 AND T3.FK_VC_TP_CREDITO = '' THEN '' "
+			+ "WHEN T3.I_TP_PROCESO = 1 AND T3.I_IND_SOLCRE_CAMPANIA = 1 AND T3.FK_VC_TP_CREDITO = '' THEN 'CAMPAÑA' "
+			+ "ELSE T4.VC_DESCRIPCION END AS tipoCredito, "
 			+ "DATE_FORMAT(T1.DT_FECHA_INICIAL, '%m') AS mes, "
 			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
 			+ "T2.I_NUM_ENVIOS_SMS AS numSMS, "
@@ -58,7 +66,7 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer
 			+ "INNER JOIN SIB.TBL_CONFIG_SMS T3 ON T3.PK_ID_CONFIG_SMS = T2.FK_ID_CONFIG_SMS "
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T4.PK_VC_TP_CREDITO = T3.FK_VC_TP_CREDITO "
 			+ "WHERE T3.I_TP_PROCESO = :tipoProceso "
-			+ "AND T1.PK_PROCESOID = :idProcess", nativeQuery = true)
+			+ "AND T1.PK_PROCESOID = :idProcess ", nativeQuery = true)
 	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess);
 
 }

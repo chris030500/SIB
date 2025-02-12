@@ -14,5 +14,4 @@ public class ConfigCreditosDesembolsadosService {
 	public int searchConfiguracion(String nombreConfig, String usuario) {
 		return configRepository.searchConfiguracion(nombreConfig, usuario);
 	}
-
 }
