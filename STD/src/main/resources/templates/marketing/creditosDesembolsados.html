@@ -39,7 +39,7 @@
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas</button>
 					</li>
-					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1}">
+					<li class="nav-item" role="presentation" th:if="${permiso_admin == 1 || permiso_editor == 1}">
 						<button onclick="ocultarMostrar(this)" class="nav-link" id="gestion-tab" data-bs-toggle="tab"
 							type="button" role="tab" aria-selected="false" tabindex="-1">Gestión del mensaje</button>
 					</li>
@@ -132,7 +132,8 @@
 				</div>
 				<!-- Fin de plantillas -->
 				<!-- Gestión SMS -->
-				<div id="gestion-tab1" class="" style="display:none;" for="3" th:if="${permiso_admin == 1}">
+				<div id="gestion-tab1" class="" style="display:none;" for="3"
+					th:if="${permiso_admin == 1 || permiso_editor == 1}">
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
 						<div class="row" style="margin-top : 15px ">
@@ -158,7 +159,7 @@
 											<th>SMS Por enviar</th>
 											<th>SMS Enviados</th>
 											<th>Estatus Proceso</th>
-											<th style="text-align: center;">Acciones</th>
+											<th th:if="${permiso_admin == 1}" style="text-align: center;">Acciones</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
