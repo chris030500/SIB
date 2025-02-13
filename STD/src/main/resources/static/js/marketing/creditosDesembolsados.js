@@ -11,6 +11,9 @@ function ocultarMostrar(divEl) {
 		case "2":
 			listaPlantillas();
 			break;
+		case "3":
+			console.log("Gestión SMS");
+			break;
 		default:
 			break;
 	}
