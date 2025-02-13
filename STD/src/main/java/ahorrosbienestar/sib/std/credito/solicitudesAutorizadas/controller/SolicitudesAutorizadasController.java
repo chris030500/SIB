@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.solicitudesautorizadas.controller;
+package ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.controller;
 
 import java.io.IOException;
 import java.util.List;
