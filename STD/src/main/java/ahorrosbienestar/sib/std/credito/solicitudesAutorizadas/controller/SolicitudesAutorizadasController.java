@@ -59,25 +59,35 @@ public class SolicitudesAutorizadasController {
 	
 	@GetMapping("/solicitudesAutorizadas")
 	public String indexSolicitudesAutorizadas(Model model) throws IOException {
+		
+		logger.info("Entro a validaicon");
 		try {
 			String rutaDireccion;
 			
 			if (validarAcceso() == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
 				model.addAttribute("credenciales", credenciales);
+				logger.info("paso credenciales");
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
+				logger.info("hora_inicio_semanal");
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
+				logger.info("hora_fin_semanal");
 				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
+				logger.info("hora_inicio_fin_semana");
 				model.addAttribute("hora_fin_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_FIN_SEMANA));
+				logger.info("hora_fin_fin_semana");
 				model.addAttribute("recurrencia_envio_sms", iConfiguracionRepository.buscarPropiedad(Constantes.RECURRENCIA_SMS));
-				
+				logger.info("recurrencia_envio_sms");
 				rutaDireccion = Constantes.CREDITO_SOLICITUDES_AUTORIZADAS;
+				logger.info("rutaDireccion");
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
+				logger.info("rutaDireccion");
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			logger.info("rutaDireccion");
 			return null;
 		}
 	}
