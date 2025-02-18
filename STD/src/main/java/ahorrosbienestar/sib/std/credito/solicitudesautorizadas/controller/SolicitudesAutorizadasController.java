@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.solicitudesAutorizadas.controller;
+package ahorrosbienestar.sib.std.credito.solicitudesautorizadas.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -28,7 +31,8 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("credito")
@@ -37,7 +41,10 @@ public class SolicitudesAutorizadasController {
 	private static final Logger logger = Logger.getLogger(SolicitudesAutorizadasController.class);
 	
 	@Autowired
-	private UsuarioService userService;
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -57,12 +64,14 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
 	
+	List<Usuario> usuario = null;
+	
 	@GetMapping("/solicitudesAutorizadas")
 	public String indexSolicitudesAutorizadas(Model model) throws IOException {
 		try {
 			String rutaDireccion;
 			
-			if (validarAcceso() == 1) {
+			if (validarAcceso(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS) == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
 				model.addAttribute("credenciales", credenciales);
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
@@ -130,7 +139,22 @@ public class SolicitudesAutorizadasController {
     	return gestionService.updateEstatusProceso(payload);
     }
 	
-	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
+	public int validarAcceso(String rutaController) {
+		try {
+
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(rutaController));
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return 0;
+		}
 	}
 }

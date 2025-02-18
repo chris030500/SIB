@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.marketing.creditosdesembolsados.service.ConfigCreditosDesembolsadosService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -32,7 +33,8 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("marketing")
@@ -41,7 +43,10 @@ public class CreditosDesembolsadosController {
 	private static final Logger logger = Logger.getLogger(CreditosDesembolsadosController.class);
 	
 	@Autowired
-	private UsuarioService userService;
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -64,6 +69,8 @@ public class CreditosDesembolsadosController {
 	@Autowired
 	private  ConfigCreditosDesembolsadosService configService;
 	
+	List<Usuario> usuario = null;
+	
 	@GetMapping("/creditosDesembolsados")
 	public String indexCreditosDesembolsados(Model model) throws IOException {
 		try {
@@ -77,7 +84,7 @@ public class CreditosDesembolsadosController {
 			
 			UserDetails userDetails = (UserDetails) principal;
 			
-			if (validarAcceso() == 1) {
+			if (validarAcceso(Constantes.MARKETING_CREDITOS_DESEMBOLSADOS) == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(1);
 				
 				model.addAttribute("permiso_admin", configService.searchConfiguracion(Constantes.USUARIO_ADMIN_MARKETING, userDetails.getUsername()));
@@ -152,8 +159,22 @@ public class CreditosDesembolsadosController {
     	return gestionService.updateEstatusProceso(payload);
     }
     
-	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.MARKETING_CREDITOS_DESEMBOLSADOS);
-	}
-	
+	public int validarAcceso(String rutaController) {
+		try {
+
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(rutaController));
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return 0;
+		}
+	}	
 }

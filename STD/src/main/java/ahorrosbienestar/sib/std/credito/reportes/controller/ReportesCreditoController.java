@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.reportes.service.SolicitudAutorizadaService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("credito")
@@ -31,7 +35,10 @@ public class ReportesCreditoController {
 	private static final Logger logger = Logger.getLogger(ReportesCreditoController.class);
 	
 	@Autowired
-	private UsuarioService userService;
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
@@ -45,13 +52,15 @@ public class ReportesCreditoController {
 	@Autowired
 	private SolicitudAutorizadaService autorizadasService;
 	
+	List<Usuario> usuario = null;
+	
 	@GetMapping("/reportes")
 	public String indexReportes(Model model) {
 		
 		try {
 			String rutaDireccion;
 			
-			if(validarAcceso() == 1) {
+			if(validarAcceso(Constantes.CREDITO_REPORTES) == 1) {
 				rutaDireccion = Constantes.CREDITO_REPORTES;
 				
 			}else {
@@ -140,7 +149,22 @@ public class ReportesCreditoController {
 		}
 	}
 
-	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_REPORTES);					
+	public int validarAcceso(String rutaController) {
+		try {
+
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			UserDetails userDetails = null;
+			if (principal instanceof UserDetails) {
+				userDetails = (UserDetails) principal;
+			}
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(rutaController));
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return 0;
+		}
 	}
 }
