@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
@@ -28,7 +31,8 @@ import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSMensualService
 import ahorrosbienestar.sib.std.smsconfig.service.ConfiguracionSMSService;
 import ahorrosbienestar.sib.std.smsconfig.service.CredencialesCalixtaService;
 import ahorrosbienestar.sib.std.smsconfig.service.GestionSMSService;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Controller
 @RequestMapping("credito")
@@ -37,7 +41,10 @@ public class SolicitudesAutorizadasController {
 	private static final Logger logger = Logger.getLogger(SolicitudesAutorizadasController.class);
 	
 	@Autowired
-	private UsuarioService userService;
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
@@ -57,27 +64,22 @@ public class SolicitudesAutorizadasController {
 	@Autowired
 	private ConfiguracionSMSMensualService configMensualService;
 	
+	List<Usuario> usuario = null;
+	
 	@GetMapping("/solicitudesAutorizadas")
 	public String indexSolicitudesAutorizadas(Model model) throws IOException {
-		
-		logger.info("Entro a validaicon");
 		try {
 			String rutaDireccion;
 			
-			if (validarAcceso() == 1) {
+			if (validarAcceso(Constantes.CREDITO_SOLICITUDES_AUTORIZADAS) == 1) {
 				List<CredencialesCalixta> credenciales = credencialesService.getDatosCalixta(2);
 				model.addAttribute("credenciales", credenciales);
-				logger.info("paso credenciales");
 				model.addAttribute("hora_inicio_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_SEMANAL));
-				logger.info("hora_inicio_semanal");
 				model.addAttribute("hora_fin_semanal", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_SEMANAL));
-				logger.info("hora_fin_semanal");
 				model.addAttribute("hora_inicio_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_INICIO_FIN_SEMANA));
-				logger.info("hora_inicio_fin_semana");
 				model.addAttribute("hora_fin_fin_semana", iConfiguracionRepository.buscarPropiedad(Constantes.HORA_FIN_FIN_SEMANA));
-				logger.info("hora_fin_fin_semana");
 				model.addAttribute("recurrencia_envio_sms", iConfiguracionRepository.buscarPropiedad(Constantes.RECURRENCIA_SMS));
-				logger.info("recurrencia_envio_sms");
+				
 				rutaDireccion = Constantes.CREDITO_SOLICITUDES_AUTORIZADAS;
 				logger.info("rutaDireccion");
 			} else {
@@ -140,7 +142,30 @@ public class SolicitudesAutorizadasController {
     	return gestionService.updateEstatusProceso(payload);
     }
 	
-	public int validarAcceso() {
-		return userService.validarAcceso(opcionesMenuService, Constantes.CREDITO_SOLICITUDES_AUTORIZADAS);					
+	public int validarAcceso(String rutaController) {
+		try {
+
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			
+			if (!(principal instanceof UserDetails)) {
+				logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+			}
+			
+			UserDetails userDetails = (UserDetails) principal;
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return 0;
+	        }
+
+			return iRelRolOpcionesRepository.validarAcceso(
+					usuario.get(0).getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(rutaController));
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return 0;
+		}
 	}
 }
