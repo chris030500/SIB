@@ -153,13 +153,21 @@ public class ReportesCreditoController {
 		try {
 
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			
+			if (!(principal instanceof UserDetails)) {
+				logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
 			}
+			
+			UserDetails userDetails = (UserDetails) principal;
 			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return 0;
+	        }
 
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+			return iRelRolOpcionesRepository.validarAcceso(
+					usuario.get(0).getRol_idRol().getPk_id_rol(),
 					opcionesMenuService.buscarRelacionController(rutaController));
 
 		} catch (Exception e) {
