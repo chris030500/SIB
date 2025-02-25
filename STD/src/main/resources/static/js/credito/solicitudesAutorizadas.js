@@ -369,7 +369,7 @@ function actualizarProceso(idSMSProceso, estatus) {
 			return response.json();
 		})
 		.then((data) => {
-			//console.log("Proceso actualizado: ", data);
+			console.log("Proceso actualizado: ", data);
 			cerrarModal("statusProcessModal");
 			listaGestiones();
 		})
