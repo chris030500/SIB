@@ -71,15 +71,22 @@ public class GestionSMSService {
 					.orElseThrow(() -> new EntityNotFoundException("GestiónSMS no encontrado con id " + idProcess));
 			
 			if (procesoSMS != null) {
+				logger.info("Obteniendo gestión SMS a modificar: " + procesoSMS.toString());
 				if (status == 4) {
+					logger.info("Cambio de estatus a: " + status + "(Cancelado)");
 					LocalDateTime currentDateTime = LocalDateTime.now();
 					procesoSMS.setEstatusProceso(status);
 					procesoSMS.setFechaCancelacion(currentDateTime);
 					procesoSMS.setUserCancela(idUser);
+					logger.info("Gestión SMS actualizada: " + procesoSMS.toString());
+					
 					return gestionRepository.save(procesoSMS);
 					
 				} else {
+					logger.info("Cambio de estatus a: " + status + "(Reiniciado)");
 					procesoSMS.setEstatusProceso(status);
+					logger.info("Gestión SMS actualizada: " + procesoSMS.toString());
+					
 					return gestionRepository.save(procesoSMS);
 				}
 			} 
@@ -96,14 +103,22 @@ public class GestionSMSService {
             Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
             Integer estatus = (Integer) payload.get("estatus");
             
+            logger.info("Obteniendo idSMSProceso para actualizar gestión SMS: " + idSMSProceso);
+            logger.info("Obteniendo estatus para actualizar gestión SMS: " + estatus);
+            
 	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
+	        
+	        logger.info("Usuario actualiza gestión SMS: " + usuario.get().getVc_nombre_usuario());
+	        
 	        if (usuario.isEmpty()) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
 			Integer idUsuario = usuario.get().getPk_id_usuario();
+			logger.info("ID usuario actualizó gestión SMS: " + idUsuario);
             GestionSMS updatedGestionSMS = updatedProcessStatus(idSMSProceso, estatus, idUsuario);
+            logger.info("La gestión del SMS a actualizado: " + updatedGestionSMS.toString());
             
             if (updatedGestionSMS == null) {
             	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
