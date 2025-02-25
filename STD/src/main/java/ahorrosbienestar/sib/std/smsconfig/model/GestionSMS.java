@@ -14,7 +14,7 @@ public class GestionSMS {
 	
 	@Id
 	@Column(name = "PK_PROCESOID")
-	private Integer pkIdProceso;
+	private Long pkIdProceso;
 	
 	@Column(name = "FK_ID_CONFIG_SMS")
 	private Integer idConfigSMS;
@@ -55,11 +55,11 @@ public class GestionSMS {
 	@Column(name = "DT_FECHA_CANCELACION")
 	private LocalDateTime fechaCancelacion;
 
-	public Integer getPkIdProceso() {
+	public Long getPkIdProceso() {
 		return pkIdProceso;
 	}
 
-	public void setPkIdProceso(Integer pkIdProceso) {
+	public void setPkIdProceso(Long pkIdProceso) {
 		this.pkIdProceso = pkIdProceso;
 	}
 

@@ -11,7 +11,7 @@ public class DetalleGestionSMSService {
 	@Autowired
 	private IDetalleGestionSMSRepository detalleRepository;
 	
-	public void updateEnviarMensaje(Integer idProceso, String enviarSMS) {
+	public void updateEnviarMensaje(Long idProceso, String enviarSMS) {
 		detalleRepository.updateEnviarMensaje(idProceso, enviarSMS);
 	}
 }

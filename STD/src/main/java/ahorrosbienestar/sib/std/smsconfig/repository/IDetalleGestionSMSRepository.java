@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ahorrosbienestar.sib.std.smsconfig.model.DetalleGestionSMS;
 
 @Repository
-public interface IDetalleGestionSMSRepository extends JpaRepository<DetalleGestionSMS, Integer> {
+public interface IDetalleGestionSMSRepository extends JpaRepository<DetalleGestionSMS, Long> {
 	
 	
 	@Modifying
@@ -19,6 +19,6 @@ public interface IDetalleGestionSMSRepository extends JpaRepository<DetalleGesti
 			+ "WHERE FK_PROCESOID = :idProceso "
 			+ "AND I_ESTATUS_ENVIO IS NULL "
 			+ "AND DT_FECHA_RESPUESTA IS NULL ", nativeQuery = true)
-	public void updateEnviarMensaje(Integer idProceso, String enviarSMS);
+	public void updateEnviarMensaje(Long idProceso, String enviarSMS);
 
 }
