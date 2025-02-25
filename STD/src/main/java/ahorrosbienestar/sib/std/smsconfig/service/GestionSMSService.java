@@ -114,7 +114,7 @@ public class GestionSMSService {
 			UserDetails userDetails = (UserDetails) principal;
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-	        if (usuario == null || usuario.isEmpty()) {
+	        if (usuario.get(0) == null) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
 	        }
 			
