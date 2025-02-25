@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 
 @Repository
-public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Integer> {
+public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 	
 	@Modifying
 	@Transactional

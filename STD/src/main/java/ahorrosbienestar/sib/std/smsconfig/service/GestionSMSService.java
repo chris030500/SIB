@@ -13,13 +13,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.smsconfig.model.GestionSMS;
 import ahorrosbienestar.sib.std.smsconfig.repository.IGestionSMSRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Service
 public class GestionSMSService {
@@ -29,8 +31,8 @@ public class GestionSMSService {
 	@Autowired
 	private IGestionSMSRepository gestionRepository;
 	
-    @Autowired
-    private UsuarioService userService;
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
     
 	@Autowired
 	private DetalleGestionSMSService detalleService;
@@ -64,7 +66,7 @@ public class GestionSMSService {
 		return gestionRepository.getCurrentProcessSMS(tipoProceso, idProcess);
 	}
 	
-	public GestionSMS updatedProcessStatus(Integer idProcess, Integer status, Integer idUser) {
+	public GestionSMS updatedProcessStatus(Long idProcess, Integer status, Integer idUser) {
 		try {
 			
 			GestionSMS procesoSMS = gestionRepository.findById(idProcess)
@@ -100,29 +102,26 @@ public class GestionSMSService {
     public ResponseEntity<GestionSMS> updateEstatusProceso(Map<String, Object> payload) {
         try {
         	
-            Integer idSMSProceso = (Integer) payload.get("idSMSProceso");
+            Long idSMSProceso = ((Number) payload.get("idSMSProceso")).longValue();
             Integer estatus = (Integer) payload.get("estatus");
             
-            logger.info("Obteniendo idSMSProceso para actualizar gestión SMS: " + idSMSProceso);
-            logger.info("Obteniendo estatus para actualizar gestión SMS: " + estatus);
-            
-	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        
-	        logger.info("Usuario actualiza gestión SMS: " + usuario.get().getVc_nombre_usuario());
-	        
-	        if (usuario.isEmpty()) {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			
+			if (!(principal instanceof UserDetails)) {
+				logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+			}
+			
+			UserDetails userDetails = (UserDetails) principal;
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario.get(0) == null) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 			
-			Integer idUsuario = usuario.get().getPk_id_usuario();
-			logger.info("ID usuario actualizó gestión SMS: " + idUsuario);
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
             GestionSMS updatedGestionSMS = updatedProcessStatus(idSMSProceso, estatus, idUsuario);
-            logger.info("La gestión del SMS a actualizado: " + updatedGestionSMS.toString());
             
-            if (updatedGestionSMS == null) {
-            	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+            logger.info("La gestión del SMS modificado: " + updatedGestionSMS.toString());
             
         	updateDetalleGestionSMS(idSMSProceso, estatus);
             return ResponseEntity.ok(updatedGestionSMS);
@@ -133,7 +132,7 @@ public class GestionSMSService {
         }
     }
     
-    private void updateDetalleGestionSMS(Integer idProceeso, Integer estatus) {
+    private void updateDetalleGestionSMS(Long idProceeso, Integer estatus) {
     	if (estatus == 4) {
     		detalleService.updateEnviarMensaje(idProceeso, "N");
     	} else {
