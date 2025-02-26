@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+    <meta charset="UTF-8">
+    <title>Cobro Domiciliado</title>
+    <link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+    <section class="content" layout:fragment="page-content">
+
+        <!-- NUEVA SECCIÓN: EMPRESAS -->
+        <div class="container mt-4">
+            <div class="card card-primary">
+                <div class="card-header text-center bg-primary text-white">
+                    <h2>Empresas</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between my-3">
+						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
+						    <i class="fas fa-envelope"></i> MENSAJE
+						</button>
+						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">Registrar Empresa</button>
+                    </div>
+
+                    <table class="table table-bordered text-center">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>ID EMPRESA</th>
+                                <th>NOMBRE DE EMPRESA</th>
+                                <th>FECHA DE REGISTRO</th>
+                                <th>FRECUENCIA</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="empresa : ${empresas}">
+                                <td th:text="${empresa.id}"></td>
+                                <td th:text="${empresa.nombre}"></td>
+                                <td th:text="${empresa.fechaRegistro}"></td>
+                                <td th:text="${empresa.frecuencia}"></td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center">
+                        <nav>
+                            <ul class="pagination">
+                                <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+		<!-- Modal para registrar empresa -->
+		<div class="modal fade" id="empresaModal" tabindex="-1" aria-labelledby="empresaModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="empresaModalLabel">Datos de la Empresa</h5>
+		                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body">
+		                <form>
+		                    <div class="mb-3">
+		                        <label for="nombreEmpresa" class="form-label">Nombre</label>
+		                        <input type="text" class="form-control" id="nombreEmpresa" placeholder="Ingrese nombre">
+		                    </div>
+		                    <div class="mb-3">
+		                        <label for="correoEmpresa" class="form-label">Correo de Contacto</label>
+		                        <input type="email" class="form-control" id="correoEmpresa" placeholder="Ingrese correo">
+		                    </div>
+		                    <div class="mb-3">
+		                        <label for="frecuencia" class="form-label">Frecuencia</label>
+		                        <select class="form-select" id="frecuencia">
+		                            <option value="SEMANAL">SEMANAL</option>
+		                            <option value="QUINCENAL">QUINCENAL</option>
+		                            <option value="MENSUAL">MENSUAL</option>
+		                        </select>
+		                    </div>
+		                    <div class="mb-3">
+		                        <label for="estatus" class="form-label">Estatus</label>
+		                        <select class="form-select" id="estatus">
+		                            <option value="ACTIVA">ACTIVA</option>
+		                            <option value="INACTIVA">INACTIVA</option>
+		                        </select>
+		                    </div>
+		                </form>
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+		                <button type="button" class="btn btn-primary">Guardar</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		
+		<!-- Modal para enviar mensaje -->
+		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="mensajeModalLabel">Texto del Correo</h5>
+		                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body">
+		                <form>
+		                    <div class="mb-3">
+		                        <label for="mensajeTexto" class="form-label">Mensaje</label>
+		                        <textarea class="form-control" id="mensajeTexto" rows="4" placeholder="Escribe tu mensaje aquí"></textarea>
+		                    </div>
+		                </form>
+		            </div>
+		            <div class="modal-footer">
+		                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+		                <button type="button" class="btn btn-primary">Guardar</button>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+    </section>
+
+    <th:block layout:fragment="page-scripts">
+        <script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+        <script th:src="@{/js/cobranza/domiciliado.js}"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script th:src="@{/css/estilos/responsivo.css}"></script>
+    </th:block>
+
+</body>
+</html>
