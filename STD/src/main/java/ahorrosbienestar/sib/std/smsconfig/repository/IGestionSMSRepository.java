@@ -34,6 +34,7 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "T1.I_SMS_ENVIAR AS numSmsEnviar, "
 			+ "T1.I_SMS_PEND_ENVIAR AS numSmsPendientes, "
 			+ "T1.I_SMS_ENVIOS AS numSmsEnvios, "
+			+ "T1.I_ESTATUS_PROCESO AS idEstatus, "
 			+ "CASE WHEN T1.I_ESTATUS_PROCESO = 1 THEN 'POR INICIAR' "
 			+ "WHEN T1.I_ESTATUS_PROCESO = 2 THEN 'EN PROCESO' "
 			+ "WHEN T1.I_ESTATUS_PROCESO = 3 THEN 'FINALIZADO' "
