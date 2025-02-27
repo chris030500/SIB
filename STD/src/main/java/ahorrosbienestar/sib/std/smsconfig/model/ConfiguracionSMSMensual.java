@@ -11,10 +11,10 @@ public class ConfiguracionSMSMensual {
 	
 	@Id
 	@Column(name = "PK_ID_CONFIG_SMS_MENSUAL")
-	private Integer pkConfigMensual;
+	private Long pkConfigMensual;
 	
 	@Column(name = "FK_ID_CONFIG_SMS")
-	private Integer fkConfigSMS;
+	private Long fkConfigSMS;
 	
 	@Column(name = "VC_MENSAJE_ENVIAR")
 	private String mensaje;
@@ -37,19 +37,19 @@ public class ConfiguracionSMSMensual {
 	@Column(name = "I_USR_MODIFICA")
 	private Integer userModifica;
 
-	public Integer getPkConfigMensual() {
+	public Long getPkConfigMensual() {
 		return pkConfigMensual;
 	}
 
-	public void setPkConfigMensual(Integer pkConfigMensual) {
+	public void setPkConfigMensual(Long pkConfigMensual) {
 		this.pkConfigMensual = pkConfigMensual;
 	}
 
-	public Integer getFkConfigSMS() {
+	public Long getFkConfigSMS() {
 		return fkConfigSMS;
 	}
 
-	public void setFkConfigSMS(Integer fkConfigSMS) {
+	public void setFkConfigSMS(Long fkConfigSMS) {
 		this.fkConfigSMS = fkConfigSMS;
 	}
 

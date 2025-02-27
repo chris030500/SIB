@@ -29,11 +29,13 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "ELSE T4.VC_DESCRIPCION END AS tipoCredito, "
 			+ "T2.VC_MENSAJE_ENVIAR AS mensajeSMS, "
 			+ "CASE WHEN T2.I_IND_LIM_ENVIO_SMS = 1 THEN 'SI' "
-			+ "ELSE 'NO' "
+			+ "WHEN T2.I_IND_LIM_ENVIO_SMS = 0 THEN 'NO' "
+			+ "ELSE '' "
 			+ "END AS limiteSMS, "
 			+ "T1.I_SMS_ENVIAR AS numSmsEnviar, "
 			+ "T1.I_SMS_PEND_ENVIAR AS numSmsPendientes, "
 			+ "T1.I_SMS_ENVIOS AS numSmsEnvios, "
+			+ "T1.I_ESTATUS_PROCESO AS idEstatus, "
 			+ "CASE WHEN T1.I_ESTATUS_PROCESO = 1 THEN 'POR INICIAR' "
 			+ "WHEN T1.I_ESTATUS_PROCESO = 2 THEN 'EN PROCESO' "
 			+ "WHEN T1.I_ESTATUS_PROCESO = 3 THEN 'FINALIZADO' "
@@ -67,6 +69,14 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T4.PK_VC_TP_CREDITO = T3.FK_VC_TP_CREDITO "
 			+ "WHERE T3.I_TP_PROCESO = :tipoProceso "
 			+ "AND T1.PK_PROCESOID = :idProcess ", nativeQuery = true)
-	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess);
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Long idProcess);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_PROCESO_ENVIO_SMS "
+			+ "SET I_ESTATUS_PROCESO = 2 "
+			+ "WHERE FK_ID_CONFIG_SMS = :idConfigSMSMensual "
+			+ "AND I_ESTATUS_PROCESO = 3 ", nativeQuery = true)
+	public void updateProcesoSMSByidConfigMensual(Long idConfigSMSMensual);
 
 }
