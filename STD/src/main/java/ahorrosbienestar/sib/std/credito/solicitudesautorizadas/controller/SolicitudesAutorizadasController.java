@@ -121,7 +121,7 @@ public class SolicitudesAutorizadasController {
 	}
 	
 	@GetMapping("/obtener-gestion")
-	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Long idSMSProcess) {
 
 	    return gestionService.getCurrentProcessSMS(2, idSMSProcess).map(ResponseEntity::ok)
 	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

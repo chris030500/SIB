@@ -118,7 +118,7 @@ public class CreditosDesembolsadosController {
 	}
 	
 	@GetMapping("/obtener-plantilla")
-	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Long idSMSConfig) {
 		
 		Optional<ConfiguracionSMS> configuracionSMS = configuracionSMSService.getCurrentSMSConfig(idSMSConfig);
 		
@@ -141,7 +141,7 @@ public class CreditosDesembolsadosController {
 	}
 	
 	@GetMapping("/obtener-gestion")
-	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Integer idSMSProcess) {
+	public ResponseEntity<Map<String, Object>> getCurrentSMSProceso(@RequestParam Long idSMSProcess) {
 		
 	    return gestionService.getCurrentProcessSMS(1, idSMSProcess).map(ResponseEntity::ok)
 	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());

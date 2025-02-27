@@ -61,9 +61,19 @@ public class GestionSMSService {
 		
 	}
 	
-	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess) {
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Long idProcess) {
 		gestionRepository.setLocaleSpanish();
 		return gestionRepository.getCurrentProcessSMS(tipoProceso, idProcess);
+	}
+	
+	public void updateProcesoByConfigMensual(Long idConfigSMSMensual) {
+		try {
+			logger.info("Obteniendo Gestión SMS mediante el id de configuración mensual.");
+			gestionRepository.updateProcesoSMSByidConfigMensual(idConfigSMSMensual);
+			
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+		}
 	}
 	
 	public GestionSMS updatedProcessStatus(Long idProcess, Integer status, Integer idUser) {

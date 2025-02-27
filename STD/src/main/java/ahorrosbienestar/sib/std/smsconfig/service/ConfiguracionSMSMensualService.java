@@ -28,6 +28,9 @@ public class ConfiguracionSMSMensualService {
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
+	@Autowired
+	private GestionSMSService gestionService;
+	
 	public ConfiguracionSMSMensual updatedConfigMensual(Long idConfigMensual, Integer limiteSMS, Integer maximoSMS ,Integer idUser) {
 		try {
 			
@@ -82,6 +85,7 @@ public class ConfiguracionSMSMensualService {
             	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             
+            gestionService.updateProcesoByConfigMensual(idConfigMensual);
             return ResponseEntity.ok(updatedConfigMensual);
         } catch (Exception e) {
         	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());

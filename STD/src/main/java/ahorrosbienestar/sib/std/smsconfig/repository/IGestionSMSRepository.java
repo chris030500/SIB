@@ -69,6 +69,14 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "LEFT JOIN SIB.TBL_CAT_TIPO_CREDITO T4 ON T4.PK_VC_TP_CREDITO = T3.FK_VC_TP_CREDITO "
 			+ "WHERE T3.I_TP_PROCESO = :tipoProceso "
 			+ "AND T1.PK_PROCESOID = :idProcess ", nativeQuery = true)
-	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Integer idProcess);
+	public Optional<Map<String, Object>> getCurrentProcessSMS(Integer tipoProceso, Long idProcess);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_PROCESO_ENVIO_SMS "
+			+ "SET I_ESTATUS_PROCESO = 2 "
+			+ "WHERE FK_ID_CONFIG_SMS = :idConfigSMSMensual "
+			+ "AND I_ESTATUS_PROCESO = 3 ", nativeQuery = true)
+	public void updateProcesoSMSByidConfigMensual(Long idConfigSMSMensual);
 
 }
