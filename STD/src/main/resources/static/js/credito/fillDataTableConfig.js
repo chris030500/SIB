@@ -55,7 +55,7 @@ function listaGestiones() {
 		tblGestionesSMS.clear().draw();
 		$.each(data.gestiones, function(idx, opt) {
 
-			console.log(opt);
+			//console.log(opt);
 
 			// Determinar si el botón debe estar deshabilitado
 			const mesIndice = meses.map(m => m.toLowerCase().trim()).indexOf(opt.nomMes.toLowerCase().trim());
