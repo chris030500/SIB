@@ -258,13 +258,20 @@ function editProcess(idSMSProcess) {
 			document.getElementById("mes-gestion").value = mes;
 			document.getElementById("sms-gestion").value = mensajeSMS;
 			document.getElementById("maximo-sms").value = numSMS;
-
-			if (limiteSMS == 1) {
-				document.getElementById("select-limite-sms").value = 1;
-				document.getElementById("divMaximoSMS").hidden = false;
-			} else {
-				document.getElementById("select-limite-sms").value = 0;
-				document.getElementById("divMaximoSMS").hidden = true;
+			
+			switch (limiteSMS) {
+				case 0: 
+					document.getElementById("select-limite-sms").value = 0;
+					document.getElementById("divMaximoSMS").hidden = true;
+					break;
+				case 1:
+					document.getElementById("select-limite-sms").value = 1;
+					document.getElementById("divMaximoSMS").hidden = false;
+					break;
+				case null:
+					document.getElementById("select-limite-sms").value = "";
+					document.getElementById("divMaximoSMS").hidden = true;
+					
 			}
 		})
 		.catch((error) => {

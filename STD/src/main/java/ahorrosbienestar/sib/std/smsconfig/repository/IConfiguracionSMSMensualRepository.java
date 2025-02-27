@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
 
 @Repository
-public interface IConfiguracionSMSMensualRepository extends JpaRepository<ConfiguracionSMSMensual, Integer> {
+public interface IConfiguracionSMSMensualRepository extends JpaRepository<ConfiguracionSMSMensual, Long> {
 
 }

@@ -1,19 +1,21 @@
 package ahorrosbienestar.sib.std.smsconfig.service;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMSMensual;
 import ahorrosbienestar.sib.std.smsconfig.repository.IConfiguracionSMSMensualRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 @Service
 public class ConfiguracionSMSMensualService {
@@ -23,10 +25,10 @@ public class ConfiguracionSMSMensualService {
 	@Autowired
 	private IConfiguracionSMSMensualRepository confMensualRepository;
 	
-    @Autowired
-    private UsuarioService userService;
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
 	
-	public ConfiguracionSMSMensual updatedConfigMensual(Integer idConfigMensual, Integer limiteSMS, Integer maximoSMS ,Integer idUser) {
+	public ConfiguracionSMSMensual updatedConfigMensual(Long idConfigMensual, Integer limiteSMS, Integer maximoSMS ,Integer idUser) {
 		try {
 			
 			ConfiguracionSMSMensual configMensual = confMensualRepository.findById(idConfigMensual).orElse(null);
@@ -56,18 +58,25 @@ public class ConfiguracionSMSMensualService {
 	
     public ResponseEntity<ConfiguracionSMSMensual> updateConfigMensual(Map<String, Object> payload) {
         try {
-            Integer idSMSProceso = (Integer) payload.get("idSMSConfigMensual");
+            Long idConfigMensual = ((Number) payload.get("idSMSConfigMensual")).longValue();
             Integer limiteSMS  = (Integer) payload.get("limiteSMS");
             Integer maxSMS = (Integer) payload.get("maxSMS");
+            
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			
-	        Optional<Usuario> usuario = userService.obtenerUsuarioAutenticado();
-	        if (usuario.isEmpty()) {
+			if (!(principal instanceof UserDetails)) {
+				logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+			}
+			
+			UserDetails userDetails = (UserDetails) principal;
+			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario.get(0) == null) {
 	            logger.error(Constantes.USUARIO_NO_ENCONTRADO);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	        }
 	        
-			Integer idUsuario = usuario.get().getPk_id_usuario();
-            ConfiguracionSMSMensual updatedConfigMensual = updatedConfigMensual(idSMSProceso, limiteSMS, maxSMS, idUsuario);
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+            ConfiguracionSMSMensual updatedConfigMensual = updatedConfigMensual(idConfigMensual, limiteSMS, maxSMS, idUsuario);
             
             if (updatedConfigMensual == null) {
             	return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

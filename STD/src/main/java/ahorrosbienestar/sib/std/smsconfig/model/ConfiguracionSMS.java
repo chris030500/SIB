@@ -15,7 +15,7 @@ public class ConfiguracionSMS {
 	
 	@Id
 	@Column(name = "PK_ID_CONFIG_SMS")
-	private Integer idConfig;
+	private Long idConfig;
 	
 	@Column(name = "FK_VC_TP_CREDITO")
 	private String tipoCredito;
@@ -65,11 +65,11 @@ public class ConfiguracionSMS {
 	@Column(name = "DT_FECHA_BAJA")
 	private LocalDateTime fechaBaja;
 
-	public Integer getIdConfig() {
+	public Long getIdConfig() {
 		return idConfig;
 	}
 
-	public void setIdConfig(Integer idConfig) {
+	public void setIdConfig(Long idConfig) {
 		this.idConfig = idConfig;
 	}
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import ahorrosbienestar.sib.std.smsconfig.model.ConfiguracionSMS;
 
 @Repository
-public interface IConfiguracionSMSRepository extends JpaRepository<ConfiguracionSMS, Integer> {
+public interface IConfiguracionSMSRepository extends JpaRepository<ConfiguracionSMS, Long> {
 	
 	@Query( value = "SELECT T1.PK_ID_CONFIG_SMS AS idConfig, "
 			+ "CASE WHEN T1.FK_VC_TP_CREDITO = 'N' THEN 'Nuevo' "
@@ -34,6 +34,6 @@ public interface IConfiguracionSMSRepository extends JpaRepository<Configuracion
 	
 	@Query( value = "SELECT * FROM SIB.TBL_CONFIG_SMS "
 			+ "WHERE PK_ID_CONFIG_SMS = :idSMSConfig ", nativeQuery = true )
-	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Integer idSMSConfig);
+	public Optional<ConfiguracionSMS> getCurrentSMSConfig(Long idSMSConfig);
 
 }

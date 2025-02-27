@@ -103,7 +103,7 @@ public class SolicitudesAutorizadasController {
 	}
 	
 	@GetMapping("/obtener-plantilla")
-	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Integer idSMSConfig) {
+	public ResponseEntity<ConfiguracionSMS> getCurrentSMSConfig(@RequestParam Long idSMSConfig) {
 
 	    return configuracionSMSService.getCurrentSMSConfig(idSMSConfig).map(ResponseEntity::ok)
 	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
