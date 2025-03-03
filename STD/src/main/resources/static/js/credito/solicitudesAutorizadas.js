@@ -245,12 +245,12 @@ function editProcess(idSMSProcess) {
 			return response.json();
 		})
 		.then((data) => {
-			//console.log("Gestión SMS: ", data);
+			console.log("Gestión SMS: ", data);
 			const idProceso = data.idProceso;
-			const idConfigMensual = data.idConfigMensual
-			const mes = data.nomMes
+			const idConfigMensual = data.idConfigMensual;
+			const mes = data.nomMes;
 			const mensajeSMS = data.mensaje;
-			const numSMS = data?.numSMS || 0;
+			const numSMS = data.numSMS;
 			const limiteSMS = data.limiteSMS;
 
 			document.getElementById("id-gestion-sms").value = idProceso;
@@ -324,7 +324,7 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 
 	const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
 	const limiteSMS = document.getElementById("select-limite-sms").value;
-	const maxSMS = document.getElementById("maximo-sms").value
+	const maxSMS = document.getElementById("maximo-sms").value;
 	const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
 
 	// Validaciones
@@ -333,7 +333,7 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 		return;
 	}
 	
-	if (maxSMS < maxSMSAnterior ) {
+	if (maxSMS < maxSMSAnterior) {
 		swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
 		return;
 	}
