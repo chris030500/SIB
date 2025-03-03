@@ -349,7 +349,7 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 		return;
 	}
 	
-	if (maxSMS < maxSMSAnterior ) {
+	if (maxSMS < maxSMSAnterior) {
 		swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
 		return;
 	}
