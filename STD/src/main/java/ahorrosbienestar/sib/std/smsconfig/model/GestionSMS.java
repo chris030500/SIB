@@ -28,14 +28,17 @@ public class GestionSMS {
 	@Column(name = "DT_FECHA_FINAL")
 	private Date fechaFinal;
 	
-	@Column(name = "I_SMS_ENVIAR")
-	private Integer numSmsEnviar;
+	@Column(name = "I_MAX_SMS")
+	private Integer maxSMS;
 	
-	@Column(name = "I_SMS_ENVIOS")
-	private Integer numSmsEnvios;
+	@Column(name = "I_SMS_DISPONIBLE")
+	private Integer smsDisponibles;
 	
-	@Column(name = "I_SMS_PEND_ENVIAR")
-	private Integer numSmsPendientes;
+	@Column(name = "I_SMS_ENVIADO")
+	private Integer smsEnviado;
+	
+	@Column(name = "I_SMS_NO_ENVIADO")
+	private Integer smsNoEnviado;
 	
 	@Column(name = "VC_VALIDAR_ENVIO_PREVIO")
 	private String esEnvioPrevio;
@@ -95,28 +98,36 @@ public class GestionSMS {
 		this.fechaFinal = fechaFinal;
 	}
 
-	public Integer getNumSmsEnviar() {
-		return numSmsEnviar;
+	public Integer getMaxSMS() {
+		return maxSMS;
 	}
 
-	public void setNumSmsEnviar(Integer numSmsEnviar) {
-		this.numSmsEnviar = numSmsEnviar;
+	public void setMaxSMS(Integer maxSMS) {
+		this.maxSMS = maxSMS;
 	}
 
-	public Integer getNumSmsEnvios() {
-		return numSmsEnvios;
+	public Integer getSmsDisponibles() {
+		return smsDisponibles;
 	}
 
-	public void setNumSmsEnvios(Integer numSmsEnvios) {
-		this.numSmsEnvios = numSmsEnvios;
+	public void setSmsDisponibles(Integer smsDisponibles) {
+		this.smsDisponibles = smsDisponibles;
 	}
 
-	public Integer getNumSmsPendientes() {
-		return numSmsPendientes;
+	public Integer getSmsEnviado() {
+		return smsEnviado;
 	}
 
-	public void setNumSmsPendientes(Integer numSmsPendientes) {
-		this.numSmsPendientes = numSmsPendientes;
+	public void setSmsEnviado(Integer smsEnviado) {
+		this.smsEnviado = smsEnviado;
+	}
+
+	public Integer getSmsNoEnviado() {
+		return smsNoEnviado;
+	}
+
+	public void setSmsNoEnviado(Integer smsNoEnviado) {
+		this.smsNoEnviado = smsNoEnviado;
 	}
 
 	public String getEsEnvioPrevio() {
@@ -170,8 +181,8 @@ public class GestionSMS {
 	@Override
 	public String toString() {
 		return "GestionSMS [pkIdProceso=" + pkIdProceso + ", idConfigSMS=" + idConfigSMS + ", tipoProceso="
-				+ tipoProceso + ", fechaInicial=" + fechaInicial + ", fechaFinal=" + fechaFinal + ", numSmsEnviar="
-				+ numSmsEnviar + ", numSmsEnvios=" + numSmsEnvios + ", numSmsPendientes=" + numSmsPendientes
+				+ tipoProceso + ", fechaInicial=" + fechaInicial + ", fechaFinal=" + fechaFinal + ", maxSMS=" + maxSMS
+				+ ", smsDisponibles=" + smsDisponibles + ", smsEnviado=" + smsEnviado + ", smsNoEnviado=" + smsNoEnviado
 				+ ", esEnvioPrevio=" + esEnvioPrevio + ", estatusProceso=" + estatusProceso + ", userRegistra="
 				+ userRegistra + ", userCancela=" + userCancela + ", fechaRegistro=" + fechaRegistro
 				+ ", fechaCancelacion=" + fechaCancelacion + "]";

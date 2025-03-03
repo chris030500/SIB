@@ -248,7 +248,7 @@ function editProcess(idSMSProcess) {
 			return response.json();
 		})
 		.then((data) => {
-			//console.log("Gestión SMS: ", data);
+			console.log("Gestión SMS: ", data);
 			const idProceso = data.idProceso;
 			const idConfigMensual = data.idConfigMensual
 			const tipoCredito = data.tipoCredito;
@@ -263,13 +263,21 @@ function editProcess(idSMSProcess) {
 			document.getElementById("tipo-credito-gestion").value = tipoCredito;
 			document.getElementById("sms-gestion").value = mensajeSMS;
 			document.getElementById("maximo-sms").value = numSMS;
+			document.getElementById("max-sms-anterior").value = numSMS;
 
-			if (limiteSMS == 1) {
-				document.getElementById("select-limite-sms").value = 1;
-				document.getElementById("divMaximoSMS").hidden = false;
-			} else {
-				document.getElementById("select-limite-sms").value = 0;
-				document.getElementById("divMaximoSMS").hidden = true;
+			switch (limiteSMS) {
+				case 0: 
+					document.getElementById("select-limite-sms").value = 0;
+					document.getElementById("divMaximoSMS").hidden = true;
+					break;
+				case 1:
+					document.getElementById("select-limite-sms").value = 1;
+					document.getElementById("divMaximoSMS").hidden = false;
+					break;
+				case null:
+					document.getElementById("select-limite-sms").value = "";
+					document.getElementById("divMaximoSMS").hidden = true;
+					
 			}
 		})
 		.catch((error) => {
@@ -333,10 +341,16 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 	const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
 	const limiteSMS = document.getElementById("select-limite-sms").value;
 	const maxSMS = document.getElementById("maximo-sms").value;
+	const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
 
 	// Validaciones
 	if (limiteSMS === "") {
 		swal("Error", "Por favor seleccionar una opción válida.", "error");
+		return;
+	}
+	
+	if (maxSMS < maxSMSAnterior ) {
+		swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
 		return;
 	}
 

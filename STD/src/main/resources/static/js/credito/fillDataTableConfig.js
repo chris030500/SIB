@@ -108,9 +108,10 @@ function listaGestiones() {
 				opt.nomMes,
 				opt.mensajeSMS,
 				opt.limiteSMS,
-				opt.numSmsEnviar,
-				opt.numSmsPendientes,
-				opt.numSmsEnvios,
+				opt.maxSMS,
+				opt.smsDisponibles,
+				opt.smsEnviados,
+				opt.smsNoEnviados,
 				opt.estatusProceso,
 				botones
 			]).draw(false);
