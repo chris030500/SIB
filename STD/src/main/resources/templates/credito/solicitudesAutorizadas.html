@@ -143,8 +143,9 @@
 											<th>Plantilla</th>
 											<th>Limite SMS</th>
 											<th>Máximo SMS</th>
-											<th>SMS Por enviar</th>
+											<th>SMS Disponibles</th>
 											<th>SMS Enviados</th>
+											<th>SMS No Enviados</th>
 											<th>Estatus Proceso</th>
 											<th>Acciones</th>
 										</tr>
@@ -291,6 +292,11 @@
 										Mensual:</label>
 									<input type="text" class="form-control" id="id-config-mensual" rows="4"
 										style="background-color: #e9e9e9" readonly>
+								</div>
+								<div class="mb-3" style="display: none;">
+									<label for="max-sms-anterior" class="form-label">Max SMS Anterior</label>
+									<input type="number" class="form-control" id="max-sms-anterior" rows="4"
+									style="background-color: #e9e9e9" readonly>
 								</div>
 								<div class="mb-3">
 									<label for="sms-gestion" class="form-label">Mensaje SMS:</label>

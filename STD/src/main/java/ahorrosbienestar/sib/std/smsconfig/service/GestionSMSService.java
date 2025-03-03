@@ -33,9 +33,6 @@ public class GestionSMSService {
 	
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-    
-	@Autowired
-	private DetalleGestionSMSService detalleService;
 	
 	public List<Map<String, Object>> getGestionesSMSByTipoCredito(Integer tipoProceso, Integer isCampania, String tipoCredito) {
 		gestionRepository.setLocaleSpanish(); // Configurar el idioma
@@ -133,7 +130,6 @@ public class GestionSMSService {
             
             logger.info("La gestión del SMS modificado: " + updatedGestionSMS.toString());
             
-        	updateDetalleGestionSMS(idSMSProceso, estatus);
             return ResponseEntity.ok(updatedGestionSMS);
             
         } catch (Exception e) {
@@ -141,13 +137,4 @@ public class GestionSMSService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    private void updateDetalleGestionSMS(Long idProceeso, Integer estatus) {
-    	if (estatus == 4) {
-    		detalleService.updateEnviarMensaje(idProceeso, "N");
-    	} else {
-    		detalleService.updateEnviarMensaje(idProceeso, "S");
-    	}
-    }
-
 }
