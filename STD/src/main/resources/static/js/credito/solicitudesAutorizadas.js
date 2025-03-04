@@ -333,14 +333,27 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 		return;
 	}
 	
-	if (maxSMS < maxSMSAnterior) {
-		swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
-		return;
+	if (limiteSMS === "1") {
+		
+		if (maxSMS < maxSMSAnterior) {
+			swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
+			return;
+		}
+	
+		if (maxSMS === maxSMSAnterior) {
+			swal("¡Error!", "El máximo SMS ingresado es igual al prevíamente registrado.", "error");
+			return;
+		}
 	}
 
 	actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
 });
 
+document.getElementById("maximo-sms").addEventListener("keydown", function (e) {
+    if (e.key === "-" || e.key === "e") {
+        e.preventDefault();
+    }
+});
 
 function modalProcess(idProcess, estatus, month) {
 

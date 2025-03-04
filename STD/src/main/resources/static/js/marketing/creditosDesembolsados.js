@@ -342,6 +342,8 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 	const limiteSMS = document.getElementById("select-limite-sms").value;
 	const maxSMS = document.getElementById("maximo-sms").value;
 	const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
+	
+	console.log("Select value: " + limiteSMS + "\nType value: " + typeof(limiteSMS));
 
 	// Validaciones
 	if (limiteSMS === "") {
@@ -349,12 +351,26 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 		return;
 	}
 	
-	if (maxSMS < maxSMSAnterior) {
-		swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
-		return;
+	if (limiteSMS === "1") {
+		
+		if (maxSMS < maxSMSAnterior) {
+			swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
+			return;
+		}
+	
+		if (maxSMS === maxSMSAnterior) {
+			swal("¡Error!", "El máximo SMS ingresado es igual al prevíamente registrado.", "error");
+			return;
+		}
 	}
 
 	actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
+});
+
+document.getElementById("maximo-sms").addEventListener("keydown", function (e) {
+    if (e.key === "-" || e.key === "e") {
+        e.preventDefault();
+    }
 });
 
 function modalProcess(idProcess, estatus, month) {
