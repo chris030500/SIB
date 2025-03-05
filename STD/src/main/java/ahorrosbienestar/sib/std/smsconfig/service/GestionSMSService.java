@@ -73,6 +73,16 @@ public class GestionSMSService {
 		}
 	}
 	
+	public void updateSMSDisponibles(Long idConfigSMSMensual) {
+		try {
+			logger.info("Obteniendo Gestión SMS mediante el id de configuración mensual.");
+			gestionRepository.updateEnviosDisponibles(idConfigSMSMensual);
+			
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+		}
+	}
+	
 	public GestionSMS updatedProcessStatus(Long idProcess, Integer status, Integer idUser) {
 		try {
 			
