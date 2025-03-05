@@ -49,6 +49,8 @@ public class ConfiguracionSMSMensualService {
 				configMensual.setNumSMS(0);
 				configMensual.setUserModifica(idUser);
 				
+				gestionService.updateSMSDisponibles(idConfigMensual);
+				
 				return confMensualRepository.save(configMensual);
 			}
 			

@@ -63,6 +63,7 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "UPPER(MONTHNAME(T1.DT_FECHA_INICIAL)) AS nomMes, "
 			+ "T2.I_NUM_ENVIOS_SMS AS numSMS, "
 			+ "T2.I_IND_LIM_ENVIO_SMS AS limiteSMS, "
+			+ "T1.I_SMS_ENVIADO AS smsEnviados, "
 			+ "T2.VC_MENSAJE_ENVIAR AS mensaje "
 			+ "FROM SIB.TBL_PROCESO_ENVIO_SMS T1 "
 			+ "INNER JOIN SIB.TBL_CONFIG_SMS_MENSUAL T2 ON T2.PK_ID_CONFIG_SMS_MENSUAL = T1.FK_ID_CONFIG_SMS "
@@ -79,5 +80,12 @@ public interface IGestionSMSRepository extends JpaRepository<GestionSMS, Long> {
 			+ "WHERE FK_ID_CONFIG_SMS = :idConfigSMSMensual "
 			+ "AND I_ESTATUS_PROCESO = 3 ", nativeQuery = true)
 	public void updateProcesoSMSByidConfigMensual(Long idConfigSMSMensual);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE SIB.TBL_PROCESO_ENVIO_SMS "
+			+ "SET I_SMS_DISPONIBLE = 0 "
+			+ "WHERE FK_ID_CONFIG_SMS = :idConfigSMSMensual ", nativeQuery = true)
+	public void updateEnviosDisponibles(Long idConfigSMSMensual);
 
 }

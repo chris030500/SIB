@@ -256,23 +256,26 @@ function editProcess(idSMSProcess) {
 			const mensajeSMS = data.mensaje;
 			const numSMS = data.numSMS;
 			const limiteSMS = data.limiteSMS;
+			const smsEnviados = data.smsEnviados;
 
 			document.getElementById("id-gestion-sms").value = idProceso;
 			document.getElementById("id-config-mensual").value = idConfigMensual;
 			document.getElementById("mes-gestion").value = mes;
 			document.getElementById("tipo-credito-gestion").value = tipoCredito;
-			document.getElementById("sms-gestion").value = mensajeSMS;
-			document.getElementById("maximo-sms").value = numSMS;
-			document.getElementById("max-sms-anterior").value = numSMS;
+			document.getElementById("sms-gestion").value = mensajeSMS;			
 
 			switch (limiteSMS) {
 				case 0: 
 					document.getElementById("select-limite-sms").value = 0;
 					document.getElementById("divMaximoSMS").hidden = true;
+					document.getElementById("maximo-sms").value = smsEnviados;
+					document.getElementById("max-sms-anterior").value = smsEnviados;
 					break;
 				case 1:
 					document.getElementById("select-limite-sms").value = 1;
 					document.getElementById("divMaximoSMS").hidden = false;
+					document.getElementById("maximo-sms").value = numSMS;
+					document.getElementById("max-sms-anterior").value = numSMS;
 					break;
 				case null:
 					document.getElementById("select-limite-sms").value = "";
@@ -342,8 +345,6 @@ document.getElementById("gestionSMSForm").addEventListener("submit", function(ev
 	const limiteSMS = document.getElementById("select-limite-sms").value;
 	const maxSMS = document.getElementById("maximo-sms").value;
 	const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
-	
-	console.log("Select value: " + limiteSMS + "\nType value: " + typeof(limiteSMS));
 
 	// Validaciones
 	if (limiteSMS === "") {
