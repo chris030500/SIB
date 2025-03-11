@@ -33,7 +33,7 @@ public class Producto {
 	@Column(name = "I_NO_PRODUCTO", columnDefinition = "INT")
 	private int i_no_producto;
 	
-	@Column(name = "VC_NOMBRE_PRODUCTO", columnDefinition = "VARCHAR(45)")
+	@Column(name = "VC_NOMBRE_PRODUCTO", columnDefinition = "VARCHAR(45)") 
 	private String vc_nombre_producto;
 	
 	@Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1)")
