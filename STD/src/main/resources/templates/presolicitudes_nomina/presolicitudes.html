@@ -27,7 +27,9 @@
 					<input type="date" class="form-control w-auto">
 					<input type="date" class="form-control w-auto">
 					<button class="btn btn-primary"><i class="fas fa-search"></i></button>
-					<button class="btn btn-success">Nueva Solicitud</button>
+					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+						Nueva Solicitud
+					</button>
 				</div>
 
 				<table class="table table-bordered text-center">
@@ -78,42 +80,101 @@
 			</div>
 		</body>
 
-		<!-- Modal para registrar empresa -->
-		<div class="modal fade" id="empresaModal" tabindex="-1" aria-labelledby="empresaModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
+		<!-- Modal para Nueva Solicitud de Crédito -->
+		<div class="modal fade" id="solicitudModal" tabindex="-1" aria-labelledby="solicitudModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="empresaModalLabel">Datos de la Empresa</h5>
+					<!-- Encabezado del modal -->
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="solicitudModalLabel">Registro de Solicitud de Crédito</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
+
+					<!-- Cuerpo del modal -->
 					<div class="modal-body">
 						<form>
-							<div class="mb-3">
-								<label for="nombreEmpresa" class="form-label">Nombre</label>
-								<input type="text" class="form-control" id="nombreEmpresa" placeholder="Ingrese nombre">
+							<!-- Primera fila -->
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="buscarEmpresa" class="form-label">Nombre de la Empresa</label>
+									<input type="search" class="form-control" id="buscarEmpresa" list="opcionEmpresa"
+										autocomplete="off" placeholder="Buscar empresa">
+									<datalist id="opcionEmpresa"></datalist>
+									<div id="spinnerEmpresas" class="spinner-border text-primary"
+										style="display: none;"></div>
+								</div>
 							</div>
-							<div class="mb-3">
-								<label for="correoEmpresa" class="form-label">Correo de Contacto</label>
-								<input type="email" class="form-control" id="correoEmpresa"
-									placeholder="Ingrese correo">
+
+							<!-- Segunda fila -->
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="buscarEmpleado" class="form-label">Nombre del Empleado</label>
+									<input type="search" class="form-control" id="buscarEmpleado" list="opcionEmpleado"
+										autocomplete="off" placeholder="Buscar empleado">
+									<datalist id="opcionEmpleado"></datalist>
+									<div id="spinnerEmpleado" class="spinner-border text-primary"
+										style="display: none;"></div>
+								</div>
 							</div>
-							<div class="mb-3">
-								<label for="frecuencia" class="form-label">Frecuencia</label>
-								<select class="form-select" id="frecuencia">
-									<option value="SEMANAL">SEMANAL</option>
-									<option value="QUINCENAL">QUINCENAL</option>
-									<option value="MENSUAL">MENSUAL</option>
-								</select>
+
+							<!-- Tercera fila -->
+							<div class="row mb-3">
+								<div class="col-md-4">
+									<label class="form-label">Núm. Empleado</label>
+									<input type="text" id="numEmpleado" class="form-control" 
+										placeholder="Ejemplo: 2434">
+								</div>
+								<div class="col-md-4">
+								    <label class="form-label">Puesto</label>
+								    <select id="puesto" class="form-select">
+								        <option value="" disabled selected>Seleccione un puesto...</option>
+								    </select>
+								</div>
+								<div class="col-md-4">
+									<label for="plazoCredito" class="form-label">Plazo</label>
+									<select class="form-select" id="plazoCredito">
+										<option value="" disabled selected>Seleccione...</option>
+										<option value="6">6 meses</option>
+										<option value="12">12 meses</option>
+										<option value="18">18 meses</option>
+										<option value="24">24 meses</option>
+									</select>
+								</div>
 							</div>
-							<div class="mb-3">
-								<label for="estatus" class="form-label">Estatus</label>
-								<select class="form-select" id="estatus">
-									<option value="ACTIVA">ACTIVA</option>
-									<option value="INACTIVA">INACTIVA</option>
-								</select>
+
+							<!-- Cuarta fila -->
+							<div class="row mb-3">
+								<div class="col-md-4">
+									<label class="form-label">Monto Solicitado</label>
+									<div class="input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" class="form-control text-end" placeholder="10000" min="0"
+											step="0.01">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label">Frecuencia de Pago</label>
+									<select class="form-select">
+										<option value="" disabled selected>Seleccione...</option>
+										<option value="SEMANAL">Semanal</option>
+										<option value="QUINCENAL">Quincenal</option>
+										<option value="MENSUAL">Mensual</option>
+									</select>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label">Monto a descontar</label>
+									<div class="input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" class="form-control text-end" placeholder="500" min="0"
+											step="0.01">
+									</div>
+								</div>
 							</div>
 						</form>
 					</div>
+
+					<!-- Footer del modal -->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary">Guardar</button>
@@ -121,6 +182,7 @@
 				</div>
 			</div>
 		</div>
+
 
 		<!-- Modal para enviar mensaje -->
 		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
@@ -150,13 +212,20 @@
 	</section>
 
 	<th:block layout:fragment="page-scripts">
-		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<!-- Bootstrap JS (si falta) -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+		<!-- jQuery (si es necesario para otras funciones) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+		<!-- Plugins y scripts adicionales -->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/cobranza/domiciliado.js}"></script>
+		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script th:src="@{/css/estilos/responsivo.css}"></script>
 	</th:block>
+
 
 </body>
 
