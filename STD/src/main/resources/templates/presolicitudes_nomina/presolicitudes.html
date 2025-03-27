@@ -39,43 +39,19 @@
 							<th>Nombre de Cliente</th>
 							<th>Fecha de Solicitud</th>
 							<th>Nombre de Empresa</th>
-							<th>Sucursal</th>
+							<th>Monto</th>
+							<th>Cuota</th>
 							<th>Estatus</th>
 							<th>Acciones</th>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td>1</td>
-							<td>Alberto Díaz Nuñez</td>
-							<td>2023-09-01</td>
-							<td>Caja Bienestar</td>
-							<td>Ezequiel Montes</td>
-							<td>Aprobada</td>
-							<td>
-								<button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
-								<button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-							</td>
-						</tr>
-						<tr>
-							<td>2</td>
-							<td>Alberto Díaz Nuñez</td>
-							<td>2023-09-02</td>
-							<td>Caja Bienestar</td>
-							<td>Ezequiel Montes</td>
-							<td>En Proceso</td>
-							<td>
-								<button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
-								<button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-							</td>
-						</tr>
+					<tbody id="tablaSolicitudes">
 					</tbody>
 				</table>
-
 				<div class="d-flex justify-content-between">
-					<button class="btn btn-secondary">Anterior</button>
-					<span>Página 1</span>
-					<button class="btn btn-secondary">Siguiente</button>
+				    <button id="btnAnterior" class="btn btn-primary">Anterior</button>
+				    <span id="paginaActual">Página 1</span>
+				    <button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
 				</div>
 			</div>
 		</body>
@@ -118,56 +94,67 @@
 								</div>
 							</div>
 
+							<!-- Segunda fila -->
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="buscarProducto" class="form-label">Producto</label>
+									<input type="search" class="form-control" id="buscarProducto" list="opcionProducto"
+										autocomplete="off" placeholder="Buscar producto">
+									<datalist id="opcionProducto"></datalist>
+									<div id="spinnerProducto" class="spinner-border text-primary"
+										style="display: none;"></div>
+								</div>
+							</div>
+
 							<!-- Tercera fila -->
 							<div class="row mb-3">
 								<div class="col-md-4">
 									<label class="form-label">Núm. Empleado</label>
-									<input type="text" id="numEmpleado" class="form-control" 
+									<input type="text" id="numEmpleado" class="form-control"
 										placeholder="Ejemplo: 2434">
 								</div>
 								<div class="col-md-4">
-								    <label class="form-label">Puesto</label>
-								    <select id="puesto" class="form-select">
-								        <option value="" disabled selected>Seleccione un puesto...</option>
-								    </select>
+									<label class="form-label">Puesto</label>
+									<select id="puesto" class="form-select">
+										<option value="" disabled selected>Seleccione un puesto...</option>
+									</select>
 								</div>
 								<div class="col-md-4">
 									<label for="plazoCredito" class="form-label">Plazo</label>
 									<select class="form-select" id="plazoCredito">
 										<option value="" disabled selected>Seleccione...</option>
-										<option value="6">6 meses</option>
-										<option value="12">12 meses</option>
-										<option value="18">18 meses</option>
-										<option value="24">24 meses</option>
 									</select>
+									<span id="spinnerPlazo" style="display:none;">Cargando...</span>
 								</div>
 							</div>
 
 							<!-- Cuarta fila -->
 							<div class="row mb-3">
 								<div class="col-md-4">
+									<label class="form-label">Frecuencia de Pago</label>
+									<select class="form-select" id="frecuenciaCredito">
+										<option value="" disabled selected>Seleccione...</option>
+										<option value="SEMANAL">Semanal</option>
+										<option value="CATORCENAL">Catorcenal</option>
+										<option value="QUINCENAL">Quincenal</option>
+										<option value="MENSUAL">Mensual</option>
+										<option value="UNICO">Unico</option>
+									</select>
+								</div>
+								<div class="col-md-4">
 									<label class="form-label">Monto Solicitado</label>
 									<div class="input-group">
 										<span class="input-group-text">$</span>
-										<input type="number" class="form-control text-end" placeholder="10000" min="0"
-											step="0.01">
+										<input type="number" id="montoSolicitado" class="form-control text-end"
+											placeholder="10000" min="0" step="0.01">
 									</div>
-								</div>
-								<div class="col-md-4">
-									<label class="form-label">Frecuencia de Pago</label>
-									<select class="form-select">
-										<option value="" disabled selected>Seleccione...</option>
-										<option value="SEMANAL">Semanal</option>
-										<option value="QUINCENAL">Quincenal</option>
-										<option value="MENSUAL">Mensual</option>
-									</select>
 								</div>
 								<div class="col-md-4">
 									<label class="form-label">Monto a descontar</label>
 									<div class="input-group">
 										<span class="input-group-text">$</span>
-										<input type="number" class="form-control text-end" placeholder="500" min="0"
-											step="0.01">
+										<input type="number" id="montoDescontar" class="form-control text-end"
+											placeholder="500" min="0" step="0.01">
 									</div>
 								</div>
 							</div>
@@ -177,7 +164,7 @@
 					<!-- Footer del modal -->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary">Guardar</button>
+						<button type="button" class="btn btn-primary" id="btnGuardarSolicitud">Guardar</button>
 					</div>
 				</div>
 			</div>
@@ -219,6 +206,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 		<!-- Plugins y scripts adicionales -->
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>

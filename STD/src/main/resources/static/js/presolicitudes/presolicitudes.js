@@ -5,89 +5,194 @@ window.onload = function() {
 }
 
 var urlPrincipal = "http://localhost:8091/STD/configuracionSolicitudes/";
+let idEmpresaSeleccionada = null;
+let idProductoSeleccionado = null;
+let tasaAnual = null; // Tasa de interés anual en %
 
 // Esta función actualiza el datalist con las empresas
 function listaEmpresas() {
-    let buscarEmpresa = document.getElementById('buscarEmpresa');
-    let opcionEmpresa = document.getElementById('opcionEmpresa');
-    let spinner = document.getElementById('spinnerEmpresas');
+	let buscarEmpresa = document.getElementById('buscarEmpresa');
+	let opcionEmpresa = document.getElementById('opcionEmpresa');
+	let spinner = document.getElementById('spinnerEmpresas');
 
-    if (!buscarEmpresa || !opcionEmpresa || !spinner) {
-        console.error("No se encontraron los elementos necesarios en el DOM.");
-        return;
-    }
+	if (!buscarEmpresa || !opcionEmpresa || !spinner) {
+		console.error("No se encontraron los elementos necesarios en el DOM.");
+		return;
+	}
 
-    buscarEmpresa.disabled = true;
-    spinner.style.display = "inline-block";
+	buscarEmpresa.disabled = true;
+	spinner.style.display = "inline-block";
 
-    $.ajax({
-        url: urlPrincipal + "lista_empresas", 
-        type: "GET",
-        dataType: "JSON",
-        success: function(respuesta) {
-            opcionEmpresa.innerHTML = ''; // Limpia las opciones previas
+	$.ajax({
+		url: urlPrincipal + "lista_empresas",
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			opcionEmpresa.innerHTML = ''; // Limpia las opciones previas
 
-            // Filtramos las opciones a medida que el usuario escribe
-            let filtroTexto = buscarEmpresa.value.toLowerCase();
-            respuesta.lista.filter(empresa => empresa.nombre.toLowerCase().includes(filtroTexto)).forEach(function(empresa) {
-                let option = document.createElement('option');
-                option.value = empresa.nombre; 
-                option.setAttribute('data-id', empresa.id);
-                opcionEmpresa.appendChild(option);
-            });
+			// Filtramos las opciones a medida que el usuario escribe
+			let filtroTexto = buscarEmpresa.value.toLowerCase();
+			respuesta.lista.filter(empresa => empresa.nombre.toLowerCase().includes(filtroTexto)).forEach(function(empresa) {
+				let option = document.createElement('option');
+				option.value = empresa.nombre;
+				option.setAttribute('data-id', empresa.id);
+				opcionEmpresa.appendChild(option);
+			});
 
-            buscarEmpresa.disabled = false;
-            spinner.style.display = "none";
-        },
-        error: function(error) {
-            console.error("Error al obtener empresas:", error);
-            spinner.style.display = "none";
-        }
-    });
+			buscarEmpresa.disabled = false;
+			spinner.style.display = "none";
+		},
+		error: function(error) {
+			console.error("Error al obtener empresas:", error);
+			spinner.style.display = "none";
+		}
+	});
 }
 
 // Esta función se actualiza para la lista de empleados con el filtro de texto
 function listaEmpleados(idEmpresa) {
-    let buscarEmpleado = document.getElementById('buscarEmpleado');
-    let opcionEmpleado = document.getElementById('opcionEmpleado');
-    let spinnerEmpleado = document.getElementById('spinnerEmpleado');
+	let buscarEmpleado = document.getElementById('buscarEmpleado');
+	let opcionEmpleado = document.getElementById('opcionEmpleado');
+	let spinnerEmpleado = document.getElementById('spinnerEmpleado');
 
-    if (!buscarEmpleado || !opcionEmpleado || !spinnerEmpleado) {
-        console.error("No se encontraron los elementos necesarios en el DOM.");
-        return;
-    }
+	if (!buscarEmpleado || !opcionEmpleado || !spinnerEmpleado) {
+		console.error("No se encontraron los elementos necesarios en el DOM.");
+		return;
+	}
 
-    buscarEmpleado.disabled = true;
-    spinnerEmpleado.style.display = "inline-block";
+	buscarEmpleado.disabled = true;
+	spinnerEmpleado.style.display = "inline-block";
 
-    $.ajax({
-        url: urlPrincipal + "lista_empleados?empresaEmpleado=" + idEmpresa, 
-        type: "GET", 
-        dataType: "JSON",
-        success: function(respuesta) {
-            console.log("Lista de empleados recibida:", respuesta);
+	$.ajax({
+		url: urlPrincipal + "lista_empleados?empresaEmpleado=" + idEmpresa,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Lista de empleados recibida:", respuesta);
 
-            let filtroTexto = buscarEmpleado.value.toLowerCase(); // Filtro según el input
-            opcionEmpleado.innerHTML = ""; // Limpiar datalist previo
+			let filtroTexto = buscarEmpleado.value.toLowerCase(); // Filtro según el input
+			opcionEmpleado.innerHTML = ""; // Limpiar datalist previo
 
-            respuesta.filter(empleado => empleado.nombreCompleto.toLowerCase().includes(filtroTexto))
-                .forEach(empleado => {
-                    let option = document.createElement('option');
-                    option.value = empleado.nombreCompleto; 
-                    option.setAttribute('data-id', empleado.clienteId);
-                    option.setAttribute('data-numEmp', empleado.numeroEmpleado);
-                    option.setAttribute('data-puesto', empleado.tipoEmpleado);
-                    opcionEmpleado.appendChild(option);
-                });
-        },
-        error: function(error) {
-            console.error("Error al obtener la lista de empleados:", error);
-        },
-        complete: function() {
-            buscarEmpleado.disabled = false;
-            spinnerEmpleado.style.display = "none";
-        }
-    });
+			respuesta.filter(empleado => empleado.nombreCompleto.toLowerCase().includes(filtroTexto))
+				.forEach(empleado => {
+					let option = document.createElement('option');
+					option.value = empleado.nombreCompleto;
+					option.setAttribute('data-id', empleado.clienteId);
+					option.setAttribute('data-numEmp', empleado.numeroEmpleado);
+					option.setAttribute('data-puesto', empleado.tipoEmpleado);
+					opcionEmpleado.appendChild(option);
+				});
+		},
+		error: function(error) {
+			console.error("Error al obtener la lista de empleados:", error);
+		},
+		complete: function() {
+			buscarEmpleado.disabled = false;
+			spinnerEmpleado.style.display = "none";
+		}
+	});
+}
+
+// Esta función se actualiza para la lista de empleados con el filtro de texto
+function listaProductos(idEmpresa, puesto) {
+
+	console.log(idEmpresa)
+	console.log(puesto)
+	let buscarProducto = document.getElementById('buscarProducto');
+	let opcionProducto = document.getElementById('opcionProducto');
+	let spinnerProducto = document.getElementById('spinnerProducto');
+
+	if (!buscarProducto || !opcionProducto || !spinnerProducto) {
+		console.error("No se encontraron los elementos necesarios en el DOM.");
+		return;
+	}
+
+	buscarProducto.disabled = true;
+	spinnerProducto.style.display = "inline-block";
+
+	$.ajax({
+		url: urlPrincipal + "lista_productos?empresa=" + idEmpresa + "&puesto=" + puesto,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Lista de productos recibida:", respuesta);
+
+			let filtroTexto = buscarProducto.value.toLowerCase(); // Filtro según el input
+			opcionProducto.innerHTML = ""; // Limpiar datalist previo
+
+			respuesta.filter(producto => producto.toLowerCase().includes(filtroTexto))
+				.forEach(producto => {
+					let option = document.createElement('option');
+					option.value = producto; // Como solo es texto, lo asignamos directamente
+					opcionProducto.appendChild(option);
+				});
+		},
+		error: function(error) {
+			console.error("Error al obtener la lista de productos:", error);
+		},
+		complete: function() {
+			buscarProducto.disabled = false;
+			spinnerProducto.style.display = "none";
+		}
+	});
+}
+
+document.getElementById("buscarProducto").addEventListener("input", function() {
+	var buscarProductoValor = this.value;
+	var productoSeleccionado = Array.from(document.querySelectorAll("#opcionProducto option"))
+		.find(option => option.value === buscarProductoValor);
+
+	if (productoSeleccionado && idEmpresaSeleccionada) { // Asegurar que la empresa ya esté seleccionada
+		var producto = productoSeleccionado.value;
+		idProductoSeleccionado = productoSeleccionado.value;
+		console.log("Producto seleccionado:", producto, "Empresa ID:", idEmpresaSeleccionada);
+		listaPlazos(producto, idEmpresaSeleccionada);
+		if (document.getElementById('puesto').value) {
+			listaMontos(producto, idEmpresaSeleccionada, document.getElementById('puesto').value);
+		}
+
+	} else {
+		console.warn("No se ha seleccionado una empresa válida antes de elegir el producto.");
+	}
+});
+
+
+function listaPlazos(producto, idEmpresa) {
+	let selectPlazo = document.getElementById("plazoCredito");
+	let spinnerPlazo = document.getElementById("spinnerPlazo");
+
+	if (!selectPlazo || !spinnerPlazo) {
+		console.error("No se encontraron los elementos del DOM para el select de plazos.");
+		return;
+	}
+
+	selectPlazo.disabled = true;
+	spinnerPlazo.style.display = "inline-block";
+
+	$.ajax({
+		url: urlPrincipal + "lista_plazos?producto=" + encodeURIComponent(producto) + "&empresa=" + idEmpresa,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Plazos recibidos:", respuesta);
+			selectPlazo.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
+
+			respuesta.forEach(plazo => {
+				let option = document.createElement("option");
+				option.value = plazo;
+				option.textContent = plazo // Si los valores son números de meses
+				selectPlazo.appendChild(option);
+			});
+
+			selectPlazo.disabled = false;
+		},
+		error: function(error) {
+			console.error("Error al obtener la lista de plazos:", error);
+		},
+		complete: function() {
+			spinnerPlazo.style.display = "none";
+		}
+	});
 }
 
 
@@ -95,82 +200,451 @@ function listaEmpleados(idEmpresa) {
 $(document).ready(function() {
 	$('#solicitudModal').on('shown.bs.modal', function() {
 		listaEmpresas();
-		llenarSelectPuestos();
+		//llenarSelectPuestos();
 	});
 });
 
 
 // Detectar cuando el usuario selecciona una opción del datalist
 document.getElementById("buscarEmpresa").addEventListener("input", function() {
-	var buscarEmpresaValor = this.value; // Obtiene el valor ingresado en el input
-
+	var buscarEmpresaValor = this.value;
 	var empresaSeleccionada = Array.from(document.querySelectorAll("#opcionEmpresa option"))
 		.find(option => option.value === buscarEmpresaValor);
 
 	if (empresaSeleccionada) {
-		var datosEmpresa = empresaSeleccionada.getAttribute("data-id"); // Usamos data-id en lugar de id
-		console.log("Empresa seleccionada:", datosEmpresa);
-		listaEmpleados(datosEmpresa);
+		idEmpresaSeleccionada = empresaSeleccionada.getAttribute("data-id"); // Guardamos el ID
+		console.log("Empresa seleccionada:", idEmpresaSeleccionada);
+		listaEmpleados(idEmpresaSeleccionada);
+		listaProductos(idEmpresaSeleccionada, 1111);
+		llenarSelectPuestos(idEmpresaSeleccionada);
+	} else {
+		idEmpresaSeleccionada = null; // Reiniciar si no se selecciona nada
 	}
 });
 
 
-function llenarSelectPuestos() {
-    let selectPuesto = document.getElementById('puesto');
 
-    if (!selectPuesto) {
-        console.error("No se encontró el select de puesto en el DOM.");
-        return;
-    }
+function llenarSelectPuestos(idEmpresaSeleccionada) {
+	let selectPuesto = document.getElementById('puesto');
 
-    // Mostrar mensaje de "Cargando..."
-    selectPuesto.innerHTML = '<option value="" disabled selected>Cargando...</option>';
-    selectPuesto.disabled = true;
+	if (!selectPuesto) {
+		console.error("No se encontró el select de puesto en el DOM.");
+		return;
+	}
 
-    $.ajax({
-        url: urlPrincipal + "obtener_puestos", // Endpoint para obtener los puestos
-        type: "GET",
-        dataType: "JSON",
-        success: function(respuesta) {
-            console.log("Lista de puestos recibida:", respuesta);
+	// Mostrar mensaje de "Cargando..."
+	selectPuesto.innerHTML = '<option value="" disabled selected>Cargando...</option>';
+	selectPuesto.disabled = true;
 
-            // Limpiar y volver a llenar el select
-            selectPuesto.innerHTML = '<option value="" disabled selected>Seleccione un puesto...</option>';
-            respuesta.forEach(puesto => {
-                let optionPuesto = document.createElement('option');
-                optionPuesto.value = puesto.pkIdTipo; // Suponiendo que cada puesto tiene un ID
-                optionPuesto.textContent = puesto.descripcion; // Suponiendo que cada puesto tiene un nombre
-                selectPuesto.appendChild(optionPuesto);
-            });
+	$.ajax({
+		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada, // Endpoint para obtener los puestos
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			console.log("Lista de puestos recibida:", respuesta);
 
-            selectPuesto.disabled = false;
-        },
-        error: function(error) {
-            console.error("Error al obtener la lista de puestos:", error);
-            selectPuesto.innerHTML = '<option value="" disabled selected>Error al cargar</option>';
-        }
-    });
+			// Limpiar y volver a llenar el select
+			selectPuesto.innerHTML = '<option value="" disabled selected>Seleccione un puesto...</option>';
+			respuesta.forEach(puesto => {
+				let optionPuesto = document.createElement('option');
+				optionPuesto.value = puesto.pkIdTipo; // Suponiendo que cada puesto tiene un ID
+				optionPuesto.textContent = puesto.descripcion; // Suponiendo que cada puesto tiene un nombre
+				selectPuesto.appendChild(optionPuesto);
+			});
+
+			selectPuesto.disabled = false;
+		},
+		error: function(error) {
+			console.error("Error al obtener la lista de puestos:", error);
+			selectPuesto.innerHTML = '<option value="" disabled selected>Error al cargar</option>';
+		}
+	});
 }
 
-document.getElementById('buscarEmpleado').addEventListener('change', function () {
-    let buscarEmpleado = document.getElementById('buscarEmpleado');
-    let opcionEmpleado = document.getElementById('opcionEmpleado');
-    let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
-    let inputPuesto = document.getElementById('puesto'); // Campo de puesto
+document.getElementById('buscarEmpleado').addEventListener('change', function() {
+	let buscarEmpleado = document.getElementById('buscarEmpleado');
+	let opcionEmpleado = document.getElementById('opcionEmpleado');
+	let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
+	let inputPuesto = document.getElementById('puesto'); // Campo de puesto
 
-    // Buscar la opción seleccionada
-    let selectedOption = Array.from(opcionEmpleado.children).find(option => option.value === buscarEmpleado.value);
+	// Buscar la opción seleccionada
+	let selectedOption = Array.from(opcionEmpleado.children).find(option => option.value === buscarEmpleado.value);
 
-    if (selectedOption) {
-        // Rellenar los campos con la información de la opción seleccionada
-        inputNumEmpleado.value = selectedOption.getAttribute('data-numEmp') || "";
-        inputPuesto.value = selectedOption.getAttribute('data-puesto') || "";
-    } else {
-        // Limpiar los campos si no hay selección válida
-        inputNumEmpleado.value = "";
-        inputPuesto.value = "";
-    }
+	if (selectedOption) {
+		// Rellenar los campos con la información de la opción seleccionada
+		inputNumEmpleado.value = selectedOption.getAttribute('data-numEmp') || "";
+		inputPuesto.value = selectedOption.getAttribute('data-puesto') || "";
+
+		//listaProductos(idEmpresaSeleccionada, selectedOption.getAttribute('data-puesto'));
+	} else {
+		// Limpiar los campos si no hay selección válida
+		inputNumEmpleado.value = "";
+		inputPuesto.value = "";
+	}
 });
+
+function listaMontos(producto, idEmpresa, puesto) {
+
+	// Construir la URL del endpoint con los parámetros
+	const url = `http://localhost:8091/STD/configuracionSolicitudes/condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+
+	// Hacer la solicitud GET al endpoint
+	fetch(url)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('No se encontraron condiciones para los parámetros especificados.');
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('Condiciones obtenidas:', data);
+
+			// Obtener valores de monto mínimo y máximo de la API
+			const montoMin = data.montoMin;
+			const montoMax = data.montoMax;
+			tasaAnual = data.tasa;
+
+			// Buscar el input por ID
+			const montoInput = document.getElementById('montoSolicitado');
+
+			if (montoInput) {
+				montoInput.value = montoMin; // Asigna el valor mínimo
+				montoInput.min = montoMin;   // Establece el mínimo permitido
+				montoInput.max = montoMax;   // Establece el máximo permitido
+
+				// Validación cuando el usuario salga del input
+				montoInput.addEventListener('blur', function() {
+					let valor = parseFloat(montoInput.value);
+
+					if (valor < montoMin || valor > montoMax) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Monto inválido',
+							text: `El monto permitido es de $ ${montoMin} y hasta $ ${montoMax}`,
+							confirmButtonColor: '#3085d6',
+						}).then(() => {
+							montoInput.value = montoMin; // Restablece el valor mínimo
+						});
+					}
+
+				});
+			}
+		})
+		.catch(error => {
+			console.error('Error al obtener las condiciones:', error);
+			alert(error.message);
+		});
+}
+
+document.getElementById('puesto').addEventListener('change', function() {
+	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
+	console.log('Puesto seleccionado:', puestoSeleccionado);
+
+	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
+
+});
+
+document.getElementById('montoSolicitado').addEventListener('blur', function() {
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	const plazoInicial = document.getElementById('plazoCredito').value
+	const frecuencia = document.getElementById('frecuenciaCredito').value
+	const plazo = plazoInicial.split(" ", 1)
+
+	// Llamar a la función de plan de pagos
+	const planDePagos = generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+
+	console.log(planDePagos); // Mostrar en consola para depuración
+
+	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
+});
+
+
+function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
+	let pagosPorAnio;
+
+	console.log("Monto:", monto);
+	console.log("Tasa Anual:", tasaAnual);
+	console.log("Plazo:", plazo);
+	console.log("Frecuencia:", frecuencia);
+
+	// Determinar el número de pagos por año según la frecuencia
+	switch (frecuencia.toLowerCase()) {
+		case "mensual":
+			pagosPorAnio = 12;
+			break;
+		case "quincenal":
+			pagosPorAnio = 24;
+			break;
+		case "semanal":
+			pagosPorAnio = 52;
+			break;
+		case "catorcenal":
+			pagosPorAnio = 26; // Hay 26 períodos catorcenales en un año
+			break;
+		case "unico":
+			pagosPorAnio = 1; // Un solo pago al final del plazo
+			break;
+		default:
+			console.error("Frecuencia no válida");
+			return;
+	}
+
+	// Calcular la tasa periódica
+	const tasaPeriodica = (tasaAnual / 100) / pagosPorAnio;
+	const totalPagos = plazo * (pagosPorAnio / 12); // Ajuste para distintos plazos
+
+	// Calcular la cuota
+	let cuotaFija;
+	if (frecuencia.toLowerCase() === "pago único") {
+		cuotaFija = monto * Math.pow(1 + tasaPeriodica, totalPagos); // Interés compuesto
+	} else {
+		cuotaFija = monto * (tasaPeriodica / (1 - Math.pow(1 + tasaPeriodica, -totalPagos)));
+	}
+
+	cuotaFija = cuotaFija.toFixed(2); // Redondear a 2 decimales
+
+	// Setear el valor en el input de "Monto a descontar"
+	const inputMontoDescontar = document.querySelector("#montoDescontar");
+	if (inputMontoDescontar) {
+		inputMontoDescontar.value = cuotaFija;
+	} else {
+		console.error("El input #montoDescontar no existe en el DOM");
+	}
+
+	return cuotaFija;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
+		guardarSolicitud();
+	});
+});
+
+function guardarSolicitud() {
+	// Obtener fecha actual en formato YYYY-MM-DD
+	const fechaActual = new Date().toISOString().split("T")[0];
+
+	// Obtener valores del formulario
+	const solicitudData = {
+		empresa: document.getElementById("buscarEmpresa").value,
+		empleado: document.getElementById("buscarEmpleado").value,
+		producto: document.getElementById("buscarProducto").value,
+		numEmpleado: document.getElementById("numEmpleado").value,
+		puesto: parseInt(document.getElementById("puesto").value) || null,
+		plazo: parseInt(document.getElementById("plazoCredito").value) || null,
+		frecuencia: document.getElementById("frecuenciaCredito").value,
+		montoSolicitado: parseFloat(document.getElementById("montoSolicitado").value) || null,
+		montoDescontar: parseFloat(document.getElementById("montoDescontar").value) || null,
+		fechaSolicitud: fechaActual // 🔥 Se agrega la fecha actual
+	};
+
+	console.log("Datos a enviar:", solicitudData); // Debugging
+
+	// Validación rápida
+	if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado) {
+		Swal.fire({
+			icon: "warning",
+			title: "Campos incompletos",
+			text: "Por favor, completa todos los campos obligatorios.",
+			confirmButtonColor: "#ffc107",
+		});
+		return;
+	}
+
+	// Realizar la solicitud al backend
+	fetch("http://localhost:8091/STD/configuracionSolicitudes/crearSolicitud", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(solicitudData)
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error al guardar la solicitud");
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log("Solicitud guardada:", data);
+			Swal.fire({
+				icon: "success",
+				title: "Éxito",
+				text: "Solicitud guardada correctamente",
+				confirmButtonColor: "#3085d6",
+			}).then(() => {
+				resetearModal(); // 🔥 Llamamos a la función para limpiar el modal
+			});
+		})
+		.catch(error => {
+			console.error("Error:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "No se pudo guardar la solicitud",
+				confirmButtonColor: "#d33",
+			});
+		});
+}
+
+// 🔥 Función para resetear el formulario y cerrar el modal
+function resetearModal() {
+	document.getElementById("solicitudForm").reset(); // Resetear formulario
+
+	let modal = new bootstrap.Modal(document.getElementById("solicitudModal"));
+	modal.hide(); // Ocultar modal
+
+	// Eliminar backdrop si persiste
+	document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+}
+
+let paginaActual = 0;
+const tamañoPagina = 10; // Registros por página
+
+document.addEventListener("DOMContentLoaded", function() {
+	cargarSolicitudes(paginaActual);
+
+	document.getElementById("btnAnterior").addEventListener("click", function() {
+		if (paginaActual > 0) {
+			paginaActual--;
+			cargarSolicitudes(paginaActual);
+		}
+	});
+
+	document.getElementById("btnSiguiente").addEventListener("click", function() {
+		paginaActual++;
+		cargarSolicitudes(paginaActual);
+	});
+});
+
+function obtenerEstatus(estatus) {
+	switch (estatus) {
+		case 1: return "En Proceso";
+		case 2: return "Enviado";
+		case 3: return "Aprobada";
+		case 0: return "Cancelada";
+		default: return "Desconocido";
+	}
+}
+
+function cargarSolicitudes(pagina) {
+    fetch(`http://localhost:8091/STD/configuracionSolicitudes/listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+        .then(response => response.json())
+        .then(data => {
+            let tabla = document.getElementById("tablaSolicitudes");
+            tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
+
+            data.content.forEach((solicitud) => {
+                let fila = `<tr>
+                    <td>${solicitud.id}</td>
+                    <td>${solicitud.empleado}</td>
+                    <td>${solicitud.fechaSolicitud}</td>
+                    <td>${solicitud.empresa}</td>
+                    <td>$ ${solicitud.montoSolicitado}</td>
+                    <td>$ ${solicitud.montoDescontar}</td>
+                    <td>${obtenerEstatus(solicitud.estatus)}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+                tabla.innerHTML += fila;
+            });
+
+            // Actualizar paginación
+            document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
+            document.getElementById("btnAnterior").disabled = pagina === 0;
+            document.getElementById("btnSiguiente").disabled = data.last;
+        })
+        .catch(error => console.error("Error al cargar las solicitudes:", error));
+}
+
+$(document).on("click", ".btn-editar", function () {
+    var solicitudId = $(this).data("id"); // Obtener el ID de la solicitud
+
+    // Obtener la solicitud por ID
+    $.ajax({
+        url: `http://localhost:8091/STD/configuracionSolicitudes/solicitud/${solicitudId}`,
+        type: "GET",
+        success: function (dataSolicitud) {
+            console.log("Solicitud obtenida:", dataSolicitud);
+
+            // Obtener la empresa asociada a la solicitud
+            $.ajax({
+                url: `http://localhost:8091/STD/configuracionSolicitudes/empresa/${dataSolicitud.empresa}`,
+                type: "GET",
+                success: function (dataEmpresa) {
+                    console.log("Empresa obtenida:", dataEmpresa);
+
+                    // Ejecutar todas las funciones necesarias antes de abrir el modal
+                    Promise.all([
+                        listaEmpresas(),
+                        listaEmpleados(dataEmpresa.id),
+                        listaProductos(dataEmpresa.id, 1111),
+                        llenarSelectPuestos(dataEmpresa.id)
+                    ]).then(() => {
+                        console.log("Todos los datos cargados");
+
+                        // Llenar los campos con la información de la solicitud
+                        $("#numEmpleado").val(dataSolicitud.numEmpleado);
+                        $("#plazoCredito").val(dataSolicitud.plazo);
+                        $("#frecuenciaCredito").val(dataSolicitud.frecuencia);
+                        $("#montoSolicitado").val(dataSolicitud.montoSolicitado);
+                        $("#montoDescontar").val(dataSolicitud.montoDescontar);
+
+                        // Seleccionar el puesto en el select (con retraso para asegurarnos de que ya está cargado)
+                        setTimeout(() => {
+                            $("#puesto").val(dataSolicitud.puesto).change();
+                            console.log("Puesto seleccionado:", $("#puesto").val());
+                        }, 500);
+
+                        // 🛠 **Forzar actualización de los campos tipo search**
+                        setTimeout(() => {
+                            actualizarDatalist("#buscarEmpresa", dataEmpresa.nombre);
+                            actualizarDatalist("#buscarEmpleado", dataSolicitud.empleado);
+                            actualizarDatalist("#buscarProducto", dataSolicitud.producto);
+                        }, 300);
+
+                        // Ahora sí, abrir el modal
+                        $("#solicitudModal").modal("show");
+                    }).catch(error => {
+                        console.error("Error al cargar datos:", error);
+                        alert("Hubo un problema al cargar la información.");
+                    });
+
+                },
+                error: function () {
+                    alert("Error al obtener la empresa");
+                }
+            });
+        },
+        error: function () {
+            alert("Error al obtener la solicitud");
+        }
+    });
+});
+
+// **Función para actualizar el `datalist` después de asignar un valor**
+function actualizarDatalist(selector, valor) {
+    let input = $(selector);
+    input.val(""); // Limpia el campo para evitar que el evento sea ignorado
+    setTimeout(() => {
+        input.val(valor).trigger("input").trigger("focus"); // Dispara eventos manualmente
+    }, 100);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -86,7 +86,11 @@ public class EmpresaService {
 	public List<EmpresaSIB> obtenerTodas() {
 		return empresaSIBRepository.findAll(); // Devuelve todas las empresas registradas
 	}
-
+	
+	public EmpresaSIB obtenerIdEmpresa(String nombre) {
+		return empresaSIBRepository.findByNombre(nombre);
+	}
+	
 	public EmpresaSIB obtenerPorId(int id) {
 		Optional<EmpresaSIB> empresa = empresaSIBRepository.findById(id);
 		return empresa.orElse(null); // Si no se encuentra, devuelve null

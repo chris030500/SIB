@@ -14,8 +14,8 @@ public class PuestoService {
     @Autowired
     private PuestoRepository puestoRepository;
 
-    public List<Puesto> obtenerTodosLosPuestos() {
-        return puestoRepository.findAll();
+    public List<Puesto> obtenerTodosLosPuestos(Integer empresa) {
+        return puestoRepository.findDistinctPuestoByEmpresa(empresa);
     }
 }
 
