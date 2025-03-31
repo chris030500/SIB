@@ -424,6 +424,47 @@
 					</ul>
 				</li>
 				<!-- Fin SCCB -->
+				
+				<!-- Marketing -->
+				<li  style="display:none;"  class="nav-item" th:id="13">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-marketing"
+						data-bs-toggle="collapse">
+						<i class="bi bi-bar-chart-line-fill"></i><span>Marketing</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-marketing" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						
+						<li th:id="M_O38" class="nav-item" style="display:none;">
+							<a th:href="@{/marketing/creditosDesembolsados}">
+								<i class="bi bi-wallet-fill"></i><span>Créditos Desembolsados</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Marketing -->
+				
+				<!-- Crédito -->
+				<li  style="display:none;"  class="nav-item" th:id="14">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-credito"
+						data-bs-toggle="collapse">
+						<i class="bi bi-credit-card-2-front-fill"></i><span>Crédito</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-credito" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						
+						<li th:id="M_O39" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/solicitudesAutorizadas}">
+								<i class="bi bi-ui-checks"></i><span>Solicitudes Autorizadas</span>
+							</a>
+						</li>
+						<li th:id="M_O40" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/reportes}">
+								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Crédito -->
 
 			</ul>
 
