@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,6 +44,16 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import org.springframework.data.domain.Pageable;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
+import java.util.*;
 
 @Controller
 @AllArgsConstructor
@@ -61,31 +73,31 @@ public class PresolicitudesController {
 
 	@Autowired
 	private CondicionesService condicionesService;
-	
+
 	@Autowired
-    private SolicitudCreditoService solicitudCreditoService;
-	
+	private SolicitudCreditoService solicitudCreditoService;
+
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
-	
+
 	@Autowired
 	private CatalogosCEService catalogosCEService;
-	
+
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-	
+
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
-	
+
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion = "";
 	private int idEmpleado = 0;
 	private int sucur = 0;
 	List<Usuario> usuario = null;
-	
+
 	@GetMapping("/solicitudes")
-	public String FiltradoQEQ() throws IOException{
+	public String FiltradoQEQ() throws IOException {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -98,8 +110,7 @@ public class PresolicitudesController {
 			System.out.print(idEmpleado);
 			System.out.print(sucur);
 			if (validarAcceso() == 1) {
-				
-				
+
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
 			} else {
 				rutaDireccion = rutaError;
@@ -129,16 +140,16 @@ public class PresolicitudesController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
-	
+
 	@GetMapping("empresa/{nombre}")
-    public ResponseEntity<EmpresaSIB> obtenerEmpresaId(@PathVariable String nombre) {
-        try {
-        	EmpresaSIB id = empresaService.obtenerIdEmpresa(nombre);
-            return ResponseEntity.ok(id);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	public ResponseEntity<EmpresaSIB> obtenerEmpresaId(@PathVariable String nombre) {
+		try {
+			EmpresaSIB id = empresaService.obtenerIdEmpresa(nombre);
+			return ResponseEntity.ok(id);
+		} catch (Exception e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 	@GetMapping("/lista_empleados")
 	public ResponseEntity<List<Empleado>> obtenerClientesPorEmpresaEmpleado(@RequestParam Integer empresaEmpleado) {
@@ -148,18 +159,18 @@ public class PresolicitudesController {
 	}
 
 	@GetMapping("/lista_productos")
-	public ResponseEntity<List<String>> obtenerProductos(@RequestParam Integer empresa, @RequestParam(required = false) Integer puesto) {
-	    List<String> productos;
-	    
-	    if (puesto != 1111) {
-	        productos = condicionesService.obtenerProductosUnicosPorPuesto(empresa, puesto);
-	    } else {
-	        productos = condicionesService.obtenerProductosUnicosPorEmpresa(empresa);
-	    }
-	    
-	    return ResponseEntity.ok(productos);
-	}
+	public ResponseEntity<List<String>> obtenerProductos(@RequestParam Integer empresa,
+			@RequestParam(required = false) Integer puesto) {
+		List<String> productos;
 
+		if (puesto != 1111) {
+			productos = condicionesService.obtenerProductosUnicosPorPuesto(empresa, puesto);
+		} else {
+			productos = condicionesService.obtenerProductosUnicosPorEmpresa(empresa);
+		}
+
+		return ResponseEntity.ok(productos);
+	}
 
 	@GetMapping("/lista_plazos")
 	public ResponseEntity<List<String>> obtenerPlazosPorProductoYEmpresa(@RequestParam String producto,
@@ -190,26 +201,56 @@ public class PresolicitudesController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Manejo de error 500
 		}
 	}
-	
+
 	@PostMapping("/crearSolicitud")
 	public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudCredito solicitud) {
-	    try {
-	    	solicitud.setEjecutivo(idEmpleado);
-	    	solicitud.setSucursal(sucur);
-	    	solicitud.setEstatus(1);
-	        // Intentar guardar la nueva solicitud
-	        SolicitudCredito nuevaSolicitud = solicitudCreditoService.guardarSolicitud(solicitud);
-	        return ResponseEntity.ok(nuevaSolicitud);
-	    } catch (Exception e) {
-	        // Imprimir el error en la consola
-	        System.out.println("Error al crear la solicitud de crédito: " + e.getMessage());
-	        
-	        // Enviar la respuesta de error al cliente
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error al crear la solicitud de crédito: " + e.getMessage());
-	    }
+		try {
+			solicitud.setEjecutivo(idEmpleado);
+			solicitud.setSucursal(sucur);
+			solicitud.setEstatus(1);
+			// Intentar guardar la nueva solicitud
+			SolicitudCredito nuevaSolicitud = solicitudCreditoService.guardarSolicitud(solicitud);
+			return ResponseEntity.ok(nuevaSolicitud);
+		} catch (Exception e) {
+			// Imprimir el error en la consola
+			System.out.println("Error al crear la solicitud de crédito: " + e.getMessage());
+
+			// Enviar la respuesta de error al cliente
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al crear la solicitud de crédito: " + e.getMessage());
+		}
 	}
-	
+
+	@PutMapping("/editarSolicitud/{id}")
+	public ResponseEntity<?> editarSolicitud(@PathVariable Integer id, @RequestBody SolicitudCredito solicitud) {
+		try {
+			Optional<SolicitudCredito> solicitudExistente = solicitudCreditoService.obtSolicitudPorId(id);
+
+			if (solicitudExistente.isPresent()) {
+				SolicitudCredito solicitudActualizada = solicitudExistente.get();
+
+				solicitudActualizada.setEmpresa(solicitud.getEmpresa());
+				solicitudActualizada.setEmpleado(solicitud.getEmpleado());
+				solicitudActualizada.setProducto(solicitud.getProducto());
+				solicitudActualizada.setNumEmpleado(solicitud.getNumEmpleado());
+				solicitudActualizada.setPuesto(solicitud.getPuesto());
+				solicitudActualizada.setPlazo(solicitud.getPlazo());
+				solicitudActualizada.setFrecuencia(solicitud.getFrecuencia());
+				solicitudActualizada.setMontoSolicitado(solicitud.getMontoSolicitado());
+				solicitudActualizada.setMontoDescontar(solicitud.getMontoDescontar());
+
+				SolicitudCredito solicitudGuardada = solicitudCreditoService.guardarSolicitud(solicitudActualizada);
+
+				return ResponseEntity.ok(solicitudGuardada);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Solicitud no encontrada");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al actualizar la solicitud: " + e.getMessage());
+		}
+	}
+
 	public int validarAcceso() {
 
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -223,31 +264,106 @@ public class PresolicitudesController {
 				opcionesMenuService.buscarRelacion(nombrePantalla));
 
 	}
-	
-	@GetMapping("/listarSolicitudes")
-	public ResponseEntity<?> listarSolicitudes(
-	        @RequestParam(defaultValue = "0") int page,
-	        @RequestParam(defaultValue = "10") int size) {
-	    try {
-	        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-	        Page<SolicitudCredito> solicitudes = solicitudCreditoService.listarSolicitudes(pageable);
-	        return ResponseEntity.ok(solicitudes);
-	    } catch (Exception e) {
-	        System.out.println("Error en listarSolicitudes: " + e.getMessage());
-	        e.printStackTrace(); // Agrega esto para ver más detalles en los logs
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error al listar solicitudes: " + e.getMessage());
-	    }
-	}
-	
-	@GetMapping("solicitud/{id}")
-    public ResponseEntity<SolicitudCredito> obtenerSolicitudPorId(@PathVariable Integer id) {
-        try {
-            SolicitudCredito solicitud = solicitudCreditoService.obtenerSolicitudPorId(id);
-            return ResponseEntity.ok(solicitud);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
+	@GetMapping("/listarSolicitudes")
+	public ResponseEntity<?> listarSolicitudes(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		try {
+			Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+			Page<SolicitudCredito> solicitudes = solicitudCreditoService.listarSolicitudes(pageable);
+			return ResponseEntity.ok(solicitudes);
+		} catch (Exception e) {
+			System.out.println("Error en listarSolicitudes: " + e.getMessage());
+			e.printStackTrace(); // Agrega esto para ver más detalles en los logs
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al listar solicitudes: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("solicitud/{id}")
+	public ResponseEntity<SolicitudCredito> obtenerSolicitudPorId(@PathVariable Integer id) {
+		try {
+			SolicitudCredito solicitud = solicitudCreditoService.obtenerSolicitudPorId(id);
+			return ResponseEntity.ok(solicitud);
+		} catch (Exception e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	@PostMapping("/upload")
+	public ResponseEntity<String> uploadExcel(@RequestParam("file") MultipartFile file) {
+		if (file.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
+		}
+
+		try (InputStream inputStream = file.getInputStream()) {
+			Workbook workbook;
+
+			if (file.getOriginalFilename().endsWith(".xlsx")) {
+				workbook = new XSSFWorkbook(inputStream);
+			} else if (file.getOriginalFilename().endsWith(".xls")) {
+				workbook = new HSSFWorkbook(inputStream);
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
+			}
+
+			Sheet sheet = workbook.getSheetAt(0);
+			List<Map<String, String>> solicitudes = new ArrayList<>();
+			Iterator<Row> rowIterator = sheet.iterator();
+
+			// Leer encabezados
+			Row headerRow = rowIterator.next();
+			List<String> headers = new ArrayList<>();
+			for (Cell cell : headerRow) {
+				headers.add(cell.getStringCellValue().trim());
+			}
+
+			// Leer datos
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
+				Map<String, String> solicitud = new HashMap<>();
+
+				for (int i = 0; i < headers.size(); i++) { // ✅ Solo un bucle
+					Cell cell = row.getCell(i);
+					String cellValue = "";
+
+					if (cell != null) {
+						switch (cell.getCellType()) {
+						case STRING:
+							cellValue = cell.getStringCellValue().trim();
+							break;
+						case NUMERIC:
+							if (DateUtil.isCellDateFormatted(cell)) {
+								cellValue = cell.getDateCellValue().toString(); // Si es fecha, conviértela a string
+							} else {
+								cellValue = String.valueOf((int) cell.getNumericCellValue()); // Convertir a entero si
+																								// es numérico
+							}
+							break;
+						case BOOLEAN:
+							cellValue = String.valueOf(cell.getBooleanCellValue());
+							break;
+						default:
+							cellValue = "";
+						}
+					}
+
+					solicitud.put(headers.get(i), cellValue);
+				}
+
+				solicitudes.add(solicitud);
+			}
+
+			workbook.close();
+
+			// Llamar al servicio para actualizar estatus
+			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes);
+
+			return ResponseEntity.ok("Archivo procesado correctamente.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al procesar el archivo: " + e.getMessage());
+		}
+	}
 }

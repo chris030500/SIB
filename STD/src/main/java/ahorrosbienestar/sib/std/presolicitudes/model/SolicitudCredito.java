@@ -56,6 +56,9 @@ public class SolicitudCredito {
     
     @Column(name = "I_ESTATUS")
     private Integer estatus;
+    
+    @Column(name = "FK_ID_PROCESO")
+    private Integer proceso;
 
     // Getters y Setters
     public Integer getId() {
@@ -168,6 +171,14 @@ public class SolicitudCredito {
 
 	public void setEstatus(Integer estatus) {
 		this.estatus = estatus;
+	}
+
+	public Integer getProceso() {
+		return proceso;
+	}
+
+	public void setProceso(Integer proceso) {
+		this.proceso = proceso;
 	}
     
 }

@@ -19,17 +19,66 @@
 					<h2>Solicitudes de Crédito</h2>
 				</div>
 
-				<div class="d-flex justify-content-between mb-3">
-					<select class="form-select w-auto">
-						<option selected>Empresa</option>
-					</select>
-					<input type="text" class="form-control w-25" placeholder="Buscar cliente...">
-					<input type="date" class="form-control w-auto">
-					<input type="date" class="form-control w-auto">
-					<button class="btn btn-primary"><i class="fas fa-search"></i></button>
-					<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
-						Nueva Solicitud
-					</button>
+				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+					<!-- Botón para cargar archivo Excel -->
+					<div class="w-auto">
+						<label class="form-label d-block">&nbsp;</label>
+						<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+							Cargar Excel
+						</button>
+					</div>
+				</div>
+
+				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+					<!-- Empresa -->
+					<div class="flex-grow-1">
+						<label for="filtroEmpresa" class="form-label">Buscar Empresa</label>
+						<input type="search" class="form-control" id="filtroEmpresa" list="listaEmpresas"
+							autocomplete="off" placeholder="Buscar empresa">
+						<datalist id="listaEmpresas"></datalist>
+						<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
+					</div>
+
+					<!-- Cliente -->
+					<div class="flex-grow-1">
+						<label for="filtroClientes" class="form-label">Buscar Cliente</label>
+						<input type="search" class="form-control" id="filtroClientes" list="listaClientes"
+							autocomplete="off" placeholder="Buscar empresa">
+						<datalist id="listaClientes"></datalist>
+						<div id="spinnerClientes" class="spinner-border text-primary" style="display: none;"></div>
+					</div>
+
+					<!-- Fecha inicio -->
+					<div class="w-auto">
+						<label for="fechaInicio" class="form-label">Fecha Inicio</label>
+						<input type="date" id="fechaInicio" class="form-control">
+					</div>
+
+					<!-- Fecha fin -->
+					<div class="w-auto">
+						<label for="fechaFin" class="form-label">Fecha Fin</label>
+						<input type="date" id="fechaFin" class="form-control">
+					</div>
+
+					<!-- Botón Buscar -->
+					<div class="w-auto">
+						<label class="form-label d-block">&nbsp;</label>
+						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
+					</div>
+
+					<!-- Botón Nueva Solicitud -->
+					<div class="w-auto">
+						<label class="form-label d-block">&nbsp;</label>
+						<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+							Nueva Solicitud
+						</button>
+					</div>
+				</div>
+
+				<!-- Spinner de carga -->
+				<div id="spinner" class="spinner-border text-primary"
+					style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+					<span class="sr-only">Cargando...</span>
 				</div>
 
 				<table class="table table-bordered text-center">
@@ -49,9 +98,9 @@
 					</tbody>
 				</table>
 				<div class="d-flex justify-content-between">
-				    <button id="btnAnterior" class="btn btn-primary">Anterior</button>
-				    <span id="paginaActual">Página 1</span>
-				    <button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
+					<button id="btnAnterior" class="btn btn-primary">Anterior</button>
+					<span id="paginaActual">Página 1</span>
+					<button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
 				</div>
 			</div>
 		</body>
@@ -69,8 +118,9 @@
 
 					<!-- Cuerpo del modal -->
 					<div class="modal-body">
-						<form>
+						<form id="solicitudForm">
 							<!-- Primera fila -->
+							<input type="hidden" id="idSolicitud">
 							<div class="row mb-3">
 								<div class="col-md-12">
 									<label for="buscarEmpresa" class="form-label">Nombre de la Empresa</label>
@@ -196,6 +246,29 @@
 			</div>
 		</div>
 
+		<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-info text-white">
+						<h5 class="modal-title" id="uploadExcelModalLabel">Subir Archivo Excel</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="uploadExcelForm">
+							<div class="mb-3">
+								<label for="excelFile" class="form-label">Seleccionar archivo Excel</label>
+								<input type="file" class="form-control" id="excelFile" accept=".xls,.xlsx">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="uploadExcelButton">Subir</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
 
 	<th:block layout:fragment="page-scripts">
