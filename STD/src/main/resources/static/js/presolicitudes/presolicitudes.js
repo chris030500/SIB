@@ -4,7 +4,7 @@ window.onload = function() {
 	//listaEmpresas();
 }
 
-var urlPrincipal = "http://localhost:8090/STD/configuracionSolicitudes/";
+var urlPrincipal = "http://localhost:8085/STD/configuracionSolicitudes/";
 let idEmpresaSeleccionada = null;
 let idProductoSeleccionado = null;
 let tasaAnual = null; // Tasa de interés anual en %
@@ -287,7 +287,7 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 function listaMontos(producto, idEmpresa, puesto) {
 
 	// Construir la URL del endpoint con los parámetros
-	const url = `http://localhost:8090/STD/configuracionSolicitudes/condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+	const url = `http://localhost:8085/STD/configuracionSolicitudes/condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
 
 	// Hacer la solicitud GET al endpoint
 	fetch(url)
@@ -463,8 +463,8 @@ function guardarSolicitud() {
 
 	// Determinar si se crea o edita la solicitud
 	const url = solicitudData.id
-		? `http://localhost:8090/STD/configuracionSolicitudes/editarSolicitud/${solicitudData.id}`
-		: "http://localhost:8090/STD/configuracionSolicitudes/crearSolicitud";
+		? `http://localhost:8085/STD/configuracionSolicitudes/editarSolicitud/${solicitudData.id}`
+		: "http://localhost:8085/STD/configuracionSolicitudes/crearSolicitud";
 	const metodo = solicitudData.id ? "PUT" : "POST";
 
 	fetch(url, {
@@ -567,7 +567,7 @@ function cargarSolicitudes(pagina) {
 	// Mostrar spinner
 	document.getElementById("spinner").style.display = "block";
 
-	fetch(`http://localhost:8090/STD/configuracionSolicitudes/listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+	fetch(`http://localhost:8085/STD/configuracionSolicitudes/listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
 		.then(response => response.json())
 		.then(data => {
 			let tabla = document.getElementById("tablaSolicitudes");
@@ -614,14 +614,14 @@ $(document).on("click", ".btn-editar", function() {
 
 	// Obtener la solicitud por ID
 	$.ajax({
-		url: `http://localhost:8090/STD/configuracionSolicitudes/solicitud/${solicitudId}`,
+		url: `http://localhost:8085/STD/configuracionSolicitudes/solicitud/${solicitudId}`,
 		type: "GET",
 		success: function(dataSolicitud) {
 			console.log("Solicitud obtenida:", dataSolicitud);
 
 			// Obtener la empresa asociada a la solicitud
 			$.ajax({
-				url: `http://localhost:8090/STD/configuracionSolicitudes/empresa/${dataSolicitud.empresa}`,
+				url: `http://localhost:8085/STD/configuracionSolicitudes/empresa/${dataSolicitud.empresa}`,
 				type: "GET",
 				success: function(dataEmpresa) {
 					console.log("Empresa obtenida:", dataEmpresa);
@@ -730,96 +730,82 @@ function cargarEmpresasFiltro() {
 }
 
 document.getElementById("uploadExcelButton").addEventListener("click", function() {
-	let fileInput = document.getElementById("excelFile");
-	let file = fileInput.files[0];
+    let fileInput = document.getElementById("excelFile");
+    let file = fileInput.files[0];
 
-	console.log("Inicia lectura de archivo");
+    console.log("Inicia lectura de archivo");
 
-	if (!file) {
-		Swal.fire({
-			icon: "warning",
-			title: "Archivo no seleccionado",
-			text: "Por favor selecciona un archivo antes de subirlo.",
-		});
-		return;
-	}
+    if (!file) {
+        Swal.fire({
+            icon: "warning",
+            title: "Archivo no seleccionado",
+            text: "Por favor selecciona un archivo antes de subirlo.",
+        });
+        return;
+    }
 
-	let formData = new FormData();
-	formData.append("file", file);
+    let formData = new FormData();
+    formData.append("file", file);
 
-	console.log("Archivo seleccionado:", file.name);
-	console.log("Tipo:", file.type);
-	console.log("Tamaño:", file.size);
+    console.log("Archivo seleccionado:", file.name);
+    console.log("Tipo:", file.type);
+    console.log("Tamaño:", file.size);
 
-	// Muestra el loading mientras se sube el archivo
-	Swal.fire({
-		title: "Subiendo archivo...",
-		text: "Por favor espera mientras se procesa.",
-		allowOutsideClick: false,
-		allowEscapeKey: false,
-		didOpen: () => {
-			Swal.showLoading();
-		}
-	});
+    // Mostrar alerta de carga con tiempo máximo
+    Swal.fire({
+        title: "Subiendo archivo...",
+        text: "Por favor espera mientras se procesa.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-	// Hacer la solicitud fetch de manera asíncrona
-	fetch("http://localhost:8090/STD/configuracionSolicitudes/upload", {
-		method: "POST",
-		body: formData
-	})
-		.then(response => response.text())
-		.then(data => {
-			console.log("Respuesta del backend:", data);
+    // Cerrar Swal después de 15 segundos si no hay respuesta
+    let swalTimeout = setTimeout(() => {
+        Swal.close();
+    }, 15000);
 
-			// Cerrar el loading de Swal
-			Swal.close();
+    fetch("http://localhost:8085/STD/configuracionSolicitudes/upload", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay respuesta
+        console.log("Respuesta del backend:", data);
 
-			// Mostrar un mensaje de éxito
-			Swal.fire({
-				icon: "success",
-				title: "Archivo subido correctamente",
-				text: data,
-			}).then(() => {
-				// Cerrar el modal de carga de archivo (Bootstrap modal)
-				var uploadModal = document.getElementById('uploadExcelModal');
-				var modal = bootstrap.Modal.getInstance(uploadModal); // Obtener la instancia del modal
-				modal.hide(); // Cerrar el modal
+        Swal.close(); // Cerrar el loading de Swal
 
-				// Limpiar el input después de subir el archivo
-				fileInput.value = "";
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            icon: "success",
+            title: "Archivo subido correctamente",
+            text: data,
+        }).then(() => {
+            // Limpiar input
+            fileInput.value = "";
+  
+            // Recargar datos
+            cargarSolicitudes(paginaActual);
+        });
+    })
+    .catch(error => {
+        clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay error
+        console.error("Error al subir el archivo:", error);
 
-				// Eliminar los backdrops residuales y restaurar el estado
-				setTimeout(() => {
-					let backdrops = document.querySelectorAll('.modal-backdrop');
-					backdrops.forEach(backdrop => backdrop.remove());
+        Swal.close(); // Cerrar el loading de Swal
 
-					// Restaurar el estado del body
-					document.body.classList.remove('modal-open');
-					document.body.style.overflow = '';
-					
-					uploadModal.style.display = 'block'
-					uploadModal.style.display = 'none'
-					
-				}, 300);
-
-
-				cargarSolicitudes(paginaActual);
-			});
-		})
-		.catch(error => {
-			console.error("Error al subir el archivo:", error);
-
-			// Cerrar el loading de Swal
-			Swal.close();
-
-			// Mostrar un mensaje de error
-			Swal.fire({
-				icon: "error",
-				title: "Error al subir el archivo",
-				text: "Hubo un problema al procesar el archivo.",
-			});
-		});
+        // Mostrar mensaje de error
+        Swal.fire({
+            icon: "error",
+            title: "Error al subir el archivo",
+            text: "Hubo un problema al procesar el archivo.",
+        });
+    });
 });
+
 
 
 

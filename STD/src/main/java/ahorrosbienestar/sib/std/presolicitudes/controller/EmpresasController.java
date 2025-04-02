@@ -61,7 +61,6 @@ public class EmpresasController {
 	public void init() {
 		try {
 			ConfiguracionCorreo configuracionCorreo = configuracionCorreoRepository.findFirstByOrderByPkIdConfAsc();
-			System.out.print(configuracionCorreo.getCronExpresion());
 			actualizarExpresionCron(configuracionCorreo.getCronExpresion());
 		} catch (Exception e) {
 			logger.error("" + e.getMessage());

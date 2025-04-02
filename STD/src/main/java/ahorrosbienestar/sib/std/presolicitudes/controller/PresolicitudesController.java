@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import ahorrosbienestar.sib.std.presolicitudes.model.Empleado;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.model.Puesto;
 import ahorrosbienestar.sib.std.presolicitudes.model.SolicitudCredito;
+import ahorrosbienestar.sib.std.presolicitudes.repository.SolicitudCreditoRepository;
 import ahorrosbienestar.sib.std.presolicitudes.service.ClienteActivoService;
 import ahorrosbienestar.sib.std.presolicitudes.service.CondicionesService;
 import ahorrosbienestar.sib.std.presolicitudes.service.EmpresaService;
@@ -88,6 +90,9 @@ public class PresolicitudesController {
 
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private SolicitudCreditoRepository solicitudCreditoRepository;
 
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
@@ -107,8 +112,6 @@ public class PresolicitudesController {
 			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			idEmpleado = usuario.get(0).getI_id_empleado();
 			sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
-			System.out.print(idEmpleado);
-			System.out.print(sucur);
 			if (validarAcceso() == 1) {
 
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
@@ -153,7 +156,6 @@ public class PresolicitudesController {
 
 	@GetMapping("/lista_empleados")
 	public ResponseEntity<List<Empleado>> obtenerClientesPorEmpresaEmpleado(@RequestParam Integer empresaEmpleado) {
-		System.out.print(empresaEmpleado);
 		List<Empleado> clientes = clienteActivoService.obtenerClientesPorEmpresaEmpleado(empresaEmpleado);
 		return ResponseEntity.ok(clientes);
 	}
@@ -291,79 +293,102 @@ public class PresolicitudesController {
 	}
 
 	@PostMapping("/upload")
-	public ResponseEntity<String> uploadExcel(@RequestParam("file") MultipartFile file) {
-		if (file.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
-		}
+	public ResponseEntity<String> uploadExcel2(@RequestParam("file") MultipartFile file) {
+	    if (file.isEmpty()) {
+	        System.out.println("[ERROR] El archivo está vacío.");
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
+	    }
 
-		try (InputStream inputStream = file.getInputStream()) {
-			Workbook workbook;
+	    try (InputStream inputStream = file.getInputStream()) {
+	        System.out.println("[INFO] Iniciando procesamiento del archivo...");
+	        Workbook workbook;
 
-			if (file.getOriginalFilename().endsWith(".xlsx")) {
-				workbook = new XSSFWorkbook(inputStream);
-			} else if (file.getOriginalFilename().endsWith(".xls")) {
-				workbook = new HSSFWorkbook(inputStream);
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
-			}
+	        if (file.getOriginalFilename().endsWith(".xlsx")) {
+	            workbook = new XSSFWorkbook(inputStream);
+	        } else if (file.getOriginalFilename().endsWith(".xls")) {
+	            workbook = new HSSFWorkbook(inputStream);
+	        } else {
+	            System.out.println("[ERROR] Formato de archivo no válido.");
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
+	        }
 
-			Sheet sheet = workbook.getSheetAt(0);
-			List<Map<String, String>> solicitudes = new ArrayList<>();
-			Iterator<Row> rowIterator = sheet.iterator();
+	        Sheet sheet = workbook.getSheetAt(0);
+	        List<Map<String, String>> solicitudes = new ArrayList<>();
+	        Iterator<Row> rowIterator = sheet.iterator();
 
-			// Leer encabezados
-			Row headerRow = rowIterator.next();
-			List<String> headers = new ArrayList<>();
-			for (Cell cell : headerRow) {
-				headers.add(cell.getStringCellValue().trim());
-			}
+	        // Leer encabezados
+	        Row headerRow = rowIterator.next();
+	        List<String> headers = new ArrayList<>();
+	        for (Cell cell : headerRow) {
+	            headers.add(cell.getStringCellValue().trim());
+	        }
+	        System.out.println("[INFO] Encabezados detectados: " + headers);
 
-			// Leer datos
-			while (rowIterator.hasNext()) {
-				Row row = rowIterator.next();
-				Map<String, String> solicitud = new HashMap<>();
+	        // Leer datos
+	        while (rowIterator.hasNext()) {
+	            Row row = rowIterator.next();
+	            Map<String, String> solicitud = new HashMap<>();
 
-				for (int i = 0; i < headers.size(); i++) { // ✅ Solo un bucle
-					Cell cell = row.getCell(i);
-					String cellValue = "";
+	            for (int i = 0; i < headers.size(); i++) {
+	                Cell cell = row.getCell(i);
+	                String cellValue = "";
 
-					if (cell != null) {
-						switch (cell.getCellType()) {
-						case STRING:
-							cellValue = cell.getStringCellValue().trim();
-							break;
-						case NUMERIC:
-							if (DateUtil.isCellDateFormatted(cell)) {
-								cellValue = cell.getDateCellValue().toString(); // Si es fecha, conviértela a string
-							} else {
-								cellValue = String.valueOf((int) cell.getNumericCellValue()); // Convertir a entero si
-																								// es numérico
-							}
-							break;
-						case BOOLEAN:
-							cellValue = String.valueOf(cell.getBooleanCellValue());
-							break;
-						default:
-							cellValue = "";
-						}
-					}
+	                if (cell != null) {
+	                    switch (cell.getCellType()) {
+	                        case STRING:
+	                            cellValue = cell.getStringCellValue().trim();
+	                            break;
+	                        case NUMERIC:
+	                            if (DateUtil.isCellDateFormatted(cell)) {
+	                                cellValue = cell.getDateCellValue().toString();
+	                            } else {
+	                                cellValue = String.valueOf((int) cell.getNumericCellValue());
+	                            }
+	                            break;
+	                        case BOOLEAN:
+	                            cellValue = String.valueOf(cell.getBooleanCellValue());
+	                            break;
+	                        default:
+	                            cellValue = "";
+	                    }
+	                }
+	                solicitud.put(headers.get(i), cellValue);
+	            }
+	            solicitudes.add(solicitud);
+	        }
+	        System.out.println("[INFO] Datos extraídos: " + solicitudes);
+	        workbook.close();
 
-					solicitud.put(headers.get(i), cellValue);
-				}
+	        // Llamar al servicio para actualizar estatus
+	        solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes);
+	        System.out.println("[INFO] Estatus de solicitudes actualizado.");
 
-				solicitudes.add(solicitud);
-			}
+	        // Obtener IDs de solicitudes
+	        List<Integer> solicitudIds = solicitudes.stream()
+	                .map(s -> {
+	                    String idStr = s.get("NoSolicitud");
+	                    return idStr != null ? Integer.parseInt(idStr) : null;
+	                })
+	                .filter(Objects::nonNull)
+	                .collect(Collectors.toList());
+	        System.out.println("[INFO] IDs de solicitudes extraídos: " + solicitudIds);
 
-			workbook.close();
+	        List<SolicitudCredito> solicitudesActualizadas = solicitudCreditoRepository.findAllById(solicitudIds);
+	        System.out.println("[INFO] Solicitudes obtenidas de la BD: " + solicitudesActualizadas);
 
-			// Llamar al servicio para actualizar estatus
-			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes);
+	        // Agrupar por sucursal
+	        Map<Integer, List<SolicitudCredito>> solicitudesPorSucursal = solicitudesActualizadas.stream()
+	                .collect(Collectors.groupingBy(SolicitudCredito::getSucursal));
+	        System.out.println("[INFO] Solicitudes agrupadas por sucursal: " + solicitudesPorSucursal);
 
-			return ResponseEntity.ok("Archivo procesado correctamente.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error al procesar el archivo: " + e.getMessage());
-		}
+	        
+
+	        return ResponseEntity.ok("Archivo procesado y notificaciones enviadas correctamente.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("[ERROR] Excepción capturada: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error al procesar el archivo: " + e.getMessage());
+	    }
 	}
 }

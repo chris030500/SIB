@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -17,13 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.presolicitudes.model.ConfiguracionCorreo;
 import ahorrosbienestar.sib.std.presolicitudes.model.Empresa;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.model.ProcesoEnvioCorreoVobo;
+import ahorrosbienestar.sib.std.presolicitudes.repository.ConfiguracionCorreoRepository;
 import ahorrosbienestar.sib.std.presolicitudes.repository.EmpresaRepository;
 import ahorrosbienestar.sib.std.presolicitudes.repository.EmpresaSIBRepository;
 import ahorrosbienestar.sib.std.presolicitudes.repository.ProcesoEnvioCorreoVoboRepository;
@@ -35,9 +39,6 @@ import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 @Service
 public class EmpresaService {
 
-	@Value("${spring.mail.username}")
-	private String remitente;
-
 	private final EmpresaRepository empresaRepository;
 
 	private final EmpresaSIBRepository empresaSIBRepository;
@@ -47,8 +48,11 @@ public class EmpresaService {
 	private final SolicitudCreditoRepository solicitudCreditoRepository;
 	
 	@Autowired
+    private ConfiguracionCorreoRepository configuracionCorreoRepository;
+	
+	@Autowired
 	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaración estática del
-																					// Logger
+																// Logger
 
 	@Autowired
 	private final JavaMailSender mailSender;
@@ -211,29 +215,54 @@ public class EmpresaService {
 	}
 
 
-	public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName,
-			byte[] fileBytes) {
-		
-		System.out.print("Inicia envio de correo");
+	public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName, byte[] fileBytes) {
+        System.out.print("Inicia envío de correo");
 
-		try {
-			MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			helper.setFrom(remitente);
-			helper.setTo(destinatario);
-			helper.setSubject(asunto);
-			helper.setText(contenidoHtml, true);
+        try {
+            // 🔹 Obtener remitente y contraseña de la BD
+            ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
+            if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
+                throw new RuntimeException("No se encontró un remitente o contraseña configurada en la base de datos.");
+            }
 
-			DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
-			helper.addAttachment(fileName, dataSource);
+            String remitente = config.getCorreoRemitente();
+            String password = config.getPassword();
 
-			mailSender.send(message);
-		} catch (MessagingException e) {
-			logger.error(Constantes.MENSAJE_ERROR + e.getMessage(), e); // Agregar el error completo en el log
-			System.out.print("Inicia generacion de correo FALLO");
-		} catch (Exception e) {
-			logger.error("Error desconocido al enviar el correo: " + e.getMessage(), e); // Agregar captura más general
-			System.out.print("Inicia generacion de correo FALLO 2");
-		}
-	}
+            System.out.println("Enviando correo desde: " + remitente);
+
+            // 🔹 Crear un JavaMailSender dinámico con los datos de la BD
+            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+            mailSender.setHost("smtp.office365.com"); // Cambia esto según tu proveedor SMTP
+            mailSender.setPort(587);
+            mailSender.setUsername(remitente);
+            mailSender.setPassword(password);
+
+            Properties props = mailSender.getJavaMailProperties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+
+            // 🔹 Crear el mensaje
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(remitente);
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(contenidoHtml, true);
+
+            // 🔹 Adjuntar archivo
+            DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
+            helper.addAttachment(fileName, dataSource);
+
+            // 🔹 Enviar correo
+            mailSender.send(message);
+            System.out.println("Correo enviado exitosamente desde: " + remitente);
+
+        } catch (MessagingException e) {
+            System.out.print("Fallo en el envío de correo: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.print("Error desconocido al enviar el correo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

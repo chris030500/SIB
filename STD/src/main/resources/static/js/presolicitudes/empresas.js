@@ -4,7 +4,7 @@ window.onload = function() {
 	listaEmpresas();
 }
 
-var urlPrincipal = "http://localhost:8090/STD/configuracionEmpresas/";
+var urlPrincipal = "http://localhost:8085/STD/configuracionEmpresas/";
 
 var buscarEmpresa = document.getElementById('buscarEmpresa');
 var correoEmpresa = document.getElementById('correoEmpresa');
