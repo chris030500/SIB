@@ -59,8 +59,17 @@ public class SolicitudCredito {
     
     @Column(name = "FK_ID_PROCESO")
     private Integer proceso;
+    
+    @Override
+	public String toString() {
+		return "SolicitudCredito [id=" + id + ", empresa=" + empresa + ", empleado=" + empleado + ", producto="
+				+ producto + ", numEmpleado=" + numEmpleado + ", puesto=" + puesto + ", plazo=" + plazo
+				+ ", frecuencia=" + frecuencia + ", montoSolicitado=" + montoSolicitado + ", montoDescontar="
+				+ montoDescontar + ", fechaSolicitud=" + fechaSolicitud + ", ejecutivo=" + ejecutivo + ", sucursal="
+				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso + "]";
+	}
 
-    // Getters y Setters
+	// Getters y Setters
     public Integer getId() {
         return id;
     }

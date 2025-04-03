@@ -4,7 +4,14 @@ window.onload = function() {
 	//listaEmpresas();
 }
 
-var urlPrincipal = "http://localhost:8085/STD/configuracionSolicitudes/";
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+// Variables | validacion de la liga absoluta
+var urlPrincipal = getAbsolutePath();
 let idEmpresaSeleccionada = null;
 let idProductoSeleccionado = null;
 let tasaAnual = null; // Tasa de interés anual en %
@@ -287,7 +294,7 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 function listaMontos(producto, idEmpresa, puesto) {
 
 	// Construir la URL del endpoint con los parámetros
-	const url = `http://localhost:8085/STD/configuracionSolicitudes/condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+	const url = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
 
 	// Hacer la solicitud GET al endpoint
 	fetch(url)
@@ -463,8 +470,8 @@ function guardarSolicitud() {
 
 	// Determinar si se crea o edita la solicitud
 	const url = solicitudData.id
-		? `http://localhost:8085/STD/configuracionSolicitudes/editarSolicitud/${solicitudData.id}`
-		: "http://localhost:8085/STD/configuracionSolicitudes/crearSolicitud";
+		? urlPrincipal + `editarSolicitud/${solicitudData.id}`
+		: urlPrincipal + "crearSolicitud";
 	const metodo = solicitudData.id ? "PUT" : "POST";
 
 	fetch(url, {
@@ -567,29 +574,33 @@ function cargarSolicitudes(pagina) {
 	// Mostrar spinner
 	document.getElementById("spinner").style.display = "block";
 
-	fetch(`http://localhost:8085/STD/configuracionSolicitudes/listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+	fetch(urlPrincipal + `listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
 		.then(response => response.json())
 		.then(data => {
 			let tabla = document.getElementById("tablaSolicitudes");
 			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
 			let filas = data.content.map((solicitud) => {
-				return `<tr>
-                    <td>${solicitud.id}</td>
-                    <td>${solicitud.empleado}</td>
-                    <td>${solicitud.fechaSolicitud}</td>
-                    <td>${solicitud.empresa}</td>
-                    <td>$ ${solicitud.montoSolicitado}</td>
-                    <td>$ ${solicitud.montoDescontar}</td>
-                    <td>${obtenerEstatus(solicitud.estatus)}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
+			    return `<tr>
+			        <td>${solicitud.id}</td>
+			        <td>${solicitud.empleado}</td>
+			        <td>${solicitud.fechaSolicitud}</td>
+			        <td>${solicitud.empresa}</td>
+			        <td>$ ${solicitud.montoSolicitado}</td>
+			        <td>$ ${solicitud.montoDescontar}</td>
+			        <td>${obtenerEstatus(solicitud.estatus)}</td>
+			        <td>
+			            <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+			                <i class="fas fa-edit"></i>
+			            </button>
+			            ${solicitud.estatus === 3 ? `
+			            <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
+			                <i class="fas fa-file-pdf"></i>
+			            </button>` : ''}
+			        </td>
+			    </tr>`;
 			}).join('');
+
 
 			tabla.innerHTML = filas;
 
@@ -607,21 +618,28 @@ function cargarSolicitudes(pagina) {
 		});
 }
 
-
+// Manejo de eventos de botones (Event Delegation)
+document.addEventListener("click", function(event) {
+	if (event.target.closest(".btn-pdf")) {
+		let id = event.target.closest(".btn-pdf").getAttribute("data-id");
+		console.log(id);
+		generarReporte(id);
+	}
+});
 
 $(document).on("click", ".btn-editar", function() {
 	var solicitudId = $(this).data("id"); // Obtener el ID de la solicitud
 
 	// Obtener la solicitud por ID
 	$.ajax({
-		url: `http://localhost:8085/STD/configuracionSolicitudes/solicitud/${solicitudId}`,
+		url: urlPrincipal + `solicitud/${solicitudId}`,
 		type: "GET",
 		success: function(dataSolicitud) {
 			console.log("Solicitud obtenida:", dataSolicitud);
 
 			// Obtener la empresa asociada a la solicitud
 			$.ajax({
-				url: `http://localhost:8085/STD/configuracionSolicitudes/empresa/${dataSolicitud.empresa}`,
+				url: urlPrincipal + `empresa/${dataSolicitud.empresa}`,
 				type: "GET",
 				success: function(dataEmpresa) {
 					console.log("Empresa obtenida:", dataEmpresa);
@@ -767,7 +785,7 @@ document.getElementById("uploadExcelButton").addEventListener("click", function(
         Swal.close();
     }, 15000);
 
-    fetch("http://localhost:8085/STD/configuracionSolicitudes/upload", {
+    fetch(urlPrincipal + "upload", {
         method: "POST",
         body: formData
     })
@@ -805,6 +823,44 @@ document.getElementById("uploadExcelButton").addEventListener("click", function(
         });
     });
 });
+
+
+function generarReporte(id) {
+	console.log("Generando reporte para la solicitud:", id);
+
+	$.ajax({
+		url: `${urlPrincipal}reporte_gestion/${id}`, // Corregido
+		type: "POST",
+		dataType: "JSON",
+		contentType: "application/json; charset=utf-8",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+			if (respuesta.length > 0) {
+				let urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+				window.open(urlReporte, "_blank");
+			} else {
+				swal({
+					title: "Error",
+					text: "No se recibió una URL válida.",
+					icon: "warning",
+				});
+			}
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error",
+				text: "Se presentó un error, intente más tarde.",
+				icon: "warning",
+			});
+		}
+	});
+}
+
 
 
 

@@ -24,17 +24,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.operaciones.reportes.controller.ReportesRestController;
 import ahorrosbienestar.sib.std.presolicitudes.model.ConfiguracionCorreo;
 import ahorrosbienestar.sib.std.presolicitudes.model.Empresa;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.repository.ConfiguracionCorreoRepository;
 import ahorrosbienestar.sib.std.presolicitudes.service.ConfiguracionCorreoService;
 import ahorrosbienestar.sib.std.presolicitudes.service.EmpresaService;
-import lombok.AllArgsConstructor;
 
 @Controller
-@AllArgsConstructor
 @RequestMapping("configuracionEmpresas")
 public class EmpresasController {
 
@@ -48,7 +45,7 @@ public class EmpresasController {
 	private ConfiguracionCorreoRepository configuracionCorreoRepository;
 
 	@Autowired
-	private static final Logger logger = Logger.getLogger(ReportesRestController.class);
+	private static final Logger logger = Logger.getLogger(EmpresasController.class);
 
 	@Autowired
 	private TaskScheduler taskScheduler;
