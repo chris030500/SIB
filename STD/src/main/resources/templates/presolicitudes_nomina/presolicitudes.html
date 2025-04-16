@@ -144,16 +144,23 @@
 							</div>
 
 							<!-- Segunda fila -->
-							<div class="row mb-3">
-								<div class="col-md-12">
-									<label for="buscarProducto" class="form-label">Producto</label>
-									<input type="search" class="form-control" id="buscarProducto" list="opcionProducto"
-										autocomplete="off" placeholder="Buscar producto">
-									<datalist id="opcionProducto"></datalist>
-									<div id="spinnerProducto" class="spinner-border text-primary"
-										style="display: none;"></div>
+							<div class="col-md-12">
+								<label for="buscarProducto" class="form-label">Producto</label>
+								<input type="search" class="form-control mb-2" id="buscarProducto" list="opcionProducto"
+									autocomplete="off" placeholder="Buscar producto">
+								<datalist id="opcionProducto"></datalist>
+								<div id="spinnerProducto" class="spinner-border text-primary" style="display: none;">
+								</div>
+
+								<!-- Checkbox solo visible si el producto es NOMIPRESTAMO -->
+								<div id="checkboxNomiPrestamoRow" class="form-check mt-2" style="display: none;">
+									<input class="form-check-input" type="checkbox" id="checkNomiprestamo">
+									<label class="form-check-label" for="checkNomiprestamo">
+										¿Este crédito es una renovación?
+									</label>
 								</div>
 							</div>
+
 
 							<!-- Tercera fila -->
 							<div class="row mb-3">
@@ -205,6 +212,13 @@
 										<input type="number" id="montoDescontar" class="form-control text-end"
 											placeholder="500" min="0" step="0.01">
 									</div>
+								</div>
+							</div>
+							<!-- Campo de comentarios -->
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="comentariosSolicitud" class="form-label">Comentarios</label>
+									<textarea class="form-control" id="comentariosSolicitud" rows="3" placeholder="Escribe un comentario (opcional)..."></textarea>
 								</div>
 							</div>
 						</form>

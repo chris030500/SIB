@@ -18,12 +18,12 @@ import ahorrosbienestar.sib.std.presolicitudes.model.SolicitudCredito;
 @Repository
 public interface SolicitudCreditoRepository extends JpaRepository<SolicitudCredito, Integer> {
 	
-	Page<SolicitudCredito> findAllByOrderByIdDesc(Pageable pageable);
+	Page<SolicitudCredito> findAllByEjecutivoOrderByIdDesc(Integer ejecutivo, Pageable pageable);
 	
 	@Query("SELECT s FROM SolicitudCredito s WHERE s.id IN :ids")
     List<SolicitudCredito> findByIds(@Param("ids") List<Integer> ids);
 	
-	@Query("SELECT COUNT(s) FROM SolicitudCredito s WHERE s.empresa = :empresa")
+	@Query("SELECT COUNT(s) FROM SolicitudCredito s WHERE s.empresa = :empresa AND s.estatus = 1")
     int contarSolicitudesPorEmpresa(@Param("empresa") String empresa);
 	
 	@Modifying

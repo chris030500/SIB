@@ -28,8 +28,8 @@ public class SolicitudCreditoService {
         return solicitudCreditoRepository.findById(id);
     }
 	
-	public Page<SolicitudCredito> listarSolicitudes(Pageable pageable) {
-	    return solicitudCreditoRepository.findAllByOrderByIdDesc(pageable);
+	public Page<SolicitudCredito> listarSolicitudes(Integer idEmpleado, Pageable pageable) {
+	    return solicitudCreditoRepository.findAllByEjecutivoOrderByIdDesc(idEmpleado, pageable);
 	}
 	
 	// Método para obtener una solicitud por su ID

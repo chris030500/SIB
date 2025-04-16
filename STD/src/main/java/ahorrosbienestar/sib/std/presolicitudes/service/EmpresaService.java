@@ -3,26 +3,25 @@ package ahorrosbienestar.sib.std.presolicitudes.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.presolicitudes.model.ConfiguracionCorreo;
 import ahorrosbienestar.sib.std.presolicitudes.model.Empresa;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
@@ -52,10 +51,6 @@ public class EmpresaService {
 	
 	@Autowired
 	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaración estática del
-																// Logger
-
-	@Autowired
-	private final JavaMailSender mailSender;
 
 	@Autowired
 	private final JasperReportController jasperReportController;
@@ -67,19 +62,17 @@ public class EmpresaService {
     private ProcesoEnvioCorreoVoboRepository procesoEnvioCorreoVoboRepository;
 
 	public EmpresaService(EmpresaRepository empresaRepository, EmpresaSIBRepository empresaSIBRepository,
-			IReporteRepository iReporteRepository, JavaMailSender mailSender,
+			IReporteRepository iReporteRepository,
 			JasperReportController jasperReportController, SolicitudCreditoRepository solicitudCreditoRepository) {
 		this.empresaRepository = empresaRepository;
 		this.empresaSIBRepository = empresaSIBRepository;
 		this.iReporteRepository = iReporteRepository;
-		this.mailSender = mailSender;
 		this.jasperReportController = jasperReportController;
 		this.solicitudCreditoRepository = solicitudCreditoRepository;
 	}
 
 	public List<Empresa> obtenerTodasLasEmpresas() {
 		try {
-			System.out.println(empresaRepository.findAll());
 			return empresaRepository.findAll(); // Asegúrate de que `findAll()` está funcionando
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -123,6 +116,10 @@ public class EmpresaService {
                 return diasDesdeUltima >= 15;
             case 3:
                 return diasDesdeUltima >= 30;
+            case 4:
+                return diasDesdeUltima >= 1;
+            case 5: 
+            	return true;    
             default:
                 return false;
         }
@@ -139,7 +136,7 @@ public class EmpresaService {
 
 	        for (EmpresaSIB correoContenido : listaCorreos) {
 	            if (debeEnviarNotificacion(correoContenido, ahora)) {
-	                
+
 	                // 1. Contar cuántas solicitudes existen para la empresa
 	                int cantidadSolicitudes = solicitudCreditoRepository.contarSolicitudesPorEmpresa(
 	                    correoContenido.getNombre()
@@ -147,43 +144,63 @@ public class EmpresaService {
 
 	                // Si no hay solicitudes, no se hace nada
 	                if (cantidadSolicitudes == 0) {
-	                	// 6. **Actualizar la fecha de última notificación en EmpresaSIB**
-		                correoContenido.setFecha(ahora);
-		                empresaSIBRepository.save(correoContenido);
+	                    correoContenido.setFecha(ahora);
+	                    empresaSIBRepository.save(correoContenido);
 	                    System.out.println("No hay solicitudes para la empresa: " + correoContenido.getNombre());
 	                    continue;
 	                }
 
 	                // 2. Crear un nuevo proceso de envío de correo
 	                ProcesoEnvioCorreoVobo procesoEnvio = new ProcesoEnvioCorreoVobo();
-	                procesoEnvio.setVcEmpresa(correoContenido.getNombre()); // Nombre de la empresa
+	                procesoEnvio.setVcEmpresa(correoContenido.getNombre());
 	                procesoEnvio.setDtFechaEnvio(ahora);
-	                procesoEnvio.setIEstatus(0);  // Estatus inicial (pendiente)
+	                procesoEnvio.setIEstatus(0); // Estatus inicial (pendiente)
 	                procesoEnvio.setICantidadSolicitudes(cantidadSolicitudes);
-	                procesoEnvio = procesoEnvioCorreoVoboRepository.save(procesoEnvio);  // Guarda el proceso y obtiene el ID
+	                procesoEnvio = procesoEnvioCorreoVoboRepository.save(procesoEnvio);
 
 	                // 3. Actualizar las solicitudes con el ID del proceso recién creado
 	                solicitudCreditoRepository.actualizarSolicitudesPorEmpresa(
 	                    correoContenido.getNombre(), procesoEnvio.getPkIdProceso()
 	                );
 
-	                // 4. Enviar correo
-	                String correo = correoContenido.getCorreoContacto();
+	                // 4. Validar correos
+	                String correos = correoContenido.getCorreoContacto();
+	                String[] destinatarios = correos.split(";");
+	                boolean todosValidos = true;
+
+	                for (String dest : destinatarios) {
+	                    try {
+	                        new InternetAddress(dest.trim()).validate();
+	                    } catch (AddressException e) {
+	                        System.out.println("Correo inválido para empresa " + correoContenido.getNombre() + ": " + dest);
+	                        todosValidos = false;
+	                        break;
+	                    }
+	                }
+
+	                if (!todosValidos) {
+	                    continue; // Saltar al siguiente si algún correo es inválido
+	                }
+
+	                // 5. Preparar y enviar el correo
 	                String fileName = correoContenido.getNombre() + fechaActual + datosReporte.getVc_extension();
 	                String contenidoCorreo = contenidoCorreo(correoContenido.getId());
-	                InternetAddress direccion = new InternetAddress(correo);
-	                
 	                String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
 	                byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
 
-	                sendEmailWithAttachment(direccion.getAddress(), 
-	                    "Solicitudes de Nómina para Aprobación", contenidoCorreo, fileName, fileBytes);
+	                sendEmailWithAttachment(
+	                    correos,  // puede ir con ;
+	                    "Solicitudes Vo.bo. Bienestar",
+	                    contenidoCorreo,
+	                    fileName,
+	                    fileBytes
+	                );
 
-	                // 5. Actualizar el estatus del proceso a "completado"
-	                procesoEnvio.setIEstatus(1);  // 1 para completado
+	                // 6. Actualizar el estatus del proceso a "completado"
+	                procesoEnvio.setIEstatus(1);
 	                procesoEnvioCorreoVoboRepository.save(procesoEnvio);
 
-	                // 6. **Actualizar la fecha de última notificación en EmpresaSIB**
+	                // 7. Actualizar la fecha de última notificación en EmpresaSIB
 	                correoContenido.setFecha(ahora);
 	                empresaSIBRepository.save(correoContenido);
 	            }
@@ -194,7 +211,162 @@ public class EmpresaService {
 	    }
 	}
 
+	public void prepararCorreoPorEmpresa(Integer idEmpresa) {
+	    LocalDate fechaActual = LocalDate.now();
+	    System.out.println("Inicia generación de correo para empresa con ID: " + idEmpresa);
 
+	    try {
+	        LocalDateTime ahora = LocalDateTime.now();
+	        ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitudes_vobo");
+
+	        EmpresaSIB empresa = empresaSIBRepository.findById(idEmpresa).orElse(null);
+
+	        if (empresa == null) {
+	            System.out.println("Empresa con ID " + idEmpresa + " no encontrada.");
+	            return;
+	        }
+
+	        if (!debeEnviarNotificacion(empresa, ahora)) {
+	            System.out.println("No es momento de enviar notificación para la empresa: " + empresa.getNombre());
+	            return;
+	        }
+
+	        int cantidadSolicitudes = solicitudCreditoRepository.contarSolicitudesPorEmpresa(empresa.getNombre());
+
+	        if (cantidadSolicitudes == 0) {
+	            empresa.setFecha(ahora);
+	            empresaSIBRepository.save(empresa);
+	            System.out.println("No hay solicitudes para la empresa: " + empresa.getNombre());
+	            return;
+	        }
+
+	        ProcesoEnvioCorreoVobo procesoEnvio = new ProcesoEnvioCorreoVobo();
+	        procesoEnvio.setVcEmpresa(empresa.getNombre());
+	        procesoEnvio.setDtFechaEnvio(ahora);
+	        procesoEnvio.setIEstatus(0);
+	        procesoEnvio.setICantidadSolicitudes(cantidadSolicitudes);
+	        procesoEnvio = procesoEnvioCorreoVoboRepository.save(procesoEnvio);
+
+	        solicitudCreditoRepository.actualizarSolicitudesPorEmpresa(
+	            empresa.getNombre(), procesoEnvio.getPkIdProceso()
+	        );
+
+	        String correos = empresa.getCorreoContacto();
+	        String[] destinatarios = correos.split(";");
+	        boolean todosValidos = true;
+
+	        for (String dest : destinatarios) {
+	            try {
+	                new InternetAddress(dest.trim()).validate();
+	            } catch (AddressException e) {
+	                System.out.println("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
+	                todosValidos = false;
+	                break;
+	            }
+	        }
+
+	        if (!todosValidos) {
+	            return;
+	        }
+
+	        String fileName = empresa.getNombre() + fechaActual + datosReporte.getVc_extension();
+	        String contenidoCorreo = contenidoCorreo(empresa.getId());
+	        String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
+	        byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
+
+	        sendEmailWithAttachment(
+	            correos,
+	            "Solicitudes Vo.bo. Bienestar",
+	            contenidoCorreo,
+	            fileName,
+	            fileBytes
+	        );
+
+	        procesoEnvio.setIEstatus(1);
+	        procesoEnvioCorreoVoboRepository.save(procesoEnvio);
+
+	        empresa.setFecha(ahora);
+	        empresaSIBRepository.save(empresa);
+
+	    } catch (Exception e) {
+	        logger.error("Error: " + e.getMessage());
+	        System.out.println("Error: " + e.getMessage());
+	    }
+	}
+
+	public String prepararCorreoPorEmpresaV(Integer idEmpresa) {
+	    LocalDate fechaActual = LocalDate.now();
+	    System.out.println("Inicia generación de correo para empresa con ID: " + idEmpresa);
+
+	    try {
+	        LocalDateTime ahora = LocalDateTime.now();
+	        ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitudes_vobo");
+
+	        EmpresaSIB empresa = empresaSIBRepository.findById(idEmpresa).orElse(null);
+	        if (empresa == null) {
+	            return "Empresa no encontrada.";
+	        }
+
+	        int cantidadSolicitudes = solicitudCreditoRepository.contarSolicitudesPorEmpresa(empresa.getNombre());
+	        if (cantidadSolicitudes == 0) {
+	            empresa.setFecha(ahora);
+	            empresaSIBRepository.save(empresa);
+	            return "No hay solicitudes para enviar.";
+	        }
+
+	        ProcesoEnvioCorreoVobo procesoEnvio = new ProcesoEnvioCorreoVobo();
+	        procesoEnvio.setVcEmpresa(empresa.getNombre());
+	        procesoEnvio.setDtFechaEnvio(ahora);
+	        procesoEnvio.setIEstatus(0);
+	        procesoEnvio.setICantidadSolicitudes(cantidadSolicitudes);
+	        procesoEnvio = procesoEnvioCorreoVoboRepository.save(procesoEnvio);
+
+	        solicitudCreditoRepository.actualizarSolicitudesPorEmpresa(
+	            empresa.getNombre(), procesoEnvio.getPkIdProceso()
+	        );
+
+	        String correos = empresa.getCorreoContacto();
+	        String[] destinatarios = correos.split(";");
+	        boolean todosValidos = true;
+
+	        for (String dest : destinatarios) {
+	            try {
+	                new InternetAddress(dest.trim()).validate();
+	            } catch (AddressException e) {
+	                System.out.println("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
+	                return "Correo inválido: " + dest;
+	            }
+	        }
+
+	        String fileName = empresa.getNombre() + fechaActual + datosReporte.getVc_extension();
+	        String contenidoCorreo = contenidoCorreo(empresa.getId());
+	        String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
+	        byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
+
+	        sendEmailWithAttachment(
+	            correos,
+	            "Solicitudes Vo.bo. Bienestar",
+	            contenidoCorreo,
+	            fileName,
+	            fileBytes
+	        );
+
+	        procesoEnvio.setIEstatus(1);
+	        procesoEnvioCorreoVoboRepository.save(procesoEnvio);
+
+	        empresa.setFecha(ahora);
+	        empresaSIBRepository.save(empresa);
+
+	        return "Correo enviado correctamente.";
+
+	    } catch (Exception e) {
+	        logger.error("Error: " + e.getMessage());
+	        return "Error al enviar el correo: " + e.getMessage();
+	    }
+	}
+
+
+	
 	// Armar contenido de correo.
 	public String contenidoCorreo(int emp) {
 	    try {
@@ -216,53 +388,59 @@ public class EmpresaService {
 
 
 	public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName, byte[] fileBytes) {
-        System.out.print("Inicia envío de correo");
+	    System.out.print("Inicia envío de correo");
 
-        try {
-            // 🔹 Obtener remitente y contraseña de la BD
-            ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
-            if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
-                throw new RuntimeException("No se encontró un remitente o contraseña configurada en la base de datos.");
-            }
+	    try {
+	        // 🔹 Obtener remitente y contraseña de la BD
+	        ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
+	        if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
+	            throw new RuntimeException("No se encontró un remitente o contraseña configurada en la base de datos.");
+	        }
 
-            String remitente = config.getCorreoRemitente();
-            String password = config.getPassword();
+	        String remitente = config.getCorreoRemitente();
+	        String password = config.getPassword();
 
-            System.out.println("Enviando correo desde: " + remitente);
+	        System.out.println("Enviando correo desde: " + remitente);
 
-            // 🔹 Crear un JavaMailSender dinámico con los datos de la BD
-            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-            mailSender.setHost("smtp.office365.com"); // Cambia esto según tu proveedor SMTP
-            mailSender.setPort(587);
-            mailSender.setUsername(remitente);
-            mailSender.setPassword(password);
+	        // 🔹 Crear un JavaMailSender dinámico con los datos de la BD
+	        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+	        mailSender.setHost("smtp.office365.com");
+	        mailSender.setPort(587);
+	        mailSender.setUsername(remitente);
+	        mailSender.setPassword(password);
 
-            Properties props = mailSender.getJavaMailProperties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
+	        Properties props = mailSender.getJavaMailProperties();
+	        props.put("mail.smtp.auth", "true");
+	        props.put("mail.smtp.starttls.enable", "true");
 
-            // 🔹 Crear el mensaje
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(remitente);
-            helper.setTo(destinatario);
-            helper.setSubject(asunto);
-            helper.setText(contenidoHtml, true);
+	        // 🔹 Dividir los destinatarios separados por punto y coma (;)
+	        String[] destinatarios = destinatario.split(";");
+	        for (int i = 0; i < destinatarios.length; i++) {
+	            destinatarios[i] = destinatarios[i].trim(); // Limpiar espacios
+	        }
 
-            // 🔹 Adjuntar archivo
-            DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
-            helper.addAttachment(fileName, dataSource);
+	        // 🔹 Crear el mensaje
+	        MimeMessage message = mailSender.createMimeMessage();
+	        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	        helper.setFrom(remitente);
+	        helper.setTo(destinatarios); // 👈 Aquí va el arreglo de correos
+	        helper.setSubject(asunto);
+	        helper.setText(contenidoHtml, true);
 
-            // 🔹 Enviar correo
-            mailSender.send(message);
-            System.out.println("Correo enviado exitosamente desde: " + remitente);
+	        // 🔹 Adjuntar archivo
+	        DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
+	        helper.addAttachment(fileName, dataSource);
 
-        } catch (MessagingException e) {
-            System.out.print("Fallo en el envío de correo: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.print("Error desconocido al enviar el correo: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+	        // 🔹 Enviar correo
+	        mailSender.send(message);
+	        System.out.println("Correo enviado exitosamente a: " + Arrays.toString(destinatarios));
+
+	    } catch (MessagingException e) {
+	        System.out.print("Fallo en el envío de correo: " + e.getMessage());
+	        e.printStackTrace();
+	    } catch (Exception e) {
+	        System.out.print("Error desconocido al enviar el correo: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	}
 }

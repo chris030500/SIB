@@ -60,6 +60,13 @@ public class SolicitudCredito {
     @Column(name = "FK_ID_PROCESO")
     private Integer proceso;
     
+    @Column(name = "VC_RENOVADO")
+    private String renovacion;
+    
+    @Column(name = "VC_COMENTARIOS")
+    private String comentarios;
+    
+    
     @Override
 	public String toString() {
 		return "SolicitudCredito [id=" + id + ", empresa=" + empresa + ", empleado=" + empleado + ", producto="
@@ -188,6 +195,22 @@ public class SolicitudCredito {
 
 	public void setProceso(Integer proceso) {
 		this.proceso = proceso;
+	}
+
+	public String getRenovacion() {
+		return renovacion;
+	}
+
+	public void setRenovacion(String renovacion) {
+		this.renovacion = renovacion;
+	}
+
+	public String getComentarios() {
+		return comentarios;
+	}
+
+	public void setComentarios(String comentarios) {
+		this.comentarios = comentarios;
 	}
     
 }

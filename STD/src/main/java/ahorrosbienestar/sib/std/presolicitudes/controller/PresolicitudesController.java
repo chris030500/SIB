@@ -262,6 +262,8 @@ public class PresolicitudesController {
 				solicitudActualizada.setFrecuencia(solicitud.getFrecuencia());
 				solicitudActualizada.setMontoSolicitado(solicitud.getMontoSolicitado());
 				solicitudActualizada.setMontoDescontar(solicitud.getMontoDescontar());
+				solicitudActualizada.setComentarios(solicitud.getComentarios());
+				solicitudActualizada.setRenovacion(solicitud.getRenovacion());
 
 				SolicitudCredito solicitudGuardada = solicitudCreditoService.guardarSolicitud(solicitudActualizada);
 
@@ -294,7 +296,7 @@ public class PresolicitudesController {
 			@RequestParam(defaultValue = "10") int size) {
 		try {
 			Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-			Page<SolicitudCredito> solicitudes = solicitudCreditoService.listarSolicitudes(pageable);
+			Page<SolicitudCredito> solicitudes = solicitudCreditoService.listarSolicitudes(idEmpleado, pageable);
 			return ResponseEntity.ok(solicitudes);
 		} catch (Exception e) {
 			System.out.println("Error en listarSolicitudes: " + e.getMessage());
@@ -514,4 +516,18 @@ public class PresolicitudesController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 	    }
 	}
+	
+	@PostMapping("/envioCorreo/{idEmpresa}")
+    public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable Integer idEmpresa) {
+		
+		System.out.print("El correo se enviara a la empresa: " + idEmpresa);
+		
+        try {
+        	empresaService.prepararCorreoPorEmpresa(idEmpresa);
+            return ResponseEntity.ok("Correo enviado correctamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al enviar correo: " + e.getMessage());
+        }
+    }
 }

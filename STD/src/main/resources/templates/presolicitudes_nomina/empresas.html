@@ -75,9 +75,11 @@
 								</div>
 							</div>
 							<div class="mb-3">
-								<label for="correoEmpresa" class="form-label">Correo de Contacto</label>
-								<input type="email" class="form-control" id="correoEmpresa"
-									placeholder="Ingrese correo">
+								<label for="correoEmpresa" class="form-label">Correos de Contacto (separados por ;)
+								</label>
+								<textarea class="form-control" id="correoEmpresa" rows="3"
+									placeholder="Ingrese correos separados por ;">
+							  </textarea>
 							</div>
 							<div class="mb-3">
 								<label for="buscarEmpresa" class="form-label">Persona de Contacto</label>
@@ -87,9 +89,11 @@
 							<div class="mb-3">
 								<label for="frecuencia" class="form-label">Frecuencia</label>
 								<select class="form-select" id="frecuencia">
-									<option value="1">SEMANAL</option>
-									<option value="2">QUINCENAL</option>
-									<option value="3">MENSUAL</option>
+									<option value="1">Semanal</option>
+									<option value="2">Quincenal</option>
+									<option value="3">Mensual</option>
+									<option value="4">Diaria</option>
+									<option value="5">Inmediata</option>
 								</select>
 							</div>
 
@@ -125,8 +129,11 @@
 								<input type="text" class="form-control" id="empresaNombre" disabled>
 							</div>
 							<div class="mb-3">
-								<label for="empresaCorreo" class="form-label">Correo</label>
-								<input type="email" class="form-control" id="empresaCorreo">
+								<label for="correoEmpresa" class="form-label">Correos de Contacto (separados por ;)
+								</label>
+								<textarea class="form-control" id="empresaCorreo" rows="3"
+									placeholder="Ingrese correos separados por ;">
+														  </textarea>
 							</div>
 							<div class="mb-3">
 								<label for="buscarEmpresa" class="form-label">Persona de Contacto</label>
@@ -139,6 +146,8 @@
 									<option value="1">Semanal</option>
 									<option value="2">Quincenal</option>
 									<option value="3">Mensual</option>
+									<option value="4">Diaria</option>
+									<option value="5">Inmediata</option>
 								</select>
 							</div>
 							<button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -194,9 +203,10 @@
 										{fecha}</strong>.</small>
 							</div>
 							<div class="mb-3">
-							    <label for="horaCron" class="form-label">Hora de Ejecución (24h)</label>
-							    <input type="time" class="form-control" id="horaCron" required>
-							    <small class="text-muted">Selecciona la hora en formato de 24 horas (por ejemplo, 14:00 para 2 PM).</small>
+								<label for="horaCron" class="form-label">Hora de Ejecución (24h)</label>
+								<input type="time" class="form-control" id="horaCron" required>
+								<small class="text-muted">Selecciona la hora en formato de 24 horas (por ejemplo, 14:00
+									para 2 PM).</small>
 							</div>
 						</form>
 					</div>
