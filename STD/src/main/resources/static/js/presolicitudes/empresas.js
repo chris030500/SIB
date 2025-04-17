@@ -4,7 +4,13 @@ window.onload = function() {
 	listaEmpresas();
 }
 
-var urlPrincipal = "http://localhost:8085/STD/configuracionEmpresas/";
+function getAbsolutePath() {
+	var loc = window.location;
+	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+var urlPrincipal = getAbsolutePath();;
 
 var buscarEmpresa = document.getElementById('buscarEmpresa');
 var correoEmpresa = document.getElementById('correoEmpresa');
@@ -24,20 +30,22 @@ function tablaEmpresas() {
 			if (respuesta && Array.isArray(respuesta) && respuesta.length > 0) {
 				$.each(respuesta, function(idx, empresa) {
 					// Crear botones para Editar y Ver Estatus
-					var btnEditar = "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal' "
-						+ " title='Editar' data-bs-target='#modalEmpresa' aria-controls='table-datatable' type='button' "
-						+ " onclick='llenarFormulario(" + JSON.stringify(empresa) + ")' id='btnEditar_" + empresa.id + "' data-tooltip='Edit'>"
-						+ " <i class='bi bi-pencil'></i></button>";
+					var btnEditar = "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' title='Editar' type='button' "
+						+ " data-bs-toggle='modal' data-bs-target='#modalEmpresa' "
+						+ " onclick='llenarFormulario(" + JSON.stringify(empresa) + ")'>"
+						+ "<i class='bi bi-pencil'></i></button>";
 
+					var btnEstatus = "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' title='Ver Estatus' type='button' "
+						+ " onclick='confirmarCambioEstatus(" + empresa.id + ", " + empresa.estatus + ")'>"
+						+ "<i class='bi bi-unlock'></i></button>";
 
-					var btnEstatus = "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal' "
-						+ " title='Ver Estatus' data-bs-target='#' aria-controls='table-datatable' type='button' "
-						+ " onclick='confirmarCambioEstatus(" + empresa.id + ", " + empresa.estatus + ")' id='" + empresa.id + "' data-tooltip='Status'>"
-						+ " <i class='bi bi-unlock'></i></button>";
+					var btnEnviarCorreo = "<button style='background: #198754; border-color: #198754;' class='btn btn-success' title='Enviar correo' type='button' "
+						+ " onclick='enviarCorreoEmpresa(" + empresa.id + ")'>"
+						+ "<i class='bi bi-envelope-fill'></i></button>";
 
 					// Validar los campos de las empresas para asegurar que no se corten
 					var validarCorreo = empresa.correoContacto && empresa.correoContacto.length > 30 ? empresa.correoContacto.substring(0, 30) + '...' : empresa.correoContacto || 'N/A';
-					var validarFrecuencia = empresa.frecuencia === 1 ? "Semanal" : empresa.frecuencia === 2 ? "Quincenal" : "Mensual";
+					var validarFrecuencia = empresa.frecuencia === 1 ? "Semanal" : empresa.frecuencia === 2 ? "Quincenal" : empresa.frecuencia === 3 ? "Mensual" : empresa.frecuencia === 4 ? "Diaria" : "Inmediata";
 					var validarEstatus = empresa.estatus === 1 ? "Activa" : "Inactiva";
 
 					// Agregar una nueva fila en la tabla
@@ -47,7 +55,7 @@ function tablaEmpresas() {
 						empresa.personaContacto || 'N/A',  // Valida si el campo está vacío
 						validarFrecuencia,
 						validarEstatus,
-						btnEditar + btnEstatus
+						btnEditar + btnEstatus + btnEnviarCorreo
 					]).draw(false);
 				});
 			} else {
@@ -60,6 +68,42 @@ function tablaEmpresas() {
 		}
 	});
 }
+
+function enviarCorreoEmpresa(idEmpresa) {
+	Swal.fire({
+		title: "¿Estás seguro?",
+		text: "Se enviará el correo a la empresa seleccionada.",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#198754",
+		cancelButtonColor: "#d33",
+		confirmButtonText: "Sí, enviar"
+	}).then((result) => {
+		if (result.isConfirmed) {
+			fetch(urlPrincipal + `envioCorreo/${idEmpresa}`, {
+				method: "POST"
+			})
+				.then(res => {
+					if (!res.ok) throw new Error("Fallo en la respuesta del servidor");
+					return res.json();
+				})
+				.then(data => {
+					Swal.fire({
+						icon: "info",
+						title: "Resultado del envío",
+						text: data.mensaje,
+						confirmButtonColor: "#0d6efd"
+					});
+				})
+				.catch(err => {
+					console.error("❌ Error al enviar correo:", err);
+					Swal.fire("Error", "No se pudo procesar el envío de correo.", "error");
+				});
+		}
+	});
+}
+
+
 
 function listaEmpresas() {
 	buscarEmpresa.disabled = true;
@@ -130,16 +174,6 @@ document.querySelector(".modal-footer .btn-primary").addEventListener("click", f
 			icon: 'error',
 			title: '¡Correo vacío!',
 			text: 'Por favor, ingresa un correo electrónico.',
-		});
-		return;
-	}
-
-	// Si el correo no es válido, mostrar un alert de SweetAlert
-	if (!validarCorreo(correo)) {
-		Swal.fire({
-			icon: 'error',
-			title: '¡Correo inválido!',
-			text: 'Por favor, ingresa un correo electrónico válido.',
 		});
 		return;
 	}
@@ -243,19 +277,10 @@ document.getElementById("formEmpresa").addEventListener("submit", function(event
 		personaContacto: document.getElementById("empresaContacto").value,
 		frecuencia: document.getElementById("empresaFrecuencia").value
 	};
-	
+
 	var correo = document.getElementById("empresaCorreo").value;
-	
-	// Si el correo no es válido, mostrar un alert de SweetAlert
-	if (!validarCorreo(correo)) {
-		Swal.fire({
-			icon: 'error',
-			title: '¡Correo inválido!',
-			text: 'Por favor, ingresa un correo electrónico válido.',
-		});
-		return;
-	}
-	
+
+
 	// Mostrar Sweet Alert de Cargando con un spinner
 	Swal.fire({
 		title: 'Actualizando...',
@@ -301,7 +326,7 @@ function confirmarCambioEstatus(id, estatusActual) {
 	Swal.fire({
 		title: '¿Estás seguro?',
 		text: '¿Quieres cambiar el estatus de esta empresa?',
-		icon: 'question',	
+		icon: 'question',
 		showCancelButton: true,
 		confirmButtonColor: '#3085d6',
 		cancelButtonColor: '#d33',
@@ -349,192 +374,192 @@ function actualizarEstatus(id, nuevoEstatus) {
 
 // Mostrar/Ocultar contraseña
 function togglePassword() {
-    var passwordInput = document.getElementById("correoPassword");
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-    } else {
-        passwordInput.type = "password";
-    }
+	var passwordInput = document.getElementById("correoPassword");
+	if (passwordInput.type === "password") {
+		passwordInput.type = "text";
+	} else {
+		passwordInput.type = "password";
+	}
 }
 
 // Insertar comodines en el mensaje
 function insertarComodin(comodin) {
-    var mensajeTexto = document.getElementById("mensajeTexto");
-    
-    // Obtener la posición actual del cursor
-    var cursorPos = mensajeTexto.selectionStart;
-    var textBefore = mensajeTexto.value.substring(0, cursorPos);
-    var textAfter = mensajeTexto.value.substring(cursorPos, mensajeTexto.value.length);
+	var mensajeTexto = document.getElementById("mensajeTexto");
 
-    // Insertar el comodín en la posición del cursor
-    mensajeTexto.value = textBefore + comodin + textAfter;
-    
-    // Mover el cursor al final del comodín insertado
-    mensajeTexto.selectionStart = mensajeTexto.selectionEnd = cursorPos + comodin.length;
+	// Obtener la posición actual del cursor
+	var cursorPos = mensajeTexto.selectionStart;
+	var textBefore = mensajeTexto.value.substring(0, cursorPos);
+	var textAfter = mensajeTexto.value.substring(cursorPos, mensajeTexto.value.length);
+
+	// Insertar el comodín en la posición del cursor
+	mensajeTexto.value = textBefore + comodin + textAfter;
+
+	// Mover el cursor al final del comodín insertado
+	mensajeTexto.selectionStart = mensajeTexto.selectionEnd = cursorPos + comodin.length;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Event listener para abrir el modal
-    $('#mensajeModal').on('show.bs.modal', function (e) {
-        cargarConfiguracionCorreo();
-    });
+document.addEventListener("DOMContentLoaded", function() {
+	// Event listener para abrir el modal
+	$('#mensajeModal').on('show.bs.modal', function(e) {
+		cargarConfiguracionCorreo();
+	});
 });
 
 function cargarConfiguracionCorreo() {
-    $.ajax({
-        url: urlPrincipal + "carga_configuracion-correo", // URL del backend
-        type: "GET", // Tipo de solicitud (GET para obtener datos)
-        success: function(data) {
-            if (data) {
-                // Si hay datos, llenar los campos del formulario con los datos obtenidos
-                document.getElementById("correoRemitente").value = data.correoRemitente || "";
-                document.getElementById("correoPassword").value = data.password || "";
-                document.getElementById("mensajeTexto").value = data.mensaje || "";
-                
-                // Convertir la expresión CRON a formato de hora
-                if (data.cronExpresion) {
-                    const horaCron = data.cronExpresion;  // La expresión CRON (ejemplo: "0 30 14 * * ?")
-                    const cronParts = horaCron.split(" ");  // Dividimos la expresión CRON por espacios
-                    
-                    // Asegurarse que la expresión CRON tiene al menos tres partes (minutos, horas y el resto)
-                    if (cronParts.length >= 3) {
-                        let horas = cronParts[2];  // Tercera parte es la hora
-                        let minutos = cronParts[1];  // Segunda parte son los minutos
+	$.ajax({
+		url: urlPrincipal + "carga_configuracion-correo", // URL del backend
+		type: "GET", // Tipo de solicitud (GET para obtener datos)
+		success: function(data) {
+			if (data) {
+				// Si hay datos, llenar los campos del formulario con los datos obtenidos
+				document.getElementById("correoRemitente").value = data.correoRemitente || "";
+				document.getElementById("correoPassword").value = data.password || "";
+				document.getElementById("mensajeTexto").value = data.mensaje || "";
 
-                        // Usar padStart para asegurar que la hora y los minutos tengan dos dígitos
-                        horas = horas.padStart(2, '0');
-                        minutos = minutos.padStart(2, '0');
+				// Convertir la expresión CRON a formato de hora
+				if (data.cronExpresion) {
+					const horaCron = data.cronExpresion;  // La expresión CRON (ejemplo: "0 30 14 * * ?")
+					const cronParts = horaCron.split(" ");  // Dividimos la expresión CRON por espacios
 
-                        // Asignamos la hora al campo de entrada, en formato HH:mm
-                        const horaFormateada = `${horas}:${minutos}`;
-                        console.log(horaFormateada); // Log para depuración
-                        document.getElementById("horaCron").value = horaFormateada || "";
-                    }
-                }
-            } else {
-                // Si no se obtienen datos, limpiar los campos
-                document.getElementById("correoRemitente").value = "";
-                document.getElementById("correoPassword").value = "";
-                document.getElementById("mensajeTexto").value = "";
-                document.getElementById("horaCron").value = ""; // Limpiar la hora
-            }
-        },
-        error: function(error) {
-            console.error("Error al obtener la configuración de correo:", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un problema al cargar la configuración de correo.',
-            });
-        }
-    });
+					// Asegurarse que la expresión CRON tiene al menos tres partes (minutos, horas y el resto)
+					if (cronParts.length >= 3) {
+						let horas = cronParts[2];  // Tercera parte es la hora
+						let minutos = cronParts[1];  // Segunda parte son los minutos
+
+						// Usar padStart para asegurar que la hora y los minutos tengan dos dígitos
+						horas = horas.padStart(2, '0');
+						minutos = minutos.padStart(2, '0');
+
+						// Asignamos la hora al campo de entrada, en formato HH:mm
+						const horaFormateada = `${horas}:${minutos}`;
+						console.log(horaFormateada); // Log para depuración
+						document.getElementById("horaCron").value = horaFormateada || "";
+					}
+				}
+			} else {
+				// Si no se obtienen datos, limpiar los campos
+				document.getElementById("correoRemitente").value = "";
+				document.getElementById("correoPassword").value = "";
+				document.getElementById("mensajeTexto").value = "";
+				document.getElementById("horaCron").value = ""; // Limpiar la hora
+			}
+		},
+		error: function(error) {
+			console.error("Error al obtener la configuración de correo:", error);
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Hubo un problema al cargar la configuración de correo.',
+			});
+		}
+	});
 }
 
 
 
 
 function actualizarConfiguracionCorreo() {
-    // Obtener los datos del formulario
-    const correoRemitente = document.getElementById('correoRemitente').value;
-    const correoPassword = document.getElementById('correoPassword').value;
-    const mensajeTexto = document.getElementById('mensajeTexto').value;
-    const horaCron = document.getElementById('horaCron').value; // Capturar la hora seleccionada
-    
-    // Verificar si la horaCron tiene un valor válido
-    if (!horaCron) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Debe ingresar un horario válido para la ejecución del cron.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-        return;
-    }
+	// Obtener los datos del formulario
+	const correoRemitente = document.getElementById('correoRemitente').value;
+	const correoPassword = document.getElementById('correoPassword').value;
+	const mensajeTexto = document.getElementById('mensajeTexto').value;
+	const horaCron = document.getElementById('horaCron').value; // Capturar la hora seleccionada
 
-    // Separar la hora y los minutos (ejemplo: "09:00" => "09" y "00")
-    const [hora, minutos] = horaCron.split(':');
-    
-    if (hora && minutos) {
-		
+	// Verificar si la horaCron tiene un valor válido
+	if (!horaCron) {
+		Swal.fire({
+			title: 'Error',
+			text: 'Debe ingresar un horario válido para la ejecución del cron.',
+			icon: 'error',
+			confirmButtonText: 'Aceptar'
+		});
+		return;
+	}
+
+	// Separar la hora y los minutos (ejemplo: "09:00" => "09" y "00")
+	const [hora, minutos] = horaCron.split(':');
+
+	if (hora && minutos) {
+
 		const cronHora = parseInt(hora, 10) < 10 ? hora.replace(/^0+/, '') : hora;
 		const cronMinutos = parseInt(minutos, 10) < 10 ? minutos.slice(1) : minutos;
-		
-        // Crear la expresión CRON
-        const cronExpresion = `0 ${cronMinutos} ${cronHora} * * ?`; // Expresión cron corregida
 
-        console.log("Expresión cron:", cronExpresion);
+		// Crear la expresión CRON
+		const cronExpresion = `0 ${cronMinutos} ${cronHora} * * ?`; // Expresión cron corregida
 
-        // Crear el objeto con los datos a actualizar
-        const datos = {
-            correoRemitente: correoRemitente,
-            password: correoPassword,
-            mensaje: mensajeTexto,
-            cronExpresion: cronExpresion // Añadimos la expresión cron al objeto
-        };
+		console.log("Expresión cron:", cronExpresion);
 
-        console.log('Datos enviados:', datos);
+		// Crear el objeto con los datos a actualizar
+		const datos = {
+			correoRemitente: correoRemitente,
+			password: correoPassword,
+			mensaje: mensajeTexto,
+			cronExpresion: cronExpresion // Añadimos la expresión cron al objeto
+		};
 
-        // Mostrar el SweetAlert de "Actualizando..." con spinner
-        Swal.fire({
-            title: 'Actualizando...',
-            text: 'Por favor, espera mientras se guardan los cambios.',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+		console.log('Datos enviados:', datos);
 
-        // Enviar los datos al servidor usando fetch (PUT request)
-        fetch(urlPrincipal + 'actualizar', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(datos) // Convertir los datos a JSON
-        })
-        .then(response => {
-            console.log('Respuesta del servidor:', response);
-            return response.json().then(data => ({ status: response.status, body: data })); // Convertimos a JSON
-        })
-        .then(({ status, body }) => {
-            console.log('JSON recibido:', body);
-            if (status === 200) {
-                Swal.fire({
-                    title: '¡Éxito!',
-                    text: 'Configuración de correo actualizada con éxito',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(() => {
-                    cargarConfiguracionCorreo(); // Llamar a esta función para cargar la configuración actualizada
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: body.message || 'No se pudo actualizar la configuración',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error al actualizar la configuración:', error);
-            Swal.fire({
-                title: 'Error de comunicación',
-                text: 'Hubo un error en la comunicación con el servidor',
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        });
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: 'El formato de la hora es incorrecto. Asegúrese de ingresar un valor en formato HH:mm.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+		// Mostrar el SweetAlert de "Actualizando..." con spinner
+		Swal.fire({
+			title: 'Actualizando...',
+			text: 'Por favor, espera mientras se guardan los cambios.',
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+
+		// Enviar los datos al servidor usando fetch (PUT request)
+		fetch(urlPrincipal + 'actualizar', {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(datos) // Convertir los datos a JSON
+		})
+			.then(response => {
+				console.log('Respuesta del servidor:', response);
+				return response.json().then(data => ({ status: response.status, body: data })); // Convertimos a JSON
+			})
+			.then(({ status, body }) => {
+				console.log('JSON recibido:', body);
+				if (status === 200) {
+					Swal.fire({
+						title: '¡Éxito!',
+						text: 'Configuración de correo actualizada con éxito',
+						icon: 'success',
+						confirmButtonText: 'Aceptar'
+					}).then(() => {
+						cargarConfiguracionCorreo(); // Llamar a esta función para cargar la configuración actualizada
+					});
+				} else {
+					Swal.fire({
+						title: 'Error',
+						text: body.message || 'No se pudo actualizar la configuración',
+						icon: 'error',
+						confirmButtonText: 'Aceptar'
+					});
+				}
+			})
+			.catch(error => {
+				console.error('Error al actualizar la configuración:', error);
+				Swal.fire({
+					title: 'Error de comunicación',
+					text: 'Hubo un error en la comunicación con el servidor',
+					icon: 'error',
+					confirmButtonText: 'Aceptar'
+				});
+			});
+	} else {
+		Swal.fire({
+			title: 'Error',
+			text: 'El formato de la hora es incorrecto. Asegúrese de ingresar un valor en formato HH:mm.',
+			icon: 'error',
+			confirmButtonText: 'Aceptar'
+		});
+	}
 }
 
 

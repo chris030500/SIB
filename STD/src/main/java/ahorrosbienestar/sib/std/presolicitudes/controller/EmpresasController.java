@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.presolicitudes.controller;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,8 +44,6 @@ public class EmpresasController {
 
 	@Autowired
 	private ConfiguracionCorreoRepository configuracionCorreoRepository;
-
-	@Autowired
 	private static final Logger logger = Logger.getLogger(EmpresasController.class);
 
 	@Autowired
@@ -53,7 +52,7 @@ public class EmpresasController {
 	private ScheduledFuture<?> currentScheduledTask = null;
 
 	private String expresionCron;
-
+	
 	@PostConstruct
 	public void init() {
 		try {
@@ -217,15 +216,17 @@ public class EmpresasController {
 	        if (currentScheduledTask != null && !currentScheduledTask.isCancelled()) {
 	            currentScheduledTask.cancel(false);
 	            logger.info("Tarea cron anterior cancelada.");
+	            System.out.print("Tarea cron anterior cancelada.");
 	        }
 
 	        // Crea un nuevo trigger con la nueva expresión cron
-	        CronTrigger trigger = new CronTrigger(expresionCron);
+	        CronTrigger trigger = new CronTrigger(expresionCron, ZoneId.of("America/Mexico_City"));
 	        
 	        // Programa la nueva tarea y guarda la referencia de la tarea programada
 	        currentScheduledTask = taskScheduler.schedule(() -> procesarCron(), trigger);
 	        
 	        logger.info("Se actualizó cron de Envio de correos");
+	        System.out.print("Se actualizó cron de Envio de correos");
 
 	    } catch (Exception e) {
 	        logger.error("Error: " + e.getMessage());
@@ -236,11 +237,27 @@ public class EmpresasController {
 	public void procesarCron() {
 		try {
 			// Metodo envio de correo y adjunto
+			System.out.print("Inicia prepara correo");
 			empresaService.preparCorreoAdjuntoVobo();
 
 		} catch (Exception e) {
 			logger.info(Constantes.MENSAJE_ERROR + e.getMessage());
+			System.out.print("Error prepara correo: " + Constantes.MENSAJE_ERROR + e.getMessage());
 		}
 	}
+	
+	@PostMapping("/envioCorreo/{idEmpresa}")
+	public ResponseEntity<Map<String, String>> envioCorreo(@PathVariable Integer idEmpresa) {
+	    Map<String, String> response = new HashMap<>();
+	    try {
+	        String resultado = empresaService.prepararCorreoPorEmpresaV(idEmpresa);
+	        response.put("mensaje", resultado);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        response.put("mensaje", "Error interno: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
+	}
+
 
 }

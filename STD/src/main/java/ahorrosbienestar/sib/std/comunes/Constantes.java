@@ -31,6 +31,7 @@ public class Constantes {
 	
 	// constantes logger
 	public static final String MENSAJE_DE_ERROR = "Error";
+	public static final String MENSAJE_LOGGER_ERROR = "Error: ";
 	
 	// Ejemplo de constantes para tipo de Mensaje
     public static final String MENSAJE_ERROR = "error";
@@ -175,7 +176,38 @@ public class Constantes {
 	public static final String ENVIA_CORREO_ASIGNACION = "1";
 	public static final String NO_ENVIA_CORREO_ASIGNACION = "0";
 	
+	//constantes Prevención PLD
+	public static final String PLD_REPORTE_OPEACIONES_INUSUALES = "prevencion/reporteOperacionesInusuales";
+	public static final int PLD_CAT_TIPO_PRODUCTO = 29;
+	public static final int PLD_CAT_BUSQUEDA_CLIENTE = 30;
+	public static final int PLD_CONTROL_REPORTE_JASPER = 1;
 	
+    //nombres reportes Prevención PLD
+    public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
+    
+	//constantes marketing
+	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
+	public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
+	public static final String HORA_FIN_SEMANAL = "HORA_FIN_SEMANAL_SMS";
+	public static final String HORA_INICIO_FIN_SEMANA = "HORA_INICIO_FIN_SEMANA_SMS";
+	public static final String HORA_FIN_FIN_SEMANA = "HORA_FIN_FIN_SEMANA_SMS";
+	public static final String RECURRENCIA_SMS = "RECURRENCIA_ENVIO_SMS";
+	
+	//permisos de pantallas marketing
+	public static final String USUARIO_ADMIN_MARKETING = "usrAdmin";
+	public static final String USUARIOS_EDITOR_MARKETING = "usrEditor";
+	
+	//constantes credito
+	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
+	public static final String CREDITO_REPORTES = "credito/reportes";
+	
+	//nombres reportes Crédito
+	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
+	
+	//Mensajes de error de autenticación
+	public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
+	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
+
     private Constantes() {
         
     }

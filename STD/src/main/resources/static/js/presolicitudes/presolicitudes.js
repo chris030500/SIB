@@ -75,7 +75,6 @@ function listaEmpleados(idEmpresa) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("Lista de empleados recibida:", respuesta);
 
 			let filtroTexto = buscarEmpleado.value.toLowerCase(); // Filtro según el input
 			opcionEmpleado.innerHTML = ""; // Limpiar datalist previo
@@ -102,9 +101,6 @@ function listaEmpleados(idEmpresa) {
 
 // Esta función se actualiza para la lista de empleados con el filtro de texto
 function listaProductos(idEmpresa, puesto) {
-
-	console.log(idEmpresa)
-	console.log(puesto)
 	let buscarProducto = document.getElementById('buscarProducto');
 	let opcionProducto = document.getElementById('opcionProducto');
 	let spinnerProducto = document.getElementById('spinnerProducto');
@@ -122,7 +118,6 @@ function listaProductos(idEmpresa, puesto) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("Lista de productos recibida:", respuesta);
 
 			let filtroTexto = buscarProducto.value.toLowerCase(); // Filtro según el input
 			opcionProducto.innerHTML = ""; // Limpiar datalist previo
@@ -152,7 +147,6 @@ document.getElementById("buscarProducto").addEventListener("input", function() {
 	if (productoSeleccionado && idEmpresaSeleccionada) { // Asegurar que la empresa ya esté seleccionada
 		var producto = productoSeleccionado.value;
 		idProductoSeleccionado = productoSeleccionado.value;
-		console.log("Producto seleccionado:", producto, "Empresa ID:", idEmpresaSeleccionada);
 		listaPlazos(producto, idEmpresaSeleccionada);
 		if (document.getElementById('puesto').value) {
 			listaMontos(producto, idEmpresaSeleccionada, document.getElementById('puesto').value);
@@ -181,7 +175,6 @@ function listaPlazos(producto, idEmpresa) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("Plazos recibidos:", respuesta);
 			selectPlazo.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
 
 			respuesta.forEach(plazo => {
@@ -221,7 +214,6 @@ document.getElementById("buscarEmpresa").addEventListener("input", function() {
 
 	if (empresaSeleccionada) {
 		idEmpresaSeleccionada = empresaSeleccionada.getAttribute("data-id"); // Guardamos el ID
-		console.log("Empresa seleccionada:", idEmpresaSeleccionada);
 		listaEmpleados(idEmpresaSeleccionada);
 		listaProductos(idEmpresaSeleccionada, 1111);
 		llenarSelectPuestos(idEmpresaSeleccionada);
@@ -249,7 +241,6 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			console.log("Lista de puestos recibida:", respuesta);
 
 			// Limpiar y volver a llenar el select
 			selectPuesto.innerHTML = '<option value="" disabled selected>Seleccione un puesto...</option>';
@@ -305,7 +296,6 @@ function listaMontos(producto, idEmpresa, puesto) {
 			return response.json();
 		})
 		.then(data => {
-			console.log('Condiciones obtenidas:', data);
 
 			// Obtener valores de monto mínimo y máximo de la API
 			const montoMin = data.montoMin;
@@ -346,7 +336,6 @@ function listaMontos(producto, idEmpresa, puesto) {
 
 document.getElementById('puesto').addEventListener('change', function() {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
-	console.log('Puesto seleccionado:', puestoSeleccionado);
 
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
 
@@ -360,8 +349,6 @@ document.getElementById('montoSolicitado').addEventListener('blur', function() {
 
 	// Llamar a la función de plan de pagos
 	const planDePagos = generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
-
-	console.log(planDePagos); // Mostrar en consola para depuración
 
 	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
 });
@@ -441,6 +428,9 @@ function guardarSolicitud() {
 		return input.value.trim() || defaultValue;
 	}
 
+	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
+
+
 	const solicitudData = {
 		id: parseInt(getInputValue("idSolicitud", 0)), // Tomar el ID si existe
 		empresa: getInputValue("buscarEmpresa"),
@@ -452,12 +442,12 @@ function guardarSolicitud() {
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
 		montoDescontar: parseFloat(getInputValue("montoDescontar")) || null,
-		fechaSolicitud: fechaActual
+		fechaSolicitud: fechaActual,
+		renovacion: esRenovacion,
+		comentarios: getInputValue("comentariosSolicitud")
 	};
 
-	console.log("📤 Datos a enviar:", solicitudData);
-
-	// Validar que los campos obligatorios estén llenos
+	// Validar campos obligatorios
 	if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado) {
 		Swal.fire({
 			icon: "warning",
@@ -468,7 +458,6 @@ function guardarSolicitud() {
 		return;
 	}
 
-	// Determinar si se crea o edita la solicitud
 	const url = solicitudData.id
 		? urlPrincipal + `editarSolicitud/${solicitudData.id}`
 		: urlPrincipal + "crearSolicitud";
@@ -496,6 +485,17 @@ function guardarSolicitud() {
 			}).then(() => {
 				resetearModal();
 				cargarSolicitudes(paginaActual);
+
+				// ✅ Si es una nueva solicitud, enviar correo
+				if (!solicitudData.id) {
+					fetch(urlPrincipal + `envioCorreo/${idEmpresaSeleccionada}`, {
+						method: 'POST'
+					})
+						.then(res => {
+							if (!res.ok) throw new Error("Error al enviar el correo");
+							return res.text();
+						})
+				}
 			});
 		})
 		.catch(error => {
@@ -581,7 +581,7 @@ function cargarSolicitudes(pagina) {
 			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
 			let filas = data.content.map((solicitud) => {
-			    return `<tr>
+				return `<tr>
 			        <td>${solicitud.id}</td>
 			        <td>${solicitud.empleado}</td>
 			        <td>${solicitud.fechaSolicitud}</td>
@@ -622,7 +622,6 @@ function cargarSolicitudes(pagina) {
 document.addEventListener("click", function(event) {
 	if (event.target.closest(".btn-pdf")) {
 		let id = event.target.closest(".btn-pdf").getAttribute("data-id");
-		console.log(id);
 		generarReporte(id);
 	}
 });
@@ -635,14 +634,12 @@ $(document).on("click", ".btn-editar", function() {
 		url: urlPrincipal + `solicitud/${solicitudId}`,
 		type: "GET",
 		success: function(dataSolicitud) {
-			console.log("Solicitud obtenida:", dataSolicitud);
 
 			// Obtener la empresa asociada a la solicitud
 			$.ajax({
 				url: urlPrincipal + `empresa/${dataSolicitud.empresa}`,
 				type: "GET",
 				success: function(dataEmpresa) {
-					console.log("Empresa obtenida:", dataEmpresa);
 					idEmpresaSeleccionada = dataEmpresa.id
 
 					// Ejecutar todas las funciones necesarias antes de abrir el modal
@@ -654,7 +651,6 @@ $(document).on("click", ".btn-editar", function() {
 						listaPlazos(dataSolicitud.producto, idEmpresaSeleccionada),
 						listaMontos(dataSolicitud.producto, idEmpresaSeleccionada, dataSolicitud.puesto)
 					]).then(() => {
-						console.log("Todos los datos cargados");
 
 						// Llenar los campos con la información de la solicitud
 						$("#idSolicitud").val(dataSolicitud.id);
@@ -668,8 +664,6 @@ $(document).on("click", ".btn-editar", function() {
 							$("#puesto").val(dataSolicitud.puesto).change();
 							$("#plazoCredito").val(dataSolicitud.plazo).change();
 							$("#montoSolicitado").val(dataSolicitud.montoSolicitado);
-							console.log("Puesto seleccionado:", $("#puesto").val());
-							console.log("Plazo seleccionado:", dataSolicitud.plazo);
 						}, 500);
 
 						// 🛠 **Forzar actualización de los campos tipo search**
@@ -677,6 +671,22 @@ $(document).on("click", ".btn-editar", function() {
 							actualizarDatalist("#buscarEmpresa", dataEmpresa.nombre);
 							actualizarDatalist("#buscarEmpleado", dataSolicitud.empleado);
 							actualizarDatalist("#buscarProducto", dataSolicitud.producto);
+
+							// Mostrar campo renovación solo si el producto es NOMIPRESTAMO
+							if (dataSolicitud.producto.toUpperCase() === "NOMIPRESTAMO") {
+								$("#checkboxNomiPrestamoRow").show();
+								if (dataSolicitud.renovacion === "SI") {
+									$("#checkNomiprestamo").prop("checked", true);
+								} else {
+									$("#checkNomiprestamo").prop("checked", false);
+								}
+							} else {
+								$("#checkboxNomiPrestamoRow").hide();
+								$("#checkNomiprestamo").prop("checked", false); // Limpiar si no aplica
+							}
+
+							// Comentarios
+							$("#comentariosSolicitud").val(dataSolicitud.comentarios || "");
 						}, 300);
 
 						// Ahora sí, abrir el modal
@@ -725,7 +735,6 @@ function cargarEmpresasFiltro() {
 			return response.json();
 		})
 		.then(data => {
-			console.log("Empresas obtenidas:", data); // Verificar estructura en consola
 
 			if (!data.lista || !Array.isArray(data.lista)) {
 				throw new Error("'lista' no es un array válido.");
@@ -748,85 +757,78 @@ function cargarEmpresasFiltro() {
 }
 
 document.getElementById("uploadExcelButton").addEventListener("click", function() {
-    let fileInput = document.getElementById("excelFile");
-    let file = fileInput.files[0];
+	let fileInput = document.getElementById("excelFile");
+	let file = fileInput.files[0];
 
-    console.log("Inicia lectura de archivo");
+	if (!file) {
+		Swal.fire({
+			icon: "warning",
+			title: "Archivo no seleccionado",
+			text: "Por favor selecciona un archivo antes de subirlo.",
+		});
+		return;
+	}
 
-    if (!file) {
-        Swal.fire({
-            icon: "warning",
-            title: "Archivo no seleccionado",
-            text: "Por favor selecciona un archivo antes de subirlo.",
-        });
-        return;
-    }
+	let formData = new FormData();
+	formData.append("file", file);
 
-    let formData = new FormData();
-    formData.append("file", file);
+	// Mostrar alerta de carga con tiempo máximo
+	Swal.fire({
+		title: "Subiendo archivo...",
+		text: "Por favor espera mientras se procesa.",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		didOpen: () => {
+			Swal.showLoading();
+		}
+	});
 
-    console.log("Archivo seleccionado:", file.name);
-    console.log("Tipo:", file.type);
-    console.log("Tamaño:", file.size);
+	// Cerrar Swal después de 15 segundos si no hay respuesta
+	let swalTimeout = setTimeout(() => {
+		Swal.close();
+	}, 15000);
 
-    // Mostrar alerta de carga con tiempo máximo
-    Swal.fire({
-        title: "Subiendo archivo...",
-        text: "Por favor espera mientras se procesa.",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+	fetch(urlPrincipal + "upload", {
+		method: "POST",
+		body: formData
+	})
+		.then(response => response.text())
+		.then(data => {
+			clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay respuesta
+			console.log("Respuesta del backend:", data);
 
-    // Cerrar Swal después de 15 segundos si no hay respuesta
-    let swalTimeout = setTimeout(() => {
-        Swal.close();
-    }, 15000);
+			Swal.close(); // Cerrar el loading de Swal
 
-    fetch(urlPrincipal + "upload", {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.text())
-    .then(data => {
-        clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay respuesta
-        console.log("Respuesta del backend:", data);
+			// Mostrar mensaje de éxito
+			Swal.fire({
+				icon: "success",
+				title: "Archivo subido correctamente",
+				text: data,
+			}).then(() => {
+				// Limpiar input
+				fileInput.value = "";
 
-        Swal.close(); // Cerrar el loading de Swal
+				// Recargar datos
+				cargarSolicitudes(paginaActual);
+			});
+		})
+		.catch(error => {
+			clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay error
+			console.error("Error al subir el archivo:", error);
 
-        // Mostrar mensaje de éxito
-        Swal.fire({
-            icon: "success",
-            title: "Archivo subido correctamente",
-            text: data,
-        }).then(() => {
-            // Limpiar input
-            fileInput.value = "";
-  
-            // Recargar datos
-            cargarSolicitudes(paginaActual);
-        });
-    })
-    .catch(error => {
-        clearTimeout(swalTimeout); // Cancelar el cierre automático si ya hay error
-        console.error("Error al subir el archivo:", error);
+			Swal.close(); // Cerrar el loading de Swal
 
-        Swal.close(); // Cerrar el loading de Swal
-
-        // Mostrar mensaje de error
-        Swal.fire({
-            icon: "error",
-            title: "Error al subir el archivo",
-            text: "Hubo un problema al procesar el archivo.",
-        });
-    });
+			// Mostrar mensaje de error
+			Swal.fire({
+				icon: "error",
+				title: "Error al subir el archivo",
+				text: "Hubo un problema al procesar el archivo.",
+			});
+		});
 });
 
 
 function generarReporte(id) {
-	console.log("Generando reporte para la solicitud:", id);
 
 	$.ajax({
 		url: `${urlPrincipal}reporte_gestion/${id}`, // Corregido
@@ -860,6 +862,18 @@ function generarReporte(id) {
 		}
 	});
 }
+
+document.getElementById("buscarProducto").addEventListener("change", function() {
+	const valor = this.value.trim().toUpperCase();
+	const checkboxRow = document.getElementById("checkboxNomiPrestamoRow");
+
+	if (valor === "NOMIPRESTAMO") {
+		checkboxRow.style.display = "block";
+	} else {
+		checkboxRow.style.display = "none";
+		document.getElementById("checkNomiprestamo").checked = false;
+	}
+});
 
 
 
