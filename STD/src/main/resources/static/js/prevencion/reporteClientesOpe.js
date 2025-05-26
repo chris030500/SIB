@@ -116,11 +116,20 @@ document.addEventListener("DOMContentLoaded", renderizarHistorial);
     });
 
     infoNo.addEventListener("change", () => {
-        if (infoNo.checked) {
-            mensajeAviso.classList.add("d-none");
-            subirNuevoArchivo.classList.remove("d-none");
+    if (infoNo.checked) {
+        mensajeAviso.classList.add("d-none");
+
+        // Redirigir a la pestaña "Cargar archivos"
+        const tabCargarArchivos = document.querySelector('#archivos-tab');
+        if (tabCargarArchivos) {
+            tabCargarArchivos.click();
+            alert("Debe volver a cargar el archivo para continuar.");
+        } else {
+            console.error("No se encontró la pestaña 'Cargar archivos' con id='archivos-tab'");
         }
-    });
+    }
+});
+
 
     // CONFIRMACIÓN MODAL - REPORTE CORRECTO
     const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
@@ -211,58 +220,7 @@ document.addEventListener("DOMContentLoaded", renderizarHistorial);
         }
     });
 
-    btnEliminarSeleccionados.querySelector("button").addEventListener("click", function () {
-        const checkboxes = tablaCuerpo.querySelectorAll('input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) return;
-
-        const nombresSeleccionados = Array.from(checkboxes).map(cb => {
-            const fila = cb.closest("tr");
-            return fila ? fila.cells[1].textContent.trim() : '';
-        });
-
-        const mensaje = `¿Estás seguro de eliminar los siguientes registros?\n\n- ${nombresSeleccionados.join('\n- ')}`;
-
-        const modal = document.createElement("div");
-        modal.innerHTML = `
-            <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Confirmación de eliminación</h5>
-                        </div>
-                        <div class="modal-body">
-                            <p>${mensaje.replace(/\n/g, '<br>')}</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button id="btnConfirmarEliminar" class="btn btn-danger">Sí</button>
-                            <button id="btnCancelarEliminar" class="btn btn-secondary">No</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-
-        modal.querySelector("#btnConfirmarEliminar").addEventListener("click", function () {
-            checkboxes.forEach(cb => {
-                const fila = cb.closest("tr");
-                if (fila) fila.remove();
-            });
-            actualizarTotalRegistros();
-            verificarSeleccionados();
-            document.body.removeChild(modal);
-            alert("Registros eliminados con éxito.");
-            const pestaña = document.getElementById("descargas-tab");
-            if (pestaña) pestaña.click();
-        });
-
-        modal.querySelector("#btnCancelarEliminar").addEventListener("click", function () {
-            document.body.removeChild(modal);
-            const pestaña = document.getElementById("descargas-tab");
-            if (pestaña) pestaña.click();
-        });
-    });
-
+    
     document.getElementById("btnDescargar")?.addEventListener("click", function () {
         const contenido = "Este es un reporte simulado generado automáticamente.\nFecha: " + new Date().toLocaleString();
         const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
@@ -331,6 +289,7 @@ document.getElementById('btnProcesar').addEventListener('click', function () {
         }
     }, 300);
 });
+
 document.querySelectorAll('input[name="tipoBusqueda"]').forEach(radio => {
         radio.addEventListener('change', function () {
             const campoUsuario = document.getElementById('campoUsuario');
