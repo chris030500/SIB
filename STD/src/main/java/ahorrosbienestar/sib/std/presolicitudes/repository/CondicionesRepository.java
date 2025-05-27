@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Map;
 
 import ahorrosbienestar.sib.std.presolicitudes.model.Condiciones;
 
@@ -16,9 +17,8 @@ public interface CondicionesRepository extends JpaRepository<Condiciones, Intege
 	@Query("SELECT DISTINCT c.vcProducto FROM Condiciones c WHERE c.iEmpresa = :empresa")
 	List<String> findDistinctProductosByPuesto(@Param("empresa") Integer empresa);
 
-	@Query("SELECT DISTINCT c.vcPlazo FROM Condiciones c WHERE c.vcPlazo IS NOT NULL AND c.vcProducto = :producto AND c.iEmpresa = :empresa")
-	List<String> findDistinctPlazoByProductoAndEmpresa(@Param("producto") String producto,
-			@Param("empresa") Integer empresa);
+	@Query(value = "SELECT VC_PLAZO FROM SIB.TBL_PRODUCTOS_PLAZOS WHERE VC_DESCRIPCION = :producto", nativeQuery = true)
+	List<String> findPlazosByDescripcionProducto(@Param("producto") String producto);
 
 	@Query(value = "SELECT " +
             "MIN(I_MONTOMIN), " +

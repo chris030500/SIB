@@ -23,8 +23,8 @@ public class CondicionesService {
 		return condicionesRepository.findDistinctProductosByPuesto(empresa);
 	}
 
-	public List<String> obtenerPlazosPorProductoYEmpresa(String producto, Integer empresa) {
-		return condicionesRepository.findDistinctPlazoByProductoAndEmpresa(producto, empresa);
+	public List<String> obtenerPlazosPorProducto(String producto) {
+		return condicionesRepository.findPlazosByDescripcionProducto(producto);
 	}
 
 	public CondicionesDTO obtenerCondiciones(String producto, Integer empresa, Integer tipoEmp) {

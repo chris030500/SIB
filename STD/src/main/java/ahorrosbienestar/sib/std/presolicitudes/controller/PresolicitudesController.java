@@ -197,9 +197,8 @@ public class PresolicitudesController {
 	}
 
 	@GetMapping("/lista_plazos")
-	public ResponseEntity<List<String>> obtenerPlazosPorProductoYEmpresa(@RequestParam String producto,
-			@RequestParam Integer empresa) {
-		List<String> plazos = condicionesService.obtenerPlazosPorProductoYEmpresa(producto, empresa);
+	public ResponseEntity<List<String>> obtenerPlazosPorProducto(@RequestParam String producto) {
+		List<String> plazos = condicionesService.obtenerPlazosPorProducto(producto);
 		return ResponseEntity.ok(plazos);
 	}
 
@@ -214,6 +213,12 @@ public class PresolicitudesController {
 			@RequestParam("empresa") Integer empresa, @RequestParam("tipoemp") Integer tipoEmp) {
 
 		try {
+			if(producto.equals("NOMINA PRESTACIONES")) {
+				tipoEmp = 0;
+			}
+			
+			System.out.print(tipoEmp);
+			
 			CondicionesDTO condiciones = condicionesService.obtenerCondiciones(producto, empresa, tipoEmp);
 
 			if (condiciones != null) {

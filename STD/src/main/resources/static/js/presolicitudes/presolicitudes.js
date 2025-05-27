@@ -159,14 +159,35 @@ document.getElementById("buscarProducto").addEventListener("input", function() {
 
 
 function listaPlazos(producto, idEmpresa) {
-	let selectPlazo = document.getElementById("plazoCredito");
+	let container = document.getElementById("plazoCreditoContainer");
 	let spinnerPlazo = document.getElementById("spinnerPlazo");
+	const selectFrecuencia = document.getElementById("frecuenciaCredito");
 
-	if (!selectPlazo || !spinnerPlazo) {
-		console.error("No se encontraron los elementos del DOM para el select de plazos.");
+	if (!container || !spinnerPlazo) {
+		console.error("No se encontraron los elementos del DOM para el campo de plazo.");
 		return;
 	}
 
+	// Caso especial: producto "NOMINA PRESTACIONES"
+	if (producto.trim().toUpperCase() === "NOMINA PRESTACIONES") {
+		selectFrecuencia.value = "UNICO"; // O "DIARIA" si así está definido en tu <option>
+		selectFrecuencia.disabled = true; // Opcional: desactiva el select para evitar que lo cambien
+		// Reemplaza el select por un input number
+		container.innerHTML = `
+			<input type="number" class="form-control" id="plazoCredito" placeholder="Plazo en días" min="1">
+		`;
+		spinnerPlazo.style.display = "none";
+		return;
+	}
+
+	// Si no es "NOMINA PRESTACIONES", usar el select
+	container.innerHTML = `
+		<select class="form-select" id="plazoCredito" disabled>
+			<option value="" disabled selected>Seleccione...</option>
+		</select>
+	`;
+
+	let selectPlazo = document.getElementById("plazoCredito");
 	selectPlazo.disabled = true;
 	spinnerPlazo.style.display = "inline-block";
 
@@ -180,7 +201,7 @@ function listaPlazos(producto, idEmpresa) {
 			respuesta.forEach(plazo => {
 				let option = document.createElement("option");
 				option.value = plazo.split(" ")[0];
-				option.textContent = plazo // Si los valores son números de meses
+				option.textContent = plazo;
 				selectPlazo.appendChild(option);
 			});
 
@@ -194,6 +215,7 @@ function listaPlazos(producto, idEmpresa) {
 		}
 	});
 }
+
 
 
 
@@ -353,60 +375,86 @@ document.getElementById('montoSolicitado').addEventListener('blur', function() {
 	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
 });
 
-
 function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
+	let diasPorPago;
 	let pagosPorAnio;
+	let totalPagos;
 
-	console.log("Monto:", monto);
-	console.log("Tasa Anual:", tasaAnual);
-	console.log("Plazo:", plazo);
-	console.log("Frecuencia:", frecuencia);
-
-	// Determinar el número de pagos por año según la frecuencia
 	switch (frecuencia.toLowerCase()) {
 		case "mensual":
+			diasPorPago = 30;
 			pagosPorAnio = 12;
+			totalPagos = plazo;
 			break;
 		case "quincenal":
+			diasPorPago = 15;
 			pagosPorAnio = 24;
+			totalPagos = plazo * 2;
 			break;
 		case "semanal":
+			diasPorPago = 7;
 			pagosPorAnio = 52;
+			totalPagos = Math.round((plazo * 52) / 12);
 			break;
 		case "catorcenal":
-			pagosPorAnio = 26; // Hay 26 períodos catorcenales en un año
+			diasPorPago = 14;
+			pagosPorAnio = Math.round(360 / 14); // ≈26
+			totalPagos = Math.round((plazo * pagosPorAnio) / 12);
 			break;
 		case "unico":
-			pagosPorAnio = 1; // Un solo pago al final del plazo
+			diasPorPago = plazo;
 			break;
 		default:
 			console.error("Frecuencia no válida");
 			return;
 	}
 
-	// Calcular la tasa periódica
+	// PAGO ÚNICO
+	if (frecuencia.toLowerCase() === "unico") {
+		const tasaAnualDecimal = tasaAnual / 100;
+		const interes = (monto * tasaAnualDecimal * plazo) / 360;
+		const iva = interes * 0.16;
+		const total = monto + interes + iva;
+		const cuotaFija = total.toFixed(2);
+
+		const inputMontoDescontar = document.querySelector("#montoDescontar");
+		if (inputMontoDescontar) inputMontoDescontar.value = cuotaFija;
+
+		return cuotaFija;
+	}
+
+	// PAGO PERIÓDICO
 	const tasaPeriodica = (tasaAnual / 100) / pagosPorAnio;
-	const totalPagos = plazo * (pagosPorAnio / 12); // Ajuste para distintos plazos
 
-	// Calcular la cuota
-	let cuotaFija;
-	if (frecuencia.toLowerCase() === "pago único") {
-		cuotaFija = monto * Math.pow(1 + tasaPeriodica, totalPagos); // Interés compuesto
-	} else {
-		cuotaFija = monto * (tasaPeriodica / (1 - Math.pow(1 + tasaPeriodica, -totalPagos)));
-	}
+	// Cuota sin IVA
+	const cuotaSinIVA = monto * (tasaPeriodica / (1 - Math.pow(1 + tasaPeriodica, -totalPagos)));
+	const totalSinIVA = cuotaSinIVA * totalPagos;
+	const interesTotal = totalSinIVA - monto;
+	const ivaTotal = interesTotal * 0.16;
+	const totalConIVA = totalSinIVA + ivaTotal;
 
-	cuotaFija = cuotaFija.toFixed(2); // Redondear a 2 decimales
+	// Calcular cuota ideal con decimales completos
+	const cuotaExacta = totalConIVA / totalPagos;
 
-	// Setear el valor en el input de "Monto a descontar"
+	// Redondear cuota a 2 decimales
+	const cuotaRedondeada = parseFloat(cuotaExacta.toFixed(2));
+
+	// Calcular el total redondeado que se pagará si todas las cuotas son iguales
+	const totalRedondeado = cuotaRedondeada * totalPagos;
+
+	// Diferencia por redondeo
+	const diferencia = totalConIVA - totalRedondeado;
+
+	// Ajustar la diferencia repartida entre todas las cuotas
+	const ajustePorCuota = diferencia / totalPagos;
+
+	// Cuota final ajustada para que sumen exactamente el total
+	const cuotaFinal = parseFloat((cuotaRedondeada + ajustePorCuota).toFixed(2));
+
 	const inputMontoDescontar = document.querySelector("#montoDescontar");
-	if (inputMontoDescontar) {
-		inputMontoDescontar.value = cuotaFija;
-	} else {
-		console.error("El input #montoDescontar no existe en el DOM");
-	}
+	if (inputMontoDescontar) inputMontoDescontar.value = cuotaFinal;
 
-	return cuotaFija;
+	return cuotaFinal;
 }
 
 document.addEventListener("DOMContentLoaded", function() {
