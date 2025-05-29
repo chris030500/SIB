@@ -43,35 +43,26 @@ buscarCliente.addEventListener('input', function() {
  */
 
 function buscarCampanias() {
-	//alert("entra");
-    const input = document.getElementById('buscarCampania');
-    const valor = input.value;
+    const valor = document.getElementById('buscarCampania').value;
 
     if (valor.length >= 2) {
-        $.ajax({
-            url: newUrlBase + "buscarCampanias?valor=" + encodeURIComponent(valor),
-            type: "GET",
-            dataType: "JSON",
-            success: function(respuesta) {
+        fetch('/credito/buscarCampanias?valor=' + encodeURIComponent(valor))
+            .then(response => response.json())
+            .then(data => {
+                console.log("Respuesta recibida:", data); // 👈 clave
+
                 const datalist = document.getElementById('opcionCampania');
                 datalist.innerHTML = '';
 
-                if (respuesta.length === 0) {
+                data.forEach(campania => {
                     const option = document.createElement('option');
-                    option.value = 'No se encontraron campañas';
+                    option.value = campania.tipoCampania; // ajusta el campo si es necesario
                     datalist.appendChild(option);
-                } else {
-                    respuesta.forEach(function(campania) {
-                        const option = document.createElement('option');
-                        option.setAttribute('data-value', campania.idCampania); // cambia este campo según tu modelo
-                        option.value = campania.tipoCampania; // este también
-                        datalist.appendChild(option);
-                    });
-                }
-            },
-            error: function(error) {
-                console.error("Error en la búsqueda AJAX:", error);
-            }
-        });
+                });
+            })
+            .catch(error => {
+                console.error("Error al buscar campañas:", error);
+            });
     }
 }
+

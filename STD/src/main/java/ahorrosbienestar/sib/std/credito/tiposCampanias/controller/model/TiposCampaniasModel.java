@@ -9,8 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "TBL_TIPOS_CAMPANIA", indexes = {@Index(name = "idx_nombrecompleto", columnList = "VC_TIPO_CAMPANIA")})
+@Table(name = "TBL_TIPOS_CAMPANIA")
+//@Table(name = "TBL_TIPOS_CAMPANIA", indexes = {@Index(name = "idx_nombrecompleto", columnList = "VC_TIPO_CAMPANIA")})
 
 
 public class TiposCampaniasModel {
