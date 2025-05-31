@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;

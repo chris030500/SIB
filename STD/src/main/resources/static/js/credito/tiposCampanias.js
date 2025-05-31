@@ -28,41 +28,70 @@ var timerId;
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
 	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
-	timerId = setTimeout(listaClientes, 500); // Establecer un nuevo temporizador
+	timerId = setTimeout(buscarCampanias, 500); // Establecer un nuevo temporizador
 }
 
 
-buscarCliente.addEventListener('input', debouncedListaClientes);
 
-buscarCliente.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	listaClientes();
-});
 /**
  * Fin
  */
 
 function buscarCampanias() {
-    const valor = document.getElementById('buscarCampania').value;
-
-    if (valor.length >= 2) {
-        fetch('/credito/buscarCampanias?valor=' + encodeURIComponent(valor))
-            .then(response => response.json())
-            .then(data => {
-                console.log("Respuesta recibida:", data); // 👈 clave
-
-                const datalist = document.getElementById('opcionCampania');
-                datalist.innerHTML = '';
-
-                data.forEach(campania => {
-                    const option = document.createElement('option');
-                    option.value = campania.tipoCampania; // ajusta el campo si es necesario
-                    datalist.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error al buscar campañas:", error);
-            });
-    }
+    var buscar = buscarCliente.value;
+    //console.log(newUrlBase);
+	$.ajax({
+		url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			var opciones = document.getElementById('opcionCampania');
+			opciones.innerHTML = '';
+			respuesta.lista.forEach(function(cliente) {
+				
+				//console.log(cliente);
+				var option = document.createElement('option');
+				option.setAttribute('data-value', cliente.vc_tipo_campania);
+				
+				option.value = cliente.vc_tipo_campania;
+				opciones.appendChild(option);
+			});
+			if (respuesta.lista[0]) {
+				clienteValue = respuesta.lista[0].vc_tipo_campania; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+			}
+			//console.log(clienteValue);
+			//console.log(opciones.innerHTML);
+		}
+	});
 }
 
+buscarCliente.addEventListener('input', debouncedListaClientes);
+
+buscarCliente.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	buscarCampanias();
+});
+
+const input = document.getElementById('buscarCampania');
+const datalist = document.getElementById('opcionCampania');
+const divDetalle = document.getElementById('detalleCampania');
+
+input.addEventListener('input', function () {
+    const valor = input.value;
+    let coincidencia = false;
+
+    // Recorremos todas las opciones del datalist
+    for (let option of datalist.options) {
+        if (option.value === valor) {
+            coincidencia = true;
+            break;
+        }
+    }
+
+    // Si hay coincidencia, mostramos el div
+    if (coincidencia) {
+        divDetalle.style.display = 'block';
+    } else {
+        divDetalle.style.display = 'none';
+    }
+});
