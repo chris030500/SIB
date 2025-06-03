@@ -37,65 +37,128 @@
 					</div>
 				</div>
 				<div class="m-3">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<div id="detalleCampania" style="display: none;">
 						    <p>Detalles de la campaña seleccionada</p>
 						    <label class="col-form-label">Tipo de Campaña</label>
+						    
+						    <fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Condiciones Generales</legend>
+							<div id="divTodos" class="container">
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-3">
+										<label for="Ventana" class="form-label">Ventana (años):</label>
+										<input id="Ventana" name="ventana" class="form-control" type="text"
+										       placeholder="Ventana (años)"
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="EdadMaxima" class="form-label">Edad Máxima:</label>
+										<input id="EdadMaxima" name="edadMaxima" class="form-control" type="text"
+										       placeholder="Edad Máxima"
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="EdadMinima" class="form-label">Edad Minima:</label>
+										<input id="EdadMinima" name="edadMinima" class="form-control" type="text"
+										       placeholder="Edad Minima"
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="MontoMinimo" class="form-label">Monto Minimo:</label>
+										<input id="MontoMinimo" name="montoMinimo" class="form-control" type="text"
+										       placeholder="Monto Minimo" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="MontoMaximo" class="form-label">Monto Máximo:</label>
+										<input id="MontoMaximo" name="montoMaximo" class="form-control" type="text"
+										       placeholder="Monto Máximo" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="MoraMaxima" class="form-label">Mora Máxima:</label>
+										<input id="MoraMaxima" name="moraMaxima" class="form-control" type="text"
+										       placeholder="Mora Máxima" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="PlazoMaximo" class="form-label">Plazo Maximo:</label>
+										
+									</div>
+									<div class="col-md-3">
+										<label for="PorceCubiertoCap" class="form-label">Porcentaje Cubierto Capital:</label>
+										<input id="PorceCubiertoCap" name="porceCubiertoCap" class="form-control" type="text"
+										       placeholder="Porcentaje Cubierto Capital" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="DiasGracia" class="form-label">Días Gracia:</label>
+										<input id="DiasGracia" name="diasGracia" class="form-control" type="text"
+										       placeholder="Días Gracia" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="DiasMora" class="form-label">Días Mora:</label>
+										<input id="DiasMora" name="diasMora" class="form-control" type="text"
+										       placeholder="Días Mora" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="PlazoMaximoAnios" class="form-label">Plazo Máximo Años:</label>
+										<input id="PlazoMaximoAnios" name="plazoMaximoAnios" class="form-control" type="text"
+										       placeholder="Plazo Máximo Años" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="MinimoVida" class="form-label">Minimo Vida del Crédito (meses):</label>
+										<input id="MinimoVida" name="minimoVida" class="form-control" type="text"
+										       placeholder="Monto Minimo" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="VigenciaBC" class="form-label">Vigencia BC:</label>
+										<input id="VigenciaBC" name="vigenciaBC" class="form-control" type="text"
+										       placeholder="Vigencia BC" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="VigenciaCampania" class="form-label">Vigencia Campaña:</label>
+										<input id="VigenciaCampania" name="vigenciaCampania" class="form-control" type="text"
+										       placeholder="Vigencia Campaña" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="CreditosLiquidados" class="form-label">Créditos Liquidados:</label>
+										<input id="CreditosLiquidados" name="CreditosLiquidados" class="form-control" type="text"
+										       placeholder="Créditos Liquidados" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="Productos" class="form-label">Productos:</label>
+										
+									</div>
+									<div class="col-md-3">
+										<label for="ConvivenciaCampanias" class="form-label">Convivencia entre Campañas:</label>
+										
+									</div>
+									<div class="col-md-3">
+										<label for="EsRenovacion" class="form-label">Créditos Liquidados:</label>
+										<input id="EsRenovacion" name="EsRenovacion" class="form-control" type="text"
+										       placeholder="Es Renovacion" 
+										        />
+									</div>
+									
+								</div>
+								
+							</div>
+							
+						</fieldset>
+						    
 						</div>
 					</div>
 				</div>
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Condiciones Generales</legend>
-					<div id="divTodos" class="container">
-						<div class="row" style="margin-top : 15px ">
-							<div class="col-md-3">
-								<label class="col-form-label">Reporte</label>
-								<select class="form-control" id="idReportePLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label">Extensión</label>
-								<select class="form-control" id="extReportePLD">
-									<option value="0">Seleccione</option>
-									<option th:each="listaReportes : ${cat_reportes_pld_ext}"
-										th:value="${listaReportes.i_opcion}" th:text="${listaReportes.v_valor}">
-									</option>
-								</select>
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de inicio</label>
-								<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde" required>
-							</div>
-							<div class="col-md-3">
-								<label class="col-form-label"> Fecha de fin</label>
-								<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta" required>
-							</div>
-						</div>
-						<div class="row">
-							
-							<!--<div id="spinnerClientes" class="col-sm-1"
-								style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
-								<div class="spinner-border" style="color: #0dcaf0;">
-								</div>
-							</div>-->
-
-						</div>
-					</div>
-					<div class="row" style="margin-top : 15px; text-align: center;">
-						<div class="col-md-8"></div>
-						<div class="col-md-4">
-							<button class="btn btn-primary" title="Generar Reporte" data-bs-target="#"
-								aria-controls="table-datatable" type="button" data-tooltip="Add"
-								onclick="generarReporte()">
-								<i class="bi bi-filetype-exe"></i>
-							</button>
-						</div>
-					</div>
-				</fieldset>
+				
 
 			</div>
 		</div>

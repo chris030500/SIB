@@ -22,40 +22,40 @@ public class TiposCampaniasModel {
 
 	@Id
 	@Column(name = "PK_ID_TIPO_CAMPANIA")
-	private int pk_id_tipo_campania;
+	private Integer pk_id_tipo_campania;
  
 	@Column(name = "VC_TIPO_CAMPANIA")
 	private String vc_tipo_campania;
  
 	@Column(name = "I_VENTANA_ANIOS")
-	private int i_ventana_anios;
+	private Integer i_ventana_anios;
  
 	@Column(name = "I_EDAD_MAXIMA")
-	private int i_edad_maxima;
+	private Integer i_edad_maxima;
 	
 	@Column(name = "D_MONTO_MINIMO")
-	private double d_monto_minimo;
+	private Double d_monto_minimo;
 	
 	@Column(name = "D_MONTO_MAXIMO")
-	private double d_monto_maximo;
+	private Double d_monto_maximo;
 	
 	@Column(name = "VC_PLAZO_ID")
 	private String vc_plazo_id;
 	
 	@Column(name = "D_PORC_CUBIERTO_CAPITAL")
-	private double d_porc_cubierto_capital;
+	private Double d_porc_cubierto_capital;
 	
 	@Column(name = "I_MINIMO_VIDA_CREDITO")
-	private int i_minimo_vida_credito;
+	private Integer i_minimo_vida_credito;
 	
 	@Column(name = "I_DIAS_MORA")
-	private int i_dias_mora;
+	private Integer i_dias_mora;
 	
 	@Column(name = "I_CREDITOS_LIQUIDADOS")
-	private int i_creditos_liquidados;
+	private Integer i_creditos_liquidados;
 	
 	@Column(name = "I_SCORE_BC")
-	private int i_score_bc;
+	private Integer i_score_bc;
 	
 	@Column(name = "VC_ES_RENOVACION")
 	private String vc_es_renovacion;
@@ -64,28 +64,28 @@ public class TiposCampaniasModel {
 	private String vc_productos;
 	
 	@Column(name = "I_VIGENCIA_CAMPANIA")
-	private int i_vigencia_campania;
+	private Integer i_vigencia_campania;
 	
 	@Column(name = "I_DIAS_GRACIA")
-	private int i_dias_gracia;
+	private Integer i_dias_gracia;
 	
 	@Column(name = "I_PROD_CREDITO_ID_OFERTA")
-	private int i_prod_credito_id_oferta;
+	private Integer i_prod_credito_id_oferta;
 	
 	@Column(name = "D_PORC_INC_OFERTA")
-	private double d_proc_inc_oferta;
+	private Double d_proc_inc_oferta;
 	
 	@Column(name = "D_MONTO_MAXIMO_OFERTA")
-	private double d_monto_maximo_oferta;
+	private Double d_monto_maximo_oferta;
 	
 	@Column(name = "D_TASA_ORDINARIA_OFERTA")
-	private double d_tasa_ordinaria_oferta;
+	private Double d_tasa_ordinaria_oferta;
 	
 	@Column(name = "D_TASA_MORATORIA_OFERTA")
-	private double d_tasa_moratoria_oferta;
+	private Double d_tasa_moratoria_oferta;
 	
 	@Column(name = "D_TASA_COMP_OFERTA")
-	private double d_tasa_comp_oferta;
+	private Double d_tasa_comp_oferta;
 	
 	@Column(name = "VC_INC_CODEUDOR_OFERTA")
 	private String vc_inc_codeudor_oferta;
@@ -94,34 +94,46 @@ public class TiposCampaniasModel {
 	private String vc_estatus;
 	
 	@Column(name = "I_TIPO_CAMPANIA")
-	private int i_tipo_campania;
+	private Integer i_tipo_campania;
 	
 	@Column(name = "I_PLAZO_MAXIMO")
-	private int i_plazo_maximo;
+	private Integer i_plazo_maximo;
 	
 	@Column(name = "I_CONVIVENCIA")
-	private int i_convivencia;
+	private Integer i_convivencia;
 	
 	@Column(name = "VC_ES_RENOVACION_OFERTA")
 	private String vc_es_renovacion_oferta;
 	
 	@Column(name = "I_ACTIVA_OFERTA")
-	private int i_activa_oferta;
+	private Integer i_activa_oferta;
 	
 	@Column(name = "I_VIGENCIA_OFERTA")
-	private int i_vigencia_oferta;
+	private Integer i_vigencia_oferta;
 	
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
 	
 	@Column(name = "I_USER_REG")
-	private int i_user_reg;
- 
-	public int getPk_id_tipo_campania() {
+	private Integer i_user_reg;
+	
+	@Column(name = "I_EDAD_MINIMA")
+	private Integer i_edad_minima;
+	
+	@Column(name = "I_MORA_MAXIMA")
+	private Integer i_mora_maxima;
+	
+	@Column(name = "I_PLAZO_MAXIMO_ANIOS")
+	private Integer i_plazo_maximo_anios;
+	
+	@Column(name = "I_VIGENCIA_BC")
+	private Integer i_vigencia_bc;
+
+	public Integer getPk_id_tipo_campania() {
 		return pk_id_tipo_campania;
 	}
 
-	public void setPk_id_tipo_campania(int pk_id_tipo_campania) {
+	public void setPk_id_tipo_campania(Integer pk_id_tipo_campania) {
 		this.pk_id_tipo_campania = pk_id_tipo_campania;
 	}
 
@@ -133,35 +145,35 @@ public class TiposCampaniasModel {
 		this.vc_tipo_campania = vc_tipo_campania;
 	}
 
-	public int getI_ventana_anios() {
+	public Integer getI_ventana_anios() {
 		return i_ventana_anios;
 	}
 
-	public void setI_ventana_anios(int i_ventana_anios) {
+	public void setI_ventana_anios(Integer i_ventana_anios) {
 		this.i_ventana_anios = i_ventana_anios;
 	}
 
-	public int getI_edad_maxima() {
+	public Integer getI_edad_maxima() {
 		return i_edad_maxima;
 	}
 
-	public void setI_edad_maxima(int i_edad_maxima) {
+	public void setI_edad_maxima(Integer i_edad_maxima) {
 		this.i_edad_maxima = i_edad_maxima;
 	}
 
-	public double getD_monto_minimo() {
+	public Double getD_monto_minimo() {
 		return d_monto_minimo;
 	}
 
-	public void setD_monto_minimo(double d_monto_minimo) {
+	public void setD_monto_minimo(Double d_monto_minimo) {
 		this.d_monto_minimo = d_monto_minimo;
 	}
 
-	public double getD_monto_maximo() {
+	public Double getD_monto_maximo() {
 		return d_monto_maximo;
 	}
 
-	public void setD_monto_maximo(double d_monto_maximo) {
+	public void setD_monto_maximo(Double d_monto_maximo) {
 		this.d_monto_maximo = d_monto_maximo;
 	}
 
@@ -173,43 +185,43 @@ public class TiposCampaniasModel {
 		this.vc_plazo_id = vc_plazo_id;
 	}
 
-	public double getD_porc_cubierto_capital() {
+	public Double getD_porc_cubierto_capital() {
 		return d_porc_cubierto_capital;
 	}
 
-	public void setD_porc_cubierto_capital(double d_porc_cubierto_capital) {
+	public void setD_porc_cubierto_capital(Double d_porc_cubierto_capital) {
 		this.d_porc_cubierto_capital = d_porc_cubierto_capital;
 	}
 
-	public int getI_minimo_vida_credito() {
+	public Integer getI_minimo_vida_credito() {
 		return i_minimo_vida_credito;
 	}
 
-	public void setI_minimo_vida_credito(int i_minimo_vida_credito) {
+	public void setI_minimo_vida_credito(Integer i_minimo_vida_credito) {
 		this.i_minimo_vida_credito = i_minimo_vida_credito;
 	}
 
-	public int getI_dias_mora() {
+	public Integer getI_dias_mora() {
 		return i_dias_mora;
 	}
 
-	public void setI_dias_mora(int i_dias_mora) {
+	public void setI_dias_mora(Integer i_dias_mora) {
 		this.i_dias_mora = i_dias_mora;
 	}
 
-	public int getI_creditos_liquidados() {
+	public Integer getI_creditos_liquidados() {
 		return i_creditos_liquidados;
 	}
 
-	public void setI_creditos_liquidados(int i_creditos_liquidados) {
+	public void setI_creditos_liquidados(Integer i_creditos_liquidados) {
 		this.i_creditos_liquidados = i_creditos_liquidados;
 	}
 
-	public int getI_score_bc() {
+	public Integer getI_score_bc() {
 		return i_score_bc;
 	}
 
-	public void setI_score_bc(int i_score_bc) {
+	public void setI_score_bc(Integer i_score_bc) {
 		this.i_score_bc = i_score_bc;
 	}
 
@@ -229,67 +241,67 @@ public class TiposCampaniasModel {
 		this.vc_productos = vc_productos;
 	}
 
-	public int getI_vigencia_campania() {
+	public Integer getI_vigencia_campania() {
 		return i_vigencia_campania;
 	}
 
-	public void setI_vigencia_campania(int i_vigencia_campania) {
+	public void setI_vigencia_campania(Integer i_vigencia_campania) {
 		this.i_vigencia_campania = i_vigencia_campania;
 	}
 
-	public int getI_dias_gracia() {
+	public Integer getI_dias_gracia() {
 		return i_dias_gracia;
 	}
 
-	public void setI_dias_gracia(int i_dias_gracia) {
+	public void setI_dias_gracia(Integer i_dias_gracia) {
 		this.i_dias_gracia = i_dias_gracia;
 	}
 
-	public int getI_prod_credito_id_oferta() {
+	public Integer getI_prod_credito_id_oferta() {
 		return i_prod_credito_id_oferta;
 	}
 
-	public void setI_prod_credito_id_oferta(int i_prod_credito_id_oferta) {
+	public void setI_prod_credito_id_oferta(Integer i_prod_credito_id_oferta) {
 		this.i_prod_credito_id_oferta = i_prod_credito_id_oferta;
 	}
 
-	public double getD_proc_inc_oferta() {
+	public Double getD_proc_inc_oferta() {
 		return d_proc_inc_oferta;
 	}
 
-	public void setD_proc_inc_oferta(double d_proc_inc_oferta) {
+	public void setD_proc_inc_oferta(Double d_proc_inc_oferta) {
 		this.d_proc_inc_oferta = d_proc_inc_oferta;
 	}
 
-	public double getD_monto_maximo_oferta() {
+	public Double getD_monto_maximo_oferta() {
 		return d_monto_maximo_oferta;
 	}
 
-	public void setD_monto_maximo_oferta(double d_monto_maximo_oferta) {
+	public void setD_monto_maximo_oferta(Double d_monto_maximo_oferta) {
 		this.d_monto_maximo_oferta = d_monto_maximo_oferta;
 	}
 
-	public double getD_tasa_ordinaria_oferta() {
+	public Double getD_tasa_ordinaria_oferta() {
 		return d_tasa_ordinaria_oferta;
 	}
 
-	public void setD_tasa_ordinaria_oferta(double d_tasa_ordinaria_oferta) {
+	public void setD_tasa_ordinaria_oferta(Double d_tasa_ordinaria_oferta) {
 		this.d_tasa_ordinaria_oferta = d_tasa_ordinaria_oferta;
 	}
 
-	public double getD_tasa_moratoria_oferta() {
+	public Double getD_tasa_moratoria_oferta() {
 		return d_tasa_moratoria_oferta;
 	}
 
-	public void setD_tasa_moratoria_oferta(double d_tasa_moratoria_oferta) {
+	public void setD_tasa_moratoria_oferta(Double d_tasa_moratoria_oferta) {
 		this.d_tasa_moratoria_oferta = d_tasa_moratoria_oferta;
 	}
 
-	public double getD_tasa_comp_oferta() {
+	public Double getD_tasa_comp_oferta() {
 		return d_tasa_comp_oferta;
 	}
 
-	public void setD_tasa_comp_oferta(double d_tasa_comp_oferta) {
+	public void setD_tasa_comp_oferta(Double d_tasa_comp_oferta) {
 		this.d_tasa_comp_oferta = d_tasa_comp_oferta;
 	}
 
@@ -309,27 +321,27 @@ public class TiposCampaniasModel {
 		this.vc_estatus = vc_estatus;
 	}
 
-	public int getI_tipo_campania() {
+	public Integer getI_tipo_campania() {
 		return i_tipo_campania;
 	}
 
-	public void setI_tipo_campania(int i_tipo_campania) {
+	public void setI_tipo_campania(Integer i_tipo_campania) {
 		this.i_tipo_campania = i_tipo_campania;
 	}
 
-	public int getI_plazo_maximo() {
+	public Integer getI_plazo_maximo() {
 		return i_plazo_maximo;
 	}
 
-	public void setI_plazo_maximo(int i_plazo_maximo) {
+	public void setI_plazo_maximo(Integer i_plazo_maximo) {
 		this.i_plazo_maximo = i_plazo_maximo;
 	}
 
-	public int getI_convivencia() {
+	public Integer getI_convivencia() {
 		return i_convivencia;
 	}
 
-	public void setI_convivencia(int i_convivencia) {
+	public void setI_convivencia(Integer i_convivencia) {
 		this.i_convivencia = i_convivencia;
 	}
 
@@ -341,19 +353,19 @@ public class TiposCampaniasModel {
 		this.vc_es_renovacion_oferta = vc_es_renovacion_oferta;
 	}
 
-	public int getI_activa_oferta() {
+	public Integer getI_activa_oferta() {
 		return i_activa_oferta;
 	}
 
-	public void setI_activa_oferta(int i_activa_oferta) {
+	public void setI_activa_oferta(Integer i_activa_oferta) {
 		this.i_activa_oferta = i_activa_oferta;
 	}
 
-	public int getI_vigencia_oferta() {
+	public Integer getI_vigencia_oferta() {
 		return i_vigencia_oferta;
 	}
 
-	public void setI_vigencia_oferta(int i_vigencia_oferta) {
+	public void setI_vigencia_oferta(Integer i_vigencia_oferta) {
 		this.i_vigencia_oferta = i_vigencia_oferta;
 	}
 
@@ -365,12 +377,44 @@ public class TiposCampaniasModel {
 		this.dt_fecha_registro = dt_fecha_registro;
 	}
 
-	public int getI_user_reg() {
+	public Integer getI_user_reg() {
 		return i_user_reg;
 	}
 
-	public void setI_user_reg(int i_user_reg) {
+	public void setI_user_reg(Integer i_user_reg) {
 		this.i_user_reg = i_user_reg;
 	}
-	
+
+	public Integer getI_edad_minima() {
+		return i_edad_minima;
+	}
+
+	public void setI_edad_minima(Integer i_edad_minima) {
+		this.i_edad_minima = i_edad_minima;
+	}
+
+	public Integer getI_mora_maxima() {
+		return i_mora_maxima;
+	}
+
+	public void setI_mora_maxima(Integer i_mora_maxima) {
+		this.i_mora_maxima = i_mora_maxima;
+	}
+
+	public Integer getI_plazo_maximo_anios() {
+		return i_plazo_maximo_anios;
+	}
+
+	public void setI_plazo_maximo_anios(Integer i_plazo_maximo_anios) {
+		this.i_plazo_maximo_anios = i_plazo_maximo_anios;
+	}
+
+	public Integer getI_vigencia_bc() {
+		return i_vigencia_bc;
+	}
+
+	public void setI_vigencia_bc(Integer i_vigencia_bc) {
+		this.i_vigencia_bc = i_vigencia_bc;
+	}
+
 }

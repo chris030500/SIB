@@ -59,6 +59,11 @@ public class tiposCampaniasController {
         //return service.listaCampanias(valor);
     }
 	
-    
+	@GetMapping("/obtenerCampania")
+	@ResponseBody
+	public TiposCampaniasModel obtenerCampania(@RequestParam("id") Integer id) {
+	    return service.obtenerCampaniaPorId(id);
+	}
+	
 
 }

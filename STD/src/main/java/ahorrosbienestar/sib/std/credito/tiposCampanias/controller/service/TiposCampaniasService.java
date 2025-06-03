@@ -26,4 +26,8 @@ public class TiposCampaniasService {
 		//return repository.listaCampanias(valor);
 	}
 	
+	public TiposCampaniasModel obtenerCampaniaPorId(Integer id) {
+	    return repository.mostrarCampania(id);
+	}
+	
 }
