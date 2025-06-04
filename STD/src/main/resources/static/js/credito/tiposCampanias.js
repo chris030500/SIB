@@ -111,7 +111,10 @@ input.addEventListener('input', function () {
                 //document.getElementById("EdadMaxima").value = data.i_edad_maxima;
                 // Agrega más campos si necesitas
             //});
-            
+            cargarCatalogoTipoCampanias();
+            cargarCatalogoConvivenciaCamp();
+            cargarCatalogoProductos();
+            cargarChecksEsRenovacion();
             // Llamada al backend para traer datos sin redireccionar
         fetch(newUrlBase + 'credito/obtenerCampania?id=' + idSeleccionado)
             .then(response => response.json())
@@ -131,6 +134,12 @@ input.addEventListener('input', function () {
                 document.getElementById("PlazoMaximoAnios").value = data.i_plazo_maximo_anios;
                 document.getElementById("VigenciaBC").value = data.i_vigencia_bc;
                 document.getElementById("VigenciaCampania").value = data.i_vigencia_campania;
+                document.getElementById("ProdCredito").value = data.i_prod_credito_id_oferta;
+                document.getElementById("PorceIncremento").value = data.d_proc_inc_oferta;
+                document.getElementById("VigenciaCampaniaOferta").value = data.i_vigencia_oferta;
+                document.getElementById("TasaOrdinaria").value = data.d_tasa_ordinaria_oferta;
+                document.getElementById("MontoMaximoOferta").value = data.d_monto_maximo_oferta;
+                
                 // Puedes agregar más campos aquí si los tienes en tu modelo
                 //console.log(data.i_ventana_anios);
             })
@@ -142,3 +151,96 @@ input.addEventListener('input', function () {
         divDetalle.style.display = 'none';
     }
 });
+
+
+//funcion para mostrar catalogo de tipos campañas (temporal/recurrente)
+function cargarCatalogoTipoCampanias() {
+    $.ajax({
+        url: newUrlBase + 'credito/api/catTipoCampanias',
+        type: 'GET',
+        success: function(data) {
+            let select = $('#tipoCampanias');
+            select.empty();
+            select.append('<option value="0">Seleccione</option>');
+
+            data.forEach(function(item) {
+                select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+            });
+        },
+        error: function(err) {
+            console.error('Error al cargar catálogos', err);
+        }
+    });
+}
+
+//funcion para mostrar catalogo de convivencia entre campañas (si/no)
+function cargarCatalogoConvivenciaCamp() {
+    $.ajax({
+        url: newUrlBase + 'credito/api/catConvivenciaCamp',
+        type: 'GET',
+        success: function(data) {
+            let select = $('#convivenciaCamp');
+            select.empty();
+            select.append('<option value="0">Seleccione</option>');
+
+            data.forEach(function(item) {
+                select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+            });
+        },
+        error: function(err) {
+            console.error('Error al cargar catálogos', err);
+        }
+    });
+}
+
+//funcion para llenar combo opcion multiple de productos
+function cargarCatalogoProductos() {
+    $.ajax({
+        url: newUrlBase + 'credito/api/catProductos',
+        type: 'GET',
+        success: function(data) {
+			//console.log("Datos recibidos:", data);
+            let select = $('#Productos');
+            select.empty();
+            data.forEach(function(item) {
+                select.append('<option value="' + item.pkIProducCreditoId + '">' + item.vcDescripcion + '</option>');
+            });
+        },
+        error: function(err) {
+            console.error('Error al cargar tipos campañas múltiples', err);
+        }
+    });
+}
+
+
+//cargar Checks es renovacion
+function cargarChecksEsRenovacion() {
+    $.ajax({
+        url: newUrlBase + 'credito/api/catEsRenovacion',
+        type: 'GET',
+        success: function(data) {
+			console.log("Datos recibidos:", data);
+            let contenedor = $('#checksEsRenovacion');
+            contenedor.empty(); // Limpiar contenido anterior
+
+            data.forEach(function(item) {
+                let radio = $('<input>')
+                    .attr('type', 'radio')
+                    .attr('name', 'checksEsRenovacion') // mismo name para agruparlos
+                    .attr('value', item.i_opcion)
+                    .attr('id', 'esRenovacion_' + item.i_opcion);
+
+                let label = $('<label>')
+                    .attr('for', 'esRenovacion_' + item.i_opcion)
+                    .text(item.v_valor);
+
+                contenedor.append(radio);
+                contenedor.append(label);
+                contenedor.append('<br>'); // Salto de línea entre opciones
+            });
+        },
+        error: function(err) {
+            console.error('Error al cargar catálogos', err);
+        }
+    });
+}

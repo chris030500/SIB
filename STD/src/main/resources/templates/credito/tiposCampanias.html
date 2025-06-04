@@ -39,9 +39,12 @@
 				<div class="m-3">
 					<div class="col-md-12">
 						<div id="detalleCampania" style="display: none;">
-						    <p>Detalles de la campaña seleccionada</p>
-						    <label class="col-form-label">Tipo de Campaña</label>
-						    
+							<div class="col-md-3">
+							    <label class="col-form-label">Tipo de Campaña</label>
+							    <select class="form-control" id="tipoCampanias">
+									
+								</select>
+						    </div>
 						    <fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Condiciones Generales</legend>
 							<div id="divTodos" class="container">
@@ -81,10 +84,6 @@
 										<input id="MoraMaxima" name="moraMaxima" class="form-control" type="text"
 										       placeholder="Mora Máxima" 
 										        />
-									</div>
-									<div class="col-md-3">
-										<label for="PlazoMaximo" class="form-label">Plazo Maximo:</label>
-										
 									</div>
 									<div class="col-md-3">
 										<label for="PorceCubiertoCap" class="form-label">Porcentaje Cubierto Capital:</label>
@@ -135,31 +134,72 @@
 										        />
 									</div>
 									<div class="col-md-3">
-										<label for="Productos" class="form-label">Productos:</label>
-										
+										<label for="EsRenovacion" class="form-label">Es Renovacion:</label>
+										<div id="checksEsRenovacion"></div>
 									</div>
 									<div class="col-md-3">
 										<label for="ConvivenciaCampanias" class="form-label">Convivencia entre Campañas:</label>
+										<select class="form-control" id="convivenciaCamp">
+								
+										</select>
+									</div>
+									<div class="col-md-3">
+										<label for="Productos" class="form-label">Productos:</label>
+										<select id="Productos" name="productos" multiple class="form-control" size="5">
+										    <!-- Las opciones se llenan por JavaScript -->
+										</select>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Condiciones Oferta</legend>
+							<div id="divTodos" class="container">
+								<div class="row" style="margin-top : 15px ">
+									<div class="col-md-3">
+										<label for="ProdCredito" class="form-label">Producto de Crédito:</label>
+										<input id="ProdCredito" name="prodCredito" class="form-control" type="text"
+										       placeholder="Producto de Crédito"
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="PorceIncremento" class="form-label">Porcentaje de Incremento:</label>
+										<input id="PorceIncremento" name="porceIncremento" class="form-control" type="text"
+										       placeholder="Porcentaje de Incremento"
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="EsRenovacionOferta" class="form-label">Es Renovación:</label>
 										
 									</div>
 									<div class="col-md-3">
-										<label for="EsRenovacion" class="form-label">Créditos Liquidados:</label>
-										<input id="EsRenovacion" name="EsRenovacion" class="form-control" type="text"
-										       placeholder="Es Renovacion" 
+										<label for="VigenciaCampaniaOferta" class="form-label">Vigencia Campaña:</label>
+										<input id="VigenciaCampaniaOferta" name="vigenciaCampaniaOferta" class="form-control" type="text"
+										       placeholder="Vigencia Campaña" 
 										        />
 									</div>
-									
+									<div class="col-md-3">
+										<label for="TasaOrdinaria" class="form-label">Tasa Ordinaria:</label>
+										<input id="TasaOrdinaria" name="tasaOrdinaria" class="form-control" type="text"
+										       placeholder="Tasa Ordinaria" 
+										        />
+									</div>
+									<div class="col-md-3">
+										<label for="Activa" class="form-label">Activa:</label>
+										
+									</div>
+									<div class="col-md-3">
+										<label for="MontoMaximoOferta" class="form-label">Monto Máximo:</label>
+										<input id="MontoMaximoOferta" name="montoMaximoOferta" class="form-control" type="text"
+										       placeholder="Monto Máximo" 
+										        />
+									</div>
 								</div>
-								
 							</div>
-							
 						</fieldset>
-						    
 						</div>
 					</div>
 				</div>
-				
-
 			</div>
 		</div>
 	</section>
