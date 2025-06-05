@@ -23,12 +23,11 @@ public interface SolicitudCreditoRepository extends JpaRepository<SolicitudCredi
 	@Query("SELECT s FROM SolicitudCredito s WHERE s.id IN :ids")
     List<SolicitudCredito> findByIds(@Param("ids") List<Integer> ids);
 	
-	@Query("SELECT COUNT(s) FROM SolicitudCredito s WHERE s.empresa = :empresa AND s.estatus = 1")
+	@Query("SELECT COUNT(s) FROM SolicitudCredito s WHERE s.empresa = :empresa AND s.estatus = 5")
     int contarSolicitudesPorEmpresa(@Param("empresa") String empresa);
 	
+	@Transactional
 	@Modifying
-    @Transactional
-    @Query("UPDATE SolicitudCredito s SET s.proceso = :idProceso, s.estatus = 2 WHERE s.empresa = :empresa AND s.estatus = 1")
+	@Query(value = "UPDATE TBL_SOLICITUDES_CREDITO SET FK_ID_PROCESO = :idProceso, I_ESTATUS = 2 WHERE VC_EMPRESA = :empresa AND I_ESTATUS = 5", nativeQuery = true)
 	int actualizarSolicitudesPorEmpresa(@Param("empresa") String empresa, @Param("idProceso") Integer idProceso);
-	
 }

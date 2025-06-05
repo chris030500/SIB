@@ -78,4 +78,31 @@ public class SolicitudCreditoService {
             }
         }
     }
+    
+    public void aprobarSolicitud(Integer id) {
+    	SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        // Verificas que esté en estado válido para aprobar
+        if (solicitud.getEstatus() != 1) {
+            throw new IllegalStateException("Solo se pueden aprobar solicitudes en estado pendiente");
+        }
+
+        solicitud.setEstatus(5); // 5 = Aceptada
+        solicitudCreditoRepository.save(solicitud);
+    }
+    
+    public void cancelarSolicitud(Integer id) {
+    	SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        // Verificas que esté en estado válido para cancelar
+        if (solicitud.getEstatus() == 0) {
+            throw new IllegalStateException("La solicitud ya está cancelada");
+        }
+
+        solicitud.setEstatus(0); // 0 = Cancelada
+        solicitudCreditoRepository.save(solicitud);
+    }
+    
 }

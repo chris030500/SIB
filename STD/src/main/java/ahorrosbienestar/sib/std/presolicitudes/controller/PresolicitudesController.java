@@ -523,7 +523,7 @@ public class PresolicitudesController {
 	}
 	
 	@PostMapping("/envioCorreo/{idEmpresa}")
-    public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable Integer idEmpresa) {
+    public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable String idEmpresa) {
 		
 		System.out.print("El correo se enviara a la empresa: " + idEmpresa);
 		
@@ -533,6 +533,26 @@ public class PresolicitudesController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al enviar correo: " + e.getMessage());
+        }
+    }
+	
+	@PostMapping("/aprobarSolicitud/{id}")
+    public ResponseEntity<String> aprobarSolicitud(@PathVariable Integer id) {
+        try {
+        	solicitudCreditoService.aprobarSolicitud(id);
+            return ResponseEntity.ok("Solicitud aprobada");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al aprobar la solicitud");
+        }
+    }
+	
+	@PostMapping("/cancelarSolicitud/{id}")
+    public ResponseEntity<String> cancelarSolicitud(@PathVariable Integer id) {
+        try {
+        	solicitudCreditoService.cancelarSolicitud(id);
+            return ResponseEntity.ok("Solicitud cancelada");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
         }
     }
 }

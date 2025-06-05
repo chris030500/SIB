@@ -1,6 +1,9 @@
 package ahorrosbienestar.sib.std.presolicitudes.controller;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -209,6 +212,17 @@ public class EmpresasController {
 
 	public void actualizarExpresionCron(String cron) {
 	    try {
+	    	// Define la zona horaria deseada
+	        ZoneId zona = ZoneId.of("America/Chihuahua");
+
+	        // Obtén la fecha y hora con zona
+	        ZonedDateTime ahora = ZonedDateTime.now(zona);
+
+	        // Da formato a la fecha y hora
+	        String fechaHora = ahora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+	        // Imprime el resultado
+	        System.out.print("false - Fecha y hora: " + fechaHora);
 	        logger.info("Proceso de Envio de correos con solicitudes de nomina a empresas para Vo.Bo.");
 	        expresionCron = cron;
 	        
@@ -220,7 +234,7 @@ public class EmpresasController {
 	        }
 
 	        // Crea un nuevo trigger con la nueva expresión cron
-	        CronTrigger trigger = new CronTrigger(expresionCron, ZoneId.of("America/Mexico_City"));
+	        CronTrigger trigger = new CronTrigger(expresionCron, ZoneId.of("America/Chihuahua"));
 	        
 	        // Programa la nueva tarea y guarda la referencia de la tarea programada
 	        currentScheduledTask = taskScheduler.schedule(() -> procesarCron(), trigger);

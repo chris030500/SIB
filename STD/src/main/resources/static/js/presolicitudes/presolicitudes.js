@@ -15,6 +15,8 @@ var urlPrincipal = getAbsolutePath();
 let idEmpresaSeleccionada = null;
 let idProductoSeleccionado = null;
 let tasaAnual = null; // Tasa de interés anual en %
+let montoMin = 0;
+let montoMax = 0;
 
 // Esta función actualiza el datalist con las empresas
 function listaEmpresas() {
@@ -259,19 +261,38 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 	selectPuesto.disabled = true;
 
 	$.ajax({
-		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada, // Endpoint para obtener los puestos
+		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada,
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
+			// Limpiar el select
+			selectPuesto.innerHTML = '';
 
-			// Limpiar y volver a llenar el select
-			selectPuesto.innerHTML = '<option value="" disabled selected>Seleccione un puesto...</option>';
-			respuesta.forEach(puesto => {
+			if (respuesta.length > 0) {
+				// Opción inicial por defecto
+				let opcionInicial = document.createElement('option');
+				opcionInicial.value = '';
+				opcionInicial.textContent = 'Seleccione un puesto...';
+				opcionInicial.disabled = true;
+				opcionInicial.selected = true;
+				selectPuesto.appendChild(opcionInicial);
+
+				// Agregar los puestos
+				respuesta.forEach(puesto => {
+					let optionPuesto = document.createElement('option');
+					optionPuesto.value = puesto.pkIdTipo;
+					optionPuesto.textContent = puesto.descripcion;
+					selectPuesto.appendChild(optionPuesto);
+				});
+			} else {
+				// Si no hay puestos disponibles
 				let optionPuesto = document.createElement('option');
-				optionPuesto.value = puesto.pkIdTipo; // Suponiendo que cada puesto tiene un ID
-				optionPuesto.textContent = puesto.descripcion; // Suponiendo que cada puesto tiene un nombre
+				optionPuesto.value = '0';
+				optionPuesto.textContent = 'TODOS';
+				optionPuesto.disabled = true;
+				optionPuesto.selected = true;
 				selectPuesto.appendChild(optionPuesto);
-			});
+			}
 
 			selectPuesto.disabled = false;
 		},
@@ -281,6 +302,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 		}
 	});
 }
+
 
 document.getElementById('buscarEmpleado').addEventListener('change', function() {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
@@ -320,8 +342,8 @@ function listaMontos(producto, idEmpresa, puesto) {
 		.then(data => {
 
 			// Obtener valores de monto mínimo y máximo de la API
-			const montoMin = data.montoMin;
-			const montoMax = data.montoMax;
+			montoMin = data.montoMin;
+			montoMax = data.montoMax;
 			tasaAnual = data.tasa;
 
 			// Buscar el input por ID
@@ -533,17 +555,6 @@ function guardarSolicitud() {
 			}).then(() => {
 				resetearModal();
 				cargarSolicitudes(paginaActual);
-
-				// ✅ Si es una nueva solicitud, enviar correo
-				if (!solicitudData.id) {
-					fetch(urlPrincipal + `envioCorreo/${idEmpresaSeleccionada}`, {
-						method: 'POST'
-					})
-						.then(res => {
-							if (!res.ok) throw new Error("Error al enviar el correo");
-							return res.text();
-						})
-				}
 			});
 		})
 		.catch(error => {
@@ -608,10 +619,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function obtenerEstatus(estatus) {
 	switch (estatus) {
-		case 1: return "En Proceso";
-		case 2: return "Enviado";
+		case 1: return "En Revision";
+		case 2: return "Enviada";
 		case 3: return "Aprobada";
 		case 4: return "Rechazada";
+		case 5: return "Aceptada";
 		case 0: return "Cancelada";
 		default: return "Desconocido";
 	}
@@ -645,6 +657,11 @@ function cargarSolicitudes(pagina) {
 			            <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
 			                <i class="fas fa-file-pdf"></i>
 			            </button>` : ''}
+			            ${solicitud.estatus === 1 ? `
+					    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
+					        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
+					        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
+    					</button>` : ''}
 			        </td>
 			    </tr>`;
 			}).join('');
@@ -664,6 +681,76 @@ function cargarSolicitudes(pagina) {
 			console.error("Error al cargar las solicitudes:", error);
 			document.getElementById("spinner").style.display = "none";
 		});
+}
+
+
+function aprobarOCancelarSolicitud(id, empresa) {
+	Swal.fire({
+		title: '¿Qué deseas hacer con esta solicitud?',
+		text: `ID de solicitud: ${id}`,
+		showDenyButton: true,
+		showCancelButton: true,
+		confirmButtonText: 'Aprobar',
+		denyButtonText: `Cancelar`,
+		cancelButtonText: 'Cerrar'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			// Lógica para aprobar
+			fetch(urlPrincipal + `aprobarSolicitud/${id}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					usuario: 'admin123',
+					observacion: ''
+				})
+			})
+				.then(res => {
+					if (!res.ok) throw new Error("Error al aprobar la solicitud");
+					return res.text();
+				})
+				.then(() => {
+					// Enviar correo después de aprobar
+					return fetch(urlPrincipal + `envioCorreo/${empresa}`, {
+						method: 'POST'
+					});
+				})
+				.then(res => {
+					if (!res.ok) throw new Error("Error al enviar el correo");
+					return res.text();
+				})
+				.then(() => {
+					Swal.fire('¡Aprobada!', 'La solicitud fue aprobada y se envió el correo.', 'success');
+					cargarSolicitudes(0);
+				})
+				.catch(error => {
+					console.error(error);
+					Swal.fire('Error', 'No se pudo aprobar la solicitud o enviar el correo.', 'error');
+				});
+		} else if (result.isDenied) {
+			// Lógica para cancelar
+			fetch(urlPrincipal + `cancelarSolicitud/${id}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					usuario: 'admin123',
+					observacion: ''
+				})
+			})
+				.then(res => res.text())
+				.then(resp => {
+					Swal.fire('Cancelada', 'La solicitud fue cancelada.', 'info');
+					cargarSolicitudes(0);
+				})
+				.catch(error => {
+					console.error(error);
+					Swal.fire('Error', 'No se pudo cancelar la solicitud.', 'error');
+				});
+		}
+	});
 }
 
 // Manejo de eventos de botones (Event Delegation)

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -108,7 +109,9 @@ public class EmpresaService {
         }
 
         long diasDesdeUltima = ahora.toLocalDate().toEpochDay() - empresa.getFecha().toLocalDate().toEpochDay();
-
+        
+        System.out.print("FRECUENCIA: " + empresa.getFrecuencia());
+        
         switch (empresa.getFrecuencia()) {
             case 1:
                 return diasDesdeUltima >= 7;
@@ -162,6 +165,14 @@ public class EmpresaService {
 	                solicitudCreditoRepository.actualizarSolicitudesPorEmpresa(
 	                    correoContenido.getNombre(), procesoEnvio.getPkIdProceso()
 	                );
+	                
+	                try {
+	    	            TimeUnit.SECONDS.sleep(10);      // o bien: Thread.sleep(2000);
+	    	        } catch (InterruptedException ex) {
+	    	            // Restablece el estado de interrupción por buenas prácticas
+	    	            Thread.currentThread().interrupt();
+	    	            // Aquí podrías registrar el evento o decidir abortar el proceso
+	    	        }
 
 	                // 4. Validar correos
 	                String correos = correoContenido.getCorreoContacto();
@@ -188,6 +199,8 @@ public class EmpresaService {
 	                String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
 	                byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
 
+	                
+	                
 	                sendEmailWithAttachment(
 	                    correos,  // puede ir con ;
 	                    "Solicitudes Vo.bo. Bienestar",
@@ -211,32 +224,27 @@ public class EmpresaService {
 	    }
 	}
 
-	public void prepararCorreoPorEmpresa(Integer idEmpresa) {
+	public void prepararCorreoPorEmpresa(String nomEmpresa) {
 	    LocalDate fechaActual = LocalDate.now();
-	    System.out.println("Inicia generación de correo para empresa con ID: " + idEmpresa);
+	    System.out.println("Inicia generación de correo para empresa: " + nomEmpresa);
 
 	    try {
 	        LocalDateTime ahora = LocalDateTime.now();
 	        ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitudes_vobo");
 
-	        EmpresaSIB empresa = empresaSIBRepository.findById(idEmpresa).orElse(null);
-
-	        if (empresa == null) {
-	            System.out.println("Empresa con ID " + idEmpresa + " no encontrada.");
-	            return;
-	        }
+	        EmpresaSIB empresa = empresaSIBRepository.findByNombre(nomEmpresa);
 
 	        if (!debeEnviarNotificacion(empresa, ahora)) {
-	            System.out.println("No es momento de enviar notificación para la empresa: " + empresa.getNombre());
+	            System.out.println("No es momento de enviar notificación para la empresa: " + nomEmpresa);
 	            return;
 	        }
 
-	        int cantidadSolicitudes = solicitudCreditoRepository.contarSolicitudesPorEmpresa(empresa.getNombre());
+	        int cantidadSolicitudes = solicitudCreditoRepository.contarSolicitudesPorEmpresa(nomEmpresa);
 
 	        if (cantidadSolicitudes == 0) {
 	            empresa.setFecha(ahora);
 	            empresaSIBRepository.save(empresa);
-	            System.out.println("No hay solicitudes para la empresa: " + empresa.getNombre());
+	            System.out.println("No hay solicitudes para la empresa: " + nomEmpresa);
 	            return;
 	        }
 
@@ -251,6 +259,14 @@ public class EmpresaService {
 	            empresa.getNombre(), procesoEnvio.getPkIdProceso()
 	        );
 
+	        try {
+	            TimeUnit.SECONDS.sleep(10);      // o bien: Thread.sleep(2000);
+	        } catch (InterruptedException ex) {
+	            // Restablece el estado de interrupción por buenas prácticas
+	            Thread.currentThread().interrupt();
+	            // Aquí podrías registrar el evento o decidir abortar el proceso
+	        }
+	        
 	        String correos = empresa.getCorreoContacto();
 	        String[] destinatarios = correos.split(";");
 	        boolean todosValidos = true;
@@ -273,7 +289,7 @@ public class EmpresaService {
 	        String contenidoCorreo = contenidoCorreo(empresa.getId());
 	        String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
 	        byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
-
+	        
 	        sendEmailWithAttachment(
 	            correos,
 	            "Solicitudes Vo.bo. Bienestar",
@@ -325,6 +341,13 @@ public class EmpresaService {
 	            empresa.getNombre(), procesoEnvio.getPkIdProceso()
 	        );
 
+	        try {
+	            TimeUnit.SECONDS.sleep(10);      // o bien: Thread.sleep(2000);
+	        } catch (InterruptedException ex) {
+	            // Restablece el estado de interrupción por buenas prácticas
+	            Thread.currentThread().interrupt();
+	            // Aquí podrías registrar el evento o decidir abortar el proceso
+	        }
 	        String correos = empresa.getCorreoContacto();
 	        String[] destinatarios = correos.split(";");
 	        boolean todosValidos = true;
@@ -342,7 +365,7 @@ public class EmpresaService {
 	        String contenidoCorreo = contenidoCorreo(empresa.getId());
 	        String parametros = "?IDPROCESO=" + procesoEnvio.getPkIdProceso();
 	        byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
-
+	        
 	        sendEmailWithAttachment(
 	            correos,
 	            "Solicitudes Vo.bo. Bienestar",
