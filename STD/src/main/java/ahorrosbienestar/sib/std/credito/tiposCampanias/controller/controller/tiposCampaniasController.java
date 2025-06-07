@@ -133,5 +133,19 @@ public class tiposCampaniasController {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
 	}
 	
+	//llenar las opciones de es renovacion
+	@GetMapping("/api/catEsRenovacionOferta")
+	@ResponseBody
+	public List<Catalogo> getCatalogoEsRenovacionOferta() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+	}
+	
+	//llenar las opciones de es activa
+	@GetMapping("/api/catActiva")
+	@ResponseBody
+	public List<Catalogo> getCatalogoActiva() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+	}
+	
 
 }
