@@ -40,6 +40,7 @@ function debouncedListaClientes() {
 
 function buscarCampanias() {
     var buscar = buscarCliente.value;
+    
     //console.log(newUrlBase);
 	$.ajax({
 		url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
@@ -54,9 +55,9 @@ function buscarCampanias() {
 				var option = document.createElement('option');
 				option.setAttribute('data-value', cliente.vc_tipo_campania);
 				
-				console.log(cliente.pk_id_tipo_campania);
+				//console.log(cliente.pk_id_tipo_campania);
 				idTipoCampania = cliente.pk_id_tipo_campania;
-				console.log(idTipoCampania);
+				//console.log(idTipoCampania);
 				
 				option.value = cliente.vc_tipo_campania;
 				opciones.appendChild(option);
@@ -137,7 +138,7 @@ input.addEventListener('input', function () {
                 document.getElementById("VigenciaBC").value = data.i_vigencia_bc;
                 document.getElementById("VigenciaCampania").value = data.i_vigencia_campania;
                 document.getElementById("ProdCredito").value = data.i_prod_credito_id_oferta;
-                document.getElementById("PorceIncremento").value = data.d_proc_inc_oferta;
+                document.getElementById("PorceIncremento").value = data.d_porc_inc_oferta;
                 document.getElementById("VigenciaCampaniaOferta").value = data.i_vigencia_oferta;
                 document.getElementById("TasaOrdinaria").value = data.d_tasa_ordinaria_oferta;
                 document.getElementById("MontoMaximoOferta").value = data.d_monto_maximo_oferta;
@@ -636,7 +637,99 @@ function modificarTiposCampanias(){
 																																										} else if (document.getElementById('MontoMaximoOferta').value != '') {
 																																											
 																																											if(esDecimalPositivo(document.getElementById('MontoMaximoOferta').value)){
-																																												///////////////
+																																												///////////////////////
+																																												
+																																												const checksEsRenovacion = document.getElementsByName("checksEsRenovacion");
+																																											    let valorSiNo = "";
+																																											
+																																											    for (let radio of checksEsRenovacion) {
+																																											        if (radio.checked) {
+																																											            valorSiNo = radio.value == "1" ? "S" : "N";
+																																											            break;
+																																											        }
+																																											    }
+																																												
+																																												
+																																												const selectElement = document.getElementById("Productos");
+																																												const selectedProductos = Array.from(selectElement.selectedOptions).map(option => option.value);
+																																											    const productosSelect = selectedProductos.join(",");
+																																											    console.log(productosSelect);
+																																												
+																																												const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
+																																											    let vc_es_renovacion_oferta_checkbox = "";
+																																											    for (let radio of checksEsRenovacionOferta) {
+																																											        if (radio.checked) {
+																																											            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2", depende de tu catálogo
+																																											            break;
+																																											        }
+																																											    }
+																																												
+																																												const checksActiva = document.getElementsByName("checksActiva");
+																																											    let activa_checkbox = "";
+																																											    for (let radio of checksActiva) {
+																																											        if (radio.checked) {
+																																											            activa_checkbox = radio.value; // será "1" o "2"
+																																											            break;
+																																											        }
+																																											    }
+
+																																												const data = {
+																																											        pk_id_tipo_campania: idTipoCampania,
+																																											        i_ventana_anios: parseInt(document.getElementById("Ventana").value),
+																																											        i_edad_maxima: parseInt(document.getElementById("EdadMaxima").value),
+																																											        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
+																																											        d_monto_minimo: parseFloat(document.getElementById("MontoMinimo").value),
+																																											        d_monto_maximo: parseFloat(document.getElementById("MontoMaximo").value),
+																																											        i_mora_maxima: parseInt(document.getElementById("MoraMaxima").value),
+																																											        d_porc_cubierto_capital: parseFloat(document.getElementById("PorceCubiertoCap").value),
+																																											        i_dias_gracia: parseInt(document.getElementById("DiasGracia").value),
+																																											        i_dias_mora: parseInt(document.getElementById("DiasMora").value),
+																																											        i_plazo_maximo_anios: parseInt(document.getElementById("PlazoMaximoAnios").value),
+																																											        i_minimo_vida_credito: parseInt(document.getElementById("MinimoVida").value),
+																																											        i_vigencia_bc: parseInt(document.getElementById("VigenciaBC").value),
+																																											        i_vigencia_campania: parseInt(document.getElementById("VigenciaCampania").value),
+																																											        i_creditos_liquidados: parseInt(document.getElementById("CreditosLiquidados").value),
+																																											        vc_es_renovacion:valorSiNo,
+																																											        i_convivencia: parseInt(document.getElementById("convivenciaCamp").value),
+																																											        vc_productos: productosSelect,
+																																											        i_prod_credito_id_oferta: parseInt(document.getElementById("ProdCredito").value),
+																																											        d_porc_inc_oferta: parseFloat(document.getElementById("PorceIncremento").value),
+																																											        vc_es_renovacion_oferta:vc_es_renovacion_oferta_checkbox,
+																																											        i_vigencia_oferta: parseInt(document.getElementById("VigenciaCampaniaOferta").value),
+																																											        d_tasa_ordinaria_oferta: parseInt(document.getElementById("TasaOrdinaria").value),
+																																											        i_activa_oferta: parseInt(activa_checkbox),
+																																											        d_monto_maximo_oferta: parseFloat(document.getElementById("MontoMaximoOferta").value),
+																																											        
+																																											    };
+																																											    console.log(data);
+																																											    fetch(newUrlBase + 'credito/api/actualizar', {
+																																											        method: 'POST',
+																																											        headers: {
+																																											            'Content-Type': 'application/json'
+																																											        },
+																																											        body: JSON.stringify(data)
+																																											    })
+																																											    .then(resp => {
+																																												    if (!resp.ok) throw new Error("Error al actualizar");
+																																												    return resp.text();
+																																												})
+																																												.then(() => {
+																																													swal({
+																																													title: "",
+																																													text: 'Actualizado correctamente',
+																																													icon: "success",
+																																												    }).then(() => {
+																																												        window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+																																												    });
+																																												})
+																																												.catch(err => {
+																																												    console.error("Error al actualizar:", err);
+																																												   swal({
+																																													title: "",
+																																													text: 'Error al actualizar',
+																																												        icon: 'error'
+																																												    });
+																																												});
 																																												///////////////////////
 																																											}else{
 																																												swal({

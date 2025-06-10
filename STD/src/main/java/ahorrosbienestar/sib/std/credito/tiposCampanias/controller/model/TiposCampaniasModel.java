@@ -73,7 +73,7 @@ public class TiposCampaniasModel {
 	private Integer i_prod_credito_id_oferta;
 	
 	@Column(name = "D_PORC_INC_OFERTA")
-	private Double d_proc_inc_oferta;
+	private Double d_porc_inc_oferta;
 	
 	@Column(name = "D_MONTO_MAXIMO_OFERTA")
 	private Double d_monto_maximo_oferta;
@@ -265,12 +265,12 @@ public class TiposCampaniasModel {
 		this.i_prod_credito_id_oferta = i_prod_credito_id_oferta;
 	}
 
-	public Double getD_proc_inc_oferta() {
-		return d_proc_inc_oferta;
+	public Double getD_porc_inc_oferta() {
+		return d_porc_inc_oferta;
 	}
 
-	public void setD_proc_inc_oferta(Double d_proc_inc_oferta) {
-		this.d_proc_inc_oferta = d_proc_inc_oferta;
+	public void setD_porc_inc_oferta(Double d_porc_inc_oferta) {
+		this.d_porc_inc_oferta = d_porc_inc_oferta;
 	}
 
 	public Double getD_monto_maximo_oferta() {

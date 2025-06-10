@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,12 +21,14 @@ import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("credito")
@@ -39,6 +43,9 @@ public class tiposCampaniasController {
 	
 	@Autowired
 	private ProductoColocacionService productoColocacionService;
+	
+	@Autowired
+    private TiposCampaniasRepository repository;
 	
 	private static String rutaDireccion = "";
 	private static final int opcBusquedaGrupo = 32;
@@ -147,5 +154,42 @@ public class tiposCampaniasController {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
 	}
 	
+	//update de datos campaña
+	/*@PostMapping("/api/actualizar")
+    public ResponseEntity<String> actualizar(@RequestBody TiposCampaniasModel campania) {
+        // Verifica si existe
+        Optional<TiposCampaniasModel> existente = repository.findById(campania.getPk_id_tipo_campania());
+        if (existente.isPresent()) {
+            repository.save(campania); // Actualiza todos los campos
+            return ResponseEntity.ok("Actualizado correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaña no encontrada");
+        }
+    }*/
+	
+	@PostMapping("/api/actualizar")
+	/*public ResponseEntity<String> actualizar(@RequestBody TiposCampaniasModel campania) {
+	    boolean actualizado = service.actualizarCampania(campania);
+	    if (actualizado) {
+	        return ResponseEntity.ok("Actualizado correctamente");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaña no encontrada o sin cambios");
+	    }
+	}*/
+	
+	public ResponseEntity<String> actualizar(@RequestBody TiposCampaniasModel campania) {
+	    try {
+	        boolean actualizado = service.actualizarCampania(campania);
+	        if (actualizado) {
+	            return ResponseEntity.ok("Actualizado correctamente");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaña no encontrada o sin cambios");
+	        }
+	    } catch (Exception e) {
+	        // Log the error here to get more information about what went wrong
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la campaña: " + e.getMessage());
+	    }
+	}
 
 }
