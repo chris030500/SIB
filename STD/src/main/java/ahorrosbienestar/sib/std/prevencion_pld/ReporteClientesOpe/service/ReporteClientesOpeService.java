@@ -1,32 +1,48 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ReporteClientesOpeRepository;
+import java.util.List;
+import java.time.LocalDateTime;
+import java.sql.Timestamp; 
+import java.util.Map;
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate; 
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ReporteClientesOpeRepository;
 
 @Service
 public class ReporteClientesOpeService {
 
     @Autowired
-    private ReporteClientesOpeRepository repository;
+    private ReporteClientesOpeRepository reporteClientesOpeRepository;
 
-    public byte[] generarReporteClientesOperacionesAuditor() throws Exception {
-        List<ReporteClientesOpeModel> datos = repository.findAll();
+    @Autowired
+    private JdbcTemplate jdbcTemplate; 
 
-        // Ruta del archivo .jasper (compilado) en src/main/resources/reports/
-        InputStream reporteStream = new ClassPathResource("reports/rpt_Clientes_operaciones_auditor.jasper").getInputStream();
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(datos);
-        HashMap<String, Object> parametros = new HashMap<>();
+    public List<ReporteClientesOpeModel> getReporteClientesOpe() {
+        return reporteClientesOpeRepository.findAll();
+    }
 
-        JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, dataSource);
-        return JasperExportManager.exportReportToPdf(jasperPrint);
+    public void guardarRegistro(String nombreArchivo, LocalDateTime fecha, String usuario) {
+        jdbcTemplate.update(
+            "INSERT INTO SIB.HIST_archivos_pep (nombre_archivo, fecha_subida, usuario) VALUES (?, ?, ?)",
+            nombreArchivo, Timestamp.valueOf(fecha), usuario
+        );
+    }
+    public List<Map<String, Object>> obtenerHistorialArchivos() {
+        String sql = "SELECT nombre_archivo, fecha_subida, usuario FROM SIB.HIST_archivos_pep ORDER BY fecha_subida DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("nombre", rs.getString("nombre_archivo"));
+            item.put("fechaSubida", rs.getTimestamp("fecha_subida").toString());
+            item.put("usuario", rs.getString("usuario"));
+            item.put("urlDescarga", "/descargarArchivoPEP?nombre=" + rs.getString("nombre_archivo"));
+            return item;
+        });
     }
 }
+
+

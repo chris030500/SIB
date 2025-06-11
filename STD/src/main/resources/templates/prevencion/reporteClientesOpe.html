@@ -51,117 +51,143 @@
 
 </head>
 <body>
-	  <section class="content" layout:fragment="page-content">
-    <div class="container border p-3">
-        <!-- Título -->
-        <div class="bg-info text-white text-center py-2 rounded mb-3">
-            <h2>Reporte Clientes y Operaciones</h2>
-        </div>
-
-        <!-- Navegación de pestañas -->
-        <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="archivos-tab" data-bs-toggle="tab" data-bs-target="#archivos"
-                        type="button" role="tab" aria-controls="archivos" aria-selected="true">Cargar archivos</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="proceso-tab" data-bs-toggle="tab" data-bs-target="#proceso"
-                        type="button" role="tab" aria-controls="proceso" aria-selected="false">Proceso</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas"
-                        type="button" role="tab" aria-controls="descargas" aria-selected="false">Descargas</button>
-            </li>
-        </ul>
-
-        <!-- Contenido de pestañas -->
-        <div class="tab-content" id="tabContent">
-            <!-- Tab: Archivos -->
-            <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
-                <div class="card-upload">
-                    <h5>Cargar archivo de clientes PEPs</h5>
-                    <div class="mb-3">
-                        <label for="archivoPEP" class="form-label">Seleccionar archivo Excel (.xlsx)</label>
-                        <input class="form-control" type="file" id="archivoPEP" accept=".xlsx">
-                    </div>
-                    <button class="btn btn-primary" id="btnSubirArchivo">Subir archivo</button>
-                    <div id="mensajePEP" class="mt-3 alert d-none"></div>
-                </div>
-
-                <div class="mt-5">
-                    <h5>Histórico de archivos subidos</h5>
-                    <ul class="list-group" id="listaArchivosPEP">
-                        <!-- Llenado dinámico -->
-                    </ul>
-                </div>
+    <section class="content" layout:fragment="page-content">
+        <div class="container border p-3">
+            <!-- Título -->
+            <div class="bg-info text-white text-center py-2 rounded mb-3">
+                <h2>Reporte Clientes y Operaciones</h2>
             </div>
 
-            <!-- Tab: Proceso -->
-            <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                <div class="container py-3">
-                    <h4 class="mb-4">Proceso de reportes</h4>
+            <!-- Navegación de pestañas -->
+            <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="archivos-tab" data-bs-toggle="tab" data-bs-target="#archivos"
+                        type="button" role="tab" aria-controls="archivos" aria-selected="true">Cargar archivos</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="proceso-tab" data-bs-toggle="tab" data-bs-target="#proceso"
+                        type="button" role="tab" aria-controls="proceso" aria-selected="false">Proceso</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas"
+                        type="button" role="tab" aria-controls="descargas" aria-selected="false">Descargas</button>
+                </li>
+            </ul>
 
-                    <!-- Rango de fechas -->
-                    <div class="mb-3">
-                        <label class="form-label">Rango de fechas para el reporte:</label>
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
-                            <span>a</span>
-                            <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
-                            <button class="btn btn-outline-primary" id="btnGuardarRango">Guardar fecha</button>
+            <!-- Contenido de pestañas -->
+            <div class="tab-content" id="tabContent">
+                <!-- Tab: Archivos -->
+                <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
+                    <div class="card-upload">
+                        <h5>Cargar archivo de clientes PEPs</h5>
+                        <div class="mb-3">
+                            <label for="archivoPEP" class="form-label">Seleccionar archivo Excel (.xlsx)</label>
+                            <input class="form-control" type="file" id="archivoPEP" accept=".xlsx">
+                            <input type="hidden" id="archivoCargado" value="false" />
                         </div>
+                        <button class="btn btn-primary" id="btnSubirArchivo">Subir archivo</button>
+                        <div id="mensajePEP" class="mt-3 alert d-none"></div>
                     </div>
 
-                    <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>
-                    <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser anterior a 2 años desde hoy.</div>
+                    <div class="mt-5">
+                        <h5>Histórico de archivos subidos</h5>
+                        <ul class="list-group" id="listaArchivosPEP">
+                            <!-- Llenado dinámico -->
+                        </ul>
+                    </div>
+                </div>
 
-                    <!-- Programación -->
-                    <div class="mb-3">
-                        <label class="form-label">¿Desea programar la generación del reporte?</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="programar_reporte" id="progSi" value="si">
-                            <label class="form-check-label" for="progSi">Sí</label>
+                <!-- Tab: Proceso -->
+                <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
+                    <div class="container py-3">
+                        <h4 class="mb-4">Proceso de reportes</h4>
+
+                        <!-- Rango de fechas -->
+                        <div class="mb-3">
+                            <label class="form-label">Rango de fechas para el reporte:</label>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
+                                <span>a</span>
+                                <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
+                                <button class="btn btn-outline-primary" id="btnGuardarRango">Guardar fecha</button>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="programar_reporte" id="progNo" value="no" checked>
-                            <label class="form-check-label" for="progNo">No</label>
+
+                        <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>
+                        <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser anterior a 2 años desde hoy.</div>
+
+                        <!-- Procesamiento -->
+                        <div class="mb-3 d-flex gap-3 align-items-center">
+                            <button class="btn btn-success" id="btnProcesar">Procesar ahora</button>
+                            <span id="progresoTexto" class="text-muted"></span>
                         </div>
-                        <div class="d-flex align-items-center mt-2">
-                            <select class="form-select me-2" id="selectFecha" disabled>
-                                <option selected disabled>Seleccione una opción</option>
-                                <option>01/04/2023 - 23:00 hs</option>
-                                <option>01/05/2023 - 23:00 hs</option>
-                            </select>
-                            <button class="btn btn-outline-success" id="btnGuardarFecha" disabled>Guardar</button>
+                        <div class="mb-3 d-flex gap-3 align-items-center">
+                            <button class="btn btn-primary" id="btnDescargar">Descargar reporte</button>
+                            <span id="progresoTextoDescarga" class="text-muted"></span>
+                        </div>
+
+                        <!-- Confirmación -->
+                        <div class="mb-3">
+                            <label class="form-label">¿La información del reporte es correcta?</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si" disabled>
+                                <label class="form-check-label" for="infoSi">Sí</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="info_correcta" id="infoNo" value="no" disabled>
+                                <label class="form-check-label" for="infoNo">No</label>
+                            </div>
+                        </div>
+
+                        <div id="mensajeAviso" class="alert alert-info d-none">
+                            El archivo se guardará en el apartado de descargas para futuras consultas.
                         </div>
                     </div>
+                </div>
 
-                    <!-- Procesamiento -->
-                    <div class="mb-3 d-flex gap-3 align-items-center">
-                        <button class="btn btn-success" id="btnProcesar">Procesar ahora</button>
-                        <span id="progresoTexto" class="text-muted"></span>
-                    </div>
+                <!-- Tab: Descargas -->
+                <div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
+                    <div class="container py-3">
+                        <h4 class="mb-4">Historial de reportes generados</h4>
 
-                    <!-- Descarga -->
-                    <div class="mb-3">
-                        <button class="btn btn-primary" id="btnDescargar" disabled>Descargar reporte</button>
-                    </div>
-
-                    <!-- Confirmación -->
-                    <div class="mb-3">
-                        <label class="form-label">¿La información del reporte es correcta?</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si" disabled>
-                            <label class="form-check-label" for="infoSi">Sí</label>
+                        <!-- Filtros -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="filtroFechaDesde" class="form-label">Fecha desde:</label>
+                                <input type="date" class="form-control" id="filtroFechaDesde">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="filtroFechaHasta" class="form-label">Fecha hasta:</label>
+                                <input type="date" class="form-control" id="filtroFechaHasta">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button class="btn btn-outline-primary w-100" id="btnFiltrarReportes">Filtrar</button>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="info_correcta" id="infoNo" value="no" disabled>
-                            <label class="form-check-label" for="infoNo">No</label>
-                        </div>
-                    </div>
 
-                    <div id="mensajeAviso" class="alert alert-info d-none">
-                        El archivo se guardará en el apartado de descargas para futuras consultas.
+                        <!-- Tabla de reportes -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Fecha de generación</th>
+                                        <th scope="col">Rango de fechas</th>
+                                        <th scope="col">Usuario</th>
+                                        <th scope="col">Archivo</th>
+                                        <th scope="col">Confirmado</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaReportesGenerados">
+                                    <!-- Llenado dinámico con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Sin resultados -->
+                        <div id="sinResultados" class="alert alert-warning mt-3 d-none">
+                            No se encontraron reportes con los filtros aplicados.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -171,22 +197,23 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Confirmación</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            <h5 class="modal-title" id="confirmModalLabel">Confirmar reporte</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            ¿Está seguro de que la información del reporte es correcta?
+                            <p>¿Está seguro de que los datos del reporte son correctos?</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" id="cancelarConfirmacion">Cancelar</button>
-                            <button type="button" class="btn btn-primary" id="confirmarOkey">Okey</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="confirmarReporte">Confirmar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+
 	<th:block layout:fragment="page-scripts">
 		
 		<!--JavaScript-->
