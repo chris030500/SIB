@@ -172,6 +172,13 @@ public class tiposCampaniasController {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
 	}
 	
+	//llenar el combo de productos oferta
+	@GetMapping("/api/catProductosCamp")
+	@ResponseBody
+	public ResponseEntity<List<ProductoColocacion>> getProductosCamp() {
+        return ResponseEntity.ok(productoColocacionService.obtenerProductosActivos());
+    }
+	
 	//llenar el combo opcion multiple de productos
 	/*@GetMapping("/api/catProductos")
 	@ResponseBody
