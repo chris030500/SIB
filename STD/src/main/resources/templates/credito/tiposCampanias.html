@@ -39,6 +39,12 @@
 				<div class="m-3">
 					<div class="col-md-12">
 						<div id="detalleCampania" style="display: none;">
+							<div id="nomTipoCampania" style="display: none;">
+								<label for="NomTipoCampania" class="form-label">Descripción tipo campaña:</label>
+								<input id="NomTipoCampania" name="nomTipoCampania" required class="form-control" type="text"
+								       placeholder="Descripción tipo campaña"
+								        />
+							</div>
 							<div class="col-md-3">
 							    <label class="col-form-label">Tipo de Campaña</label>
 							    <select class="form-control" id="tipoCampanias">
@@ -197,9 +203,16 @@
 								</div>
 							</div>
 						</fieldset>
-						<button type="button" class="btn btn-primary" onclick="modificarTiposCampanias()">
-							Modificar
-						</button>
+						<div id="botonModificar" style="display: none;">
+							<button type="button" class="btn btn-primary" onclick="modificarTiposCampanias()">
+								Modificar
+							</button>
+						</div>
+						<div id="botonAgregar" style="display: none;">
+							<button type="button" class="btn btn-primary" onclick="modificarTiposCampanias()">
+								Agregar
+							</button>
+						</div>
 						</div>
 					</div>
 				</div>

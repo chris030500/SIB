@@ -40,38 +40,88 @@ function debouncedListaClientes() {
 
 function buscarCampanias() {
     var buscar = buscarCliente.value;
-    
-    //console.log(newUrlBase);
-	$.ajax({
-		url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-			var opciones = document.getElementById('opcionCampania');
-			opciones.innerHTML = '';
-			respuesta.lista.forEach(function(cliente) {
-				
-				//console.log(cliente);
-				var option = document.createElement('option');
-				option.setAttribute('data-value', cliente.vc_tipo_campania);
-				
-				//console.log(cliente.pk_id_tipo_campania);
-				idTipoCampania = cliente.pk_id_tipo_campania;
-				//console.log(idTipoCampania);
-				
-				option.value = cliente.vc_tipo_campania;
-				opciones.appendChild(option);
-				
-				option.setAttribute('data-id', cliente.pk_id_tipo_campania); // Necesario para luego usarlo
-				option.value = cliente.vc_tipo_campania;
-			});
-			if (respuesta.lista[0]) {
-				clienteValue = respuesta.lista[0].vc_tipo_campania; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+    //cuando ingrese el valor 0 se agrege un nuevo registro
+    if (buscar === "0") {
+        divDetalle.style.display = 'block';
+        divBotonAgregar.style.display = 'block';
+        divBotonModificar.style.display = 'none';
+        nomTipoCampania.style.display = 'block';
+        limpiarFormulario(); // función que deja todos los campos vacíos
+        idTipoCampania = 0; // importante para distinguir creación de modificación
+        cargarCatalogoTipoCampanias(0);
+        cargarCatalogoConvivenciaCamp(0);
+        cargarChecksEsRenovacion(0);
+        cargarChecksEsRenovacionOferta(0);
+        cargarChecksActiva(0);
+        //let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
+		cargarCatalogoProductos([]);
+        return;
+    }else{
+	    //console.log(newUrlBase);
+		$.ajax({
+			url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
+			type: "GET",
+			dataType: "JSON",
+			success: function(respuesta) {
+				var opciones = document.getElementById('opcionCampania');
+				opciones.innerHTML = '';
+				respuesta.lista.forEach(function(cliente) {
+					
+					//console.log(cliente);
+					var option = document.createElement('option');
+					option.setAttribute('data-value', cliente.vc_tipo_campania);
+					
+					//console.log(cliente.pk_id_tipo_campania);
+					idTipoCampania = cliente.pk_id_tipo_campania;
+					//console.log(idTipoCampania);
+					
+					option.value = cliente.vc_tipo_campania;
+					opciones.appendChild(option);
+					
+					option.setAttribute('data-id', cliente.pk_id_tipo_campania); // Necesario para luego usarlo
+					option.value = cliente.vc_tipo_campania;
+				});
+				if (respuesta.lista[0]) {
+					clienteValue = respuesta.lista[0].vc_tipo_campania; // Aquí asumo que deseas guardar el primer valor de i_clienteid                
+				}
+				//console.log(clienteValue);
+				//console.log(opciones.innerHTML);
 			}
-			//console.log(clienteValue);
-			//console.log(opciones.innerHTML);
-		}
-	});
+		});
+	}
+}
+
+function limpiarFormulario() {
+    document.getElementById("Ventana").value = "";
+    document.getElementById("EdadMaxima").value = "";
+    document.getElementById("EdadMinima").value = "";
+    document.getElementById("MontoMinimo").value = "";
+    document.getElementById("MontoMaximo").value = "";
+    document.getElementById("MoraMaxima").value = "";
+    document.getElementById("PorceCubiertoCap").value = "";
+    document.getElementById("PorceCubiertoCap").value = "";
+    document.getElementById("DiasGracia").value = "";
+    document.getElementById("DiasMora").value = "";
+    document.getElementById("PlazoMaximoAnios").value = "";
+    document.getElementById("MinimoVida").value = "";
+    document.getElementById("VigenciaBC").value = "";
+    document.getElementById("VigenciaCampania").value = "";
+    document.getElementById("CreditosLiquidados").value = "";
+    document.getElementById("ProdCredito").value = "";
+    document.getElementById("PorceIncremento").value = "";
+    document.getElementById("VigenciaCampaniaOferta").value = "";
+    document.getElementById("TasaOrdinaria").value = "";
+    document.getElementById("MontoMaximoOferta").value = "";
+    // limpia todos los demás campos...
+
+    //$('#tipoCampanias').val("0");
+    //$('#convivenciaCamp').val("0");
+    //$('#Productos').val([]);
+
+    // Limpia radios
+    //$("input[name='checksEsRenovacion']").prop("checked", false);
+    //$("input[name='checksEsRenovacionOferta']").prop("checked", false);
+    //$("input[name='checksActiva']").prop("checked", false);
 }
 
 buscarCliente.addEventListener('input', debouncedListaClientes);
@@ -84,6 +134,9 @@ buscarCliente.addEventListener('input', function() {
 const input = document.getElementById('buscarCampania');
 const datalist = document.getElementById('opcionCampania');
 const divDetalle = document.getElementById('detalleCampania');
+const divBotonModificar = document.getElementById('botonModificar');
+const divBotonAgregar = document.getElementById('botonAgregar');
+const nomTipoCampania = document.getElementById('nomTipoCampania');
 
 input.addEventListener('input', function () {
     const valor = input.value;
@@ -103,6 +156,8 @@ input.addEventListener('input', function () {
     // Si hay coincidencia, mostramos el div
     if (coincidencia) {
         divDetalle.style.display = 'block';
+        divBotonModificar.style.display = 'block';
+        divBotonAgregar.style.display = 'none';
         // Llama al servicio con el ID
        // fetch(newUrlBase + 'credito/obtenerCampania?id=' + idSeleccionado)
          //   .then(response => response.json())
@@ -160,6 +215,7 @@ input.addEventListener('input', function () {
             
     } else {
         divDetalle.style.display = 'none';
+        divBotonModificar.style.display = 'none';
     }
 });
 
@@ -368,7 +424,7 @@ function esDecimalPositivo(valor) {
 var mensajeError = "Datos incorrectos, favor de validar.";
 
 function modificarTiposCampanias(){
-	console.log("Entra a modificarTiposCampanias");
+	
 	if (document.getElementById('tipoCampanias').value == 0) {
 		
 		swal({
@@ -653,13 +709,13 @@ function modificarTiposCampanias(){
 																																												const selectElement = document.getElementById("Productos");
 																																												const selectedProductos = Array.from(selectElement.selectedOptions).map(option => option.value);
 																																											    const productosSelect = selectedProductos.join(",");
-																																											    console.log(productosSelect);
+																																											    //console.log(productosSelect);
 																																												
 																																												const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
 																																											    let vc_es_renovacion_oferta_checkbox = "";
 																																											    for (let radio of checksEsRenovacionOferta) {
 																																											        if (radio.checked) {
-																																											            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2", depende de tu catálogo
+																																											            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2"
 																																											            break;
 																																											        }
 																																											    }
@@ -672,9 +728,25 @@ function modificarTiposCampanias(){
 																																											            break;
 																																											        }
 																																											    }
+																																											    let nomTipoCampania = '';
+																																											    if(idTipoCampania === 0){
+																																													if (document.getElementById('NomTipoCampania').value == '') {
+																			
+																																														swal({
+																																															title: "",
+																																															text: "Debe ingresar descripción para tipo campaña.",
+																																															icon: "warning",
+																																														});
+																																														
+																																													} else if (document.getElementById('NomTipoCampania').value != '') {
+																																														nomTipoCampania = document.getElementById("NomTipoCampania").value;
+																																													}
+																																												}
 
 																																												const data = {
 																																											        pk_id_tipo_campania: idTipoCampania,
+																																											        vc_tipo_campania: nomTipoCampania,
+																																											        i_tipo_campania: parseInt(document.getElementById("tipoCampanias").value),
 																																											        i_ventana_anios: parseInt(document.getElementById("Ventana").value),
 																																											        i_edad_maxima: parseInt(document.getElementById("EdadMaxima").value),
 																																											        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
@@ -702,7 +774,19 @@ function modificarTiposCampanias(){
 																																											        
 																																											    };
 																																											    console.log(data);
-																																											    fetch(newUrlBase + 'credito/api/actualizar', {
+																																											    const jsonBitacora = JSON.stringify(data);
+																																											    console.log(jsonBitacora);
+																																											    let endpoint = '';
+																																											    //const endpoint = idTipoCampania === 0 ? 'credito/api/crear' : 'credito/api/actualizar';
+																																											    if(idTipoCampania === 0){
+																																													endpoint = 'credito/api/crear';
+																																													delete data.pk_id_tipo_campania;
+																																												}else{
+																																													endpoint = 'credito/api/actualizar';
+																																													delete data.vc_tipo_campania;
+																																												}
+																																											    //fetch(newUrlBase + 'credito/api/actualizar', {
+																																												fetch(newUrlBase + endpoint, {
 																																											        method: 'POST',
 																																											        headers: {
 																																											            'Content-Type': 'application/json'

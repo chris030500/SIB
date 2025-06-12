@@ -36,6 +36,7 @@ public class TiposCampaniasService {
     public boolean actualizarCampania(TiposCampaniasModel campania) {
         int filasAfectadas = repository.actualizarCampania(
             campania.getPk_id_tipo_campania(),
+            campania.getI_tipo_campania(),
             campania.getI_ventana_anios(),
             campania.getI_edad_maxima(),
             campania.getI_edad_minima(),
@@ -63,5 +64,38 @@ public class TiposCampaniasService {
         );
         return filasAfectadas > 0;
     }
+	
+	@Transactional
+	public boolean crearCampania(TiposCampaniasModel c) {
+	    int filas = repository.insertarCampania(
+	    	c.getVc_tipo_campania(),
+	    	c.getI_tipo_campania(),
+	    	c.getI_ventana_anios(),
+	        c.getI_edad_maxima(),
+	        c.getI_edad_minima(),
+	        c.getD_monto_minimo(),
+	        c.getD_monto_maximo(),
+	        c.getI_mora_maxima(),
+	        c.getD_porc_cubierto_capital(),
+	        c.getI_dias_gracia(),
+	        c.getI_dias_mora(),
+	        c.getI_plazo_maximo_anios(),
+	        c.getI_minimo_vida_credito(),
+	        c.getI_vigencia_bc(),
+	        c.getI_vigencia_campania(),
+	        c.getI_creditos_liquidados(),
+	        c.getVc_es_renovacion(),
+	        c.getI_convivencia(),
+	        c.getVc_productos(),
+	        c.getI_prod_credito_id_oferta(),
+	        c.getD_porc_inc_oferta(),
+	        c.getVc_es_renovacion_oferta(),
+	        c.getI_vigencia_oferta(),
+	        c.getD_tasa_ordinaria_oferta(),
+	        c.getI_activa_oferta(),
+	        c.getD_monto_maximo_oferta()
+	    );
+	    return filas > 0;
+	}
 	
 }
