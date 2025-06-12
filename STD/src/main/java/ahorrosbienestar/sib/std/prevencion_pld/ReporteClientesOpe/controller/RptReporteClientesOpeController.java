@@ -16,18 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
-
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.IReporteClientesOpeRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import java.util.Map;
-
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -59,9 +47,6 @@ public class RptReporteClientesOpeController {
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
-	
-	@Autowired
-	private IReporteClientesOpeService reporteClientesOpeService;
 
 	
 	
@@ -109,45 +94,6 @@ public class RptReporteClientesOpeController {
 			return ResponseEntity.ok(respuesta);
 		}
 
-	}
-	@PostMapping("/cargarArchivoPeps")
-	public ResponseEntity<?> cargarArchivoPeps(@RequestPart("archivoPeps") MultipartFile archivo) {
-	    List<ReporteClientesOpeModel> registros = new ArrayList<>();
-
-	    try (Workbook workbook = new XSSFWorkbook(archivo.getInputStream())) {
-	        Sheet hoja = workbook.getSheetAt(0);
-	        boolean primeraFila = true;
-
-	        for (Row fila : hoja) {
-	            if (primeraFila) {
-	                primeraFila = false; // Saltar encabezados
-	                continue;
-	            }
-
-	            ReporteClientesOpeModel registro = new ReporteClientesOpeModel();
-	            // Asumiendo que tu Excel tiene columnas simples como ID, nombre, tipo, etc.
-
-	            // Ejemplo de asignación, ajusta los índices y tipos:
-	            Cell celda1 = fila.getCell(0); // ejemplo: ID
-	            Cell celda2 = fila.getCell(1); // ejemplo: nombre
-	            Cell celda3 = fila.getCell(2); // ejemplo: tipo
-
-	            // Asegúrate de tener setters adecuados en ReporteClientesOpeModel
-	            registro.setCampo1(celda1.getStringCellValue());
-	            registro.setCampo2(celda2.getStringCellValue());
-	            registro.setCampo3(celda3.getStringCellValue());
-
-	            registros.add(registro);
-	        }
-
-	        iReporteClientesOpeRepository.saveAll(registros);
-
-	        return ResponseEntity.ok().body(Map.of("message", "Archivo cargado correctamente."));
-
-	    } catch (Exception e) {
-	        logger.error("Error al procesar el archivo PEPs: " + e.getMessage());
-	        return ResponseEntity.badRequest().body(Map.of("message", "Error al cargar archivo: " + e.getMessage()));
-	    }
 	}
 	
 	public int validarAcceso() {

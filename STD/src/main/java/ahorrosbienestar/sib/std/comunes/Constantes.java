@@ -188,7 +188,7 @@ public class Constantes {
   //constantes PLD ReporteClientesOpe
   	public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
   	
-  	public static final String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_operaciones_auditor";
+  	public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_operaciones_auditor";
     
 	//constantes marketing
 	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";

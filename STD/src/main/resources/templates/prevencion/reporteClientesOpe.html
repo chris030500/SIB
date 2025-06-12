@@ -76,26 +76,48 @@
 
             <!-- Contenido de pestañas -->
             <div class="tab-content" id="tabContent">
-                <!-- Tab: Archivos -->
-                <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
-                    <div class="card-upload">
-                        <h5>Cargar archivo de clientes PEPs</h5>
-                        <div class="mb-3">
-                            <label for="archivoPEP" class="form-label">Seleccionar archivo Excel (.xlsx)</label>
-                            <input class="form-control" type="file" id="archivoPEP" accept=".xlsx">
-                            <input type="hidden" id="archivoCargado" value="false" />
-                        </div>
-                        <button class="btn btn-primary" id="btnSubirArchivo">Subir archivo</button>
-                        <div id="mensajePEP" class="mt-3 alert d-none"></div>
-                    </div>
+             <!-- Tab: Archivos -->
+<div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
+	<button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalAdjuntosPEP">
+		Cargar Archivo de PEPs
+	</button>
+</div>
 
-                    <div class="mt-5">
-                        <h5>Histórico de archivos subidos</h5>
-                        <ul class="list-group" id="listaArchivosPEP">
-                            <!-- Llenado dinámico -->
-                        </ul>
-                    </div>
-                </div>
+<!-- Modal fuera del tab-pane -->
+<div class="modal fade" id="modalAdjuntosPEP" data-backdrop="static" tabindex="-1" data-keyboard="false" role="dialog">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content">
+			<fieldset class="border p-2">
+				<div class="modal-header">
+					<div class="col-md-11">
+						<legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
+					</div>
+					<div class="col-md-1">
+						<button type="button" class="btn-close" onclick="cerrarModal(this)" data-dismiss="modal" aria-label="Close"></button>
+					</div>
+				</div>
+				<div class="modal-body">
+					<fieldset class="border p-2">
+						<form id="uploadFormPEP" enctype="multipart/form-data">
+							<div class="form-group">
+								<label for="fileUploadPEP">Seleccionar archivo Excel:</label>
+								<input type="file" id="fileUploadPEP" name="fileUploadPEP" accept=".xlsx, .xls" class="form-control" />
+							</div>
+							<button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
+						</form>
+
+						<div class="mt-4">
+							<h5>Archivos Subidos</h5>
+							<ul id="fileListPEP" class="list-group">
+								<li class="list-group-item">No hay archivos subidos.</li>
+							</ul>
+						</div>
+					</fieldset>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+</div>
 
                 <!-- Tab: Proceso -->
                 <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
