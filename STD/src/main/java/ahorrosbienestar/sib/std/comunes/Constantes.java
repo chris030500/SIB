@@ -186,7 +186,7 @@ public class Constantes {
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
     
   //constantes PLD ReporteClientesOpe
-  	public static final String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
+  	public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
   	
   	public static final String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_operaciones_auditor";
     
