@@ -776,6 +776,11 @@ function modificarTiposCampanias(){
 																																											    console.log(data);
 																																											    const jsonBitacora = JSON.stringify(data);
 																																											    console.log(jsonBitacora);
+																																											    const dataHis = {
+																																											        vc_json_entrada: jsonBitacora,
+																																											        i_user_reg: parseInt(document.getElementById("idUser").value),
+																																											        
+																																											    };
 																																											    let endpoint = '';
 																																											    //const endpoint = idTipoCampania === 0 ? 'credito/api/crear' : 'credito/api/actualizar';
 																																											    if(idTipoCampania === 0){
@@ -798,6 +803,17 @@ function modificarTiposCampanias(){
 																																												    return resp.text();
 																																												})
 																																												.then(() => {
+																																													
+																																													///
+																																													fetch(newUrlBase + 'credito/api/crearHis', {
+																																												        method: 'POST',
+																																												        headers: {
+																																												            'Content-Type': 'application/json'
+																																												        },
+																																												        body: JSON.stringify(dataHis)
+																																												    })
+																																													///
+																																													
 																																													swal({
 																																													title: "",
 																																													text: 'Actualizado correctamente',

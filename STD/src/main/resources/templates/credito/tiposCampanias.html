@@ -29,11 +29,12 @@
 				<div class="row">
 					<div class="col-md-6">
 						<label class="col-form-label">Campaña de Crédito</label>
-						
+						<input type="hidden" class="form-control" id="idUser"
+											th:value="${idUsuario}" readonly>
 						<input type="search" class="form-control" id="buscarCampania"
 						       list="opcionCampania" autocomplete="off"
 						       placeholder="Buscar campaña"
-						       oninput="buscarCampanias()" />
+						       oninput="this.value = this.value.toUpperCase(); buscarCampanias()" />
 						<datalist id="opcionCampania"></datalist>
 					</div>
 				</div>
@@ -43,7 +44,7 @@
 							<div id="nomTipoCampania" style="display: none;">
 								<label for="NomTipoCampania" class="form-label">Descripción tipo campaña:</label>
 								<input id="NomTipoCampania" name="nomTipoCampania" required class="form-control" type="text"
-								       placeholder="Descripción tipo campaña"
+								       oninput="this.value = this.value.toUpperCase();" placeholder="Descripción tipo campaña"
 								        />
 							</div>
 							<div class="col-md-3">
