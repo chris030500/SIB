@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.catalogos.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -781,5 +782,29 @@ public class CatalogosCEService {
 		}
 		return null;
 	}
+	
+	public String obtenerJefe(int empleadoID) {
+	    logger.info("Obteniendo EsJefe para el EmpleadoID: " + empleadoID);
+	    try {
+	        String sql = "SELECT EsJefe FROM CE.TBL_MICROFIN_EMPLEADOS WHERE EmpleadoID = ?";
+
+	        return jdbcTemplate.queryForObject(sql, new Object[] { empleadoID }, String.class);
+	    } catch (Exception e) {
+	        logger.error("Error al obtener EsJefe: " + e.getMessage());
+	        return null;
+	    }
+	}
+	
+	public List<Integer> obtenerSucursalesPorJefe(int jefeId) {
+	    logger.info("Obteniendo Sucursales para el JefeID: " + jefeId);
+	    try {
+	        String sql = "SELECT DISTINCT SucursalID FROM CE.TBL_MICROFIN_EMPLEADOS WHERE JefeInmediadoID = ?";
+	        return jdbcTemplate.queryForList(sql, new Object[]{ jefeId }, Integer.class);
+	    } catch (Exception e) {
+	        logger.error("Error al obtener las sucursales del jefe: " + e.getMessage());
+	        return Collections.emptyList();
+	    }
+	}
+
 
 }

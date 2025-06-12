@@ -32,6 +32,14 @@ public class SolicitudCreditoService {
 	    return solicitudCreditoRepository.findAllByEjecutivoOrderByIdDesc(idEmpleado, pageable);
 	}
 	
+	public Page<SolicitudCredito> listarSolicitudesPorSucursales(List<Integer> sucursales, Pageable pageable) {
+	    return solicitudCreditoRepository.findAllBySucursalIn(sucursales, pageable);
+	}
+
+	public Page<SolicitudCredito> listarTodasSolicitudes(Pageable pageable) {
+	    return solicitudCreditoRepository.findAll(pageable);
+	}
+	
 	// Método para obtener una solicitud por su ID
     public SolicitudCredito obtenerSolicitudPorId(Integer id) throws Exception {
         Optional<SolicitudCredito> solicitud = solicitudCreditoRepository.findById(id);

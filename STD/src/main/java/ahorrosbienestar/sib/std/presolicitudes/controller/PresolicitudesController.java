@@ -102,27 +102,27 @@ public class PresolicitudesController {
 
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private IReporteRepository iReporteRepository;
-	
+
 	@Autowired
 	private JasperReportController jasperReportController;
-	
+
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
-	
 
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion = "";
 	private int idEmpleado = 0;
 	private int sucur = 0;
+	private int idRol;
 	List<Usuario> usuario = null;
-
+	List<Integer> sucursales = null;
 
 	private static final String controllerReporte = "generarReporte";
-	
+
 	@GetMapping("/solicitudes")
 	public String FiltradoQEQ() throws IOException {
 		try {
@@ -134,6 +134,7 @@ public class PresolicitudesController {
 			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			idEmpleado = usuario.get(0).getI_id_empleado();
 			sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
+			idRol = usuario.get(0).getRol_idRol().getPk_id_rol();
 			if (validarAcceso() == 1) {
 
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
@@ -213,12 +214,12 @@ public class PresolicitudesController {
 			@RequestParam("empresa") Integer empresa, @RequestParam("tipoemp") Integer tipoEmp) {
 
 		try {
-			if(producto.equals("NOMINA PRESTACIONES")) {
+			if (producto.equals("NOMINA PRESTACIONES")) {
 				tipoEmp = 0;
 			}
-			
+
 			System.out.print(tipoEmp);
-			
+
 			CondicionesDTO condiciones = condicionesService.obtenerCondiciones(producto, empresa, tipoEmp);
 
 			if (condiciones != null) {
@@ -299,13 +300,44 @@ public class PresolicitudesController {
 	@GetMapping("/listarSolicitudes")
 	public ResponseEntity<?> listarSolicitudes(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
+
 		try {
 			Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-			Page<SolicitudCredito> solicitudes = solicitudCreditoService.listarSolicitudes(idEmpleado, pageable);
-			return ResponseEntity.ok(solicitudes);
+
+			System.out.println("idEmpleado: " + idEmpleado);
+			System.out.println("idRol: " + idRol);
+
+			String jefe = catalogosCEService.obtenerJefe(idEmpleado);
+			System.out.println("Jefe: " + jefe);
+
+			Page<SolicitudCredito> solicitudes;
+			Map<String, Object> response = new HashMap<>();
+
+			String rolesVobo = iConfiguracionRepository.ObtenerRolesVobo();
+
+			List<Integer> rolesPermitidos = Arrays.stream(rolesVobo.split(",")).map(String::trim).map(Integer::parseInt)
+					.collect(Collectors.toList());
+
+			if (rolesPermitidos.contains(idRol)) { 
+				solicitudes = solicitudCreditoService.listarTodasSolicitudes(pageable);
+				response.put("permiso", true);
+			} else {
+				if ("S".equals(jefe)) {
+					List<Integer> sucursales = catalogosCEService.obtenerSucursalesPorJefe(idEmpleado);
+					System.out.println("Sucursales: " + sucursales);
+					solicitudes = solicitudCreditoService.listarSolicitudesPorSucursales(sucursales, pageable);
+				} else {
+					solicitudes = solicitudCreditoService.listarSolicitudes(idEmpleado, pageable);
+				}
+				response.put("permiso", false);
+			}
+
+			response.put("contenido", solicitudes);
+
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			System.out.println("Error en listarSolicitudes: " + e.getMessage());
-			e.printStackTrace(); // Agrega esto para ver más detalles en los logs
+			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error al listar solicitudes: " + e.getMessage());
 		}
@@ -437,37 +469,37 @@ public class PresolicitudesController {
 			// Enviar correos a cada sucursal
 			// Enviar correos agrupados por proceso y sucursal
 			for (Map.Entry<Integer, Integer> entry : procesoPorSucursal.entrySet()) {
-			    Integer sucursal = entry.getKey();
-			    Integer proceso = entry.getValue(); // Obtener el proceso asociado a la sucursal
+				Integer sucursal = entry.getKey();
+				Integer proceso = entry.getValue(); // Obtener el proceso asociado a la sucursal
 
-			    // Generar el cuerpo del correo con la información del proceso
-			    String cuerpoCorreo = generarCuerpoCorreo(sucursal);
+				// Generar el cuerpo del correo con la información del proceso
+				String cuerpoCorreo = generarCuerpoCorreo(sucursal);
 
-			    // Obtener el correo de la sucursal
-			    String correoSucursal = Optional.ofNullable(correoSucursalService.obtenerCorreoSucursal(sucursal))
-			            .orElse("default@empresa.com");
+				// Obtener el correo de la sucursal
+				String correoSucursal = Optional.ofNullable(correoSucursalService.obtenerCorreoSucursal(sucursal))
+						.orElse("default@empresa.com");
 
-			    // Obtener datos del reporte
-			    LocalDate fechaActual = LocalDate.now();
-			    ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_estatus_solicitudes_vobo");
-			    String fileName = "Estatus de Solicitudes " + fechaActual + datosReporte.getVc_extension();
-			    InternetAddress direccion = new InternetAddress(correoSucursal);
-			    
-			    // Construcción del parámetro de consulta con el proceso y sucursal
-			    String parametros = "?IDPROCESO=" + proceso + "&IDSUCUR=" + sucursal;
-			    byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(), parametros);
+				// Obtener datos del reporte
+				LocalDate fechaActual = LocalDate.now();
+				ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_estatus_solicitudes_vobo");
+				String fileName = "Estatus de Solicitudes " + fechaActual + datosReporte.getVc_extension();
+				InternetAddress direccion = new InternetAddress(correoSucursal);
 
-			    
-			    // Debugging: Verificar datos antes del envío
-			    System.out.println("[INFO] Enviando correo a: " + direccion.getAddress());
-			    System.out.println("[INFO] Sucursal: " + sucursal + " | Proceso: " + proceso);
-			    System.out.println("[INFO] Archivo adjunto: " + fileName);
-			    System.out.println("[INFO] Parámetros del reporte: " + parametros);
+				// Construcción del parámetro de consulta con el proceso y sucursal
+				String parametros = "?IDPROCESO=" + proceso + "&IDSUCUR=" + sucursal;
+				byte[] fileBytes = jasperReportController.generarArchivoCorreo(datosReporte.getPk_id_reporte(),
+						parametros);
 
-			    // Enviar el correo con el adjunto
-			    emailService.sendEmailWithAttachment(direccion.getAddress(), "Actualización de Estatus de Solicitudes", cuerpoCorreo, fileName, fileBytes);
+				// Debugging: Verificar datos antes del envío
+				System.out.println("[INFO] Enviando correo a: " + direccion.getAddress());
+				System.out.println("[INFO] Sucursal: " + sucursal + " | Proceso: " + proceso);
+				System.out.println("[INFO] Archivo adjunto: " + fileName);
+				System.out.println("[INFO] Parámetros del reporte: " + parametros);
+
+				// Enviar el correo con el adjunto
+				emailService.sendEmailWithAttachment(direccion.getAddress(), "Actualización de Estatus de Solicitudes",
+						cuerpoCorreo, fileName, fileBytes);
 			}
-
 
 			return ResponseEntity.ok("Archivo procesado y notificaciones enviadas correctamente.");
 		} catch (Exception e) {
@@ -483,76 +515,80 @@ public class PresolicitudesController {
 
 		sb.append("<html>");
 		sb.append("<head><meta charset='UTF-8'></head>");
-		sb.append("<body style='font-family: Arial, sans-serif; color: #2c3e50; background-color: #f4f6f7; padding: 20px;'>");
-		sb.append("<div style='max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);'>");
-		sb.append("<h2 style='color:#2980b9; border-bottom: 2px solid #2980b9; padding-bottom: 10px;'>Notificación: Actualización de Estatus</h2>");
+		sb.append(
+				"<body style='font-family: Arial, sans-serif; color: #2c3e50; background-color: #f4f6f7; padding: 20px;'>");
+		sb.append(
+				"<div style='max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);'>");
+		sb.append(
+				"<h2 style='color:#2980b9; border-bottom: 2px solid #2980b9; padding-bottom: 10px;'>Notificación: Actualización de Estatus</h2>");
 		sb.append("<p>Estimado equipo de la sucursal <strong>").append(sucursal).append("</strong>,</p>");
-		sb.append("<p>Les informamos que se ha actualizado el estatus de las solicitudes de credito de nomina registradas en su sucursal.</p>");
-		sb.append("<p>Adjunto a este correo encontraran un archivo de Excel con los nuevos estatus correspondientes.</p>");
+		sb.append(
+				"<p>Les informamos que se ha actualizado el estatus de las solicitudes de credito de nomina registradas en su sucursal.</p>");
+		sb.append(
+				"<p>Adjunto a este correo encontraran un archivo de Excel con los nuevos estatus correspondientes.</p>");
 		sb.append("<p style='font-weight: bold; color: #e74c3c;'>No es necesario responder a este correo.</p>");
 		sb.append("<p>Saludos.</p>");
 		sb.append("</div>");
 		sb.append("</body></html>");
 
-
-
 		return sb.toString();
 	}
 
-	
 	@RequestMapping(value = "/reporte_gestion/{id}", method = RequestMethod.POST)
 	public ResponseEntity<?> reporteGestiones(@PathVariable Integer id) {
-	    List<String> respuesta = new ArrayList<>();
-	    
-	    try {
-	        ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitud_aprobada");
+		List<String> respuesta = new ArrayList<>();
 
-	        // Construcción de la URL del reporte
-	        //jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(), parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
+		try {
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitud_aprobada");
 
-	        String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)+datosReporte.getPk_id_reporte()+"&parametros=?solicitudID="
-					+id+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=SC";
-	        
-	        respuesta.add(reporteURL);
-	        return ResponseEntity.ok(respuesta);
-	    } catch (Exception e) {
-	        logger.error("Error: " + e.getMessage());
-	        respuesta.add("Error al generar el reporte.");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
-	    }
+			// Construcción de la URL del reporte
+			// jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(),
+			// parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
+
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
+					+ datosReporte.getPk_id_reporte() + "&parametros=?solicitudID=" + id + "&tipoDocumento="
+					+ datosReporte.getVc_extension() + "&identificadorDoc=SC";
+
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error: " + e.getMessage());
+			respuesta.add("Error al generar el reporte.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
 	}
-	
+
 	@PostMapping("/envioCorreo/{idEmpresa}")
-    public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable String idEmpresa) {
-		
+	public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable String idEmpresa) {
+
 		System.out.print("El correo se enviara a la empresa: " + idEmpresa);
-		
-        try {
-        	empresaService.prepararCorreoPorEmpresa(idEmpresa);
-            return ResponseEntity.ok("Correo enviado correctamente.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al enviar correo: " + e.getMessage());
-        }
-    }
-	
+
+		try {
+			empresaService.prepararCorreoPorEmpresa(idEmpresa);
+			return ResponseEntity.ok("Correo enviado correctamente.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error al enviar correo: " + e.getMessage());
+		}
+	}
+
 	@PostMapping("/aprobarSolicitud/{id}")
-    public ResponseEntity<String> aprobarSolicitud(@PathVariable Integer id) {
-        try {
-        	solicitudCreditoService.aprobarSolicitud(id);
-            return ResponseEntity.ok("Solicitud aprobada");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al aprobar la solicitud");
-        }
-    }
-	
+	public ResponseEntity<String> aprobarSolicitud(@PathVariable Integer id) {
+		try {
+			solicitudCreditoService.aprobarSolicitud(id);
+			return ResponseEntity.ok("Solicitud aprobada");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al aprobar la solicitud");
+		}
+	}
+
 	@PostMapping("/cancelarSolicitud/{id}")
-    public ResponseEntity<String> cancelarSolicitud(@PathVariable Integer id) {
-        try {
-        	solicitudCreditoService.cancelarSolicitud(id);
-            return ResponseEntity.ok("Solicitud cancelada");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
-        }
-    }
+	public ResponseEntity<String> cancelarSolicitud(@PathVariable Integer id) {
+		try {
+			solicitudCreditoService.cancelarSolicitud(id);
+			return ResponseEntity.ok("Solicitud cancelada");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
+		}
+	}
 }

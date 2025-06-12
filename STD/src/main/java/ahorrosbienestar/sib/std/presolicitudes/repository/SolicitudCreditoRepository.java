@@ -20,6 +20,8 @@ public interface SolicitudCreditoRepository extends JpaRepository<SolicitudCredi
 	
 	Page<SolicitudCredito> findAllByEjecutivoOrderByIdDesc(Integer ejecutivo, Pageable pageable);
 	
+	Page<SolicitudCredito> findAllBySucursalIn(List<Integer> sucursales, Pageable pageable);
+	
 	@Query("SELECT s FROM SolicitudCredito s WHERE s.id IN :ids")
     List<SolicitudCredito> findByIds(@Param("ids") List<Integer> ids);
 	

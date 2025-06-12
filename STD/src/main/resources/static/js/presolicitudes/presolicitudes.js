@@ -317,6 +317,10 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 		// Rellenar los campos con la información de la opción seleccionada
 		inputNumEmpleado.value = selectedOption.getAttribute('data-numEmp') || "";
 		inputPuesto.value = selectedOption.getAttribute('data-puesto') || "";
+		console.log(inputPuesto.value);
+		if (inputPuesto.value == "") {
+			inputPuesto.value = 0;
+		}
 
 		//listaProductos(idEmpresaSeleccionada, selectedOption.getAttribute('data-puesto'));
 	} else {
@@ -640,7 +644,23 @@ function cargarSolicitudes(pagina) {
 			let tabla = document.getElementById("tablaSolicitudes");
 			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
-			let filas = data.content.map((solicitud) => {
+			const solicitudes = data.contenido.content; // Cambiado
+			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
+			const botonExcel = document.getElementById("contenedorBotonExcel");
+
+			console.log("Permiso:", permiso); // Diagnóstico
+
+			if (permiso === true) {
+				botonExcel.classList.remove("d-none");
+				botonExcel.classList.add("d-flex");
+			} else {
+				botonExcel.classList.remove("d-flex");
+				botonExcel.classList.add("d-none");
+			}
+
+
+
+			let filas = solicitudes.map((solicitud) => {
 				return `<tr>
 			        <td>${solicitud.id}</td>
 			        <td>${solicitud.empleado}</td>
@@ -650,18 +670,21 @@ function cargarSolicitudes(pagina) {
 			        <td>$ ${solicitud.montoDescontar}</td>
 			        <td>${obtenerEstatus(solicitud.estatus)}</td>
 			        <td>
-			            <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-			                <i class="fas fa-edit"></i>
-			            </button>
+			            ${permiso ? `
+			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+			                    <i class="fas fa-edit"></i>
+			                </button>
+			                ${solicitud.estatus === 1 ? `
+			                    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
+			                        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
+			                        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
+			                    </button>` : ''}
+			            ` : ''}
+			            
 			            ${solicitud.estatus === 3 ? `
-			            <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
-			                <i class="fas fa-file-pdf"></i>
-			            </button>` : ''}
-			            ${solicitud.estatus === 1 ? `
-					    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-					        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
-					        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
-    					</button>` : ''}
+			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
+			                    <i class="fas fa-file-pdf"></i>
+			                </button>` : ''}
 			        </td>
 			    </tr>`;
 			}).join('');
@@ -672,16 +695,26 @@ function cargarSolicitudes(pagina) {
 			// Actualizar paginación
 			document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
 			document.getElementById("btnAnterior").disabled = pagina === 0;
-			document.getElementById("btnSiguiente").disabled = data.last;
+			document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
 
 			// Ocultar spinner
 			document.getElementById("spinner").style.display = "none";
+
+			// (Opcional) Si quieres condicionar algún botón con permiso:
+			if (permiso) {
+				console.log("Tiene permiso de aprobación.");
+				// document.getElementById("btnAprobarMasivo").style.display = "inline-block";
+			} else {
+				console.log("No tiene permiso.");
+				// document.getElementById("btnAprobarMasivo").style.display = "none";
+			}
 		})
 		.catch(error => {
 			console.error("Error al cargar las solicitudes:", error);
 			document.getElementById("spinner").style.display = "none";
 		});
 }
+
 
 
 function aprobarOCancelarSolicitud(id, empresa) {
