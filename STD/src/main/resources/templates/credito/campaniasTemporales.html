@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Campañas Temporales</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divParametrosBuro">
+				<div class="row">
+					<!-- Campo de búsqueda -->
+					<div class="col-md-6">
+						<label class="col-form-label">Campañas Temporales</label>
+						<input type="search" class="form-control" id="buscarCampania" list="opcionCampania"
+							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampanias()" />
+						<datalist id="opcionCampania"></datalist>
+					</div>
+
+				</div>
+				<div id="divRegistro">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Informacion Campaña temporal</legend>
+						<!-- Nombre de Campaña -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Nombre de Campaña:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="nombreCampania" name="nombreCampania"
+									placeholder="Ingrese nombre de campaña..." />
+							</div>
+						</div>
+						<!-- archivo de Campaña -->
+						<div class="row" style="margin-top: 15px; display: none;" id="divArchivoCampania">
+							<div class="col-md-3">
+								<label class="col-form-label">Nombre de Campaña:</label>
+							</div>
+							<div class="col-md-4">
+								<!-- Campo de archivo oculto inicialmente -->
+								<div class="" id="archivoTemporales">
+									<label class="col-form-label">Cargar Archivo</label>
+									<input type="file" class="form-control" id="archivoCampania"
+										name="archivoCampania" />
+								</div>
+							</div>
+						</div>
+
+
+
+						<!-- Descripción de la Campaña -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Descripción de la Campaña:</label>
+							</div>
+							<div class="col-md-4">
+								<textarea class="form-control" id="descripcionCampania" name="descripcionCampania"
+									rows="4" placeholder="Ingrese la descripción de la campaña..."></textarea>
+							</div>
+						</div>
+
+
+						<!-- Vigencia en meses -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Vigencia (meses):</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
+									min="1" />
+							</div>
+						</div>
+
+						<!-- Fecha de Inicio -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Fecha de Inicio:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
+							</div>
+						</div>
+						<!-- Fecha de Fin -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Fecha de Fin:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="date" class="form-control" id="fechaFin" name="fechaFin" />
+							</div>
+						</div>
+
+						<!-- Fecha de Registro -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Fecha de Registro:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="date" class="form-control" id="fechaRegistro" name="fechaRegistro" />
+							</div>
+						</div>
+
+						<!-- Estatus -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Estatus:</label>
+							</div>
+							<div class="col-md-4">
+								<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+									<option value="0">Seleccione</option>
+									<option th:each="opcionTipo : ${cat_riesgo_Maximo}"
+										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+										th:id="${opcionTipo.v_pantalla}">
+									</option>
+								</select>
+							</div>
+						</div>
+
+
+						<!-- Vigencia en meses -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Vigencia (meses):</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
+									min="1" />
+							</div>
+						</div>
+
+						<!-- Fecha Envío a MC -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-3">
+								<label class="col-form-label">Fecha de Envío a MC:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="date" class="form-control" id="fechaEnvioMC" name="fechaEnvioMC" />
+							</div>
+						</div>
+
+
+
+						<div class="row mt-4">
+							<div class="col-md-4 text-right">
+
+							</div>
+							<div class="col-md-4 text-right">
+
+							</div>
+							<div class="col-md-4 text-left">
+								<button type="submit" name="accion" value="guardar"
+									class="btn btn-primary">Guardar</button>
+
+							</div>
+						</div>
+
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/credito/tiposCampanias.js}"></script>
+		<script th:src="@{/js/credito/paramBuroCredito.js}"></script>
+	</th:block>
+</body>
+
+</html>

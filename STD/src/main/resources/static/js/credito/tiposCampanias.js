@@ -40,8 +40,12 @@ function debouncedListaClientes() {
 
 function buscarCampanias() {
     var buscar = buscarCliente.value;
+    const divArchivo = document.getElementById("divArchivoCampania");
     //cuando ingrese el valor 0 se agrege un nuevo registro
-    if (buscar === "0") {
+    if (buscar.trim() === "0") {
+		document.getElementById("divArchivoCampania").style.display = "flex"; // o "block"
+
+		divArchivo.style.display = "block";
         divDetalle.style.display = 'block';
         divBotonAgregar.style.display = 'block';
         divBotonModificar.style.display = 'none';
@@ -55,9 +59,13 @@ function buscarCampanias() {
         cargarChecksActiva(0);
         //let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
 		cargarCatalogoProductos([]);
+		
         return;
     }else{
 	    //console.log(newUrlBase);
+	    document.getElementById("divArchivoCampania").style.display = "none";
+
+	     divArchivo.style.display = "none";
 		$.ajax({
 			url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
 			type: "GET",
