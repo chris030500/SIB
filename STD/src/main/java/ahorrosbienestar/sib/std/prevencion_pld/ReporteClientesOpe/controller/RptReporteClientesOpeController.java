@@ -6,16 +6,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -25,6 +27,15 @@ import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+//import java.util.Map;
+//import org.springframework.web.bind.annotation.RequestBody;
+
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+
 
 @Controller
 @AllArgsConstructor
@@ -48,7 +59,8 @@ public class RptReporteClientesOpeController {
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
 
-	
+	//@Autowired
+	//private ReporteClientesOpeRepository repo;
 	
 	@GetMapping("/reporteClientesOpe")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -95,6 +107,28 @@ public class RptReporteClientesOpeController {
 		}
 
 	}
+	
+	@PostMapping("/cargar-excel")
+	public ResponseEntity<?> cargarArchivo(@RequestParam("file") MultipartFile file) {
+	    try {
+	        // 1. Guardar temporalmente el archivo
+	        String path = "C:/ruta/temp/" + file.getOriginalFilename();
+	        file.transferTo(new File(path));
+
+	        ReporteClientesOpeService reporteClientesOpeService = null;
+			// 2. Leer Excel
+	        @SuppressWarnings("null")
+			List<ReporteClientesOpeModel> lista = reporteClientesOpeService.leerArchivoExcel(path);
+
+	        // 3. Procesar y guardar
+	        reporteClientesOpeService.procesarYComparar(lista, "folio123");
+
+	        return ResponseEntity.ok("Archivo procesado correctamente.");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+	    }
+	}
+
 	
 	public int validarAcceso() {
 		try {

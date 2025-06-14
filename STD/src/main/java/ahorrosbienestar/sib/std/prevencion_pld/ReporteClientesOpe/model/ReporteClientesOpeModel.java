@@ -174,10 +174,10 @@ public class ReporteClientesOpeModel {
     @Column(name = "numero_contrato")
     private Long numeroContrato;
     
-    public Integer getClienteId() {
+    public Integer getclienteId() {
         return clienteId;
     }
-    public void setClienteId(Integer clienteId) {
+    public void setclienteId(Integer clienteId) {
         this.clienteId = clienteId;
     }
 	

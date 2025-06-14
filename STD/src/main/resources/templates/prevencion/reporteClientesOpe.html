@@ -78,45 +78,17 @@
             <div class="tab-content" id="tabContent">
              <!-- Tab: Archivos -->
 <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
-	<button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalAdjuntosPEP">
-		Cargar Archivo de PEPs
-	</button>
-</div>
+	<fieldset class="border p-2 mt-3">
+		<legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
 
-<!-- Modal fuera del tab-pane -->
-<div class="modal fade" id="modalAdjuntosPEP" data-backdrop="static" tabindex="-1" data-keyboard="false" role="dialog">
-	<div class="modal-dialog modal-xl modal-dialog-centered">
-		<div class="modal-content">
-			<fieldset class="border p-2">
-				<div class="modal-header">
-					<div class="col-md-11">
-						<legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
-					</div>
-					<div class="col-md-1">
-						<button type="button" class="btn-close" onclick="cerrarModal(this)" data-dismiss="modal" aria-label="Close"></button>
-					</div>
-				</div>
-				<div class="modal-body">
-					<fieldset class="border p-2">
-						<form id="uploadFormPEP" enctype="multipart/form-data">
-							<div class="form-group">
-								<label for="fileUploadPEP">Seleccionar archivo Excel:</label>
-								<input type="file" id="fileUploadPEP" name="fileUploadPEP" accept=".xlsx, .xls" class="form-control" />
-							</div>
-							<button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
-						</form>
-
-						<div class="mt-4">
-							<h5>Archivos Subidos</h5>
-							<ul id="fileListPEP" class="list-group">
-								<li class="list-group-item">No hay archivos subidos.</li>
-							</ul>
-						</div>
-					</fieldset>
-				</div>
-			</fieldset>
-		</div>
-	</div>
+		<form id="uploadFormPEP" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="fileUploadPEP">Seleccionar archivo Excel:</label>
+				<input type="file" id="fileUploadPEP" name="fileUploadPEP" accept=".xls, .xlsx" class="form-control" />
+			</div>
+			<button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
+		</form>
+	</fieldset>
 </div>
 
                 <!-- Tab: Proceso -->
@@ -239,6 +211,7 @@
 	<th:block layout:fragment="page-scripts">
 		
 		<!--JavaScript-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
