@@ -60,10 +60,10 @@ public class ReporteClientesOpeService {
         if (lista == null || lista.isEmpty()) return;
 
         for (ReporteClientesOpeModel registro : lista) {
-            if (registro.getClienteId() == null || registro.getClienteId().isEmpty()) continue;
+            if (registro.getclienteId() == null || registro.getclienteId().isEmpty()) continue;
 
             Optional<ReporteClientesOpeModel> registroExistenteOpt =
-                reporteClientesOpeRepository.findByClienteId(registro.getClienteId());
+                reporteClientesOpeRepository.findByClienteId(registro.getclienteId());
 
             ReporteClientesOpeModel entidad;
             if (registroExistenteOpt.isPresent()) {
@@ -75,7 +75,7 @@ public class ReporteClientesOpeService {
                 entidad = registro;
             }
 
-            entidad.setIdFolio(idFolio);
+           // entidad.setIdFolio(idFolio);
             reporteClientesOpeRepository.save(entidad);
         }
     }
