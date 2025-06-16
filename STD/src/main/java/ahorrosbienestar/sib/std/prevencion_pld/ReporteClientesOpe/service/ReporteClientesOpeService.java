@@ -1,82 +1,83 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ReporteClientesOpeRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ReporteClientesOpeRepository;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReporteClientesOpeService {
 
+    private final ReporteClientesOpeRepository repo;
+
     @Autowired
-    private ReporteClientesOpeRepository reporteClientesOpeRepository;
-
-    /**
-     * Lee un archivo Excel (.xlsx) desde una ruta en disco y lo convierte en una lista de modelos.
-     */
-    public List<ReporteClientesOpeModel> leerArchivoExcel(String filePath) {
-        List<ReporteClientesOpeModel> datosExcel = new ArrayList<>();
-        try (FileInputStream file = new FileInputStream(new File(filePath));
-             Workbook workbook = WorkbookFactory.create(file)) {
-
-            Sheet sheet = workbook.getSheetAt(0); // Primera hoja
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Saltar encabezado
-
-                ReporteClientesOpeModel registro = new ReporteClientesOpeModel();
-
-                // Asegúrate de validar celdas nulas antes de acceder
-                
-
-                if (row.getCell(1) != null)
-                    registro.setnombre(row.getCell(1).getStringCellValue());
-
-
-                // Agrega más campos según necesidad...
-
-                datosExcel.add(registro);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return datosExcel;
+    public ReporteClientesOpeService(ReporteClientesOpeRepository repo) {
+        this.repo = repo;
     }
 
-    /**
-     * Procesa y compara los datos recibidos con la base de datos.
-     * Inserta o actualiza registros si corresponde.
-     */
     @Transactional
-    public void procesarYComparar(List<ReporteClientesOpeModel> lista, String idFolio) {
-        if (lista == null || lista.isEmpty()) return;
+    public void procesarArchivoPEP(MultipartFile file) throws Exception {
+        List<ReporteClientesOpeModel> registros = leerExcel(file.getInputStream());
+        if (registros.isEmpty()) return;
+        repo.saveAll(registros);
+    }
 
-        for (ReporteClientesOpeModel registro : lista) {
-            if (registro.getclienteId() == null || registro.getclienteId().isEmpty()) continue;
+    /* ---------- Lectura de Excel ---------- */
+    private List<ReporteClientesOpeModel> leerExcel(InputStream in) throws Exception {
+        List<ReporteClientesOpeModel> lista = new ArrayList<>();
+        DataFormatter fmt = new DataFormatter();
 
-            Optional<ReporteClientesOpeModel> registroExistenteOpt =
-                reporteClientesOpeRepository.findByClienteId(registro.getclienteId());
+        try (Workbook wb = WorkbookFactory.create(in)) {
+            Sheet sheet = wb.getSheetAt(0);
+            if (sheet == null) return lista;
 
-            ReporteClientesOpeModel entidad;
-            if (registroExistenteOpt.isPresent()) {
-                entidad = registroExistenteOpt.get();
-                entidad.setnombre(registro.getnombre());
-                entidad.setfechaOperacion(registro.getfechaOperacion());
-                // Otros campos...
-            } else {
-                entidad = registro;
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue;  // cabecera
+
+                ReporteClientesOpeModel m = new ReporteClientesOpeModel();
+                int c = 0;
+                m.setclienteId(parseInteger(fmt, row.getCell(c++)));
+                m.setEstatusCliente (fmt.formatCellValue(row.getCell(c++)));
+                m.setFechaAlta      (parseDate(fmt, row.getCell(c++)));
+                m.setTipoCliente    (fmt.formatCellValue(row.getCell(c++)));
+                m.setNumeroCliente  (parseInteger(fmt, row.getCell(c++)));
+                m.setNombreCompleto (fmt.formatCellValue(row.getCell(c++)));
+                m.setGenero         (fmt.formatCellValue(row.getCell(c++)));
+                /* …sigue mapeando según tu layout… */
+                m.setMontoOperacion (parseDecimal(row.getCell(c++)));
+
+                lista.add(m);
             }
-
-           // entidad.setIdFolio(idFolio);
-            reporteClientesOpeRepository.save(entidad);
         }
+        return lista;
+    }
+
+    /* ---------- Helpers ---------- */
+    private Integer parseInteger(DataFormatter fmt, Cell c) {
+        String s = fmt.formatCellValue(c);
+        return s.isEmpty() ? null : Integer.valueOf(s);
+    }
+
+    private BigDecimal parseDecimal(Cell c) {
+        return (c == null) ? null : BigDecimal.valueOf(c.getNumericCellValue());
+    }
+
+    private LocalDate parseDate(DataFormatter fmt, Cell c) {
+        if (c == null) return null;
+        if (c.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(c)) {
+            return c.getLocalDateTimeCellValue().toLocalDate();
+        }
+        String s = fmt.formatCellValue(c);
+        return s.isEmpty() ? null : LocalDate.parse(s);
     }
 }
+
