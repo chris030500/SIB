@@ -21,6 +21,7 @@ public class HisTiposCampaniasService {
 	public boolean crearHisCampania(HisTiposCampaniasModel c) {
 	    int filas = repository.insertarHisCampania(
 	    	c.getVc_json_entrada(),
+	    	c.getVc_tabla(),
 	    	c.getI_user_reg()
 	    );
 	    return filas > 0;

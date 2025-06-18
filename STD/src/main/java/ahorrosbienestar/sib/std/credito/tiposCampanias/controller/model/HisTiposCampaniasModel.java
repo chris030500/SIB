@@ -24,11 +24,22 @@ public class HisTiposCampaniasModel {
 	@Column(name = "VC_JSON_ENTRADA")
 	private String vc_json_entrada;
 	
+	@Column(name = "VC_TABLA")
+	private String vc_tabla;
+	
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
  
 	@Column(name = "I_USER_REG")
 	private Integer i_user_reg;
+
+	public String getVc_tabla() {
+		return vc_tabla;
+	}
+
+	public void setVc_tabla(String vc_tabla) {
+		this.vc_tabla = vc_tabla;
+	}
 
 	public Integer getPk_id_his_tipo_campania() {
 		return pk_id_his_tipo_campania;

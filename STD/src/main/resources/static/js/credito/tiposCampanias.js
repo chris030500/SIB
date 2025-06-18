@@ -800,9 +800,11 @@ function modificarTiposCampanias(){
 																																											    };
 																																											    console.log(data);
 																																											    const jsonBitacora = JSON.stringify(data);
+																																											    let tabla = 'TBL_TIPOS_CAMPANIA';
 																																											    console.log(jsonBitacora);
 																																											    const dataHis = {
 																																											        vc_json_entrada: jsonBitacora,
+																																											        vc_tabla: tabla,
 																																											        i_user_reg: parseInt(document.getElementById("idUser").value),
 																																											        
 																																											    };
