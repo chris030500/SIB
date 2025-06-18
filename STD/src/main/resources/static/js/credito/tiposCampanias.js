@@ -480,7 +480,7 @@ function modificarTiposCampanias(){
 						icon: "warning",
 					});
 				
-				} else if (document.getElementById('EdadMaxima').value != '') {
+				} else if (document.getElementById('EdadMaxima').value != '' && document.getElementById('EdadMaxima').value > 0) {
 					
 					if(esEntero(document.getElementById('EdadMaxima').value)){
 						
@@ -492,7 +492,7 @@ function modificarTiposCampanias(){
 								icon: "warning",
 							});
 							
-						} else if (document.getElementById('EdadMinima').value != '') {
+						} else if (document.getElementById('EdadMinima').value != '' && document.getElementById('EdadMinima').value > 0) {
 							if(esEntero(document.getElementById('EdadMinima').value)){
 								if (document.getElementById('MontoMinimo').value == '') {
 				
@@ -502,7 +502,7 @@ function modificarTiposCampanias(){
 										icon: "warning",
 									});
 									
-								} else if (document.getElementById('MontoMinimo').value != '') {
+								} else if (document.getElementById('MontoMinimo').value != '' && document.getElementById('MontoMinimo').value > 0) {
 									
 									if(esDecimalPositivo(document.getElementById('MontoMinimo').value)){
 										
@@ -514,7 +514,7 @@ function modificarTiposCampanias(){
 												icon: "warning",
 											});
 											
-										} else if (document.getElementById('MontoMaximo').value != '') {
+										} else if (document.getElementById('MontoMaximo').value != '' && document.getElementById('MontoMaximo').value > 0) {
 											if(esDecimalPositivo(document.getElementById('MontoMaximo').value)){
 												if (document.getElementById('MoraMaxima').value == '') {
 						
