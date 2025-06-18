@@ -159,6 +159,7 @@ input.addEventListener('input', function () {
         divDetalle.style.display = 'block';
         divBotonModificar.style.display = 'block';
         divBotonAgregar.style.display = 'none';
+        nomTipoCampania.style.display = 'none';
         // Llama al servicio con el ID
        // fetch(newUrlBase + 'credito/obtenerCampania?id=' + idSeleccionado)
          //   .then(response => response.json())
