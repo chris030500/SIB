@@ -90,8 +90,8 @@ public class TiposCampaniasModel {
 	@Column(name = "VC_INC_CODEUDOR_OFERTA")
 	private String vc_inc_codeudor_oferta;
 	
-	@Column(name = "VC_ESTATUS")
-	private String vc_estatus;
+	@Column(name = "I_ESTATUS")
+	private Integer i_estatus;
 	
 	@Column(name = "I_TIPO_CAMPANIA")
 	private Integer i_tipo_campania;
@@ -313,12 +313,12 @@ public class TiposCampaniasModel {
 		this.vc_inc_codeudor_oferta = vc_inc_codeudor_oferta;
 	}
 
-	public String getVc_estatus() {
-		return vc_estatus;
+	public Integer getI_estatus() {
+		return i_estatus;
 	}
 
-	public void setVc_estatus(String vc_estatus) {
-		this.vc_estatus = vc_estatus;
+	public void setI_estatus(Integer i_estatus) {
+		this.i_estatus = i_estatus;
 	}
 
 	public Integer getI_tipo_campania() {
