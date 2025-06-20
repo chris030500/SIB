@@ -15,6 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 import java.io.*;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -26,6 +30,9 @@ public class GeneracionReporteService {
 
     private final ProcesoReporteRepository procesoRepo;
     private final DescargaReporteRepository descargaRepo;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public GeneracionReporteService(ProcesoReporteRepository procesoRepo,
@@ -41,42 +48,57 @@ public class GeneracionReporteService {
         procesoRepo.save(proceso);
         return ResponseEntity.ok("Fechas guardadas correctamente");
     }
-
+/*
     @Transactional
-    public ResponseEntity<?> procesarAhora(Long procesoId) {
-        ProcesoReporte proceso = procesoRepo.findById(procesoId).orElseThrow();
+    public ResponseEntity<?> procesarAhora(String usuario) {
+        // Llamar SP_TBL_PLD_PROCESO_REPORTE para registrar la carga y obtener idProceso
+        StoredProcedureQuery sp1 = entityManager.createStoredProcedureQuery("SIB.SP_TBL_PLD_PROCESO_REPORTE");
+        sp1.registerStoredProcedureParameter("p_usuarioCarga", String.class, ParameterMode.IN);
+        sp1.registerStoredProcedureParameter("p_idProceso", Integer.class, ParameterMode.OUT);
+        sp1.setParameter("p_usuarioCarga", usuario);
+        sp1.execute();
+        Integer idProceso = (Integer) sp1.getOutputParameterValue("p_idProceso");
 
-        Workbook wb = new XSSFWorkbook();
-        Sheet sheet = wb.createSheet("Reporte");
-        Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("ID Cliente");
-        header.createCell(1).setCellValue("Nombre");
-        header.createCell(2).setCellValue("Fecha Operación");
+        // Llamar SP_TBL_PLD_DESCARGAS para generar tabla OPERACIONES2 y poblar DESCARGAS
+        StoredProcedureQuery sp2 = entityManager.createStoredProcedureQuery("SIB.SP_TBL_PLD_DESCARGAS");
+        sp2.registerStoredProcedureParameter("p_idProceso", Integer.class, ParameterMode.IN);
+        sp2.registerStoredProcedureParameter("p_usuarioEjecuto", String.class, ParameterMode.IN);
+        sp2.registerStoredProcedureParameter("p_registros", Integer.class, ParameterMode.OUT);
+        sp2.setParameter("p_idProceso", idProceso);
+        sp2.setParameter("p_usuarioEjecuto", usuario);
+        sp2.execute();
+        Integer registros = (Integer) sp2.getOutputParameterValue("p_registros");
 
-        // Puedes agregar lógica para cargar datos reales aquí
-        Row row = sheet.createRow(1);
-        row.createCell(0).setCellValue("123456");
-        row.createCell(1).setCellValue("JUAN PÉREZ");
-        row.createCell(2).setCellValue("2025-06-16");
+        if (registros == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se generaron registros para este proceso.");
+        }
 
+        // Crear archivo Excel desde los datos reales en TBL_PLD_DESCARGAS
+        List<DescargaReporte> lista = descargaRepo.findByIdProceso(idProceso);
         String nombre = "reporte_peps_" + System.currentTimeMillis() + ".xlsx";
         String ruta = System.getProperty("java.io.tmpdir") + File.separator + nombre;
 
-        try (FileOutputStream fos = new FileOutputStream(ruta)) {
+        try (Workbook wb = new XSSFWorkbook(); FileOutputStream fos = new FileOutputStream(ruta)) {
+            Sheet sheet = wb.createSheet("Reporte");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("ID Cliente");
+            header.createCell(1).setCellValue("Nombre");
+
+            int rowIdx = 1;
+            for (DescargaReporte d : lista) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(d.getIdCliente());
+                row.createCell(1).setCellValue(d.getNombreCliente());
+            }
+
             wb.write(fos);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error generando Excel: " + e.getMessage());
         }
 
-        DescargaReporte d = new DescargaReporte();
-        d.setNombreArchivo(nombre);
-        d.setRuta(ruta);
-        d.setFechaGeneracion(LocalDateTime.now());
-        descargaRepo.save(d);
-
-        return ResponseEntity.ok("Reporte generado");
-    }
+        return ResponseEntity.ok("Reporte generado con éxito: " + nombre);
+    }*/
 
     public ResponseEntity<?> confirmarReporte(boolean confirmado) {
         if (!confirmado) {
@@ -90,7 +112,7 @@ public class GeneracionReporteService {
         int anio = Year.now().getValue();
         return descargaRepo.findByAnio(anio);
     }
-
+/*
     public ResponseEntity<Resource> descargarArchivo(Long id) {
         DescargaReporte d = descargaRepo.findById(id).orElseThrow();
         File f = new File(d.getRuta());
@@ -106,5 +128,6 @@ public class GeneracionReporteService {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-    }
+    }*/
 }
+

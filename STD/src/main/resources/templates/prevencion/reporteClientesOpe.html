@@ -80,13 +80,14 @@
 <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
     <fieldset class="border p-2 mt-3">
         <legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
-        <form id="uploadFormPEP" action="http://localhost:8080/prevencion/reporteClientesOpe/uploadPEP" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="fileUploadPEP">Seleccionar archivo Excel:</label>
-                <input type="file" id="fileUploadPEP" name="file" accept=".xls, .xlsx" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
-        </form>
+        <form id="uploadFormPEP"
+      th:action="@{/prevencion/reporteClientesOpe/uploadPEP}"
+      method="post"
+      enctype="multipart/form-data">
+    <input type="file" id="fileUploadPEP" name="file"
+           accept=".xls,.xlsx" class="form-control"/>
+    <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
+</form>
     </fieldset>
 </div>
 
@@ -103,18 +104,6 @@
                     <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
                     <button class="btn btn-outline-primary" id="btnGuardarRango">Guardar fecha</button>
                 </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">¿Desea programar?</label>
-                <select class="form-control" id="programado">
-                    <option value="false">No</option>
-                    <option value="true">Sí</option>
-                </select>
-            </div>
-            <div class="mb-3" id="horaProgDiv" style="display:none">
-                <label>Hora de ejecución:</label>
-                <input type="time" id="horaEjecucion" class="form-control" />
             </div>
 
             <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>

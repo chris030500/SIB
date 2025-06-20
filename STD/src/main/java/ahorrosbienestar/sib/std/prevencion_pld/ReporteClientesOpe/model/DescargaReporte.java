@@ -1,33 +1,38 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
 
 import javax.persistence.*;
-//import java.math.BigDecimal;
-//import java.time.LocalDate;
-import java.time.LocalDateTime;
-//import java.time.LocalTime;
 
+/**  Tabla: SIB.TBL_PLD_DESCARGAS  */
 @Entity
 @Table(name = "TBL_PLD_DESCARGAS")
 public class DescargaReporte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "idDetalle")
+    private Long idDetalle;
 
-    private String nombreArchivo;
-    private String ruta;
-    private LocalDateTime fechaGeneracion;
+    /* ---- FK al proceso ---- */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idProceso", nullable = false)
+    private ProcesoReporte proceso;
 
-    // getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @Column(name = "idCliente", nullable = false)
+    private Long idCliente;
 
-    public String getNombreArchivo() { return nombreArchivo; }
-    public void setNombreArchivo(String nombreArchivo) { this.nombreArchivo = nombreArchivo; }
+    @Column(name = "nombreCliente", length = 255, nullable = false)
+    private String nombreCliente;
 
-    public String getRuta() { return ruta; }
-    public void setRuta(String ruta) { this.ruta = ruta; }
+    /* ---------- getters & setters ---------- */
+    public Long getIdDetalle()                  { return idDetalle; }
+    public void setIdDetalle(Long idDetalle)    { this.idDetalle = idDetalle; }
 
-    public LocalDateTime getFechaGeneracion() { return fechaGeneracion; }
-    public void setFechaGeneracion(LocalDateTime fechaGeneracion) { this.fechaGeneracion = fechaGeneracion; }
+    public ProcesoReporte getProceso()                { return proceso; }
+    public void setProceso(ProcesoReporte proceso)    { this.proceso = proceso; }
+
+    public Long getIdCliente()                 { return idCliente; }
+    public void setIdCliente(Long idCliente)   { this.idCliente = idCliente; }
+
+    public String getNombreCliente()                { return nombreCliente; }
+    public void setNombreCliente(String nombre)     { this.nombreCliente = nombre; }
 }

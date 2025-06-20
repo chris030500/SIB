@@ -1,26 +1,15 @@
-document.getElementById("uploadFormPEP").addEventListener("submit", async function (e) {
-    e.preventDefault();  // Evitar el comportamiento por defecto del formulario
+/* -------- SUBIR ARCHIVO -------- */
+document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
+  e.preventDefault();
+  const file = document.getElementById("fileUploadPEP").files[0];
+  if (!file) { alert("Selecciona un archivo"); return; }
 
-    const archivo = document.getElementById("fileUploadPEP").files[0]; // Obtener el archivo
-    if (!archivo) {
-        alert("Selecciona un archivo");
-        return;
-    }
+  const fd = new FormData();
+  fd.append("file", file);           //  << nombre EXACTO que espera el controller
 
-    const fd = new FormData();
-    fd.append("file", archivo);  // Agregar el archivo al FormData
-
-    try {
-        const res = await fetch("http://localhost:8080/prevencion/reporteClientesOpe/uploadPEP", {
-  method: "POST",
-  body: fd
-});
-
-        const result = await res.text();  // Leer la respuesta del servidor
-        alert(result);  // Mostrar la respuesta
-    } catch (err) {
-        alert("Error: " + err);  // Mostrar el error si ocurre alguno
-    }
+  const res  = await fetch(e.target.action, { method: "POST", body: fd });
+  const text = await res.text();
+  alert(text);
 });
 
 document.getElementById("programado").addEventListener("change", e => {
@@ -60,20 +49,26 @@ function confirmar(valor) {
         });
 }
 
+/* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
 function cargarDescargas() {
-    fetch("/prevencion/reporteClientesOpe/descargas")
-        .then(r => r.json())
-        .then(data => {
-            const tbody = document.querySelector("#tablaDescargas tbody");
-            tbody.innerHTML = "";
-            data.forEach(row => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row.nombreArchivo}</td>
-                                <td>${row.fechaGeneracion}</td>
-                                <td><a href='/prevencion/reporteClientesOpe/descargar/${row.id}' class='btn btn-sm btn-primary'>Descargar</a></td>`;
-                tbody.appendChild(tr);
-            });
-        });
+  fetch("/prevencion/reporteClientesOpe/descargas")
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.getElementById("tablaReportesGenerados");   // ← id real
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.fechaGeneracion}</td>
+          <td>${row.rangoFechas||""}</td>
+          <td>${row.usuario||""}</td>
+          <td>${row.nombreArchivo}</td>
+          <td>${row.confirmado?"Sí":"No"}</td>
+          <td><a class='btn btn-sm btn-primary'
+                 href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
+        tbody.appendChild(tr);
+      });
+    });
 }
-
-document.querySelector("a[href='#descargas']").addEventListener("click", cargarDescargas);
+document.getElementById("descargas-tab")
+        .addEventListener("click", cargarDescargas);
