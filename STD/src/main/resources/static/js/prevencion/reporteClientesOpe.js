@@ -12,16 +12,57 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   alert(text);
 });
 
-document.getElementById("programado").addEventListener("change", e => {
-    document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
+document.getElementById("btnProcesar").addEventListener("click", async () => {
+  const inicio = document.getElementById("fechaInicio").value;
+  const fin    = document.getElementById("fechaFin").value;
+  const msg    = document.getElementById("progresoTexto");
+
+  if (!inicio || !fin) {
+    alert("Debes seleccionar una fecha de inicio y una de fin.");
+    return;
+  }
+
+  msg.textContent = "Generando reporte...";
+
+  try {
+    const res = await fetch("/prevencion/reporteClientesOpe/procesar", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+    });
+
+    if (!res.ok) throw new Error("Error generando el reporte.");
+
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+
+    const a = Object.assign(document.createElement("a"), {
+      href: url,
+      download: `Reporte_Clientes_Operaciones_${inicio}_a_${fin}.xlsx`
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+
+    msg.textContent = "Reporte generado ✔";
+  } catch (err) {
+    console.error(err);
+    msg.textContent = "Fallo al generar el reporte";
+    alert(err.message);
+  }
 });
 
-document.getElementById("formProceso").addEventListener("submit", function(e) {
+
+
+//document.getElementById("programado").addEventListener("change", e => {
+  //  document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
+//});
+
+/*document.getElementById("formProceso").addEventListener("submit", function(e) {
     e.preventDefault();
     const data = {
         fechaInicio: document.getElementById("fechaInicio").value,
         fechaFin: document.getElementById("fechaFin").value,
-        programado: document.getElementById("programado").value === "true",
+       // programado: document.getElementById("programado").value === "true",
         horaEjecucion: document.getElementById("horaEjecucion").value
     };
     fetch("/prevencion/reporteClientesOpe/guardarFechas", {
@@ -29,17 +70,8 @@ document.getElementById("formProceso").addEventListener("submit", function(e) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     }).then(r => r.text()).then(alert);
-});
+});*/
 
-document.getElementById("btnProcesar").addEventListener("click", () => {
-    // este id debería venir de backend o guardarse en session
-    const procesoId = 1; 
-    fetch(`/prevencion/reporteClientesOpe/procesar?procesoId=${procesoId}`, { method: "POST" })
-        .then(r => r.text()).then(msg => {
-            alert(msg);
-            document.getElementById("confirmacion").style.display = "block";
-        });
-});
 
 function confirmar(valor) {
     fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })

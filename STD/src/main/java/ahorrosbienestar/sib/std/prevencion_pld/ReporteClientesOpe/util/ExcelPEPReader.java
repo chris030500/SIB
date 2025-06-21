@@ -29,7 +29,7 @@ public class ExcelPEPReader {
             }
 
             // Lectura de datos
-            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+            for (int r = 0; r <= sheet.getLastRowNum(); r++) {
                 Row row = sheet.getRow(r);
                 if (row == null) continue;
 

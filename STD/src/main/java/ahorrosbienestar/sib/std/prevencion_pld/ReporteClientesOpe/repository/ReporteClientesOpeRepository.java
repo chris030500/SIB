@@ -4,6 +4,5 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteC
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReporteClientesOpeRepository extends JpaRepository<ReporteClientesOpeModel, Integer> {
-    // ClienteID es la llave primaria
 }
 

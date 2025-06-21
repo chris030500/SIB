@@ -47,6 +47,7 @@ public class RptReporteClientesOpeController {
     private final ReporteClientesOpeService     reporteClientesOpeService;
     private final GeneracionReporteService      generacionReporteService;
 
+    
     /* ---------- ctor ---------- */
     @Autowired
     public RptReporteClientesOpeController(
@@ -92,7 +93,7 @@ public class RptReporteClientesOpeController {
     }
     
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteOperacionesInusuales(@RequestParam("fechaInicio") String fechaInicio, 
+	public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio, 
 			@RequestParam("fechaFin") String fechaFin) {
 
 		List<String> respuesta = new ArrayList<>();
@@ -117,6 +118,7 @@ public class RptReporteClientesOpeController {
 		}
 
 	}
+    
 
     /* ---------- Resto de endpoints ---------- */
     @PostMapping("/reporteClientesOpe/guardarFechas")
@@ -125,11 +127,11 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.guardarFechasProceso(dto);
     }
 
-   // @PostMapping("/reporteClientesOpe/procesar")
-   // @ResponseBody
-    //public ResponseEntity<?> procesar(@RequestParam Long procesoId) {
-     //   return generacionReporteService.procesarAhora(procesoId);
-    //}
+   /* @PostMapping("/reporteClientesOpe/procesar")
+    @ResponseBody
+    public ResponseEntity<?> procesar(@RequestParam Long procesoId) {
+        return generacionReporteService.procesarAhora(procesoId);
+    }*/
 
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
@@ -137,17 +139,18 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.confirmarReporte(confirmado);
     }
 
-    @GetMapping("/reporteClientesOpe/descargas")
+   /* @GetMapping("/reporteClientesOpe/descargas")
     @ResponseBody
     public List<DescargaReporte> descargas() {
         return generacionReporteService.obtenerDescargas();
-    }
+    }*/
 /*
     @GetMapping("/reporteClientesOpe/descargar/{id}")
     public ResponseEntity<Resource> descargar(@PathVariable Long id) {
         return generacionReporteService.descargarArchivo(id);
     }*/
 
+    
     /* ---------- Seguridad ---------- */
     private int validarAcceso() {
         try {

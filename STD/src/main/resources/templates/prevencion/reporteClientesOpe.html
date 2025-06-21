@@ -97,15 +97,13 @@
         <div class="container py-3">
             <h4 class="mb-4">Proceso de reportes</h4>
             <div class="mb-3">
-                <label class="form-label">Rango de fechas para el reporte:</label>
-                <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
-                    <span>a</span>
-                    <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
-                    <button class="btn btn-outline-primary" id="btnGuardarRango">Guardar fecha</button>
-                </div>
-            </div>
-
+    <label class="form-label">Rango de fechas para el reporte:</label>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
+        <span>a</span>
+        <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
+    </div>
+</div>
             <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>
             <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser anterior a 2 años desde hoy.</div>
 
