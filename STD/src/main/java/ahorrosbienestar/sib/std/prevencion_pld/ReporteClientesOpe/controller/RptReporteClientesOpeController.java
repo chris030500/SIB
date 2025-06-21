@@ -1,12 +1,12 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
 
 import java.util.ArrayList;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
+//import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,12 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
-import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+//import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DescargaReporte;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DescargaReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;

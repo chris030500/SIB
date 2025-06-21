@@ -12,45 +12,57 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   alert(text);
 });
 
-document.getElementById("btnProcesar").addEventListener("click", async () => {
-  const inicio = document.getElementById("fechaInicio").value;
-  const fin    = document.getElementById("fechaFin").value;
-  const msg    = document.getElementById("progresoTexto");
 
-  if (!inicio || !fin) {
-    alert("Debes seleccionar una fecha de inicio y una de fin.");
-    return;
+document.addEventListener("DOMContentLoaded", () => {
+  const btnProcesar = document.getElementById("btnProcesar");
+  const inputInicio = document.getElementById("fechaInicio");
+  const inputFin    = document.getElementById("fechaFin");
+
+  // Validación simple de fechas
+  function fechasInvalidas(inicio, fin) {
+    if (!inicio || !fin) {
+      alert("Debes seleccionar la fecha de inicio y la fecha de fin.");
+      return true;
+    }
+    if (fin < inicio) {
+      alert("La fecha fin no puede ser anterior a la fecha inicio.");
+      return true;
+    }
+    return false;
   }
 
-  msg.textContent = "Generando reporte...";
+  // Evento click del botón
+  btnProcesar.addEventListener("click", async (event) => {
+    event.preventDefault(); // ← importante si el botón está en un formulario
 
-  try {
-    const res = await fetch("/prevencion/reporteClientesOpe/procesar", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-    });
+    const inicio = inputInicio.value;
+    const fin    = inputFin.value;
 
-    if (!res.ok) throw new Error("Error generando el reporte.");
+    if (fechasInvalidas(inicio, fin)) return;
 
-    const blob = await res.blob();
-    const url  = URL.createObjectURL(blob);
+    try {
+      const res = await fetch("generarRptReporteClientesOpeController", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+      });
 
-    const a = Object.assign(document.createElement("a"), {
-      href: url,
-      download: `Reporte_Clientes_Operaciones_${inicio}_a_${fin}.xlsx`
-    });
-    a.click();
-    URL.revokeObjectURL(url);
+      if (!res.ok) throw new Error("Error generando el reporte.");
 
-    msg.textContent = "Reporte generado ✔";
-  } catch (err) {
-    console.error(err);
-    msg.textContent = "Fallo al generar el reporte";
-    alert(err.message);
-  }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Reporte_Clientes_Ope_${inicio}_a_${fin}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
+  });
 });
-
 
 
 //document.getElementById("programado").addEventListener("change", e => {
