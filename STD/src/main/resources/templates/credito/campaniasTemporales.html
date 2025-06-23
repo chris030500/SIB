@@ -31,160 +31,114 @@
 					<div class="col-md-6">
 						<label class="col-form-label">Campañas Temporales</label>
 						<input type="search" class="form-control" id="buscarCampania" list="opcionCampania"
-							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampanias()" />
+							autocomplete="off" placeholder="Buscar campaña" /> <!--oninput="buscarCampanias()"-->
 						<datalist id="opcionCampania"></datalist>
 					</div>
 
 				</div>
 				<div id="divRegistro">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Informacion Campaña temporal</legend>
-						<!-- Nombre de Campaña -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Nombre de Campaña:</label>
-							</div>
-							<div class="col-md-4">
-								<input type="text" class="form-control" id="nombreCampania" name="nombreCampania"
-									placeholder="Ingrese nombre de campaña..." />
-							</div>
-						</div>
-						<!-- archivo de Campaña -->
-						<div class="row" style="margin-top: 15px; display: none;" id="divArchivoCampania">
-							<div class="col-md-3">
-								
-							</div>
-							<div class="col-md-4">
-								<!-- Campo de archivo oculto inicialmente -->
-								<div class="" id="archivoTemporales">
-									<label class="col-form-label">Cargar Archivo</label>
-									<input type="file" class="form-control" id="archivoCampania"
-										name="archivoCampania" />
-								</div>
-							</div>
-						</div>
+						<!-- FORMULARIO 1: Registro de datos campaña -->
+<form id="formDatosCampania" method="post">
+	<fieldset class="border p-2">
+		<legend class="float-none w-auto p-2">Información Campaña Temporal</legend>
 
+		<!-- Nombre de Campaña -->
+		<div class="row mt-3">
+			<div class="col-md-3">
+				<label class="col-form-label">Nombre de Campaña:</label>
+			</div>
+			<div class="col-md-4">
+				<input type="text" class="form-control" id="nombreCampania" name="nombreCampania"
+					placeholder="Ingrese nombre de campaña..." />
+			</div>
+		</div>
 
+		<!-- Descripción -->
+		<div class="row mt-3">
+			<div class="col-md-3">
+				<label class="col-form-label">Descripción de la Campaña:</label>
+			</div>
+			<div class="col-md-4">
+				<textarea class="form-control" id="descripcionCampania" name="descripcionCampania"
+					rows="4" placeholder="Ingrese la descripción de la campaña..."></textarea>
+			</div>
+		</div>
 
-						<!-- Descripción de la Campaña -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Descripción de la Campaña:</label>
-							</div>
-							<div class="col-md-4">
-								<textarea class="form-control" id="descripcionCampania" name="descripcionCampania"
-									rows="4" placeholder="Ingrese la descripción de la campaña..."></textarea>
-							</div>
-						</div>
+		<!-- Vigencia -->
+		<div class="row mt-3">
+			<div class="col-md-3">
+				<label class="col-form-label">Vigencia (meses):</label>
+			</div>
+			<div class="col-md-4">
+				<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses" min="1" />
+			</div>
+		</div>
 
+		<!-- Fechas -->
+		<div class="row mt-3">
+			<div class="col-md-3"><label class="col-form-label">Fecha de Inicio:</label></div>
+			<div class="col-md-4"><input type="date" class="form-control" id="fechaInicio" name="fechaInicio" /></div>
+		</div>
 
-						<!-- Vigencia en meses -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Vigencia (meses):</label>
-							</div>
-							<div class="col-md-4">
-								<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
-									min="1" />
-							</div>
-						</div>
+		<div class="row mt-3">
+			<div class="col-md-3"><label class="col-form-label">Fecha de Fin:</label></div>
+			<div class="col-md-4"><input type="date" class="form-control" id="fechaFin" name="fechaFin" /></div>
+		</div>
 
-						<!-- Fecha de Inicio -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Fecha de Inicio:</label>
-							</div>
-							<div class="col-md-4">
-								<input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
-							</div>
-						</div>
-						<!-- Fecha de Fin -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Fecha de Fin:</label>
-							</div>
-							<div class="col-md-4">
-								<input type="date" class="form-control" id="fechaFin" name="fechaFin" />
-							</div>
-						</div>
+		<div class="row mt-3">
+			<div class="col-md-3"><label class="col-form-label">Fecha de Registro:</label></div>
+			<div class="col-md-4"><input type="date" class="form-control" id="fechaRegistro" name="fechaRegistro" /></div>
+		</div>
 
-						<!-- Fecha de Registro -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Fecha de Registro:</label>
-							</div>
-							<div class="col-md-4">
-								<input type="date" class="form-control" id="fechaRegistro" name="fechaRegistro" />
-							</div>
-						</div>
+		<!-- Estatus -->
+		<div class="row mt-3">
+			<div class="col-md-3"><label class="col-form-label">Estatus:</label></div>
+			<div class="col-md-4">
+				<input type="text" class="form-control" id="estatusCampania" name="estatusCampania"
+					placeholder="Estatus Campaña.." readonly/>
+			</div>
+		</div>
 
-						<!-- Estatus -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Estatus:</label>
-							</div>
-							<div class="col-md-4">
-								<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
-									<option value="0">Seleccione</option>
-									<option th:each="opcionTipo : ${cat_riesgo_Maximo}"
-										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
-										th:id="${opcionTipo.v_pantalla}">
-									</option>
-								</select>
-							</div>
-						</div>
+		<!-- Fecha de envío MC -->
+		<div class="row mt-3">
+			<div class="col-md-3"><label class="col-form-label">Fecha de Envío a MC:</label></div>
+			<div class="col-md-4"><input type="date" class="form-control" id="fechaEnvioMC" name="fechaEnvioMC" /></div>
+		</div>
 
+		<!-- Checkbox -->
+		<div class="row mt-3">
+			<div class="col-md-3">
+				<div class="form-check mt-1">
+					<input type="checkbox" class="form-check-input" id="checkRecurrente" onchange="toggleFechaEnvioMC()" />
+					<label class="form-check-label" for="checkRecurrente">Recurrente</label>
+				</div>
+			</div>
+		</div>
 
-						<!-- Vigencia en meses -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Vigencia (meses):</label>
-							</div>
-							<div class="col-md-4">
-								<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
-									min="1" />
-							</div>
-						</div>
+		<!-- Botón guardar -->
+		<div class="row mt-4">
+			<div class="col-md-12 text-right">
+				<button type="submit" class="btn btn-primary" id="btnGuardarCampania">Guardar Campaña</button>
+			</div>
+		</div>
+	</fieldset>
+</form>
 
-						<!-- Fecha Envío a MC -->
-						<div class="row" style="margin-top: 15px;">
-							<div class="col-md-3">
-								<label class="col-form-label">Fecha de Envío a MC:</label>
-							</div>
-							<div class="col-md-4">
-								<input type="date" class="form-control" id="fechaEnvioMC" name="fechaEnvioMC" />
-							</div>
-						</div>
-						
-							<!-- Fecha Envío a MC -->
-						<div class="row" style="margin-top: 15px;">
-												 <div class="col-md-3">
-        <div class="form-check" style="margin-top: 5px;">
-            <input type="checkbox" class="form-check-input" id="checkRecurrente" onchange="toggleFechaEnvioMC()" />
-            <label class="form-check-label" for="checkRecurrente">Recurrente</label>
-        </div>
-    </div>
+<hr/>
 
-						</div>
+<!-- FORMULARIO 2: Carga de archivo -->
+<form id="formArchivoCampaniaTmp" enctype="multipart/form-data">
+	<div class="row mt-3">
+		<div class="col-md-4">
+			<label for="file" class="col-form-label">Seleccionar Archivo:</label>
+			<input class="form-control" type="file" id="file" name="file" accept=".xls,.xlsx" required>
+		</div>
+		<div class="col-md-2 align-self-end">
+			<button type="button" class="btn btn-success" id="btnGuardarFile" onclick="subirArchivo()">Subir Archivo</button>
+		</div>
+	</div>
+</form>
 
-
-	
-
-						<div class="row mt-4">
-							<div class="col-md-4 text-right">
-
-							</div>
-							<div class="col-md-4 text-right">
-
-							</div>
-							<div class="col-md-4 text-left">
-								<button type="submit" name="accion" value="guardar"
-									class="btn btn-primary">Guardar</button>
-
-							</div>
-						</div>
-
-					</fieldset>
 				</div>
 			</div>
 		</div>
@@ -195,7 +149,7 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/credito/tiposCampanias.js}"></script>
+		<script th:src="@{/js/credito/tiposCampaniasTemporales.js}"></script>
 		<script th:src="@{/js/credito/paramBuroCredito.js}"></script>
 	</th:block>
 </body>

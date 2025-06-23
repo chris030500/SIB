@@ -1,13 +1,18 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +26,7 @@ import lombok.NoArgsConstructor;
 public class TiposCampaniasModel {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PK_ID_TIPO_CAMPANIA")
 	private Integer pk_id_tipo_campania;
  
@@ -114,8 +120,9 @@ public class TiposCampaniasModel {
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
 	
-	@Column(name = "I_USER_REG")
-	private Integer i_user_reg;
+	@OneToOne
+	@JoinColumn(name = "I_USER_REG")
+	private Usuario i_user_reg;
 	
 	@Column(name = "I_EDAD_MINIMA")
 	private Integer i_edad_minima;
@@ -377,11 +384,12 @@ public class TiposCampaniasModel {
 		this.dt_fecha_registro = dt_fecha_registro;
 	}
 
-	public Integer getI_user_reg() {
+	
+	public Usuario getI_user_reg() {
 		return i_user_reg;
 	}
 
-	public void setI_user_reg(Integer i_user_reg) {
+	public void setI_user_reg(Usuario i_user_reg) {
 		this.i_user_reg = i_user_reg;
 	}
 
