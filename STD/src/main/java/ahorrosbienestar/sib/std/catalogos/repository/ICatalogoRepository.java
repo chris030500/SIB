@@ -10,7 +10,7 @@ import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 
 public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer>{
 
-	@Query(value = "SELECT * FROM TBL_OPC_BUSQUEDA WHERE I_ID_GRUPO =:id_group", nativeQuery = true)
+	@Query(value = "SELECT * FROM TBL_OPC_BUSQUEDA WHERE I_ID_GRUPO =:id_group AND i_estatus = 1", nativeQuery = true)
 	public List<Catalogo> generarOpciones(@Param ( "id_group" ) Integer id);
 
 }

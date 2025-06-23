@@ -20,7 +20,8 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	//@Query(value = "SELECT VC_TIPO_CAMPANIA FROM SIB.TBL_TIPOS_CAMPANIA WHERE VC_TIPO_CAMPANIA LIKE %:valor%", nativeQuery = true)
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
 			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
-			+ " WHERE CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE %:valor%", nativeQuery = true)
+			+ " WHERE I_TIPO_CAMPANIA = 2"
+			+ " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE %:valor%", nativeQuery = true)
 	List<Object[]> listaCampanias(@Param("valor") String valor);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_TIPOS_CAMPANIA WHERE PK_ID_TIPO_CAMPANIA = :pk_id_tipo_campania", nativeQuery = true)

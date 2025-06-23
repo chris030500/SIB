@@ -200,10 +200,11 @@ public class Constantes {
 	//constantes credito
 	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
 	public static final String CREDITO_REPORTES = "credito/reportes";
+	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
 	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
 	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
 	
-		
+	
 	//nombres reportes Crédito
 	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
 	

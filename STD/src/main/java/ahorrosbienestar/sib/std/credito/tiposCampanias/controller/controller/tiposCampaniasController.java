@@ -4,6 +4,7 @@ package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +14,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.HisTiposCampaniasService;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
+import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
+import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.model.ProductoColocacion;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoColocacionService;
+import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +49,9 @@ public class tiposCampaniasController {
 	private TiposCampaniasService service;
 	
 	@Autowired
+	private HisTiposCampaniasService serviceHis;
+	
+	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
 	
 	@Autowired
@@ -47,15 +60,54 @@ public class tiposCampaniasController {
 	@Autowired
     private TiposCampaniasRepository repository;
 	
+	@Autowired
+	private IUsuarioRepository iUsuarioRepository;
+	
+	@Autowired
+	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+	
+	@Autowired
+	private OpcionesMenuService opcionesMenuService;
+	
+	List<Usuario> usuario = null;
+	
 	private static String rutaDireccion = "";
 	private static final int opcBusquedaGrupo = 32;
 	private static final int opcBusquedaGrupo2 = 33;
 	
 	
 	@GetMapping("/tiposCampanias")
-	public String mostrarSolicitudes(){
+	public String mostrarSolicitudes(Model model){
 		
-		return "credito/tiposCampanias";
+		try {
+			String rutaDireccion;
+			
+			if (validarAcceso(Constantes.CREDITO_CAMPANIAS) == 1) {
+				
+				/////
+				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				
+				
+				UserDetails userDetails = (UserDetails) principal;
+				usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+				Integer idUsuario = usuario.get(0).getPk_id_usuario();
+				//System.out.print("idUsuario:" + idUsuario);
+				model.addAttribute("idUsuario", idUsuario);
+				////
+				
+				rutaDireccion = Constantes.CREDITO_CAMPANIAS;
+			} else {
+				rutaDireccion = Constantes.RUTA_ERROR;
+			}
+			return rutaDireccion;
+		} catch (Exception e) {
+			//logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return null;
+		}
+		
+		
+		
+		//return "credito/tiposCampanias";
 	}
 	
 	//mostrar el listado de tipos campañas
@@ -119,6 +171,13 @@ public class tiposCampaniasController {
 	public List<Catalogo> getCatalogoConvivenciaCamp() {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
 	}
+	
+	//llenar el combo de productos oferta
+	@GetMapping("/api/catProductosCamp")
+	@ResponseBody
+	public ResponseEntity<List<ProductoColocacion>> getProductosCamp() {
+        return ResponseEntity.ok(productoColocacionService.obtenerProductosActivos());
+    }
 	
 	//llenar el combo opcion multiple de productos
 	/*@GetMapping("/api/catProductos")
@@ -219,5 +278,51 @@ public class tiposCampaniasController {
 	            .body("Error al crear campaña: " + e.getMessage());
 	    }
 	}
+	
+	@PostMapping("/api/crearHis")
+	public ResponseEntity<String> crearHis(@RequestBody HisTiposCampaniasModel campania) {
+	    try {
+	        boolean creada = serviceHis.crearHisCampania(campania);
+	        if (creada) {
+	            return ResponseEntity.ok("Campaña creada correctamente");
+	        } else {
+	        	
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo crear el historico la campaña");
+	        }
+	    } catch (Exception e) {
+	    	
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear el historico campaña: " + e.getMessage());
+	    }
+	}
+	
+	public int validarAcceso(String rutaController) {
+		try {
+
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			
+			if (!(principal instanceof UserDetails)) {
+				//logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+			}
+			
+			UserDetails userDetails = (UserDetails) principal;
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario == null || usuario.isEmpty()) {
+	            //logger.error(Constantes.USUARIO_NO_ENCONTRADO);
+	            return 0;
+	        }
+
+			return iRelRolOpcionesRepository.validarAcceso(
+					usuario.get(0).getRol_idRol().getPk_id_rol(),
+					opcionesMenuService.buscarRelacionController(rutaController));
+
+		} catch (Exception e) {
+			//logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return 0;
+		}
+	}
+	
+
 
 }
