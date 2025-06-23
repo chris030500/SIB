@@ -63,7 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+// -----------------------------------------------------------------------------------------------------------
 
+
+// --------------------------------------------------------------------------------------------------------------
 
 //document.getElementById("programado").addEventListener("change", e => {
   //  document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
