@@ -52,7 +52,7 @@
 						<!-- archivo de Campaña -->
 						<div class="row" style="margin-top: 15px; display: none;" id="divArchivoCampania">
 							<div class="col-md-3">
-								<label class="col-form-label">Nombre de Campaña:</label>
+								
 							</div>
 							<div class="col-md-4">
 								<!-- Campo de archivo oculto inicialmente -->
@@ -155,8 +155,20 @@
 								<input type="date" class="form-control" id="fechaEnvioMC" name="fechaEnvioMC" />
 							</div>
 						</div>
+						
+							<!-- Fecha Envío a MC -->
+						<div class="row" style="margin-top: 15px;">
+												 <div class="col-md-3">
+        <div class="form-check" style="margin-top: 5px;">
+            <input type="checkbox" class="form-check-input" id="checkRecurrente" onchange="toggleFechaEnvioMC()" />
+            <label class="form-check-label" for="checkRecurrente">Recurrente</label>
+        </div>
+    </div>
+
+						</div>
 
 
+	
 
 						<div class="row mt-4">
 							<div class="col-md-4 text-right">
