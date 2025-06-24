@@ -1,52 +1,66 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.DetallePEPsRepository;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ProcesosPEPsRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.ExcelPEPReader;
-import lombok.AllArgsConstructor;
+
+import java.io.InputStream;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class DetallePEPsService {
-	@Autowired
-	private DetallePEPsRepository  detallePEPsRepository;
-	
-	public DetallePEPsModel save(DetallePEPsModel model) {
-		return detallePEPsRepository.save(model);
-	}
 
-	public void procesarArchivoPEP(MultipartFile file) throws Exception {
-		  List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
-	        if (filas.isEmpty()) return;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-	        AtomicInteger insertados = new AtomicInteger(0);
-	        AtomicInteger actualizados = new AtomicInteger(0);
+    /**
+     * Se ejecuta cada vez que se sube un archivo.
+     */
+    public void procesarCargaSinUsuario(MultipartFile file) throws Exception {
+        //  Desactivar procesos anteriores (estatus 0)
+        desactivarProcesosAnteriores();
 
-	        for (DetallePEPsModel fila : filas) {
-	        	detallePEPsRepository.findById(fila.getI_clienteid()).ifPresentOrElse(existing -> {
-	                if (!Objects.equals(existing.getVc_nombre_cliente(), fila.getVc_nombre_cliente())) {
-	                    existing.setVc_nombre_cliente(fila.getVc_nombre_cliente());
-	                    detallePEPsRepository.save(existing);
-	                    actualizados.incrementAndGet();
-	                }
-	            }, () -> {
-	            	detallePEPsRepository.save(fila);
-	                insertados.incrementAndGet();
-	            });
-	        }
+        //  Insertar nuevo proceso activo
+        int idProceso = registrarNuevoProceso();
 
-	        System.out.println("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());
-		
-	}
+        //  Parsear archivo Excel
+        List<DetallePEPsModel> registros = ExcelPEPReader.parse(file);
+        if (registros.isEmpty()) return;
+
+        //  Insertar todos los registros (no importa si ya existían)
+        String sql = """
+            INSERT INTO SIB.TBL_DETALLE_PEPS (FK_PROCESO, I_CLIENTEID, VC_NOMBRE_CLIENTE)
+            VALUES (?, ?, ?)
+        """;
+
+        for (DetallePEPsModel r : registros) {
+            jdbcTemplate.update(sql, idProceso, r.getI_clienteid(), r.getVc_nombre_cliente());
+        }
+
+        System.out.println("Proceso " + idProceso + ": insertados " + registros.size() + " registros.");
+    }
+
+    private void desactivarProcesosAnteriores() {
+        jdbcTemplate.update("UPDATE SIB.TBL_PROCESOS_PEPS SET I_ESTATUS = 0 WHERE I_ESTATUS = 1");
+    }
+
+    private int registrarNuevoProceso() {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sql = "INSERT INTO SIB.TBL_PROCESOS_PEPS (I_USER_REG, I_ESTATUS) VALUES (?, 1)";
+
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setNull(1, java.sql.Types.INTEGER); // o usar un ID real de usuario más adelante
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
+    }
 }

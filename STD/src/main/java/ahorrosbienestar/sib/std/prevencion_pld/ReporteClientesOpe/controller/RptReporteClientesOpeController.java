@@ -80,22 +80,19 @@ public class RptReporteClientesOpeController {
     }
 
     /* ---------- Subir archivo Excel ---------- */
-    @PostMapping(value   = "/reporteClientesOpe/uploadPEP",
-                 consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-                 produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseBody
+    @PostMapping("/reporteClientesOpe/uploadPEP")
     public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
         try {
-        	// generar el id del proceso tabla SIB.TBL_PROCESOS_PEPS
-        	detallePEPsService.procesarArchivoPEP(file);
-            //reporteClientesOpeService.procesarArchivoPEP(file);
-            return ResponseEntity.ok("Archivo procesado exitosamente");
+            detallePEPsService.procesarCargaSinUsuario(file);
+            return ResponseEntity.ok("Archivo procesado exitosamente.");
         } catch (Exception ex) {
-            logger.error("Fallo al procesar archivo", ex);
+            logger.error("Error procesando archivo PEP", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Error procesando archivo: " + ex.getMessage());
+                                 .body("Error: " + ex.getMessage());
         }
     }
+
+
     
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio, 

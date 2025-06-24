@@ -6,6 +6,11 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
+//import sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
+
 import java.io.InputStream;
 import java.util.*;
 
@@ -22,31 +27,34 @@ public class ExcelPEPReader {
             Sheet sheet = wb.getSheetAt(0);
             if (sheet == null) return lista;
 
-            // Mapeo de cabeceras
+            // 1. Mapeo de cabeceras
             Map<String, Integer> idx = new HashMap<>();
             Row header = sheet.getRow(0);
+            if (header == null) return lista;
+
             for (Cell c : header) {
-                idx.put(FMT.formatCellValue(c).trim().toLowerCase(), c.getColumnIndex());
+                String nombreCol = FMT.formatCellValue(c).trim().toLowerCase();
+                idx.put(nombreCol, c.getColumnIndex());
             }
 
-            // Lectura de datos
-            for (int r = 0; r <= sheet.getLastRowNum(); r++) {
+            // 2. Lectura de filas (desde la fila 1, salta encabezado)
+            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
                 Row row = sheet.getRow(r);
                 if (row == null) continue;
 
-                Integer id = parseInt(row, idx, "cliente_id");
+                Integer clienteId = parseInt(row, idx, "cliente_id");
                 String nombre = getText(row, idx, "nombre_completo");
 
-                if (id == null || nombre.isEmpty()) continue;
+                if (clienteId == null || nombre.isEmpty()) continue;
 
-                DetallePEPsModel m = new DetallePEPsModel();
-                m.setI_clienteid(id);
-                m.setVc_nombre_cliente(nombre);
-              
+                DetallePEPsModel model = new DetallePEPsModel();
+                model.setI_clienteid(clienteId);
+                model.setVc_nombre_cliente(nombre);
 
-                lista.add(m);
+                lista.add(model);
             }
         }
+
         return lista;
     }
 
@@ -54,7 +62,7 @@ public class ExcelPEPReader {
         Integer i = idx.get(campo.toLowerCase());
         if (i == null) return "";
         Cell cell = row.getCell(i);
-        return cell == null ? "" : FMT.formatCellValue(cell);
+        return cell == null ? "" : FMT.formatCellValue(cell).trim();
     }
 
     private static Integer parseInt(Row row, Map<String, Integer> idx, String campo) {
