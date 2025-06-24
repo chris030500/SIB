@@ -23,12 +23,12 @@ public class DetallePEPsService {
     /**
      * Se ejecuta cada vez que se sube un archivo.
      */
-    public void procesarCargaSinUsuario(MultipartFile file) throws Exception {
+    public void procesarCargaConUsuario(MultipartFile file, int idUsuario) throws Exception {
         //  Desactivar procesos anteriores (estatus 0)
         desactivarProcesosAnteriores();
 
         //  Insertar nuevo proceso activo
-        int idProceso = registrarNuevoProceso();
+        int idProceso = registrarNuevoProceso(idUsuario);
 
         //  Parsear archivo Excel
         List<DetallePEPsModel> registros = ExcelPEPReader.parse(file);
@@ -44,20 +44,21 @@ public class DetallePEPsService {
             jdbcTemplate.update(sql, idProceso, r.getI_clienteid(), r.getVc_nombre_cliente());
         }
 
-        System.out.println("Proceso " + idProceso + ": insertados " + registros.size() + " registros.");
+        System.out.println(" Proceso " + idProceso + " (usuario " + idUsuario + "): insertados " + registros.size() + " registros.");
     }
 
     private void desactivarProcesosAnteriores() {
         jdbcTemplate.update("UPDATE SIB.TBL_PROCESOS_PEPS SET I_ESTATUS = 0 WHERE I_ESTATUS = 1");
     }
 
-    private int registrarNuevoProceso() {
+    private int registrarNuevoProceso(int idUsuario) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
         String sql = "INSERT INTO SIB.TBL_PROCESOS_PEPS (I_USER_REG, I_ESTATUS) VALUES (?, 1)";
 
         jdbcTemplate.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setNull(1, java.sql.Types.INTEGER); // o usar un ID real de usuario más adelante
+            ps.setInt(1, idUsuario);
             return ps;
         }, keyHolder);
 

@@ -80,10 +80,23 @@ public class RptReporteClientesOpeController {
     }
 
     /* ---------- Subir archivo Excel ---------- */
+    
     @PostMapping("/reporteClientesOpe/uploadPEP")
     public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
         try {
-            detallePEPsService.procesarCargaSinUsuario(file);
+            int idUsuario = 0;
+
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails userDetails) {
+                String username = userDetails.getUsername();
+                List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
+                if (!usuarios.isEmpty()) {
+                    idUsuario = usuarios.get(0).getPk_id_usuario();
+                }
+            }
+
+            detallePEPsService.procesarCargaConUsuario(file, idUsuario); // <--- nuevo método
+
             return ResponseEntity.ok("Archivo procesado exitosamente.");
         } catch (Exception ex) {
             logger.error("Error procesando archivo PEP", ex);
@@ -134,6 +147,7 @@ public class RptReporteClientesOpeController {
     public ResponseEntity<?> procesar(@RequestParam Long procesoId) {
         return generacionReporteService.procesarAhora(procesoId);
     }*/
+    
 
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
