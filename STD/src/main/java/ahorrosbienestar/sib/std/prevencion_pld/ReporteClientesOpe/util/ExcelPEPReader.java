@@ -1,64 +1,42 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util;
 
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.multipart.MultipartFile;
-//import sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelPEPReader {
-
-    private static final DataFormatter FMT = new DataFormatter();
 
     public static List<DetallePEPsModel> parse(MultipartFile file) throws Exception {
         List<DetallePEPsModel> lista = new ArrayList<>();
 
-        try (InputStream in = file.getInputStream();
-             Workbook wb = new XSSFWorkbook(in)) {
+        try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
+            Sheet sheet = workbook.getSheetAt(0);
 
-            Sheet sheet = wb.getSheetAt(0);
-            if (sheet == null) return lista;
-
-            // 1. Mapeo de cabeceras
-            Map<String, Integer> idx = new HashMap<>();
-            Row header = sheet.getRow(0);
-            if (header == null) return lista;
-
-            for (Cell c : header) {
-                String nombreCol = FMT.formatCellValue(c).trim().toLowerCase();
-                idx.put(nombreCol, c.getColumnIndex());
-            }
-
-            // 2. Lectura de filas (desde la fila 1, salta encabezado)
-            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
-                Row row = sheet.getRow(r);
-                if (row == null) continue;
-
-                Integer clienteId = parseInt(row, idx, "cliente_id");
-                String nombre = getText(row, idx, "nombre_completo");
-
-                if (clienteId == null || nombre.isEmpty()) continue;
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue; // salta encabezado
 
                 DetallePEPsModel model = new DetallePEPsModel();
-                model.setI_clienteid(clienteId);
-                model.setVc_nombre_cliente(nombre);
 
-                lista.add(model);
+                try {
+                    model.setI_clienteid((int) row.getCell(0).getNumericCellValue()); // Columna A
+                    model.setVc_nombre_cliente(row.getCell(1).getStringCellValue());  // Columna B
+                    lista.add(model);
+                } catch (Exception e) {
+                    System.out.println("Fila inválida en Excel (fila " + row.getRowNum() + "), error: " + e.getMessage());
+                }
             }
         }
 
         return lista;
     }
 
-    private static String getText(Row row, Map<String, Integer> idx, String campo) {
+
+
+   /* private static String getText(Row row, Map<String, Integer> idx, String campo) {
         Integer i = idx.get(campo.toLowerCase());
         if (i == null) return "";
         Cell cell = row.getCell(i);
@@ -72,5 +50,5 @@ public class ExcelPEPReader {
         } catch (NumberFormatException e) {
             return null;
         }
-    }
+    }*/
 }

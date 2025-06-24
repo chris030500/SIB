@@ -29,10 +29,11 @@ public class DetallePEPsService {
 
         //  Insertar nuevo proceso activo
         int idProceso = registrarNuevoProceso(idUsuario);
+        System.out.println("ID del proceso creado: " + idProceso);
 
         //  Parsear archivo Excel
         List<DetallePEPsModel> registros = ExcelPEPReader.parse(file);
-        if (registros.isEmpty()) return;
+        System.out.println("Registros leídos del archivo Excel: " + registros.size());
 
         //  Insertar todos los registros (no importa si ya existían)
         String sql = """
@@ -62,6 +63,7 @@ public class DetallePEPsService {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return keyHolder.getKey() != null ? keyHolder.getKey().intValue() : 0;
     }
+
 }
