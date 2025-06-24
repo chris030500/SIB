@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 /* -------- SUBIR ARCHIVO -------- */
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();

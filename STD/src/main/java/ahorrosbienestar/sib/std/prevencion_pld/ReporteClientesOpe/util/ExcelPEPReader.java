@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util;
 
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,8 +13,8 @@ public class ExcelPEPReader {
 
     private static final DataFormatter FMT = new DataFormatter();
 
-    public static List<ReporteClientesOpeModel> parse(MultipartFile file) throws Exception {
-        List<ReporteClientesOpeModel> lista = new ArrayList<>();
+    public static List<DetallePEPsModel> parse(MultipartFile file) throws Exception {
+        List<DetallePEPsModel> lista = new ArrayList<>();
 
         try (InputStream in = file.getInputStream();
              Workbook wb = new XSSFWorkbook(in)) {
@@ -38,9 +39,10 @@ public class ExcelPEPReader {
 
                 if (id == null || nombre.isEmpty()) continue;
 
-                ReporteClientesOpeModel m = new ReporteClientesOpeModel();
-                m.setClienteId(id);
-                m.setNombreCompleto(nombre.trim().toUpperCase());
+                DetallePEPsModel m = new DetallePEPsModel();
+                m.setI_clienteid(id);
+                m.setVc_nombre_cliente(nombre);
+              
 
                 lista.add(m);
             }

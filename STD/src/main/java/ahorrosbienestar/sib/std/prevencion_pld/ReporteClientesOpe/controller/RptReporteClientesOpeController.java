@@ -30,6 +30,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DescargaReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 
 @Controller
@@ -46,7 +47,7 @@ public class RptReporteClientesOpeController {
     private final OpcionesMenuService           opcionesMenuService;
     private final ReporteClientesOpeService     reporteClientesOpeService;
     private final GeneracionReporteService      generacionReporteService;
-
+    private final DetallePEPsService            detallePEPsService;
     
     /* ---------- ctor ---------- */
     @Autowired
@@ -57,7 +58,8 @@ public class RptReporteClientesOpeController {
             IConfiguracionRepository      iConfiguracionRepository,
             OpcionesMenuService           opcionesMenuService,
             ReporteClientesOpeService     reporteClientesOpeService,
-            GeneracionReporteService      generacionReporteService) {
+            GeneracionReporteService      generacionReporteService,
+            DetallePEPsService            detallePEPsService) {
 
         this.iUsuarioRepository        = iUsuarioRepository;
         this.iRelRolOpcionesRepository = iRelRolOpcionesRepository;
@@ -66,6 +68,7 @@ public class RptReporteClientesOpeController {
         this.opcionesMenuService       = opcionesMenuService;
         this.reporteClientesOpeService = reporteClientesOpeService;
         this.generacionReporteService  = generacionReporteService;
+        this.detallePEPsService =        detallePEPsService;
     }
 
     /* ---------- Vista principal ---------- */
@@ -83,7 +86,9 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
         try {
-            reporteClientesOpeService.procesarArchivoPEP(file);
+        	// generar el id del proceso tabla SIB.TBL_PROCESOS_PEPS
+        	detallePEPsService.procesarArchivoPEP(file);
+            //reporteClientesOpeService.procesarArchivoPEP(file);
             return ResponseEntity.ok("Archivo procesado exitosamente");
         } catch (Exception ex) {
             logger.error("Fallo al procesar archivo", ex);

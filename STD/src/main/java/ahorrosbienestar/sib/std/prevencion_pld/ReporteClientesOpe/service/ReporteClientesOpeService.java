@@ -22,7 +22,7 @@ public class ReporteClientesOpeService {
 
     @Transactional
     public void procesarArchivoPEP(MultipartFile file) throws Exception {
-        List<ReporteClientesOpeModel> filas = ExcelPEPReader.parse(file);
+        /*List<ReporteClientesOpeModel> filas = ExcelPEPReader.parse(file);
         if (filas.isEmpty()) return;
 
         AtomicInteger insertados = new AtomicInteger(0);
@@ -41,6 +41,6 @@ public class ReporteClientesOpeService {
             });
         }
 
-        System.out.println("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());
+        System.out.println("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());*/
     }
 }
