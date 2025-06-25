@@ -56,6 +56,7 @@ public class DetallePEPsModel {
 	public void setVc_nombre_cliente(String vc_nombre_cliente) {
 		this.vc_nombre_cliente = vc_nombre_cliente;
 	}
+
 	
 	
 	

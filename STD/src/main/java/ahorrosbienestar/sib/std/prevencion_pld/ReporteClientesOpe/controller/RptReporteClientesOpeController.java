@@ -1,12 +1,10 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
 
 import java.util.ArrayList;
-//import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,66 +20,65 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
-//import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DescargaReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 
 @Controller
 @RequestMapping("/prevencion")
 public class RptReporteClientesOpeController {
 
-    /* ---------- dependencias ---------- */
     private static final Logger logger = Logger.getLogger(RptReporteClientesOpeController.class);
 
-    private final IUsuarioRepository            iUsuarioRepository;
-    private final IRelRolOpcionesRepository     iRelRolOpcionesRepository;
-    private final IReporteRepository            iReporteRepository;
-    private final IConfiguracionRepository      iConfiguracionRepository;
-    private final OpcionesMenuService           opcionesMenuService;
-    private final ReporteClientesOpeService     reporteClientesOpeService;
-    private final GeneracionReporteService      generacionReporteService;
-    private final DetallePEPsService            detallePEPsService;
-    
-    /* ---------- ctor ---------- */
+    private final IUsuarioRepository iUsuarioRepository;
+    private final IRelRolOpcionesRepository iRelRolOpcionesRepository;
+    private final IReporteRepository iReporteRepository;
+    private final IConfiguracionRepository iConfiguracionRepository;
+    private final OpcionesMenuService opcionesMenuService;
+    private final ReporteClientesOpeService reporteClientesOpeService;
+    private final GeneracionReporteService generacionReporteService;
+    private final DetallePEPsService detallePEPsService;
+    private final ProcesosPEPsService procesosPEPsService;
+
     @Autowired
     public RptReporteClientesOpeController(
-            IUsuarioRepository            iUsuarioRepository,
-            IRelRolOpcionesRepository     iRelRolOpcionesRepository,
-            IReporteRepository            iReporteRepository,
-            IConfiguracionRepository      iConfiguracionRepository,
-            OpcionesMenuService           opcionesMenuService,
-            ReporteClientesOpeService     reporteClientesOpeService,
-            GeneracionReporteService      generacionReporteService,
-            DetallePEPsService            detallePEPsService) {
-
-        this.iUsuarioRepository        = iUsuarioRepository;
+            IUsuarioRepository iUsuarioRepository,
+            IRelRolOpcionesRepository iRelRolOpcionesRepository,
+            IReporteRepository iReporteRepository,
+            IConfiguracionRepository iConfiguracionRepository,
+            OpcionesMenuService opcionesMenuService,
+            ReporteClientesOpeService reporteClientesOpeService,
+            GeneracionReporteService generacionReporteService,
+            DetallePEPsService detallePEPsService,
+            ProcesosPEPsService procesosPEPsService) {
+        this.iUsuarioRepository = iUsuarioRepository;
         this.iRelRolOpcionesRepository = iRelRolOpcionesRepository;
-        this.iReporteRepository        = iReporteRepository;
-        this.iConfiguracionRepository  = iConfiguracionRepository;
-        this.opcionesMenuService       = opcionesMenuService;
+        this.iReporteRepository = iReporteRepository;
+        this.iConfiguracionRepository = iConfiguracionRepository;
+        this.opcionesMenuService = opcionesMenuService;
         this.reporteClientesOpeService = reporteClientesOpeService;
-        this.generacionReporteService  = generacionReporteService;
-        this.detallePEPsService =        detallePEPsService;
+        this.generacionReporteService = generacionReporteService;
+        this.detallePEPsService = detallePEPsService;
+        this.procesosPEPsService = procesosPEPsService;
     }
 
-    /* ---------- Vista principal ---------- */
     @GetMapping("/reporteClientesOpe")
     public String vistaReporte(Model model) {
         return (validarAcceso() == 1)
-               ? Constantes.PLD_REPORTE_CLIENTES_OPE   //  nombre de la vista JSP/Thymeleaf
-               : Constantes.RUTA_ERROR;
+                ? Constantes.PLD_REPORTE_CLIENTES_OPE
+                : Constantes.RUTA_ERROR;
     }
 
-    /* ---------- Subir archivo Excel ---------- */
-    
-    @PostMapping("/reporteClientesOpe/uploadPEP")
+    @PostMapping(value = "/reporteClientesOpe/uploadPEP",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseBody
     public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
         try {
             int idUsuario = 0;
@@ -95,59 +92,53 @@ public class RptReporteClientesOpeController {
                 }
             }
 
-            detallePEPsService.procesarCargaConUsuario(file, idUsuario); // <--- nuevo método
+            if (idUsuario == 0) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado.");
+            }
 
-            return ResponseEntity.ok("Archivo procesado exitosamente.");
+            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(idUsuario);
+
+            detallePEPsService.procesarCargaConUsuario(file, idUsuario);
+
+            return ResponseEntity.ok("Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
+
         } catch (Exception ex) {
             logger.error("Error procesando archivo PEP", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Error: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + ex.getMessage());
         }
     }
 
-
-    
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio, 
-			@RequestParam("fechaFin") String fechaFin) {
+    public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+                                                @RequestParam("fechaFin") String fechaFin) {
 
-		List<String> respuesta = new ArrayList<>();
-		
-		try {
-			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
-			
-			StringBuilder reporteURL = new StringBuilder();
-			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
-			.append(datosReporte.getPk_id_reporte())
-			.append("&parametros=?FechaInicio=")
-			.append(fechaInicio)
-			.append("~FechaFin=")
-			.append(fechaFin);
+        List<String> respuesta = new ArrayList<>();
 
-			respuesta.add(reporteURL.toString());
-			return ResponseEntity.ok(respuesta);
-		} catch (Exception e) {
-			logger.error("Error: " + e.getMessage());
-			respuesta.add(e.getMessage());
-			return ResponseEntity.ok(respuesta);
-		}
+        try {
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
 
-	}
-    
+            StringBuilder reporteURL = new StringBuilder();
+            reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
+                    .append(datosReporte.getPk_id_reporte())
+                    .append("&parametros=?FechaInicio=")
+                    .append(fechaInicio)
+                    .append("~FechaFin=")
+                    .append(fechaFin);
 
-    /* ---------- Resto de endpoints ---------- */
+            respuesta.add(reporteURL.toString());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("Error: " + e.getMessage());
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+
     @PostMapping("/reporteClientesOpe/guardarFechas")
     @ResponseBody
     public ResponseEntity<?> guardarFechas(@RequestBody ProcesoReporte dto) {
         return generacionReporteService.guardarFechasProceso(dto);
     }
-
-   /* @PostMapping("/reporteClientesOpe/procesar")
-    @ResponseBody
-    public ResponseEntity<?> procesar(@RequestParam Long procesoId) {
-        return generacionReporteService.procesarAhora(procesoId);
-    }*/
-    
 
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
@@ -155,19 +146,6 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.confirmarReporte(confirmado);
     }
 
-   /* @GetMapping("/reporteClientesOpe/descargas")
-    @ResponseBody
-    public List<DescargaReporte> descargas() {
-        return generacionReporteService.obtenerDescargas();
-    }*/
-/*
-    @GetMapping("/reporteClientesOpe/descargar/{id}")
-    public ResponseEntity<Resource> descargar(@PathVariable Long id) {
-        return generacionReporteService.descargarArchivo(id);
-    }*/
-
-    
-    /* ---------- Seguridad ---------- */
     private int validarAcceso() {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -184,4 +162,3 @@ public class RptReporteClientesOpeController {
         }
     }
 }
-
