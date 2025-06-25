@@ -201,6 +201,9 @@ public class Constantes {
 	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
 	public static final String CREDITO_REPORTES = "credito/reportes";
 	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
+	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
+	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
+	
 	
 	//nombres reportes Crédito
 	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
@@ -208,6 +211,10 @@ public class Constantes {
 	//Mensajes de error de autenticación
 	public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
 	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
+	//Pantalla parametros buro de credito
+	public static final int CAT_TIPO_RIESGO = 34;
+	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
+	
 
     private Constantes() {
         

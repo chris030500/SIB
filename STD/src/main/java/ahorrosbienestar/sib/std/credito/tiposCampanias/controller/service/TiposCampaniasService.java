@@ -98,4 +98,8 @@ public class TiposCampaniasService {
 	    return filas > 0;
 	}
 	
+	public TiposCampaniasModel save(TiposCampaniasModel model) {
+		return repository.save(model);
+	}
+	
 }
