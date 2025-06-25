@@ -5,7 +5,7 @@
 
 var url = "";
 $(document).ready(function() {
-	 subirArchivo();
+	subirArchivo();
 });
 
 
@@ -30,75 +30,63 @@ function tamFile() {
 	};
 }
 
-function subirArchivo(){
-	
-	
-			$("#btnGuardarCampania").click(function(event) {
-event.preventDefault();  // <-- evita envío normal del form
-	guardarDtosTmp();
-			/*swal({
-				title: "Registrar Campaña Temporal",
-      			content: {
-        			element: "div",
-        			attributes: {
-          			innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          			style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        			},
-      			},
-				timer: 4000, // tiempo en milisegundos
-				buttons: false,
-      			closeOnClickOutside: false,
-      			closeOnEsc: false,
-			}).then((result) => {
-				// Este código se ejecutará después de que el temporizador haya terminado
-				//if (validarDatos() == 0){
-				
-				//}
-			});*/
+function subirArchivo() {
 
-		
+
+	$("#btnGuardarCampania").click(function(event) {
+		event.preventDefault();  // <-- evita envío normal del form
+	
+		swal({
+			title: "Registrar Campaña Temporal",
+			content: {
+				element: "div",
+				attributes: {
+					innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+					style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+				},
+			},
+			timer: 4000, // tiempo en milisegundos
+			buttons: false,
+			closeOnClickOutside: false,
+			closeOnEsc: false,
+		}).then((result) => {
+			// Este código se ejecutará después de que el temporizador haya terminado
+			if (validarDatos() == 0) {
+				guardarDtosTmp();
+			}
+		});
+
+
 
 	});
-	
-		$("#btnGuardarFile").click(function() {
+
+	$("#btnGuardarFile").click(function() {
 
 		if (document.getElementById("file").value.length > 0) {
-			swal({
-				title: "Procesando información.",
-      			content: {
-        			element: "div",
-        			attributes: {
-          			innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          			style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        			},
-      			},
-				timer: 4000, // tiempo en milisegundos
-				buttons: false,
-      			closeOnClickOutside: false,
-      			closeOnEsc: false,
-			}).then((result) => {
-				// Este código se ejecutará después de que el temporizador haya terminado
-				
-					var form = $('#archivoCampaniaTmp')[0];
-					var data = new FormData(form);
-					procesarCapaniaTmp(data)
-				
-			});
+
+			var form = $('#formArchivoCampaniaTmp')[0];
+			var data = new FormData(form);
+
+			// Si necesitas agregar el parámetro idCmpTmp desde JS, hazlo aquí:
+			data.append("idCmpTmp", 1); 
+			procesarCampaniaTmp(data)
+
+
 
 		} else {
-			
-				swal("Es necesario seleccionar un Archivo.", {
-					closeOnClickOutside: false,
-					icon: "error",
-				});			
+
+			swal("Es necesario seleccionar un Archivo.", {
+				closeOnClickOutside: false,
+				icon: "error",
+			});
 		}
 
 	});
 }
 //validarDatos
-function validarDatos(){
+function validarDatos() {
 	let pasoValidacion = 0;
-	
+
 	return pasoValidacion;
 }
 var dtosCampaniaTmp = "registroCmpTmp";
@@ -113,65 +101,61 @@ function guardarDtosTmp() {
 		method: "POST",
 		body: formData
 	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error("Error en la solicitud");
-		}
-		return response.text(); // o .json() si el backend devuelve JSON
-	})
-	.then(data => {
-		console.log("Respuesta del servidor:", data);
-		alert("¡Campaña guardada con éxito!");
-		form.reset(); // limpiar formulario
-	})
-	.catch(error => {
-		console.error("Error:", error);
-		alert("Ocurrió un error al guardar la campaña");
-	})
-	.finally(() => {
-		document.getElementById('btnGuardarCampania').disabled = false;
-	});
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error en la solicitud");
+			}
+			return response.text(); // o .json() si el backend devuelve JSON
+		})
+		.then(data => {
+			console.log("Respuesta del servidor:", data);
+			alert("¡Campaña guardada con éxito!");
+			form.reset(); // limpiar formulario
+		})
+		.catch(error => {
+			console.error("Error:", error);
+			alert("Ocurrió un error al guardar la campaña");
+		})
+		.finally(() => {
+			document.getElementById('btnGuardarCampania').disabled = false;
+		});
 }
 
 
 //archivo
-var procesarArchivo = "procesarArchivo?idCmpTmp=1";
-function procesarCapaniaTmp(data) {
-	
-	$.ajax({
-		async: false,
-		url: getAbsolutePath() + procesarArchivo,
-		type: "POST",
-		enctype: 'multipart/form-data',
-		data: data, //pass the form data
-		processData: false,
-		contentType: false,
-		complete: function() {
-			swal.close();
-		},
-		success: function(data) {
-			
+var procesarArchivo = "procesarArchivo";
+function procesarCampaniaTmp(data) {
+
+	fetch(getAbsolutePath() + procesarArchivo, {
+		method: "POST",
+		body: data, // FormData que ya incluye el archivo u otros campos
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error en la respuesta del servidor");
+			}
+			return response.json(); // O .text() si no es JSON
+		})
+		.then(data => {
 			swal(data[0], {
 				closeOnClickOutside: false,
 				icon: "success",
-			}).then(resp => {
-				//adjuntarFiles(2);
 			});
-		},
-		error: function(data) {
-					
-			swal("El tamaño del archivo es mayor al permitirdo 30MB.", {
+		})
+		.catch(error => {
+			console.error("Error al procesar:", error);
+			swal("El tamaño del archivo es mayor al permitido 30MB.", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
-			
-			
-		},
-		complete: function() {
+		})
+		.finally(() => {
 			setTimeout($.unblockUI, 600);
-		}
-	});
-
+		});
 }
+
+
+
+
 
 

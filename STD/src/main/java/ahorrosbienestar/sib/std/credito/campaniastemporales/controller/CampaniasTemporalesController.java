@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.CampaniaTemporalDTO;
+import ahorrosbienestar.sib.std.credito.campaniastemporales.service.DetalleCampaniasTemporalesService;
 import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
@@ -54,6 +48,8 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 	@Autowired
 	private TiposCampaniasService tiposCampaniasService;
 	
+	@Autowired
+	private DetalleCampaniasTemporalesService detalleCampaniasTemporalesService;
 
 
 
@@ -121,56 +117,7 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 	    List<String> respuesta = new ArrayList<>();
 
 	    try {
-	        for (MultipartFile file : files) {
-	            String fileName = file.getOriginalFilename();
-
-	            if (fileName == null || file.isEmpty()) {
-	                respuesta.add("Archivo vacío o sin nombre válido.");
-	                continue;
-	            }
-
-	            Workbook workbook;
-
-	            if (fileName.endsWith(".xls")) {
-	                workbook = new HSSFWorkbook(file.getInputStream()); // Excel 97-2003
-	            } else if (fileName.endsWith(".xlsx")) {
-	                workbook = new XSSFWorkbook(file.getInputStream()); // Excel 2007+
-	            } else {
-	                respuesta.add("Formato no compatible: " + fileName);
-	                continue;
-	            }
-
-	            Sheet sheet = workbook.getSheetAt(0); // Primera hoja
-	            for (Row row : sheet) {
-	                StringBuilder fila = new StringBuilder();
-	                for (Cell cell : row) {
-	                    switch (cell.getCellType()) {
-	                        case STRING:
-	                            fila.append(cell.getStringCellValue()).append(" | ");
-	                            break;
-	                        case NUMERIC:
-	                            if (DateUtil.isCellDateFormatted(cell)) {
-	                                fila.append(cell.getDateCellValue()).append(" | ");
-	                            } else {
-	                                fila.append(cell.getNumericCellValue()).append(" | ");
-	                            }
-	                            break;
-	                        case BOOLEAN:
-	                            fila.append(cell.getBooleanCellValue()).append(" | ");
-	                            break;
-	                        case FORMULA:
-	                            fila.append(cell.getCellFormula()).append(" | ");
-	                            break;
-	                        default:
-	                            fila.append(" ").append(" | ");
-	                            break;
-	                    }
-	                }
-	                respuesta.add(fila.toString());
-	            }
-
-	            workbook.close();
-	        }
+	    	detalleCampaniasTemporalesService.detCampaniasTmp(files[0]);
 
 	        return ResponseEntity.ok(respuesta);
 

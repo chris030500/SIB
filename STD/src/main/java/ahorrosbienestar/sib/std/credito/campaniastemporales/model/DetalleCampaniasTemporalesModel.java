@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
 @Table(name = "TBL_DETALLE_CAMPANIAS_TEMPORAL", schema = "SIB")
@@ -34,7 +35,7 @@ public class DetalleCampaniasTemporalesModel {
 	private Integer solicitudCreditoIdOrigen;
 
 	@Column(name = "I_CREDITOID")
-	private Integer creditoId;
+	private Long creditoId;
 
 	@Column(name = "D_MONTO_CREDITO_ORIGEN")
 	private Double montoCreditoOrigen;
@@ -66,8 +67,147 @@ public class DetalleCampaniasTemporalesModel {
 	@Column(name = "I_PRODUCTOID_OFERTA")
 	private Integer productoIdOferta;
 
-	@Column(name = "I_USER_REG")
-	private Integer userReg;
+	@OneToOne
+	@JoinColumn(name = "I_USER_REG")
+	private Usuario userReg;
+	
+
+	public Integer getIdDetalle() {
+		return idDetalle;
+	}
+
+	public void setIdDetalle(Integer idDetalle) {
+		this.idDetalle = idDetalle;
+	}
+
+	public TiposCampaniasModel getFkCampanias() {
+		return fkCampanias;
+	}
+
+	public void setFkCampanias(TiposCampaniasModel fkCampanias) {
+		this.fkCampanias = fkCampanias;
+	}
+
+	public Integer getFkProceso() {
+		return fkProceso;
+	}
+
+	public void setFkProceso(Integer fkProceso) {
+		this.fkProceso = fkProceso;
+	}
+
+	public Integer getClienteId() {
+		return clienteId;
+	}
+
+	public void setClienteId(Integer clienteId) {
+		this.clienteId = clienteId;
+	}
+
+	public Integer getSolicitudCreditoIdOrigen() {
+		return solicitudCreditoIdOrigen;
+	}
+
+	public void setSolicitudCreditoIdOrigen(Integer solicitudCreditoIdOrigen) {
+		this.solicitudCreditoIdOrigen = solicitudCreditoIdOrigen;
+	}
+
+
+	public Long getCreditoId() {
+		return creditoId;
+	}
+
+	public void setCreditoId(Long creditoId) {
+		this.creditoId = creditoId;
+	}
+
+	public Double getMontoCreditoOrigen() {
+		return montoCreditoOrigen;
+	}
+
+	public void setMontoCreditoOrigen(Double montoCreditoOrigen) {
+		this.montoCreditoOrigen = montoCreditoOrigen;
+	}
+
+	public Integer getPlazoOfertaId() {
+		return plazoOfertaId;
+	}
+
+	public void setPlazoOfertaId(Integer plazoOfertaId) {
+		this.plazoOfertaId = plazoOfertaId;
+	}
+
+	public Integer getNumeroCuotas() {
+		return numeroCuotas;
+	}
+
+	public void setNumeroCuotas(Integer numeroCuotas) {
+		this.numeroCuotas = numeroCuotas;
+	}
+
+	public String getFrecuenciaOferta() {
+		return frecuenciaOferta;
+	}
+
+	public void setFrecuenciaOferta(String frecuenciaOferta) {
+		this.frecuenciaOferta = frecuenciaOferta;
+	}
+
+	public String getTipoCredito() {
+		return tipoCredito;
+	}
+
+	public void setTipoCredito(String tipoCredito) {
+		this.tipoCredito = tipoCredito;
+	}
+
+	public Double getPorcentajeIncrementoOferta() {
+		return porcentajeIncrementoOferta;
+	}
+
+	public void setPorcentajeIncrementoOferta(Double porcentajeIncrementoOferta) {
+		this.porcentajeIncrementoOferta = porcentajeIncrementoOferta;
+	}
+
+	public Double getMontoOferta() {
+		return montoOferta;
+	}
+
+	public void setMontoOferta(Double montoOferta) {
+		this.montoOferta = montoOferta;
+	}
+
+	public Double getTasaOrdinariaOferta() {
+		return tasaOrdinariaOferta;
+	}
+
+	public void setTasaOrdinariaOferta(Double tasaOrdinariaOferta) {
+		this.tasaOrdinariaOferta = tasaOrdinariaOferta;
+	}
+
+	public Double getCuotaOferta() {
+		return cuotaOferta;
+	}
+
+	public void setCuotaOferta(Double cuotaOferta) {
+		this.cuotaOferta = cuotaOferta;
+	}
+
+	public Integer getProductoIdOferta() {
+		return productoIdOferta;
+	}
+
+	public void setProductoIdOferta(Integer productoIdOferta) {
+		this.productoIdOferta = productoIdOferta;
+	}
+
+	public Usuario getUserReg() {
+		return userReg;
+	}
+
+	public void setUserReg(Usuario userReg) {
+		this.userReg = userReg;
+	}
 	
 	
 }
