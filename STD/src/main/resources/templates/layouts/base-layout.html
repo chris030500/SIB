@@ -272,9 +272,7 @@
 				</li>
 				<!--Fin Proceso de No conformidades-->
 
-
-
-				<!-- Prevención PLD -->
+                <!-- Prevención PLD -->
 				<li style="display:none;" class="nav-item" th:id="7">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-prevencion"
 						data-bs-toggle="collapse">
@@ -303,6 +301,16 @@
 						<li th:id="M_O37" class="nav-item" style="display:none;">
 							<a th:href="@{/prevencion/reporteOperacionesInusuales}">
 								<i class="bi bi-file-earmark-spreadsheet-fill"></i><span>Reporte Operaciones Inusuales</span>
+							</a>
+						</li>
+					</ul>
+				<!-- Menu para reporte PDL -->
+				<!-- DES-25-0013 Auditoria-->
+				<!-- andrea.orduno -->
+				<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O43" class="nav-item" style="display:none;">
+							<a th:href="@{/prevencion/reporteClientesOpe}">
+								<i class="bi bi-filetype-xlsx"></i><span>Reporte de clientes y operaciones</span>
 							</a>
 						</li>
 					</ul>
