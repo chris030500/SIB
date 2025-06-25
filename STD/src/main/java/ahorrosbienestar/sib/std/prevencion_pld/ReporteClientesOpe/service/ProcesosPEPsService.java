@@ -18,10 +18,10 @@ public class ProcesosPEPsService {
 
     @Transactional
     public ProcesosPEPsModel registrarProceso(int idUsuario) {
-        // 1. Desactiva el proceso anterior (estatus = 1)
+        // Desactiva el proceso anterior (estatus = 1)
         procesosPEPsRepository.desactivarProcesosActivos();
 
-        // 2. Crea un nuevo proceso con estatus = 1
+        //  Crea un nuevo proceso con estatus = 1
         ProcesosPEPsModel proceso = new ProcesosPEPsModel();
         proceso.setI_usuario_reg(idUsuario);
         proceso.setDt_fecha_registro(LocalDateTime.now());

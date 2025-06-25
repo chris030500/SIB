@@ -26,7 +26,7 @@ public class DetallePEPsService {
         return detallePEPsRepository.save(model);
     }
  
-    public void procesarCargaConUsuario(MultipartFile file, int usuario ) throws Exception {
+    public void procesarCargaConUsuario(MultipartFile file, int usuario, int idProceso ) throws Exception {
           List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
             if (filas.isEmpty()) return;
  
@@ -41,7 +41,8 @@ public class DetallePEPsService {
                         actualizados.incrementAndGet();
                     }
                 }, () -> {
-                    detallePEPsRepository.save(fila);
+                    fila.setFk_proceso(idProceso);
+                	detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
                 });
             }

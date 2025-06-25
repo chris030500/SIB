@@ -98,7 +98,7 @@ public class RptReporteClientesOpeController {
 
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(idUsuario);
 
-            detallePEPsService.procesarCargaConUsuario(file, idUsuario);
+            detallePEPsService.procesarCargaConUsuario(file, idUsuario, proceso.getPk_id_peps());
 
             return ResponseEntity.ok("Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
 
@@ -123,8 +123,11 @@ public class RptReporteClientesOpeController {
                     .append("&parametros=?FechaInicio=")
                     .append(fechaInicio)
                     .append("~FechaFin=")
-                    .append(fechaFin);
-
+                    .append(fechaFin)
+                    .append("&tipoDocumento=")
+                    .append(datosReporte.getVc_extension())
+                    .append("&identificadorDoc=")
+                    .append(1);
             respuesta.add(reporteURL.toString());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
