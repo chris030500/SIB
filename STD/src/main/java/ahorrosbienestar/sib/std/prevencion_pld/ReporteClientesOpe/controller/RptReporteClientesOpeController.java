@@ -67,7 +67,7 @@ public class RptReporteClientesOpeController {
         this.detallePEPsService = detallePEPsService;
         this.procesosPEPsService = procesosPEPsService;
     }
-
+    List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
     public String vistaReporte(Model model) {
         return (validarAcceso() == 1)
@@ -81,24 +81,18 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
         try {
-            int idUsuario = 0;
+           
 
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (principal instanceof UserDetails userDetails) {
-                String username = userDetails.getUsername();
-                List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
-                if (!usuarios.isEmpty()) {
-                    idUsuario = usuarios.get(0).getPk_id_usuario();
-                }
-            }
+    		UserDetails userDetails = null;
+    		if (principal instanceof UserDetails) {
+    			userDetails = (UserDetails) principal;
+    			usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+    		}
+ 
+            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
 
-            if (idUsuario == 0) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado.");
-            }
-
-            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(idUsuario);
-
-            detallePEPsService.procesarCargaConUsuario(file, idUsuario, proceso.getPk_id_peps());
+            detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
 
             return ResponseEntity.ok("Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
 
@@ -115,21 +109,13 @@ public class RptReporteClientesOpeController {
         List<String> respuesta = new ArrayList<>();
 
         try {
-            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
-
-            StringBuilder reporteURL = new StringBuilder();
-            reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
-                    .append(datosReporte.getPk_id_reporte())
-                    .append("&parametros=?FechaInicio=")
-                    .append(fechaInicio)
-                    .append("~FechaFin=")
-                    .append(fechaFin)
-                    .append("&tipoDocumento=")
-                    .append(datosReporte.getVc_extension())
-                    .append("&identificadorDoc=")
-                    .append(1);
-            respuesta.add(reporteURL.toString());
-            return ResponseEntity.ok(respuesta);
+        	
+        	
+        	ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=?FechaInicio="+fechaInicio+"~FechaFin="+fechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OP";
+					
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error: " + e.getMessage());
             respuesta.add(e.getMessage());

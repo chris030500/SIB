@@ -41,30 +41,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const fin    = inputFin.value;
 
     if (fechasInvalidas(inicio, fin)) return;
-
-    try {
-      const res = await fetch("generarRptReporteClientesOpeController", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-      });
-
-      if (!res.ok) throw new Error("Error generando el reporte.");
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Reporte_Clientes_Ope_${inicio}_a_${fin}.xlsx`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error al generar el reporte:", error);
-      alert("Se produjo un error al generar el reporte.");
-    }
+	descargaRptClientesOpe(inicio, fin);
+  
   });
 });
+
+
+async function descargaRptClientesOpe(inicio, fin) {
+  try {
+    const res = await fetch("generarRptReporteClientesOpeController", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error en la petición: ${res.status}`);
+    }
+
+    // obtener repuesta
+    const data = await res.json();        
+    console.log('Array JSON:', data);
+
+    // obtener el primer elemento de la respuesta
+    const rutaReporte = data[0];
+    if (!rutaReporte) {
+      throw new Error("No se recibió la ruta del reporte.");
+    }
+
+    // 3️⃣ Abrir el reporte en ventana nueva
+    var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + rutaReporte;
+
+    window.open(urlReporte);
+    window.focus();
+
+  } catch (error) {
+    console.error("Error al generar el reporte:", error);
+    alert(error.message || "Se produjo un error al generar el reporte.");
+  }
+}
+
+
 // -----------------------------------------------------------------------------------------------------------
 
 
