@@ -265,13 +265,20 @@ public class tiposCampaniasController {
 	@PostMapping("/api/crear")
 	public ResponseEntity<String> crear(@RequestBody TiposCampaniasModel campania) {
 	    try {
-	        boolean creada = service.crearCampania(campania);
-	        if (creada) {
+	        //boolean creada = service.crearCampania(campania);
+	        
+	    	if(service.save(campania) !=null) {
+				return ResponseEntity.ok("Campaña guardada correctamente");
+			}else {
+				return ResponseEntity.ok("Error al guardar campania");
+			}
+	    	
+	        /*if (creada) {
 	            return ResponseEntity.ok("Campaña creada correctamente");
 	        } else {
 	        	
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo crear la campaña");
-	        }
+	        }*/
 	    } catch (Exception e) {
 	    	//System.out.print("Error al crear campaña:::: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

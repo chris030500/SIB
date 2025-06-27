@@ -102,4 +102,8 @@ public class TiposCampaniasService {
 		return repository.save(model);
 	}
 	
+	/*public TiposCampaniasModel BuscarCampania(TiposCampaniasModel model) {
+		return repository.findById(model);
+	}*/
+	
 }

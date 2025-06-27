@@ -40,12 +40,12 @@ function debouncedListaClientes() {
 
 function buscarCampanias() {
     var buscar = buscarCliente.value;
-    const divArchivo = document.getElementById("divArchivoCampania");
+    //const divArchivo = document.getElementById("divArchivoCampania");
     //cuando ingrese el valor 0 se agrege un nuevo registro
     if (buscar.trim() === "0") {
-		document.getElementById("divArchivoCampania").style.display = "flex"; // o "block"
+		//document.getElementById("divArchivoCampania").style.display = "flex"; // o "block"
 
-		divArchivo.style.display = "block";
+		//divArchivo.style.display = "block";
         divDetalle.style.display = 'block';
         divBotonAgregar.style.display = 'block';
         divBotonModificar.style.display = 'none';
@@ -64,9 +64,9 @@ function buscarCampanias() {
         return;
     }else{
 	    //console.log(newUrlBase);
-	    document.getElementById("divArchivoCampania").style.display = "none";
+	    //document.getElementById("divArchivoCampania").style.display = "none";
 
-	     divArchivo.style.display = "none";
+	     //divArchivo.style.display = "none";
 		$.ajax({
 			url: newUrlBase + "credito/buscarCampanias?valor=" + buscar,
 			type: "GET",
@@ -319,7 +319,7 @@ function cargarCatalogoProductos(valoresSeleccionados) {
             
         },
         error: function(err) {
-            console.error('Error al cargar tipos campañas múltiples', err);
+            console.error('Error al cargar productos', err);
         }
     });
 }
