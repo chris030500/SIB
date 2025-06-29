@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -100,6 +101,17 @@ public class TiposCampaniasService {
 	
 	public TiposCampaniasModel save(TiposCampaniasModel model) {
 		return repository.save(model);
+	}
+
+	public List<TiposCampaniasDTO> buscarCampaniasActivas(String valorBusqueda) {
+		List<Object[]> resultados = repository.listaCampaniasActivas(valorBusqueda);
+	    return resultados.stream()
+	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
+	            .collect(Collectors.toList());
+	}
+	
+	public Optional<TiposCampaniasModel> obtenerCampaniaxID(int idCampania) {
+		return repository.findById(idCampania);
 	}
 	
 }

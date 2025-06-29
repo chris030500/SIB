@@ -155,7 +155,9 @@ function procesarCampaniaTmp(data) {
 }
 
 
-
+function buscarCampanias(){
+	
+}
 
 
 

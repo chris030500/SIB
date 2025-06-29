@@ -215,7 +215,10 @@ public class Constantes {
 	public static final int CAT_TIPO_RIESGO = 34;
 	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
 	
-
+	//contantes parametros buro de credito
+	public static final String PARAM_BURO_ADVISER = "ADVISER";
+	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
+	
     private Constantes() {
         
     }
