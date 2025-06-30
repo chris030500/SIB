@@ -1,3 +1,7 @@
+document.addEventListener("DOMContentLoaded", function () {
+    listaMunicipiosExclusion();
+});
+
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -55,3 +59,35 @@ function cargarArchivoExcel() {
         alert("Ocurrió un error al cargar el archivo.");
     });
 }
+
+function listaMunicipiosExclusion() {
+    url = newUrlBase + "credito/listarMunicipios";
+	$.getJSON(url, {}, function(data) {
+		tblExclusionMunicipios.clear().draw();
+		$.each(data, function(idx, opt) {
+
+			tblExclusionMunicipios.row.add([
+             opt.codigo,
+             opt.asentamiento,
+			 opt.tipoAsentamiento, 
+			 opt.municipio,  
+			 opt.estado, 
+			 opt.ciudad, 
+			 opt.codigoPostal, 
+			 opt.codigoEstado, 
+			 opt.cobertura]).draw(false);
+		});
+	});
+}
+
+$(function () {
+    const clientes = ["Juan Pérez", "María López", "Carlos Díaz", "Lucía Herrera", "Ana Torres"];
+
+    $("#cliente").autocomplete({
+        source: clientes,
+        minLength: 2
+    });
+});
+
+
+

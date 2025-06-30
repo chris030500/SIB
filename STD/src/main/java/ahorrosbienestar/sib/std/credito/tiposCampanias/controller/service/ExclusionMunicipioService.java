@@ -16,62 +16,66 @@ import java.util.List;
 @Service
 public class ExclusionMunicipioService {
 
-    @Autowired
-    private ExclusionMunicipioRepository exclusionMunicipioRepository;
+	@Autowired
+	private ExclusionMunicipioRepository exclusionMunicipioRepository;
 
-    public void procesarExcel(MultipartFile archivo) throws Exception {
-        List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
+	public void procesarExcel(MultipartFile archivo) throws Exception {
+		List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
 
-        try (InputStream input = archivo.getInputStream();
-             Workbook workbook = new XSSFWorkbook(input)) {
+		try (InputStream input = archivo.getInputStream(); Workbook workbook = new XSSFWorkbook(input)) {
 
-            Sheet hoja = workbook.getSheetAt(0);
+			Sheet hoja = workbook.getSheetAt(0);
 
-            for (int i = 1; i <= hoja.getLastRowNum(); i++) {
-                Row fila = hoja.getRow(i);
-                if (fila == null) continue;
+			for (int i = 1; i <= hoja.getLastRowNum(); i++) {
+				Row fila = hoja.getRow(i);
+				if (fila == null)
+					continue;
 
-                ExclusionMunicipioModel excl = new ExclusionMunicipioModel();
-                excl.setCodigo((int) getNumericValue(fila, 0));
-                excl.setAsentamiento(getStringValue(fila, 1));
-                excl.setTipoAsentamiento(getStringValue(fila, 2));
-                excl.setMunicipio(getStringValue(fila, 3));
-                excl.setEstado(getStringValue(fila, 4));
-                excl.setCiudad(getStringValue(fila, 5));
-                excl.setCodigoPostal((int) getNumericValue(fila, 6));
-                excl.setCodigoEstado((int) getNumericValue(fila, 7));
-                excl.setCobertura(getStringValue(fila, 8));
+				ExclusionMunicipioModel excl = new ExclusionMunicipioModel();
+				excl.setCodigo((int) getNumericValue(fila, 0));
+				excl.setAsentamiento(getStringValue(fila, 1));
+				excl.setTipoAsentamiento(getStringValue(fila, 2));
+				excl.setMunicipio(getStringValue(fila, 3));
+				excl.setEstado(getStringValue(fila, 4));
+				excl.setCiudad(getStringValue(fila, 5));
+				excl.setCodigoPostal((int) getNumericValue(fila, 6));
+				excl.setCodigoEstado((int) getNumericValue(fila, 7));
+				excl.setCobertura(getStringValue(fila, 8));
 
-                listaExclusiones.add(excl);
-            }
+				listaExclusiones.add(excl);
+			}
 
-            exclusionMunicipioRepository.saveAll(listaExclusiones);
-        }
-    }
+			exclusionMunicipioRepository.saveAll(listaExclusiones);
+		}
+	}
 
-    private double getNumericValue(Row row, int cellIndex) {
-        Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        if (cell.getCellType() == CellType.NUMERIC) {
-            return cell.getNumericCellValue();
-        } else if (cell.getCellType() == CellType.STRING) {
-            try {
-                return Double.parseDouble(cell.getStringCellValue().trim());
-            } catch (NumberFormatException e) {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
+	private double getNumericValue(Row row, int cellIndex) {
+		Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+		if (cell.getCellType() == CellType.NUMERIC) {
+			return cell.getNumericCellValue();
+		} else if (cell.getCellType() == CellType.STRING) {
+			try {
+				return Double.parseDouble(cell.getStringCellValue().trim());
+			} catch (NumberFormatException e) {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
 
-    private String getStringValue(Row row, int cellIndex) {
-        Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        if (cell.getCellType() == CellType.STRING) {
-            return cell.getStringCellValue().trim();
-        } else if (cell.getCellType() == CellType.NUMERIC) {
-            return String.valueOf((int) cell.getNumericCellValue());
-        } else {
-            return "";
-        }
+	private String getStringValue(Row row, int cellIndex) {
+		Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+		if (cell.getCellType() == CellType.STRING) {
+			return cell.getStringCellValue().trim();
+		} else if (cell.getCellType() == CellType.NUMERIC) {
+			return String.valueOf((int) cell.getNumericCellValue());
+		} else {
+			return "";
+		}
+	}
+
+	public List<ExclusionMunicipioModel> obtenerTodos() {
+        return exclusionMunicipioRepository.findAll();
     }
 }
