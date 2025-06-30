@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
  
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ReporteClientesOpeModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.DetallePEPsRepository;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ProcesosPEPsRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.ExcelPEPReader;
 import lombok.AllArgsConstructor;
  
@@ -26,7 +23,7 @@ public class DetallePEPsService {
         return detallePEPsRepository.save(model);
     }
  
-    public void procesarCargaConUsuario(MultipartFile file, int usuario, int idProceso ) throws Exception {
+    public void procesarCargaConUsuario(MultipartFile file,  int idProceso ) throws Exception {
           List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
             if (filas.isEmpty()) return;
  
@@ -42,7 +39,7 @@ public class DetallePEPsService {
                     }
                 }, () -> {
                     fila.setFk_proceso(idProceso);
-                	detallePEPsRepository.save(fila);
+                    detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
                 });
             }
