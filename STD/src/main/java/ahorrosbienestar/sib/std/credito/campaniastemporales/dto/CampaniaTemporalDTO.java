@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.credito.campaniastemporales.dto;
 
 public class CampaniaTemporalDTO {
 
+	 private Integer idCampaniaSeleccionada;
 	 private String nombreCampania;
 	 private String descripcionCampania;
 	 private Integer vigenciaMeses;
@@ -9,8 +10,17 @@ public class CampaniaTemporalDTO {
 	 private String fechaFin;
 	 private String fechaRegistro;
 	 private Integer idTipoArchivo;
+	 private Integer estatusCampania;
 	 private String fechaEnvioMC;
 	 private Boolean recurrente;
+	 
+	 
+	public Integer getIdCampaniaSeleccionada() {
+		return idCampaniaSeleccionada;
+	}
+	public void setIdCampaniaSeleccionada(Integer idCampaniaSeleccionada) {
+		this.idCampaniaSeleccionada = idCampaniaSeleccionada;
+	}
 	public String getNombreCampania() {
 		return nombreCampania;
 	}
@@ -52,6 +62,13 @@ public class CampaniaTemporalDTO {
 	}
 	public void setIdTipoArchivo(Integer idTipoArchivo) {
 		this.idTipoArchivo = idTipoArchivo;
+	}
+	
+	public Integer getEstatusCampania() {
+		return estatusCampania;
+	}
+	public void setEstatusCampania(Integer estatusCampania) {
+		this.estatusCampania = estatusCampania;
 	}
 	public String getFechaEnvioMC() {
 		return fechaEnvioMC;

@@ -113,5 +113,12 @@ public class TiposCampaniasService {
 	public Optional<TiposCampaniasModel> obtenerCampaniaxID(int idCampania) {
 		return repository.findById(idCampania);
 	}
+
+	public List<TiposCampaniasDTO> buscarCampaniasTemporales(String valorBusqueda) {
+		List<Object[]> resultados = repository.buscarCampaniasTemporales(valorBusqueda);
+	    return resultados.stream()
+	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
+	            .collect(Collectors.toList());
+	}
 	
 }
