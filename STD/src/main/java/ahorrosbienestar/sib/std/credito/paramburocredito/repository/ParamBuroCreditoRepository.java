@@ -13,5 +13,7 @@ public interface ParamBuroCreditoRepository extends JpaRepository<ParamBuroCredi
 	@Query(value = "SELECT * FROM SIB.TBL_PARAM_BURO_CREDITO WHERE FK_CAMPANIA_ID = :valorCampaniaID", nativeQuery = true)
 	ParamBuroCreditoModel obtParamBuro(@Param("valorCampaniaID") Integer valorCampaniaID);
 
+
+
 	
 }

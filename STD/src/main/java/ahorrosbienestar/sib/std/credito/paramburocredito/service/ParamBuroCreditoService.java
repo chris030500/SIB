@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.credito.paramburocredito.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class ParamBuroCreditoService {
 	public ParamBuroCreditoModel save(ParamBuroCreditoModel registroParamBC) {
 		return this.paramBuroCreditoRepository.save(registroParamBC);
 	}
+
+
 
 	/*public int buscarConfiguracion(String campoParametro, String usuario) {
 		// TODO Auto-generated method stub

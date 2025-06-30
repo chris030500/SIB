@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.credito.paramburocredito.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -129,31 +131,52 @@ public class ParamBuroCreditoController {
 	}
 	
 	@PostMapping("/registroParamBC")
-	public ResponseEntity<String> guardarParamBC(@ModelAttribute ParametrosBCDTO paramBC) {
+	public ResponseEntity<?> guardarParamBC(@ModelAttribute ParametrosBCDTO paramBC) {
+		
+		String mensaje = Constantes.REGISTRO_OK;
+		String tipo ="";
+		Map<String, Object> respuesta = new HashMap<>();
 		
 		try {
-			System.out.println(""+paramBC.getIdRegistroParam());
-			Optional<TiposCampaniasModel> campaniaConsulta = tiposCampaniasService.obtenerCampaniaxID(paramBC.getIdCampaniaSeleccionada());
-			ParamBuroCreditoModel registroParamBC = new ParamBuroCreditoModel();
-			if(paramBC.getIdRegistroParam() != null) {
-				registroParamBC.setIdParametro(paramBC.getIdRegistroParam());
-				registroParamBC.setUsuarioRegistra(obtUsuario());
-			}
-				registroParamBC.setBcsMinimo(paramBC.getBcsMinimo());
-				registroParamBC.setIccMinimo(paramBC.getIccMinimo());
-				registroParamBC.setMobMaximo(paramBC.getMopMaximo());
-				registroParamBC.setRiesgoMaximo(paramBC.getRiesgoMaximo());
-				registroParamBC.setTipoEvaluacion(paramBC.getTipoEvaluacion());
-				registroParamBC.setUsoMaximo(paramBC.getUsoMaximo());
-				registroParamBC.setIdCampania(campaniaConsulta.get());
-				registroParamBC.setUsuarioRegistra(obtUsuario());
-					
-			if(paramBuroCreditoService.save(registroParamBC) !=null) {
-				return ResponseEntity.ok("Buro de credito guardada correctamente");
-			}else {
-				return ResponseEntity.ok("Error al guardar parametros de buro de credito");
-			}
-			
+			 System.out.println("" + paramBC.getIdRegistroParam());
+
+			    Optional<TiposCampaniasModel> campaniaConsulta = 
+			        tiposCampaniasService.obtenerCampaniaxID(paramBC.getIdCampaniaSeleccionada());
+
+			    ParamBuroCreditoModel registroParamBC = 
+			        paramBuroCreditoService.obtParamBuro(paramBC.getIdCampaniaSeleccionada());
+
+			    if (registroParamBC != null) {
+			        // Ya existe, se actualiza
+			        registroParamBC.setUsuarioModifica(obtUsuario());
+			        mensaje = Constantes.ACTUALIZACION_OK;
+			    } else {
+			        // No existe, se crea uno nuevo
+			        registroParamBC = new ParamBuroCreditoModel();
+			        registroParamBC.setUsuarioRegistra(obtUsuario());
+			        mensaje = Constantes.REGISTRO_OK;
+			    }
+
+			    // Se llenan los campos comunes
+			    registroParamBC.setBcsMinimo(paramBC.getBcsMinimo());
+			    registroParamBC.setIccMinimo(paramBC.getIccMinimo());
+			    registroParamBC.setMobMaximo(paramBC.getMopMaximo());
+			    registroParamBC.setRiesgoMaximo(paramBC.getRiesgoMaximo());
+			    registroParamBC.setTipoEvaluacion(paramBC.getTipoEvaluacion());
+			    registroParamBC.setUsoMaximo(paramBC.getUsoMaximo());
+			    registroParamBC.setIdCampania(campaniaConsulta.get());
+
+			    if (paramBuroCreditoService.save(registroParamBC) != null) {
+			        tipo = Constantes.MENSAJE_OK;
+			    } else {
+			        mensaje = Constantes.ACTUALIZACION_ERROR;
+			        tipo = Constantes.MENSAJE_ERROR;
+			    }
+
+			    respuesta.put(Constantes.TEXTO_MNS, mensaje);
+			    respuesta.put(Constantes.TIPO_MNS, tipo);
+			    return ResponseEntity.ok(respuesta);
+
 			
 		} catch (Exception e) {
 
