@@ -1,136 +1,247 @@
 // @ts-nocheck
-document.addEventListener("DOMContentLoaded", () => {
-  const inputInicio = document.getElementById("fechaInicio");
-  const inputFin    = document.getElementById("fechaFin");
-
-  document.getElementById("btnProcesar").addEventListener("click", async () => {
-  const respuesta = await fetch("/procesar-reporte", {
-    method: "POST"
-  });
-
-  if (respuesta.ok) {
-    alert("Reporte registrado exitosamente");
-    location.reload(); // Actualizas la tabla de descargas
-  } else {
-    alert("Error al registrar reporte");
-  }
+/* -------- SUBIR ARCHIVO -------- */
+document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
+  e.preventDefault();
+  const file = document.getElementById("fileUploadPEP").files[0];
+  if (!file) { alert("Selecciona un archivo"); return; }
+ 
+  const fd = new FormData();
+  fd.append("file", file);           //  << nombre EXACTO que espera el controller
+ 
+  const res  = await fetch(e.target.action, { method: "POST", body: fd });
+  const text = await res.text();
+  alert(text);
 });
-
+ 
+ 
+document.addEventListener("DOMContentLoaded", () => {
+  const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
   const btnProcesarProceso = document.getElementById("btnProcesarProceso");
-  btnProcesarProceso.addEventListener("click", async (event) => {
-    event.preventDefault();
+  const btnProcesar = document.getElementById("btnProcesar");
+  const inputInicio = document.getElementById("fechaInicio");
+  const inputFin = document.getElementById("fechaFin");
+
+  // Validación simple de fechas
+  function fechasInvalidas(inicio, fin) {
+    if (!inicio || !fin) {
+      alert("Debes seleccionar la fecha de inicio y la fecha de fin.");
+      return true;
+    }
+    if (fin < inicio) {
+      alert("La fecha fin no puede ser anterior a la fecha inicio.");
+      return true;
+    }
+    return false;
+  }
+
+  // Evento click del botón para ejecutar la auditoría
+ /* btnProcesarAuditoria.addEventListener("click", async (event) => {
+   event.preventDefault(); // Evita que se envíe el formulario
+
     const inicio = inputInicio.value;
-    const fin    = inputFin.value;
+    const fin = inputFin.value;
 
     if (fechasInvalidas(inicio, fin)) return;
-    await descargaRptOperacionesAuditoria(inicio, fin);
-  });
-const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
 
-btnProcesarAuditoria.addEventListener("click", async () => {
     try {
-        const response = await fetch("/auditoria/actualiza-peps", {
-            method: "POST"
-        });
+      // Solicita al backend ejecutar el SP para procesar la auditoría
+      const res = await fetch("/prevencion/auditoria/actualiza-peps", {
+        method: "POST",
+      });
 
-        if (response.ok) {
-            alert("SP ejecutado correctamente, ahora puedes generar el reporte.");
-            document.getElementById("btnProcesar").disabled = false;
-            document.getElementById("btnProcesarProceso").disabled = false;
-        } else {
-            alert("Error al ejecutar el SP");
-        }
+      if (!res.ok) throw new Error("Error al ejecutar la auditoría.");
+
+      // Habilitar el botón para generar el reporte si todo fue bien
+      btnProcesar.disabled = false;
+      alert("Auditoría procesada con éxito. Ahora puedes generar el reporte.");
     } catch (error) {
-        console.error("Error:", error);
-        alert("Ocurrió un error al procesar la auditoría");
+      console.error("Error al ejecutar la auditoría:", error);
+      alert("Se produjo un error al ejecutar la auditoría.");
     }
-});
-});
+  });*/
 
-// Validación de fechas
-function fechasInvalidas(inicio, fin) {
-  if (!inicio || !fin) {
-    alert("Debes seleccionar la fecha de inicio y la fecha de fin.");
-    return true;
-  }
-  if (fin < inicio) {
-    alert("La fecha fin no puede ser anterior a la fecha inicio.");
-    return true;
-  }
-  return false;
-}
+  // Evento click del botón para generar el reporte
+  btnProcesar.addEventListener("click", async (event) => {
+    event.preventDefault();
 
-// Descargar reporte clientes
-async function descargaRptClientesOpe(inicio, fin) {
-  try {
-    const res = await fetch("generarRptReporteClientesOpeController", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-    });
+    const inicio = inputInicio.value;
+    const fin = inputFin.value;
 
-    if (!res.ok) throw new Error(`Error en la petición: ${res.status}`);
+    if (fechasInvalidas(inicio, fin)) return;
 
-    const data = await res.json();
-    const rutaReporte = data[0];
-    if (!rutaReporte) throw new Error("No se recibió la ruta del reporte.");
+    try {
+      const res = await fetch("generarRptReporteClientesOpeController", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
+      });
 
-    abrirReporte(rutaReporte);
+      if (!res.ok) throw new Error("Error generando el reporte.");
 
-  } catch (error) {
-    console.error("Error al generar el reporte de clientes:", error);
-    alert(error.message || "Se produjo un error al generar el reporte.");
-  }
-}
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
 
-// Descargar reporte operaciones auditoría
-async function descargaRptOperacionesAuditoria(inicio, fin) {
-  try {
-    const res = await fetch("generarRptOperacionesAuditoria", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-    });
-
-    if (!res.ok) throw new Error(`Error en la petición: ${res.status}`);
-
-    const data = await res.json();
-    const rutaReporte = data[0];
-    if (!rutaReporte) throw new Error("No se recibió la ruta del reporte de operaciones auditoría.");
-
-    abrirReporte(rutaReporte);
-
-  } catch (error) {
-    console.error("Error al generar el reporte de operaciones auditoría:", error);
-    alert(error.message || "Se produjo un error al generar el reporte de operaciones auditoría.");
-  }
-}
-
-async function cargarHistorial() {
-  const resp = await fetch("/historial-reportes");
-  const data = await resp.json();
-
-  const tabla = document.getElementById("tablaDescargas");
-  tabla.innerHTML = "";
-  data.forEach(item => {
-    const fila = 
-      <tr>
-        <td>${item.id}</td>
-        <td>${new Date(item.fechaGeneracion).toLocaleString()}</td>
-        <td>${item.usuario}</td>
-        <td>${item.nombreArchivo}</td>
-        <td>${item.confirmado ? "Sí" : "No"}</td>
-      </tr>;
-    tabla.innerHTML += fila;
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Reporte_Clientes_Ope_${inicio}_a_${fin}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
   });
+
+// -----------------------------------------------------------------------------------------------------------
+ 
+  btnProcesarProceso.addEventListener("click", async (event) => {
+    event.preventDefault(); // ← importante si el botón está en un formulario
+ 
+    const inicio = inputInicio.value;
+    const fin    = inputFin.value;
+ 
+    if (fechasInvalidas(inicio, fin)) return;
+ 
+    try {
+      const res = await fetch("generarRptOperacionesAuditoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+      });
+ 
+      if (!res.ok) throw new Error("Error generando el reporte.");
+ 
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+ 
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Reporte_Clientes_Ope_${inicio}_a_${fin}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
+  });
+  
+});
+ 
+// --------------------------------------------------------------------------------------------------------------
+ 
+//document.getElementById("programado").addEventListener("change", e => {
+  //  document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
+//});
+ 
+/*document.getElementById("formProceso").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const data = {
+        fechaInicio: document.getElementById("fechaInicio").value,
+        fechaFin: document.getElementById("fechaFin").value,
+       // programado: document.getElementById("programado").value === "true",
+        horaEjecucion: document.getElementById("horaEjecucion").value
+    };
+    fetch("/prevencion/reporteClientesOpe/guardarFechas", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }).then(r => r.text()).then(alert);
+});*/
+ 
+ 
+function confirmar(valor) {
+    fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
+        .then(r => {
+            if (r.redirected) window.location.href = r.url;
+            else return r.text().then(alert);
+        });
 }
+					var url= "";
+					url = "ejecutarDatosProceso";
+function peticionPost() {
+  var metodo = 0;
+	
+	 swal({
+      title: "Procesando información.",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+	
+	
+	$.ajax({
+		url: getAbsolutePath()+url,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+		
+		},
+		complete: function() {
+			swal.close();
+		},
+		success: function(respuesta) {
+   			url = "";			
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
-document.addEventListener("DOMContentLoaded", cargarHistorial);
+				if (metodo == 1) {
+					iniciaTblParametros();
+					limpiarParametros();
+
+				} else if (metodo == 2) {
+					iniciaTblClasificacion();
+					limpiarDatosClasificacion();
+				}else if(metodo == 3){
+					//proceso manual Bases de ofertas automaticas. 
+					if(respuesta.envio == "1" ){
+						correosAsignacion();
+					}
+				}else if(metodo == 4){
+					cargatblProcesoG();
+					limpiarParametros();	
+				}else if(metodo == 5){
+		
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
+					window.focus();
+				}
+			});
 
 
-//  Función para abrir reporte
-function abrirReporte(rutaReporte) {
-  var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + rutaReporte;
-  window.open(urlReporte);
-  window.focus();
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal("Se presento un error, intente mas tarde.", {
+				closeOnClickOutside: false,
+				icon: "error",
+			});
+		}
+	});
 }
+ 
+/* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
+function cargarDescargas() {
+  fetch("/prevencion/reporteClientesOpe/descargas")
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.getElementById("tablaReportesGenerados");   // ← id real
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.fechaGeneracion}</td>
+          <td>${row.rangoFechas||""}</td>
+          <td>${row.usuario||""}</td>
+          <td>${row.nombreArchivo}</td>
+          <td>${row.confirmado?"Sí":"No"}</td>
+          <td><a class='btn btn-sm btn-primary'
+                 href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
+        tbody.appendChild(tr);
+      });
+    });
+}
+document.getElementById("descargas-tab")
+        .addEventListener("click", cargarDescargas);

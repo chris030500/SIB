@@ -1,8 +1,14 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,9 +31,11 @@ import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.AuditoriaRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.guardarHistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
@@ -55,6 +63,9 @@ public class RptReporteClientesOpeController {
     private final GeneracionReporteService generacionReporteService;
     private final DetallePEPsService detallePEPsService;
     private final ProcesosPEPsService procesosPEPsService;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+    //private final AuditoriaRepository auditoriaRepository;
     //private guardarHistorialReporte guardarhistorialreporte;
 
    // private final HistorialService historialService;
@@ -70,6 +81,7 @@ public class RptReporteClientesOpeController {
             GeneracionReporteService generacionReporteService,
             DetallePEPsService detallePEPsService,
             ProcesosPEPsService procesosPEPsService
+          //  AuditoriaRepository auditoriaRepository
            // guardarHistorialReporte guardarhistorialreporte
          /*   HistorialService historialService*/) {
         this.iUsuarioRepository = iUsuarioRepository;
@@ -81,6 +93,7 @@ public class RptReporteClientesOpeController {
         this.generacionReporteService = generacionReporteService;
         this.detallePEPsService = detallePEPsService;
         this.procesosPEPsService = procesosPEPsService;
+       // this.AuditoriaRepository = auditoriaRepository;
        // this.guardarhistorialreporte = guardarhistorialreporte;
        // this.historialService = historialService;
     }
@@ -177,38 +190,72 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
-    @RestController
-    @RequestMapping("/auditoria")
-    public class ReporteClientesOpeController {
+    @PostMapping("/ejecutarDatosProceso")
+	public ResponseEntity<?> ejecutarDatosProceso(){
+	
+		logger.info("/ejecutarDatosProceso");
+		//ArrayList<String> respuesta = new ArrayList<String>();
+		String mensaje ="";
+		String tipo =Constantes.MENSAJE_OK;
+		String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
+		String procesoPeps ="";
+		Map<String, Object> respuesta = new HashMap<>();
+		
+		try {
+			procesoPeps = procesoGestionAsignado();
+			
+			if(procesoPeps != null) {
+				respuesta.put(Constantes.TEXTO_MNS,procesoPeps);
+				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+				
+			}else {
+				respuesta.put(Constantes.TEXTO_MNS,"PROCESO OK");
+				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
+			}
+			
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:"+e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+			respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
+			return ResponseEntity.ok(respuesta);
+		}
+	}
 
-        @Autowired
-        private ReporteClientesOpeService service;
+    public String procesoGestionAsignado() {
+		 Connection connection = null;
+	        CallableStatement callableStatement = null;
+	        String errorMessage = null;
 
-        @PostMapping("/actualiza-peps")
-        public String actualizarPeps() {
-            //service.ejecutarSPActualizaPeps();
-            return "Proceso PEPS actualizado correctamente";
-        }
-    }
-    
-    @PostMapping("/procesar-reporte")
-    public ResponseEntity<String> procesarReporte(HttpServletRequest request) {
-        try {
-            
-            // Usuario actual
-            String usuario = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "desconocido";
+	        try {
+	            connection = jdbcTemplate.getDataSource().getConnection();
+	            callableStatement = connection.prepareCall(Constantes.PEPS_CLIENTES);
+	            callableStatement.registerOutParameter(1, Types.VARCHAR);
+	            callableStatement.execute();
+	            errorMessage = callableStatement.getString(1);
+	        } catch (SQLException e) {
+	            logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+	        } finally {
+	            if (callableStatement != null) {
+	                try {
+	                    callableStatement.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+	                }
+	            }
+	            if (connection != null) {
+	                try {
+	                    connection.close();
+	                } catch (SQLException e) {
+	                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+	                }
+	            }
+	        }
 
-            // Registrar en base
-            //guardarHistorialReporte.registrarHistorial(new Date(), usuario);
-
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar");
-        }
-    }
-
-
+	        return errorMessage;
+	 }
     
     private int validarAcceso() {
         try {
