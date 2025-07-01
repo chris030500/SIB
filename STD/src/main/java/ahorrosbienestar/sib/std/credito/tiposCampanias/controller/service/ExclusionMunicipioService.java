@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.repository.ClientesActivosRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclusionMunicipioModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.ExclusionMunicipioRepository;
 
@@ -18,6 +20,9 @@ public class ExclusionMunicipioService {
 
 	@Autowired
 	private ExclusionMunicipioRepository exclusionMunicipioRepository;
+	
+	@Autowired
+	private ClientesActivosRepository clientesActivosRepository;
 
 	public void procesarExcel(MultipartFile archivo) throws Exception {
 		List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
@@ -77,5 +82,9 @@ public class ExclusionMunicipioService {
 
 	public List<ExclusionMunicipioModel> obtenerTodos() {
         return exclusionMunicipioRepository.findAll();
+    }
+	
+	public List<ClientesActivosModel> obtenerClientes() {
+        return clientesActivosRepository.findAll();
     }
 }

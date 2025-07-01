@@ -98,14 +98,18 @@
 					<fieldset class="border p-2">
 						<legend class="float-none w-auto p-2">Agregar/Eliminar Clientes</legend>
 
-						<form th:action="@{/exclusiones/guardarCliente}" method="post">
+						<form id="formExclusionCliente">
 							<div class="container">
 								<div class="row mb-3">
+									<input type="hidden" name="clienteId" id="clienteIdSeleccionado">
 									<div class="col-md-2 text-end"><label for="cliente"
 											class="form-label">Cliente:</label></div>
 									<div class="col-md-10">
-										<input type="text" class="form-control" id="cliente" name="cliente"
-											placeholder="Buscar cliente...">
+										<input type="search" class="form-control" id="buscarEmpleado"
+											list="opcionEmpleado" autocomplete="off" placeholder="Buscar empleado">
+										<datalist id="opcionEmpleado"></datalist>
+										<div id="spinnerEmpleado" class="spinner-border text-primary"
+											style="display: none;"></div>
 									</div>
 								</div>
 

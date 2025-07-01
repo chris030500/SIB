@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclusionMunicipioModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.ExclusionClienteService;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.ExclusionMunicipioService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclisionesClientesModel;
 
 @Controller
 @RequestMapping("/credito")
@@ -23,6 +27,9 @@ public class exclusionesCampaniasController {
 
     @Autowired
     private ExclusionMunicipioService exclusionMunicipioService;
+    
+    @Autowired
+    private ExclusionClienteService exclusionClienteService;
 
     @GetMapping("/exclusiones")
     public String mostrarExclusiones() {
@@ -46,4 +53,34 @@ public class exclusionesCampaniasController {
     public List<ExclusionMunicipioModel> listarMunicipios() {
         return exclusionMunicipioService.obtenerTodos();
     }
+    
+    @GetMapping("/lista_clientes")
+	public ResponseEntity<List<ClientesActivosModel>> obtenerClientesPorEmpresaEmpleado() {
+		List<ClientesActivosModel> clientes = exclusionMunicipioService.obtenerClientes();
+		return ResponseEntity.ok(clientes);
+	}
+    
+    
+
+    @PostMapping("/guardarCliente")
+    public String guardarCliente(
+        @RequestParam("clienteId") Integer idCliente,
+        @RequestParam("buscarEmpleado") String nombreCliente,
+        @RequestParam("motivo") String motivo,
+        @RequestParam("observaciones") String observaciones,
+        RedirectAttributes redirectAttributes
+    ) {
+    	ExclisionesClientesModel model = new ExclisionesClientesModel();
+        model.setIdCliente(idCliente);
+        model.setNombreCliente(nombreCliente);
+        model.setMotivoExclusion(motivo);
+        model.setObservacionesExclusion(observaciones);
+        model.setEstatusCliente(1); // ejemplo
+
+        exclusionClienteService.guardarExclusion(model);
+
+        redirectAttributes.addFlashAttribute("mensaje", "Cliente excluido correctamente.");
+        return "redirect:/credito/exclusiones";
+    }
+
 }
