@@ -3,15 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputInicio = document.getElementById("fechaInicio");
   const inputFin    = document.getElementById("fechaFin");
 
-  const btnProcesar = document.getElementById("btnProcesar");
-  btnProcesar.addEventListener("click", async (event) => {
-    event.preventDefault();
-    const inicio = inputInicio.value;
-    const fin    = inputFin.value;
-
-    if (fechasInvalidas(inicio, fin)) return;
-    await descargaRptClientesOpe(inicio, fin);
+  document.getElementById("btnProcesar").addEventListener("click", async () => {
+  const respuesta = await fetch("/procesar-reporte", {
+    method: "POST"
   });
+
+  if (respuesta.ok) {
+    alert("Reporte registrado exitosamente");
+    location.reload(); // Actualizas la tabla de descargas
+  } else {
+    alert("Error al registrar reporte");
+  }
+});
 
   const btnProcesarProceso = document.getElementById("btnProcesarProceso");
   btnProcesarProceso.addEventListener("click", async (event) => {
@@ -22,30 +25,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fechasInvalidas(inicio, fin)) return;
     await descargaRptOperacionesAuditoria(inicio, fin);
   });
-  
 const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
 
-    btnProcesarAuditoria.addEventListener("click", async (event) => {
-        event.preventDefault();
+btnProcesarAuditoria.addEventListener("click", async () => {
+    try {
+        const response = await fetch("/auditoria/actualiza-peps", {
+            method: "POST"
+        });
 
-        try {
-            const response = await fetch("/reporteClientesOpe/procesarAuditoria", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const result = await response.text();
-            if (result === "OK") {
-                alert("Se procesó correctamente el reporte de auditoría");
-            } else {
-                alert("Error al procesar: " + result);
-            }
-        } catch (error) {
-            alert("Error en la petición: " + error);
+        if (response.ok) {
+            alert("SP ejecutado correctamente, ahora puedes generar el reporte.");
+            document.getElementById("btnProcesar").disabled = false;
+            document.getElementById("btnProcesarProceso").disabled = false;
+        } else {
+            alert("Error al ejecutar el SP");
         }
-    });
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Ocurrió un error al procesar la auditoría");
+    }
+});
 });
 
 // Validación de fechas
@@ -106,6 +105,28 @@ async function descargaRptOperacionesAuditoria(inicio, fin) {
     alert(error.message || "Se produjo un error al generar el reporte de operaciones auditoría.");
   }
 }
+
+async function cargarHistorial() {
+  const resp = await fetch("/historial-reportes");
+  const data = await resp.json();
+
+  const tabla = document.getElementById("tablaDescargas");
+  tabla.innerHTML = "";
+  data.forEach(item => {
+    const fila = 
+      <tr>
+        <td>${item.id}</td>
+        <td>${new Date(item.fechaGeneracion).toLocaleString()}</td>
+        <td>${item.usuario}</td>
+        <td>${item.nombreArchivo}</td>
+        <td>${item.confirmado ? "Sí" : "No"}</td>
+      </tr>;
+    tabla.innerHTML += fila;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", cargarHistorial);
+
 
 //  Función para abrir reporte
 function abrirReporte(rutaReporte) {

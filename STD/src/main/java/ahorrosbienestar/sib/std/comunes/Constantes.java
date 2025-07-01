@@ -191,6 +191,8 @@ public class Constantes {
       public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
       
       public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
+      
+      public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?,?,?)}";
     
     //constantes marketing
     public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";

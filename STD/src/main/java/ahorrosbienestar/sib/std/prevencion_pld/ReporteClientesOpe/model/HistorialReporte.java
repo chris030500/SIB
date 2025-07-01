@@ -25,9 +25,6 @@ public class HistorialReporte {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaGeneracion;
 
-    @Column(name = "RANGO_FECHAS")
-    private String rangoFechas;
-
     @Column(name = "USUARIO")
     private String usuario;
 
@@ -41,11 +38,35 @@ public class HistorialReporte {
 
     public HistorialReporte(Date fechaGeneracion, String rangoFechas, String usuario, String nombreArchivo, Boolean confirmado) {
         this.fechaGeneracion = fechaGeneracion;
-        this.rangoFechas = rangoFechas;
         this.usuario = usuario;
         this.nombreArchivo = nombreArchivo;
         this.confirmado = confirmado;
     }
+
+	public void setFechaGeneracion(Date fechaGeneracion2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setUsuario(String usuario2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setNombreArchivo(String nombreArchivo2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setConfirmado(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void registrarHistorial(Date date, String usuario2, String nombreArchivo2) {
+		// TODO Auto-generated method stub
+		
+	}
 
     // Getters y setters (puedes generarlos con tu IDE)
 }

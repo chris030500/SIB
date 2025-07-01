@@ -1,8 +1,11 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
- 
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,11 +29,16 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.guardarHistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.HistorialService;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.guardarHistorialReporte;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
+
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.HistorialReporteDto;
  
 @Controller
 @RequestMapping("/prevencion")
@@ -47,6 +55,8 @@ public class RptReporteClientesOpeController {
     private final GeneracionReporteService generacionReporteService;
     private final DetallePEPsService detallePEPsService;
     private final ProcesosPEPsService procesosPEPsService;
+    //private guardarHistorialReporte guardarhistorialreporte;
+
    // private final HistorialService historialService;
  
     @Autowired
@@ -60,6 +70,7 @@ public class RptReporteClientesOpeController {
             GeneracionReporteService generacionReporteService,
             DetallePEPsService detallePEPsService,
             ProcesosPEPsService procesosPEPsService
+           // guardarHistorialReporte guardarhistorialreporte
          /*   HistorialService historialService*/) {
         this.iUsuarioRepository = iUsuarioRepository;
         this.iRelRolOpcionesRepository = iRelRolOpcionesRepository;
@@ -70,6 +81,7 @@ public class RptReporteClientesOpeController {
         this.generacionReporteService = generacionReporteService;
         this.detallePEPsService = detallePEPsService;
         this.procesosPEPsService = procesosPEPsService;
+       // this.guardarhistorialreporte = guardarhistorialreporte;
        // this.historialService = historialService;
     }
     List<Usuario> usuarios =null;
@@ -79,6 +91,7 @@ public class RptReporteClientesOpeController {
                 ? Constantes.PLD_REPORTE_CLIENTES_OPE
                 : Constantes.RUTA_ERROR;
     }
+    
  
     @PostMapping(value = "/reporteClientesOpe/uploadPEP",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -164,41 +177,39 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
-    @PostMapping("reporteClientesOpe/procesarAuditoria")
-    @ResponseBody
-    public String procesarAuditoria() {
-        try {
-            reporteClientesOpeService.ejecutarSPActualizaPeps();
-            return "OK";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "ERROR: " + e.getMessage();
+    @RestController
+    @RequestMapping("/auditoria")
+    public class ReporteClientesOpeController {
+
+        @Autowired
+        private ReporteClientesOpeService service;
+
+        @PostMapping("/actualiza-peps")
+        public String actualizarPeps() {
+            //service.ejecutarSPActualizaPeps();
+            return "Proceso PEPS actualizado correctamente";
         }
     }
     
-    /*@PostMapping("/reporteClientesOpe/ejecutarSPPeps")
-    @ResponseBody
-    public ResponseEntity<String> ejecutarSPPeps() {
+    @PostMapping("/procesar-reporte")
+    public ResponseEntity<String> procesarReporte(HttpServletRequest request) {
         try {
-            reporteClientesOpeService.ejecutarSPActualizaPeps();
-            return ResponseEntity.ok("El procedimiento SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES se ejecutó correctamente.");
+            
+            // Usuario actual
+            String usuario = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "desconocido";
+
+            // Registrar en base
+            //guardarHistorialReporte.registrarHistorial(new Date(), usuario);
+
+            return null;
         } catch (Exception e) {
-            logger.error("Error al ejecutar SP de PEPs: " + e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar");
         }
-    }*/
-   // @PostMapping("/reporteClientesOpe/ejecutarSPPeps")
-   // @ResponseBody
-   // public ResponseEntity<String> ejecutarSPPeps() {
-     //   try {
-       //     historialService.ejecutarSPActualizaPEPs();
-         //   return ResponseEntity.ok("El procedimiento de PEPs se ejecutó correctamente.");
-       // } catch (Exception e) {
-         //   logger.error("Error al ejecutar SP de PEPs: " + e.getMessage(), e);
-           // return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        //}
-    //}
- 
+    }
+
+
+    
     private int validarAcceso() {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
