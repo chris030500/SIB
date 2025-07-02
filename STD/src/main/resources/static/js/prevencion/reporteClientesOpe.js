@@ -77,15 +77,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!res.ok) throw new Error("Error generando el reporte.");
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Reporte_Clientes_Ope_${inicio}_a_${fin}.xlsx`;
-      a.click();
-      URL.revokeObjectURL(url);
+ 
+     if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
+ 
+	 const respuesta = await res.json();
+	 const url = respuesta[0];
+	 window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
+	 window.focus();
     } catch (error) {
       console.error("Error al generar el reporte:", error);
       alert("Se produjo un error al generar el reporte.");
