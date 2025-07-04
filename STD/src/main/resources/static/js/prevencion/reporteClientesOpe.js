@@ -1,24 +1,42 @@
-
 // @ts-nocheck
+
+var tblHistorico;
+$(document).ready(function() {
+  	tblHistorico = $("#tblHistorico").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	iniciaTblHistorico();
+});
+
+
 /* -------- SUBIR ARCHIVO -------- */
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
   const file = document.getElementById("fileUploadPEP").files[0];
   if (!file) { alert("Selecciona un archivo"); return; }
-
+ 
   const fd = new FormData();
   fd.append("file", file);           //  << nombre EXACTO que espera el controller
-
+ 
   const res  = await fetch(e.target.action, { method: "POST", body: fd });
   const text = await res.text();
   alert(text);
 });
-
-
+ 
+ 
 document.addEventListener("DOMContentLoaded", () => {
+  const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
+  const btnProcesarProceso = document.getElementById("btnProcesarProceso");
   const btnProcesar = document.getElementById("btnProcesar");
   const inputInicio = document.getElementById("fechaInicio");
-  const inputFin    = document.getElementById("fechaFin");
+  const inputFin = document.getElementById("fechaFin");
 
   // Validación simple de fechas
   function fechasInvalidas(inicio, fin) {
@@ -33,64 +51,101 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
-  // Evento click del botón
-  btnProcesar.addEventListener("click", async (event) => {
-    event.preventDefault(); // ← importante si el botón está en un formulario
+  // Evento click del botón para ejecutar la auditoría
+ /* btnProcesarAuditoria.addEventListener("click", async (event) => {
+   event.preventDefault(); // Evita que se envíe el formulario
 
     const inicio = inputInicio.value;
-    const fin    = inputFin.value;
+    const fin = inputFin.value;
 
     if (fechasInvalidas(inicio, fin)) return;
-	descargaRptClientesOpe(inicio, fin);
-  
+
+    try {
+      // Solicita al backend ejecutar el SP para procesar la auditoría
+      const res = await fetch("/prevencion/auditoria/actualiza-peps", {
+        method: "POST",
+      });
+
+      if (!res.ok) throw new Error("Error al ejecutar la auditoría.");
+
+      // Habilitar el botón para generar el reporte si todo fue bien
+      btnProcesar.disabled = false;
+      alert("Auditoría procesada con éxito. Ahora puedes generar el reporte.");
+    } catch (error) {
+      console.error("Error al ejecutar la auditoría:", error);
+      alert("Se produjo un error al ejecutar la auditoría.");
+    }
+  });*/
+
+  // Evento click del botón para generar el reporte
+  btnProcesar.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const inicio = inputInicio.value;
+    const fin = inputFin.value;
+
+    if (fechasInvalidas(inicio, fin)) return;
+
+    try {
+      const res = await fetch("generarRptReporteClientesOpeController", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
+      });
+
+      if (!res.ok) throw new Error("Error generando el reporte.");
+ 
+     if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
+ 
+	 const respuesta = await res.json();
+	 const url = respuesta[0];
+	 window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
+	 window.focus();
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
   });
-});
-
-
-async function descargaRptClientesOpe(inicio, fin) {
-  try {
-    const res = await fetch("generarRptReporteClientesOpeController", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-    });
-
-    if (!res.ok) {
-      throw new Error(`Error en la petición: ${res.status}`);
-    }
-
-    // obtener repuesta
-    const data = await res.json();        
-    console.log('Array JSON:', data);
-
-    // obtener el primer elemento de la respuesta
-    const rutaReporte = data[0];
-    if (!rutaReporte) {
-      throw new Error("No se recibió la ruta del reporte.");
-    }
-
-    // 3️⃣ Abrir el reporte en ventana nueva
-    var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + rutaReporte;
-
-    window.open(urlReporte);
-    window.focus();
-
-  } catch (error) {
-    console.error("Error al generar el reporte:", error);
-    alert(error.message || "Se produjo un error al generar el reporte.");
-  }
-}
-
 
 // -----------------------------------------------------------------------------------------------------------
-
-
+ 
+  btnProcesarProceso.addEventListener("click", async (event) => {
+    event.preventDefault(); // ← importante si el botón está en un formulario
+ 
+    const inicio = inputInicio.value;
+    const fin    = inputFin.value;
+ 
+    if (fechasInvalidas(inicio, fin)) return;
+ 
+    try {
+      const res = await fetch("generarRptOperacionesAuditoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+      });
+ 
+      if (!res.ok) throw new Error("Error generando el reporte.");
+ 
+     if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
+ 
+	 const respuesta = await res.json();
+	 const url = respuesta[0];
+	 window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
+	 window.focus();
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
+  });
+  
+});
+ 
 // --------------------------------------------------------------------------------------------------------------
-
+ 
 //document.getElementById("programado").addEventListener("change", e => {
   //  document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
 //});
-
+ 
 /*document.getElementById("formProceso").addEventListener("submit", function(e) {
     e.preventDefault();
     const data = {
@@ -105,8 +160,8 @@ async function descargaRptClientesOpe(inicio, fin) {
         body: JSON.stringify(data)
     }).then(r => r.text()).then(alert);
 });*/
-
-
+ 
+ 
 function confirmar(valor) {
     fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
         .then(r => {
@@ -114,7 +169,72 @@ function confirmar(valor) {
             else return r.text().then(alert);
         });
 }
+					var url= "";
+					url = "ejecutarDatosProceso";
+function peticionPost() {
+  var metodo = 0;
+	
+	 swal({
+      title: "Procesando información.",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        },
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    });
+	
+	
+	$.ajax({
+		url: getAbsolutePath()+url,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+		
+		},
+		complete: function() {
+			swal.close();
+		},
+		success: function(respuesta) {
+   			url = "";			
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
+				if (metodo == 1) {
+					iniciaTblParametros();
+					limpiarParametros();
+
+				} else if (metodo == 2) {
+					iniciaTblClasificacion();
+					limpiarDatosClasificacion();
+				}else if(metodo == 3){
+					//proceso manual Bases de ofertas automaticas. 
+					if(respuesta.envio == "1" ){
+						correosAsignacion();
+					}
+				}else if(metodo == 4){
+					cargatblProcesoG();
+					limpiarParametros();	
+				}else if(metodo == 5){
+		
+					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
+					window.focus();
+				}
+			});
+
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal("Se presento un error, intente mas tarde.", {
+				closeOnClickOutside: false,
+				icon: "error",
+			});
+		}
+	});
+}
+ 
 /* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
 function cargarDescargas() {
   fetch("/prevencion/reporteClientesOpe/descargas")
@@ -138,3 +258,54 @@ function cargarDescargas() {
 }
 document.getElementById("descargas-tab")
         .addEventListener("click", cargarDescargas);
+        
+        
+        
+
+var btnsROpera="";
+var btnsRCientes ="";
+var cargatblHistorico = "obtHistoricoProcesos";
+function iniciaTblHistorico() {
+	url = getAbsolutePath() + cargatblHistorico;
+	$.getJSON(url, {}, function(data) {
+		tblHistorico.clear().draw();
+		$.each(data, function(idx, opt) {
+			
+
+			btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='generarHistoricoOperaciones("
+					+ opt.id
+					+ ")' id="
+					+ opt.id
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+
+			btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='generarHistoricoClientes("
+					+ opt.id
+					+ ")' id="
+					+ opt.id
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+			
+
+			tblHistorico.row.add([opt.fechaGeneracion, opt.i_usuario.vc_nombre_usuario,opt.i_usuario.vc_nombre_usuario, 
+			opt.fechaGeneracionvobo,
+			btnsROpera+btnsRCientes]).draw(false);
+
+			
+
+		});
+	});
+
+}
+
+function generarHistoricoOperaciones(idBuscarHO){
+  console.log("id proceso operaciones"+idBuscarHO);
+}
+
+function generarHistoricoClientes(idBuscarHO){
+  console.log("id proceso clientes"+idBuscarHO);
+}

@@ -1,151 +1,151 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
-
+ 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 //import java.time.LocalDateTime;
 //import java.time.LocalTime;
-
+ 
 // -------- ReporteClientesOpeModel --------
 @Entity
 @Table(name = "TBL_PLD_AUDITORIAS_CLIENTES_OPERACIONES")
 public class ReporteClientesOpeModel {
-
+ 
     @Id
     @Column(name = "cliente_id")
     private Integer clienteId;
-
+ 
     private String estatusCliente;
-
+ 
     private LocalDate fechaAlta;
-
+ 
     private String tipoCliente;
-
+ 
     private Integer numeroCliente;
-
+ 
     private String nombreCompleto;
-
+ 
     private String genero;
-
+ 
     private String tipoPersona;
-
+ 
     private String rfc;
-
+ 
     private LocalDate fechaNacimiento;
-
+ 
     private String entidadFederativaNacimiento;
-
+ 
     private String paisNacimiento;
-
+ 
     private String nacionalidad;
-
+ 
     private String ocupacion;
-
+ 
     private String numeroTelefono;
-
+ 
     private String correo;
-
+ 
     private Boolean representanteLegal;
-
+ 
     private String curp;
-
+ 
     private String colonia;
-
+ 
     private String calle;
-
+ 
     private String numeroCasa;
-
+ 
     private String numInterior;
-
+ 
     private String cp;
-
+ 
     private String municipio;
-
+ 
     private String estado;
-
+ 
     private String peps;
-
+ 
     private String actividadBMXID;
-
+ 
     private String actividadBMX;
-
+ 
     private String actividadSCIANID;
-
+ 
     private String nivelRiesgo;
-
+ 
     private Long montoCreditos;
-
+ 
     private String tipoOcupacion;
-
+ 
     private String lugarTrabajo;
-
+ 
     private Long actividadFRID;
-
+ 
     private String actividadFR;
-
+ 
     private String sectorEconomico;
-
+ 
     private Long volumenCreditos;
-
+ 
     private String actividadINEGI;
-
+ 
     private LocalDate fechaBaja;
-
+ 
     private String tipoClientePersona;
-
+ 
     private String nombre;
-
+ 
     private LocalDate fechaOperacion;
-
+ 
     private BigDecimal montoOperacion;
-
+ 
     private String destinatarioCredito;
-
+ 
     private String instrumentoMonetario;
-
+ 
     private String tipoProductoCliente;
-
+ 
     private String tipoPersonaOperacion;
-
+ 
     private String descripcionMovimiento;
-
+ 
     private String referenciaMovimiento;
-
+ 
     private String naturalezaMovimiento;
-
+ 
     private Long numTransaccion;
-
+ 
     private String productoDestino;
-
+ 
     private String nombreProductoDestino;
-
+ 
     private Long numeroContrato;
-
+ 
     // --- getters y setters ---
     public Integer getClienteId() { return clienteId; }
     public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
-
+ 
     public String getEstatusCliente() { return estatusCliente; }
     public void setEstatusCliente(String estatusCliente) { this.estatusCliente = estatusCliente; }
-
+ 
     public LocalDate getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
-
+ 
     public String getTipoCliente() { return tipoCliente; }
     public void setTipoCliente(String tipoCliente) { this.tipoCliente = tipoCliente; }
-
+ 
     public Integer getNumeroCliente() { return numeroCliente; }
     public void setNumeroCliente(Integer numeroCliente) { this.numeroCliente = numeroCliente; }
-
+ 
     public String getNombreCompleto() { return nombreCompleto; }
     public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
-
+ 
     public String getGenero() { return genero; }
     public void setGenero(String genero) { this.genero = genero; }
     
     public String gettipoPersona() { return tipoPersona; }
     public void settipoPersona(String tipoPersona) { this.tipoPersona = tipoPersona; }
-
+ 
     public String getrfc() { return rfc; }
     public void setrfc(String rfc) { this.rfc = rfc; }
     
@@ -154,7 +154,7 @@ public class ReporteClientesOpeModel {
     
     public String getentidadFederativaNacimiento() { return entidadFederativaNacimiento; }
     public void setentidadFederativaNacimiento(String entidadFederativaNacimiento) { this.entidadFederativaNacimiento = entidadFederativaNacimiento; }
-
+ 
     public String getpaisNacimiento() { return paisNacimiento; }
     public void setpaisNacimiento(String paisNacimiento) { this.paisNacimiento = paisNacimiento; }
     
@@ -247,7 +247,7 @@ public class ReporteClientesOpeModel {
     
     public BigDecimal getMontoOperacion() { return montoOperacion; }
     public void setMontoOperacion(BigDecimal montoOperacion) { this.montoOperacion = montoOperacion; }
-
+ 
     public LocalDate getFechaOperacion() { return fechaOperacion; }
     public void setFechaOperacion(LocalDate fechaOperacion) { this.fechaOperacion = fechaOperacion; }
     
@@ -284,9 +284,3 @@ public class ReporteClientesOpeModel {
     public Long numeroContrato() { return numeroContrato; }
     public void numeroContrato(Long numeroContrato) { this.numeroContrato = numeroContrato; }
 }
-
-   
-    
-    
-
-   

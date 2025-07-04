@@ -39,7 +39,7 @@ public class DetallePEPsService {
                     }
                 }, () -> {
                     fila.setFk_proceso(idProceso);
-                	detallePEPsRepository.save(fila);
+                    detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
                 });
             }
