@@ -1,72 +1,92 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
-
-//import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
-@Table(name = "TBL_HISTORIAL_REPORTES_AUDITORIAS")
+@Table(name = "TBL_HISTORIAL_REPORTES_AUDITORIAS", schema = "SIB")
 public class HistorialReporte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_REPORTE")
+    @Column(name = "PK_PROCESO_HISTORICO")
     private Integer id;
 
-    @Column(name = "FECHA_GENERACION")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaGeneracion;
+    @Column(name = "DT_FECHA_GENERACION", nullable = false)
+    private LocalDateTime fechaGeneracion;
+    
+    @OneToOne
+    @JoinColumn(name = "I_USUARIO", updatable = true)
+	private Usuario i_usuario;
+    
+    @OneToOne
+    @JoinColumn(name = "I_USUARIO_VOBO", updatable = true)
+	private Usuario i_usuario_vobo;
 
-    @Column(name = "USUARIO")
-    private String usuario;
+    @Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Integer estatus;
+    
+    @Column(name = "DT_FECHA_VOBO", nullable = false)
+    private LocalDateTime fechaGeneracionvobo;
 
-    @Column(name = "NOMBRE_ARCHIVO")
-    private String nombreArchivo;
-
-    @Column(name = "CONFIRMADO")
-    private Boolean confirmado;
-
-    public HistorialReporte() {}
-
-    public HistorialReporte(Date fechaGeneracion, String rangoFechas, String usuario, String nombreArchivo, Boolean confirmado) {
-        this.fechaGeneracion = fechaGeneracion;
-        this.usuario = usuario;
-        this.nombreArchivo = nombreArchivo;
-        this.confirmado = confirmado;
-    }
-
-	public void setFechaGeneracion(Date fechaGeneracion2) {
-		// TODO Auto-generated method stub
-		
+	public Integer getId() {
+		return id;
 	}
 
-	public void setUsuario(String usuario2) {
-		// TODO Auto-generated method stub
-		
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public void setNombreArchivo(String nombreArchivo2) {
-		// TODO Auto-generated method stub
-		
+	public LocalDateTime getFechaGeneracion() {
+		return fechaGeneracion;
 	}
 
-	public void setConfirmado(boolean b) {
-		// TODO Auto-generated method stub
-		
+	public void setFechaGeneracion(LocalDateTime fechaGeneracion) {
+		this.fechaGeneracion = fechaGeneracion;
 	}
 
-	public static void registrarHistorial(Date date, String usuario2, String nombreArchivo2) {
-		// TODO Auto-generated method stub
-		
+	public Usuario getI_usuario() {
+		return i_usuario;
 	}
 
-    // Getters y setters (puedes generarlos con tu IDE)
+	public void setI_usuario(Usuario i_usuario) {
+		this.i_usuario = i_usuario;
+	}
+
+	public Usuario getI_usuario_vobo() {
+		return i_usuario_vobo;
+	}
+
+	public void setI_usuario_vobo(Usuario i_usuario_vobo) {
+		this.i_usuario_vobo = i_usuario_vobo;
+	}
+
+	public Integer getEstatus() {
+		return estatus;
+	}
+
+	public void setEstatus(Integer estatus) {
+		this.estatus = estatus;
+	}
+
+	public LocalDateTime getFechaGeneracionvobo() {
+		return fechaGeneracionvobo;
+	}
+
+	public void setFechaGeneracionvobo(LocalDateTime fechaGeneracionvobo) {
+		this.fechaGeneracionvobo = fechaGeneracionvobo;
+	}
+
+    // Getters y Setters
+
+    
 }

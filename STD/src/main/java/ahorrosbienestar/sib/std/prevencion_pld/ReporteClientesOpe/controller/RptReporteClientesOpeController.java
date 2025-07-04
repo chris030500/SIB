@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -37,7 +38,7 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoR
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.AuditoriaRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.guardarHistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
@@ -66,7 +67,7 @@ public class RptReporteClientesOpeController {
     @Autowired
     JdbcTemplate jdbcTemplate;
     //private final AuditoriaRepository auditoriaRepository;
-    //private guardarHistorialReporte guardarhistorialreporte;
+    private GuardarHistorialReporte guardarhistorialreporte;
 
    // private final HistorialService historialService;
  
@@ -80,10 +81,8 @@ public class RptReporteClientesOpeController {
             ReporteClientesOpeService reporteClientesOpeService,
             GeneracionReporteService generacionReporteService,
             DetallePEPsService detallePEPsService,
-            ProcesosPEPsService procesosPEPsService
-          //  AuditoriaRepository auditoriaRepository
-           // guardarHistorialReporte guardarhistorialreporte
-         /*   HistorialService historialService*/) {
+            ProcesosPEPsService procesosPEPsService,
+           GuardarHistorialReporte guardarhistorialreporte) {
         this.iUsuarioRepository = iUsuarioRepository;
         this.iRelRolOpcionesRepository = iRelRolOpcionesRepository;
         this.iReporteRepository = iReporteRepository;
@@ -94,7 +93,7 @@ public class RptReporteClientesOpeController {
         this.detallePEPsService = detallePEPsService;
         this.procesosPEPsService = procesosPEPsService;
        // this.AuditoriaRepository = auditoriaRepository;
-       // this.guardarhistorialreporte = guardarhistorialreporte;
+       this.guardarhistorialreporte = guardarhistorialreporte;
        // this.historialService = historialService;
     }
     List<Usuario> usuarios =null;
@@ -256,6 +255,25 @@ public class RptReporteClientesOpeController {
 
 	        return errorMessage;
 	 }
+    
+	/***
+	 * 
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/obtHistoricoProcesos")
+	public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso(Model model) {
+		 logger.info("/obtHistoricoProcesos");
+		try {
+			
+			return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
+			
+			//return ResponseEntity.ok(baseService.findAll());
+		} catch (Exception e) {
+			logger.error("--" + e.getMessage());
+			return null;
+		}
+	}
     
     private int validarAcceso() {
         try {

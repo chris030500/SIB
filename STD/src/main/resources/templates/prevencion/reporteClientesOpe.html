@@ -58,7 +58,7 @@
  
 <body>
     <section class="content" layout:fragment="page-content">
-        <div class="container border p-3">
+        <div class="border p-2 card">
             <!-- Título -->
             <div class="bg-info text-white text-center py-2 rounded mb-3">
                 <h2>Reporte Clientes y Operaciones</h2>
@@ -76,7 +76,7 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas"
-                        type="button" role="tab" aria-controls="descargas" aria-selected="false">Descargas</button>
+                        type="button" role="tab" aria-controls="descargas" aria-selected="false">H</button>
                 </li>
             </ul>
  
@@ -167,14 +167,14 @@
                         </div>
  
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle">
-                                <thead class="table-light">
+                            <table class="table table-sm" style="width: 100%;" id="tblHistorico">
+                                <thead>
                                     <tr>
-                                        <th scope="col">Fecha de generación</th>
-                                        <th scope="col">Usuario</th>
-                                        <th scope="col">Archivo</th>
-                                        <th scope="col">Confirmado</th>
-                                        <th scope="col">Acciones</th>
+                                        <th>Fecha de generación</th>
+                                        <th>Usuario</th>
+                                        <th>Confirmado</th>
+                                        <th>Fecha de vo.bo</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tablaReportesGenerados">
@@ -216,11 +216,13 @@
     <th:block layout:fragment="page-scripts">
  
         <!--JavaScript-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script th:src="@{/js/jquery-3.5.1.js}"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
         <script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
     </th:block>
 </body>

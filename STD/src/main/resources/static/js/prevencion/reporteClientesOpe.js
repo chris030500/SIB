@@ -1,4 +1,21 @@
 // @ts-nocheck
+
+var tblHistorico;
+$(document).ready(function() {
+  	tblHistorico = $("#tblHistorico").DataTable({
+		"language": {
+			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+		},
+		'aoColumnDefs': [{
+			'bSortable': false,
+			'aTargets': [-1] /* 1st one, start by the right */
+		}]
+	});
+	
+	iniciaTblHistorico();
+});
+
+
 /* -------- SUBIR ARCHIVO -------- */
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
@@ -241,3 +258,54 @@ function cargarDescargas() {
 }
 document.getElementById("descargas-tab")
         .addEventListener("click", cargarDescargas);
+        
+        
+        
+
+var btnsROpera="";
+var btnsRCientes ="";
+var cargatblHistorico = "obtHistoricoProcesos";
+function iniciaTblHistorico() {
+	url = getAbsolutePath() + cargatblHistorico;
+	$.getJSON(url, {}, function(data) {
+		tblHistorico.clear().draw();
+		$.each(data, function(idx, opt) {
+			
+
+			btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+					+ " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+					+ " onclick='generarHistoricoOperaciones("
+					+ opt.id
+					+ ")' id="
+					+ opt.id
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-tools'></i></button>";
+
+			btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0' "
+					+ " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+					+ " onclick='generarHistoricoClientes("
+					+ opt.id
+					+ ")' id="
+					+ opt.id
+					+ " data-tooltip='Add'>"
+					+ " <i class='bi bi-file-play-fill'></i></button>";
+			
+
+			tblHistorico.row.add([opt.fechaGeneracion, opt.i_usuario.vc_nombre_usuario,opt.i_usuario.vc_nombre_usuario, 
+			opt.fechaGeneracionvobo,
+			btnsROpera+btnsRCientes]).draw(false);
+
+			
+
+		});
+	});
+
+}
+
+function generarHistoricoOperaciones(idBuscarHO){
+  console.log("id proceso operaciones"+idBuscarHO);
+}
+
+function generarHistoricoClientes(idBuscarHO){
+  console.log("id proceso clientes"+idBuscarHO);
+}
