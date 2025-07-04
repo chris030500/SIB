@@ -51,6 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
+document.getElementById("infoSi").addEventListener("change", function() {
+  if (this.checked) {
+    ejecutarVistoBueno();
+  }
+});
   // Evento click del botón para ejecutar la auditoría
  /* btnProcesarAuditoria.addEventListener("click", async (event) => {
    event.preventDefault(); // Evita que se envíe el formulario
@@ -234,6 +239,49 @@ function peticionPost() {
 		}
 	});
 }
+
+function ejecutarVistoBueno() {
+  var url = "ejecutarVistoBueno";
+
+  swal({
+    title: "Procesando información.",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+      },
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false,
+  });
+
+  $.ajax({
+    url: getAbsolutePath() + url,
+    type: "POST",
+    dataType: "JSON",
+    beforeSend: function() {},
+    complete: function() {
+      swal.close();
+    },
+    success: function(respuesta) {
+      url = "";			
+			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
+
+				iniciaTblHistorico();
+			});
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      swal("Se presentó un error, intente más tarde.", {
+        closeOnClickOutside: false,
+        icon: "error",
+      });
+    }
+  });
+}
+
+
  
 /* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
 function cargarDescargas() {

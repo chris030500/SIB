@@ -256,6 +256,46 @@ public class RptReporteClientesOpeController {
 	        return errorMessage;
 	 }
     
+    @PostMapping("/ejecutarVistoBueno")
+    public ResponseEntity<?> ejecutarVistoBueno() {
+        logger.info("/ejecutarVistoBueno");
+        Map<String, Object> respuesta = new HashMap<>();
+
+        String errorMessage = null;
+        Connection connection = null;
+        CallableStatement callableStatement = null;
+
+        try {
+            connection = jdbcTemplate.getDataSource().getConnection();
+            callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
+            callableStatement.registerOutParameter(1, Types.VARCHAR);
+            callableStatement.execute();
+            errorMessage = callableStatement.getString(1);
+
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                respuesta.put(Constantes.TEXTO_MNS, errorMessage);
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+            } else {
+                respuesta.put(Constantes.TEXTO_MNS, "VISTO BUENO OK");
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
+            }
+
+            return ResponseEntity.ok(respuesta);
+        } catch (SQLException e) {
+            logger.error("Error al ejecutar SP Visto Bueno: " + e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS, "Error al ejecutar SP: " + e.getMessage());
+            respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+            return ResponseEntity.ok(respuesta);
+        } finally {
+            try {
+                if (callableStatement != null) callableStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                logger.error("Error al cerrar conexión: " + e.getMessage());
+            }
+        }
+    }
+
 	/***
 	 * 
 	 * @param model
