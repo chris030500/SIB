@@ -30,6 +30,9 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	//@Query(value = "SELECT VC_TIPO_CAMPANIA FROM SIB.TBL_TIPOS_CAMPANIA WHERE VC_TIPO_CAMPANIA LIKE %:valor%", nativeQuery = true)
 	//public List<TiposCampaniasModel> listaCampanias(@Param("valor") String valor);
 	
+	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, VC_TIPO_CAMPANIA FROM SIB.TBL_TIPOS_CAMPANIA WHERE I_ESTATUS = :valor", nativeQuery = true)
+	List<TiposCampaniasModel> listaTiposCampanias(@Param("valor") Integer valor);	
+	
 	@Modifying
 	@Transactional // Necesario para ejecutar updates
 	@Query(value = "UPDATE SIB.TBL_TIPOS_CAMPANIA SET "

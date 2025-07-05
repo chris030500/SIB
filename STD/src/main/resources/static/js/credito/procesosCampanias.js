@@ -13,15 +13,121 @@ function getAbsolutePath() {
 // Variables | validacion de la liga absoluta
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/credito", "");
+var mensajeError = "Datos incorrectos, favor de validar.";
+
+function valVacio() {
+	
+	url = "";
+	var result = false;
+	var contador = 0;
+	
+	
+	if(document.getElementById("FechaFin").value < document.getElementById("FechaInicio").value){
+		mensajeError = "Fecha fin no debe ser menor a fecha inicio.";
+		document.getElementById("FechaFin").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(document.getElementById("FechaInicio").value > document.getElementById("FechaFin").value){
+		mensajeError = "Fecha inicio no debe ser mayor a fecha fin.";
+		document.getElementById("FechaInicio").style.borderColor = "#F70707";
+		contador = contador + 1;
+		result = true;
+	}
+	
+	if(contador == 0){
+		document.getElementById("FechaInicio").style.borderColor = "";
+		document.getElementById("FechaFin").style.borderColor = "";
+		// @ts-ignore
+	
+		result = false;
+	}else{
+		
+		result = true;
+	}
+	return result;
+}
 
 function buscarProcesosCampanias() {
-    alert("entra buscarProcesosCampanias");
+    
+    if (valVacio() == false) {
+		
+		let select = document.getElementById("Campania");
+		let seleccionProd = Array.from(select.selectedOptions);
+		
+		
+		
+		
+		if (seleccionProd.length === 0) {
+
+			swal({
+				title: "",
+				text: "Debe seleccionar al menos un producto.",
+				icon: "warning",
+			});
+			
+		}else{
+			console.log("entra a todo ok");
+			let fechaInicio = document.getElementById("FechaInicio").value;
+			let fechaFin = document.getElementById("FechaFin").value;
+			//let tipoCampania = seleccionProd[0].value; // Si solo se permite una
+			
+			const selectedCam = Array.from(select.selectedOptions).map(option => option.value);
+			//let campanias = Array.from(document.getElementById("Campania").selectedOptions).map(opt => opt.value);
+			let camaniasSelect = selectedCam.join(",");
+			
+			$.ajax({
+			    url: newUrlBase + 'credito/api/procesosCampanias',
+			    type: 'GET',
+			    data: {
+			        fechaInicio: fechaInicio,
+			        fechaFin: fechaFin,
+			        Campania: camaniasSelect
+			    },
+			    success: function(data) {
+					console.log("data: " + data);
+			        //let tbody = document.querySelector("tablaProcesosBody");
+			        let tbody = $("#tablaProcesosBody");
+			        tbody.empty();
+
+					if (data.length === 0) {
+						tbody.append('<tr><td colspan="3">No se encontraron resultados.</td></tr>');
+					} else {
+						data.forEach(function(item) {
+							let fila = `<tr>
+								<td>${item.dt_fecha_extraccion || ''}</td>
+								<td>${item.i_user_reg?.vc_nombre_usuario || ''}</td>
+								<td>${item.tipoCampania?.vc_tipo_campania || ''}</td>
+								<td>${item.dt_fecha_inicio_vigencia || ''}</td>
+								<td>${item.dt_fecha_fin_vigencia || ''}</td>
+								<td>${item.estatusCampania?.vc_estatus || ''}</td>
+							</tr>`;
+							tbody.append(fila);
+						});
+					}
+				},
+			    error: function(err) {
+			        console.error("Error al obtener procesos campañas:", err);
+			    }
+			});
+		}
+	} else {
+
+		swal({
+			title: "",
+			text: mensajeError,
+			icon: "warning",
+		});
+	}
+    
 }
 
 //funcion para llenar combo opcion multiple de campañas
-function cargarCatalogoCampañas() {
+document.addEventListener("DOMContentLoaded", function() {
+	//console.log("url:", newUrlBase);
     $.ajax({
-        url: newUrlBase + 'credito/api/catTiposCampanias',
+        url: newUrlBase + 'credito/api/catTipoCampania',
         type: 'GET',
         success: function(data) {
 			//console.log("Datos recibidos:", data);
@@ -32,11 +138,11 @@ function cargarCatalogoCampañas() {
             });
             
             // Marcar seleccionados
-        	select.val(valoresSeleccionados.map(String));
+        	//select.val(valoresSeleccionados.map(String));
             
         },
         error: function(err) {
             console.error('Error al cargar tipos campañas', err);
         }
     });
-}
+});

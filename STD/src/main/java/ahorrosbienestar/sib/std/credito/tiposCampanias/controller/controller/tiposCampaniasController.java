@@ -20,10 +20,8 @@ import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.model.ProductoColocacion;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.service.ProductoColocacionService;
-import ahorrosbienestar.sib.std.smsconfig.model.CredencialesCalixta;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
@@ -31,14 +29,12 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampa
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("credito")
@@ -247,7 +243,7 @@ public class tiposCampaniasController {
 	    } catch (Exception e) {
 	        // Log the error here to get more information about what went wrong
 	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la campaña: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar la campaña: " + e.getMessage());
 	    }
 	}
 	

@@ -1,22 +1,29 @@
 package ahorrosbienestar.sib.std.credito.procesosCampanias.controller.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.model.ProcesosCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.repository.ProcesosCampaniasRepository;
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class ProcesosCampaniasService {
 
-	private TiposCampaniasRepository tiposCampaniasRepository;
+	//private TiposCampaniasRepository tiposCampaniasRepository;
+	@Autowired
+    private ProcesosCampaniasRepository procesosCampaniasRepository;
+
+    public List<ProcesosCampaniasModel> buscarCampanias(LocalDate inicio, LocalDate fin, String tipoCampania) {
+        return procesosCampaniasRepository.buscarPorFiltros(inicio, fin, tipoCampania);
+    }
 	
-	public List<TiposCampaniasModel> getTiposCampaniasModel() {
-		return tiposCampaniasRepository.findAll();
-	}
+	/*public List<ProcesosCampaniasModel> buscarCampanias(LocalDate inicio, LocalDate fin, List<Integer> tipoCampania) {
+	    return procesosCampaniasRepository.buscarPorFiltros(inicio, fin, tipoCampania);
+	}*/
 	
 }
