@@ -33,22 +33,4 @@ public class ExcelPEPReader {
  
         return lista;
     }
- 
- 
- 
-   /* private static String getText(Row row, Map<String, Integer> idx, String campo) {
-        Integer i = idx.get(campo.toLowerCase());
-        if (i == null) return "";
-        Cell cell = row.getCell(i);
-        return cell == null ? "" : FMT.formatCellValue(cell).trim();
-    }
- 
-    private static Integer parseInt(Row row, Map<String, Integer> idx, String campo) {
-        String val = getText(row, idx, campo);
-        try {
-            return Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }*/
 }

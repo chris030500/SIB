@@ -3,8 +3,7 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.time.LocalTime;
+
  
 // -------- ReporteClientesOpeModel --------
 @Entity

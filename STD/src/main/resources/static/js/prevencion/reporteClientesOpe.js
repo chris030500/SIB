@@ -51,11 +51,27 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
-document.getElementById("infoSi").addEventListener("change", function() {
+
+document.getElementById("btnVistoBueno").addEventListener("click", function() {
+	var ValorSi = $('#infoSi').is(':checked');
+	var ValorNo = $('#infoNo').is(':checked');
+	
+	if (ValorSi) {
+  ejecutarVistoBueno()
+} else {
+  swal({
+  title: '¡Listo!',
+  text: 'El visto bueno se canceló',
+  icon: 'warning',
+  confirmButtonText: 'Aceptar'
+});
+}
   if (this.checked) {
     ejecutarVistoBueno();
   }
 });
+
+
   // Evento click del botón para ejecutar la auditoría
  /* btnProcesarAuditoria.addEventListener("click", async (event) => {
    event.preventDefault(); // Evita que se envíe el formulario
@@ -241,48 +257,69 @@ function peticionPost() {
 }
 
 function ejecutarVistoBueno() {
-  var url = "ejecutarVistoBueno";
-
+  // Mostrar pregunta de confirmación primero
   swal({
-    title: "Procesando información.",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+    title: "¿Validó correctamente?",
+    text: "Confirme si desea ejecutar el visto bueno.",
+    icon: "warning",
+    buttons: {
+      cancel: {
+        text: "No",
+        value: false,
+        visible: true,
+        closeModal: true,
+      },
+      confirm: {
+        text: "Sí",
+        value: true,
+        visible: true,
+        closeModal: false, 
       },
     },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
-
-  $.ajax({
-    url: getAbsolutePath() + url,
-    type: "POST",
-    dataType: "JSON",
-    beforeSend: function() {},
-    complete: function() {
-      swal.close();
-    },
-    success: function(respuesta) {
-      url = "";			
-			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
-
-				iniciaTblHistorico();
-			});
-    },
-    error: function(XMLHttpRequest, textStatus, errorThrown) {
-      swal("Se presentó un error, intente más tarde.", {
+    dangerMode: true,
+  }).then((willExecute) => {
+    if (willExecute) {
+      // Si el usuario da clic en "Sí", se muestra spinner y hacemos la petición
+      swal({
+        title: "Procesando información.",
+        content: {
+          element: "div",
+          attributes: {
+            innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+            style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+          },
+        },
+        buttons: false,
         closeOnClickOutside: false,
-        icon: "error",
+        closeOnEsc: false,
       });
-    }
+
+      var url = "ejecutarVistoBueno";
+
+      $.ajax({
+        url: getAbsolutePath() + url,
+        type: "POST",
+        dataType: "JSON",
+        complete: function() {
+          swal.close();
+        },
+        success: function(respuesta) {
+          swal("", respuesta.mensaje, respuesta.tipo).then(() => {
+            iniciaTblHistorico();
+          });
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          swal("Se presentó un error, intente más tarde.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+        }
+      });
+
+    } 
   });
 }
 
-
- 
 /* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
 function cargarDescargas() {
   fetch("/prevencion/reporteClientesOpe/descargas")

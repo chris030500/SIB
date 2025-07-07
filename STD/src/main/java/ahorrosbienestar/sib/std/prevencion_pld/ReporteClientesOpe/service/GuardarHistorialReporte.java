@@ -1,12 +1,7 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.HistorialReporteRepository;
-import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,10 +17,6 @@ public class GuardarHistorialReporte {
 
     public void registrarHistorial(Date fechaGeneracion, String usuario, String nombreArchivo) {
         HistorialReporte historial = new HistorialReporte();
-        //historial.setFechaGeneracion(fechaGeneracion);
-        //historial.setUsuario(usuario);
-        //historial.setNombreArchivo(nombreArchivo);
-        //historial.setConfirmado(false);
 
         historialRepo.save(historial);
     }
@@ -37,12 +28,6 @@ public class GuardarHistorialReporte {
 	public List<HistorialReporte> procesoVobo() {
 		return historialRepo.procesoVobo();
 	}
-	
-
-	
-   // public List<HistorialReporte> obtenerHistorial() {
-     //   return historialRepo.findAll(Sort.by(Sort.Direction.DESC, "fechaGeneracion"));
-    //}
 }
 
 

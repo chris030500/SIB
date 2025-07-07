@@ -5,49 +5,46 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
- 
+
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
-import ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model.Bases;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.AuditoriaRepository;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.guardarHistorialReporte;
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 
-//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.HistorialReporteDto;
  
 @Controller
 @RequestMapping("/prevencion")
@@ -66,10 +63,9 @@ public class RptReporteClientesOpeController {
     private final ProcesosPEPsService procesosPEPsService;
     @Autowired
     JdbcTemplate jdbcTemplate;
-    //private final AuditoriaRepository auditoriaRepository;
+   
     private GuardarHistorialReporte guardarhistorialreporte;
 
-   // private final HistorialService historialService;
  
     @Autowired
     public RptReporteClientesOpeController(
@@ -92,9 +88,7 @@ public class RptReporteClientesOpeController {
         this.generacionReporteService = generacionReporteService;
         this.detallePEPsService = detallePEPsService;
         this.procesosPEPsService = procesosPEPsService;
-       // this.AuditoriaRepository = auditoriaRepository;
        this.guardarhistorialreporte = guardarhistorialreporte;
-       // this.historialService = historialService;
     }
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
@@ -193,7 +187,6 @@ public class RptReporteClientesOpeController {
 	public ResponseEntity<?> ejecutarDatosProceso(){
 	
 		logger.info("/ejecutarDatosProceso");
-		//ArrayList<String> respuesta = new ArrayList<String>();
 		String mensaje ="";
 		String tipo =Constantes.MENSAJE_OK;
 		String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
@@ -308,7 +301,6 @@ public class RptReporteClientesOpeController {
 			
 			return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
 			
-			//return ResponseEntity.ok(baseService.findAll());
 		} catch (Exception e) {
 			logger.error("--" + e.getMessage());
 			return null;
