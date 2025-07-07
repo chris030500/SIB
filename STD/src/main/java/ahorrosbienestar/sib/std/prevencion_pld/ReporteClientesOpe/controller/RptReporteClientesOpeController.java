@@ -39,7 +39,6 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Detall
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ReporteClientesOpeService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -52,42 +51,36 @@ public class RptReporteClientesOpeController {
  
     private static final Logger logger = Logger.getLogger(RptReporteClientesOpeController.class);
  
-    private final IUsuarioRepository iUsuarioRepository;
-    private final IRelRolOpcionesRepository iRelRolOpcionesRepository;
-    private final IReporteRepository iReporteRepository;
-    private final IConfiguracionRepository iConfiguracionRepository;
-    private final OpcionesMenuService opcionesMenuService;
-    private final GeneracionReporteService generacionReporteService;
-    private final DetallePEPsService detallePEPsService;
-    private final ProcesosPEPsService procesosPEPsService;
+    @Autowired
+    private IUsuarioRepository iUsuarioRepository;
+    
+    @Autowired
+    private IRelRolOpcionesRepository iRelRolOpcionesRepository;
+    
+    @Autowired
+    private IReporteRepository iReporteRepository;
+    
+    @Autowired
+    private IConfiguracionRepository iConfiguracionRepository;
+    
+    @Autowired
+    private OpcionesMenuService opcionesMenuService;
+    
+    @Autowired
+    private GeneracionReporteService generacionReporteService;
+    
+    @Autowired
+    private DetallePEPsService detallePEPsService;
+    
+    @Autowired
+    private ProcesosPEPsService procesosPEPsService;
+    
     @Autowired
     JdbcTemplate jdbcTemplate;
    
+    @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
 
- 
-    @Autowired
-    public RptReporteClientesOpeController(
-            IUsuarioRepository iUsuarioRepository,
-            IRelRolOpcionesRepository iRelRolOpcionesRepository,
-            IReporteRepository iReporteRepository,
-            IConfiguracionRepository iConfiguracionRepository,
-            OpcionesMenuService opcionesMenuService,
-            ReporteClientesOpeService reporteClientesOpeService,
-            GeneracionReporteService generacionReporteService,
-            DetallePEPsService detallePEPsService,
-            ProcesosPEPsService procesosPEPsService,
-           GuardarHistorialReporte guardarhistorialreporte) {
-        this.iUsuarioRepository = iUsuarioRepository;
-        this.iRelRolOpcionesRepository = iRelRolOpcionesRepository;
-        this.iReporteRepository = iReporteRepository;
-        this.iConfiguracionRepository = iConfiguracionRepository;
-        this.opcionesMenuService = opcionesMenuService;
-        this.generacionReporteService = generacionReporteService;
-        this.detallePEPsService = detallePEPsService;
-        this.procesosPEPsService = procesosPEPsService;
-       this.guardarhistorialreporte = guardarhistorialreporte;
-    }
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
     public String vistaReporte(Model model) {
@@ -139,7 +132,7 @@ public class RptReporteClientesOpeController {
             respuesta.add(reporteURL);
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
+            logger.error(Constantes.MENSAJE_DE_ERROR+ e.getMessage());
             respuesta.add(e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
@@ -203,7 +196,7 @@ public class RptReporteClientesOpeController {
 			
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
 			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
@@ -298,7 +291,7 @@ public class RptReporteClientesOpeController {
 			return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
 			
 		} catch (Exception e) {
-			logger.error("--" + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
 			return null;
 		}
 	}
@@ -314,7 +307,7 @@ public class RptReporteClientesOpeController {
                     u.getRol_idRol().getPk_id_rol(),
                     opcionesMenuService.buscarRelacionController(Constantes.PLD_REPORTE_CLIENTES_OPE));
         } catch (Exception e) {
-            logger.error("Error:" + e.getMessage());
+            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             return 0;
         }
     }
