@@ -42,7 +42,7 @@ public class ExcelPEPReader {
             }
             catch (Exception e) {
     			logger.error("Error DetallePEPsModel" + e.getMessage());
-    			return null;
+    			return lista;
     		}
      
             return lista;
