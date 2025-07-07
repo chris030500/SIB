@@ -21,7 +21,6 @@ public class ExcelPEPReader {
 		  }
  
     public static List<DetallePEPsModel> parse(MultipartFile file){
-    	try {
     		List<DetallePEPsModel> lista = new ArrayList<>();
     		 
             try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
@@ -41,13 +40,12 @@ public class ExcelPEPReader {
                     }
                 }
             }
+            catch (Exception e) {
+    			logger.error("Error DetallePEPsModel" + e.getMessage());
+    			return null;
+    		}
      
             return lista;
-		} catch (Exception e) {
-			logger.error("Error DetallePEPsModel" + e.getMessage());
-			return null;
-		}
-		
         
     }
 }
