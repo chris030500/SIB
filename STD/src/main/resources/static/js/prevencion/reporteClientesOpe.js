@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return false;
   }
-
+});
 
 document.getElementById("btnVistoBueno").addEventListener("click", function() {
 	var ValorSi = $('#infoSi').is(':checked');
@@ -69,7 +69,7 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
   if (this.checked) {
     ejecutarVistoBueno();
   }
-});
+
 
 
   // Evento click del botón para ejecutar la auditoría
@@ -224,26 +224,6 @@ function peticionPost() {
    			url = "";			
 			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
-				if (metodo == 1) {
-					iniciaTblParametros();
-					limpiarParametros();
-
-				} else if (metodo == 2) {
-					iniciaTblClasificacion();
-					limpiarDatosClasificacion();
-				}else if(metodo == 3){
-					//proceso manual Bases de ofertas automaticas. 
-					if(respuesta.envio == "1" ){
-						correosAsignacion();
-					}
-				}else if(metodo == 4){
-					cargatblProcesoG();
-					limpiarParametros();	
-				}else if(metodo == 5){
-		
-					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
-					window.focus();
-				}
 			});
 
 

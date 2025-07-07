@@ -8,43 +8,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+ 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+ 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-
- 
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 @Controller
 @RequestMapping("/prevencion")
 public class RptReporteClientesOpeController {
@@ -77,10 +69,11 @@ public class RptReporteClientesOpeController {
     
     @Autowired
     JdbcTemplate jdbcTemplate;
-   
+    
     @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
-
+ 
+    
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
     public String vistaReporte(Model model) {
@@ -113,12 +106,12 @@ public class RptReporteClientesOpeController {
  
         } catch (Exception ex) {
             logger.error("Error procesando archivo PEP", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constantes.MENSAJE_DE_ERROR + ex.getMessage());
         }
     }
  
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-    public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
                                                 @RequestParam("fechaFin") String fechaFin) {
  
         List<String> respuesta = new ArrayList<>();
@@ -132,18 +125,18 @@ public class RptReporteClientesOpeController {
             respuesta.add(reporteURL);
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            logger.error(Constantes.MENSAJE_DE_ERROR+ e.getMessage());
+            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
             respuesta.add(e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
     }
     
     @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
-    public ResponseEntity<List<String>> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<?> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
                                                          @RequestParam("fechaFin") String fechaFin) {
-
+ 
         List<String> respuesta = new ArrayList<>();
-
+ 
         try {
             // Buscar el reporte en base a la constante
             ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_AUDITORIA);
@@ -160,100 +153,100 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(respuesta);
         }
     }
-
+ 
  
     @PostMapping("/reporteClientesOpe/guardarFechas")
     @ResponseBody
-    public ResponseEntity<String> guardarFechas(@RequestBody ProcesoReporte dto) {
+    public ResponseEntity<?> guardarFechas(@RequestBody ProcesoReporte dto) {
         return generacionReporteService.guardarFechasProceso(dto);
     }
  
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
-    public ResponseEntity<String> confirmar(@RequestParam boolean confirmado) {
+    public ResponseEntity<?> confirmar(@RequestParam boolean confirmado) {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
     @PostMapping("/ejecutarDatosProceso")
-	public ResponseEntity<Map<String, Object>> ejecutarDatosProceso(){
-	
-		logger.info("/ejecutarDatosProceso");
-		String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
-		String procesoPeps ="";
-		Map<String, Object> respuesta = new HashMap<>();
-		
-		try {
-			procesoPeps = procesoGestionAsignado();
-			
-			if(procesoPeps != null) {
-				respuesta.put(Constantes.TEXTO_MNS,procesoPeps);
-				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
-				
-			}else {
-				respuesta.put(Constantes.TEXTO_MNS,"PROCESO OK");
-				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
-			}
-			
-			return ResponseEntity.ok(respuesta);
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
-			respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
-			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
-			respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
-			return ResponseEntity.ok(respuesta);
-		}
-	}
-
+    public ResponseEntity<?> ejecutarDatosProceso(){
+    
+        logger.info("/ejecutarDatosProceso");
+        String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
+        String procesoPeps ="";
+        Map<String, Object> respuesta = new HashMap<>();
+        
+        try {
+            procesoPeps = procesoGestionAsignado();
+            
+            if(procesoPeps != null) {
+                respuesta.put(Constantes.TEXTO_MNS,procesoPeps);
+                respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+                
+            }else {
+                respuesta.put(Constantes.TEXTO_MNS,"PROCESO OK");
+                respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
+            }
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+            respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
+            respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+ 
     public String procesoGestionAsignado() {
-		 Connection connection = null;
-	        CallableStatement callableStatement = null;
-	        String errorMessage = null;
-
-	        try {
-	            connection = jdbcTemplate.getDataSource().getConnection();
-	            callableStatement = connection.prepareCall(Constantes.PEPS_CLIENTES);
-	            callableStatement.registerOutParameter(1, Types.VARCHAR);
-	            callableStatement.execute();
-	            errorMessage = callableStatement.getString(1);
-	        } catch (SQLException e) {
-	            logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-	            errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-	        } finally {
-	            if (callableStatement != null) {
-	                try {
-	                    callableStatement.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-	                }
-	            }
-	            if (connection != null) {
-	                try {
-	                    connection.close();
-	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar la conexión: " + e.getMessage());
-	                }
-	            }
-	        }
-
-	        return errorMessage;
-	 }
+         Connection connection = null;
+            CallableStatement callableStatement = null;
+            String errorMessage = null;
+ 
+            try {
+                connection = jdbcTemplate.getDataSource().getConnection();
+                callableStatement = connection.prepareCall(Constantes.PEPS_CLIENTES);
+                callableStatement.registerOutParameter(1, Types.VARCHAR);
+                callableStatement.execute();
+                errorMessage = callableStatement.getString(1);
+            } catch (SQLException e) {
+                logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+                errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
+            } finally {
+                if (callableStatement != null) {
+                    try {
+                        callableStatement.close();
+                    } catch (SQLException e) {
+                        logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
+                    }
+                }
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        logger.error("Error al cerrar la conexión: " + e.getMessage());
+                    }
+                }
+            }
+ 
+            return errorMessage;
+     }
     
     @PostMapping("/ejecutarVistoBueno")
-    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
+    public ResponseEntity<?> ejecutarVistoBueno() {
         logger.info("/ejecutarVistoBueno");
         Map<String, Object> respuesta = new HashMap<>();
-
+ 
         String errorMessage = null;
         Connection connection = null;
         CallableStatement callableStatement = null;
-
+ 
         try {
             connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
             callableStatement.registerOutParameter(1, Types.VARCHAR);
             callableStatement.execute();
             errorMessage = callableStatement.getString(1);
-
+ 
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put(Constantes.TEXTO_MNS, errorMessage);
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
@@ -261,7 +254,7 @@ public class RptReporteClientesOpeController {
                 respuesta.put(Constantes.TEXTO_MNS, "VISTO BUENO OK");
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
             }
-
+ 
             return ResponseEntity.ok(respuesta);
         } catch (SQLException e) {
             logger.error("Error al ejecutar SP Visto Bueno: " + e.getMessage());
@@ -277,24 +270,24 @@ public class RptReporteClientesOpeController {
             }
         }
     }
-
-	/***
-	 * 
-	 * @param model
-	 * @return
-	 */
-	@GetMapping("/obtHistoricoProcesos")
-	public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso(Model model) {
-		 logger.info("/obtHistoricoProcesos");
-		try {
-			
-			return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
-			
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return null;
-		}
-	}
+ 
+    /***
+     * 
+     * @param model
+     * @return
+     */
+    @GetMapping("/obtHistoricoProcesos")
+    public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso(Model model) {
+         logger.info("/obtHistoricoProcesos");
+        try {
+            
+            return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
+            
+        } catch (Exception e) {
+            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            return null;
+        }
+    }
     
     private int validarAcceso() {
         try {

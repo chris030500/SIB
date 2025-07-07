@@ -27,7 +27,7 @@ public class GeneracionReporteService {
         this.procesoRepo = procesoRepo;
     }
  
-    public ResponseEntity<String> guardarFechasProceso(ProcesoReporte proceso) {
+    public ResponseEntity<?> guardarFechasProceso(ProcesoReporte proceso) {
         if (procesoRepo.countPepCargados() == 0) {
             return ResponseEntity.badRequest().body("Debe cargar primero archivo PEP");
         }
@@ -36,7 +36,7 @@ public class GeneracionReporteService {
     }
 
  
-    public ResponseEntity<String> confirmarReporte(boolean confirmado) {
+    public ResponseEntity<?> confirmarReporte(boolean confirmado) {
         if (!confirmado) {
             URI uri = URI.create("/pantalla/cargar-archivos");
             return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
