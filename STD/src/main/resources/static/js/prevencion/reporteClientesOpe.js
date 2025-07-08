@@ -50,6 +50,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return false;
   }
+});
+
+document.getElementById("btnVistoBueno").addEventListener("click", function() {
+	var ValorSi = $('#infoSi').is(':checked');
+	var ValorNo = $('#infoNo').is(':checked');
+	
+	if (ValorSi) {
+  ejecutarVistoBueno()
+} else {
+  swal({
+  title: '¡Listo!',
+  text: 'El visto bueno se canceló',
+  icon: 'warning',
+  confirmButtonText: 'Aceptar'
+});
+}
+  if (this.checked) {
+    ejecutarVistoBueno();
+  }
+
+
 
   // Evento click del botón para ejecutar la auditoría
  /* btnProcesarAuditoria.addEventListener("click", async (event) => {
@@ -203,26 +224,6 @@ function peticionPost() {
    			url = "";			
 			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
-				if (metodo == 1) {
-					iniciaTblParametros();
-					limpiarParametros();
-
-				} else if (metodo == 2) {
-					iniciaTblClasificacion();
-					limpiarDatosClasificacion();
-				}else if(metodo == 3){
-					//proceso manual Bases de ofertas automaticas. 
-					if(respuesta.envio == "1" ){
-						correosAsignacion();
-					}
-				}else if(metodo == 4){
-					cargatblProcesoG();
-					limpiarParametros();	
-				}else if(metodo == 5){
-		
-					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
-					window.focus();
-				}
 			});
 
 
@@ -234,7 +235,71 @@ function peticionPost() {
 		}
 	});
 }
- 
+
+function ejecutarVistoBueno() {
+  // Mostrar pregunta de confirmación primero
+  swal({
+    title: "¿Validó correctamente?",
+    text: "Confirme si desea ejecutar el visto bueno.",
+    icon: "warning",
+    buttons: {
+      cancel: {
+        text: "No",
+        value: false,
+        visible: true,
+        closeModal: true,
+      },
+      confirm: {
+        text: "Sí",
+        value: true,
+        visible: true,
+        closeModal: false, 
+      },
+    },
+    dangerMode: true,
+  }).then((willExecute) => {
+    if (willExecute) {
+      // Si el usuario da clic en "Sí", se muestra spinner y hacemos la petición
+      swal({
+        title: "Procesando información.",
+        content: {
+          element: "div",
+          attributes: {
+            innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+            style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+          },
+        },
+        buttons: false,
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+      });
+
+      var url = "ejecutarVistoBueno";
+
+      $.ajax({
+        url: getAbsolutePath() + url,
+        type: "POST",
+        dataType: "JSON",
+        complete: function() {
+          swal.close();
+        },
+        success: function(respuesta) {
+          swal("", respuesta.mensaje, respuesta.tipo).then(() => {
+            iniciaTblHistorico();
+          });
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          swal("Se presentó un error, intente más tarde.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+        }
+      });
+
+    } 
+  });
+}
+
 /* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
 function cargarDescargas() {
   fetch("/prevencion/reporteClientesOpe/descargas")
