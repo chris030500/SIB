@@ -37,8 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnProcesar = document.getElementById("btnProcesar");
   const inputInicio = document.getElementById("fechaInicio");
   const inputFin = document.getElementById("fechaFin");
- 
-  // Validación simple de fechas
+
   function fechasInvalidas(inicio, fin) {
     if (!inicio || !fin) {
       alert("Debes seleccionar la fecha de inicio y la fecha de fin.");
@@ -50,194 +49,126 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return false;
   }
-});
- 
-document.getElementById("btnVistoBueno").addEventListener("click", function() {
-    var ValorSi = $('#infoSi').is(':checked');
-    var ValorNo = $('#infoNo').is(':checked');
-    
-    if (ValorSi) {
-  ejecutarVistoBueno()
-} else {
-  swal({
-  title: '¡Listo!',
-  text: 'El visto bueno se canceló',
-  icon: 'warning',
-  confirmButtonText: 'Aceptar'
-});
-}
-  if (this.checked) {
-    ejecutarVistoBueno();
-  }
- 
- 
- 
-  // Evento click del botón para ejecutar la auditoría
- /* btnProcesarAuditoria.addEventListener("click", async (event) => {
-   event.preventDefault(); // Evita que se envíe el formulario
- 
-    const inicio = inputInicio.value;
-    const fin = inputFin.value;
- 
-    if (fechasInvalidas(inicio, fin)) return;
- 
-    try {
-      // Solicita al backend ejecutar el SP para procesar la auditoría
-      const res = await fetch("/prevencion/auditoria/actualiza-peps", {
-        method: "POST",
-      });
- 
-      if (!res.ok) throw new Error("Error al ejecutar la auditoría.");
- 
-      // Habilitar el botón para generar el reporte si todo fue bien
-      btnProcesar.disabled = false;
-      alert("Auditoría procesada con éxito. Ahora puedes generar el reporte.");
-    } catch (error) {
-      console.error("Error al ejecutar la auditoría:", error);
-      alert("Se produjo un error al ejecutar la auditoría.");
-    }
-  });*/
- 
-  // Evento click del botón para generar el reporte
+
   btnProcesar.addEventListener("click", async (event) => {
     event.preventDefault();
- 
     const inicio = inputInicio.value;
     const fin = inputFin.value;
- 
+
     if (fechasInvalidas(inicio, fin)) return;
- 
+
     try {
       const res = await fetch("generarRptReporteClientesOpeController", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
       });
- 
+
       if (!res.ok) throw new Error("Error generando el reporte.");
- 
-     if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
- 
-     const respuesta = await res.json();
-     const url = respuesta[0];
-     window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
-     window.focus();
+      const respuesta = await res.json();
+      const url = respuesta[0];
+      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
+      window.focus();
     } catch (error) {
       console.error("Error al generar el reporte:", error);
       alert("Se produjo un error al generar el reporte.");
     }
   });
- 
-// -----------------------------------------------------------------------------------------------------------
- 
+
   btnProcesarProceso.addEventListener("click", async (event) => {
-    event.preventDefault(); // ← importante si el botón está en un formulario
- 
+    event.preventDefault();
     const inicio = inputInicio.value;
-    const fin    = inputFin.value;
- 
+    const fin = inputFin.value;
+
     if (fechasInvalidas(inicio, fin)) return;
- 
+
     try {
       const res = await fetch("generarRptOperacionesAuditoria", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
       });
- 
+
       if (!res.ok) throw new Error("Error generando el reporte.");
- 
-     if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
- 
-     const respuesta = await res.json();
-     const url = respuesta[0];
-     window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
-     window.focus();
+      const respuesta = await res.json();
+      const url = respuesta[0];
+      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
+      window.focus();
     } catch (error) {
       console.error("Error al generar el reporte:", error);
       alert("Se produjo un error al generar el reporte.");
     }
   });
-  
 });
- 
-// --------------------------------------------------------------------------------------------------------------
- 
-//document.getElementById("programado").addEventListener("change", e => {
-  //  document.getElementById("horaProgDiv").style.display = e.target.value === "true" ? "block" : "none";
-//});
- 
-/*document.getElementById("formProceso").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const data = {
-        fechaInicio: document.getElementById("fechaInicio").value,
-        fechaFin: document.getElementById("fechaFin").value,
-       // programado: document.getElementById("programado").value === "true",
-        horaEjecucion: document.getElementById("horaEjecucion").value
-    };
-    fetch("/prevencion/reporteClientesOpe/guardarFechas", {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    }).then(r => r.text()).then(alert);
-});*/
- 
- 
+
+document.getElementById("btnVistoBueno").addEventListener("click", function() {
+  var ValorSi = $('#infoSi').is(':checked');
+  var ValorNo = $('#infoNo').is(':checked');
+
+  if (ValorSi) {
+    ejecutarVistoBueno();
+  } else {
+    swal({
+      title: '¡Listo!',
+      text: 'El visto bueno se canceló',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar'
+    });
+  }
+
+  if (this.checked) {
+    ejecutarVistoBueno();
+  }
+});
+
 function confirmar(valor) {
-    fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
-        .then(r => {
-            if (r.redirected) window.location.href = r.url;
-            else return r.text().then(alert);
-        });
+  fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
+    .then(r => {
+      if (r.redirected) window.location.href = r.url;
+      else return r.text().then(alert);
+    });
 }
-                    var url= "";
-                    url = "ejecutarDatosProceso";
+
+var url = "";
+url = "ejecutarDatosProceso";
+
 function peticionPost() {
   var metodo = 0;
-    
-     swal({
-      title: "Procesando información.",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        },
+  swal({
+    title: "Procesando información.",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
       },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false,
-    });
-    
-    
-    $.ajax({
-        url: getAbsolutePath()+url,
-        type: "POST",
-        dataType: "JSON",
-        beforeSend: function() {
-        
-        },
-        complete: function() {
-            swal.close();
-        },
-        success: function(respuesta) {
-               url = "";            
-            swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
- 
-            });
- 
- 
-        }, error: function(XMLHttpRequest, textStatus, errorThrown) {
-            swal("Se presento un error, intente mas tarde.", {
-                closeOnClickOutside: false,
-                icon: "error",
-            });
-        }
-    });
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false,
+  });
+
+  $.ajax({
+    url: getAbsolutePath() + url,
+    type: "POST",
+    dataType: "JSON",
+    complete: function() {
+      swal.close();
+    },
+    success: function(respuesta) {
+      url = "";
+      swal("", respuesta.mensaje, respuesta.tipo).then(resp => {});
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      swal("Se presentó un error, intente más tarde.", {
+        closeOnClickOutside: false,
+        icon: "error",
+      });
+    }
+  });
 }
- 
+
 function ejecutarVistoBueno() {
-  // Mostrar pregunta de confirmación primero
   swal({
     title: "¿Validó correctamente?",
     text: "Confirme si desea ejecutar el visto bueno.",
@@ -253,13 +184,12 @@ function ejecutarVistoBueno() {
         text: "Sí",
         value: true,
         visible: true,
-        closeModal: false, 
+        closeModal: false,
       },
     },
     dangerMode: true,
   }).then((willExecute) => {
     if (willExecute) {
-      // Si el usuario da clic en "Sí", se muestra spinner y hacemos la petición
       swal({
         title: "Procesando información.",
         content: {
@@ -273,9 +203,9 @@ function ejecutarVistoBueno() {
         closeOnClickOutside: false,
         closeOnEsc: false,
       });
- 
+
       var url = "ejecutarVistoBueno";
- 
+
       $.ajax({
         url: getAbsolutePath() + url,
         type: "POST",
@@ -295,82 +225,66 @@ function ejecutarVistoBueno() {
           });
         }
       });
- 
-    } 
+    }
   });
 }
- 
-/* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
+
 function cargarDescargas() {
   fetch("/prevencion/reporteClientesOpe/descargas")
     .then(r => r.json())
     .then(data => {
-      const tbody = document.getElementById("tablaReportesGenerados");   // ← id real
+      const tbody = document.getElementById("tablaReportesGenerados");
       tbody.innerHTML = "";
       data.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.fechaGeneracion}</td>
-          <td>${row.rangoFechas||""}</td>
-          <td>${row.usuario||""}</td>
+          <td>${row.rangoFechas || ""}</td>
+          <td>${row.usuario || ""}</td>
           <td>${row.nombreArchivo}</td>
-          <td>${row.confirmado?"Sí":"No"}</td>
-          <td><a class='btn btn-sm btn-primary'
-                 href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
+          <td>${row.confirmado ? "Sí" : "No"}</td>
+          <td><a class='btn btn-sm btn-primary' href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
         tbody.appendChild(tr);
       });
     });
 }
 document.getElementById("descargas-tab")
-        .addEventListener("click", cargarDescargas);
-        
-        
-        
- 
-var btnsROpera="";
-var btnsRCientes ="";
+  .addEventListener("click", cargarDescargas);
+
+var btnsROpera = "";
+var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
+
 function iniciaTblHistorico() {
-    url = getAbsolutePath() + cargatblHistorico;
-    $.getJSON(url, {}, function(data) {
-        tblHistorico.clear().draw();
-        $.each(data, function(idx, opt) {
-            
- 
-            btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-                    + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
-                    + " onclick='generarHistoricoOperaciones("
-                    + opt.id
-                    + ")' id="
-                    + opt.id
-                    + " data-tooltip='Add'>"
-                    + " <i class='bi bi-tools'></i></button>";
- 
-            btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0' "
-                    + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
-                    + " onclick='generarHistoricoClientes("
-                    + opt.id
-                    + ")' id="
-                    + opt.id
-                    + " data-tooltip='Add'>"
-                    + " <i class='bi bi-file-play-fill'></i></button>";
-            
- 
-            tblHistorico.row.add([opt.fechaGeneracion, opt.i_usuario.vc_nombre_usuario,opt.i_usuario.vc_nombre_usuario, 
-            opt.fechaGeneracionvobo,
-            btnsROpera+btnsRCientes]).draw(false);
- 
-            
- 
-        });
+  url = getAbsolutePath() + cargatblHistorico;
+  $.getJSON(url, {}, function(data) {
+    tblHistorico.clear().draw();
+    $.each(data, function(idx, opt) {
+      btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
+        + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+        + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + " data-tooltip='Add'>"
+        + " <i class='bi bi-tools'></i></button>";
+
+      btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0' "
+        + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+        + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + " data-tooltip='Add'>"
+        + " <i class='bi bi-file-play-fill'></i></button>";
+
+      tblHistorico.row.add([
+        opt.fechaGeneracion,
+        opt.i_usuario.vc_nombre_usuario,
+        opt.i_usuario.vc_nombre_usuario,
+        opt.fechaGeneracionvobo,
+        btnsROpera + btnsRCientes
+      ]).draw(false);
     });
- 
+  });
 }
- 
-function generarHistoricoOperaciones(idBuscarHO){
-  console.log("id proceso operaciones"+idBuscarHO);
+
+function generarHistoricoOperaciones(idBuscarHO) {
+  console.log("id proceso operaciones " + idBuscarHO);
 }
- 
-function generarHistoricoClientes(idBuscarHO){
-  console.log("id proceso clientes"+idBuscarHO);
+
+function generarHistoricoClientes(idBuscarHO) {
+  console.log("id proceso clientes " + idBuscarHO);
 }
