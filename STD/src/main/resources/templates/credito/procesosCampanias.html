@@ -69,9 +69,15 @@
 							
 						</fieldset>
 						
-						<table class="table table-striped mt-4">
+						<fieldset class="border p-3" style="width: 100%; min-height: 300px;">
+						<legend class="float-none w-auto p-2">Procesos Campaña</legend>
+						
+						<!--table class="table table-striped mt-4"-->
+						<table class="table table-sm" style="width: 100%; text-align: center;"
+									id="tblGestionSMS">
 						    <thead>
 						        <tr>
+									<th>Seleccionar</th>
 						            <th>Fecha Extracción</th>
 						            <th>Usuario</th>
 						            <th>Campaña</th>
@@ -85,7 +91,10 @@
 								<!-- Se llenará con JS -->
 							</tbody>
 						</table>
-						
+						<div class="col text-start">
+	                        <button type="button" class="btn btn-primary" onclick="generarReportProcesosCampanias()">Generar Reporte</button>
+	                    </div>
+						</fieldset>
 						
 					</div>
 				</div>
@@ -96,9 +105,17 @@
 		<!--JavaScript-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
+		<script th:src="@{/js/credito/fillDataTableConfig.js}"></script>
 		<script th:src="@{/js/credito/procesosCampanias.js}"></script>
+		
+		<!--script th:src="@{/js/jquery-3.5.1.js}"></script-->
+		
 	</th:block>
 </body>
 

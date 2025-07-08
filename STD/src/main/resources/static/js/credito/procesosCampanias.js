@@ -96,6 +96,7 @@ function buscarProcesosCampanias() {
 					} else {
 						data.forEach(function(item) {
 							let fila = `<tr>
+								<td><input type="checkbox" name="seleccion" value="${item.pk_id_proceso_campania}"></td>
 								<td>${item.dt_fecha_extraccion || ''}</td>
 								<td>${item.i_user_reg?.vc_nombre_usuario || ''}</td>
 								<td>${item.tipoCampania?.vc_tipo_campania || ''}</td>
@@ -146,3 +147,64 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+function generarReportProcesosCampanias() {
+    
+    
+    
+    const seleccionados = document.querySelectorAll('input[name="seleccion"]:checked');
+  	if (seleccionados.length > 0) {
+    	
+    	const ids = [];
+    	document.querySelectorAll('input[name="seleccion"]:checked').forEach(cb => {
+      		ids.push(cb.value);
+    	});
+    	console.log("IDs seleccionados:", ids);
+    	
+    	///////////////////////////////
+    	var urlServicio;
+    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+    	urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+    	console.log("urlServicio:", urlServicio);
+    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+    	
+    	$.ajax({
+		url: urlServicio,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+
+			//console.log(urlReporte);
+			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "Error, ",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+		});
+    	//////////////
+    	
+  	} else {
+    	
+    	swal({
+			title: "",
+			text: "Debes seleccionar al menos una fila.",
+			icon: "warning",
+		});
+  	}
+    
+  }
