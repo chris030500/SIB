@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+var url= "";
 var tblHistorico;
 $(document).ready(function() {
   	tblHistorico = $("#tblHistorico").DataTable({
@@ -119,7 +119,7 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
      if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
  
 	 const respuesta = await res.json();
-	 const url = respuesta[0];
+	 url = respuesta[0];
 	 window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
 	 window.focus();
     } catch (error) {
@@ -150,7 +150,7 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
      if (!res.ok) throw new Error("Error obteniendo la URL del reporte.");
  
 	 const respuesta = await res.json();
-	 const url = respuesta[0];
+	 url = respuesta[0];
 	 window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0]);
 	 window.focus();
     } catch (error) {
@@ -190,10 +190,12 @@ function confirmar(valor) {
             else return r.text().then(alert);
         });
 }
-					var url= "";
-					url = "ejecutarDatosProceso";
+		
+
 function peticionPost() {
-  var metodo = 0;
+url = "";
+url = "ejecutarDatosProceso";
+
 	
 	 swal({
       title: "Procesando información.",
@@ -274,7 +276,7 @@ function ejecutarVistoBueno() {
         closeOnEsc: false,
       });
 
-      var url = "ejecutarVistoBueno";
+      url = "ejecutarVistoBueno";
 
       $.ajax({
         url: getAbsolutePath() + url,
@@ -286,6 +288,7 @@ function ejecutarVistoBueno() {
         success: function(respuesta) {
           swal("", respuesta.mensaje, respuesta.tipo).then(() => {
             iniciaTblHistorico();
+            url = "";
           });
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -299,34 +302,8 @@ function ejecutarVistoBueno() {
     } 
   });
 }
-
-/* -------- AJUSTE EN TABLA DESCARGAS (id correcto) -------- */
-function cargarDescargas() {
-  fetch("/prevencion/reporteClientesOpe/descargas")
-    .then(r => r.json())
-    .then(data => {
-      const tbody = document.getElementById("tablaReportesGenerados");   // ← id real
-      tbody.innerHTML = "";
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.fechaGeneracion}</td>
-          <td>${row.rangoFechas||""}</td>
-          <td>${row.usuario||""}</td>
-          <td>${row.nombreArchivo}</td>
-          <td>${row.confirmado?"Sí":"No"}</td>
-          <td><a class='btn btn-sm btn-primary'
-                 href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
-        tbody.appendChild(tr);
-      });
-    });
-}
-document.getElementById("descargas-tab")
-        .addEventListener("click", cargarDescargas);
-        
-        
-        
-
+   
+       
 var btnsROpera="";
 var btnsRCientes ="";
 var cargatblHistorico = "obtHistoricoProcesos";

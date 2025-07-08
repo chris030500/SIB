@@ -84,7 +84,7 @@
 			<div class="tab-content" id="tabContent">
 				<!-- Tab: Archivos -->
 				<div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
-					<fieldset class="border p-2 mt-3">
+					<fieldset class="border p-2 card">
 						<legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
 						<form id="uploadFormPEP" th:action="@{/prevencion/reporteClientesOpe/uploadPEP}" method="post"
 							enctype="multipart/form-data">
@@ -107,7 +107,7 @@
 
 				<!-- Tab: Proceso -->
 				<div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
-					<div class="container py-3">
+					<div class="border p-2 card">
 						<h4 class="mb-4">Proceso de reportes</h4>
 						<div class="mb-3">
 							<label class="form-label">Rango de fechas para el reporte:</label>
@@ -162,7 +162,7 @@
 
 				<!-- Tab: Descargas -->
 				<div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
-					<div class="container py-3">
+					<div class="border p-2 card">
 						<h4 class="mb-4">Historial de reportes generados</h4>
 
 						<div class="table-responsive">
