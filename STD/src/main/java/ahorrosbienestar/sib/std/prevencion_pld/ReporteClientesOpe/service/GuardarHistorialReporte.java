@@ -4,7 +4,6 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.Historia
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.HistorialReporteRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 @Service
 public class GuardarHistorialReporte {
@@ -15,7 +14,7 @@ public class GuardarHistorialReporte {
         this.historialRepo = historialRepo;
     }
 
-    public void registrarHistorial(Date fechaGeneracion, String usuario, String nombreArchivo) {
+    public void registrarHistorial() {
         HistorialReporte historial = new HistorialReporte();
 
         historialRepo.save(historial);
