@@ -111,7 +111,7 @@ public class RptReporteClientesOpeController {
     }
  
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-    public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
                                                 @RequestParam("fechaFin") String fechaFin) {
  
         List<String> respuesta = new ArrayList<>();
@@ -132,7 +132,7 @@ public class RptReporteClientesOpeController {
     }
     
     @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
-    public ResponseEntity<?> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<List<String>> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
                                                          @RequestParam("fechaFin") String fechaFin) {
  
         List<String> respuesta = new ArrayList<>();
@@ -157,18 +157,18 @@ public class RptReporteClientesOpeController {
  
     @PostMapping("/reporteClientesOpe/guardarFechas")
     @ResponseBody
-    public ResponseEntity<?> guardarFechas(@RequestBody ProcesoReporte dto) {
+    public ResponseEntity<String> guardarFechas(@RequestBody ProcesoReporte dto) {
         return generacionReporteService.guardarFechasProceso(dto);
     }
  
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
-    public ResponseEntity<?> confirmar(@RequestParam boolean confirmado) {
+    public ResponseEntity<String> confirmar(@RequestParam boolean confirmado) {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
     @PostMapping("/ejecutarDatosProceso")
-    public ResponseEntity<?> ejecutarDatosProceso(){
+    public ResponseEntity<Map<String, Object>> ejecutarDatosProceso(){
     
         logger.info("/ejecutarDatosProceso");
         String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
@@ -232,7 +232,7 @@ public class RptReporteClientesOpeController {
      }
     
     @PostMapping("/ejecutarVistoBueno")
-    public ResponseEntity<?> ejecutarVistoBueno() {
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
         logger.info("/ejecutarVistoBueno");
         Map<String, Object> respuesta = new HashMap<>();
  
