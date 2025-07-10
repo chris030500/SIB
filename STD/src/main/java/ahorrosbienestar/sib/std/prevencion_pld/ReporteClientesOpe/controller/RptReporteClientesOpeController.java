@@ -153,6 +153,45 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(respuesta);
         }
     }
+    
+    @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
+        List<String> respuesta = new ArrayList<>();
+        try {
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_HISTORICO);
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF) 
+                    + datosReporte.getPk_id_reporte()
+                    + "&parametros=?idHistorico=" + id
+                    + "&tipoDocumento=" + datosReporte.getVc_extension()
+                    + "&identificadorDoc=HC";
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("Error al generar histórico clientes: " + e.getMessage(), e);
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+
+    @RequestMapping(value = { "/generarRptHistoricoOperaciones" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> generarRptHistoricoOperaciones(@RequestParam("id") Long id) {
+        List<String> respuesta = new ArrayList<>();
+        try {
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_HISTORICO);
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+                    + datosReporte.getPk_id_reporte()
+                    + "&parametros=?idHistorico=" + id
+                    + "&tipoDocumento=" + datosReporte.getVc_extension()
+                    + "&identificadorDoc=HO";
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("Error al generar histórico operaciones: " + e.getMessage(), e);
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+
  
  
     @PostMapping("/reporteClientesOpe/guardarFechas")

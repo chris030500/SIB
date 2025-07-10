@@ -263,9 +263,38 @@ function iniciaTblHistorico() {
 }
 
 function generarHistoricoOperaciones(idBuscarHO) {
-  console.log("id proceso operaciones " + idBuscarHO);
+  fetch("generarRptHistoricoOperaciones", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ id: idBuscarHO })
+  })
+  .then(res => res.json())
+  .then(respuesta => {
+    const url = respuesta[0];
+    window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url);
+    window.focus();
+  })
+  .catch(error => {
+    console.error("Error al generar el histórico de operaciones:", error);
+    alert("Se produjo un error al generar el reporte.");
+  });
 }
 
 function generarHistoricoClientes(idBuscarHO) {
-  console.log("id proceso clientes " + idBuscarHO);
+  fetch("generarRptHistoricoClientes", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ id: idBuscarHO })
+  })
+  .then(res => res.json())
+  .then(respuesta => {
+    const url = respuesta[0];
+    window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url);
+    window.focus();
+  })
+  .catch(error => {
+    console.error("Error al generar el histórico de clientes:", error);
+    alert("Se produjo un error al generar el reporte.");
+  });
 }
+
