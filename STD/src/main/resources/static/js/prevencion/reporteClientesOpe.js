@@ -1,36 +1,35 @@
 // @ts-nocheck
- 
+var url = "";
 var tblHistorico;
+
 $(document).ready(function() {
-      tblHistorico = $("#tblHistorico").DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-        },
-        'aoColumnDefs': [{
-            'bSortable': false,
-            'aTargets': [-1] /* 1st one, start by the right */
-        }]
-    });
-    
-    iniciaTblHistorico();
+  tblHistorico = $("#tblHistorico").DataTable({
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+    },
+    'aoColumnDefs': [{
+      'bSortable': false,
+      'aTargets': [-1]
+    }]
+  });
+
+  iniciaTblHistorico();
 });
- 
- 
+
 /* -------- SUBIR ARCHIVO -------- */
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
   const file = document.getElementById("fileUploadPEP").files[0];
   if (!file) { alert("Selecciona un archivo"); return; }
- 
+
   const fd = new FormData();
-  fd.append("file", file);           //  << nombre EXACTO que espera el controller
- 
-  const res  = await fetch(e.target.action, { method: "POST", body: fd });
+  fd.append("file", file);
+
+  const res = await fetch(e.target.action, { method: "POST", body: fd });
   const text = await res.text();
   alert(text);
 });
- 
- 
+
 document.addEventListener("DOMContentLoaded", () => {
   const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
   const btnProcesarProceso = document.getElementById("btnProcesarProceso");
@@ -38,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputInicio = document.getElementById("fechaInicio");
   const inputFin = document.getElementById("fechaFin");
 
+  // Validación simple de fechas
   function fechasInvalidas(inicio, fin) {
     if (!inicio || !fin) {
       alert("Debes seleccionar la fecha de inicio y la fecha de fin.");
@@ -50,8 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
+  // Evento click del botón para generar el reporte
   btnProcesar.addEventListener("click", async (event) => {
     event.preventDefault();
+
     const inicio = inputInicio.value;
     const fin = inputFin.value;
 
@@ -65,8 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!res.ok) throw new Error("Error generando el reporte.");
+
       const respuesta = await res.json();
-      const url = respuesta[0];
+      url = respuesta[0];
       window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
       window.focus();
     } catch (error) {
@@ -75,8 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Evento click del botón para generar proceso
   btnProcesarProceso.addEventListener("click", async (event) => {
     event.preventDefault();
+
     const inicio = inputInicio.value;
     const fin = inputFin.value;
 
@@ -86,12 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("generarRptOperacionesAuditoria", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
       });
 
       if (!res.ok) throw new Error("Error generando el reporte.");
+
       const respuesta = await res.json();
-      const url = respuesta[0];
+      url = respuesta[0];
       window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
       window.focus();
     } catch (error) {
@@ -115,10 +121,6 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
       confirmButtonText: 'Aceptar'
     });
   }
-
-  if (this.checked) {
-    ejecutarVistoBueno();
-  }
 });
 
 function confirmar(valor) {
@@ -129,11 +131,9 @@ function confirmar(valor) {
     });
 }
 
-var url = "";
-url = "ejecutarDatosProceso";
-
 function peticionPost() {
-  var metodo = 0;
+  url = "ejecutarDatosProceso";
+
   swal({
     title: "Procesando información.",
     content: {
@@ -156,13 +156,14 @@ function peticionPost() {
       swal.close();
     },
     success: function(respuesta) {
-      url = "";
-      swal("", respuesta.mensaje, respuesta.tipo).then(resp => {});
+      swal("", respuesta.mensaje, respuesta.tipo).then(() => {
+        url = "";
+      });
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
       swal("Se presentó un error, intente más tarde.", {
-        closeOnClickOutside: false,
         icon: "error",
+        closeOnClickOutside: false,
       });
     }
   });
@@ -204,7 +205,7 @@ function ejecutarVistoBueno() {
         closeOnEsc: false,
       });
 
-      var url = "ejecutarVistoBueno";
+      url = "ejecutarVistoBueno";
 
       $.ajax({
         url: getAbsolutePath() + url,
@@ -216,6 +217,7 @@ function ejecutarVistoBueno() {
         success: function(respuesta) {
           swal("", respuesta.mensaje, respuesta.tipo).then(() => {
             iniciaTblHistorico();
+            url = "";
           });
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -229,28 +231,6 @@ function ejecutarVistoBueno() {
   });
 }
 
-function cargarDescargas() {
-  fetch("/prevencion/reporteClientesOpe/descargas")
-    .then(r => r.json())
-    .then(data => {
-      const tbody = document.getElementById("tablaReportesGenerados");
-      tbody.innerHTML = "";
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.fechaGeneracion}</td>
-          <td>${row.rangoFechas || ""}</td>
-          <td>${row.usuario || ""}</td>
-          <td>${row.nombreArchivo}</td>
-          <td>${row.confirmado ? "Sí" : "No"}</td>
-          <td><a class='btn btn-sm btn-primary' href='/prevencion/reporteClientesOpe/descargar/${row.id}'>Descargar</a></td>`;
-        tbody.appendChild(tr);
-      });
-    });
-}
-document.getElementById("descargas-tab")
-  .addEventListener("click", cargarDescargas);
-
 var btnsROpera = "";
 var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
@@ -260,14 +240,15 @@ function iniciaTblHistorico() {
   $.getJSON(url, {}, function(data) {
     tblHistorico.clear().draw();
     $.each(data, function(idx, opt) {
+
       btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
         + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + " data-tooltip='Add'>"
+        + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-tools'></i></button>";
 
-      btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0' "
+      btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
         + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + " data-tooltip='Add'>"
+        + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-file-play-fill'></i></button>";
 
       tblHistorico.row.add([
