@@ -107,21 +107,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-document.getElementById("btnVistoBueno").addEventListener("click", function() {
-  var ValorSi = $('#infoSi').is(':checked');
-  var ValorNo = $('#infoNo').is(':checked');
-
-  if (ValorSi) {
-    ejecutarVistoBueno();
-  } else {
+// Evento para cuando se selecciona "No"
+$('#infoNo').on('change', function() {
+  if ($(this).is(':checked')) {
     swal({
-      title: '¡Listo!',
-      text: 'El visto bueno se canceló',  //corregir esta parte mañana
-      icon: 'warning',
-      confirmButtonText: 'Aceptar'
+      title: "¡Listo!",
+      text: "El visto bueno se canceló.",
+      icon: "warning",
+      buttons: {
+        confirm: {
+          text: "Regresar a la pantalla Cargar Archivos",
+          value: true,
+          visible: true,
+          className: "",
+          closeModal: true
+        }
+      }
+    }).then(() => {
+      $('#archivos-tab').click();
     });
   }
 });
+
+// Evento para el botón "Visto Bueno"
+document.getElementById("btnVistoBueno").addEventListener("click", function() {
+  var ValorSi = $('#infoSi').is(':checked');
+
+  if (ValorSi) {
+    swal({
+      title: "¡Éxito!",
+      text: "Visto bueno registrado correctamente.",
+      icon: "success",
+      button: "Aceptar",
+    }).then(() => {
+      ejecutarVistoBueno();
+    });
+  } else {
+    swal("Debes seleccionar la opción 'Sí' para continuar.", {
+      icon: "warning",
+    });
+  }
+});
+
+
+
 
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
