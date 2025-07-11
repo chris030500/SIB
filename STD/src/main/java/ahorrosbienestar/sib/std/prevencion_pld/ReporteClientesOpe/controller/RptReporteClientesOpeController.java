@@ -85,30 +85,34 @@ public class RptReporteClientesOpeController {
  
     @PostMapping(value = "/reporteClientesOpe/uploadPEP",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
-        try {
-           
- 
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserDetails userDetails = null;
-            if (principal instanceof UserDetails) {
-                userDetails = (UserDetails) principal;
-                usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-            }
- 
-            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
- 
-            detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
- 
-            return ResponseEntity.ok("Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
- 
-        } catch (Exception ex) {
-            logger.error("Error procesando archivo PEP", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constantes.MENSAJE_DE_ERROR + ex.getMessage());
+            produces = MediaType.APPLICATION_JSON_VALUE) 
+@ResponseBody
+public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
+    Map<String, Object> respuesta = new HashMap<>();
+    try {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = null;
+        if (principal instanceof UserDetails) {
+            userDetails = (UserDetails) principal;
+            usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
         }
+
+        ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
+        detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+
+        respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
+        respuesta.put("tipo", "success");
+        return ResponseEntity.ok(respuesta);
+
+    } catch (Exception ex) {
+        logger.error("Error procesando archivo PEP", ex);
+        respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
+        respuesta.put("tipo", "error");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
     }
+}
+
+
  
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
@@ -270,7 +274,7 @@ public class RptReporteClientesOpeController {
             return errorMessage;
      }
     
-    @PostMapping("/ejecutarVistoBueno")
+    @PostMapping("/ejecutarVistoBueno")  //revisar mañana
     public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
         logger.info("/ejecutarVistoBueno");
         Map<String, Object> respuesta = new HashMap<>();

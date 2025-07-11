@@ -17,7 +17,7 @@ $(document).ready(function() {
 });
 
 /* -------- SUBIR ARCHIVO -------- */
-document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
+/*document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
   const file = document.getElementById("fileUploadPEP").files[0];
   if (!file) { alert("Selecciona un archivo"); return; }
@@ -28,7 +28,7 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   const res = await fetch(e.target.action, { method: "POST", body: fd });
   const text = await res.text();
   alert(text);
-});
+});*/
 
 document.addEventListener("DOMContentLoaded", () => {
   const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
@@ -116,12 +116,65 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
   } else {
     swal({
       title: '¡Listo!',
-      text: 'El visto bueno se canceló',
+      text: 'El visto bueno se canceló',  //corregir esta parte mañana
       icon: 'warning',
       confirmButtonText: 'Aceptar'
     });
   }
 });
+
+document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
+  e.preventDefault();
+  const file = document.getElementById("fileUploadPEP").files[0];
+  if (!file) {
+    swal("Debes seleccionar un archivo.", {
+      icon: "warning",
+    });
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append("file", file);
+
+  swal({
+    title: "Procesando información.",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+      },
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false,
+  });
+
+  try {
+    const res = await fetch(e.target.action, {
+      method: "POST",
+      body: fd
+    });
+
+    const json = await res.json();
+    swal.close();
+
+    swal({
+      title: json.tipo === "success" ? "¡Éxito!" : "Error",
+      text: json.mensaje,
+      icon: json.tipo,
+      button: "Aceptar",
+    });
+
+  } catch (error) {
+    swal.close();
+    swal("Se presentó un error, intente más tarde.", {
+      icon: "error",
+      closeOnClickOutside: false,
+    });
+  }
+});
+
 
 function confirmar(valor) {
   fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
@@ -130,6 +183,8 @@ function confirmar(valor) {
       else return r.text().then(alert);
     });
 }
+
+
 
 function peticionPost() {
   url = "ejecutarDatosProceso";
@@ -168,6 +223,7 @@ function peticionPost() {
     }
   });
 }
+
 
 function ejecutarVistoBueno() {
   swal({

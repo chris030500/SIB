@@ -5,10 +5,12 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.His
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class GuardarHistorialReporte {
 
     private final HistorialReporteRepository historialRepo;
+    
 
     public GuardarHistorialReporte(HistorialReporteRepository historialRepo) {
         this.historialRepo = historialRepo;
@@ -27,6 +29,7 @@ public class GuardarHistorialReporte {
 	public List<HistorialReporte> procesoVobo() {
 		return historialRepo.procesoVobo();
 	}
+	
 	
 }
 
