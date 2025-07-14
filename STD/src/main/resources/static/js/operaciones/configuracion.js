@@ -281,7 +281,6 @@ searchInput.addEventListener('input', function() {
  * Lista de telefonos
  */
 function listaTelefonos() {
-	console.log("AQUI")
 	$.ajax({
 		url: newUrlBase + "lista_telefonos",
 		type: "GET",
