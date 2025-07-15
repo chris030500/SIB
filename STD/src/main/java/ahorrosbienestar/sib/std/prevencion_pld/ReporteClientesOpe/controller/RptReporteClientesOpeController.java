@@ -96,6 +96,8 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             userDetails = (UserDetails) principal;
             usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
         }
+        
+        logger.info("/uploadFormPEP");
 
         ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
         detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
@@ -105,7 +107,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
         return ResponseEntity.ok(respuesta);
 
     } catch (Exception ex) {
-        logger.error("Error procesando archivo PEP", ex);
+        logger.error("Error procesando archivo PEP" + ex.getMessage());
         respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
         respuesta.put("tipo", "error");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
