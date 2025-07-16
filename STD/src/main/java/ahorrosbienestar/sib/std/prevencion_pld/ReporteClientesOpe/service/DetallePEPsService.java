@@ -50,7 +50,8 @@ public class DetallePEPsService {
             logger.info("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());
         
         } catch (Exception e) {
-            logger.error("Error procesarCargaConUsuario" + e.getMessage());
+            logger.error("Error procesarCargaConUsuario", e); // <-- imprime stacktrace completo
+            throw new RuntimeException("Error procesando archivo", e); // <-- relanza el error al controller
         }
           
     }
