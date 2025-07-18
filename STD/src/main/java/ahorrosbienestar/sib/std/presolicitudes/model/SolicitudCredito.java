@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
 @Table(name = "TBL_SOLICITUDES_CREDITO", schema = "SIB")
@@ -66,6 +70,12 @@ public class SolicitudCredito {
     @Column(name = "VC_COMENTARIOS")
     private String comentarios;
     
+    @Column(name = "DT_FECHA_APROBACION")
+    private LocalDate fechaAprobacion;
+    
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REG", updatable = true)
+	private Usuario usuarioReg;
     
     @Override
 	public String toString() {
@@ -73,7 +83,7 @@ public class SolicitudCredito {
 				+ producto + ", numEmpleado=" + numEmpleado + ", puesto=" + puesto + ", plazo=" + plazo
 				+ ", frecuencia=" + frecuencia + ", montoSolicitado=" + montoSolicitado + ", montoDescontar="
 				+ montoDescontar + ", fechaSolicitud=" + fechaSolicitud + ", ejecutivo=" + ejecutivo + ", sucursal="
-				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso + "]";
+				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaAprobacion=" + fechaAprobacion +", usuarioReg=" + usuarioReg + "]";
 	}
 
 	// Getters y Setters
@@ -212,6 +222,24 @@ public class SolicitudCredito {
 	public void setComentarios(String comentarios) {
 		this.comentarios = comentarios;
 	}
-    
+
+	public LocalDate getFechaAprobacion() {
+		return fechaAprobacion;
+	}
+
+	public void setFechaAprobacion(LocalDate fechaAprobacion) {
+		this.fechaAprobacion = fechaAprobacion;
+	}
+
+	public Usuario getUsuarioReg() {
+		return usuarioReg;
+	}
+
+	public void setUsuarioReg(Usuario usuarioReg) {
+		this.usuarioReg = usuarioReg;
+	}
+
+
+	
 }
 

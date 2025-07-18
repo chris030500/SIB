@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
+import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -238,6 +239,7 @@ public class PresolicitudesController {
 			solicitud.setEjecutivo(idEmpleado);
 			solicitud.setSucursal(sucur);
 			solicitud.setEstatus(1);
+			solicitud.setUsuarioReg(obtUsuario());
 			// Intentar guardar la nueva solicitud
 			SolicitudCredito nuevaSolicitud = solicitudCreditoService.guardarSolicitud(solicitud);
 			return ResponseEntity.ok(nuevaSolicitud);
@@ -591,4 +593,17 @@ public class PresolicitudesController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
 		}
 	}
+	
+	 public Usuario obtUsuario() {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	        
+	        if (!(principal instanceof UserDetails)) {
+	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+	        }
+	        
+	        UserDetails userDetails = (UserDetails) principal;
+	        usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+	        return usuario.get(0);
+	        
+	    }
 }

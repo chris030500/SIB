@@ -504,6 +504,14 @@ function guardarSolicitud() {
 
 	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
 
+/*	let montoDescontarValue = getInputValue("montoDescontar");
+let montoDescontarParsed = parseFloat(montoDescontarValue);
+if (isNaN(montoDescontarParsed)) {
+	// Si no hay valor, intenta obtener el texto visible (por ejemplo, de un <span> o similar)
+	const montoDOM = document.querySelector("#montoDescontar")?.textContent?.trim();
+	montoDescontarParsed = parseFloat(montoDOM) || null;
+}*/
+
 
 	const solicitudData = {
 		id: parseInt(getInputValue("idSolicitud", 0)), // Tomar el ID si existe
@@ -515,14 +523,68 @@ function guardarSolicitud() {
 		plazo: parseInt(getInputValue("plazoCredito")) || null,
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
-		montoDescontar: parseFloat(getInputValue("montoDescontar")) || null,
+		montoDescontar: (() => {
+	const val = parseFloat(document.getElementById("montoDescontar")?.value.trim());
+	return isNaN(val) ? null : val;
+})(),
 		fechaSolicitud: fechaActual,
 		renovacion: esRenovacion,
 		comentarios: getInputValue("comentariosSolicitud")
 	};
+	
 
-	// Validar campos obligatorios
-	if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado) {
+
+	let validacion = 0;
+	if(!solicitudData.empresa){
+		document.getElementById("buscarEmpresa").classList.add("is-invalid");
+		validacion = 1;
+	}else{
+		document.getElementById("buscarEmpresa").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	if(!solicitudData.empleado){
+		document.getElementById("buscarEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	}else{
+			document.getElementById("buscarEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	
+	if(!solicitudData.producto){
+		document.getElementById("buscarProducto").classList.add("is-invalid");
+		validacion = 1;
+	}else{
+			document.getElementById("buscarProducto").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	
+	if(!solicitudData.numEmpleado){
+		document.getElementById("numEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	}else {
+			document.getElementById("numEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	
+	if(!solicitudData.montoSolicitado){
+		document.getElementById("montoSolicitado").classList.add("is-invalid");
+		validacion = 1;
+	}else{
+			document.getElementById("montoSolicitado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	
+	
+	
+	if(!solicitudData.montoDescontar){
+		document.getElementById("montoDescontar").classList.add("is-invalid");
+		validacion = 1;
+	}else{
+		document.getElementById("montoDescontar").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	
+	if(validacion == 1){
 		Swal.fire({
 			icon: "warning",
 			title: "Campos incompletos",
@@ -531,6 +593,17 @@ function guardarSolicitud() {
 		});
 		return;
 	}
+	
+	// Validar campos obligatorios
+	/*if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado || !solicitudData.montoSolicitado || !solicitudData.montoDescontar) {
+		Swal.fire({
+			icon: "warning",
+			title: "Campos incompletos",
+			text: "Por favor, completa todos los campos obligatorios.",
+			confirmButtonColor: "#ffc107",
+		});
+		return;
+	}*/
 
 	const url = solicitudData.id
 		? urlPrincipal + `editarSolicitud/${solicitudData.id}`
@@ -571,6 +644,7 @@ function guardarSolicitud() {
 			});
 		});
 }
+
 
 
 // 🔥 Función para resetear el formulario y cerrar el modal
@@ -668,6 +742,8 @@ function cargarSolicitudes(pagina) {
 			        <td>${solicitud.empresa}</td>
 			        <td>$ ${solicitud.montoSolicitado}</td>
 			        <td>$ ${solicitud.montoDescontar}</td>
+			        <td>${solicitud.usuarioReg.vc_nombre_usuario}</td>
+			        <td>${solicitud.sucursal}</td>
 			        <td>${obtenerEstatus(solicitud.estatus)}</td>
 			        <td>
 			            ${permiso ? `
