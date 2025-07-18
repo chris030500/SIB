@@ -101,8 +101,8 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
  
         ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
         if(proceso != null) {
-        	detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
-        	 
+            detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+             
             respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
             respuesta.put("tipo", "success");
             return ResponseEntity.ok(respuesta);
