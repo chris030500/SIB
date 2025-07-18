@@ -1,5 +1,12 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
  
+import java.time.LocalDateTime;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ProcesosPEPsRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +17,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
  
 import java.time.LocalDateTime;
+
  
 @Service
 @RequiredArgsConstructor
 public class ProcesosPEPsService {
+
 	
 	private static final Logger logger = Logger.getLogger(ProcesosPEPsService.class);
+
     @Autowired
     private ProcesosPEPsRepository procesosPEPsRepository;
  
@@ -47,5 +57,6 @@ public class ProcesosPEPsService {
             throw new RuntimeException("Error al registrar proceso", e);
         }
     }
+    }
 
-}
+
