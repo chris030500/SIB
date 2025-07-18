@@ -1,7 +1,7 @@
 // @ts-nocheck
 var url = "";
 var tblHistorico;
-
+ 
 $(document).ready(function() {
   tblHistorico = $("#tblHistorico").DataTable({
     "language": {
@@ -12,31 +12,31 @@ $(document).ready(function() {
       'aTargets': [-1]
     }]
   });
-
+ 
   iniciaTblHistorico();
 });
-
+ 
 /* -------- SUBIR ARCHIVO -------- */
 /*document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
   const file = document.getElementById("fileUploadPEP").files[0];
   if (!file) { alert("Selecciona un archivo"); return; }
-
+ 
   const fd = new FormData();
   fd.append("file", file);
-
+ 
   const res = await fetch(e.target.action, { method: "POST", body: fd });
   const text = await res.text();
   alert(text);
 });*/
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
   const btnProcesarAuditoria = document.getElementById("btnProcesarAuditoria");
   const btnProcesarProceso = document.getElementById("btnProcesarProceso");
   const btnProcesar = document.getElementById("btnProcesar");
   const inputInicio = document.getElementById("fechaInicio");
   const inputFin = document.getElementById("fechaFin");
-
+ 
   // Validación simple de fechas
   function fechasInvalidas(inicio, fin) {
     if (!inicio || !fin) {
@@ -49,25 +49,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return false;
   }
-
+ 
   // Evento click del botón para generar el reporte
   btnProcesar.addEventListener("click", async (event) => {
     event.preventDefault();
-
+ 
     const inicio = inputInicio.value;
     const fin = inputFin.value;
-
+ 
     if (fechasInvalidas(inicio, fin)) return;
-
+ 
     try {
       const res = await fetch("generarRptReporteClientesOpeController", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
       });
-
+ 
       if (!res.ok) throw new Error("Error generando el reporte.");
-
+ 
       const respuesta = await res.json();
       url = respuesta[0];
       window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
@@ -77,25 +77,25 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Se produjo un error al generar el reporte.");
     }
   });
-
+ 
   // Evento click del botón para generar proceso
   btnProcesarProceso.addEventListener("click", async (event) => {
     event.preventDefault();
-
+ 
     const inicio = inputInicio.value;
     const fin = inputFin.value;
-
+ 
     if (fechasInvalidas(inicio, fin)) return;
-
+ 
     try {
       const res = await fetch("generarRptOperacionesAuditoria", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
       });
-
+ 
       if (!res.ok) throw new Error("Error generando el reporte.");
-
+ 
       const respuesta = await res.json();
       url = respuesta[0];
       window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
+ 
 // Evento para cuando se selecciona "No"
 $('#infoNo').on('change', function() {
   if ($(this).is(':checked')) {
@@ -128,11 +128,11 @@ $('#infoNo').on('change', function() {
     });
   }
 });
-
+ 
 // Evento para el botón "Visto Bueno"
 document.getElementById("btnVistoBueno").addEventListener("click", function() {
   var ValorSi = $('#infoSi').is(':checked');
-
+ 
   if (ValorSi) {
     swal({
       title: "¡Éxito!",
@@ -148,10 +148,10 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
     });
   }
 });
-
-
-
-
+ 
+ 
+ 
+ 
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
   const file = document.getElementById("fileUploadPEP").files[0];
@@ -161,10 +161,10 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     });
     return;
   }
-
+ 
   const fd = new FormData();
   fd.append("file", file);
-
+ 
   swal({
     title: "Procesando información.",
     content: {
@@ -178,23 +178,23 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   try {
     const res = await fetch(e.target.action, {
       method: "POST",
       body: fd
     });
-
+ 
     const json = await res.json();
     swal.close();
-
+ 
     swal({
       title: json.tipo === "success" ? "¡Éxito!" : "Error",
       text: json.mensaje,
       icon: json.tipo,
       button: "Aceptar",
     });
-
+ 
   } catch (error) {
     swal.close();
     swal("Se presentó un error, intente más tarde.", {
@@ -203,8 +203,8 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     });
   }
 });
-
-
+ 
+ 
 function confirmar(valor) {
   fetch(`/prevencion/reporteClientesOpe/confirmar?confirmado=${valor}`, { method: "POST" })
     .then(r => {
@@ -212,12 +212,12 @@ function confirmar(valor) {
       else return r.text().then(alert);
     });
 }
-
-
-
+ 
+ 
+ 
 function peticionPost() {
   url = "ejecutarDatosProceso";
-
+ 
   swal({
     title: "Procesando información.",
     content: {
@@ -231,7 +231,7 @@ function peticionPost() {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   $.ajax({
     url: getAbsolutePath() + url,
     type: "POST",
@@ -252,8 +252,8 @@ function peticionPost() {
     }
   });
 }
-
-
+ 
+ 
 function ejecutarVistoBueno() {
   swal({
     title: "¿Validó correctamente?",
@@ -289,9 +289,9 @@ function ejecutarVistoBueno() {
         closeOnClickOutside: false,
         closeOnEsc: false,
       });
-
+ 
       url = "ejecutarVistoBueno";
-
+ 
       $.ajax({
         url: getAbsolutePath() + url,
         type: "POST",
@@ -315,27 +315,27 @@ function ejecutarVistoBueno() {
     }
   });
 }
-
+ 
 var btnsROpera = "";
 var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
-
+ 
 function iniciaTblHistorico() {
   url = getAbsolutePath() + cargatblHistorico;
   $.getJSON(url, {}, function(data) {
     tblHistorico.clear().draw();
     $.each(data, function(idx, opt) {
-
+ 
       btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
         + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-tools'></i></button>";
-
+ 
       btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
         + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-file-play-fill'></i></button>";
-
+ 
       tblHistorico.row.add([
         opt.fechaGeneracion,
         opt.i_usuario.vc_nombre_usuario,
@@ -346,7 +346,7 @@ function iniciaTblHistorico() {
     });
   });
 }
-
+ 
 function generarHistoricoOperaciones(idBuscarHO) {
   fetch("generarRptHistoricoOperaciones", {
     method: "POST",
@@ -364,7 +364,7 @@ function generarHistoricoOperaciones(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
-
+ 
 function generarHistoricoClientes(idBuscarHO) {
   fetch("generarRptHistoricoClientes", {
     method: "POST",
@@ -382,4 +382,3 @@ function generarHistoricoClientes(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
-

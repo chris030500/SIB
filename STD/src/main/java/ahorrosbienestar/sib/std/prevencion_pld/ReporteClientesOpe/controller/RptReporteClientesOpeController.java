@@ -97,15 +97,15 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
         }
         
-        logger.info("/uploadFormPEP");
-
+        logger.info("/reporteClientesOpe/uploadPEP");
+ 
         ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
         detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
-
+ 
         respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
         respuesta.put("tipo", "success");
         return ResponseEntity.ok(respuesta);
-
+ 
     } catch (Exception ex) {
         logger.error("Error procesando archivo PEP" + ex.getMessage());
         respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
@@ -113,8 +113,8 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
     }
 }
-
-
+ 
+ 
  
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
@@ -178,7 +178,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             return ResponseEntity.ok(respuesta);
         }
     }
-
+ 
     @RequestMapping(value = { "/generarRptHistoricoOperaciones" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptHistoricoOperaciones(@RequestParam("id") Long id) {
         List<String> respuesta = new ArrayList<>();
@@ -197,7 +197,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             return ResponseEntity.ok(respuesta);
         }
     }
-
+ 
  
  
     @PostMapping("/reporteClientesOpe/guardarFechas")
@@ -280,17 +280,17 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
     public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
         logger.info("/ejecutarVistoBueno");
         Map<String, Object> respuesta = new HashMap<>();
-
+ 
         String errorMessage = null;
         Connection connection = null;
         CallableStatement callableStatement = null;
-
+ 
         try {
             // Obtener usuario logueado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = null;
             Integer idUsuario = null;
-
+ 
             if (principal instanceof UserDetails) {
                 userDetails = (UserDetails) principal;
                 usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
@@ -298,22 +298,22 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
                     idUsuario = usuarios.get(0).getPk_id_usuario(); 
                 }
             }
-
+ 
             if (idUsuario == null) {
                 respuesta.put(Constantes.TEXTO_MNS, "No se pudo obtener el ID del usuario.");
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
                 return ResponseEntity.ok(respuesta);
             }
-
+ 
             connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
-
+ 
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT param
             callableStatement.setInt(2, idUsuario);                  // IN param
-
+ 
             callableStatement.execute();
             errorMessage = callableStatement.getString(1);
-
+ 
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put(Constantes.TEXTO_MNS, errorMessage);
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
@@ -321,7 +321,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
                 respuesta.put(Constantes.TEXTO_MNS, "VISTO BUENO OK");
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
             }
-
+ 
             return ResponseEntity.ok(respuesta);
         } catch (SQLException e) {
             logger.error("Error al ejecutar SP Visto Bueno: " + e.getMessage());
@@ -337,7 +337,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             }
         }
     }
-
+ 
  
     /***
      * 
