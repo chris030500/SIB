@@ -6,11 +6,14 @@
 function toggleMopMaximo() {
 	const tipo = document.querySelector('input[name="tipoEvaluacion"]:checked').value;
 	const mopMaxRow = document.getElementById('mopMaximoRow');
-
+	const usoMaximo = document.getElementById('usoMaximo');
+	
 	if (tipo === '1') {
 		mopMaxRow.style.display = 'none';
+		usoMaximo.style.display = 'none';
 	} else {
 		mopMaxRow.style.display = 'flex'; // usa 'flex' o 'block' según el diseño
+		usoMaximo.style.display = 'flex'; // usa 'flex' o 'block' según el diseño
 	}
 }
 
@@ -144,8 +147,16 @@ function llenarFormulario(param) {
 	document.getElementById("iccMinimo").value = param.iccMinimo ?? 0;
 
 	// select
-	document.getElementById("idTipoArchivo").value = param.riesgoMaximo ?? 0;
+	//document.getElementById("idTipoArchivo").value = param.riesgoMaximo ?? 0;
+	const seleccion = (param.riesgoMaximo ?? "").split(",");
 
+	// Recorremos las opciones del select y las marcamos si están en la lista
+	const selectElement = document.getElementById("idTipoArchivo");
+	Array.from(selectElement.options).forEach(option => {
+	if (seleccion.includes(option.value)) {
+		option.selected = true;
+	}
+	});
 }
 
 function limpiarFormulario() {

@@ -120,5 +120,10 @@ public class TiposCampaniasService {
 	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
 	            .collect(Collectors.toList());
 	}
+
+	public List<TiposCampaniasModel> campaniasReportes() {
+	
+		   return repository.findAll();
+	}
 	
 }

@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.credito.paramburocredito.dto;
 
+import java.util.List;
+
 public class ParametrosBCDTO {
 
     private Integer idCampaniaSeleccionada;
@@ -9,8 +11,8 @@ public class ParametrosBCDTO {
 	private Double mopMaximo; // MOP Máximo (puede ser opcional según el tipo)
 	private Double bcsMinimo; // BCS Mínimo
 	private Double iccMinimo; // ICC Mínimo
-	private Integer riesgoMaximo; // valor de la opción seleccionada (i_opcion)
-	
+	//private String riesgoMaximo; // valor de la opción seleccionada (i_opcion)
+	private List<String> riesgoMaximo;
 	
 	public Integer getTipoEvaluacion() {
 		return tipoEvaluacion;
@@ -49,10 +51,11 @@ public class ParametrosBCDTO {
 	public void setIccMinimo(Double iccMinimo) {
 		this.iccMinimo = iccMinimo;
 	}
-	public Integer getRiesgoMaximo() {
+	
+	public List<String> getRiesgoMaximo() {
 		return riesgoMaximo;
 	}
-	public void setRiesgoMaximo(Integer riesgoMaximo) {
+	public void setRiesgoMaximo(List<String> riesgoMaximo) {
 		this.riesgoMaximo = riesgoMaximo;
 	}
 	public Integer getIdCampaniaSeleccionada() {

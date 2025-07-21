@@ -138,6 +138,7 @@ public class ParamBuroCreditoController {
 		Map<String, Object> respuesta = new HashMap<>();
 		
 		try {
+			 String concatenado = String.join(",", paramBC.getRiesgoMaximo());
 			 System.out.println("" + paramBC.getIdRegistroParam());
 
 			    Optional<TiposCampaniasModel> campaniaConsulta = 
@@ -161,7 +162,7 @@ public class ParamBuroCreditoController {
 			    registroParamBC.setBcsMinimo(paramBC.getBcsMinimo());
 			    registroParamBC.setIccMinimo(paramBC.getIccMinimo());
 			    registroParamBC.setMobMaximo(paramBC.getMopMaximo());
-			    registroParamBC.setRiesgoMaximo(paramBC.getRiesgoMaximo());
+			    registroParamBC.setRiesgoMaximo(concatenado);
 			    registroParamBC.setTipoEvaluacion(paramBC.getTipoEvaluacion());
 			    registroParamBC.setUsoMaximo(paramBC.getUsoMaximo());
 			    registroParamBC.setIdCampania(campaniaConsulta.get());

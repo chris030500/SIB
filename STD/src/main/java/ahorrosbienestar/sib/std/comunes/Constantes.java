@@ -203,6 +203,7 @@ public class Constantes {
 	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
 	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
 	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
+	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
 	
 	
 	//nombres reportes Crédito

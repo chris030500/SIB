@@ -40,8 +40,8 @@ public class ParamBuroCreditoModel {
     @Column(name = "D_ICC_MINIMO")
     private Double iccMinimo;
 
-    @Column(name = "I_RIESGO_MAXIMO")
-    private Integer riesgoMaximo;
+    @Column(name = "VC_RIESGO_MAXIMO")
+    private String riesgoMaximo;
     
     @OneToOne
     @JoinColumn(name = "I_USER_REG")
@@ -107,11 +107,11 @@ public class ParamBuroCreditoModel {
 		this.iccMinimo = iccMinimo;
 	}
 
-	public Integer getRiesgoMaximo() {
+	public String getRiesgoMaximo() {
 		return riesgoMaximo;
 	}
 
-	public void setRiesgoMaximo(Integer riesgoMaximo) {
+	public void setRiesgoMaximo(String riesgoMaximo) {
 		this.riesgoMaximo = riesgoMaximo;
 	}
 
