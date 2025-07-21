@@ -180,10 +180,10 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   });
  
   try {
-    const res = await fetch(e.target.action, {
-      method: "POST",
-      body: fd
-    });
+    const res = await fetch("/STD/prevencion/reporteClientesOpe/uploadPEP", {
+  method: "POST",
+  body: fd
+});
  
     const json = await res.json();
     swal.close();

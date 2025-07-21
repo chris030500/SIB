@@ -111,7 +111,7 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
 
-            logger.info("/reporteClientesOpe/uploadPEP");
+           // logger.info("/reporteClientesOpe/uploadPEP");
             logger.info("Usuario autenticado: " + usuarios);
 
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
