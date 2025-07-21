@@ -504,13 +504,13 @@ function guardarSolicitud() {
 
 	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
 
-/*	let montoDescontarValue = getInputValue("montoDescontar");
-let montoDescontarParsed = parseFloat(montoDescontarValue);
-if (isNaN(montoDescontarParsed)) {
-	// Si no hay valor, intenta obtener el texto visible (por ejemplo, de un <span> o similar)
-	const montoDOM = document.querySelector("#montoDescontar")?.textContent?.trim();
-	montoDescontarParsed = parseFloat(montoDOM) || null;
-}*/
+	/*	let montoDescontarValue = getInputValue("montoDescontar");
+	let montoDescontarParsed = parseFloat(montoDescontarValue);
+	if (isNaN(montoDescontarParsed)) {
+		// Si no hay valor, intenta obtener el texto visible (por ejemplo, de un <span> o similar)
+		const montoDOM = document.querySelector("#montoDescontar")?.textContent?.trim();
+		montoDescontarParsed = parseFloat(montoDOM) || null;
+	}*/
 
 
 	const solicitudData = {
@@ -524,67 +524,67 @@ if (isNaN(montoDescontarParsed)) {
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
 		montoDescontar: (() => {
-	const val = parseFloat(document.getElementById("montoDescontar")?.value.trim());
-	return isNaN(val) ? null : val;
-})(),
+			const val = parseFloat(document.getElementById("montoDescontar")?.value.trim());
+			return isNaN(val) ? null : val;
+		})(),
 		fechaSolicitud: fechaActual,
 		renovacion: esRenovacion,
 		comentarios: getInputValue("comentariosSolicitud")
 	};
-	
+
 
 
 	let validacion = 0;
-	if(!solicitudData.empresa){
+	if (!solicitudData.empresa) {
 		document.getElementById("buscarEmpresa").classList.add("is-invalid");
 		validacion = 1;
-	}else{
+	} else {
 		document.getElementById("buscarEmpresa").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	if(!solicitudData.empleado){
+	if (!solicitudData.empleado) {
 		document.getElementById("buscarEmpleado").classList.add("is-invalid");
 		validacion = 1;
-	}else{
-			document.getElementById("buscarEmpleado").classList.remove("is-invalid");
+	} else {
+		document.getElementById("buscarEmpleado").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	
-	if(!solicitudData.producto){
+
+	if (!solicitudData.producto) {
 		document.getElementById("buscarProducto").classList.add("is-invalid");
 		validacion = 1;
-	}else{
-			document.getElementById("buscarProducto").classList.remove("is-invalid");
+	} else {
+		document.getElementById("buscarProducto").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	
-	if(!solicitudData.numEmpleado){
+
+	if (!solicitudData.numEmpleado) {
 		document.getElementById("numEmpleado").classList.add("is-invalid");
 		validacion = 1;
-	}else {
-			document.getElementById("numEmpleado").classList.remove("is-invalid");
+	} else {
+		document.getElementById("numEmpleado").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	
-	if(!solicitudData.montoSolicitado){
+
+	if (!solicitudData.montoSolicitado) {
 		document.getElementById("montoSolicitado").classList.add("is-invalid");
 		validacion = 1;
-	}else{
-			document.getElementById("montoSolicitado").classList.remove("is-invalid");
+	} else {
+		document.getElementById("montoSolicitado").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	
-	
-	
-	if(!solicitudData.montoDescontar){
+
+
+
+	if (!solicitudData.montoDescontar) {
 		document.getElementById("montoDescontar").classList.add("is-invalid");
 		validacion = 1;
-	}else{
+	} else {
 		document.getElementById("montoDescontar").classList.remove("is-invalid");
 		validacion = 0;
 	}
-	
-	if(validacion == 1){
+
+	if (validacion == 1) {
 		Swal.fire({
 			icon: "warning",
 			title: "Campos incompletos",
@@ -593,7 +593,7 @@ if (isNaN(montoDescontarParsed)) {
 		});
 		return;
 	}
-	
+
 	// Validar campos obligatorios
 	/*if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado || !solicitudData.montoSolicitado || !solicitudData.montoDescontar) {
 		Swal.fire({
@@ -680,9 +680,9 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
-	cargarEmpresasFiltro();
+	//cargarEmpresasFiltro();
 
-	document.getElementById("btnAnterior").addEventListener("click", function() {
+	/*document.getElementById("btnAnterior").addEventListener("click", function() {
 		if (paginaActual > 0) {
 			paginaActual--;
 			cargarSolicitudes(paginaActual);
@@ -692,7 +692,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("btnSiguiente").addEventListener("click", function() {
 		paginaActual++;
 		cargarSolicitudes(paginaActual);
-	});
+	});*/
 });
 
 function obtenerEstatus(estatus) {
@@ -731,50 +731,102 @@ function cargarSolicitudes(pagina) {
 				botonExcel.classList.remove("d-flex");
 				botonExcel.classList.add("d-none");
 			}
+			const registrosTotalesSol = [];
+			tablaSolicitudes.clear().draw();
+			$.each(solicitudes, function(idx, opt) {
+				// Botón editar
+				let btnEditar = `<button class='btn btn-warning btn-sm btn-editar' title='Editar Solicitud' data-id='${opt.id}' data-tooltip='Editar'>
+        <i class='fas fa-edit'></i></button>`;
+
+				// Botón aprobar/cancelar si estatus === 1
+				let btnAprobarCancelar = '';
+				if (opt.estatus === 1) {
+					btnAprobarCancelar = `<button class='btn btn-primary btn-sm btn-aprobar-cancelar' title='Aprobar o Cancelar' data-tooltip='Aprobar/Cancelar'
+            onclick="aprobarOCancelarSolicitud(${opt.id}, '${opt.empresa}')">
+            <i class='fas fa-check-circle'></i> / <i class='fas fa-times-circle'></i>
+        </button>`;
+				}
+
+				// Botón PDF si estatus === 3
+				let btnPdf = '';
+				if (opt.estatus === 3) {
+					btnPdf = `<button class='btn btn-success btn-sm btn-pdf' title='Ver PDF' data-id='${opt.id}' data-tooltip='Ver PDF'>
+            <i class='fas fa-file-pdf'></i>
+        </button>`;
+				}
+
+				// Concatenar botones
+				let acciones = '';
+				if (permiso) {
+					acciones = btnEditar + btnAprobarCancelar;
+				}
+				acciones += btnPdf;
+
+				// Agregar fila a DataTable
+				registrosTotalesSol.push([
+					opt.id,
+					opt.empleado,
+					opt.fechaSolicitud,
+					opt.empresa,
+					opt.montoSolicitado,
+					opt.montoDescontar,
+					opt.usuarioReg.vc_nombre_usuario,
+					opt.sucursal,
+					obtenerEstatus(opt.estatus),
+					acciones
+				]);
+			});
+
+			// Add all rows at once
+            tablaSolicitudes.rows.add(registrosTotalesSol).draw();
+		
+			/*
+						let filas = solicitudes.map((solicitud) => {
+							return `<tr>
+								<td>${solicitud.id}</td>
+								<td>${solicitud.empleado}</td>
+								<td>${solicitud.fechaSolicitud}</td>
+								<td>${solicitud.empresa}</td>
+								<td>$ ${solicitud.montoSolicitado}</td>
+								<td>$ ${solicitud.montoDescontar}</td>
+								<td>${solicitud.usuarioReg.vc_nombre_usuario}</td>
+								<td>${solicitud.sucursal}</td>
+								<td>${obtenerEstatus(solicitud.estatus)}</td>
+								<td>
+									${permiso ? `
+										<button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+											<i class="fas fa-edit"></i>
+										</button>
+										${solicitud.estatus === 1 ? `
+											<button class="btn btn-primary btn-sm btn-aprobar-cancelar"
+												onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
+												<i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
+											</button>` : ''}
+									` : ''}
+								    
+									${solicitud.estatus === 3 ? `
+										<button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
+											<i class="fas fa-file-pdf"></i>
+										</button>` : ''}
+								</td>
+							</tr>`;
+						}).join('');
+			
+			
+						tabla.innerHTML = filas;
+			
+						// Actualizar paginación
+						document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
+						document.getElementById("btnAnterior").disabled = pagina === 0;
+						document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
+			*/
 
 
 
-			let filas = solicitudes.map((solicitud) => {
-				return `<tr>
-			        <td>${solicitud.id}</td>
-			        <td>${solicitud.empleado}</td>
-			        <td>${solicitud.fechaSolicitud}</td>
-			        <td>${solicitud.empresa}</td>
-			        <td>$ ${solicitud.montoSolicitado}</td>
-			        <td>$ ${solicitud.montoDescontar}</td>
-			        <td>${solicitud.usuarioReg.vc_nombre_usuario}</td>
-			        <td>${solicitud.sucursal}</td>
-			        <td>${obtenerEstatus(solicitud.estatus)}</td>
-			        <td>
-			            ${permiso ? `
-			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-			                    <i class="fas fa-edit"></i>
-			                </button>
-			                ${solicitud.estatus === 1 ? `
-			                    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-			                        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
-			                        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
-			                    </button>` : ''}
-			            ` : ''}
-			            
-			            ${solicitud.estatus === 3 ? `
-			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
-			                    <i class="fas fa-file-pdf"></i>
-			                </button>` : ''}
-			        </td>
-			    </tr>`;
-			}).join('');
 
-
-			tabla.innerHTML = filas;
-
-			// Actualizar paginación
-			document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
-			document.getElementById("btnAnterior").disabled = pagina === 0;
-			document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
 
 			// Ocultar spinner
-			document.getElementById("spinner").style.display = "none";
+			//document.getElementById("spinner").style.display = "none";
 
 			// (Opcional) Si quieres condicionar algún botón con permiso:
 			if (permiso) {
@@ -787,7 +839,7 @@ function cargarSolicitudes(pagina) {
 		})
 		.catch(error => {
 			console.error("Error al cargar las solicitudes:", error);
-			document.getElementById("spinner").style.display = "none";
+			//document.getElementById("spinner").style.display = "none";
 		});
 }
 

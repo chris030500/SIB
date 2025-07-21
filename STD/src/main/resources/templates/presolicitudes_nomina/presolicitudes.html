@@ -8,6 +8,7 @@
 	<title>Cobro Domiciliado</title>
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link rel="stylesheet" href="@{/css/estilos/responsivo.css}">
 </head>
 
 <body>
@@ -31,40 +32,40 @@
 
 				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
 					<!-- Empresa -->
-					<div class="flex-grow-1">
+					<!--<div class="flex-grow-1">
 						<label for="filtroEmpresa" class="form-label">Buscar Empresa</label>
 						<input type="search" class="form-control" id="filtroEmpresa" list="listaEmpresas"
 							autocomplete="off" placeholder="Buscar empresa">
 						<datalist id="listaEmpresas"></datalist>
 						<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
-					</div>
+					</div>-->
 
 					<!-- Cliente -->
-					<div class="flex-grow-1">
+					<!--<div class="flex-grow-1">
 						<label for="filtroClientes" class="form-label">Buscar Cliente</label>
 						<input type="search" class="form-control" id="filtroClientes" list="listaClientes"
 							autocomplete="off" placeholder="Buscar empresa">
 						<datalist id="listaClientes"></datalist>
 						<div id="spinnerClientes" class="spinner-border text-primary" style="display: none;"></div>
-					</div>
+					</div>-->
 
 					<!-- Fecha inicio -->
-					<div class="w-auto">
+					<!--<div class="w-auto">
 						<label for="fechaInicio" class="form-label">Fecha Inicio</label>
 						<input type="date" id="fechaInicio" class="form-control">
-					</div>
+					</div>-->
 
 					<!-- Fecha fin -->
-					<div class="w-auto">
+					<!--<div class="w-auto">
 						<label for="fechaFin" class="form-label">Fecha Fin</label>
 						<input type="date" id="fechaFin" class="form-control">
-					</div>
+					</div>-->
 
 					<!-- Botón Buscar -->
-					<div class="w-auto">
+					<!--<div class="w-auto">
 						<label class="form-label d-block">&nbsp;</label>
 						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
-					</div>
+					</div>-->
 
 					<!-- Botón Nueva Solicitud -->
 					<div class="w-auto">
@@ -80,30 +81,34 @@
 					style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
 					<span class="sr-only">Cargando...</span>
 				</div>
+				<div class="row" style="margin-top : 15px ">
+					<div class="table-responsive">
+						<table class="table table-sm" style="width: 100%;" id="tablaSolicitudes">
+							<thead class="table-primary">
+								<tr>
+									<th>No. Cliente</th>
+									<th>Nombre de Cliente</th>
+									<th>Fecha de Solicitud</th>
+									<th>Nombre de Empresa</th>
+									<th>Monto</th>
+									<th>Cuota</th>
+									<th>Usuario Registro</th>
+									<th>Sucursal</th>
+									<th>Estatus</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
 
-				<table class="table table-bordered text-center">
-					<thead class="table-primary">
-						<tr>
-							<th>No. Cliente</th>
-							<th>Nombre de Cliente</th>
-							<th>Fecha de Solicitud</th>
-							<th>Nombre de Empresa</th>
-							<th>Monto</th>
-							<th>Cuota</th>
-							<th>Usuario Registro</th>
-							<th>Sucursal</th>
-							<th>Estatus</th>
-							<th>Acciones</th>
-						</tr>
-					</thead>
-					<tbody id="tablaSolicitudes">
-					</tbody>
-				</table>
-				<div class="d-flex justify-content-between">
+				<!--<div class="d-flex justify-content-between">
 					<button id="btnAnterior" class="btn btn-primary">Anterior</button>
 					<span id="paginaActual">Página 1</span>
 					<button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
-				</div>
+				</div>-->
 			</div>
 		</body>
 
@@ -289,19 +294,22 @@
 	</section>
 
 	<th:block layout:fragment="page-scripts">
-		<!-- Bootstrap JS (si falta) -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-		<!-- jQuery (si es necesario para otras funciones) -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-		<!-- Plugins y scripts adicionales -->
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+		<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
+
+
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>
+		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
 	</th:block>
 
 
