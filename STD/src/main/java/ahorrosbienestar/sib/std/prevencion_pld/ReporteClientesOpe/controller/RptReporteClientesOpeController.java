@@ -85,31 +85,57 @@ public class RptReporteClientesOpeController {
  
     @PostMapping(value = "/reporteClientesOpe/uploadPEP",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE) 
-@ResponseBody
-public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
-    Map<String, Object> respuesta = new HashMap<>();
-    try {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDetails userDetails = null;
-        if (principal instanceof UserDetails) {
-            userDetails = (UserDetails) principal;
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
+        Map<String, Object> respuesta = new HashMap<>();
+
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            logger.info("Principal obtenido: " + principal);
+
+            if (!(principal instanceof UserDetails)) {
+                logger.error("Error: Usuario no autenticado correctamente.");
+                respuesta.put("mensaje", "Error: Usuario no autenticado.");
+                respuesta.put("tipo", "error");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+            }
+
+            UserDetails userDetails = (UserDetails) principal;
             usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+            if (usuarios == null || usuarios.isEmpty()) {
+                logger.error("Error: Usuario no encontrado en base de datos: " + userDetails.getUsername());
+                respuesta.put("mensaje", "Error: Usuario no encontrado.");
+                respuesta.put("tipo", "error");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+            }
+
+            logger.info("/reporteClientesOpe/uploadPEP");
+            logger.info("Usuario autenticado: " + usuarios);
+
+            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
+
+            if (proceso != null) {
+                detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+
+                respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
+                respuesta.put("tipo", "success");
+                return ResponseEntity.ok(respuesta);
+            } else {
+                logger.error("Error procesando archivo PEP: No se pudo registrar el proceso.");
+                respuesta.put("mensaje", "Error: No se pudo registrar el proceso.");
+                respuesta.put("tipo", "error");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+            }
+
+        } catch (Exception ex) {
+            logger.error("Error procesando archivo PEP", ex);
+            respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
+            respuesta.put("tipo", "error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
-        
-        logger.info("/reporteClientesOpe/uploadPEP");
- 
-        respuesta.put("mensaje", "Archivo procesado exitosamente. ");
-        respuesta.put("tipo", "success");
-        return ResponseEntity.ok(respuesta);
- 
-    } catch (Exception ex) {
-        logger.error("Error procesando archivo PEP" + ex.getMessage());
-        respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
-        respuesta.put("tipo", "error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
     }
-}
  
  
  
