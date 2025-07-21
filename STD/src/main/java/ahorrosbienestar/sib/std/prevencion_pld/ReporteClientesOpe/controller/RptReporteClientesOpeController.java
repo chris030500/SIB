@@ -85,33 +85,48 @@ public class RptReporteClientesOpeController {
  
     @PostMapping(value = "/reporteClientesOpe/uploadPEP",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.TEXT_PLAIN_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> uploadPEP(@RequestParam("file") MultipartFile file) {
-        try {
-           
- 
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserDetails userDetails = null;
-            if (principal instanceof UserDetails) {
-                userDetails = (UserDetails) principal;
-                usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-            }
- 
-            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
- 
-            detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
- 
-            return ResponseEntity.ok("Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
- 
-        } catch (Exception ex) {
-            logger.error("Error procesando archivo PEP", ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constantes.MENSAJE_DE_ERROR + ex.getMessage());
+            produces = MediaType.APPLICATION_JSON_VALUE) 
+@ResponseBody
+public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
+    Map<String, Object> respuesta = new HashMap<>();
+    try {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = null;
+        if (principal instanceof UserDetails) {
+            userDetails = (UserDetails) principal;
+            usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
         }
+        
+        logger.info("/reporteClientesOpe/uploadPEP");
+ 
+        ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
+        if(proceso != null) {
+        	detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+        	 
+            respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
+            respuesta.put("tipo", "success");
+            return ResponseEntity.ok(respuesta);
+        }else {
+            logger.error("Error procesando archivo PEP");
+            respuesta.put("mensaje", "Error procesando archivo: ");
+            respuesta.put("tipo", "error");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+        }
+        
+        
+ 
+    } catch (Exception ex) {
+        logger.error("Error procesando archivo PEP" + ex.getMessage());
+        respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
+        respuesta.put("tipo", "error");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
     }
+}
+ 
+ 
  
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-    public ResponseEntity<?> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
                                                 @RequestParam("fechaFin") String fechaFin) {
  
         List<String> respuesta = new ArrayList<>();
@@ -132,7 +147,7 @@ public class RptReporteClientesOpeController {
     }
     
     @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
-    public ResponseEntity<?> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
+    public ResponseEntity<List<String>> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
                                                          @RequestParam("fechaFin") String fechaFin) {
  
         List<String> respuesta = new ArrayList<>();
@@ -153,22 +168,61 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(respuesta);
         }
     }
+    
+    @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
+        List<String> respuesta = new ArrayList<>();
+        try {
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_HISTORICO);
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF) 
+                    + datosReporte.getPk_id_reporte()
+                    + "&parametros=?idHistorico=" + id
+                    + "&tipoDocumento=" + datosReporte.getVc_extension()
+                    + "&identificadorDoc=HC";
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("Error al generar histórico clientes: " + e.getMessage(), e);
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+ 
+    @RequestMapping(value = { "/generarRptHistoricoOperaciones" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> generarRptHistoricoOperaciones(@RequestParam("id") Long id) {
+        List<String> respuesta = new ArrayList<>();
+        try {
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_HISTORICO);
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+                    + datosReporte.getPk_id_reporte()
+                    + "&parametros=?idHistorico=" + id
+                    + "&tipoDocumento=" + datosReporte.getVc_extension()
+                    + "&identificadorDoc=HO";
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error("Error al generar histórico operaciones: " + e.getMessage(), e);
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+ 
  
  
     @PostMapping("/reporteClientesOpe/guardarFechas")
     @ResponseBody
-    public ResponseEntity<?> guardarFechas(@RequestBody ProcesoReporte dto) {
+    public ResponseEntity<String> guardarFechas(@RequestBody ProcesoReporte dto) {
         return generacionReporteService.guardarFechasProceso(dto);
     }
  
     @PostMapping("/reporteClientesOpe/confirmar")
     @ResponseBody
-    public ResponseEntity<?> confirmar(@RequestParam boolean confirmado) {
+    public ResponseEntity<String> confirmar(@RequestParam boolean confirmado) {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
     @PostMapping("/ejecutarDatosProceso")
-    public ResponseEntity<?> ejecutarDatosProceso(){
+    public ResponseEntity<Map<String, Object>> ejecutarDatosProceso(){
     
         logger.info("/ejecutarDatosProceso");
         String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
@@ -232,7 +286,7 @@ public class RptReporteClientesOpeController {
      }
     
     @PostMapping("/ejecutarVistoBueno")
-    public ResponseEntity<?> ejecutarVistoBueno() {
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
         logger.info("/ejecutarVistoBueno");
         Map<String, Object> respuesta = new HashMap<>();
  
@@ -241,9 +295,31 @@ public class RptReporteClientesOpeController {
         CallableStatement callableStatement = null;
  
         try {
+            // Obtener usuario logueado
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetails userDetails = null;
+            Integer idUsuario = null;
+ 
+            if (principal instanceof UserDetails) {
+                userDetails = (UserDetails) principal;
+                usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+                if (!usuarios.isEmpty()) {
+                    idUsuario = usuarios.get(0).getPk_id_usuario(); 
+                }
+            }
+ 
+            if (idUsuario == null) {
+                respuesta.put(Constantes.TEXTO_MNS, "No se pudo obtener el ID del usuario.");
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+                return ResponseEntity.ok(respuesta);
+            }
+ 
             connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
-            callableStatement.registerOutParameter(1, Types.VARCHAR);
+ 
+            callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT param
+            callableStatement.setInt(2, idUsuario);                  // IN param
+ 
             callableStatement.execute();
             errorMessage = callableStatement.getString(1);
  
@@ -270,6 +346,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+ 
  
     /***
      * 
