@@ -154,19 +154,22 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
  
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
-  const file = document.getElementById("fileUploadPEP").files[0];
-  if (!file) {
-    swal("Debes seleccionar un archivo.", {
-      icon: "warning",
-    });
+
+  const input = document.getElementById("fileUploadPEP");
+  const files = input.files;
+
+  if (!files || files.length === 0) {
+    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
     return;
   }
- 
+
   const fd = new FormData();
-  fd.append("file", file);
- 
+  for (let i = 0; i < files.length; i++) {
+    fd.append("file", files[i]); 
+  }
+
   swal({
-    title: "Procesando información.",
+    title: "Procesando archivo(s)...",
     content: {
       element: "div",
       attributes: {
@@ -178,40 +181,44 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
- 
+
   try {
-    const res = await fetch("/STD/prevencion/reporteClientesOpe/uploadPEP", {
-  method: "POST",
-  body: fd
-});
- 
-    const json = await res.json();
+    const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
+      method: "POST",
+      body: fd
+    });
+
+    const respuesta = await res.json(); 
     swal.close();
- 
-    if (json.tipo === "success") {
-  swal({
-    title: "¡Éxito!",
-    text: json.mensaje,
-    icon: "success",
-    button: "Aceptar",
-  });
-} else {
-  swal({
-    title: "Error",
-    text: json.mensaje,
-    icon: "error",
-    button: "Aceptar",
-  });
-}
- 
+
+    if (res.ok && Array.isArray(respuesta)) {
+      swal({
+        title: "¡Éxito!",
+        text: respuesta[0],
+        icon: "success",
+        button: "Aceptar",
+      }).then(() => {
+       
+      });
+    } else {
+      swal({
+        title: "Error",
+        text: respuesta[0] || "Ocurrió un error inesperado.",
+        icon: "error",
+        button: "Aceptar",
+      });
+    }
+
   } catch (error) {
     swal.close();
+    console.error("Error en fetch:", error);
     swal("Se presentó un error, intente más tarde.", {
       icon: "error",
       closeOnClickOutside: false,
     });
   }
 });
+
  
  
 function confirmar(valor) {

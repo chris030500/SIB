@@ -83,59 +83,61 @@ public class RptReporteClientesOpeController {
     }
     
  
-    @PostMapping(value = "/reporteClientesOpe/uploadPEP",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
-        Map<String, Object> respuesta = new HashMap<>();
+    @PostMapping("/reporteClientesOpe/uploadPEP")
+    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
+
+        String mensaje = "";
+        ArrayList<String> respuesta = new ArrayList<>();
 
         try {
+            // Verificación de usuario autenticado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            logger.info("Principal obtenido: " + principal);
-
             if (!(principal instanceof UserDetails)) {
-                logger.error("Error: Usuario no autenticado correctamente.");
-                respuesta.put("mensaje", "Error: Usuario no autenticado.");
-                respuesta.put("tipo", "error");
+                mensaje = "Error: Usuario no autenticado.";
+                respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
 
             UserDetails userDetails = (UserDetails) principal;
-            usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+            List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
             if (usuarios == null || usuarios.isEmpty()) {
-                logger.error("Error: Usuario no encontrado en base de datos: " + userDetails.getUsername());
-                respuesta.put("mensaje", "Error: Usuario no encontrado.");
-                respuesta.put("tipo", "error");
+                mensaje = "Error: Usuario no encontrado en base de datos.";
+                respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
 
-           // logger.info("/reporteClientesOpe/uploadPEP");
-            logger.info("Usuario autenticado: " + usuarios);
+            if (files == null || files.length == 0) {
+                mensaje = "No se subió ningún archivo.";
+                respuesta.add(mensaje);
+                return ResponseEntity.badRequest().body(respuesta);
+            }
 
+            // Registrar proceso
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
-
-            if (proceso != null) {
-                detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
-
-                respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
-                respuesta.put("tipo", "success");
-                return ResponseEntity.ok(respuesta);
-            } else {
-                logger.error("Error procesando archivo PEP: No se pudo registrar el proceso.");
-                respuesta.put("mensaje", "Error: No se pudo registrar el proceso.");
-                respuesta.put("tipo", "error");
+            if (proceso == null) {
+                mensaje = "Error: No se pudo registrar el proceso.";
+                respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
             }
 
-        } catch (Exception ex) {
-            logger.error("Error procesando archivo PEP", ex);
-            respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
-            respuesta.put("tipo", "error");
+            // Procesar cada archivo (sin guardarlo físicamente)
+            for (MultipartFile file : files) {
+                detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+            }
+
+            mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
+            respuesta.add(mensaje);
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            mensaje = "Error procesando archivo(s): " + e.getMessage();
+            logger.error(mensaje, e);
+            respuesta.add(mensaje);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
+
  
  
  

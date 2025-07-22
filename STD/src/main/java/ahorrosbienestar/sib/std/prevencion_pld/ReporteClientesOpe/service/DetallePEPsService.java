@@ -26,14 +26,20 @@ public class DetallePEPsService {
         return detallePEPsRepository.save(model);
     }
  
-    public void procesarCargaConUsuario(MultipartFile file,  int idProceso ){
+    public void procesarCargaConUsuario(MultipartFile file, int idProceso) {
         try {
+            logger.info("Iniciando lectura del archivo...");
             List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
-            if (filas.isEmpty()) return;
- 
+            logger.info("Archivo leído. Total de filas: " + filas.size());
+
+            if (filas.isEmpty()) {
+                logger.warn("El archivo no contiene filas válidas.");
+                return;
+            }
+
             AtomicInteger insertados = new AtomicInteger(0);
             AtomicInteger actualizados = new AtomicInteger(0);
- 
+
             for (DetallePEPsModel fila : filas) {
                 detallePEPsRepository.findById(fila.getI_clienteid()).ifPresentOrElse(existing -> {
                     if (!Objects.equals(existing.getVc_nombre_cliente(), fila.getVc_nombre_cliente())) {
@@ -47,13 +53,12 @@ public class DetallePEPsService {
                     insertados.incrementAndGet();
                 });
             }
-            logger.info("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());
-        
+
+            logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);
         } catch (Exception e) {
-            logger.error("Error procesarCargaConUsuario", e); // <-- imprime stacktrace completo
-            throw new RuntimeException("Error procesando archivo", e); // <-- relanza el error al controller
+            logger.error("Error en procesarCargaConUsuario: ", e);
+            throw new RuntimeException("Error al procesar archivo: " + e.getMessage(), e);
         }
-          
     }
 }
 
