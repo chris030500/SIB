@@ -19,7 +19,8 @@
 				<div class="p-3 mb-4 text-white text-center" style="background-color: #33A9FF;">
 					<h2>Solicitudes de Crédito</h2>
 				</div>
-
+				<div class="row" style="margin-top : 5px ">
+				<div class="col-lg-6">
 				<div id="contenedorBotonExcel" class="d-none flex-wrap align-items-end gap-2 mb-3">
 					<!-- Botón para cargar archivo Excel -->
 					<div class="w-auto">
@@ -28,6 +29,17 @@
 							Cargar Excel
 						</button>
 					</div>
+				</div>
+				</div>
+				<div class="col-lg-6">
+					<!-- Botón Nueva Solicitud -->
+					<div class="w-auto">
+						<label class="form-label d-block">&nbsp;</label>
+						<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+							Nueva Solicitud
+						</button>
+					</div>
+				</div>
 				</div>
 
 				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
@@ -67,13 +79,7 @@
 						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
 					</div>-->
 
-					<!-- Botón Nueva Solicitud -->
-					<div class="w-auto">
-						<label class="form-label d-block">&nbsp;</label>
-						<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
-							Nueva Solicitud
-						</button>
-					</div>
+					
 				</div>
 
 				<!-- Spinner de carga -->
@@ -295,17 +301,12 @@
 
 	<th:block layout:fragment="page-scripts">
 
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-
-		<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-		<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
-
-
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>
 		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>

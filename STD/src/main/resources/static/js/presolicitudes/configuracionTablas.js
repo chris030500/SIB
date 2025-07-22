@@ -13,15 +13,35 @@ $(document).ready(function() {
         }]
     });
     
-     tablaSolicitudes = $("#tablaSolicitudes").DataTable({
-        "language": {
-            "url": "/json/Spanish.json"
+   tablaSolicitudes = $("#tablaSolicitudes").DataTable({
+    language: {
+        processing:     "Procesando...",
+        search:         "Buscar:",
+        lengthMenu:     "Mostrar _MENU_ registros",
+        info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+        infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0",
+        infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+        infoPostFix:    "",
+        loadingRecords: "Cargando...",
+        zeroRecords:    "No se encontraron resultados",
+        emptyTable:     "Ningún dato disponible en esta tabla",
+        paginate: {
+            first:      "Primero",
+            previous:   "Anterior",
+            next:       "Siguiente",
+            last:       "Último"
         },
-        'aoColumnDefs': [{
-            'bSortable': false,
-            'aTargets': [-1]  // La última columna (Acciones) no será ordenable
-        }]
-    });
+        aria: {
+            sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+            sortDescending: ": Activar para ordenar la columna de manera descendente"
+        }
+    },
+    order: [[0, "desc"]], // Cambia 0 por el índice de la columna por la que deseas ordenar
+    aoColumnDefs: [{
+        bSortable: false,
+        aTargets: [-1] // La última columna no es ordenable
+    }]
+});
     
     
 });

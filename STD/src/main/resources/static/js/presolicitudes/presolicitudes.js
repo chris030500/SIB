@@ -710,13 +710,13 @@ function obtenerEstatus(estatus) {
 
 function cargarSolicitudes(pagina) {
 	// Mostrar spinner
-	document.getElementById("spinner").style.display = "block";
+	//document.getElementById("spinner").style.display = "block";
 
 	fetch(urlPrincipal + `listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
 		.then(response => response.json())
 		.then(data => {
-			let tabla = document.getElementById("tablaSolicitudes");
-			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
+			//let tabla = document.getElementById("tablaSolicitudes");
+			//tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
 			const solicitudes = data.contenido.content; // Cambiado
 			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
