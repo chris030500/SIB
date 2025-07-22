@@ -188,12 +188,21 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     const json = await res.json();
     swal.close();
  
-    swal({
-      title: json.tipo === "success" ? "¡Éxito!" : "Error",
-      text: json.mensaje,
-      icon: json.tipo,
-      button: "Aceptar",
-    });
+    if (json.tipo === "success") {
+  swal({
+    title: "¡Éxito!",
+    text: json.mensaje,
+    icon: "success",
+    button: "Aceptar",
+  });
+} else {
+  swal({
+    title: "Error",
+    text: json.mensaje,
+    icon: "error",
+    button: "Aceptar",
+  });
+}
  
   } catch (error) {
     swal.close();
