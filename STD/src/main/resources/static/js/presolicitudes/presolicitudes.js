@@ -389,7 +389,7 @@ document.getElementById('puesto').addEventListener('change', function() {
 
 });
 
-document.getElementById('montoSolicitado').addEventListener('blur', function() {
+document.getElementById('montoSolicitado').addEventListener('input', function() {
 	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
 	const plazoInicial = document.getElementById('plazoCredito').value
 	const frecuencia = document.getElementById('frecuenciaCredito').value
@@ -487,6 +487,31 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
 		guardarSolicitud();
 	});
+	document.getElementById('plazoCredito').addEventListener('change', function() {
+		const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+		const plazoInicial = document.getElementById('plazoCredito').value;
+		const frecuencia = document.getElementById('frecuenciaCredito').value;
+		const plazo = plazoInicial;
+
+		// Llamar a la función de plan de pagos
+		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+
+
+	});
+
+
+	document.getElementById('plazoCredito').addEventListener('change', function() {
+		const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+		const plazoInicial = document.getElementById('plazoCredito').value;
+		const frecuencia = document.getElementById('frecuenciaCredito').value;
+		const plazo = plazoInicial;
+
+		// Llamar a la función de plan de pagos
+		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+
+
+	});
+
 });
 
 function guardarSolicitud() {
@@ -712,13 +737,13 @@ function cargarSolicitudes(pagina) {
 	// Mostrar spinner
 	//document.getElementById("spinner").style.display = "block";
 
-	fetch(urlPrincipal + `listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+	fetch(urlPrincipal + `listarSolicitudes`)
 		.then(response => response.json())
 		.then(data => {
 			//let tabla = document.getElementById("tablaSolicitudes");
 			//tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
-			const solicitudes = data.contenido.content; // Cambiado
+			const solicitudes = data.contenido; // Cambiado
 			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
 			const botonExcel = document.getElementById("contenedorBotonExcel");
 
@@ -778,8 +803,8 @@ function cargarSolicitudes(pagina) {
 			});
 
 			// Add all rows at once
-            tablaSolicitudes.rows.add(registrosTotalesSol).draw();
-		
+			tablaSolicitudes.rows.add(registrosTotalesSol).draw();
+
 			/*
 						let filas = solicitudes.map((solicitud) => {
 							return `<tr>
@@ -846,7 +871,7 @@ function cargarSolicitudes(pagina) {
 
 
 function aprobarOCancelarSolicitud(id, empresa) {
-	Swal.fire({
+	swal.fire({
 		title: '¿Qué deseas hacer con esta solicitud?',
 		text: `ID de solicitud: ${id}`,
 		showDenyButton: true,
@@ -1058,7 +1083,7 @@ document.getElementById("uploadExcelButton").addEventListener("click", function(
 
 	if (!file) {
 		Swal.fire({
-			icon: "warning",
+			icon: "error",
 			title: "Archivo no seleccionado",
 			text: "Por favor selecciona un archivo antes de subirlo.",
 		});
@@ -1170,9 +1195,6 @@ document.getElementById("buscarProducto").addEventListener("change", function() 
 		document.getElementById("checkNomiprestamo").checked = false;
 	}
 });
-
-
-
 
 
 

@@ -70,12 +70,17 @@ public class SolicitudCredito {
     @Column(name = "VC_COMENTARIOS")
     private String comentarios;
     
-    @Column(name = "DT_FECHA_APROBACION")
-    private LocalDate fechaAprobacion;
+    @Column(name = "DT_FECHA_RESPUESTA_EMP")
+    private LocalDate fechaRegistroRespuestaEmp;
     
 	@OneToOne
 	@JoinColumn(name = "I_USUARIO_REG", updatable = true)
 	private Usuario usuarioReg;
+	
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REG_RES_EMP", updatable = true)
+	private Usuario usuarioRegRespuesta;
+    
     
     @Override
 	public String toString() {
@@ -83,7 +88,7 @@ public class SolicitudCredito {
 				+ producto + ", numEmpleado=" + numEmpleado + ", puesto=" + puesto + ", plazo=" + plazo
 				+ ", frecuencia=" + frecuencia + ", montoSolicitado=" + montoSolicitado + ", montoDescontar="
 				+ montoDescontar + ", fechaSolicitud=" + fechaSolicitud + ", ejecutivo=" + ejecutivo + ", sucursal="
-				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaAprobacion=" + fechaAprobacion +", usuarioReg=" + usuarioReg + "]";
+				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaRegistroRespuestaEmp=" + fechaRegistroRespuestaEmp +", usuarioReg=" + usuarioReg +", usuarioRegRespuesta=" + usuarioRegRespuesta + "]";
 	}
 
 	// Getters y Setters
@@ -223,12 +228,13 @@ public class SolicitudCredito {
 		this.comentarios = comentarios;
 	}
 
-	public LocalDate getFechaAprobacion() {
-		return fechaAprobacion;
+
+	public LocalDate getFechaRegistroRespuestaEmp() {
+		return fechaRegistroRespuestaEmp;
 	}
 
-	public void setFechaAprobacion(LocalDate fechaAprobacion) {
-		this.fechaAprobacion = fechaAprobacion;
+	public void setFechaRegistroRespuestaEmp(LocalDate fechaRegistroRespuestaEmp) {
+		this.fechaRegistroRespuestaEmp = fechaRegistroRespuestaEmp;
 	}
 
 	public Usuario getUsuarioReg() {
@@ -237,6 +243,14 @@ public class SolicitudCredito {
 
 	public void setUsuarioReg(Usuario usuarioReg) {
 		this.usuarioReg = usuarioReg;
+	}
+
+	public Usuario getUsuarioRegRespuesta() {
+		return usuarioRegRespuesta;
+	}
+
+	public void setUsuarioRegRespuesta(Usuario usuarioRegRespuesta) {
+		this.usuarioRegRespuesta = usuarioRegRespuesta;
 	}
 
 

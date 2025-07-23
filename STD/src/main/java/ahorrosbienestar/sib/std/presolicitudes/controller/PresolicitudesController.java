@@ -1,19 +1,30 @@
 package ahorrosbienestar.sib.std.presolicitudes.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.service.CatalogosCEService;
 import ahorrosbienestar.sib.std.comunes.Constantes;
@@ -51,16 +63,6 @@ import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.util.*;
 
 @Controller
 @RequestMapping("configuracionSolicitudes")
@@ -245,7 +247,7 @@ public class PresolicitudesController {
 			return ResponseEntity.ok(nuevaSolicitud);
 		} catch (Exception e) {
 			// Imprimir el error en la consola
-			System.out.println("Error al crear la solicitud de crédito: " + e.getMessage());
+			logger.error("Error al crear la solicitud de crédito: " + e.getMessage());
 
 			// Enviar la respuesta de error al cliente
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -300,19 +302,18 @@ public class PresolicitudesController {
 	}
 
 	@GetMapping("/listarSolicitudes")
-	public ResponseEntity<?> listarSolicitudes(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
+	public ResponseEntity<?> listarSolicitudes() {
 
 		try {
-			Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+			//Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-			System.out.println("idEmpleado: " + idEmpleado);
-			System.out.println("idRol: " + idRol);
+			logger.info("idEmpleado: " + idEmpleado);
+			logger.info("idRol: " + idRol);
 
 			String jefe = catalogosCEService.obtenerJefe(idEmpleado);
-			System.out.println("Jefe: " + jefe);
+			logger.info("Jefe: " + jefe);
 
-			Page<SolicitudCredito> solicitudes;
+			List<SolicitudCredito> solicitudes;
 			Map<String, Object> response = new HashMap<>();
 
 			String rolesVobo = iConfiguracionRepository.ObtenerRolesVobo();
@@ -321,15 +322,15 @@ public class PresolicitudesController {
 					.collect(Collectors.toList());
 
 			if (rolesPermitidos.contains(idRol)) { 
-				solicitudes = solicitudCreditoService.listarTodasSolicitudes(pageable);
+				solicitudes = solicitudCreditoService.listarTodasSolicitudes();
 				response.put("permiso", true);
 			} else {
 				if ("S".equals(jefe)) {
 					List<Integer> sucursales = catalogosCEService.obtenerSucursalesPorJefe(idEmpleado);
-					System.out.println("Sucursales: " + sucursales);
-					solicitudes = solicitudCreditoService.listarSolicitudesPorSucursales(sucursales, pageable);
+					logger.info("Sucursales: " + sucursales);
+					solicitudes = solicitudCreditoService.listarSolicitudesPorSucursales(sucursales);
 				} else {
-					solicitudes = solicitudCreditoService.listarSolicitudes(idEmpleado, pageable);
+					solicitudes = solicitudCreditoService.listarSolicitudes(idEmpleado);
 				}
 				response.put("permiso", false);
 			}
@@ -338,7 +339,7 @@ public class PresolicitudesController {
 
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			System.out.println("Error en listarSolicitudes: " + e.getMessage());
+			logger.error("Error en listarSolicitudes: " + e.getMessage());
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error al listar solicitudes: " + e.getMessage());
@@ -358,12 +359,12 @@ public class PresolicitudesController {
 	@PostMapping("/upload")
 	public ResponseEntity<String> uploadExcel2(@RequestParam("file") MultipartFile file) {
 		if (file.isEmpty()) {
-			System.out.println("[ERROR] El archivo está vacío.");
+			logger.info("[ERROR] El archivo está vacío.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
 		}
 
 		try (InputStream inputStream = file.getInputStream()) {
-			System.out.println("[INFO] Iniciando procesamiento del archivo...");
+			logger.info("[INFO] Iniciando procesamiento del archivo...");
 			Workbook workbook;
 
 			if (file.getOriginalFilename().endsWith(".xlsx")) {
@@ -371,7 +372,7 @@ public class PresolicitudesController {
 			} else if (file.getOriginalFilename().endsWith(".xls")) {
 				workbook = new HSSFWorkbook(inputStream);
 			} else {
-				System.out.println("[ERROR] Formato de archivo no válido.");
+				logger.error("[ERROR] Formato de archivo no válido.");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
 			}
 
@@ -385,7 +386,7 @@ public class PresolicitudesController {
 			for (Cell cell : headerRow) {
 				headers.add(cell.getStringCellValue().trim());
 			}
-			System.out.println("[INFO] Encabezados detectados: " + headers);
+			logger.info("[INFO] Encabezados detectados: " + headers);
 
 			// Leer datos
 			while (rowIterator.hasNext()) {
@@ -419,28 +420,28 @@ public class PresolicitudesController {
 				}
 				solicitudes.add(solicitud);
 			}
-			System.out.println("[INFO] Datos extraídos: " + solicitudes);
+			logger.info("[INFO] Datos extraídos: " + solicitudes);
 			workbook.close();
 
 			// Llamar al servicio para actualizar estatus
-			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes);
-			System.out.println("[INFO] Estatus de solicitudes actualizado.");
+			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes,obtUsuario());
+			logger.info("[INFO] Estatus de solicitudes actualizado.");
 
 			// Obtener IDs de solicitudes
 			List<Integer> solicitudIds = solicitudes.stream().map(s -> {
 				String idStr = s.get("NoSolicitud");
 				return idStr != null ? Integer.parseInt(idStr) : null;
 			}).filter(Objects::nonNull).collect(Collectors.toList());
-			System.out.println("[INFO] IDs de solicitudes extraídos: " + solicitudIds);
+			logger.info("[INFO] IDs de solicitudes extraídos: " + solicitudIds);
 
 			List<SolicitudCredito> solicitudesActualizadas = solicitudCreditoRepository.findAllById(solicitudIds);
-			System.out.println("[INFO] Solicitudes obtenidas de la BD: " + solicitudesActualizadas);
+			logger.info("[INFO] Solicitudes obtenidas de la BD: " + solicitudesActualizadas);
 
 			// Agrupar por sucursal
 			Map<Integer, List<SolicitudCredito>> solicitudesPorSucursal = solicitudesActualizadas.stream()
 					.collect(Collectors.groupingBy(SolicitudCredito::getSucursal));
 
-			System.out.println("[INFO] Solicitudes agrupadas por sucursal: " + solicitudesPorSucursal);
+			logger.info("[INFO] Solicitudes agrupadas por sucursal: " + solicitudesPorSucursal);
 
 			// Obtener el valor único de "proceso" por sucursal
 			Map<Integer, Integer> procesoPorSucursal = new HashMap<>();
@@ -459,14 +460,14 @@ public class PresolicitudesController {
 					procesoPorSucursal.put(sucursal, procesos.iterator().next());
 				} else {
 					// Si hay más de un valor, indicamos inconsistencia
-					System.out.println(
+					logger.info(
 							"[ERROR] Inconsistencia en procesos para la sucursal " + sucursal + ": " + procesos);
 					procesoPorSucursal.put(sucursal, 0);
 				}
 			}
 
 			// Imprimir los procesos asignados a cada sucursal
-			System.out.println("[INFO] Procesos por sucursal: " + procesoPorSucursal);
+			logger.info("[INFO] Procesos por sucursal: " + procesoPorSucursal);
 
 			// Enviar correos a cada sucursal
 			// Enviar correos agrupados por proceso y sucursal
@@ -493,10 +494,10 @@ public class PresolicitudesController {
 						parametros);
 
 				// Debugging: Verificar datos antes del envío
-				System.out.println("[INFO] Enviando correo a: " + direccion.getAddress());
-				System.out.println("[INFO] Sucursal: " + sucursal + " | Proceso: " + proceso);
-				System.out.println("[INFO] Archivo adjunto: " + fileName);
-				System.out.println("[INFO] Parámetros del reporte: " + parametros);
+				logger.info("[INFO] Enviando correo a: " + direccion.getAddress());
+				logger.info("[INFO] Sucursal: " + sucursal + " | Proceso: " + proceso);
+				logger.info("[INFO] Archivo adjunto: " + fileName);
+				logger.info("[INFO] Parámetros del reporte: " + parametros);
 
 				// Enviar el correo con el adjunto
 				emailService.sendEmailWithAttachment(direccion.getAddress(), "Actualización de Estatus de Solicitudes",
@@ -506,7 +507,7 @@ public class PresolicitudesController {
 			return ResponseEntity.ok("Archivo procesado y notificaciones enviadas correctamente.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("[ERROR] Excepción capturada: " + e.getMessage());
+			logger.error("[ERROR] Excepción capturada: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error al procesar el archivo: " + e.getMessage());
 		}
@@ -563,7 +564,7 @@ public class PresolicitudesController {
 	@PostMapping("/envioCorreo/{idEmpresa}")
 	public ResponseEntity<String> enviarCorreoPorEmpresa(@PathVariable String idEmpresa) {
 
-		System.out.print("El correo se enviara a la empresa: " + idEmpresa);
+		logger.info("El correo se enviara a la empresa: " + idEmpresa);
 
 		try {
 			empresaService.prepararCorreoPorEmpresa(idEmpresa);
