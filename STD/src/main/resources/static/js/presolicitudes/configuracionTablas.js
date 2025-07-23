@@ -62,7 +62,7 @@ $(document).ready(function() {
         aTargets: [-1] // La última columna no es ordenable
     },
         {
-            targets: [4, 5], // Cambia al índice de las columnas numéricas
+            targets: [5, 6], // Cambia al índice de las columnas numéricas
             render: $.fn.dataTable.render.number(',', '.', 2, '$')
             // ',' -> separador de miles, '.' -> separador decimal, 2 -> decimales
         }]

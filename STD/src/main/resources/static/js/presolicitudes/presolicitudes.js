@@ -386,8 +386,19 @@ document.getElementById('puesto').addEventListener('change', function() {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
 
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
-
+	
 });
+
+function actualizarMonto(){
+		const monto = parseFloat(document.getElementById('montoSolicitado').value) || 0;
+		const plazoInicial = document.getElementById('plazoCredito').value;
+		const frecuencia = document.getElementById('frecuenciaCredito').value;
+		const plazo = plazoInicial;
+
+		// Llamar a la función de plan de pagos
+		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+
+}
 
 document.getElementById('montoSolicitado').addEventListener('input', function() {
 	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
@@ -484,35 +495,30 @@ function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+	limpiarModal();
 	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
 		guardarSolicitud();
 	});
-	document.getElementById('plazoCredito').addEventListener('change', function() {
-		const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-		const plazoInicial = document.getElementById('plazoCredito').value;
-		const frecuencia = document.getElementById('frecuenciaCredito').value;
-		const plazo = plazoInicial;
-
-		// Llamar a la función de plan de pagos
-		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
-
-
-	});
-
-
-	document.getElementById('plazoCredito').addEventListener('change', function() {
-		const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-		const plazoInicial = document.getElementById('plazoCredito').value;
-		const frecuencia = document.getElementById('frecuenciaCredito').value;
-		const plazo = plazoInicial;
-
-		// Llamar a la función de plan de pagos
-		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
-
-
-	});
 
 });
+
+function limpiarModal(){
+	const modal = document.getElementById('solicitudModal');
+
+    modal.addEventListener('show.bs.modal', function () {
+        // Limpia todos los inputs, selects y textareas dentro del modal
+        const inputs = modal.querySelectorAll('input, select, textarea');
+
+        inputs.forEach(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = false;
+            } else {
+                input.value = '';
+            }
+        });
+    });
+}
+
 
 function guardarSolicitud() {
 	const fechaActual = new Date().toISOString().split("T")[0];
@@ -705,6 +711,7 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
+	
 	//cargarEmpresasFiltro();
 
 	/*document.getElementById("btnAnterior").addEventListener("click", function() {
@@ -790,6 +797,7 @@ function cargarSolicitudes(pagina) {
 				// Agregar fila a DataTable
 				registrosTotalesSol.push([
 					opt.id,
+					opt.numEmpleado,
 					opt.empleado,
 					opt.fechaSolicitud,
 					opt.empresa,

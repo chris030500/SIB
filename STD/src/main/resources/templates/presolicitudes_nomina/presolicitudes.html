@@ -92,6 +92,7 @@
 						<table class="table table-sm" style="width: 100%;" id="tablaSolicitudes">
 							<thead class="table-primary">
 								<tr>
+									<th>No. Solicitud</th>
 									<th>No. Cliente</th>
 									<th>Nombre de Cliente</th>
 									<th>Fecha de Solicitud</th>
@@ -191,7 +192,7 @@
 								<div class="col-md-4">
 									<label for="plazoCredito" class="form-label">Plazo</label>
 									<div id="plazoCreditoContainer">
-										<select class="form-select" id="plazoCredito">
+										<select class="form-select" id="plazoCredito" onchange="actualizarMonto()">
 											<option value="" disabled selected>Seleccione...</option>
 										</select>
 									</div>
@@ -225,7 +226,7 @@
 									<div class="input-group">
 										<span class="input-group-text">$</span>
 										<input type="number" id="montoDescontar" class="form-control text-end"
-											placeholder="500" min="0" step="0.01" readonly>
+											placeholder="Ejemplo:500" min="0" step="0.01" readonly>
 									</div>
 								</div>
 							</div>
