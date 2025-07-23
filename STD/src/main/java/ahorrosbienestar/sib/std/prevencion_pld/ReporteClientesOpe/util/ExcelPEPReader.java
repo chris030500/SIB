@@ -23,46 +23,52 @@ public class ExcelPEPReader {
      public static List<DetallePEPsModel> parse(MultipartFile file) {
     	    List<DetallePEPsModel> lista = new ArrayList<>();
 
-    	    try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
+    	    try {
+    	        logger.info("Nombre del archivo: " + file.getOriginalFilename());
+    	        logger.info("Tamaño del archivo: " + file.getSize());
+
+    	        InputStream is = file.getInputStream();
+    	        logger.info("InputStream abierto");
+
+    	        Workbook workbook = WorkbookFactory.create(is);
+    	        logger.info("Workbook creado");
+
     	        Sheet sheet = workbook.getSheetAt(0);
+    	        logger.info("Hoja obtenida: " + sheet.getSheetName());
 
-    	        for (Row row : sheet) {
-    	            if (row.getRowNum() == 0) continue; // Saltar encabezado
-
-    	            DetallePEPsModel model = new DetallePEPsModel();
-
-    	            try {
-    	                // Validar que las celdas existan
-    	                if (row.getCell(0) == null || row.getCell(1) == null) {
-    	                    logger.warn("Fila incompleta en fila " + row.getRowNum() + ". Se requiere ClienteID y Nombre.");
-    	                    continue;
-    	                }
-
-    	                // Validar tipo de dato para columna A: ClienteID
-    	                if (row.getCell(0).getCellType() != org.apache.poi.ss.usermodel.CellType.NUMERIC) {
-    	                    logger.warn("ClienteID no es numérico en fila " + row.getRowNum());
-    	                    continue;
-    	                }
-
-    	                // Validar tipo de dato para columna B: Nombre del cliente
-    	                if (row.getCell(1).getCellType() != org.apache.poi.ss.usermodel.CellType.STRING) {
-    	                    logger.warn("Nombre del cliente no es texto en fila " + row.getRowNum());
-    	                    continue;
-    	                }
-
-    	                model.setI_clienteid((int) row.getCell(0).getNumericCellValue());
-    	                model.setVc_nombre_cliente(row.getCell(1).getStringCellValue());
-    	                lista.add(model);
-
-    	            } catch (Exception e) {
-    	                logger.warn("Error leyendo fila " + row.getRowNum() + ": " + e.getMessage());
-    	            }
+    	        if (sheet.getPhysicalNumberOfRows() < 2) {
+    	            logger.warn("La hoja no contiene datos suficientes (menos de 2 filas)");
+    	            return lista;
     	        }
 
+    	        for (Row row : sheet) {
+    	            if (row.getRowNum() == 0) continue;
+
+    	            if (row.getCell(0) == null || row.getCell(1) == null) {
+    	                logger.warn("Fila vacía o incompleta en fila " + row.getRowNum());
+    	                continue;
+    	            }
+
+    	            if (row.getCell(0).getCellType() != org.apache.poi.ss.usermodel.CellType.NUMERIC ||
+    	                row.getCell(1).getCellType() != org.apache.poi.ss.usermodel.CellType.STRING) {
+    	                logger.warn("Tipo de dato inválido en fila " + row.getRowNum());
+    	                continue;
+    	            }
+
+    	            DetallePEPsModel model = new DetallePEPsModel();
+    	            model.setI_clienteid((int) row.getCell(0).getNumericCellValue());
+    	            model.setVc_nombre_cliente(row.getCell(1).getStringCellValue());
+    	            lista.add(model);
+    	        }
+
+    	        logger.info("Archivo leído. Total de filas: " + lista.size());
+
     	    } catch (Exception e) {
-    	        logger.error("Error procesando Excel: " + e.getMessage(), e);
+    	        logger.error("🚨 ERROR en ExcelPEPReader.parse(): " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
+    	        throw new RuntimeException("Fallo en lectura del archivo Excel: " + e.getMessage(), e);
     	    }
 
     	    return lista;
     	}
+
 }
