@@ -115,11 +115,12 @@ public class RptReporteClientesOpeController {
 
             // Registrar proceso
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
-            if (proceso == null) {
-                mensaje = "Error: No se pudo registrar el proceso.";
+            if (proceso == null || proceso.getPk_id_peps() == 0) {
+                mensaje = "Error interno al registrar el proceso.";
                 respuesta.add(mensaje);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
+
 
             // Procesar cada archivo (sin guardarlo físicamente)
             for (MultipartFile file : files) {

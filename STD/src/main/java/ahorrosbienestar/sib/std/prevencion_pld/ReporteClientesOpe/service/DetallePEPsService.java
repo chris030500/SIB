@@ -57,7 +57,7 @@ public class DetallePEPsService {
             logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);
         } catch (Exception e) {
             logger.error("Error en procesarCargaConUsuario: ", e);
-            throw new RuntimeException("Error al procesar archivo: " + e.getMessage(), e);
+            throw new RuntimeException("Formato de archivo inválido o columnas incorrectas. Verifica que el archivo Excel sea correcto.");
         }
     }
 }
