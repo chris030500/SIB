@@ -88,6 +88,7 @@ public class RptReporteClientesOpeController {
 
         String mensaje = "";
         ArrayList<String> respuesta = new ArrayList<>();
+        logger.info("1");
 
         try {
             // Verificación de usuario autenticado
@@ -97,21 +98,25 @@ public class RptReporteClientesOpeController {
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
+            logger.info("2");
 
             UserDetails userDetails = (UserDetails) principal;
             List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+            logger.info("3");
 
             if (usuarios == null || usuarios.isEmpty()) {
                 mensaje = "Error: Usuario no encontrado en base de datos.";
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
+            logger.info("4");
 
             if (files == null || files.length == 0) {
                 mensaje = "No se subió ningún archivo.";
                 respuesta.add(mensaje);
                 return ResponseEntity.badRequest().body(respuesta);
             }
+            logger.info("5");
 
             // Registrar proceso
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
@@ -120,23 +125,32 @@ public class RptReporteClientesOpeController {
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
+            logger.info("6");
 
 
             // Procesar cada archivo (sin guardarlo físicamente)
             for (MultipartFile file : files) {
+            	logger.info("7");
                 detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+                logger.info("8");
             }
+            logger.info("9");
 
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
             respuesta.add(mensaje);
+            logger.info("10");
             return ResponseEntity.ok(respuesta);
+            
 
         } catch (Exception e) {
+        	logger.info("11");
             mensaje = "Error procesando archivo(s): " + e.getMessage();
             logger.error(mensaje, e);
             respuesta.add(mensaje);
+            logger.info("12");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
+        
     }
 
  
