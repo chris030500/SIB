@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Entity
 @Table(name = "TBL_SOLICITUDES_CREDITO", schema = "SIB")
@@ -66,6 +70,17 @@ public class SolicitudCredito {
     @Column(name = "VC_COMENTARIOS")
     private String comentarios;
     
+    @Column(name = "DT_FECHA_RESPUESTA_EMP")
+    private LocalDate fechaRegistroRespuestaEmp;
+    
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REG", updatable = true)
+	private Usuario usuarioReg;
+	
+	@OneToOne
+	@JoinColumn(name = "I_USUARIO_REG_RES_EMP", updatable = true)
+	private Usuario usuarioRegRespuesta;
+    
     
     @Override
 	public String toString() {
@@ -73,7 +88,7 @@ public class SolicitudCredito {
 				+ producto + ", numEmpleado=" + numEmpleado + ", puesto=" + puesto + ", plazo=" + plazo
 				+ ", frecuencia=" + frecuencia + ", montoSolicitado=" + montoSolicitado + ", montoDescontar="
 				+ montoDescontar + ", fechaSolicitud=" + fechaSolicitud + ", ejecutivo=" + ejecutivo + ", sucursal="
-				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso + "]";
+				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaRegistroRespuestaEmp=" + fechaRegistroRespuestaEmp +", usuarioReg=" + usuarioReg +", usuarioRegRespuesta=" + usuarioRegRespuesta + "]";
 	}
 
 	// Getters y Setters
@@ -212,6 +227,33 @@ public class SolicitudCredito {
 	public void setComentarios(String comentarios) {
 		this.comentarios = comentarios;
 	}
-    
+
+
+	public LocalDate getFechaRegistroRespuestaEmp() {
+		return fechaRegistroRespuestaEmp;
+	}
+
+	public void setFechaRegistroRespuestaEmp(LocalDate fechaRegistroRespuestaEmp) {
+		this.fechaRegistroRespuestaEmp = fechaRegistroRespuestaEmp;
+	}
+
+	public Usuario getUsuarioReg() {
+		return usuarioReg;
+	}
+
+	public void setUsuarioReg(Usuario usuarioReg) {
+		this.usuarioReg = usuarioReg;
+	}
+
+	public Usuario getUsuarioRegRespuesta() {
+		return usuarioRegRespuesta;
+	}
+
+	public void setUsuarioRegRespuesta(Usuario usuarioRegRespuesta) {
+		this.usuarioRegRespuesta = usuarioRegRespuesta;
+	}
+
+
+	
 }
 

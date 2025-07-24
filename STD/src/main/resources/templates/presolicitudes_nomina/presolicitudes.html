@@ -8,17 +8,19 @@
 	<title>Cobro Domiciliado</title>
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
 	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link rel="stylesheet" href="@{/css/estilos/responsivo.css}">
 </head>
 
 <body>
 	<section class="content" layout:fragment="page-content">
 
 		<body>
-			<div class="container mt-4">
+			<div class="">
 				<div class="p-3 mb-4 text-white text-center" style="background-color: #33A9FF;">
 					<h2>Solicitudes de Crédito</h2>
 				</div>
-
+				<div class="row" style="margin-top : 5px ">
+				<div class="col-lg-6">
 				<div id="contenedorBotonExcel" class="d-none flex-wrap align-items-end gap-2 mb-3">
 					<!-- Botón para cargar archivo Excel -->
 					<div class="w-auto">
@@ -28,44 +30,8 @@
 						</button>
 					</div>
 				</div>
-
-				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
-					<!-- Empresa -->
-					<div class="flex-grow-1">
-						<label for="filtroEmpresa" class="form-label">Buscar Empresa</label>
-						<input type="search" class="form-control" id="filtroEmpresa" list="listaEmpresas"
-							autocomplete="off" placeholder="Buscar empresa">
-						<datalist id="listaEmpresas"></datalist>
-						<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
-					</div>
-
-					<!-- Cliente -->
-					<div class="flex-grow-1">
-						<label for="filtroClientes" class="form-label">Buscar Cliente</label>
-						<input type="search" class="form-control" id="filtroClientes" list="listaClientes"
-							autocomplete="off" placeholder="Buscar empresa">
-						<datalist id="listaClientes"></datalist>
-						<div id="spinnerClientes" class="spinner-border text-primary" style="display: none;"></div>
-					</div>
-
-					<!-- Fecha inicio -->
-					<div class="w-auto">
-						<label for="fechaInicio" class="form-label">Fecha Inicio</label>
-						<input type="date" id="fechaInicio" class="form-control">
-					</div>
-
-					<!-- Fecha fin -->
-					<div class="w-auto">
-						<label for="fechaFin" class="form-label">Fecha Fin</label>
-						<input type="date" id="fechaFin" class="form-control">
-					</div>
-
-					<!-- Botón Buscar -->
-					<div class="w-auto">
-						<label class="form-label d-block">&nbsp;</label>
-						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
-					</div>
-
+				</div>
+				<div class="col-lg-6">
 					<!-- Botón Nueva Solicitud -->
 					<div class="w-auto">
 						<label class="form-label d-block">&nbsp;</label>
@@ -74,34 +40,82 @@
 						</button>
 					</div>
 				</div>
+				</div>
+
+				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+					<!-- Empresa -->
+					<!--<div class="flex-grow-1">
+						<label for="filtroEmpresa" class="form-label">Buscar Empresa</label>
+						<input type="search" class="form-control" id="filtroEmpresa" list="listaEmpresas"
+							autocomplete="off" placeholder="Buscar empresa">
+						<datalist id="listaEmpresas"></datalist>
+						<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
+					</div>-->
+
+					<!-- Cliente -->
+					<!--<div class="flex-grow-1">
+						<label for="filtroClientes" class="form-label">Buscar Cliente</label>
+						<input type="search" class="form-control" id="filtroClientes" list="listaClientes"
+							autocomplete="off" placeholder="Buscar empresa">
+						<datalist id="listaClientes"></datalist>
+						<div id="spinnerClientes" class="spinner-border text-primary" style="display: none;"></div>
+					</div>-->
+
+					<!-- Fecha inicio -->
+					<!--<div class="w-auto">
+						<label for="fechaInicio" class="form-label">Fecha Inicio</label>
+						<input type="date" id="fechaInicio" class="form-control">
+					</div>-->
+
+					<!-- Fecha fin -->
+					<!--<div class="w-auto">
+						<label for="fechaFin" class="form-label">Fecha Fin</label>
+						<input type="date" id="fechaFin" class="form-control">
+					</div>-->
+
+					<!-- Botón Buscar -->
+					<!--<div class="w-auto">
+						<label class="form-label d-block">&nbsp;</label>
+						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
+					</div>-->
+
+					
+				</div>
 
 				<!-- Spinner de carga -->
 				<div id="spinner" class="spinner-border text-primary"
 					style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
 					<span class="sr-only">Cargando...</span>
 				</div>
+				<div class="row" style="margin-top : 15px ">
+					<div class="table-responsive">
+						<table class="table table-sm" style="width: 100%;" id="tablaSolicitudes">
+							<thead class="table-primary">
+								<tr>
+									<th>No. Solicitud</th>
+									<th>Nombre de Cliente</th>
+									<th>No. Cliente</th>
+									<th>Fecha de Solicitud</th>
+									<th>Nombre de Empresa</th>
+									<th>Monto</th>
+									<th>Cuota</th>
+									<th>Usuario Registro</th>
+									<th>Sucursal</th>
+									<th>Estatus</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
 
-				<table class="table table-bordered text-center">
-					<thead class="table-primary">
-						<tr>
-							<th>No. Cliente</th>
-							<th>Nombre de Cliente</th>
-							<th>Fecha de Solicitud</th>
-							<th>Nombre de Empresa</th>
-							<th>Monto</th>
-							<th>Cuota</th>
-							<th>Estatus</th>
-							<th>Acciones</th>
-						</tr>
-					</thead>
-					<tbody id="tablaSolicitudes">
-					</tbody>
-				</table>
-				<div class="d-flex justify-content-between">
+				<!--<div class="d-flex justify-content-between">
 					<button id="btnAnterior" class="btn btn-primary">Anterior</button>
 					<span id="paginaActual">Página 1</span>
 					<button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
-				</div>
+				</div>-->
 			</div>
 		</body>
 
@@ -176,7 +190,7 @@
 									</select>
 								</div>
 								<div class="col-md-4">
-									<label for="plazoCredito" class="form-label">Plazo</label>
+									<label for="" class="form-label">Plazo</label>
 									<div id="plazoCreditoContainer">
 										<select class="form-select" id="plazoCredito">
 											<option value="" disabled selected>Seleccione...</option>
@@ -204,7 +218,7 @@
 									<div class="input-group">
 										<span class="input-group-text">$</span>
 										<input type="number" id="montoSolicitado" class="form-control text-end"
-											placeholder="10000" min="0" step="0.01">
+											placeholder="Ejemplo:10000" min="0" step="0.01">
 									</div>
 								</div>
 								<div class="col-md-4">
@@ -212,7 +226,7 @@
 									<div class="input-group">
 										<span class="input-group-text">$</span>
 										<input type="number" id="montoDescontar" class="form-control text-end"
-											placeholder="500" min="0" step="0.01" readonly>
+											placeholder="Ejemplo:500" min="0" step="0.01" readonly>
 									</div>
 								</div>
 							</div>
@@ -287,19 +301,18 @@
 	</section>
 
 	<th:block layout:fragment="page-scripts">
-		<!-- Bootstrap JS (si falta) -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-		<!-- jQuery (si es necesario para otras funciones) -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-		<!-- Plugins y scripts adicionales -->
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>
+		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
 	</th:block>
 
 

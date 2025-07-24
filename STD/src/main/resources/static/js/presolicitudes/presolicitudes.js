@@ -258,7 +258,6 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 
 	// Mostrar mensaje de "Cargando..."
 	selectPuesto.innerHTML = '<option value="" disabled selected>Cargando...</option>';
-	selectPuesto.disabled = true;
 
 	$.ajax({
 		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada,
@@ -289,12 +288,10 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 				let optionPuesto = document.createElement('option');
 				optionPuesto.value = '0';
 				optionPuesto.textContent = 'TODOS';
-				optionPuesto.disabled = true;
 				optionPuesto.selected = true;
 				selectPuesto.appendChild(optionPuesto);
+				selectPuesto.value = '0';
 			}
-
-			selectPuesto.disabled = false;
 		},
 		error: function(error) {
 			console.error("Error al obtener la lista de puestos:", error);
@@ -304,7 +301,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 }
 
 
-document.getElementById('buscarEmpleado').addEventListener('change', function() {
+document.getElementById('buscarEmpleado').addEventListener('input', function() {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
 	let opcionEmpleado = document.getElementById('opcionEmpleado');
 	let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
@@ -331,12 +328,11 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 });
 
 function listaMontos(producto, idEmpresa, puesto) {
-
-	// Construir la URL del endpoint con los parámetros
-	const url = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+	var urlMonto = "";
+	urlMonto = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto ?? 0}`;
 
 	// Hacer la solicitud GET al endpoint
-	fetch(url)
+	fetch(urlMonto)
 		.then(response => {
 			if (!response.ok) {
 				throw new Error('No se encontraron condiciones para los parámetros especificados.');
@@ -378,7 +374,7 @@ function listaMontos(producto, idEmpresa, puesto) {
 		})
 		.catch(error => {
 			console.error('Error al obtener las condiciones:', error);
-			alert(error.message);
+			console.error(error.message);
 		});
 }
 
@@ -389,17 +385,48 @@ document.getElementById('puesto').addEventListener('change', function() {
 
 });
 
-document.getElementById('montoSolicitado').addEventListener('blur', function() {
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+/*
+function actualizarMonto(){
+		const monto = parseFloat(document.getElementById('montoSolicitado').value) || 0;
+		const plazoInicial = document.getElementById('plazoCredito').value;
+		const frecuencia = document.getElementById('frecuenciaCredito').value;
+		const plazo = plazoInicial;
+
+		// Llamar a la función de plan de pagos
+		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+
+}*/
+
+function actualizarPP(montoSol) {
 	const plazoInicial = document.getElementById('plazoCredito').value
 	const frecuencia = document.getElementById('frecuenciaCredito').value
 	const plazo = plazoInicial
 
 	// Llamar a la función de plan de pagos
-	const planDePagos = generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+	const planDePagos = generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
 
 	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
+}
+
+document.getElementById('montoSolicitado').addEventListener('change', function() {
+
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+
+
 });
+
+document.getElementById('montoSolicitado').addEventListener('blur', function() {
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+});
+
+document.getElementById('montoSolicitado').addEventListener('input', function() {
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+});
+
+
 
 function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 	let diasPorPago;
@@ -484,12 +511,35 @@ function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+	limpiarModal();
 	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
 		guardarSolicitud();
 	});
+
 });
 
+function limpiarModal() {
+	const modal = document.getElementById('solicitudModal');
+
+	modal.addEventListener('show.bs.modal', function() {
+		// Limpia todos los inputs, selects y textareas dentro del modal
+		const inputs = modal.querySelectorAll('input, select, textarea');
+
+		inputs.forEach(input => {
+			if (input.type === 'checkbox' || input.type === 'radio') {
+				input.checked = false;
+			} else {
+				input.value = '';
+			}
+		});
+	});
+}
+
+
 function guardarSolicitud() {
+
+	document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+		.forEach(el => el.disabled = true);
 	const fechaActual = new Date().toISOString().split("T")[0];
 
 	// Función auxiliar para obtener valores de inputs de manera segura
@@ -504,6 +554,14 @@ function guardarSolicitud() {
 
 	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
 
+	/*	let montoDescontarValue = getInputValue("montoDescontar");
+	let montoDescontarParsed = parseFloat(montoDescontarValue);
+	if (isNaN(montoDescontarParsed)) {
+		// Si no hay valor, intenta obtener el texto visible (por ejemplo, de un <span> o similar)
+		const montoDOM = document.querySelector("#montoDescontar")?.textContent?.trim();
+		montoDescontarParsed = parseFloat(montoDOM) || null;
+	}*/
+
 
 	const solicitudData = {
 		id: parseInt(getInputValue("idSolicitud", 0)), // Tomar el ID si existe
@@ -511,18 +569,88 @@ function guardarSolicitud() {
 		empleado: getInputValue("buscarEmpleado"),
 		producto: getInputValue("buscarProducto"),
 		numEmpleado: getInputValue("numEmpleado"),
-		puesto: parseInt(getInputValue("puesto")) || null,
+		puesto: parseInt(getInputValue("puesto")) || 0,
 		plazo: parseInt(getInputValue("plazoCredito")) || null,
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
-		montoDescontar: parseFloat(getInputValue("montoDescontar")) || null,
+		montoDescontar: (() => {
+			const val = parseFloat(document.getElementById("montoDescontar")?.value.trim());
+			return isNaN(val) ? null : val;
+		})(),
 		fechaSolicitud: fechaActual,
 		renovacion: esRenovacion,
 		comentarios: getInputValue("comentariosSolicitud")
 	};
 
+
+
+	let validacion = 0;
+	if (!solicitudData.empresa) {
+		document.getElementById("buscarEmpresa").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarEmpresa").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	if (!solicitudData.empleado) {
+		document.getElementById("buscarEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.producto) {
+		document.getElementById("buscarProducto").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarProducto").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.numEmpleado) {
+		document.getElementById("numEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("numEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.montoSolicitado) {
+		document.getElementById("montoSolicitado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("montoSolicitado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+
+
+	if (!solicitudData.montoDescontar) {
+		document.getElementById("montoDescontar").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("montoDescontar").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (validacion == 1) {
+		Swal.fire({
+			icon: "warning",
+			title: "Campos incompletos",
+			text: "Por favor, completa todos los campos obligatorios.",
+			confirmButtonColor: "#ffc107",
+		}).then(() => {
+			// Este bloque se ejecuta después de que el usuario da clic en "Aceptar"
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
+		});
+
+		return;
+	}
+
 	// Validar campos obligatorios
-	if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado) {
+	/*if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado || !solicitudData.montoSolicitado || !solicitudData.montoDescontar) {
 		Swal.fire({
 			icon: "warning",
 			title: "Campos incompletos",
@@ -530,7 +658,7 @@ function guardarSolicitud() {
 			confirmButtonColor: "#ffc107",
 		});
 		return;
-	}
+	}*/
 
 	const url = solicitudData.id
 		? urlPrincipal + `editarSolicitud/${solicitudData.id}`
@@ -560,6 +688,9 @@ function guardarSolicitud() {
 				resetearModal();
 				cargarSolicitudes(paginaActual);
 			});
+
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
 		})
 		.catch(error => {
 			console.error("❌ Error:", error);
@@ -571,6 +702,7 @@ function guardarSolicitud() {
 			});
 		});
 }
+
 
 
 // 🔥 Función para resetear el formulario y cerrar el modal
@@ -606,9 +738,10 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
-	cargarEmpresasFiltro();
 
-	document.getElementById("btnAnterior").addEventListener("click", function() {
+	//cargarEmpresasFiltro();
+
+	/*document.getElementById("btnAnterior").addEventListener("click", function() {
 		if (paginaActual > 0) {
 			paginaActual--;
 			cargarSolicitudes(paginaActual);
@@ -618,7 +751,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	document.getElementById("btnSiguiente").addEventListener("click", function() {
 		paginaActual++;
 		cargarSolicitudes(paginaActual);
-	});
+	});*/
 });
 
 function obtenerEstatus(estatus) {
@@ -636,15 +769,15 @@ function obtenerEstatus(estatus) {
 
 function cargarSolicitudes(pagina) {
 	// Mostrar spinner
-	document.getElementById("spinner").style.display = "block";
+	//document.getElementById("spinner").style.display = "block";
 
-	fetch(urlPrincipal + `listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+	fetch(urlPrincipal + `listarSolicitudes`)
 		.then(response => response.json())
 		.then(data => {
-			let tabla = document.getElementById("tablaSolicitudes");
-			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
+			//let tabla = document.getElementById("tablaSolicitudes");
+			//tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
 
-			const solicitudes = data.contenido.content; // Cambiado
+			const solicitudes = data.contenido; // Cambiado
 			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
 			const botonExcel = document.getElementById("contenedorBotonExcel");
 
@@ -657,48 +790,103 @@ function cargarSolicitudes(pagina) {
 				botonExcel.classList.remove("d-flex");
 				botonExcel.classList.add("d-none");
 			}
+			const registrosTotalesSol = [];
+			tablaSolicitudes.clear().draw();
+			$.each(solicitudes, function(idx, opt) {
+				// Botón editar
+				let btnEditar = `<button class='btn btn-warning btn-sm btn-editar' title='Editar Solicitud' data-id='${opt.id}' data-tooltip='Editar'>
+        <i class='fas fa-edit'></i></button>`;
+
+				// Botón aprobar/cancelar si estatus === 1
+				let btnAprobarCancelar = '';
+				if (opt.estatus === 1) {
+					btnAprobarCancelar = `<button class='btn btn-primary btn-sm btn-aprobar-cancelar' title='Aprobar o Cancelar' data-tooltip='Aprobar/Cancelar'
+            onclick="aprobarOCancelarSolicitud(${opt.id}, '${opt.empresa}')">
+            <i class='fas fa-check-circle'></i> / <i class='fas fa-times-circle'></i>
+        </button>`;
+				}
+
+				// Botón PDF si estatus === 3
+				let btnPdf = '';
+				if (opt.estatus === 3) {
+					btnPdf = `<button class='btn btn-success btn-sm btn-pdf' title='Ver PDF' data-id='${opt.id}' data-tooltip='Ver PDF'>
+            <i class='fas fa-file-pdf'></i>
+        </button>`;
+				}
+
+				// Concatenar botones
+				let acciones = '';
+				if (permiso) {
+					acciones = btnEditar + btnAprobarCancelar;
+				}
+				acciones += btnPdf;
+
+				// Agregar fila a DataTable
+				registrosTotalesSol.push([
+					opt.id,
+					opt.empleado,
+					opt.numEmpleado,
+					opt.fechaSolicitud,
+					opt.empresa,
+					opt.montoSolicitado,
+					opt.montoDescontar,
+					opt.usuarioReg.vc_nombre_usuario,
+					opt.sucursal,
+					obtenerEstatus(opt.estatus),
+					acciones
+				]);
+			});
+
+			// Add all rows at once
+			tablaSolicitudes.rows.add(registrosTotalesSol).draw();
+
+			/*
+						let filas = solicitudes.map((solicitud) => {
+							return `<tr>
+								<td>${solicitud.id}</td>
+								<td>${solicitud.empleado}</td>
+								<td>${solicitud.fechaSolicitud}</td>
+								<td>${solicitud.empresa}</td>
+								<td>$ ${solicitud.montoSolicitado}</td>
+								<td>$ ${solicitud.montoDescontar}</td>
+								<td>${solicitud.usuarioReg.vc_nombre_usuario}</td>
+								<td>${solicitud.sucursal}</td>
+								<td>${obtenerEstatus(solicitud.estatus)}</td>
+								<td>
+									${permiso ? `
+										<button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+											<i class="fas fa-edit"></i>
+										</button>
+										${solicitud.estatus === 1 ? `
+											<button class="btn btn-primary btn-sm btn-aprobar-cancelar"
+												onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
+												<i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
+											</button>` : ''}
+									` : ''}
+								    
+									${solicitud.estatus === 3 ? `
+										<button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
+											<i class="fas fa-file-pdf"></i>
+										</button>` : ''}
+								</td>
+							</tr>`;
+						}).join('');
+			
+			
+						tabla.innerHTML = filas;
+			
+						// Actualizar paginación
+						document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
+						document.getElementById("btnAnterior").disabled = pagina === 0;
+						document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
+			*/
 
 
 
-			let filas = solicitudes.map((solicitud) => {
-				return `<tr>
-			        <td>${solicitud.id}</td>
-			        <td>${solicitud.empleado}</td>
-			        <td>${solicitud.fechaSolicitud}</td>
-			        <td>${solicitud.empresa}</td>
-			        <td>$ ${solicitud.montoSolicitado}</td>
-			        <td>$ ${solicitud.montoDescontar}</td>
-			        <td>${obtenerEstatus(solicitud.estatus)}</td>
-			        <td>
-			            ${permiso ? `
-			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-			                    <i class="fas fa-edit"></i>
-			                </button>
-			                ${solicitud.estatus === 1 ? `
-			                    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-			                        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
-			                        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
-			                    </button>` : ''}
-			            ` : ''}
-			            
-			            ${solicitud.estatus === 3 ? `
-			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
-			                    <i class="fas fa-file-pdf"></i>
-			                </button>` : ''}
-			        </td>
-			    </tr>`;
-			}).join('');
 
-
-			tabla.innerHTML = filas;
-
-			// Actualizar paginación
-			document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
-			document.getElementById("btnAnterior").disabled = pagina === 0;
-			document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
 
 			// Ocultar spinner
-			document.getElementById("spinner").style.display = "none";
+			//document.getElementById("spinner").style.display = "none";
 
 			// (Opcional) Si quieres condicionar algún botón con permiso:
 			if (permiso) {
@@ -711,14 +899,14 @@ function cargarSolicitudes(pagina) {
 		})
 		.catch(error => {
 			console.error("Error al cargar las solicitudes:", error);
-			document.getElementById("spinner").style.display = "none";
+			//document.getElementById("spinner").style.display = "none";
 		});
 }
 
 
 
 function aprobarOCancelarSolicitud(id, empresa) {
-	Swal.fire({
+	swal.fire({
 		title: '¿Qué deseas hacer con esta solicitud?',
 		text: `ID de solicitud: ${id}`,
 		showDenyButton: true,
@@ -809,7 +997,7 @@ $(document).on("click", ".btn-editar", function() {
 				type: "GET",
 				success: function(dataEmpresa) {
 					idEmpresaSeleccionada = dataEmpresa.id
-
+					$("#solicitudModal").modal("show");
 					// Ejecutar todas las funciones necesarias antes de abrir el modal
 					Promise.all([
 						listaEmpresas(),
@@ -861,17 +1049,17 @@ $(document).on("click", ".btn-editar", function() {
 						$("#solicitudModal").modal("show");
 					}).catch(error => {
 						console.error("Error al cargar datos:", error);
-						alert("Hubo un problema al cargar la información.");
+						console.error("Hubo un problema al cargar la información.");
 					});
 
 				},
 				error: function() {
-					alert("Error al obtener la empresa");
+					console.error("Error al obtener la empresa");
 				}
 			});
 		},
 		error: function() {
-			alert("Error al obtener la solicitud");
+			console.error("Error al obtener la solicitud");
 		}
 	});
 });
@@ -930,7 +1118,7 @@ document.getElementById("uploadExcelButton").addEventListener("click", function(
 
 	if (!file) {
 		Swal.fire({
-			icon: "warning",
+			icon: "error",
 			title: "Archivo no seleccionado",
 			text: "Por favor selecciona un archivo antes de subirlo.",
 		});
@@ -1042,9 +1230,6 @@ document.getElementById("buscarProducto").addEventListener("change", function() 
 		document.getElementById("checkNomiprestamo").checked = false;
 	}
 });
-
-
-
 
 
 
