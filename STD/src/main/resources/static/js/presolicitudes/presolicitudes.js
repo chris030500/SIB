@@ -258,7 +258,6 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 
 	// Mostrar mensaje de "Cargando..."
 	selectPuesto.innerHTML = '<option value="" disabled selected>Cargando...</option>';
-	selectPuesto.disabled = true;
 
 	$.ajax({
 		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada,
@@ -289,12 +288,10 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 				let optionPuesto = document.createElement('option');
 				optionPuesto.value = '0';
 				optionPuesto.textContent = 'TODOS';
-				optionPuesto.disabled = true;
 				optionPuesto.selected = true;
 				selectPuesto.appendChild(optionPuesto);
+				selectPuesto.value = '0';
 			}
-
-			selectPuesto.disabled = false;
 		},
 		error: function(error) {
 			console.error("Error al obtener la lista de puestos:", error);
@@ -304,7 +301,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 }
 
 
-document.getElementById('buscarEmpleado').addEventListener('change', function() {
+document.getElementById('buscarEmpleado').addEventListener('input', function() {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
 	let opcionEmpleado = document.getElementById('opcionEmpleado');
 	let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
@@ -331,12 +328,11 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 });
 
 function listaMontos(producto, idEmpresa, puesto) {
-
-	// Construir la URL del endpoint con los parámetros
-	const url = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+	var urlMonto = "";
+	urlMonto = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto ?? 0}`;
 
 	// Hacer la solicitud GET al endpoint
-	fetch(url)
+	fetch(urlMonto)
 		.then(response => {
 			if (!response.ok) {
 				throw new Error('No se encontraron condiciones para los parámetros especificados.');
@@ -378,7 +374,7 @@ function listaMontos(producto, idEmpresa, puesto) {
 		})
 		.catch(error => {
 			console.error('Error al obtener las condiciones:', error);
-			alert(error.message);
+			console.error(error.message);
 		});
 }
 
@@ -386,9 +382,10 @@ document.getElementById('puesto').addEventListener('change', function() {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
 
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
-	
+
 });
 
+/*
 function actualizarMonto(){
 		const monto = parseFloat(document.getElementById('montoSolicitado').value) || 0;
 		const plazoInicial = document.getElementById('plazoCredito').value;
@@ -398,19 +395,38 @@ function actualizarMonto(){
 		// Llamar a la función de plan de pagos
 		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
 
-}
+}*/
 
-document.getElementById('montoSolicitado').addEventListener('input', function() {
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+function actualizarPP(montoSol) {
 	const plazoInicial = document.getElementById('plazoCredito').value
 	const frecuencia = document.getElementById('frecuenciaCredito').value
 	const plazo = plazoInicial
 
 	// Llamar a la función de plan de pagos
-	const planDePagos = generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+	const planDePagos = generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
 
 	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
+}
+
+document.getElementById('montoSolicitado').addEventListener('change', function() {
+
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+
+
 });
+
+document.getElementById('montoSolicitado').addEventListener('blur', function() {
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+});
+
+document.getElementById('montoSolicitado').addEventListener('input', function() {
+	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
+	actualizarPP(monto);
+});
+
+
 
 function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 	let diasPorPago;
@@ -502,25 +518,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
-function limpiarModal(){
+function limpiarModal() {
 	const modal = document.getElementById('solicitudModal');
 
-    modal.addEventListener('show.bs.modal', function () {
-        // Limpia todos los inputs, selects y textareas dentro del modal
-        const inputs = modal.querySelectorAll('input, select, textarea');
+	modal.addEventListener('show.bs.modal', function() {
+		// Limpia todos los inputs, selects y textareas dentro del modal
+		const inputs = modal.querySelectorAll('input, select, textarea');
 
-        inputs.forEach(input => {
-            if (input.type === 'checkbox' || input.type === 'radio') {
-                input.checked = false;
-            } else {
-                input.value = '';
-            }
-        });
-    });
+		inputs.forEach(input => {
+			if (input.type === 'checkbox' || input.type === 'radio') {
+				input.checked = false;
+			} else {
+				input.value = '';
+			}
+		});
+	});
 }
 
 
 function guardarSolicitud() {
+
+	document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+		.forEach(el => el.disabled = true);
 	const fechaActual = new Date().toISOString().split("T")[0];
 
 	// Función auxiliar para obtener valores de inputs de manera segura
@@ -550,7 +569,7 @@ function guardarSolicitud() {
 		empleado: getInputValue("buscarEmpleado"),
 		producto: getInputValue("buscarProducto"),
 		numEmpleado: getInputValue("numEmpleado"),
-		puesto: parseInt(getInputValue("puesto")) || null,
+		puesto: parseInt(getInputValue("puesto")) || 0,
 		plazo: parseInt(getInputValue("plazoCredito")) || null,
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
@@ -621,7 +640,12 @@ function guardarSolicitud() {
 			title: "Campos incompletos",
 			text: "Por favor, completa todos los campos obligatorios.",
 			confirmButtonColor: "#ffc107",
+		}).then(() => {
+			// Este bloque se ejecuta después de que el usuario da clic en "Aceptar"
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
 		});
+
 		return;
 	}
 
@@ -664,6 +688,9 @@ function guardarSolicitud() {
 				resetearModal();
 				cargarSolicitudes(paginaActual);
 			});
+
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
 		})
 		.catch(error => {
 			console.error("❌ Error:", error);
@@ -711,7 +738,7 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
-	
+
 	//cargarEmpresasFiltro();
 
 	/*document.getElementById("btnAnterior").addEventListener("click", function() {
@@ -797,8 +824,8 @@ function cargarSolicitudes(pagina) {
 				// Agregar fila a DataTable
 				registrosTotalesSol.push([
 					opt.id,
-					opt.numEmpleado,
 					opt.empleado,
+					opt.numEmpleado,
 					opt.fechaSolicitud,
 					opt.empresa,
 					opt.montoSolicitado,
@@ -970,7 +997,7 @@ $(document).on("click", ".btn-editar", function() {
 				type: "GET",
 				success: function(dataEmpresa) {
 					idEmpresaSeleccionada = dataEmpresa.id
-
+					$("#solicitudModal").modal("show");
 					// Ejecutar todas las funciones necesarias antes de abrir el modal
 					Promise.all([
 						listaEmpresas(),
@@ -1022,17 +1049,17 @@ $(document).on("click", ".btn-editar", function() {
 						$("#solicitudModal").modal("show");
 					}).catch(error => {
 						console.error("Error al cargar datos:", error);
-						alert("Hubo un problema al cargar la información.");
+						console.error("Hubo un problema al cargar la información.");
 					});
 
 				},
 				error: function() {
-					alert("Error al obtener la empresa");
+					console.error("Error al obtener la empresa");
 				}
 			});
 		},
 		error: function() {
-			alert("Error al obtener la solicitud");
+			console.error("Error al obtener la solicitud");
 		}
 	});
 });

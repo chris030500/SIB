@@ -221,7 +221,7 @@ public class PresolicitudesController {
 				tipoEmp = 0;
 			}
 
-			System.out.print(tipoEmp);
+			logger.info(tipoEmp);
 
 			CondicionesDTO condiciones = condicionesService.obtenerCondiciones(producto, empresa, tipoEmp);
 
