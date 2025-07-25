@@ -131,9 +131,10 @@ public class RptReporteClientesOpeController {
             // Procesar cada archivo (sin guardarlo físicamente)
             for (MultipartFile file : files) {
             	logger.info("7");
-                detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
+                logger.info("Archivo recibido: " + file.getOriginalFilename() + " tamaño: " + file.getSize());
                 logger.info("8");
             }
+
             logger.info("9");
 
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
