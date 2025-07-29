@@ -399,9 +399,32 @@ function generarHistoricoClientes(idBuscarHO) {
   });
 }
 
+const idMigracion = 1; // puede hacerlo dinámico si se necesita
+
+async function cargarEstadoInicial() {
+    try {
+        const res = await fetch(`/STD/migraciones/obtener-migracion/${idMigracion}`);
+        if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
+        const data = await res.json();
+
+        const checkbox = document.getElementById("estatusSwitch");
+        const label = document.getElementById("labelEstado");
+
+        checkbox.checked = data.estatus === 1;
+        label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+
+        // Si quieres mostrar mensaje de migración también
+        if (data.mensajeResultado) {
+            document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
+        }
+
+    } catch (error) {
+        console.error("Error al cargar estado inicial:", error);
+    }
+}
+
 async function cambiarEstatus(checkbox) {
     const estatus = checkbox.checked ? 1 : 0;
-    const idMigracion = 1;
 
     try {
         const res = await fetch("/STD/migraciones/cambiar-estatus", {
@@ -413,42 +436,20 @@ async function cambiarEstatus(checkbox) {
         });
 
         if (res.ok) {
-            Swal.fire("¡Actualizado!", "El estatus ha sido cambiado", "success");
             document.getElementById("labelEstado").innerText = estatus === 1 ? "Activo" : "Inactivo";
+            Swal.fire("¡Éxito!", `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, "success");
         } else {
             Swal.fire("Error", "No se pudo actualizar el estatus", "error");
-            // revertir visualmente si falló
-            checkbox.checked = !checkbox.checked;
+            checkbox.checked = !checkbox.checked; // revertir visualmente
         }
     } catch (error) {
+        console.error("Error al cambiar estatus:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
         checkbox.checked = !checkbox.checked;
     }
 }
 
-async function cargarEstadoInicial() {
-    try {
-        const res = await fetch('/STD/migraciones/obtener-migracion/1');
-        const data = await res.json();
-        if (data) {
-            // Cargar estatus
-            const checkbox = document.getElementById("estatusSwitch");
-            checkbox.checked = data.estatus === 1;
-            document.getElementById("labelEstado").innerText = data.estatus === 1 ? "Activo" : "Inactivo";
-
-            // Cargar mensaje de resultado si existe
-            if (data.mensajeResultado) {
-                document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
-            }
-        }
-    } catch (error) {
-        console.error("Error cargando estado inicial de la migración", error);
-    }
-}
-
-// Ejecutar al cargar la página
 window.onload = cargarEstadoInicial;
-
 
 // Para cargar mensaje de resultado en pantalla
 async function cargarMensajeMigracion() {

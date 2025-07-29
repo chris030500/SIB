@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
- 
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+//import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -37,6 +39,9 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Detall
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.MigracionesPService;
+import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
 public class RptReporteClientesOpeController {
@@ -45,6 +50,9 @@ public class RptReporteClientesOpeController {
  
     @Autowired
     private IUsuarioRepository iUsuarioRepository;
+    
+    @Autowired
+    private MigracionesPService migracionesPService;
     
     @Autowired
     private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -378,6 +386,23 @@ public class RptReporteClientesOpeController {
                 logger.error("Error al cerrar conexión: " + e.getMessage());
             }
         }
+    }
+    
+    @PostMapping("/STD/migraciones/cambiar-estatus")
+    @ResponseBody
+    public ResponseEntity<?> cambiarEstatus(@RequestParam("id") Integer id,
+                                            @RequestParam("estatus") Integer estatus,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        migracionesPService.actualizarEstatus(id, estatus, userDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/STD/migraciones/obtener-migracion/{id}")
+    @ResponseBody
+    public ResponseEntity<MigracionesP> obtenerMigracion(@PathVariable("id") Integer id) {
+        Optional<MigracionesP> migracion = migracionesPService.obtenerMigracionPorId(id);
+        return migracion.map(ResponseEntity::ok)
+                        .orElseGet(() -> ResponseEntity.notFound().build());
     }
  
  

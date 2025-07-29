@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+
 @Controller
 @RequestMapping("/STD/migraciones")
 public class MigracionesPController {
+	
 
     @Autowired
     private MigracionesPService service;
+    
 
     @PostMapping("/cambiar-estatus")
     @ResponseBody
@@ -25,6 +28,12 @@ public class MigracionesPController {
                                             @AuthenticationPrincipal UserDetails userDetails) {
         service.actualizarEstatus(id, estatus, userDetails.getUsername());
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/ping")
+    @ResponseBody
+    public String ping() {
+        return "pong";
     }
     
     @GetMapping("/obtener-migracion/{id}")

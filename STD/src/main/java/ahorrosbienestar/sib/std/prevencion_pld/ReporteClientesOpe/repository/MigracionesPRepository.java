@@ -1,7 +1,8 @@
-package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository;
+package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MigracionesPRepository extends JpaRepository<MigracionesP, Integer> {
 }
+

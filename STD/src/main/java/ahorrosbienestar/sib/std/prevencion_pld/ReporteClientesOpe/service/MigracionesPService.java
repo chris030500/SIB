@@ -1,9 +1,10 @@
-package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service;
+package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
-import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository.MigracionesPRepository;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -19,18 +20,15 @@ public class MigracionesPService {
     }
 
     public void activarEjecucion(Integer id, String usuario) {
-        Optional<MigracionesP> migracionOpt = repository.findById(id);
-
-        if (migracionOpt.isPresent()) {
-            MigracionesP migracion = migracionOpt.get();
+        repository.findById(id).ifPresent(migracion -> {
             migracion.setEstatus(1);
             migracion.setEjecuta(1);
             migracion.setUsuarioEjecuta(usuario);
             migracion.setUsuarioActualiza(usuario);
             migracion.setFechaEjecucion(calcularProximaEjecucion());
-            migracion.setMensajeResultado(null); // Limpiar mensaje anterior
+            migracion.setMensajeResultado(null);
             repository.save(migracion);
-        }
+        });
     }
 
     public void actualizarEstatus(Integer id, Integer estatus, String usuario) {
@@ -61,3 +59,4 @@ public class MigracionesPService {
         }
     }
 }
+
