@@ -4,225 +4,182 @@
     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 <!-- DES-25-0013 Historico de Operaciones -->
 <!-- andrea.orduno-->
- 
+
 <head th:replace="layouts/base-layout :: head">
     <meta charset="UTF-8">
-    <title>Insert title here</title>
+    <title>Configuración de Migración</title>
     <link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
     <link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
     <style>
-        .tab-button {
-            padding: 10px 20px;
-            margin-right: 5px;
-            border: none;
-            border-radius: 8px;
-            background-color: #e0e0e0;
-            cursor: pointer;
-        }
- 
-        .tab-button.active {
-            background-color: #0038FF;
-            color: white;
-        }
- 
-        .tab-button.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
- 
-        .card-upload {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
- 
-        .uploaded-file {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-            position: relative;
-        }
- 
-        .uploaded-file .check-icon {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            color: green;
-            font-size: 24px;
-        }
+        .tab-button { padding: 10px 20px; margin-right: 5px; border: none; border-radius: 8px; background-color: #e0e0e0; cursor: pointer; }
+        .tab-button.active { background-color: #0038FF; color: white; }
+        .tab-button.disabled { background-color: #ccc; cursor: not-allowed; }
+        .card-upload { border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin-top: 20px; }
+        .uploaded-file { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-top: 10px; position: relative; }
+        .uploaded-file .check-icon { position: absolute; right: 15px; top: 15px; color: green; font-size: 24px; }
     </style>
- 
 </head>
- 
+
 <body>
-    <section class="content" layout:fragment="page-content">
-        <div class="border p-2 card">
-            <!-- Título -->
-            <div class="bg-info text-white text-center py-2 rounded mb-3">
-                <h2>Reporte Clientes y Operaciones</h2>
+<section class="content" layout:fragment="page-content">
+    <div class="border p-2 card">
+        <div class="bg-info text-white text-center py-2 rounded mb-3">
+            <h2>Reporte Clientes y Operaciones</h2>
+        </div>
+
+        <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="archivos-tab" data-bs-toggle="tab" data-bs-target="#archivos" type="button" role="tab" aria-controls="archivos" aria-selected="true">Cargar archivos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="proceso-tab" data-bs-toggle="tab" data-bs-target="#proceso" type="button" role="tab" aria-controls="proceso" aria-selected="false">Proceso</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button" role="tab" aria-controls="descargas" aria-selected="false">Historial</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="tabContent">
+            <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
+                <fieldset class="border p-2 card">
+                    <legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
+                    <form id="uploadFormPEP" action="/STD/prevencion/reporteClientesOpe/uploadPEP" method="post" enctype="multipart/form-data">
+                        <input type="file" id="fileUploadPEP" name="file" accept=".xls,.xlsx" class="form-control" />
+                        <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
+                    </form>
+                    <div class="mb-3 d-flex gap-3 align-items-center mt-3">
+                        <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="peticionPost()" title="Procesar Auditoría">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <span class="text-muted">Procesar reporte de Auditoría</span>
+                    </div>
+                </fieldset>
             </div>
- 
-            <!-- Navegación de pestañas -->
-            <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="archivos-tab" data-bs-toggle="tab" data-bs-target="#archivos"
-                        type="button" role="tab" aria-controls="archivos" aria-selected="true">Cargar archivos</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="proceso-tab" data-bs-toggle="tab" data-bs-target="#proceso"
-                        type="button" role="tab" aria-controls="proceso" aria-selected="false">Proceso</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas"
-                        type="button" role="tab" aria-controls="descargas" aria-selected="false">Historial</button>
-                </li>
-            </ul>
- 
-            <!-- Contenido de pestañas -->
-            <div class="tab-content" id="tabContent">
-                <!-- Tab: Archivos -->
-                <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
-                    <fieldset class="border p-2 card">
-                        <legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
-                        <form id="uploadFormPEP" action="/STD/prevencion/reporteClientesOpe/uploadPEP" method="post" enctype="multipart/form-data">
-                            <input type="file" id="fileUploadPEP" name="file" accept=".xls,.xlsx"
-                                class="form-control" />
-                            <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
-                        </form>
-                        &nbsp;&nbsp;
-                        &nbsp;&nbsp;
-                        <div class="mb-3 d-flex gap-3 align-items-center">
-                            <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="peticionPost()"
-                                title="Procesar Auditoría">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <span class="text-muted">Procesar reporte de Auditoría</span>
-                        </div>
-                    </fieldset>
-                </div>
- 
- 
-                <!-- Tab: Proceso -->
-                <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                    <div class="border p-2 card">
-                        <h4 class="mb-4">Proceso de reportes</h4>
-                        <div class="mb-3">
-                            <label class="form-label">Rango de fechas para el reporte:</label>
-                            <div class="d-flex flex-wrap gap-2 align-items-center">
-                                <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
-                                <span>a</span>
-                                <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
-                            </div>
-                        </div>
-                        <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó
-                            correctamente.</div>
-                        <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser
-                            anterior a 2 años desde hoy.</div>
- 
-                        <div class="mb-3 d-flex gap-3 align-items-center">
-                            <button class="btn btn-success" id="btnProcesar">Generar Reporte Clientes ahora</button>
-                            <span id="progresoTexto" class="text-muted"></span>
-                        </div>
- 
-                        <div class="mb-3 d-flex gap-3 align-items-center">
-                            <button class="btn btn-danger" id="btnProcesarProceso">Generar Reporte Procesos
-                                ahora</button>
-                            <span id="progresoTexto" class="text-muted"></span>
-                        </div>
- 
-                        <div id="confirmacion" class="mb-3">
-                            <label class="form-label">¿La información del reporte es correcta?</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="info_correcta" id="infoSi"
-                                    value="si">
-                                <label class="form-check-label" for="infoSi">Sí</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="info_correcta" id="infoNo"
-                                    value="no">
-                                <label class="form-check-label" for="infoNo">No</label>
-                            </div>
- 
-                        </div>
- 
-                        <div class="mb-3 d-flex gap-3 align-items-center">
-                            <button class="btn btn-success" id="btnVistoBueno">Registrar Visto bueno</button>
-                            <span id="progresoTexto" class="text-muted"></span>
-                        </div>
- 
-                        <div id="mensajeAviso" class="alert alert-info d-none">
-                            El archivo se guardará en el apartado de descargas para futuras consultas.
+
+            <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
+                <div class="mb-4 p-3 border rounded bg-light">
+                   <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <label class="form-label fw-bold me-2">Estatus de migración:</label>
+        <div class="form-check form-switch">
+    <input class="form-check-input" type="checkbox" id="estatusSwitch" onchange="cambiarEstatus(this)">
+    <label class="form-check-label ms-1" for="estatusSwitch">
+        <span id="labelEstado">Inactivo</span>
+    </label>
+</div>
+    </div>
+    <form id="formEjecutarMigracion" action="/STD/migraciones/activar-ejecucion/1" method="post">
+        <button class="btn btn-warning btn-sm" type="submit" title="Programar migración">
+            <i class="fas fa-play"></i> Ejecutar
+        </button>
+    </form>
+</div>
+
+<!-- Mensaje del resultado de la migración -->
+<div class="mt-2">
+    <small class="text-muted" id="mensajeResultado">
+        <!-- Aquí se mostrará el mensaje VC_MENSAJE_RESULTADO si existe -->
+    </small>
+</div>
+
+<hr />
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Rango de fechas para el reporte:</label>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
+                            <span>a</span>
+                            <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
                         </div>
                     </div>
-                </div>
- 
- 
-                <!-- Tab: Descargas -->
-                <div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
-                    <div class="border p-2 card">
-                        <h4 class="mb-4">Historial de reportes generados</h4>
- 
-                        <div class="table-responsive">
-                            <table class="table table-sm" style="width: 100%;" id="tblHistorico">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha de generación</th>
-                                        <th>Usuario</th>
-                                        <th>Confirmado</th>
-                                        <th>Fecha de vo.bo</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaReportesGenerados">
-                                    <!-- Llenado dinámico con JS -->
-                                </tbody>
-                            </table>
+
+                    <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>
+                    <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser anterior a 2 años desde hoy.</div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Acciones disponibles:</label>
+                        <div class="d-flex flex-column flex-md-row gap-3 mb-2">
+                            <button class="btn btn-primary w-100" id="btnProcesar">Generar Reporte de Clientes</button>
+                            <button class="btn btn-danger w-100" id="btnProcesarProceso">Generar Reporte de Operaciones</button>
                         </div>
- 
-                        <div id="sinResultados" class="alert alert-warning mt-3 d-none">
-                            No se encontraron reportes con los filtros aplicados.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">¿La información del reporte es correcta?</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si">
+                            <label class="form-check-label" for="infoSi">Sí</label>
                         </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="info_correcta" id="infoNo" value="no">
+                            <label class="form-check-label" for="infoNo">No</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-flex gap-3 align-items-center">
+                        <button class="btn btn-success" id="btnVistoBueno">Registrar Visto bueno</button>
+                        <span id="progresoTexto" class="text-muted"></span>
+                    </div>
+
+                    <div id="mensajeAviso" class="alert alert-info d-none">
+                        El archivo se guardará en el apartado de descargas para futuras consultas.
                     </div>
                 </div>
             </div>
- 
-            <!-- Modal confirmación -->
-            <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmModalLabel">Confirmar reporte</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>¿Está seguro de que los datos del reporte son correctos?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" id="confirmarReporte">Confirmar</button>
-                        </div>
+
+            <div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
+                <div class="border p-2 card">
+                    <h4 class="mb-4">Historial de reportes generados</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm" style="width: 100%;" id="tblHistorico">
+                            <thead>
+                                <tr>
+                                    <th>Fecha de generación</th>
+                                    <th>Usuario</th>
+                                    <th>Confirmado</th>
+                                    <th>Fecha de vo.bo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaReportesGenerados"></tbody>
+                        </table>
+                    </div>
+                    <div id="sinResultados" class="alert alert-warning mt-3 d-none">
+                        No se encontraron reportes con los filtros aplicados.
                     </div>
                 </div>
             </div>
         </div>
-    </section>
- 
- 
-    <th:block layout:fragment="page-scripts">
- 
-        <!--JavaScript-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script th:src="@{/js/jquery-3.5.1.js}"></script>
-        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-        <!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
-    </th:block>
+
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirmar reporte</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Está seguro de que los datos del reporte son correctos?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="confirmarReporte">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="page-scripts">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script th:src="@{/js/jquery-3.5.1.js}"></script>
+    <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+    <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+    <script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
+</th:block>
 </body>
- 
 </html>

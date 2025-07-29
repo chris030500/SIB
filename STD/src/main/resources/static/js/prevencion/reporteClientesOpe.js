@@ -398,3 +398,78 @@ function generarHistoricoClientes(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
+
+async function cambiarEstatus(checkbox) {
+    const estatus = checkbox.checked ? 1 : 0;
+    const idMigracion = 1;
+
+    try {
+        const res = await fetch("/STD/migraciones/cambiar-estatus", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `id=${idMigracion}&estatus=${estatus}`
+        });
+
+        if (res.ok) {
+            Swal.fire("¡Actualizado!", "El estatus ha sido cambiado", "success");
+            document.getElementById("labelEstado").innerText = estatus === 1 ? "Activo" : "Inactivo";
+        } else {
+            Swal.fire("Error", "No se pudo actualizar el estatus", "error");
+            // revertir visualmente si falló
+            checkbox.checked = !checkbox.checked;
+        }
+    } catch (error) {
+        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        checkbox.checked = !checkbox.checked;
+    }
+}
+
+async function cargarEstadoInicial() {
+    try {
+        const res = await fetch('/STD/migraciones/obtener-migracion/1');
+        const data = await res.json();
+        if (data) {
+            // Cargar estatus
+            const checkbox = document.getElementById("estatusSwitch");
+            checkbox.checked = data.estatus === 1;
+            document.getElementById("labelEstado").innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+
+            // Cargar mensaje de resultado si existe
+            if (data.mensajeResultado) {
+                document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
+            }
+        }
+    } catch (error) {
+        console.error("Error cargando estado inicial de la migración", error);
+    }
+}
+
+// Ejecutar al cargar la página
+window.onload = cargarEstadoInicial;
+
+
+// Para cargar mensaje de resultado en pantalla
+async function cargarMensajeMigracion() {
+    try {
+        const res = await fetch('/STD/migraciones/obtener-migracion/1');
+        const data = await res.json();
+        if (data) {
+            // Mostrar mensaje resultado
+            if (data.mensajeResultado) {
+                document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
+            }
+
+            // Mostrar estatus como activo/inactivo
+            const checkbox = document.getElementById("estatusSwitch");
+            checkbox.checked = data.estatus === 1;
+            document.getElementById("labelEstado").innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+        }
+    } catch (err) {
+        console.error("Error al cargar datos de migración", err);
+    }
+}
+
+window.onload = cargarMensajeMigracion;
+
