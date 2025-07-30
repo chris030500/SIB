@@ -2,61 +2,113 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
+//import lombok.RequiredArgsConstructor;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
 public class MigracionesPService {
+	
+	private static final Logger logger = Logger.getLogger(MigracionesPService.class);
 
-    @Autowired
-    private MigracionesPRepository repository;
+	 @Autowired
+	    private MigracionesPRepository migracionesPRepository;
+
+	 public void actualizarEstatus(Integer id, Integer estatus, String usuario) {
+		    Optional<MigracionesP> opt = migracionesPRepository.findById(id);
+		    if (opt.isPresent()) {
+		        MigracionesP migracion = opt.get();
+		        migracion.setEstatus(estatus);
+		        migracion.setUsuarioActualiza(usuario);
+		        migracionesPRepository.save(migracion);
+		    }
+		}
+
 
     public Optional<MigracionesP> obtenerMigracionPorId(Integer id) {
-        return repository.findById(id);
+        return migracionesPRepository.findById(id);
     }
 
-    public void activarEjecucion(Integer id, String usuario) {
-        repository.findById(id).ifPresent(migracion -> {
-            migracion.setEstatus(1);
-            migracion.setEjecuta(1);
-            migracion.setUsuarioEjecuta(usuario);
-            migracion.setUsuarioActualiza(usuario);
-            migracion.setFechaEjecucion(calcularProximaEjecucion());
-            migracion.setMensajeResultado(null);
-            repository.save(migracion);
-        });
-    }
+    //  Activar ejecución
+    public void activarEjecucion(Integer idMigracion, String usuario) {
+        logger.info("==> Inicia activarEjecucion para ID: " + idMigracion + ", usuario: " + usuario);
 
-    public void actualizarEstatus(Integer id, Integer estatus, String usuario) {
-        repository.findById(id).ifPresent(migracion -> {
-            migracion.setEstatus(estatus);
-            migracion.setUsuarioActualiza(usuario);
-            repository.save(migracion);
-        });
-    }
+        Optional<MigracionesP> optional = migracionesPRepository.findById(idMigracion);
+        if (optional.isPresent()) {
+            MigracionesP entidad = optional.get();
 
-    public void actualizarMensajeResultado(Integer id, String mensaje) {
-        repository.findById(id).ifPresent(migracion -> {
-            migracion.setEjecuta(0);
-            migracion.setMensajeResultado(mensaje);
-            migracion.setEstatus(0);
-            repository.save(migracion);
-        });
-    }
+            logger.info("Migración encontrada. Estableciendo valores...");
 
-    private LocalDateTime calcularProximaEjecucion() {
-        LocalTime ahora = LocalTime.now();
-        if (ahora.isBefore(LocalTime.of(13, 0))) {
-            return LocalDateTime.now().withHour(15).withMinute(0);
-        } else if (ahora.isBefore(LocalTime.of(17, 0))) {
-            return LocalDateTime.now().withHour(19).withMinute(0);
+            entidad.setEjecuta(1);
+            entidad.setEstatus(1);
+            entidad.setUsuarioEjecuta(usuario);
+
+            LocalDateTime ahora = LocalDateTime.now();
+            int horaActual = ahora.getHour();
+            logger.info("Hora actual: " + horaActual);
+
+            String siguienteHora;
+            if (horaActual < 13) {
+                siguienteHora = "15";
+            } else if (horaActual < 17) {
+                siguienteHora = "19";
+            } else {
+                siguienteHora = "13";
+                ahora = ahora.plusDays(1);
+                logger.info("Se programa para el día siguiente");
+            }
+
+            entidad.setCron(siguienteHora + ":00");
+            entidad.setFechaEjecucion(
+                ahora.withHour(Integer.parseInt(siguienteHora))
+                     .withMinute(0)
+                     .withSecond(0)
+                     .withNano(0)
+            );
+
+            logger.info("Valores establecidos - CRON: " + entidad.getCron() + ", FECHA_EJECUCION: " + entidad.getFechaEjecucion());
+
+            migracionesPRepository.save(entidad);
+            logger.info("Migración actualizada y guardada exitosamente.");
         } else {
-            return LocalDateTime.now().plusDays(1).withHour(13).withMinute(0);
+            logger.error("No se encontró la migración con ID: " + idMigracion);
+            throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
         }
     }
-}
 
+
+
+
+    //  Finalizar migración
+    public void finalizarMigracion(Integer idMigracion, String usuarioActualiza) {
+        logger.info("==> Inicia finalizarMigracion para ID: " + idMigracion + ", usuario: " + usuarioActualiza);
+
+        Optional<MigracionesP> optional = migracionesPRepository.findById(idMigracion);
+        if (optional.isPresent()) {
+            MigracionesP entidad = optional.get();
+
+            entidad.setEjecuta(0);
+            entidad.setEstatus(0);
+            entidad.setUsuarioActualiza(usuarioActualiza);
+
+            String mensaje = "Se migró la información a " + LocalDate.now();
+            entidad.setMensajeResultado(mensaje);
+
+            logger.info("Finalizando migración. Mensaje: " + mensaje);
+
+            migracionesPRepository.save(entidad);
+            logger.info("Migración finalizada y guardada exitosamente.");
+        } else {
+            logger.error("No se encontró la migración con ID: " + idMigracion);
+            throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
+        }
+    }
+
+
+}

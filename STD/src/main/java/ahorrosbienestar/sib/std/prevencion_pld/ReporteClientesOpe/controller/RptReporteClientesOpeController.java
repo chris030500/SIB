@@ -388,7 +388,38 @@ public class RptReporteClientesOpeController {
         }
     }
     
-    @PostMapping("/STD/migraciones/cambiar-estatus")
+    @PostMapping("/activar-ejecucion/{id}")
+    @ResponseBody
+    public ResponseEntity<?> activarEjecucion(@PathVariable("id") Integer id,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        logger.info("==> POST /activar-ejecucion/" + id + " ejecutado por: " + userDetails.getUsername());
+        migracionesPService.activarEjecucion(id, userDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/finalizar-migracion/{id}")
+    @ResponseBody
+    public ResponseEntity<?> finalizarMigracion(@PathVariable("id") Integer id,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            migracionesPService.finalizarMigracion(id, userDetails.getUsername());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/obtener-migracion/{id}")
+    @ResponseBody
+    public ResponseEntity<MigracionesP> obtenerMigracion(@PathVariable("id") Integer id) {
+        return migracionesPService.obtenerMigracionPorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
+    @PostMapping("/cambiar-estatus")
     @ResponseBody
     public ResponseEntity<?> cambiarEstatus(@RequestParam("id") Integer id,
                                             @RequestParam("estatus") Integer estatus,
@@ -397,15 +428,7 @@ public class RptReporteClientesOpeController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/STD/migraciones/obtener-migracion/{id}")
-    @ResponseBody
-    public ResponseEntity<MigracionesP> obtenerMigracion(@PathVariable("id") Integer id) {
-        Optional<MigracionesP> migracion = migracionesPService.obtenerMigracionPorId(id);
-        return migracion.map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.notFound().build());
-    }
- 
- 
+
     /***
      * 
      * @param model

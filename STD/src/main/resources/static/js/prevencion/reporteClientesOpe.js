@@ -399,23 +399,25 @@ function generarHistoricoClientes(idBuscarHO) {
   });
 }
 
-const idMigracion = 1; // puede hacerlo dinámico si se necesita
+const idMigracion = 1;
+
 
 async function cargarEstadoInicial() {
     try {
-        const res = await fetch(`/STD/migraciones/obtener-migracion/${idMigracion}`);
+        const res = await fetch("/prevencion/obtener-migracion/1"); 
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
         const data = await res.json();
 
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
+        const mensaje = document.getElementById("mensajeResultado");
 
         checkbox.checked = data.estatus === 1;
         label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
 
-        // Si quieres mostrar mensaje de migración también
-        if (data.mensajeResultado) {
-            document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
+        if (mensaje && data.mensajeResultado) {
+            mensaje.innerText = data.mensajeResultado;
+            mensaje.style.display = "block";
         }
 
     } catch (error) {
@@ -423,12 +425,44 @@ async function cargarEstadoInicial() {
     }
 }
 
-async function cambiarEstatus(checkbox) {
-    const estatus = checkbox.checked ? 1 : 0;
+
+async function activarMigracion() {
+    console.log("Click en activarMigracion");
 
     try {
-        const res = await fetch("/STD/migraciones/cambiar-estatus", {
-            method: "POST",
+        const res = await fetch("/STD/prevencion/activar-ejecucion/1", {
+    method: "POST"
+        });
+
+        if (res.ok) {
+            console.log("→ Respuesta OK del servidor");
+            Swal.fire({
+                title: "¡Éxito!",
+                text: "Migración programada correctamente.",
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+            cargarEstadoInicial();
+        } else {
+            console.log("→ Respuesta fallida del servidor");
+            Swal.fire("Error", "No se pudo programar la migración", "error");
+        }
+    } catch (error) {
+        console.error("→ Error de conexión:", error);
+        Swal.fire("Error", "Fallo la conexión con el servidor", "error");
+    }
+}
+
+
+
+async function cambiarEstatus(checkbox) {
+    const estatus = checkbox.checked ? 1 : 0;
+    const label = document.getElementById("labelEstado");
+
+    try {
+        const res = await fetch("/STD/prevencion/cambiar-estatus", {
+    method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -436,12 +470,19 @@ async function cambiarEstatus(checkbox) {
         });
 
         if (res.ok) {
-            document.getElementById("labelEstado").innerText = estatus === 1 ? "Activo" : "Inactivo";
-            Swal.fire("¡Éxito!", `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, "success");
+            label.innerText = estatus === 1 ? "Activo" : "Inactivo";
+            Swal.fire({
+                title: "¡Éxito!",
+                text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
             Swal.fire("Error", "No se pudo actualizar el estatus", "error");
-            checkbox.checked = !checkbox.checked; // revertir visualmente
+            checkbox.checked = !checkbox.checked;
         }
+
     } catch (error) {
         console.error("Error al cambiar estatus:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
@@ -449,10 +490,9 @@ async function cambiarEstatus(checkbox) {
     }
 }
 
-window.onload = cargarEstadoInicial;
 
 // Para cargar mensaje de resultado en pantalla
-async function cargarMensajeMigracion() {
+/*async function cargarMensajeMigracion() {
     try {
         const res = await fetch('/STD/migraciones/obtener-migracion/1');
         const data = await res.json();
@@ -472,5 +512,5 @@ async function cargarMensajeMigracion() {
     }
 }
 
-window.onload = cargarMensajeMigracion;
+window.onload = cargarMensajeMigracion;*/
 

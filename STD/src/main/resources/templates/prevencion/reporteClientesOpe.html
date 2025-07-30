@@ -40,6 +40,7 @@
         </ul>
 
         <div class="tab-content" id="tabContent">
+             <!-- ARCHIVOS -->
             <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
                 <fieldset class="border p-2 card">
                     <legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
@@ -55,6 +56,8 @@
                     </div>
                 </fieldset>
             </div>
+            
+             <!-- PROCESO -->
 
             <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
                 <div class="mb-4 p-3 border rounded bg-light">
@@ -62,18 +65,17 @@
     <div class="d-flex align-items-center">
         <label class="form-label fw-bold me-2">Estatus de migración:</label>
         <div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="estatusSwitch" onchange="cambiarEstatus(this)">
-    <label class="form-check-label ms-1" for="estatusSwitch">
-        <span id="labelEstado">Inactivo</span>
-    </label>
+  <input class="form-check-input" type="checkbox" id="estatusSwitch" onchange="cambiarEstatus(this)">
+  <label class="form-check-label ms-1" for="estatusSwitch">
+    <span id="labelEstado">Inactivo</span>
+  </label>
 </div>
 
+
     </div>
-    <form id="formEjecutarMigracion" action="/STD/migraciones/activar-ejecucion/1" method="post">
-        <button class="btn btn-warning btn-sm" type="submit" title="Programar migración">
-            <i class="fas fa-play"></i> Ejecutar
-        </button>
-    </form>
+    <button class="btn btn-warning btn-sm" type="button" onclick="activarMigracion()" title="Programar migración">
+    <i class="fas fa-play"></i> Ejecutar
+</button>
 </div>
 
 <!-- Mensaje del resultado de la migración -->
@@ -128,6 +130,8 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- DESCAGAS -->
 
             <div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
                 <div class="border p-2 card">
