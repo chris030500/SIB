@@ -39,8 +39,8 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Detall
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.MigracionesPService;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
+import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
@@ -392,7 +392,6 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<?> activarEjecucion(@PathVariable("id") Integer id,
                                               @AuthenticationPrincipal UserDetails userDetails) {
-        logger.info("==> POST /activar-ejecucion/" + id + " ejecutado por: " + userDetails.getUsername());
         migracionesPService.activarEjecucion(id, userDetails.getUsername());
         return ResponseEntity.ok().build();
     }
@@ -415,16 +414,17 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<MigracionesP> obtenerMigracion(@PathVariable("id") Integer id) {
         return migracionesPService.obtenerMigracionPorId(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     
     @PostMapping("/cambiar-estatus")
     @ResponseBody
     public ResponseEntity<?> cambiarEstatus(@RequestParam("id") Integer id,
                                             @RequestParam("estatus") Integer estatus,
                                             @AuthenticationPrincipal UserDetails userDetails) {
-        migracionesPService.actualizarEstatus(id, estatus, userDetails.getUsername());
+        migracionesPService.actualizarSoloEstatus(id, estatus, userDetails.getUsername());
         return ResponseEntity.ok().build();
     }
 

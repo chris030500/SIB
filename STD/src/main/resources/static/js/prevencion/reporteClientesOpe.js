@@ -401,29 +401,37 @@ function generarHistoricoClientes(idBuscarHO) {
 
 const idMigracion = 1;
 
-
 async function cargarEstadoInicial() {
     try {
-        const res = await fetch("/prevencion/obtener-migracion/1"); 
+        const res = await fetch("/prevencion/obtener-migracion/1");
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
         const data = await res.json();
 
+        // SWITCH (estatus)
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
-        const mensaje = document.getElementById("mensajeResultado");
-
         checkbox.checked = data.estatus === 1;
         label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
 
+        // BOTÓN DE EJECUCIÓN
+        const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+        if (btnEjecutar) {
+            btnEjecutar.disabled = data.ejecuta === 0;
+        }
+
+        // MENSAJE
+        const mensaje = document.getElementById("mensajeResultado");
         if (mensaje && data.mensajeResultado) {
             mensaje.innerText = data.mensajeResultado;
             mensaje.style.display = "block";
         }
-
     } catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
 }
+
+
+
 
 
 async function activarMigracion() {
@@ -489,6 +497,8 @@ async function cambiarEstatus(checkbox) {
         checkbox.checked = !checkbox.checked;
     }
 }
+
+
 
 
 // Para cargar mensaje de resultado en pantalla

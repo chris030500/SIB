@@ -1,8 +1,7 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
+package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service;
 
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
-import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
-//import lombok.RequiredArgsConstructor;
+import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository.MigracionesPRepository;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +19,8 @@ public class MigracionesPService {
 	 @Autowired
 	    private MigracionesPRepository migracionesPRepository;
 
-	 public void actualizarEstatus(Integer id, Integer estatus, String usuario) {
-		    Optional<MigracionesP> opt = migracionesPRepository.findById(id);
-		    if (opt.isPresent()) {
-		        MigracionesP migracion = opt.get();
-		        migracion.setEstatus(estatus);
-		        migracion.setUsuarioActualiza(usuario);
-		        migracionesPRepository.save(migracion);
-		    }
+	 public void actualizarSoloEstatus(Integer id, Integer estatus, String usuario) {
+		    migracionesPRepository.actualizarEstatusSolo(id, estatus, usuario);
 		}
 
 
@@ -49,30 +42,26 @@ public class MigracionesPService {
             entidad.setEstatus(1);
             entidad.setUsuarioEjecuta(usuario);
 
-            LocalDateTime ahora = LocalDateTime.now();
-            int horaActual = ahora.getHour();
-            logger.info("Hora actual: " + horaActual);
+            LocalDateTime ahora = LocalDateTime.now(); // <-- Fecha y hora del clic
 
+            int horaActual = ahora.getHour();
             String siguienteHora;
+
             if (horaActual < 13) {
                 siguienteHora = "15";
             } else if (horaActual < 17) {
                 siguienteHora = "19";
             } else {
                 siguienteHora = "13";
-                ahora = ahora.plusDays(1);
-                logger.info("Se programa para el día siguiente");
+                logger.info("Se programa para el día siguiente (solo VC_CRON, no DT_FECHA_EJECUCION)");
             }
 
-            entidad.setCron(siguienteHora + ":00");
-            entidad.setFechaEjecucion(
-                ahora.withHour(Integer.parseInt(siguienteHora))
-                     .withMinute(0)
-                     .withSecond(0)
-                     .withNano(0)
-            );
+            entidad.setCron(siguienteHora + ":00"); // <-- Se mantiene la programación lógica
 
-            logger.info("Valores establecidos - CRON: " + entidad.getCron() + ", FECHA_EJECUCION: " + entidad.getFechaEjecucion());
+            entidad.setFechaEjecucion(ahora); // <-- Se guarda la hora REAL del clic, no la programada
+
+            logger.info("CRON programado: " + entidad.getCron());
+            logger.info("Fecha real de ejecución guardada: " + ahora);
 
             migracionesPRepository.save(entidad);
             logger.info("Migración actualizada y guardada exitosamente.");
@@ -81,9 +70,6 @@ public class MigracionesPService {
             throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
         }
     }
-
-
-
 
     //  Finalizar migración
     public void finalizarMigracion(Integer idMigracion, String usuarioActualiza) {
