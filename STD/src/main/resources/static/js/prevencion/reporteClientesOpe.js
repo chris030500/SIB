@@ -398,3 +398,129 @@ function generarHistoricoClientes(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
+
+const idMigracion = 1;
+
+async function cargarEstadoInicial() {
+    try {
+        const res = await fetch("/prevencion/obtener-migracion/1");
+        if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
+        const data = await res.json();
+
+        // SWITCH (estatus)
+        const checkbox = document.getElementById("estatusSwitch");
+        const label = document.getElementById("labelEstado");
+        checkbox.checked = data.estatus === 1;
+        label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+
+        // BOTÓN DE EJECUCIÓN
+        const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+        if (btnEjecutar) {
+            btnEjecutar.disabled = data.ejecuta === 0;
+        }
+
+        // MENSAJE
+        const mensaje = document.getElementById("mensajeResultado");
+        if (mensaje && data.mensajeResultado) {
+            mensaje.innerText = data.mensajeResultado;
+            mensaje.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error al cargar estado inicial:", error);
+    }
+}
+
+
+
+
+
+async function activarMigracion() {
+    console.log("Click en activarMigracion");
+
+    try {
+        const res = await fetch("/STD/prevencion/activar-ejecucion/1", {
+    method: "POST"
+        });
+
+        if (res.ok) {
+            console.log("→ Respuesta OK del servidor");
+            Swal.fire({
+                title: "¡Éxito!",
+                text: "Migración programada correctamente.",
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+            cargarEstadoInicial();
+        } else {
+            console.log("→ Respuesta fallida del servidor");
+            Swal.fire("Error", "No se pudo programar la migración", "error");
+        }
+    } catch (error) {
+        console.error("→ Error de conexión:", error);
+        Swal.fire("Error", "Fallo la conexión con el servidor", "error");
+    }
+}
+
+
+
+async function cambiarEstatus(checkbox) {
+    const estatus = checkbox.checked ? 1 : 0;
+    const label = document.getElementById("labelEstado");
+
+    try {
+        const res = await fetch("/STD/prevencion/cambiar-estatus", {
+    method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `id=${idMigracion}&estatus=${estatus}`
+        });
+
+        if (res.ok) {
+            label.innerText = estatus === 1 ? "Activo" : "Inactivo";
+            Swal.fire({
+                title: "¡Éxito!",
+                text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire("Error", "No se pudo actualizar el estatus", "error");
+            checkbox.checked = !checkbox.checked;
+        }
+
+    } catch (error) {
+        console.error("Error al cambiar estatus:", error);
+        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        checkbox.checked = !checkbox.checked;
+    }
+}
+
+
+
+
+// Para cargar mensaje de resultado en pantalla
+/*async function cargarMensajeMigracion() {
+    try {
+        const res = await fetch('/STD/migraciones/obtener-migracion/1');
+        const data = await res.json();
+        if (data) {
+            // Mostrar mensaje resultado
+            if (data.mensajeResultado) {
+                document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
+            }
+
+            // Mostrar estatus como activo/inactivo
+            const checkbox = document.getElementById("estatusSwitch");
+            checkbox.checked = data.estatus === 1;
+            document.getElementById("labelEstado").innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+        }
+    } catch (err) {
+        console.error("Error al cargar datos de migración", err);
+    }
+}
+
+window.onload = cargarMensajeMigracion;*/
+
