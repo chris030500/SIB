@@ -92,6 +92,8 @@ public class Constantes {
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
+    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_procesos_campanias";
+    
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
     
@@ -204,6 +206,7 @@ public class Constantes {
 	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
 	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
 	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
+	public static final String CAMPANIAS_PROCESOS = "credito/procesosCampanias";
 	
 	
 	//nombres reportes Crédito

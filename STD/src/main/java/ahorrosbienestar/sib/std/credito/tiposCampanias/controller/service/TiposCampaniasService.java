@@ -126,4 +126,24 @@ public class TiposCampaniasService {
 		   return repository.findAll();
 	}
 	
+	public List<TiposCampaniasModel> getTiposCampaniasModel() {
+        return repository.findAll();
+    }
+	
+	/*public List<TiposCampaniasModel> obtenerCampaniasActivos() {
+        return repository.listaTiposCampanias(1);
+    }*/
+	
+	/*public List<TiposCampaniasDTO> obtenerCampaniasActivos(Integer valor) {
+		List<Object[]> resultados = repository.obtenerCampaniasActivos(valor);
+	    return resultados.stream()
+	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
+	            .collect(Collectors.toList());
+		//return repository.listaCampanias(valor);
+	}*/
+	
+	/*public TiposCampaniasModel BuscarCampania(TiposCampaniasModel model) {
+		return repository.findById(model);
+	}*/
+	
 }
