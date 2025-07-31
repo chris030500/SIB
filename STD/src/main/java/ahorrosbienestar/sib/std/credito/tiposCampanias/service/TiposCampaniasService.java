@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +9,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
 import lombok.AllArgsConstructor;
 
 @Service

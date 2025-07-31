@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

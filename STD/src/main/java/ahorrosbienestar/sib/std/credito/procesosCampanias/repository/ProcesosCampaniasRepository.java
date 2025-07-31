@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.procesosCampanias.controller.repository;
+package ahorrosbienestar.sib.std.credito.procesosCampanias.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.model.ProcesosCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 
 @Repository
 

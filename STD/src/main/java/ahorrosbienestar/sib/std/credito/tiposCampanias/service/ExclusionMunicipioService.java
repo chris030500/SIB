@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -8,8 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.repository.ClientesActivosRepository;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclusionMunicipioModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.ExclusionMunicipioRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclusionMunicipioModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.ExclusionMunicipioRepository;
 
 import java.io.InputStream;
 import java.util.ArrayList;

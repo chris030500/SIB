@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.procesosCampanias.controller.controller;
+package ahorrosbienestar.sib.std.credito.procesosCampanias.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,10 +22,10 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.model.ProcesosCampaniasModel;
-import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.service.ProcesosCampaniasService;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.service.ProcesosCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;

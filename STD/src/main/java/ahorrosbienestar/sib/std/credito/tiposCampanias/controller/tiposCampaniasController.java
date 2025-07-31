@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.controller;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.HisTiposCampaniasService;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_operaciones_inusuales.model.ProductoColocacion;
@@ -25,10 +23,13 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.HisTiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.repository.TiposCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
