@@ -28,9 +28,9 @@ import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.CampaniaTemporal
 import ahorrosbienestar.sib.std.credito.campaniastemporales.service.DetalleCampaniasTemporalesService;
 import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
 import ahorrosbienestar.sib.std.credito.paramburocredito.model.ParamBuroCreditoModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;

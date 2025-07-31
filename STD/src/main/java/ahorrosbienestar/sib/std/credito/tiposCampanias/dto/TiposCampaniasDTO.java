@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.dto;
 
 public class TiposCampaniasDTO {
 

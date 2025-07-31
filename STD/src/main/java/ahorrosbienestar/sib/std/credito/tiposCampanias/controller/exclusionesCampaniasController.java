@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.tiposCampanias.controller.controller;
+package ahorrosbienestar.sib.std.credito.tiposCampanias.controller;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclusionMunicipioModel;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.ExclusionClienteService;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.ExclusionMunicipioService;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.ExclisionesClientesModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclisionesClientesModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclusionMunicipioModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.ExclusionClienteService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.ExclusionMunicipioService;
 
 @Controller
 @RequestMapping("/credito")

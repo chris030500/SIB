@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

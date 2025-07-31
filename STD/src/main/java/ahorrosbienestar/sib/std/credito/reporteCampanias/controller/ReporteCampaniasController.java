@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
