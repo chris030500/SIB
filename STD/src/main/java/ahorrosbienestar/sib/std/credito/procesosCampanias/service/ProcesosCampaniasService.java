@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.procesosCampanias.controller.service;
+package ahorrosbienestar.sib.std.credito.procesosCampanias.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.model.ProcesosCampaniasModel;
-import ahorrosbienestar.sib.std.credito.procesosCampanias.controller.repository.ProcesosCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import lombok.AllArgsConstructor;
 
 @Service

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.credito.procesosCampanias.controller.model;
+package ahorrosbienestar.sib.std.credito.procesosCampanias.model;
 
 import java.time.LocalDate;
 
