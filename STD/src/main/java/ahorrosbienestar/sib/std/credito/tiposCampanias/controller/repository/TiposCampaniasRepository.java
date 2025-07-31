@@ -136,5 +136,20 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        @Param("i_activa_oferta") Integer i_activa_oferta,
 	        @Param("d_monto_maximo_oferta") Double d_monto_maximo_oferta
 	);
+
+
+	
+	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
+			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
+			+ " WHERE I_ESTATUS = 1"
+			+ " AND VC_TIPO_CAMPANIA LIKE %:valorBusqueda%", nativeQuery = true)
+	List<Object[]> listaCampaniasActivas(@Param("valorBusqueda") String valorBusqueda);
+	
+	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
+			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
+			+ " WHERE I_TIPO_CAMPANIA=2"
+			+ " AND VC_TIPO_CAMPANIA LIKE %:valorBusqueda%", nativeQuery = true)
+	List<Object[]> buscarCampaniasTemporales(@Param("valorBusqueda") String valorBusqueda);
+	
  
 }

@@ -1,8 +1,10 @@
 package ahorrosbienestar.sib.std.credito.campaniastemporales.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.CampaniaTemporalDTO;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.service.DetalleCampaniasTemporalesService;
 import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
+import ahorrosbienestar.sib.std.credito.paramburocredito.model.ParamBuroCreditoModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -51,6 +57,8 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 	@Autowired
 	private DetalleCampaniasTemporalesService detalleCampaniasTemporalesService;
 
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
 
 
 	List<Usuario> usuario = null;
@@ -66,6 +74,7 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 			String rutaDireccion;
 			
 			if(validarAcceso(Constantes.CAMPANIAS_TEMPORALES) == 1) {
+				model.addAttribute("cat_estatus", iCatalogoRepository.generarOpciones(Constantes.CAT_ESTATUS_CAMPANIAS));
 				rutaDireccion = Constantes.CAMPANIAS_TEMPORALES;
 				
 			}else {
@@ -113,45 +122,109 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 	@PostMapping("/procesarArchivo")
 	public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
 	                                  @RequestParam("idCmpTmp") Integer idCmpTmp) {
-
-	    List<String> respuesta = new ArrayList<>();
+		
+		
+		String mensaje = Constantes.REGISTRO_OK;
+		String tipo ="";
+		Map<String, Object> respuesta = new HashMap<>();
 
 	    try {
 	    	detalleCampaniasTemporalesService.detCampaniasTmp(files[0]);
+	    	 tipo = Constantes.MENSAJE_OK;
+	    	
 
-	        return ResponseEntity.ok(respuesta);
+	    	respuesta.put(Constantes.TEXTO_MNS, mensaje);
+			respuesta.put(Constantes.TIPO_MNS, tipo);
 
 	    } catch (Exception e) {
-	        respuesta.add("Error al procesar archivo: " + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+	    	mensaje = Constantes.ACTUALIZACION_ERROR;
+	        tipo = Constantes.MENSAJE_ERROR;
+	    	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 	    }
+	    return ResponseEntity.ok(respuesta);
 	}
 	
 	@PostMapping("/registroCmpTmp")
-	public ResponseEntity<String> guardarCampania(@ModelAttribute CampaniaTemporalDTO cmptmpdto) {
+	public ResponseEntity<?> guardarCampania(@ModelAttribute CampaniaTemporalDTO cmptmpdto) {
 		try {
 			
-			// Obtener la fecha actual sin tiempo
-	        LocalDate fechaActual = LocalDate.now();
-			
-			TiposCampaniasModel tipoCampaniaTmp = new TiposCampaniasModel();
-			tipoCampaniaTmp.setVc_tipo_campania(cmptmpdto.getNombreCampania());
-			tipoCampaniaTmp.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
-			tipoCampaniaTmp.setI_tipo_campania(Constantes.CAMPANIA_TIPO_TEMPORAL);
-			tipoCampaniaTmp.setDt_fecha_registro(fechaActual);
-			tipoCampaniaTmp.setI_user_reg(obtUsuario());
+			String mensaje = "";
+			String tipo ="";
+			Map<String, Object> respuesta = new HashMap<>();
 			
 			
-			if(tiposCampaniasService.save(tipoCampaniaTmp) !=null) {
-				return ResponseEntity.ok("Campaña guardada correctamente");
-			}else {
-				return ResponseEntity.ok("Error al guardar campania");
-			}
+				if(cmptmpdto.getIdCampaniaSeleccionada() !=null) {
+					 Optional<TiposCampaniasModel> campaniaConsulta = tiposCampaniasService.obtenerCampaniaxID(cmptmpdto.getIdCampaniaSeleccionada());
+					 if (campaniaConsulta.isPresent()) {
+						    // Ya existe → ACTUALIZACIÓN
+						    TiposCampaniasModel existente = campaniaConsulta.get();
+						    existente.setVc_tipo_campania(cmptmpdto.getNombreCampania());
+						    existente.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
+						    existente.setDt_fecha_registro(LocalDate.now());
+						    existente.setI_estatus(cmptmpdto.getEstatusCampania());
+						    existente.setI_user_reg(obtUsuario());
+
+						    if(tiposCampaniasService.save(existente) !=null) {
+						    	 mensaje = Constantes.ACTUALIZACION_OK;
+						    	 tipo = Constantes.MENSAJE_OK;
+						    }else {
+						    	 mensaje = Constantes.ACTUALIZACION_ERROR;
+							        tipo = Constantes.MENSAJE_ERROR;
+						    }
+						}
+				}else {
+					    // NO EXISTE → NUEVO REGISTRO
+					    TiposCampaniasModel nuevo = new TiposCampaniasModel();
+					    nuevo.setVc_tipo_campania(cmptmpdto.getNombreCampania());
+					    nuevo.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
+					    nuevo.setI_tipo_campania(Constantes.CAMPANIA_TIPO_TEMPORAL);
+					    nuevo.setDt_fecha_registro(LocalDate.now());
+					    nuevo.setI_estatus(cmptmpdto.getEstatusCampania());
+					    nuevo.setI_user_reg(obtUsuario());
+
+					    if(tiposCampaniasService.save(nuevo) !=null) {
+					    	 mensaje = Constantes.REGISTRO_OK;
+					    	 tipo = Constantes.MENSAJE_OK;
+					    }else {
+					        mensaje = Constantes.ACTUALIZACION_ERROR;
+					        tipo = Constantes.MENSAJE_ERROR;
+					    }
+
+					}
+			
+				 respuesta.put(Constantes.TEXTO_MNS, mensaje);
+				 respuesta.put(Constantes.TIPO_MNS, tipo);
+				 return ResponseEntity.ok(respuesta);
+			
+			
 			
 		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("Error: " + e.getMessage());
 		}
+	}
+	
+	@GetMapping("/obtParamCampaniasTmp")
+	public ResponseEntity<TiposCampaniasModel> obtCampanias(@RequestParam int valorCampaniaID) {
+		TiposCampaniasModel parametros = tiposCampaniasService.obtenerCampaniaPorId(valorCampaniaID);
+				
+
+	    if (parametros == null) {
+	        return ResponseEntity.noContent().build(); // Devuelve 204
+	    }else {
+		    return ResponseEntity.ok(parametros); // Devuelve JSON 200
+	    }
+
+
+	}
+	
+	
+	@GetMapping("/buscarCampaniasTemporales")
+	@ResponseBody
+	public List<TiposCampaniasDTO> obtCampanias(@RequestParam String valorBusqueda) {
+	    return tiposCampaniasService.buscarCampaniasTemporales(valorBusqueda);
 	}
 	
 	public Usuario obtUsuario() {

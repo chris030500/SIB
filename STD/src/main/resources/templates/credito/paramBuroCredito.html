@@ -25,19 +25,24 @@
 					</div>
 				</div>
 			</div>
-			<div id="divParametrosBuro">
+			<!-- FORMULARIO 1: Búsqueda de Campaña -->
+			<form id="formBuscarCampania">
 				<div class="row">
 					<div class="col-md-6">
 						<label class="col-form-label">Campaña de Crédito</label>
 						<input type="search" class="form-control" id="buscarCampania" list="opcionCampania"
-							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampanias()" />
+							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampanias()"/>
 						<datalist id="opcionCampania"></datalist>
 					</div>
 				</div>
+			</form>
+			<!-- FORMULARIO 2: Parámetros -->
+			<form id="formParametrosBC">
 				<div id="divBusqueda">
 					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Parametros</legend>
-
+						<legend class="float-none w-auto p-2">Parámetros</legend>
+						<input type="hidden" id="idCampaniaSeleccionada" name="idCampaniaSeleccionada" />
+						<input type="hidden" id="idRegistroParam" name="idRegistroParam" />
 						<!-- Radio buttons -->
 						<div class="row" style="margin-top: 15px;">
 							<div class="col-md-4">
@@ -45,66 +50,68 @@
 							</div>
 							<div class="col-md-4">
 								<label class="col-form-label">
-									<input type="radio" name="tipoEvaluacion" value="PROSPECTOR"
+									<input type="radio" name="tipoEvaluacion" value="1"
 										onclick="toggleMopMaximo()" />
 									PROSPECTOR
 								</label>
 							</div>
 							<div class="col-md-4">
 								<label class="col-form-label">
-									<input type="radio" name="tipoEvaluacion" value="ADVISER"
+									<input type="radio" name="tipoEvaluacion" value="2"
 										onclick="toggleMopMaximo()" />
 									ADVISER
 								</label>
 							</div>
 						</div>
 
-						<!-- PORCENTAJE DE USO MÁXIMO -->
+						<!-- Porcentaje de uso máximo -->
 						<div class="row" style="margin-top: 15px;">
 							<div class="col-md-4">
 								<label class="col-form-label">Porcentaje de Uso Máximo %:</label>
 							</div>
 							<div class="col-md-4">
-								<input type="number" value="" />
+								<input type="number" name="usoMaximo" id="usoMaximo" class="form-control" min="1" max="100" value="0"/>
 							</div>
 						</div>
 
-						<!-- MOP MÁXIMO -->
+						<!-- MOP Máximo -->
 						<div class="row" id="mopMaximoRow" style="margin-top: 15px;">
 							<div class="col-md-4">
 								<label class="col-form-label">MOP Máximo:</label>
 							</div>
 							<div class="col-md-4">
-								<input type="number" value="" />
+								<input type="number" name="mopMaximo" id="mopMaximo" class="form-control" min="1" max="100" value="0"/>
 							</div>
 						</div>
 
-						<!-- BCS MÍNIMO -->
+						<!-- BCS Mínimo -->
 						<div class="row" style="margin-top: 15px;">
 							<div class="col-md-4">
 								<label class="col-form-label">BCS Mínimo:</label>
 							</div>
 							<div class="col-md-4">
-								<input type="number" value="" />
+								<input type="number" name="bcsMinimo" id="bcsMinimo" class="form-control" min="1" max="100" value="0"/>
 							</div>
 						</div>
+
 						<!-- ICC mínimo -->
 						<div class="row" style="margin-top: 15px;">
 							<div class="col-md-4">
 								<label class="col-form-label">ICC Mínimo:</label>
 							</div>
 							<div class="col-md-4">
-								<input type="number" value="" />
+								<input type="number" name="iccMinimo" id="iccMinimo" class="form-control" min="1" max="100" value="0"/>
 							</div>
 						</div>
 
-						<!-- RIESGO MÁXIMO -->
+						<!-- Riesgo Máximo -->
 						<div class="row" style="margin-top: 15px;">
 							<div class="col-md-4">
 								<label class="col-form-label">Riesgo Máximo:</label>
 							</div>
 							<div class="col-md-4">
-								<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
+								<select class="form-control" name="riesgoMaximo[]" id="idTipoArchivo"
+									multiple onchange="asignarArchivo(this)">
 									<option value="0">Seleccione</option>
 									<option th:each="opcionTipo : ${cat_riesgo_Maximo}"
 										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
@@ -113,23 +120,20 @@
 								</select>
 							</div>
 						</div>
+
+						<!-- Botón Guardar -->
 						<div class="row mt-4">
-							<div class="col-md-4 text-right">
-								
-							</div>
-							<div class="col-md-4 text-right">
-								
-							</div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
 							<div class="col-md-4 text-left">
-								<button type="submit" name="accion" value="guardar"
-									class="btn btn-primary">Guardar</button>
-								
+								<button type="submit" class="btn btn-primary" id="btnGuardarParamBC"
+								onclick="guardarParametrosBC()">Guardar</button>
 							</div>
 						</div>
-
 					</fieldset>
 				</div>
-			</div>
+			</form>
+
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
@@ -138,7 +142,6 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/credito/tiposCampanias.js}"></script>
 		<script th:src="@{/js/credito/paramBuroCredito.js}"></script>
 	</th:block>
 </body>

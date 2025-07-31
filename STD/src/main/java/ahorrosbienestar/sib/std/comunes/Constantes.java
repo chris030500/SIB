@@ -205,6 +205,7 @@ public class Constantes {
 	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
 	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
 	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
+	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
 	public static final String CAMPANIAS_PROCESOS = "credito/procesosCampanias";
 	
 	
@@ -218,7 +219,12 @@ public class Constantes {
 	public static final int CAT_TIPO_RIESGO = 34;
 	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
 	
-
+	//contantes parametros buro de credito
+	public static final String PARAM_BURO_ADVISER = "ADVISER";
+	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
+	
+	public static final int CAT_ESTATUS_CAMPANIAS = 16;
+	
     private Constantes() {
         
     }

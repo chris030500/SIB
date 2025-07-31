@@ -26,22 +26,25 @@
 				</div>
 			</div>
 			<div id="divParametrosBuro">
-				<div class="row">
-					<!-- Campo de búsqueda -->
-					<div class="col-md-6">
-						<label class="col-form-label">Campañas Temporales</label>
-						<input type="search" class="form-control" id="buscarCampania" list="opcionCampania"
-							autocomplete="off" placeholder="Buscar campaña" /> <!--oninput="buscarCampanias()"-->
+				<!-- FORMULARIO 1: Búsqueda de Campaña Temporales -->
+				<form id="formBuscarCampania">
+					<div class="row">
+						<!-- Campo de búsqueda -->
+						<div class="col-md-6">
+							<label class="col-form-label">Campañas Temporales</label>
+							<input type="search" class="form-control" id="buscarCampaniaTemporales" list="opcionCampania"
+							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampaniasTemporales()"/>
 						<datalist id="opcionCampania"></datalist>
 					</div>
 
-				</div>
+					</div>
+				</form>
 				<div id="divRegistro">
 					<!-- FORMULARIO 1: Registro de datos campaña -->
 					<form id="formDatosCampania" method="post">
 						<fieldset class="border p-2">
 							<legend class="float-none w-auto p-2">Información Campaña Temporal</legend>
-
+							<input type="hidden" id="idCampaniaSeleccionada" name="idCampaniaSeleccionada" />
 							<!-- Nombre de Campaña -->
 							<div class="row mt-3">
 								<div class="col-md-3">
@@ -98,8 +101,13 @@
 							<div class="row mt-3">
 								<div class="col-md-3"><label class="col-form-label">Estatus:</label></div>
 								<div class="col-md-4">
-									<input type="text" class="form-control" id="estatusCampania" name="estatusCampania"
-										placeholder="Estatus Campaña.." readonly />
+								<select class="form-control" name="estatusCampania" id="estatusCampania">
+									<option value="0">Seleccione</option>
+									<option th:each="opcionTipo : ${cat_estatus}"
+										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+										th:id="${opcionTipo.v_pantalla}">
+									</option>
+								</select>
 								</div>
 							</div>
 
@@ -142,8 +150,7 @@
 									required>
 							</div>
 							<div class="col-md-2 align-self-end">
-								<button type="button" class="btn btn-success" id="btnGuardarFile"
-									>Subir Archivo</button>
+								<button type="button" class="btn btn-success" id="btnGuardarFile">Subir Archivo</button>
 							</div>
 						</div>
 					</form>
@@ -159,7 +166,6 @@
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/credito/tiposCampaniasTemporales.js}"></script>
-		<script th:src="@{/js/credito/paramBuroCredito.js}"></script>
 	</th:block>
 </body>
 
