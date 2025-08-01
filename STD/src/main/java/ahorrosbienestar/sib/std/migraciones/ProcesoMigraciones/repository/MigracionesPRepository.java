@@ -45,4 +45,6 @@ public interface MigracionesPRepository extends JpaRepository<MigracionesP, Inte
         @Param("mensaje") String mensaje,
         @Param("usuario") String usuario
     );
+    
+
 }

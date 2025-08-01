@@ -343,12 +343,12 @@ function iniciaTblHistorico() {
     $.each(data, function(idx, opt) {
  
       btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-        + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+        + " title='Reporte Historico de operaciones' data-bs-target='#' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-tools'></i></button>";
  
       btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
-        + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+        + " title='Reporte Historico de clientes' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-file-play-fill'></i></button>";
  
@@ -403,7 +403,7 @@ const idMigracion = 1;
 
 async function cargarEstadoInicial() {
     try {
-        const res = await fetch("/prevencion/obtener-migracion/1");
+        const res = await fetch(`/prevencion/obtener-migracion/${idMigracion}`);
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
         const data = await res.json();
 
@@ -416,34 +416,57 @@ async function cargarEstadoInicial() {
         // BOTÓN DE EJECUCIÓN
         const btnEjecutar = document.getElementById("btnEjecutarMigracion");
         if (btnEjecutar) {
-            btnEjecutar.disabled = data.ejecuta === 0;
+            const enEjecucion = data.ejecuta === 1;
+            btnEjecutar.disabled = enEjecucion;
+            btnEjecutar.classList.toggle("disabled", enEjecucion);
         }
 
-        // MENSAJE
+        // INPUT "botón de clasificación"
+        const btnClasificacion = document.getElementById("btnCodigoClasificacion");
+if (btnClasificacion) {
+    const enEjecucion = data.ejecuta === 1; // si está en ejecución, deshabilitarlo
+    btnClasificacion.disabled = enEjecucion;
+    btnClasificacion.classList.toggle("disabled", enEjecucion);
+}
+
+        // MENSAJE DE RESULTADO
         const mensaje = document.getElementById("mensajeResultado");
-        if (mensaje && data.mensajeResultado) {
-            mensaje.innerText = data.mensajeResultado;
+        if (mensaje) {
+            mensaje.innerText = "";
+            if (data.mensajeResultado) {
+                mensaje.innerText = data.mensajeResultado;
+            }
+            if (data.cron) {
+                mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
+            }
             mensaje.style.display = "block";
         }
-    } catch (error) {
+
+    }  catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
 }
 
 
-
-
-
 async function activarMigracion() {
-    console.log("Click en activarMigracion");
+    const btn = document.getElementById("btnEjecutarMigracion");
+
+    // 🚫 Si ya está deshabilitado, no continuar
+    if (btn.disabled) {
+        console.log("⛔ Botón ya está deshabilitado. Abortando ejecución.");
+        return;
+    }
+
+    // 🔒 Deshabilitar inmediatamente para evitar múltiples clics
+    btn.disabled = true;
+    btn.classList.add("disabled");
 
     try {
-        const res = await fetch("/STD/prevencion/activar-ejecucion/1", {
-    method: "POST"
+        const res = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
+            method: "POST"
         });
 
         if (res.ok) {
-            console.log("→ Respuesta OK del servidor");
             Swal.fire({
                 title: "¡Éxito!",
                 text: "Migración programada correctamente.",
@@ -451,16 +474,23 @@ async function activarMigracion() {
                 timer: 2000,
                 showConfirmButton: false
             });
-            cargarEstadoInicial();
+
+            setTimeout(() => {
+                cargarEstadoInicial(); // volver a consultar la tabla
+            }, 2100);
         } else {
-            console.log("→ Respuesta fallida del servidor");
             Swal.fire("Error", "No se pudo programar la migración", "error");
+            btn.disabled = false; // Reactivar si hubo error
+            btn.classList.remove("disabled");
         }
     } catch (error) {
         console.error("→ Error de conexión:", error);
-        Swal.fire("Error", "Fallo la conexión con el servidor", "error");
+        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        btn.disabled = false; // Reactivar si hubo error
+        btn.classList.remove("disabled");
     }
 }
+
 
 
 
@@ -470,7 +500,7 @@ async function cambiarEstatus(checkbox) {
 
     try {
         const res = await fetch("/STD/prevencion/cambiar-estatus", {
-    method: "POST",
+            method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -497,6 +527,18 @@ async function cambiarEstatus(checkbox) {
         checkbox.checked = !checkbox.checked;
     }
 }
+
+function EJECUTAR() {
+    Swal.fire({
+        title: "¡Éxito!",
+        text: "Se ejecuto correctamente.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+
 
 
 

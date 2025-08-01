@@ -397,6 +397,7 @@ public class RptReporteClientesOpeController {
     }
 
 
+
     @PostMapping("/finalizar-migracion/{id}")
     @ResponseBody
     public ResponseEntity<?> finalizarMigracion(@PathVariable("id") Integer id,
@@ -412,10 +413,18 @@ public class RptReporteClientesOpeController {
 
     @GetMapping("/obtener-migracion/{id}")
     @ResponseBody
-    public ResponseEntity<MigracionesP> obtenerMigracion(@PathVariable("id") Integer id) {
-        return migracionesPService.obtenerMigracionPorId(id)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Map<String, Object>> obtenerMigracion(@PathVariable("id") Integer id) {
+        Optional<MigracionesP> migracion = migracionesPService.obtenerMigracionPorId(id);
+        if (migracion.isPresent()) {
+            Map<String, Object> estado = new HashMap<>();
+            estado.put("estatus", migracion.get().getEstatus()); 
+            estado.put("ejecuta", migracion.get().getEjecuta()); 
+            estado.put("mensajeResultado", migracion.get().getMensajeResultado()); 
+            estado.put("cron", migracion.get().getCron());
+            return ResponseEntity.ok(estado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     
@@ -427,6 +436,9 @@ public class RptReporteClientesOpeController {
         migracionesPService.actualizarSoloEstatus(id, estatus, userDetails.getUsername());
         return ResponseEntity.ok().build();
     }
+    
+    
+
 
 
     /***
