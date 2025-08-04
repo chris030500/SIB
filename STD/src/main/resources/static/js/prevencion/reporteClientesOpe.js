@@ -154,20 +154,20 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
  
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
-
+ 
   const input = document.getElementById("fileUploadPEP");
   const files = input.files;
-
+ 
   if (!files || files.length === 0) {
     swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
     return;
   }
-
+ 
   const fd = new FormData();
   for (let i = 0; i < files.length; i++) {
     fd.append("file", files[i]); 
   }
-
+ 
   swal({
     title: "Procesando archivo(s)...",
     content: {
@@ -181,16 +181,16 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   try {
     const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
       method: "POST",
       body: fd
     });
-
+ 
     const respuesta = await res.json(); 
     swal.close();
-
+ 
     if (res.ok && Array.isArray(respuesta)) {
       swal({
         title: "¡Éxito!",
@@ -208,7 +208,7 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
         button: "Aceptar",
       });
     }
-
+ 
   } catch (error) {
     swal.close();
     console.error("Error en fetch:", error);
@@ -218,7 +218,7 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
     });
   }
 });
-
+ 
  
  
 function confirmar(valor) {
@@ -398,22 +398,21 @@ function generarHistoricoClientes(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
-
+ 
 const idMigracion = 1;
+const BASE_URL = "/STD/prevencion";
 
 async function cargarEstadoInicial() {
     try {
-        const res = await fetch(`/prevencion/obtener-migracion/${idMigracion}`);
+        const res = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
         const data = await res.json();
 
-        // SWITCH (estatus)
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
         checkbox.checked = data.estatus === 1;
         label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
 
-        // BOTÓN DE EJECUCIÓN
         const btnEjecutar = document.getElementById("btnEjecutarMigracion");
         if (btnEjecutar) {
             const enEjecucion = data.ejecuta === 1;
@@ -421,28 +420,10 @@ async function cargarEstadoInicial() {
             btnEjecutar.classList.toggle("disabled", enEjecucion);
         }
 
-        // INPUT "botón de clasificación"
-        const btnClasificacion = document.getElementById("btnCodigoClasificacion");
-if (btnClasificacion) {
-    const enEjecucion = data.ejecuta === 1; // si está en ejecución, deshabilitarlo
-    btnClasificacion.disabled = enEjecucion;
-    btnClasificacion.classList.toggle("disabled", enEjecucion);
-}
+        // Agrega esta línea para mostrar el mensaje siempre
+        mostrarMensajeMigracion(data);
 
-        // MENSAJE DE RESULTADO
-        const mensaje = document.getElementById("mensajeResultado");
-        if (mensaje) {
-            mensaje.innerText = "";
-            if (data.mensajeResultado) {
-                mensaje.innerText = data.mensajeResultado;
-            }
-            if (data.cron) {
-                mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
-            }
-            mensaje.style.display = "block";
-        }
-
-    }  catch (error) {
+    } catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
 }
@@ -451,18 +432,13 @@ if (btnClasificacion) {
 async function activarMigracion() {
     const btn = document.getElementById("btnEjecutarMigracion");
 
-    // 🚫 Si ya está deshabilitado, no continuar
-    if (btn.disabled) {
-        console.log("⛔ Botón ya está deshabilitado. Abortando ejecución.");
-        return;
-    }
+    if (btn.disabled) return;
 
-    // 🔒 Deshabilitar inmediatamente para evitar múltiples clics
     btn.disabled = true;
     btn.classList.add("disabled");
 
     try {
-        const res = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
+        const res = await fetch(`${BASE_URL}/activar-ejecucion/${idMigracion}`, {
             method: "POST"
         });
 
@@ -475,23 +451,29 @@ async function activarMigracion() {
                 showConfirmButton: false
             });
 
-            setTimeout(() => {
-                cargarEstadoInicial(); // volver a consultar la tabla
+            // Re-consultar para obtener mensaje actualizado
+            setTimeout(async () => {
+                const estado = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
+                if (estado.ok) {
+                    const data = await estado.json();
+                    mostrarMensajeMigracion(data);
+                }
+                cargarEstadoInicial(); // También actualiza estados visuales
             }, 2100);
+
         } else {
             Swal.fire("Error", "No se pudo programar la migración", "error");
-            btn.disabled = false; // Reactivar si hubo error
+            btn.disabled = false;
             btn.classList.remove("disabled");
         }
+
     } catch (error) {
         console.error("→ Error de conexión:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
-        btn.disabled = false; // Reactivar si hubo error
+        btn.disabled = false;
         btn.classList.remove("disabled");
     }
 }
-
-
 
 
 async function cambiarEstatus(checkbox) {
@@ -499,70 +481,39 @@ async function cambiarEstatus(checkbox) {
     const label = document.getElementById("labelEstado");
 
     try {
-        const res = await fetch("/STD/prevencion/cambiar-estatus", {
+        const res = await fetch(`${BASE_URL}/cambiar-estatus`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `id=${idMigracion}&estatus=${estatus}`
         });
 
         if (res.ok) {
             label.innerText = estatus === 1 ? "Activo" : "Inactivo";
-            Swal.fire({
-                title: "¡Éxito!",
-                text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`,
-                icon: "success",
-                timer: 2000,
-                showConfirmButton: false
-            });
+            Swal.fire({ title: "¡Éxito!", text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, icon: "success", timer: 2000, showConfirmButton: false });
         } else {
             Swal.fire("Error", "No se pudo actualizar el estatus", "error");
             checkbox.checked = !checkbox.checked;
         }
-
     } catch (error) {
-        console.error("Error al cambiar estatus:", error);
+        console.error("Error:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
         checkbox.checked = !checkbox.checked;
     }
 }
 
-function EJECUTAR() {
-    Swal.fire({
-        title: "¡Éxito!",
-        text: "Se ejecuto correctamente.",
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-
-
-
-
-
+ window.onload = cargarEstadoInicial;
 // Para cargar mensaje de resultado en pantalla
-/*async function cargarMensajeMigracion() {
-    try {
-        const res = await fetch('/STD/migraciones/obtener-migracion/1');
-        const data = await res.json();
-        if (data) {
-            // Mostrar mensaje resultado
-            if (data.mensajeResultado) {
-                document.getElementById("mensajeResultado").innerText = data.mensajeResultado;
-            }
+function mostrarMensajeMigracion(data) {
+    const mensaje = document.getElementById("mensajeResultado");
+    if (!mensaje) return;
 
-            // Mostrar estatus como activo/inactivo
-            const checkbox = document.getElementById("estatusSwitch");
-            checkbox.checked = data.estatus === 1;
-            document.getElementById("labelEstado").innerText = data.estatus === 1 ? "Activo" : "Inactivo";
-        }
-    } catch (err) {
-        console.error("Error al cargar datos de migración", err);
+    mensaje.innerText = "";
+    if (data.mensajeResultado) {
+        mensaje.innerText = data.mensajeResultado;
     }
+    if (data.cron) {
+        mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
+    }
+    mensaje.style.display = "block";
 }
-
-window.onload = cargarMensajeMigracion;*/
 
