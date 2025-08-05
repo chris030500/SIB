@@ -32,6 +32,7 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasSer
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,11 @@ public class tiposCampaniasController {
 				Integer idUsuario = usuario.get(0).getPk_id_usuario();
 				//System.out.print("idUsuario:" + idUsuario);
 				model.addAttribute("idUsuario", idUsuario);
+				
+				// Obtener la fecha actual sin tiempo
+		        LocalDate fechaActual = LocalDate.now();
+		        model.addAttribute("idFecha", fechaActual);
+				
 				////
 				
 				rutaDireccion = Constantes.CREDITO_CAMPANIAS;

@@ -137,9 +137,20 @@ public class TiposCampaniasModel {
 	
 	@Column(name = "I_VIGENCIA_BC")
 	private Integer i_vigencia_bc;
+	
+	@Column(name = "I_MINIMO_VIDA_CREDITO_R")
+	private Integer i_minimo_vida_credito_r;
 
 	public Integer getPk_id_tipo_campania() {
 		return pk_id_tipo_campania;
+	}
+
+	public Integer getI_minimo_vida_credito_r() {
+		return i_minimo_vida_credito_r;
+	}
+
+	public void setI_minimo_vida_credito_r(Integer i_minimo_vida_credito_r) {
+		this.i_minimo_vida_credito_r = i_minimo_vida_credito_r;
 	}
 
 	public void setPk_id_tipo_campania(Integer pk_id_tipo_campania) {

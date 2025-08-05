@@ -61,7 +61,11 @@ public class TiposCampaniasService {
             campania.getI_vigencia_oferta(),
             campania.getD_tasa_ordinaria_oferta(),
             campania.getI_activa_oferta(),
-            campania.getD_monto_maximo_oferta()
+            campania.getD_monto_maximo_oferta(),
+            campania.getI_minimo_vida_credito_r(),
+            campania.getI_estatus(),
+            campania.getDt_fecha_registro()
+            
         );
         return filasAfectadas > 0;
     }
@@ -94,7 +98,10 @@ public class TiposCampaniasService {
 	        c.getI_vigencia_oferta(),
 	        c.getD_tasa_ordinaria_oferta(),
 	        c.getI_activa_oferta(),
-	        c.getD_monto_maximo_oferta()
+	        c.getD_monto_maximo_oferta(),
+	        c.getI_minimo_vida_credito_r(),
+	        c.getI_estatus(),
+	        c.getDt_fecha_registro()
 	    );
 	    return filas > 0;
 	}
