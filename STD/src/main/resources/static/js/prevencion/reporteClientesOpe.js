@@ -154,19 +154,22 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
  
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
-  const file = document.getElementById("fileUploadPEP").files[0];
-  if (!file) {
-    swal("Debes seleccionar un archivo.", {
-      icon: "warning",
-    });
+ 
+  const input = document.getElementById("fileUploadPEP");
+  const files = input.files;
+ 
+  if (!files || files.length === 0) {
+    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
     return;
   }
  
   const fd = new FormData();
-  fd.append("file", file);
+  for (let i = 0; i < files.length; i++) {
+    fd.append("file", files[i]); 
+  }
  
   swal({
-    title: "Procesando información.",
+    title: "Procesando archivo(s)...",
     content: {
       element: "div",
       attributes: {
@@ -180,29 +183,42 @@ document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   });
  
   try {
-    const res = await fetch(e.target.action, {
+    const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
       method: "POST",
       body: fd
     });
  
-    const json = await res.json();
+    const respuesta = await res.json(); 
     swal.close();
  
-    swal({
-      title: json.tipo === "success" ? "¡Éxito!" : "Error",
-      text: json.mensaje,
-      icon: json.tipo,
-      button: "Aceptar",
-    });
+    if (res.ok && Array.isArray(respuesta)) {
+      swal({
+        title: "¡Éxito!",
+        text: respuesta[0],
+        icon: "success",
+        button: "Aceptar",
+      }).then(() => {
+       
+      });
+    } else {
+      swal({
+        title: "Error",
+        text: respuesta[0] || "Ocurrió un error inesperado.",
+        icon: "error",
+        button: "Aceptar",
+      });
+    }
  
   } catch (error) {
     swal.close();
+    console.error("Error en fetch:", error);
     swal("Se presentó un error, intente más tarde.", {
       icon: "error",
       closeOnClickOutside: false,
     });
   }
 });
+ 
  
  
 function confirmar(valor) {
@@ -327,12 +343,12 @@ function iniciaTblHistorico() {
     $.each(data, function(idx, opt) {
  
       btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-        + " title='Actualizar Parametros' data-bs-target='#' aria-controls='table-datatable' type='button'"
+        + " title='Reporte Historico de operaciones' data-bs-target='#' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-tools'></i></button>";
  
       btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
-        + " title='Ejecutar Proceso' aria-controls='table-datatable' type='button'"
+        + " title='Reporte Historico de clientes' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
         + " <i class='bi bi-file-play-fill'></i></button>";
  
@@ -382,3 +398,122 @@ function generarHistoricoClientes(idBuscarHO) {
     alert("Se produjo un error al generar el reporte.");
   });
 }
+ 
+const idMigracion = 1;
+const BASE_URL = "/STD/prevencion";
+
+async function cargarEstadoInicial() {
+    try {
+        const res = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
+        if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
+        const data = await res.json();
+
+        const checkbox = document.getElementById("estatusSwitch");
+        const label = document.getElementById("labelEstado");
+        checkbox.checked = data.estatus === 1;
+        label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
+
+        const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+        if (btnEjecutar) {
+            const enEjecucion = data.ejecuta === 1;
+            btnEjecutar.disabled = enEjecucion;
+            btnEjecutar.classList.toggle("disabled", enEjecucion);
+        }
+
+        // Agrega esta línea para mostrar el mensaje siempre
+        mostrarMensajeMigracion(data);
+
+    } catch (error) {
+        console.error("Error al cargar estado inicial:", error);
+    }
+}
+
+
+async function activarMigracion() {
+    const btn = document.getElementById("btnEjecutarMigracion");
+
+    if (btn.disabled) return;
+
+    btn.disabled = true;
+    btn.classList.add("disabled");
+
+    try {
+        const res = await fetch(`${BASE_URL}/activar-ejecucion/${idMigracion}`, {
+            method: "POST"
+        });
+
+        if (res.ok) {
+            Swal.fire({
+                title: "¡Éxito!",
+                text: "Migración programada correctamente.",
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Re-consultar para obtener mensaje actualizado
+            setTimeout(async () => {
+                const estado = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
+                if (estado.ok) {
+                    const data = await estado.json();
+                    mostrarMensajeMigracion(data);
+                }
+                cargarEstadoInicial(); // También actualiza estados visuales
+            }, 2100);
+
+        } else {
+            Swal.fire("Error", "No se pudo programar la migración", "error");
+            btn.disabled = false;
+            btn.classList.remove("disabled");
+        }
+
+    } catch (error) {
+        console.error("→ Error de conexión:", error);
+        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        btn.disabled = false;
+        btn.classList.remove("disabled");
+    }
+}
+
+
+async function cambiarEstatus(checkbox) {
+    const estatus = checkbox.checked ? 1 : 0;
+    const label = document.getElementById("labelEstado");
+
+    try {
+        const res = await fetch(`${BASE_URL}/cambiar-estatus`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `id=${idMigracion}&estatus=${estatus}`
+        });
+
+        if (res.ok) {
+            label.innerText = estatus === 1 ? "Activo" : "Inactivo";
+            Swal.fire({ title: "¡Éxito!", text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, icon: "success", timer: 2000, showConfirmButton: false });
+        } else {
+            Swal.fire("Error", "No se pudo actualizar el estatus", "error");
+            checkbox.checked = !checkbox.checked;
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        checkbox.checked = !checkbox.checked;
+    }
+}
+
+ window.onload = cargarEstadoInicial;
+// Para cargar mensaje de resultado en pantalla
+function mostrarMensajeMigracion(data) {
+    const mensaje = document.getElementById("mensajeResultado");
+    if (!mensaje) return;
+
+    mensaje.innerText = "";
+    if (data.mensajeResultado) {
+        mensaje.innerText = data.mensajeResultado;
+    }
+    if (data.cron) {
+        mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
+    }
+    mensaje.style.display = "block";
+}
+

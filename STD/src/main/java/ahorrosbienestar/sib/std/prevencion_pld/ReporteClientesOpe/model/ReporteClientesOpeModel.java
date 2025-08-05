@@ -9,277 +9,233 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "TBL_PLD_AUDITORIAS_CLIENTES_OPERACIONES")
 public class ReporteClientesOpeModel {
- 
+
     @Id
-    @Column(name = "cliente_id")
-    private Integer clienteId;
- 
-    private String estatusCliente;
- 
-    private LocalDate fechaAlta;
- 
-    private String tipoCliente;
- 
-    private Integer numeroCliente;
- 
-    private String nombreCompleto;
- 
-    private String genero;
- 
-    private String tipoPersona;
- 
-    private String rfc;
- 
-    private LocalDate fechaNacimiento;
- 
-    private String entidadFederativaNacimiento;
- 
-    private String paisNacimiento;
- 
-    private String nacionalidad;
- 
-    private String ocupacion;
- 
-    private String numeroTelefono;
- 
-    private String correo;
- 
-    private Boolean representanteLegal;
- 
-    private String curp;
- 
-    private String colonia;
- 
-    private String calle;
- 
-    private String numeroCasa;
- 
-    private String numInterior;
- 
-    private String cp;
- 
-    private String municipio;
- 
-    private String estado;
- 
-    private String peps;
- 
-    private String actividadBMXID;
- 
-    private String actividadBMX;
- 
-    private String actividadSCIANID;
- 
-    private String nivelRiesgo;
- 
-    private Long montoCreditos;
- 
-    private String tipoOcupacion;
- 
-    private String lugarTrabajo;
- 
-    private Long actividadFRID;
- 
-    private String actividadFR;
- 
-    private String sectorEconomico;
- 
-    private Long volumenCreditos;
- 
-    private String actividadINEGI;
- 
-    private LocalDate fechaBaja;
- 
-    private String tipoClientePersona;
- 
-    private String nombre;
- 
-    private LocalDate fechaOperacion;
- 
-    private BigDecimal montoOperacion;
- 
-    private String destinatarioCredito;
- 
-    private String instrumentoMonetario;
- 
-    private String tipoProductoCliente;
- 
-    private String tipoPersonaOperacion;
- 
-    private String descripcionMovimiento;
- 
-    private String referenciaMovimiento;
- 
-    private String naturalezaMovimiento;
- 
-    private Long numTransaccion;
- 
-    private String productoDestino;
- 
-    private String nombreProductoDestino;
- 
-    private Long numeroContrato;
- 
-    // --- getters y setters ---
-    public Integer getClienteId() { return clienteId; }
-    public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
- 
-    public String getEstatusCliente() { return estatusCliente; }
-    public void setEstatusCliente(String estatusCliente) { this.estatusCliente = estatusCliente; }
- 
-    public LocalDate getFechaAlta() { return fechaAlta; }
-    public void setFechaAlta(LocalDate fechaAlta) { this.fechaAlta = fechaAlta; }
- 
-    public String getTipoCliente() { return tipoCliente; }
-    public void setTipoCliente(String tipoCliente) { this.tipoCliente = tipoCliente; }
- 
-    public Integer getNumeroCliente() { return numeroCliente; }
-    public void setNumeroCliente(Integer numeroCliente) { this.numeroCliente = numeroCliente; }
- 
-    public String getNombreCompleto() { return nombreCompleto; }
-    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
- 
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
-    
-    public String gettipoPersona() { return tipoPersona; }
-    public void settipoPersona(String tipoPersona) { this.tipoPersona = tipoPersona; }
- 
-    public String getrfc() { return rfc; }
-    public void setrfc(String rfc) { this.rfc = rfc; }
-    
-    public LocalDate getfechaNacimiento() { return fechaNacimiento; }
-    public void setfechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
-    
-    public String getentidadFederativaNacimiento() { return entidadFederativaNacimiento; }
-    public void setentidadFederativaNacimiento(String entidadFederativaNacimiento) { this.entidadFederativaNacimiento = entidadFederativaNacimiento; }
- 
-    public String getpaisNacimiento() { return paisNacimiento; }
-    public void setpaisNacimiento(String paisNacimiento) { this.paisNacimiento = paisNacimiento; }
-    
-    public String getnacionalidad() { return nacionalidad; }
-    public void setpaisnacionalidad(String nacionalidad) { this.nacionalidad = nacionalidad; }
-    
-    public String getocupacion() { return ocupacion; }
-    public void setocupacion(String ocupacion) { this.ocupacion = ocupacion; }
-    
-    public String getnumeroTelefono() { return numeroTelefono; }
-    public void setnumeroTelefono(String numeroTelefono) { this.numeroTelefono = numeroTelefono; }
-    
-    public String getcorreo() { return correo; }
-    public void setcorreo(String correo) { this.correo = correo; }
-    
-    public Boolean getrepresentanteLegal() { return representanteLegal; }
-    public void setrepresentanteLegal(Boolean representanteLegal) { this.representanteLegal = representanteLegal; }
-    
-    public String getcurp() { return curp; }
-    public void setcurp(String curp) { this.curp = curp; }
-    
-    public String getcolonia() { return colonia; }
-    public void setcolonia(String colonia) { this.colonia = colonia; }
-    
-    public String getcalle() { return calle; }
-    public void setcalle(String calle) { this.calle = calle; }
-    
-    public String getnumeroCasa() { return numeroCasa; }
-    public void setnumeroCasa(String numeroCasa) { this.numeroCasa = numeroCasa; }
-    
-    public String getnumInterior() { return numInterior; }
-    public void setnumInterior(String numInterior) { this.numInterior = numInterior; }
-    
-    public String getmunicipio() { return municipio; }
-    public void setmunicipio(String municipio) { this.municipio = municipio; }
-    
-    public String getcp() { return cp; }
-    public void setcp(String cp) { this.cp = cp; }
-    
-    public String getestado() { return estado; }
-    public void setestado(String estado) { this.estado = estado; }
-    
-    public String getpeps() { return peps; }
-    public void setpeps(String peps) { this.peps = peps; }
-    
-    public String getactividadBMXID() { return actividadBMXID; }
-    public void setactividadBMXID(String actividadBMXID) { this.actividadBMXID = actividadBMXID; }
-    
-    public String getactividadBMX() { return actividadBMX; }
-    public void setactividadBMX(String actividadBMX) { this.actividadBMX = actividadBMX; }
-    
-    public String actividadSCIANID() { return actividadSCIANID; }
-    public void actividadSCIANID(String actividadSCIANID) { this.actividadSCIANID = actividadSCIANID; }
-    
-    public String nivelRiesgo() { return nivelRiesgo; }
-    public void nivelRiesgo(String nivelRiesgo) { this.nivelRiesgo = nivelRiesgo; }
-    
-    public Long montoCreditos() { return montoCreditos; }
-    public void montoCreditos(Long montoCreditos) { this.montoCreditos = montoCreditos; }
-    
-    public String tipoOcupacion() { return tipoOcupacion; }
-    public void tipoOcupacion(String tipoOcupacion) { this.tipoOcupacion = tipoOcupacion; }
-    
-    public String lugarTrabajo() { return lugarTrabajo; }
-    public void lugarTrabajo(String lugarTrabajo) { this.lugarTrabajo = lugarTrabajo; }
-    
-    public Long actividadFRID() { return actividadFRID; }
-    public void actividadFRID(Long actividadFRID) { this.actividadFRID = actividadFRID; }
-    
-    public String actividadFR() { return actividadFR; }
-    public void actividadFR(String actividadFR) { this.actividadFR = actividadFR; }
-    
-    public String sectorEconomico() { return sectorEconomico; }
-    public void sectorEconomico(String sectorEconomico) { this.sectorEconomico = sectorEconomico; }
-    
-    public Long volumenCreditos() { return volumenCreditos; }
-    public void volumenCreditos(Long volumenCreditos) { this.volumenCreditos = volumenCreditos; }
-    
-    public String actividadINEGI() { return actividadINEGI; }
-    public void actividadINEGI(String actividadINEGI) { this.actividadINEGI = actividadINEGI; }
-    
-    public LocalDate getfechaBaja() { return fechaBaja; }
-    public void setfechaBaja(LocalDate fechaBaja) { this.fechaBaja = fechaBaja; }
-    
-    public String tipoClientePersona() { return tipoClientePersona; }
-    public void tipoClientePersona(String tipoClientePersona) { this.tipoClientePersona = tipoClientePersona; }
-    
-    public String nombre() { return nombre; }
-    public void nombre(String nombre) { this.nombre = nombre; }
-    
-    public BigDecimal getMontoOperacion() { return montoOperacion; }
-    public void setMontoOperacion(BigDecimal montoOperacion) { this.montoOperacion = montoOperacion; }
- 
-    public LocalDate getFechaOperacion() { return fechaOperacion; }
-    public void setFechaOperacion(LocalDate fechaOperacion) { this.fechaOperacion = fechaOperacion; }
-    
-    public String destinatarioCredito() { return destinatarioCredito; }
-    public void destinatarioCredito(String destinatarioCredito) { this.destinatarioCredito = destinatarioCredito; }
-    
-    public String instrumentoMonetario() { return instrumentoMonetario; }
-    public void instrumentoMonetario(String instrumentoMonetario) { this.instrumentoMonetario = instrumentoMonetario; }
-    
-    public String tipoProductoCliente() { return tipoProductoCliente; }
-    public void tipoProductoCliente(String tipoProductoCliente) { this.tipoProductoCliente = tipoProductoCliente; }
-    
-    public String tipoPersonaOperacion() { return tipoPersonaOperacion; }
-    public void tipoPersonaOperacion(String tipoPersonaOperacion) { this.tipoPersonaOperacion = tipoPersonaOperacion; }
-    
-    public String descripcionMovimiento() { return descripcionMovimiento; }
-    public void descripcionMovimiento(String descripcionMovimiento) { this.descripcionMovimiento = descripcionMovimiento; }
-    
-    public String referenciaMovimiento() { return referenciaMovimiento; }
-    public void referenciaMovimiento(String referenciaMovimiento) { this.referenciaMovimiento = referenciaMovimiento; }
-    
-    public String naturalezaMovimiento() { return naturalezaMovimiento; }
-    public void naturalezaMovimiento(String naturalezaMovimiento) { this.naturalezaMovimiento = naturalezaMovimiento; }
-    
-    public Long numTransaccion() { return numTransaccion; }
-    public void numTransaccion(Long numTransaccion) { this.numTransaccion = numTransaccion; }
-    
-    public String productoDestino() { return productoDestino; }
-    public void productoDestino(String productoDestino) { this.productoDestino = productoDestino; }
-    
-    public String nombreProductoDestino() { return nombreProductoDestino; }
-    public void nombreProductoDestino(String nombreProductoDestino) { this.nombreProductoDestino = nombreProductoDestino; }
-    
-    public Long numeroContrato() { return numeroContrato; }
-    public void numeroContrato(Long numeroContrato) { this.numeroContrato = numeroContrato; }
+    @Column(name = "I_ClienteID")
+    private Integer I_ClienteID;
+
+    private String VC_estatus_cliente;
+
+    private LocalDate DT_FechaAlta;
+
+    private String VC_tipo_cliente;
+
+    private Integer I_numero_cliente;
+
+    private String VC_nombre_completo;
+
+    private String VC_GENERO;
+
+    private String VC_tipo_persona;
+
+    private String VC_rfc;
+
+    private LocalDate DT_FechaNacimiento;
+
+    private String VC_entidad_federativa_nacimiento;
+
+    private String VC_pais_nacimiento;
+
+    private String VC_nacionalidad;
+
+    private String VC_ocupacion;
+
+    private String VC_numero_telefono;
+
+    private String VC_Correo;
+
+    private String VC_representante_legal;
+
+    private String C_curp;
+
+    private String VC_colonia;
+
+    private String VC_calle;
+
+    private String VC_numeroCasa;
+
+    private String VC_num_interior;
+
+    private String VC_cp;
+
+    private String VC_municipio;
+
+    private String VC_estado;
+
+    private String VC_Peps;
+
+    private Integer I_ActividadBMXID;
+
+    private String VC_ActividadBMX;
+
+    private Integer I_ActividadSCIANID;
+
+    private String VC_nivel_riesgo;
+
+    private BigDecimal N_volumen_creditos;
+
+    private LocalDate DT_fecha_operacion;
+
+    private BigDecimal N_monto_operacion;
+
+    private String VC_destinatario_credito;
+
+    private String VC_instrumento_monetario;
+
+    private String VC_tipo_producto_cliente;
+
+    private String VC_tipo_persona_operacion;
+
+    private String VC_descripcion_movimiento;
+
+    private String VC_referencia_movimiento;
+
+    private String C_naturaleza_movimiento;
+
+    private Long I_num_transaccion;
+
+    private String VC_producto_destino;
+
+    private String VC_nombre_producto_destino;
+
+    private Long I_numero_contrato;
+
+    private LocalDate DT_Fecha_ejecucion;
+
+    // Getters y setters
+
+    public Integer getI_ClienteID() { return I_ClienteID; }
+    public void setI_ClienteID(Integer i_ClienteID) { I_ClienteID = i_ClienteID; }
+
+    public String getVC_estatus_cliente() { return VC_estatus_cliente; }
+    public void setVC_estatus_cliente(String vC_estatus_cliente) { VC_estatus_cliente = vC_estatus_cliente; }
+
+    public LocalDate getDT_FechaAlta() { return DT_FechaAlta; }
+    public void setDT_FechaAlta(LocalDate dT_FechaAlta) { DT_FechaAlta = dT_FechaAlta; }
+
+    public String getVC_tipo_cliente() { return VC_tipo_cliente; }
+    public void setVC_tipo_cliente(String vC_tipo_cliente) { VC_tipo_cliente = vC_tipo_cliente; }
+
+    public Integer getI_numero_cliente() { return I_numero_cliente; }
+    public void setI_numero_cliente(Integer i_numero_cliente) { I_numero_cliente = i_numero_cliente; }
+
+    public String getVC_nombre_completo() { return VC_nombre_completo; }
+    public void setVC_nombre_completo(String vC_nombre_completo) { VC_nombre_completo = vC_nombre_completo; }
+
+    public String getVC_GENERO() { return VC_GENERO; }
+    public void setVC_GENERO(String vC_GENERO) { VC_GENERO = vC_GENERO; }
+
+    public String getVC_tipo_persona() { return VC_tipo_persona; }
+    public void setVC_tipo_persona(String vC_tipo_persona) { VC_tipo_persona = vC_tipo_persona; }
+
+    public String getVC_rfc() { return VC_rfc; }
+    public void setVC_rfc(String vC_rfc) { VC_rfc = vC_rfc; }
+
+    public LocalDate getDT_FechaNacimiento() { return DT_FechaNacimiento; }
+    public void setDT_FechaNacimiento(LocalDate dT_FechaNacimiento) { DT_FechaNacimiento = dT_FechaNacimiento; }
+
+    public String getVC_entidad_federativa_nacimiento() { return VC_entidad_federativa_nacimiento; }
+    public void setVC_entidad_federativa_nacimiento(String vC_entidad_federativa_nacimiento) { VC_entidad_federativa_nacimiento = vC_entidad_federativa_nacimiento; }
+
+    public String getVC_pais_nacimiento() { return VC_pais_nacimiento; }
+    public void setVC_pais_nacimiento(String vC_pais_nacimiento) { VC_pais_nacimiento = vC_pais_nacimiento; }
+
+    public String getVC_nacionalidad() { return VC_nacionalidad; }
+    public void setVC_nacionalidad(String vC_nacionalidad) { VC_nacionalidad = vC_nacionalidad; }
+
+    public String getVC_ocupacion() { return VC_ocupacion; }
+    public void setVC_ocupacion(String vC_ocupacion) { VC_ocupacion = vC_ocupacion; }
+
+    public String getVC_numero_telefono() { return VC_numero_telefono; }
+    public void setVC_numero_telefono(String vC_numero_telefono) { VC_numero_telefono = vC_numero_telefono; }
+
+    public String getVC_Correo() { return VC_Correo; }
+    public void setVC_Correo(String vC_Correo) { VC_Correo = vC_Correo; }
+
+    public String getVC_representante_legal() { return VC_representante_legal; }
+    public void setVC_representante_legal(String vC_representante_legal) { VC_representante_legal = vC_representante_legal; }
+
+    public String getC_curp() { return C_curp; }
+    public void setC_curp(String c_curp) { C_curp = c_curp; }
+
+    public String getVC_colonia() { return VC_colonia; }
+    public void setVC_colonia(String vC_colonia) { VC_colonia = vC_colonia; }
+
+    public String getVC_calle() { return VC_calle; }
+    public void setVC_calle(String vC_calle) { VC_calle = vC_calle; }
+
+    public String getVC_numeroCasa() { return VC_numeroCasa; }
+    public void setVC_numeroCasa(String vC_numeroCasa) { VC_numeroCasa = vC_numeroCasa; }
+
+    public String getVC_num_interior() { return VC_num_interior; }
+    public void setVC_num_interior(String vC_num_interior) { VC_num_interior = vC_num_interior; }
+
+    public String getVC_cp() { return VC_cp; }
+    public void setVC_cp(String vC_cp) { VC_cp = vC_cp; }
+
+    public String getVC_municipio() { return VC_municipio; }
+    public void setVC_municipio(String vC_municipio) { VC_municipio = vC_municipio; }
+
+    public String getVC_estado() { return VC_estado; }
+    public void setVC_estado(String vC_estado) { VC_estado = vC_estado; }
+
+    public String getVC_Peps() { return VC_Peps; }
+    public void setVC_Peps(String vC_Peps) { VC_Peps = vC_Peps; }
+
+    public Integer getI_ActividadBMXID() { return I_ActividadBMXID; }
+    public void setI_ActividadBMXID(Integer i_ActividadBMXID) { I_ActividadBMXID = i_ActividadBMXID; }
+
+    public String getVC_ActividadBMX() { return VC_ActividadBMX; }
+    public void setVC_ActividadBMX(String vC_ActividadBMX) { VC_ActividadBMX = vC_ActividadBMX; }
+
+    public Integer getI_ActividadSCIANID() { return I_ActividadSCIANID; }
+    public void setI_ActividadSCIANID(Integer i_ActividadSCIANID) { I_ActividadSCIANID = i_ActividadSCIANID; }
+
+    public String getVC_nivel_riesgo() { return VC_nivel_riesgo; }
+    public void setVC_nivel_riesgo(String vC_nivel_riesgo) { VC_nivel_riesgo = vC_nivel_riesgo; }
+
+    public BigDecimal getN_volumen_creditos() { return N_volumen_creditos; }
+    public void setN_volumen_creditos(BigDecimal n_volumen_creditos) { N_volumen_creditos = n_volumen_creditos; }
+
+    public LocalDate getDT_fecha_operacion() { return DT_fecha_operacion; }
+    public void setDT_fecha_operacion(LocalDate dT_fecha_operacion) { DT_fecha_operacion = dT_fecha_operacion; }
+
+    public BigDecimal getN_monto_operacion() { return N_monto_operacion; }
+    public void setN_monto_operacion(BigDecimal n_monto_operacion) { N_monto_operacion = n_monto_operacion; }
+
+    public String getVC_destinatario_credito() { return VC_destinatario_credito; }
+    public void setVC_destinatario_credito(String vC_destinatario_credito) { VC_destinatario_credito = vC_destinatario_credito; }
+
+    public String getVC_instrumento_monetario() { return VC_instrumento_monetario; }
+    public void setVC_instrumento_monetario(String vC_instrumento_monetario) { VC_instrumento_monetario = vC_instrumento_monetario; }
+
+    public String getVC_tipo_producto_cliente() { return VC_tipo_producto_cliente; }
+    public void setVC_tipo_producto_cliente(String vC_tipo_producto_cliente) { VC_tipo_producto_cliente = vC_tipo_producto_cliente; }
+
+    public String getVC_tipo_persona_operacion() { return VC_tipo_persona_operacion; }
+    public void setVC_tipo_persona_operacion(String vC_tipo_persona_operacion) { VC_tipo_persona_operacion = vC_tipo_persona_operacion; }
+
+    public String getVC_descripcion_movimiento() { return VC_descripcion_movimiento; }
+    public void setVC_descripcion_movimiento(String vC_descripcion_movimiento) { VC_descripcion_movimiento = vC_descripcion_movimiento; }
+
+    public String getVC_referencia_movimiento() { return VC_referencia_movimiento; }
+    public void setVC_referencia_movimiento(String vC_referencia_movimiento) { VC_referencia_movimiento = vC_referencia_movimiento; }
+
+    public String getC_naturaleza_movimiento() { return C_naturaleza_movimiento; }
+    public void setC_naturaleza_movimiento(String c_naturaleza_movimiento) { C_naturaleza_movimiento = c_naturaleza_movimiento; }
+
+    public Long getI_num_transaccion() { return I_num_transaccion; }
+    public void setI_num_transaccion(Long i_num_transaccion) { I_num_transaccion = i_num_transaccion; }
+
+    public String getVC_producto_destino() { return VC_producto_destino; }
+    public void setVC_producto_destino(String vC_producto_destino) { VC_producto_destino = vC_producto_destino; }
+
+    public String getVC_nombre_producto_destino() { return VC_nombre_producto_destino; }
+    public void setVC_nombre_producto_destino(String vC_nombre_producto_destino) { VC_nombre_producto_destino = vC_nombre_producto_destino; }
+
+    public Long getI_numero_contrato() { return I_numero_contrato; }
+    public void setI_numero_contrato(Long i_numero_contrato) { I_numero_contrato = i_numero_contrato; }
+
+    public LocalDate getDT_Fecha_ejecucion() { return DT_Fecha_ejecucion; }
+    public void setDT_Fecha_ejecucion(LocalDate dT_Fecha_ejecucion) { DT_Fecha_ejecucion = dT_Fecha_ejecucion; }
 }

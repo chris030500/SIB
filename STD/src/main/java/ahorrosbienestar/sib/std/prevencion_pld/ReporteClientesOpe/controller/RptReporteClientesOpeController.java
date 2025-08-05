@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
- 
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+//import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -37,6 +40,9 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Detall
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
+import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
+import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
 public class RptReporteClientesOpeController {
@@ -45,6 +51,9 @@ public class RptReporteClientesOpeController {
  
     @Autowired
     private IUsuarioRepository iUsuarioRepository;
+    
+    @Autowired
+    private MigracionesPService migracionesPService;
     
     @Autowired
     private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -83,45 +92,77 @@ public class RptReporteClientesOpeController {
     }
     
  
-    @PostMapping(value = "/reporteClientesOpe/uploadPEP",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE) 
-@ResponseBody
-public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") MultipartFile file) {
-    Map<String, Object> respuesta = new HashMap<>();
-    try {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDetails userDetails = null;
-        if (principal instanceof UserDetails) {
-            userDetails = (UserDetails) principal;
-            usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-        }
-        
-        logger.info("/reporteClientesOpe/uploadPEP");
- 
-        ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
-        if(proceso != null) {
-        	detallePEPsService.procesarCargaConUsuario(file, proceso.getPk_id_peps());
-        	 
-            respuesta.put("mensaje", "Archivo procesado exitosamente. ID del proceso: " + proceso.getPk_id_peps());
-            respuesta.put("tipo", "success");
+    @PostMapping("/reporteClientesOpe/uploadPEP")
+    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
+
+        String mensaje = "";
+        ArrayList<String> respuesta = new ArrayList<>();
+        logger.info("1");
+
+        try {
+            // Verificación de usuario autenticado
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (!(principal instanceof UserDetails)) {
+                mensaje = "Error: Usuario no autenticado.";
+                respuesta.add(mensaje);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+            }
+            logger.info("2");
+
+            UserDetails userDetails = (UserDetails) principal;
+            List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+            logger.info("3");
+
+            if (usuarios == null || usuarios.isEmpty()) {
+                mensaje = "Error: Usuario no encontrado en base de datos.";
+                respuesta.add(mensaje);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+            }
+            logger.info("4");
+
+            if (files == null || files.length == 0) {
+                mensaje = "No se subió ningún archivo.";
+                respuesta.add(mensaje);
+                return ResponseEntity.badRequest().body(respuesta);
+            }
+            logger.info("5");
+
+            // Registrar proceso
+            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
+            if (proceso == null || proceso.getPk_id_peps() == 0) {
+                mensaje = "Error interno al registrar el proceso.";
+                respuesta.add(mensaje);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+            }
+            logger.info("6");
+
+
+            // Procesar cada archivo (sin guardarlo físicamente)
+            for (MultipartFile file : files) {
+            	logger.info("7");
+                logger.info("Archivo recibido: " + file.getOriginalFilename() + " tamaño: " + file.getSize());
+                logger.info("8");
+            }
+
+            logger.info("9");
+
+            mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
+            respuesta.add(mensaje);
+            logger.info("10");
             return ResponseEntity.ok(respuesta);
-        }else {
-            logger.error("Error procesando archivo PEP");
-            respuesta.put("mensaje", "Error procesando archivo: ");
-            respuesta.put("tipo", "error");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+            
+
+        } catch (Exception e) {
+        	logger.info("11");
+            mensaje = "Error procesando archivo(s): " + e.getMessage();
+            logger.error(mensaje, e);
+            respuesta.add(mensaje);
+            logger.info("12");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
         
-        
- 
-    } catch (Exception ex) {
-        logger.error("Error procesando archivo PEP" + ex.getMessage());
-        respuesta.put("mensaje", "Error procesando archivo: " + ex.getMessage());
-        respuesta.put("tipo", "error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
     }
-}
+
  
  
  
@@ -208,6 +249,7 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
     }
  
  
+    
  
     @PostMapping("/reporteClientesOpe/guardarFechas")
     @ResponseBody
@@ -346,8 +388,56 @@ public ResponseEntity<Map<String, Object>> uploadPEP(@RequestParam("file") Multi
             }
         }
     }
+    
+    @PostMapping("/activar-ejecucion/{id}")
+    public ResponseEntity<?> activarEjecucion(@PathVariable("id") Integer id,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        migracionesPService.activarEjecucion(id, userDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
  
  
+ 
+    @PostMapping("/finalizar-migracion/{id}")
+    public ResponseEntity<?> finalizarMigracion(@PathVariable("id") Integer id,
+                                                @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            migracionesPService.finalizarMigracion(id, userDetails.getUsername());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+ 
+ 
+    @GetMapping(value = "/obtener-migracion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> obtenerMigracion(@PathVariable("id") Integer id) {
+        Optional<MigracionesP> migracion = migracionesPService.obtenerMigracionPorId(id);
+        if (migracion.isPresent()) {
+            Map<String, Object> estado = new HashMap<>();
+            estado.put("estatus", migracion.get().getEstatus()); 
+            estado.put("ejecuta", migracion.get().getEjecuta()); 
+            estado.put("mensajeResultado", migracion.get().getMensajeResultado()); 
+            estado.put("cron", migracion.get().getCron());
+            return ResponseEntity.ok(estado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+ 
+    
+    @PostMapping("/cambiar-estatus")
+    public ResponseEntity<?> cambiarEstatus(@RequestParam("id") Integer id,
+                                            @RequestParam("estatus") Integer estatus,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        migracionesPService.actualizarSoloEstatus(id, estatus, userDetails.getUsername());
+        return ResponseEntity.ok().build();
+    }
+    
+
+
+
     /***
      * 
      * @param model
