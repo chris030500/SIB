@@ -170,7 +170,7 @@ public class ProcesosCampaniasController {
 					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + dtFechaInicio + "~FechaFin="
 					+ dtFechaFin + "~Campania=" + campania + "&tipoDocumento=" +datosReporte.getVc_extension()+ "&identificadorDoc=OA";
 
-			System.out.println("reporteURL: " + reporteURL);
+			//System.out.println("reporteURL: " + reporteURL);
 			
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
