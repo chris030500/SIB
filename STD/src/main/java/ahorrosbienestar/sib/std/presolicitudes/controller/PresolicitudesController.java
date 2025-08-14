@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,7 @@ import ahorrosbienestar.sib.std.presolicitudes.model.Empleado;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.model.Puesto;
 import ahorrosbienestar.sib.std.presolicitudes.model.SolicitudCredito;
+import ahorrosbienestar.sib.std.presolicitudes.repository.ParametrosimuladorRepository;
 import ahorrosbienestar.sib.std.presolicitudes.repository.SolicitudCreditoRepository;
 import ahorrosbienestar.sib.std.presolicitudes.service.ClienteActivoService;
 import ahorrosbienestar.sib.std.presolicitudes.service.CondicionesService;
@@ -114,6 +116,9 @@ public class PresolicitudesController {
 
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
+	
+	@Autowired
+	private ParametrosimuladorRepository parametrosimuladorRepository;
 
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
@@ -127,7 +132,7 @@ public class PresolicitudesController {
 	private static final String controllerReporte = "generarReporte";
 
 	@GetMapping("/solicitudes")
-	public String FiltradoQEQ() throws IOException {
+	public String FiltradoQEQ(Model model) throws IOException {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			UserDetails userDetails = null;
@@ -139,7 +144,8 @@ public class PresolicitudesController {
 			sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
 			idRol = usuario.get(0).getRol_idRol().getPk_id_rol();
 			if (validarAcceso() == 1) {
-
+				model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
+				
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
 			} else {
 				rutaDireccion = rutaError;
