@@ -94,7 +94,7 @@
 								<tr>
 									<th>No. Solicitud</th>
 									<th>Nombre de Cliente</th>
-									<th>No. Cliente</th>
+									<th>No. Empleado</th>
 									<th>Fecha de Solicitud</th>
 									<th>Nombre de Empresa</th>
 									<th>Monto</th>
@@ -205,12 +205,16 @@
 								<div class="col-md-4">
 									<label class="form-label">Frecuencia de Pago</label>
 									<select class="form-select" id="frecuenciaCredito">
-										<option value="" disabled selected>Seleccione...</option>
-										<option value="SEMANAL">Semanal</option>
+										<option value="0">Seleccione una frecuencia</option>
+										<option th:each="tipoFrecuencia : ${cat_tipo_frecuencia}"
+											th:value="${tipoFrecuencia.id}" th:text="${tipoFrecuencia.descFrecuencia}"
+											th:for="${tipoFrecuencia.frecuencia}">
+										</option>
+										<!--<option value="SEMANAL">Semanal</option>
 										<option value="CATORCENAL">Catorcenal</option>
 										<option value="QUINCENAL">Quincenal</option>
 										<option value="MENSUAL">Mensual</option>
-										<option value="UNICO">Unico</option>
+										<option value="UNICO">Unico</option>-->
 									</select>
 								</div>
 								<div class="col-md-4">

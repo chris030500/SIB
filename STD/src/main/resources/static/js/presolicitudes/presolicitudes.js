@@ -223,6 +223,7 @@ function listaPlazos(producto, idEmpresa) {
 
 $(document).ready(function() {
 	$('#solicitudModal').on('shown.bs.modal', function() {
+		$('#frecuenciaCredito').val('0');
 		listaEmpresas();
 		//document.getElementById('idSolicitud').value = null;
 		//llenarSelectPuestos();
