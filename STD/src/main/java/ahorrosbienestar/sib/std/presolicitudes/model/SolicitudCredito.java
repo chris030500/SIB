@@ -81,14 +81,17 @@ public class SolicitudCredito {
 	@JoinColumn(name = "I_USUARIO_REG_RES_EMP", updatable = true)
 	private Usuario usuarioRegRespuesta;
     
-    
+    @Column(name = "VC_COMENTARIOS_EMPRESA")
+    private String comentariosEmpresa;
+   
     @Override
 	public String toString() {
 		return "SolicitudCredito [id=" + id + ", empresa=" + empresa + ", empleado=" + empleado + ", producto="
 				+ producto + ", numEmpleado=" + numEmpleado + ", puesto=" + puesto + ", plazo=" + plazo
 				+ ", frecuencia=" + frecuencia + ", montoSolicitado=" + montoSolicitado + ", montoDescontar="
 				+ montoDescontar + ", fechaSolicitud=" + fechaSolicitud + ", ejecutivo=" + ejecutivo + ", sucursal="
-				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaRegistroRespuestaEmp=" + fechaRegistroRespuestaEmp +", usuarioReg=" + usuarioReg +", usuarioRegRespuesta=" + usuarioRegRespuesta + "]";
+				+ sucursal + ", estatus=" + estatus + ", proceso=" + proceso +", fechaRegistroRespuestaEmp=" + fechaRegistroRespuestaEmp +", usuarioReg=" + usuarioReg 
+				+", usuarioRegRespuesta=" + usuarioRegRespuesta +", comentariosEmpresa=" + comentariosEmpresa + "]";
 	}
 
 	// Getters y Setters
@@ -253,6 +256,13 @@ public class SolicitudCredito {
 		this.usuarioRegRespuesta = usuarioRegRespuesta;
 	}
 
+	public String getComentariosEmpresa() {
+		return comentariosEmpresa;
+	}
+
+	public void setComentariosEmpresa(String comentariosEmpresa) {
+		this.comentariosEmpresa = comentariosEmpresa;
+	}
 
 	
 }

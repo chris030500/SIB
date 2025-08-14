@@ -304,6 +304,8 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 
 document.getElementById('buscarEmpleado').addEventListener('input', function() {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
+	// Convertir a mayúsculas
+	buscarEmpleado.value = buscarEmpleado.value.toUpperCase();
 	let opcionEmpleado = document.getElementById('opcionEmpleado');
 	let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
 	let inputPuesto = document.getElementById('puesto'); // Campo de puesto
@@ -435,27 +437,27 @@ function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 	let totalPagos;
 
 	switch (frecuencia.toLowerCase()) {
-		case "mensual":
+		case "4":
 			diasPorPago = 30;
 			pagosPorAnio = 12;
 			totalPagos = plazo;
 			break;
-		case "quincenal":
+		case "3":
 			diasPorPago = 15;
 			pagosPorAnio = 24;
 			totalPagos = plazo * 2;
 			break;
-		case "semanal":
+		case "1":
 			diasPorPago = 7;
 			pagosPorAnio = 52;
 			totalPagos = Math.round((plazo * 52) / 12);
 			break;
-		case "catorcenal":
+		case "2":
 			diasPorPago = 14;
 			pagosPorAnio = Math.round(360 / 14); // ≈26
 			totalPagos = Math.round((plazo * pagosPorAnio) / 12);
 			break;
-		case "unico":
+		case "5":
 			diasPorPago = plazo;
 			break;
 		default:
@@ -517,6 +519,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		guardarSolicitud();
 	});
 
+});
+
+// Evento para pasar a mayúsculas el textarea de comentarios
+document.getElementById('comentariosSolicitud').addEventListener('input', function () {
+    this.value = this.value.toUpperCase();
 });
 
 function limpiarModal() {

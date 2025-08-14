@@ -59,6 +59,9 @@ public class SolicitudCreditoService {
         for (Map<String, String> solicitud : solicitudes) {
             String noSolicitudStr = solicitud.get("NoSolicitud");
             String autoriza = solicitud.get("Autoriza SI/NO");
+            String comentariosEmpresa = solicitud.get("Comentarios Empresa") == null
+            	    ? ""
+            	    : solicitud.get("Comentarios Empresa").toUpperCase();
 
             if (noSolicitudStr == null || autoriza == null) {
                 System.out.println("Datos faltantes en la solicitud.");
@@ -72,6 +75,7 @@ public class SolicitudCreditoService {
                 if (solicitudOptional.isPresent()) {
                     SolicitudCredito solicitudCredito = solicitudOptional.get();
                     solicitudCredito.setFechaRegistroRespuestaEmp(LocalDate.now());
+                    solicitudCredito.setComentariosEmpresa(comentariosEmpresa);
                     solicitudCredito.setUsuarioRegRespuesta(usuarioRespuesta);
                     if ("SI".equalsIgnoreCase(autoriza)) {
                         solicitudCredito.setEstatus(3); // Aprobada
