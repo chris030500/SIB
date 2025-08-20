@@ -50,61 +50,72 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
  
-  // Evento click del botón para generar el reporte
-  btnProcesar.addEventListener("click", async (event) => {
-    event.preventDefault();
- 
-    const inicio = inputInicio.value;
-    const fin = inputFin.value;
- 
-    if (fechasInvalidas(inicio, fin)) return;
- 
-    try {
-      const res = await fetch("generarRptReporteClientesOpeController", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
-      });
- 
-      if (!res.ok) throw new Error("Error generando el reporte.");
- 
-      const respuesta = await res.json();
-      url = respuesta[0];
-      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
-      window.focus();
-    } catch (error) {
-      console.error("Error al generar el reporte:", error);
-      alert("Se produjo un error al generar el reporte.");
-    }
+// Evento click del botón para generar el reporte
+btnProcesar.addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  const inicio = inputInicio.value;
+  const fin = inputFin.value;
+
+  if (fechasInvalidas(inicio, fin)) return;
+
+  btnProcesar.disabled = true;
+  btnProcesar.textContent = "Generando...";
+
+  // 🔹 Mostrar alerta de carga con spinner
+  swal({
+    title: "Generando reporte...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style: "display: flex; justify-content: center; align-items: center; padding: 20px;"
+      },
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false,
   });
- 
-  // Evento click del botón para generar proceso
-  btnProcesarProceso.addEventListener("click", async (event) => {
-    event.preventDefault();
- 
-    const inicio = inputInicio.value;
-    const fin = inputFin.value;
- 
-    if (fechasInvalidas(inicio, fin)) return;
- 
-    try {
-      const res = await fetch("generarRptOperacionesAuditoria", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
-      });
- 
-      if (!res.ok) throw new Error("Error generando el reporte.");
- 
-      const respuesta = await res.json();
-      url = respuesta[0];
-      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
-      window.focus();
-    } catch (error) {
-      console.error("Error al generar el reporte:", error);
-      alert("Se produjo un error al generar el reporte.");
-    }
+
+try {
+  const res = await fetch("generarRptReporteClientesOpeController", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
   });
+
+  if (!res.ok) throw new Error("Error generando el reporte.");
+
+  // 🔹 leer como texto, no JSON
+  const urlRelativa = await res.text();  
+  const urlCompleta = window.location.origin + "/STD/prevencion" + urlRelativa;
+
+  swal.close();
+
+  swal({
+    title: "¡Éxito!",
+    text: "El archivo está listo para descargar",
+    icon: "success",
+    button: "Descargar ahora"
+  }).then(() => {
+    window.open(urlCompleta, "_blank");
+  });
+
+} catch (error) {
+  swal.close();
+  console.error("Error al generar el reporte:", error);
+
+  swal({
+    title: "Error",
+    text: "Se produjo un error al generar el reporte.",
+    icon: "error",
+    button: "Aceptar"
+  });
+} finally {
+  btnProcesar.disabled = false;
+  btnProcesar.textContent = "Generar Reporte";
+}
+});
 });
  
 // Evento para cuando se selecciona "No"

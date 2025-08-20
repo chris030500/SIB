@@ -101,6 +101,22 @@ public class ReporteClientesOpeModel {
     private Long I_numero_contrato;
 
     private LocalDate DT_Fecha_ejecucion;
+    
+    private String VC_TIPO_OCUPACION;
+    
+    private String VC_LUGARDETRABAJO;
+    
+    private Long   I_ActividadFRID;
+    
+    private String VC_Actividad_FR;
+    
+    private Long   I_SECTORECONOMICOID;
+    
+    private String VC_SECTORECONOMICO;
+    
+    private Long   I_ActividadINEGIID;
+    
+    private String VC_ActividadINEGI;
 
     // Getters y setters
 
@@ -238,4 +254,28 @@ public class ReporteClientesOpeModel {
 
     public LocalDate getDT_Fecha_ejecucion() { return DT_Fecha_ejecucion; }
     public void setDT_Fecha_ejecucion(LocalDate dT_Fecha_ejecucion) { DT_Fecha_ejecucion = dT_Fecha_ejecucion; }
+    
+    public String getVC_TIPO_OCUPACION() { return VC_TIPO_OCUPACION; }
+    public void setVC_TIPO_OCUPACION(String VC_TIPO_OCUPACION) { this.VC_TIPO_OCUPACION = VC_TIPO_OCUPACION; }
+
+    public String getVC_LUGARDETRABAJO() { return VC_LUGARDETRABAJO; }
+    public void setVC_LUGARDETRABAJO(String VC_LUGARDETRABAJO) { this.VC_LUGARDETRABAJO = VC_LUGARDETRABAJO; }
+
+    public Long getI_ActividadFRID() { return I_ActividadFRID; }
+    public void setI_ActividadFRID(Long I_ActividadFRID) { this.I_ActividadFRID = I_ActividadFRID; }
+
+    public String getVC_Actividad_FR() { return VC_Actividad_FR; }
+    public void setVC_Actividad_FR(String VC_Actividad_FR) { this.VC_Actividad_FR = VC_Actividad_FR; }
+
+    public Long getI_SECTORECONOMICOID() { return I_SECTORECONOMICOID; }
+    public void setI_SECTORECONOMICOID(Long I_SECTORECONOMICOID) { this.I_SECTORECONOMICOID = I_SECTORECONOMICOID; }
+
+    public String getVC_SECTORECONOMICO() { return VC_SECTORECONOMICO; }
+    public void setVC_SECTORECONOMICO(String VC_SECTORECONOMICO) { this.VC_SECTORECONOMICO = VC_SECTORECONOMICO; }
+
+    public Long getI_ActividadINEGIID() { return I_ActividadINEGIID; }
+    public void setI_ActividadINEGIID(Long I_ActividadINEGIID) { this.I_ActividadINEGIID = I_ActividadINEGIID; }
+
+    public String getVC_ActividadINEGI() { return VC_ActividadINEGI; }
+    public void setVC_ActividadINEGI(String VC_ActividadINEGI) { this.VC_ActividadINEGI = VC_ActividadINEGI; }
 }
