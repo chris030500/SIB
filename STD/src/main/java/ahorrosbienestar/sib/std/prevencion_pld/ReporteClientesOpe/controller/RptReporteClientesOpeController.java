@@ -189,10 +189,10 @@ public class RptReporteClientesOpeController {
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
 
-            // Usamos el nuevo servicio que genera Excel en dos hojas
+            // Usa el nuevo servicio que genera Excel en dos hojas
             Path archivo = excelReportService.generarExcelClientesYOperaciones(ini, fin);
 
-            // 👇 devolvemos un solo string, no lista ni con corchetes
+            // devuelve un solo string, no lista ni con corchetes
             return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
 
         } catch (Exception e) {
@@ -211,10 +211,10 @@ public class RptReporteClientesOpeController {
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
 
-            // Usamos el servicio que genera Excel solo con operaciones
+            // servicio que genera Excel solo con operaciones
             Path archivo = excelReportService.generarExcelOperaciones(ini, fin);
 
-            // 👇 devolvemos un solo string limpio
+            // devolvuelve un solo string limpio
             return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
 
         } catch (Exception e) {
