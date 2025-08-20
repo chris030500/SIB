@@ -1,8 +1,10 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
+import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +44,18 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Proces
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
@@ -81,6 +95,9 @@ public class RptReporteClientesOpeController {
     
     @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
+    
+    @Autowired
+    private ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ExcelReportService excelReportService;
  
     
     List<Usuario> usuarios =null;
@@ -162,53 +179,67 @@ public class RptReporteClientesOpeController {
         }
         
     }
-
  
- 
- 
+ // ================== CLIENTES + OPERACIONES ==================
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-    public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
-                                                @RequestParam("fechaFin") String fechaFin) {
- 
-        List<String> respuesta = new ArrayList<>();
- 
+    public ResponseEntity<String> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+                                                     @RequestParam("fechaFin") String fechaFin) {
+
         try {
-            
-            
-            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
-            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=?FechaInicio="+fechaInicio+"~FechaFin="+fechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OP";
-                    
-            respuesta.add(reporteURL);
-            return ResponseEntity.ok(respuesta);
+            Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
+            Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
+
+            // Usamos el nuevo servicio que genera Excel en dos hojas
+            Path archivo = excelReportService.generarExcelClientesYOperaciones(ini, fin);
+
+            // 👇 devolvemos un solo string, no lista ni con corchetes
+            return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
+
         } catch (Exception e) {
-            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            respuesta.add(e.getMessage());
-            return ResponseEntity.ok(respuesta);
+            logger.error("Error al generar reporte clientes/operaciones: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error: " + e.getMessage());
         }
     }
-    
+
+    // ================== SOLO OPERACIONES ==================
     @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
-    public ResponseEntity<List<String>> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
-                                                         @RequestParam("fechaFin") String fechaFin) {
- 
-        List<String> respuesta = new ArrayList<>();
- 
+    public ResponseEntity<String> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
+                                                              @RequestParam("fechaFin") String fechaFin) {
+
         try {
-            // Buscar el reporte en base a la constante
-            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_AUDITORIA);
-            
-            // Armar la URL
-            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=?FechaInicio="+fechaInicio+"~FechaFin="+fechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OP";
-            
-            respuesta.add(reporteURL);
-            return ResponseEntity.ok(respuesta);
-            
+            Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
+            Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
+
+            // Usamos el servicio que genera Excel solo con operaciones
+            Path archivo = excelReportService.generarExcelOperaciones(ini, fin);
+
+            // 👇 devolvemos un solo string limpio
+            return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
+
         } catch (Exception e) {
             logger.error("Error al generar reporte operaciones auditoría: " + e.getMessage(), e);
-            respuesta.add(e.getMessage());
-            return ResponseEntity.ok(respuesta);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/download/{filename:.+}")
+    public ResponseEntity<Resource> download(@PathVariable String filename) throws IOException {
+        Path file = Paths.get(System.getProperty("java.io.tmpdir")).resolve(filename);
+        Resource resource = new UrlResource(file.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new IOException("No se pudo leer el archivo: " + filename);
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(resource);
+    }
+
+
     
     @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
