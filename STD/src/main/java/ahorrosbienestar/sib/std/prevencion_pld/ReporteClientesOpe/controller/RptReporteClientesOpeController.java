@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -11,9 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-
+ 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+ 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -47,18 +45,17 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Proces
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
-
-import org.springframework.core.io.FileSystemResource;
+ 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+//import org.springframework.http.MediaType;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+ 
 import java.io.IOException;
-import java.nio.file.Path;
+//import java.nio.file.Path;
 import java.nio.file.Paths;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
@@ -115,11 +112,11 @@ public class RptReporteClientesOpeController {
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
-
+ 
         String mensaje = "";
         ArrayList<String> respuesta = new ArrayList<>();
         logger.info("1");
-
+ 
         try {
             // Verificación de usuario autenticado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -129,25 +126,25 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("2");
-
+ 
             UserDetails userDetails = (UserDetails) principal;
             List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
             logger.info("3");
-
+ 
             if (usuarios == null || usuarios.isEmpty()) {
                 mensaje = "Error: Usuario no encontrado en base de datos.";
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("4");
-
+ 
             if (files == null || files.length == 0) {
                 mensaje = "No se subió ningún archivo.";
                 respuesta.add(mensaje);
                 return ResponseEntity.badRequest().body(respuesta);
             }
             logger.info("5");
-
+ 
             // Registrar proceso
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
             if (proceso == null || proceso.getPk_id_peps() == 0) {
@@ -156,25 +153,25 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
             logger.info("6");
-
-
+ 
+ 
             // Procesar cada archivo (sin guardarlo físicamente)
             for (MultipartFile file : files) {
-            	logger.info("7");
+                logger.info("7");
                 logger.info("Archivo recibido: " + file.getOriginalFilename() + " tamaño: " + file.getSize());
                 logger.info("8");
             }
-
+ 
             logger.info("9");
-
+ 
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
             respuesta.add(mensaje);
             logger.info("10");
             return ResponseEntity.ok(respuesta);
             
-
+ 
         } catch (Exception e) {
-        	logger.info("11");
+            logger.info("11");
             mensaje = "Error procesando archivo(s): " + e.getMessage();
             logger.error(mensaje, e);
             respuesta.add(mensaje);
@@ -183,81 +180,71 @@ public class RptReporteClientesOpeController {
         }
         
     }
-    
+ 
  // ================== CLIENTES + OPERACIONES ==================
     @PostMapping("/generarRptReporteClientesOpeController")
     public ResponseEntity<String> reporteClientesOpe(
             @RequestParam("fechaInicio") String fechaInicio,
-            @RequestParam("fechaFin") String fechaFin,
-            HttpServletRequest request) {
+            @RequestParam("fechaFin") String fechaFin) {
 
         try {
+            logger.info("Generando reporte de clientes+operaciones desde {} hasta {}");
+
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
 
-            // 🔹 Armar URL absoluta (sirve en Windows y Linux)
-            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                           + request.getContextPath();
+            //  Generar el Excel en el directorio temporal del SO (Windows -> AppData\Temp, Linux -> /tmp)
+            Path archivo = excelReportService.generarExcelClientesYOperaciones(ini, fin);
 
-            String urlDescarga = baseUrl + "/prevencion/descargarReporte"
-                               + "?fechaInicio=" + ini
-                               + "&fechaFin=" + fin;
+            logger.info(" Archivo generado en: {}");
 
-            return ResponseEntity.ok(urlDescarga);
+            //  Devuelve una ruta relativa para que el JS la abra
+            return ResponseEntity.ok("/STD/prevencion/download/" + archivo.getFileName().toString());
 
         } catch (Exception e) {
-            logger.error("Error al generar reporte clientes/operaciones: " + e.getMessage(), e);
+            logger.error(" Error al generar reporte clientes/operaciones: {}", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error: " + e.getMessage());
-        }
-    }
-
-    // ================== SOLO OPERACIONES ==================
-    @PostMapping("/generarRptOperacionesAuditoria")
-    public ResponseEntity<String> reporteOperacionesAuditoria(
-            @RequestParam("fechaInicio") String fechaInicio,
-            @RequestParam("fechaFin") String fechaFin,
-            HttpServletRequest request) {
-
-        try {
-            Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
-            Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
-
-            Path archivo = excelReportService.generarExcelOperaciones(ini, fin);
-
-            // 🔹 Igual, devolver URL absoluta
-            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                           + request.getContextPath();
-
-            String urlDescarga = baseUrl + "/prevencion/download/" + archivo.getFileName();
-
-            return ResponseEntity.ok(urlDescarga);
-
-        } catch (Exception e) {
-            logger.error("Error al generar reporte operaciones auditoría: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error: " + e.getMessage());
+                    .body("Error: " + e.getMessage());
         }
     }
 
     // ================== DESCARGA ==================
-    @GetMapping("/descargarReporte")
-    public ResponseEntity<Resource> descargarReporte(
-            @RequestParam Timestamp fechaInicio,
-            @RequestParam Timestamp fechaFin) throws IOException {
+    @GetMapping("/download/{filename:.+}")
+    public ResponseEntity<Resource> download(@PathVariable String filename) {
+        try {
+            logger.info(" Petición de descarga para archivo: {}");
 
-        Path file = excelReportService.generarExcelClientesYOperaciones(fechaInicio, fechaFin);
-        Resource resource = new FileSystemResource(file.toFile());
+            // System.getProperty("java.io.tmpdir") devuelve /tmp en Linux y Temp en Windows
+            Path file = Paths.get(System.getProperty("java.io.tmpdir")).resolve(filename);
+            logger.info("Buscando archivo en: {}");
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getFileName())
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(resource);
+            if (!Files.exists(file)) {
+                logger.error(" Archivo no encontrado: {}");
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = new UrlResource(file.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                logger.error(" No se pudo leer el archivo: {}");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(null);
+            }
+
+            logger.info("Archivo listo para descarga: {}");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(resource);
+
+        } catch (Exception e) {
+            logger.error(" Error en descarga: {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-
-
-
+ 
     
     @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
@@ -473,7 +460,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.notFound().build();
         }
     }
-
+ 
  
     
     @PostMapping("/cambiar-estatus")
@@ -484,9 +471,9 @@ public class RptReporteClientesOpeController {
         return ResponseEntity.ok().build();
     }
     
-
-
-
+ 
+ 
+ 
     /***
      * 
      * @param model
