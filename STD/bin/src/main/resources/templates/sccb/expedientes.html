@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
+
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content" style="background-color: white;">
+		<div class="container">
+			<div class="border p-2 card">
+
+				<div class="bg-info text-white">
+					<div class="row no-gutters">
+						<div class="col-md-2"></div>
+						<div class="col-md-8">
+							<div>
+								<h2 style="text-align:center">Consulta de Expedientes</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+        	</div>
+        	<form>
+				<div class="row p-4">
+					<div class="col-5">
+						<div class="row justify-content-center">
+							<div class="col-4">
+								<label class="form-label">Tipo de expediente: </label>
+							</div>
+							<div class="col-8">
+								<select class="form-control" id="opcionesTipoExpediente">
+									<option value="0">Seleccione</option>
+									<option value="1">Afiliación</option>
+									<option value="2">Crédito</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="row justify-content-center" style="display: none;" id="divCredito">
+							<div class="col-3">
+								<label for="creditoBusqueda" class="col-form-label">Nombre:</label>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<input type="search" class="form-control" id="creditoBusqueda"
+									placeholder="Nombre" onkeyup="buscarNombreCredito(this.value);">
+								</div>
+							</div>
+							<div class="row p-2">
+								<select id="selectCredito" class="form-select" name="selectCredito" style="font-size: small;">
+									
+								</select>
+							</div>
+						</div>
+						
+						<div class="row justify-content-center" style="display: none;" id="divName">
+							<div class="col-3">
+								<label for="nameBusqueda" class="col-form-label">Nombre:</label>
+							</div>
+							<div class="col-8">
+								<div class="row">
+									<input id="nameBusqueda" type="search" class="form-control"
+									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
+								</div>
+							</div>
+							<div class="row p-2">
+								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
+										
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-1">
+						<div class="row">
+							<div class="col-12">
+								<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+								title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+								th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
+							
+									<i class="bi bi-search"></i>
+							
+								</button>
+								<button class="btn btn-secondary mt-1" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+								title="Limpiar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
+								th:onclick="cleanView()" id="btnClean" style="display: none;">
+							
+								<i class="bi bi-eraser-fill"></i>
+							
+							</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<div id="divMainTable" class="row justify-content-center mb-3" style="display: none;">
+				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					Expediente
+				</div>
+				<div id="divTblCredito" class="table-responsive" style="display: none;">
+					<table id="credito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>ID Expediente</th>
+								<th>Tipo</th>
+								<th>Fecha Creación</th>
+								<th>Contrato</th>
+								<th>Acuerdo</th>
+								<th>Estatus</th>
+								<th>Situación</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div id="divTblAfiliacion" class="table-responsive" style="display: none;">
+					<table id="afiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>ID Expediente</th>
+								<th>Tipo</th>
+								<th>Fecha Creación</th>
+								<th>Estatus</th>
+								<th>Situación</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			
+			<div id="divDetalleExpediente" class="row justify-content-center mb-3" style="display: none;">
+				<div id="titleDetalleExpediente" class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
+					
+				</div>
+				<div id="divDetalleExpCredito" class="table-responsive" style="display: none;">
+					<table id="detalleCredito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Requisito</th>
+								<th>Comprobante</th>
+								<th>Entregado</th>
+								<th>Valido Desde</th>
+								<th>Valido Hasta</th>
+								<th>Digitalización</th>
+								<th>Fecha de Digitalización</th>
+								<th>Nombre</th>
+								<th>Relación</th>
+								<th>Imagen Digitalizada</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div id="divDetalleExpAfiliacion" class="table-responsive" style="display: none;">
+					<table id="detalleAfiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
+						<thead style="background-color: #0D6EFD;">
+							<tr class="text-white" style="font-weight: bold;">
+								<th>Requisito</th>
+								<th>Comprobante</th>
+								<th>Entregado</th>
+								<th>Valido Desde</th>
+								<th>Valido Hasta</th>
+								<th>Digitalización</th>
+								<th>Fecha de Digitalización</th>
+								<th>Imagen Digitalizada</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			<!-- Modal -->
+			<div class="modal fade" id="visorImagenes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  				<div class="modal-dialog modal-lg modal-dialog-scrollable">
+    				<div class="modal-content">
+      					<div class="modal-header">
+        					<h1 class="modal-title fs-5" id="exampleModalLabel">Visor de Imágenes</h1>
+        					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      					</div>
+      					<div class="modal-body">
+							  <img id="imagen"/>
+      					</div>
+      					<div class="modal-footer">
+        					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      					</div>
+    				</div>
+  				</div>
+			</div>
+		</div>
+    </section>
+    <th:block layout:fragment="page-scripts">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script th:src="@{/js/jquery-3.5.1.js}"></script>
+        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+       	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+        <script th:src="@{/js/sccb/expedientes.js}"></script>
+    </th:block>
+</body>
+
+
+</html>
