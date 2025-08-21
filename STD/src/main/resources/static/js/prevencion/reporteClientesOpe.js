@@ -68,8 +68,10 @@ btnProcesar.addEventListener("click", async (event) => {
     content: {
       element: "div",
       attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;"
+        innerHTML:
+          '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style:
+          "display: flex; justify-content: center; align-items: center; padding: 20px;",
       },
     },
     buttons: false,
@@ -77,44 +79,42 @@ btnProcesar.addEventListener("click", async (event) => {
     closeOnEsc: false,
   });
 
-try {
-  const res = await fetch("generarRptReporteClientesOpeController", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
-  });
+  try {
+    const res = await fetch("generarRptReporteClientesOpeController", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
+    });
 
-  if (!res.ok) throw new Error("Error generando el reporte.");
+    if (!res.ok) throw new Error("Error generando el reporte.");
 
-  // 🔹 leer como texto, no JSON
-  const urlRelativa = await res.text();  
-  const urlCompleta = window.location.origin + "/STD/prevencion" + urlRelativa;
+    // 🔹 el backend devuelve la URL absoluta (ya lista para abrir)
+    const urlCompleta = await res.text();
+    console.log("✅ URL generada por el backend:", urlCompleta); // 👀 DEBUG
 
-  swal.close();
+    swal.close();
+    swal({
+      title: "¡Éxito!",
+      text: "El archivo está listo para descargar",
+      icon: "success",
+      button: "Descargar ahora",
+    }).then(() => {
+      window.open(urlCompleta, "_blank"); // abre directo
+    });
+  } catch (error) {
+    swal.close();
+    console.error("❌ Error al generar el reporte:", error);
 
-  swal({
-    title: "¡Éxito!",
-    text: "El archivo está listo para descargar",
-    icon: "success",
-    button: "Descargar ahora"
-  }).then(() => {
-    window.open(urlCompleta, "_blank");
-  });
-
-} catch (error) {
-  swal.close();
-  console.error("Error al generar el reporte:", error);
-
-  swal({
-    title: "Error",
-    text: "Se produjo un error al generar el reporte.",
-    icon: "error",
-    button: "Aceptar"
-  });
-} finally {
-  btnProcesar.disabled = false;
-  btnProcesar.textContent = "Generar Reporte";
-}
+    swal({
+      title: "Error",
+      text: "Se produjo un error al generar el reporte.",
+      icon: "error",
+      button: "Aceptar",
+    });
+  } finally {
+    btnProcesar.disabled = false;
+    btnProcesar.textContent = "Generar Reporte";
+  }
 });
 });
  
