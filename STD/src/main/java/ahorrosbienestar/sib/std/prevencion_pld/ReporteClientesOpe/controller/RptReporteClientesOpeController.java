@@ -103,11 +103,11 @@ public class RptReporteClientesOpeController {
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
- 
+
         String mensaje = "";
         ArrayList<String> respuesta = new ArrayList<>();
         logger.info("1");
- 
+
         try {
             // Verificación de usuario autenticado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -117,25 +117,25 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("2");
- 
+
             UserDetails userDetails = (UserDetails) principal;
             List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
             logger.info("3");
- 
+
             if (usuarios == null || usuarios.isEmpty()) {
                 mensaje = "Error: Usuario no encontrado en base de datos.";
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("4");
- 
-            if (files == null || files.length == 0) {
+
+            if (files == null || files.length == 0 || files[0].isEmpty()) {
                 mensaje = "No se subió ningún archivo.";
                 respuesta.add(mensaje);
                 return ResponseEntity.badRequest().body(respuesta);
             }
             logger.info("5");
- 
+
             // Registrar proceso
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
             if (proceso == null || proceso.getPk_id_peps() == 0) {
@@ -144,23 +144,22 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
             logger.info("6");
- 
- 
-            // Procesar cada archivo (sin guardarlo físicamente)
+
+            // Procesar cada archivo (solo en memoria, sin guardarlos)
             for (MultipartFile file : files) {
                 logger.info("7");
                 logger.info("Archivo recibido: " + file.getOriginalFilename() + " tamaño: " + file.getSize());
+
                 logger.info("8");
             }
- 
+
             logger.info("9");
- 
+
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
             respuesta.add(mensaje);
             logger.info("10");
             return ResponseEntity.ok(respuesta);
-            
- 
+
         } catch (Exception e) {
             logger.info("11");
             mensaje = "Error procesando archivo(s): " + e.getMessage();
@@ -169,8 +168,8 @@ public class RptReporteClientesOpeController {
             logger.info("12");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
-        
     }
+
  
  
  // ================== CLIENTES + OPERACIONES ==================
