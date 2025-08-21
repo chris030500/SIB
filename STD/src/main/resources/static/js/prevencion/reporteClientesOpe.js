@@ -62,7 +62,6 @@ btnProcesar.addEventListener("click", async (event) => {
   btnProcesar.disabled = true;
   btnProcesar.textContent = "Generando...";
 
-  // 🔹 Mostrar alerta de carga con spinner
   swal({
     title: "Generando reporte...",
     content: {
@@ -80,31 +79,35 @@ btnProcesar.addEventListener("click", async (event) => {
   });
 
   try {
-    const res = await fetch("generarRptReporteClientesOpeController", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
-    });
+    const res = await fetch(
+      `download?fechaInicio=${encodeURIComponent(inicio)}&fechaFin=${encodeURIComponent(fin)}`
+    );
 
     if (!res.ok) throw new Error("Error generando el reporte.");
 
-    // 🔹 el backend devuelve la URL absoluta (ya lista para abrir)
-    const urlCompleta = await res.text();
-    console.log("✅ URL generada por el backend:", urlCompleta); // 👀 DEBUG
+    // Convertir la respuesta en blob (archivo binario)
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un link invisible y disparar la descarga
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Reporte_Clientes_Operaciones.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
 
     swal.close();
     swal({
       title: "¡Éxito!",
-      text: "El archivo está listo para descargar",
+      text: "El reporte se descargó correctamente",
       icon: "success",
-      button: "Descargar ahora",
-    }).then(() => {
-      window.open(urlCompleta, "_blank"); // abre directo
+      button: "Aceptar",
     });
   } catch (error) {
     swal.close();
     console.error("❌ Error al generar el reporte:", error);
-
     swal({
       title: "Error",
       text: "Se produjo un error al generar el reporte.",

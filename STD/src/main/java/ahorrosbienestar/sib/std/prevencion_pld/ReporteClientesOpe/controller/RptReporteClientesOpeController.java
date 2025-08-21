@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
- 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletOutputStream;
+import java.io.OutputStream;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,18 +48,6 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.Proces
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
- 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-//import org.springframework.http.MediaType;
-//import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
- 
-import java.io.IOException;
-//import java.nio.file.Path;
-import java.nio.file.Paths;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
@@ -181,70 +172,81 @@ public class RptReporteClientesOpeController {
         
     }
  
+ 
  // ================== CLIENTES + OPERACIONES ==================
     @PostMapping("/generarRptReporteClientesOpeController")
-    public ResponseEntity<String> reporteClientesOpe(
+    public void generarReporteClientesOperaciones(
             @RequestParam("fechaInicio") String fechaInicio,
-            @RequestParam("fechaFin") String fechaFin) {
+            @RequestParam("fechaFin") String fechaFin,
+            HttpServletResponse response) {
+
+        logger.info("=== INICIO generarReporteClientesOperaciones ===");
+        logger.info("Parámetros recibidos -> fechaInicio: {}, fechaFin: {}");
 
         try {
-            logger.info("Generando reporte de clientes+operaciones desde {} hasta {}");
-
+            // Conversión de fechas
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
+            logger.info("Fechas convertidas -> ini: {}, fin: {}");
 
-            //  Generar el Excel en el directorio temporal del SO (Windows -> AppData\Temp, Linux -> /tmp)
-            Path archivo = excelReportService.generarExcelClientesYOperaciones(ini, fin);
+            // Configurar cabeceras HTTP
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            String filename = "Reporte_Clientes_Operaciones_" + fechaInicio + "_a_" + fechaFin + ".xlsx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            logger.info("Cabeceras HTTP configuradas -> Content-Disposition: {}");
 
-            logger.info(" Archivo generado en: {}");
+            // Obtener OutputStream
+            OutputStream out = response.getOutputStream();
+            logger.debug("OutputStream obtenido correctamente");
 
-            //  Devuelve una ruta relativa para que el JS la abra
-            return ResponseEntity.ok("/STD/prevencion/download/" + archivo.getFileName().toString());
+            // Llamar al service
+            logger.info("Invocando excelReportService.generarExcelClientesYOperaciones...");
+            excelReportService.generarExcelClientesYOperaciones(ini, fin, out);
+            logger.info("Método excelReportService.generarExcelClientesYOperaciones finalizó sin excepción");
+
+            // Flush explícito
+            out.flush();
+            logger.debug("OutputStream flush ejecutado correctamente");
+
+            logger.info("=== FIN generarReporteClientesOperaciones: reporte generado con éxito ===");
 
         } catch (Exception e) {
-            logger.error(" Error al generar reporte clientes/operaciones: {}", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+            logger.error("❌ ERROR en generarReporteClientesOperaciones", e);
+            throw new RuntimeException("Error al generar el reporte: " + e.getMessage(), e);
         }
     }
 
-    // ================== DESCARGA ==================
-    @GetMapping("/download/{filename:.+}")
-    public ResponseEntity<Resource> download(@PathVariable String filename) {
-        try {
-            logger.info(" Petición de descarga para archivo: {}");
 
-            // System.getProperty("java.io.tmpdir") devuelve /tmp en Linux y Temp en Windows
-            Path file = Paths.get(System.getProperty("java.io.tmpdir")).resolve(filename);
-            logger.info("Buscando archivo en: {}");
+    @GetMapping("/download")
+    public void download(@RequestParam("fechaInicio") String inicio,
+                         @RequestParam("fechaFin") String fin,
+                         HttpServletResponse response) throws IOException {
 
-            if (!Files.exists(file)) {
-                logger.error(" Archivo no encontrado: {}");
-                return ResponseEntity.notFound().build();
-            }
+        logger.info("=== INICIO download ===");
+        logger.info("Parámetros recibidos -> inicio: {}, fin: {}");
 
-            Resource resource = new UrlResource(file.toUri());
+        Timestamp ini = Timestamp.valueOf(inicio + " 00:00:00");
+        Timestamp fini = Timestamp.valueOf(fin + " 23:59:59");
+        logger.info("Fechas convertidas -> ini: {}, fin: {}");
 
-            if (!resource.exists() || !resource.isReadable()) {
-                logger.error(" No se pudo leer el archivo: {}");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(null);
-            }
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Reporte_Clientes_Operaciones.xlsx");
+        logger.debug("Cabeceras HTTP configuradas correctamente");
 
-            logger.info("Archivo listo para descarga: {}");
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
-                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                    .body(resource);
-
+        try (ServletOutputStream out = response.getOutputStream()) {
+            logger.debug("OutputStream obtenido correctamente en download()");
+            excelReportService.generarExcelClientesYOperaciones(ini, fini, out);
+            logger.info("Método excelReportService.generarExcelClientesYOperaciones ejecutado con éxito en download()");
         } catch (Exception e) {
-            logger.error(" Error en descarga: {}", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("❌ ERROR en download()", e);
+            throw e;
         }
+
+        logger.info("=== FIN download ===");
     }
 
- 
+
+
     
     @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
