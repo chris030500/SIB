@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
- 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -45,6 +48,7 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.Historia
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -179,21 +183,27 @@ public class RptReporteClientesOpeController {
         }
         
     }
- 
+    
  // ================== CLIENTES + OPERACIONES ==================
-    @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
-    public ResponseEntity<String> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
-                                                     @RequestParam("fechaFin") String fechaFin) {
+    @PostMapping("/generarRptReporteClientesOpeController")
+    public ResponseEntity<String> reporteClientesOpe(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin,
+            HttpServletRequest request) {
 
         try {
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
 
-            // Usa el nuevo servicio que genera Excel en dos hojas
-            Path archivo = excelReportService.generarExcelClientesYOperaciones(ini, fin);
+            // 🔹 Armar URL absoluta (sirve en Windows y Linux)
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                           + request.getContextPath();
 
-            // devuelve un solo string, no lista ni con corchetes
-            return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
+            String urlDescarga = baseUrl + "/prevencion/descargarReporte"
+                               + "?fechaInicio=" + ini
+                               + "&fechaFin=" + fin;
+
+            return ResponseEntity.ok(urlDescarga);
 
         } catch (Exception e) {
             logger.error("Error al generar reporte clientes/operaciones: " + e.getMessage(), e);
@@ -203,19 +213,25 @@ public class RptReporteClientesOpeController {
     }
 
     // ================== SOLO OPERACIONES ==================
-    @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
-    public ResponseEntity<String> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
-                                                              @RequestParam("fechaFin") String fechaFin) {
+    @PostMapping("/generarRptOperacionesAuditoria")
+    public ResponseEntity<String> reporteOperacionesAuditoria(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin,
+            HttpServletRequest request) {
 
         try {
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
 
-            // servicio que genera Excel solo con operaciones
             Path archivo = excelReportService.generarExcelOperaciones(ini, fin);
 
-            // devolvuelve un solo string limpio
-            return ResponseEntity.ok("/download/" + archivo.getFileName().toString());
+            // 🔹 Igual, devolver URL absoluta
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                           + request.getContextPath();
+
+            String urlDescarga = baseUrl + "/prevencion/download/" + archivo.getFileName();
+
+            return ResponseEntity.ok(urlDescarga);
 
         } catch (Exception e) {
             logger.error("Error al generar reporte operaciones auditoría: " + e.getMessage(), e);
@@ -224,20 +240,22 @@ public class RptReporteClientesOpeController {
         }
     }
 
-    @GetMapping("/download/{filename:.+}")
-    public ResponseEntity<Resource> download(@PathVariable String filename) throws IOException {
-        Path file = Paths.get(System.getProperty("java.io.tmpdir")).resolve(filename);
-        Resource resource = new UrlResource(file.toUri());
+    // ================== DESCARGA ==================
+    @GetMapping("/descargarReporte")
+    public ResponseEntity<Resource> descargarReporte(
+            @RequestParam Timestamp fechaInicio,
+            @RequestParam Timestamp fechaFin) throws IOException {
 
-        if (!resource.exists() || !resource.isReadable()) {
-            throw new IOException("No se pudo leer el archivo: " + filename);
-        }
+        Path file = excelReportService.generarExcelClientesYOperaciones(fechaInicio, fechaFin);
+        Resource resource = new FileSystemResource(file.toFile());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getFileName())
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(resource);
     }
+
+
 
 
     
