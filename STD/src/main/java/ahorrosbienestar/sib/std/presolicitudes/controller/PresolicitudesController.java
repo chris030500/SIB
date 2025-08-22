@@ -139,11 +139,8 @@ public class PresolicitudesController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			idEmpleado = usuario.get(0).getI_id_empleado();
-			sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
-			idRol = usuario.get(0).getRol_idRol().getPk_id_rol();
-			if (validarAcceso() == 1) {
+			
+			if (validarAcceso(userDetails.getUsername()) == 1) {
 				model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
 				
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
@@ -293,17 +290,14 @@ public class PresolicitudesController {
 		}
 	}
 
-	public int validarAcceso() {
+	public int validarAcceso(String usuarioLogin) {
 
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		usuario = iUsuarioRepository.findByNombreUsuario(usuarioLogin);
+		idEmpleado = usuario.get(0).getI_id_empleado();
+		sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
+		idRol = usuario.get(0).getRol_idRol().getPk_id_rol();
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
 
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
-				opcionesMenuService.buscarRelacion(nombrePantalla));
 
 	}
 
