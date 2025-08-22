@@ -66,6 +66,8 @@ public class SolicitudCredito {
     @Column(name = "VC_COMENTARIOS")
     private String comentarios;
     
+    @Column(name = "DT_FECHA_APROBACION")
+    private LocalDate fechaAprobacion;
     
     @Override
 	public String toString() {
@@ -211,6 +213,14 @@ public class SolicitudCredito {
 
 	public void setComentarios(String comentarios) {
 		this.comentarios = comentarios;
+	}
+
+	public LocalDate getFechaAprobacion() {
+		return fechaAprobacion;
+	}
+
+	public void setFechaAprobacion(LocalDate fechaAprobacion) {
+		this.fechaAprobacion = fechaAprobacion;
 	}
     
 }

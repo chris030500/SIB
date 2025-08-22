@@ -302,7 +302,7 @@ public class PresolicitudesController {
 			@RequestParam(defaultValue = "10") int size) {
 
 		try {
-			Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+			Pageable pageable = PageRequest.of(page, size); // sin sort
 
 			System.out.println("idEmpleado: " + idEmpleado);
 			System.out.println("idRol: " + idRol);
@@ -310,7 +310,7 @@ public class PresolicitudesController {
 			String jefe = catalogosCEService.obtenerJefe(idEmpleado);
 			System.out.println("Jefe: " + jefe);
 
-			Page<SolicitudCredito> solicitudes;
+			Page<Map<String, Object>> solicitudes;
 			Map<String, Object> response = new HashMap<>();
 
 			String rolesVobo = iConfiguracionRepository.ObtenerRolesVobo();

@@ -289,7 +289,6 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 				let optionPuesto = document.createElement('option');
 				optionPuesto.value = '0';
 				optionPuesto.textContent = 'TODOS';
-				optionPuesto.disabled = true;
 				optionPuesto.selected = true;
 				selectPuesto.appendChild(optionPuesto);
 			}
@@ -661,28 +660,30 @@ function cargarSolicitudes(pagina) {
 
 
 			let filas = solicitudes.map((solicitud) => {
+				console.log(solicitud);
 				return `<tr>
-			        <td>${solicitud.id}</td>
+			        <td>${solicitud.idSolicitud}</td>
 			        <td>${solicitud.empleado}</td>
 			        <td>${solicitud.fechaSolicitud}</td>
 			        <td>${solicitud.empresa}</td>
 			        <td>$ ${solicitud.montoSolicitado}</td>
 			        <td>$ ${solicitud.montoDescontar}</td>
+			       	<td>${solicitud.nombreSucursal}</td>
 			        <td>${obtenerEstatus(solicitud.estatus)}</td>
 			        <td>
 			            ${permiso ? `
-			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
+			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.idSolicitud}">
 			                    <i class="fas fa-edit"></i>
 			                </button>
 			                ${solicitud.estatus === 1 ? `
 			                    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-			                        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
+			                        onclick="aprobarOCancelarSolicitud(${solicitud.idSolicitud}, '${solicitud.empresa}')">
 			                        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
 			                    </button>` : ''}
 			            ` : ''}
 			            
 			            ${solicitud.estatus === 3 ? `
-			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
+			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.idSolicitud}">
 			                    <i class="fas fa-file-pdf"></i>
 			                </button>` : ''}
 			        </td>
