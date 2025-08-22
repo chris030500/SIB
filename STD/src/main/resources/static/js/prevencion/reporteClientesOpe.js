@@ -62,6 +62,7 @@ btnProcesar.addEventListener("click", async (event) => {
   btnProcesar.disabled = true;
   btnProcesar.textContent = "Generando...";
 
+  // Mostrar alerta con spinner
   swal({
     title: "Generando reporte...",
     content: {
@@ -89,10 +90,10 @@ btnProcesar.addEventListener("click", async (event) => {
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
 
-    // Crear un link invisible y disparar la descarga
+    // Descargar con nombre dinámico
     const a = document.createElement("a");
     a.href = url;
-    a.download = "Reporte_Clientes_Operaciones.xlsx";
+    a.download = `Reporte_Clientes_Operaciones_${inicio}_a_${fin}.xlsx`;
     document.body.appendChild(a);
     a.click();
     a.remove();
