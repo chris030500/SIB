@@ -54,15 +54,15 @@ public class ExcelReportServiceImpl implements ExcelReportService {
     private void escribirClientes(Sheet sheet, Timestamp inicio, Timestamp fin) {
         int rowNum = 0;
 
-        // Encabezados de todas las columnas (según tu lista)
+        // Encabezados
         String[] cols = {
-            "TIPO","Estatus","Fecha alta","ClienteID","Fecha nacimiento","Nombre","Genero",
-            "Entidad nacimiento","Pais nacimiento","Nacionalidad","Teléfono","Correo",
-            "Representante legal","Tipo persona","RFC","CURP","PEPs","Ocupación",
-            "Actividad INEGI ID","Actividad INEGI","Actividad BMX ID","Actividad BMX",
-            "Actividad SCIAN ID","Nivel riesgo","Calle","# casa","# interior","Colonia",
-            "Municipio","Estado","CP","Tipo ocupación","Lugar trabajo","Actividad FR ID",
-            "Actividad FR","Sector Económico ID","Sector Económico","Volumen Créditos"
+                "TIPO","Estatus","Fecha alta","ClienteID","Fecha nacimiento","Nombre","Genero",
+                "Entidad nacimiento","Pais nacimiento","Nacionalidad","Teléfono","Correo",
+                "Representante legal","Tipo persona","RFC","CURP","PEPs","Ocupación",
+                "Actividad INEGI ID","Actividad INEGI","Actividad BMX ID","Actividad BMX",
+                "Actividad SCIAN ID","Nivel riesgo","Calle","# casa","# interior","Colonia",
+                "Municipio","Estado","CP","Tipo ocupación","Lugar trabajo","Actividad FR ID",
+                "Actividad FR","Sector Económico ID","Sector Económico","Volumen Créditos"
         };
         Row header = sheet.createRow(rowNum++);
         for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
@@ -70,12 +70,10 @@ public class ExcelReportServiceImpl implements ExcelReportService {
         // Datos
         LocalDate ini = inicio.toLocalDateTime().toLocalDate();
         LocalDate finD = fin.toLocalDateTime().toLocalDate();
-        LocalDate lastDate = ini.minusDays(1);
-        int lastId = 0;
 
         Pageable page = PageRequest.of(0, BATCH_SIZE);
         while (true) {
-            List<ClienteRowDTO> clientes = repo.fetchClientes(lastDate, lastId, ini, finD, page);
+            List<ClienteRowDTO> clientes = repo.fetchClientesSinPaginacion(ini, finD, page);
             if (clientes.isEmpty()) break;
 
             for (ClienteRowDTO x : clientes) {
@@ -120,10 +118,10 @@ public class ExcelReportServiceImpl implements ExcelReportService {
                 r.createCell(c++).setCellValue(n(x.sectorEconId));
                 r.createCell(c++).setCellValue(s(x.sectorEcon));
                 r.createCell(c++).setCellValue(d(x.volumenCreditos));
-
-                if (x.fechaAlta != null) lastDate = x.fechaAlta;
-                if (x.clienteId != null) lastId = x.clienteId;
             }
+
+            if (clientes.size() < BATCH_SIZE) break;
+            page = PageRequest.of(page.getPageNumber() + 1, BATCH_SIZE);
         }
     }
 
@@ -131,12 +129,12 @@ public class ExcelReportServiceImpl implements ExcelReportService {
     private void escribirOperaciones(Sheet sheet, Timestamp inicio, Timestamp fin) {
         int rowNum = 0;
 
-        // Encabezados (según tu DTO de operaciones)
+        // Encabezados
         String[] cols = {
-            "ClienteID","Nombre cliente","Tipo Persona","Fecha","Monto",
-            "Destino Beneficiario","Instrumento","Tipo Producto",
-            "Descripción Mov","Referencia Mov","Naturaleza Mov",
-            "Num Transacción","No Contrato"
+                "ClienteID","Nombre cliente","Tipo Persona","Fecha","Monto",
+                "Destino Beneficiario","Instrumento","Tipo Producto",
+                "Descripción Mov","Referencia Mov","Naturaleza Mov",
+                "Num Transacción","No Contrato"
         };
         Row header = sheet.createRow(rowNum++);
         for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
@@ -144,12 +142,10 @@ public class ExcelReportServiceImpl implements ExcelReportService {
         // Datos
         LocalDate ini = inicio.toLocalDateTime().toLocalDate();
         LocalDate finD = fin.toLocalDateTime().toLocalDate();
-        LocalDate lastDate = ini.minusDays(1);
-        long lastId = 0;
 
         Pageable page = PageRequest.of(0, BATCH_SIZE);
         while (true) {
-            List<OperacionRowDTO> operaciones = repo.fetchOps(lastDate, lastId, ini, finD, page);
+            List<OperacionRowDTO> operaciones = repo.fetchOpsSinPaginacion(ini, finD, page);
             if (operaciones.isEmpty()) break;
 
             for (OperacionRowDTO x : operaciones) {
@@ -169,10 +165,10 @@ public class ExcelReportServiceImpl implements ExcelReportService {
                 r.createCell(c++).setCellValue(s(x.naturalezaMov));
                 r.createCell(c++).setCellValue(n(x.numTransaccion));
                 r.createCell(c++).setCellValue(n(x.noContrato));
-
-                if (x.fecha != null) lastDate = x.fecha;
-                if (x.numTransaccion != null) lastId = x.numTransaccion;
             }
+
+            if (operaciones.size() < BATCH_SIZE) break;
+            page = PageRequest.of(page.getPageNumber() + 1, BATCH_SIZE);
         }
     }
 

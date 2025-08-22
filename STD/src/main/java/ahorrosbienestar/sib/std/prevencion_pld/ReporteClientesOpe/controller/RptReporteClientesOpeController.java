@@ -129,43 +129,44 @@ public class RptReporteClientesOpeController {
             }
             logger.info("4");
 
+            // 3) Validar archivo
             if (files == null || files.length == 0 || files[0].isEmpty()) {
                 mensaje = "No se subió ningún archivo.";
                 respuesta.add(mensaje);
+                logger.warn(mensaje);
                 return ResponseEntity.badRequest().body(respuesta);
             }
-            logger.info("5");
+            logger.info("Paso 4: {} archivo(s) recibido(s)");
 
-            // Registrar proceso
+            // 4) Registrar proceso
+            logger.info("Paso 5: registrando proceso para usuario ID={}");
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
+            logger.info("Paso 6: proceso registrado = {}");
+
             if (proceso == null || proceso.getPk_id_peps() == 0) {
                 mensaje = "Error interno al registrar el proceso.";
                 respuesta.add(mensaje);
+                logger.error(mensaje);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
-            logger.info("6");
 
-            // Procesar cada archivo (solo en memoria, sin guardarlos)
+            // 5) Procesar archivo(s) recibido(s)
             for (MultipartFile file : files) {
-                logger.info("7");
-                logger.info("Archivo recibido: " + file.getOriginalFilename() + " tamaño: " + file.getSize());
-
-                logger.info("8");
+                logger.info("Paso 7: Archivo recibido -> nombre={} | tamaño={} bytes");
+                // Aquí podrías meter tu lógica de parseo si aplica
             }
-
-            logger.info("9");
 
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
             respuesta.add(mensaje);
-            logger.info("10");
+            logger.info("Paso 8: {}");
+
+            logger.info("=== FIN uploadPEP ===");
             return ResponseEntity.ok(respuesta);
 
         } catch (Exception e) {
-            logger.info("11");
             mensaje = "Error procesando archivo(s): " + e.getMessage();
-            logger.error(mensaje, e);
             respuesta.add(mensaje);
-            logger.info("12");
+            logger.error("❌ Paso X: excepción en uploadPEP", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
@@ -180,32 +181,18 @@ public class RptReporteClientesOpeController {
             HttpServletResponse response) {
 
         logger.info("=== INICIO generarReporteClientesOperaciones ===");
-        logger.info("Parámetros recibidos -> fechaInicio: {}, fechaFin: {}");
-
         try {
-            // Conversión de fechas
             Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
             Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
-            logger.info("Fechas convertidas -> ini: {}, fin: {}");
 
-            // Configurar cabeceras HTTP
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             String filename = "Reporte_Clientes_Operaciones_" + fechaInicio + "_a_" + fechaFin + ".xlsx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            logger.info("Cabeceras HTTP configuradas -> Content-Disposition: {}");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-            // Obtener OutputStream
-            OutputStream out = response.getOutputStream();
-            logger.debug("OutputStream obtenido correctamente");
-
-            // Llamar al service
-            logger.info("Invocando excelReportService.generarExcelClientesYOperaciones...");
-            excelReportService.generarExcelClientesYOperaciones(ini, fin, out);
-            logger.info("Método excelReportService.generarExcelClientesYOperaciones finalizó sin excepción");
-
-            // Flush explícito
-            out.flush();
-            logger.debug("OutputStream flush ejecutado correctamente");
+            try (ServletOutputStream out = response.getOutputStream()) {
+                excelReportService.generarExcelClientesYOperaciones(ini, fin, out);
+                out.flush();
+            }
 
             logger.info("=== FIN generarReporteClientesOperaciones: reporte generado con éxito ===");
 
