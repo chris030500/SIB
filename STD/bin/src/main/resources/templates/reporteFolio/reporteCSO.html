@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="container border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Generar Reporte</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divGenerarReporte" class="container">
+				<fieldset class="border p-2">
+					<legend class="float-none w-auto p-2">Generar Reporte</legend>
+					<div id="divTodos" class="container">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Busqueda Todos los registros.</legend>
+							<div class="row" style="margin-top : 15px ">
+								<div class="col-md-4">
+									<label><input type="checkbox" id="ckTodos" value="first_checkbox" onchange="opcionTodos()"> Todos los
+										registros</label>
+								</div>
+								<div class="col-md-4">
+									<label class="col-form-label"> Fecha de inicio</label>
+									<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
+								</div>
+								<div class="col-md-4">
+									<label class="col-form-label"> Fecha de fin</label>
+									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<div id="divParamBusqueda" class="container">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Parametros de Busqueda.</legend>
+							<div class="row" style="margin-top : 15px ">
+								<div class="col-md-3">
+									<label class="col-form-label"> Nro. Oficio</label>
+									<select class="form-control" id="nrOficio">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_lista_oficios}"
+												th:value="${opcionTipo.pk_id_folio}" th:text="${opcionTipo.i_folio}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label"> Tipo Oficio</label>
+									<select class="form-control" id="iOficio">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_tipo_oficio}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label"> Organo que la Emite</label>
+									<select class="form-control" id="iEmite">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_lista_reguladores}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3">
+									<label class="col-form-label"> Estatus del Oficio</label>
+									<select class="form-control" id="iEstatus">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_lista_estatus}"
+												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
+										</option>
+									</select>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				</fieldset>
+				<div class="row" style="margin-top : 15px ">
+					<div class="col-md-8"></div>
+					<div class="col-md-4">
+						<button type="button" class="btn btn-primary form-control" id="btnGenerarReporte">Generar
+							Reporte</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/reporteFolio/reporteFolio.js}"></script>
+	</th:block>
+</body>
+
+</html>
