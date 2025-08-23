@@ -43,8 +43,6 @@ function generarContrasena() {
 
 					},
 					error: function(xhr, status, error) {
-						console.log("status: " + status);
-						console.log("error: " + error);
 						if (xhr.status === 400) {
 							var errorMessage = xhr.responseText;
 							// Mostrar el mensaje de error al usuario
@@ -54,15 +52,16 @@ function generarContrasena() {
 								title: errorMessage,
 								showConfirmButton: false
 							}).then((result) => {
-								window.location.replace(newUrlBase + "formulario");
+								window.location.replace(urlBase);
 							});
 						} else {
+							// Manejar otros errores de la solicitud AJAX
 							swal({
 								type: 'warning',
 								title: "Error al cambiar la contraseña",
 								showConfirmButton: false
 							}).then((result) => {
-								window.location.replace(newUrlBase + "formulario");
+								window.location.replace(urlBase);
 							});
 						}
 					}
