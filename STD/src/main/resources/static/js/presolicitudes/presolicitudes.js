@@ -172,13 +172,15 @@ function listaPlazos(producto, idEmpresa) {
 
 	// Caso especial: producto "NOMINA PRESTACIONES"
 	if (producto.trim().toUpperCase() === "NOMINA PRESTACIONES") {
-		selectFrecuencia.value = "UNICO"; // O "DIARIA" si así está definido en tu <option>
+		selectFrecuencia.value = "5"; // O "DIARIA" si así está definido en tu <option>
 		selectFrecuencia.disabled = true; // Opcional: desactiva el select para evitar que lo cambien
 		// Reemplaza el select por un input number
 		container.innerHTML = `
 			<input type="number" class="form-control" id="plazoCredito" placeholder="Plazo en días" min="1">
 		`;
 		spinnerPlazo.style.display = "none";
+		attachMontoDescontarListeners(); // <-- NUEVO: al recrear #plazoCredito
+		recalcMontoDescontar();          // <-- NUEVO: recalcular de inmediato
 		return;
 	}
 
@@ -214,19 +216,17 @@ function listaPlazos(producto, idEmpresa) {
 		},
 		complete: function() {
 			spinnerPlazo.style.display = "none";
+			attachMontoDescontarListeners(); // <-- NUEVO
+			recalcMontoDescontar();          // <-- NUEVO
 		}
 	});
 }
-
-
 
 
 $(document).ready(function() {
 	$('#solicitudModal').on('shown.bs.modal', function() {
 		$('#frecuenciaCredito').val('0');
 		listaEmpresas();
-		//document.getElementById('idSolicitud').value = null;
-		//llenarSelectPuestos();
 	});
 });
 
@@ -369,11 +369,17 @@ function listaMontos(producto, idEmpresa, puesto) {
 							confirmButtonColor: '#3085d6',
 						}).then(() => {
 							montoInput.value = montoMin; // Restablece el valor mínimo
+							recalcMontoDescontar();      // <-- NUEVO: recalcular tras corregir
 						});
 					}
 
 				});
 			}
+
+			// <-- NUEVO: ya que tenemos tasaAnual/montos, adjuntar listeners (por si aún no) y calcular
+			attachMontoDescontarListeners();
+			recalcMontoDescontar();
+
 		})
 		.catch(error => {
 			console.error('Error al obtener las condiciones:', error);
@@ -381,137 +387,142 @@ function listaMontos(producto, idEmpresa, puesto) {
 		});
 }
 
+// Cuando cambia el puesto, recargamos condiciones y se recalcula
 document.getElementById('puesto').addEventListener('change', function() {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
-
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
-
 });
 
-/*
-function actualizarMonto(){
-		const monto = parseFloat(document.getElementById('montoSolicitado').value) || 0;
-		const plazoInicial = document.getElementById('plazoCredito').value;
-		const frecuencia = document.getElementById('frecuenciaCredito').value;
-		const plazo = plazoInicial;
 
-		// Llamar a la función de plan de pagos
-		generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+// --------- CÁLCULO DE PLAN / MONTO DESCONTAR ---------
 
-}*/
+/*  Helper NUEVO: Recalcula y actualiza #montoDescontar cuando cambien plazo/frecuencia/monto */
+function recalcMontoDescontar() {
+	const montoInput = document.getElementById('montoSolicitado');
+	const plazoEl = document.getElementById('plazoCredito');      // select o input number
+	const freqEl = document.getElementById('frecuenciaCredito');
 
-function actualizarPP(montoSol) {
-	const plazoInicial = document.getElementById('plazoCredito').value
-	const frecuencia = document.getElementById('frecuenciaCredito').value
-	const plazo = plazoInicial
+	if (!montoInput || !plazoEl || !freqEl) return;
 
-	// Llamar a la función de plan de pagos
-	const planDePagos = generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
+	const monto = parseFloat(montoInput.value) || 0;
+	const plazo = plazoEl.value;
+	const frecuencia = freqEl.value;
 
-	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
+	// Solo calcula si hay datos completos
+	if (!monto || !plazo || !frecuencia || tasaAnual == null) return;
+
+	actualizarPP(monto); // esta ya llama a generarPlanPagos y escribe #montoDescontar
 }
 
-document.getElementById('montoSolicitado').addEventListener('change', function() {
+/*  Helper NUEVO: Adjunta (o re-adjunta) listeners a monto/plazo/frecuencia  */
+function attachMontoDescontarListeners() {
+	const montoInput = document.getElementById('montoSolicitado');
+	const plazoEl = document.getElementById('plazoCredito');   // OJO: se recrea en listaPlazos()
+	const freqEl = document.getElementById('frecuenciaCredito');
 
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-	actualizarPP(monto);
-
-
-});
-
-document.getElementById('montoSolicitado').addEventListener('blur', function() {
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-	actualizarPP(monto);
-});
-
-document.getElementById('montoSolicitado').addEventListener('input', function() {
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-	actualizarPP(monto);
-});
-
-
-
-function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
-	let diasPorPago;
-	let pagosPorAnio;
-	let totalPagos;
-
-	switch (frecuencia.toLowerCase()) {
-		case "4":
-			diasPorPago = 30;
-			pagosPorAnio = 12;
-			totalPagos = plazo;
-			break;
-		case "3":
-			diasPorPago = 15;
-			pagosPorAnio = 24;
-			totalPagos = plazo * 2;
-			break;
-		case "1":
-			diasPorPago = 7;
-			pagosPorAnio = 52;
-			totalPagos = Math.round((plazo * 52) / 12);
-			break;
-		case "2":
-			diasPorPago = 14;
-			pagosPorAnio = Math.round(360 / 14); // ≈26
-			totalPagos = Math.round((plazo * pagosPorAnio) / 12);
-			break;
-		case "5":
-			diasPorPago = plazo;
-			break;
-		default:
-			console.error("Frecuencia no válida");
-			return;
+	if (montoInput) {
+		montoInput.removeEventListener('input', recalcMontoDescontar);
+		montoInput.addEventListener('input', recalcMontoDescontar);
+		montoInput.removeEventListener('change', recalcMontoDescontar);
+		montoInput.addEventListener('change', recalcMontoDescontar);
+		montoInput.removeEventListener('blur', recalcMontoDescontar);
+		montoInput.addEventListener('blur', recalcMontoDescontar);
 	}
 
-	// PAGO ÚNICO
-	if (frecuencia.toLowerCase() === "unico") {
-		const tasaAnualDecimal = tasaAnual / 100;
-		const interes = (monto * tasaAnualDecimal * plazo) / 360;
-		const iva = interes * 0.16;
-		const total = monto + interes + iva;
-		const cuotaFija = total.toFixed(2);
-
-		const inputMontoDescontar = document.querySelector("#montoDescontar");
-		if (inputMontoDescontar) inputMontoDescontar.value = cuotaFija;
-
-		return cuotaFija;
+	if (plazoEl) {
+		plazoEl.removeEventListener('change', recalcMontoDescontar);
+		plazoEl.addEventListener('change', recalcMontoDescontar);
+		plazoEl.removeEventListener('input', recalcMontoDescontar);
+		plazoEl.addEventListener('input', recalcMontoDescontar);
 	}
 
-	// PAGO PERIÓDICO
-	const tasaPeriodica = (tasaAnual / 100) / pagosPorAnio;
+	if (freqEl) {
+		freqEl.removeEventListener('change', recalcMontoDescontar);
+		freqEl.addEventListener('change', recalcMontoDescontar);
+	}
+}
 
-	// Cuota sin IVA
-	const cuotaSinIVA = monto * (tasaPeriodica / (1 - Math.pow(1 + tasaPeriodica, -totalPagos)));
-	const totalSinIVA = cuotaSinIVA * totalPagos;
-	const interesTotal = totalSinIVA - monto;
-	const ivaTotal = interesTotal * 0.16;
-	const totalConIVA = totalSinIVA + ivaTotal;
+/* Mantengo tu API original: actualizarPP usa generarPlanPagos */
+async function actualizarPP(montoSol) {
+  const monto = document.getElementById('montoSolicitado')?.value;
+  const plazo = document.getElementById('plazoCredito')?.value;
+  const frecuencia = document.getElementById('frecuenciaCredito')?.value;
 
-	// Calcular cuota ideal con decimales completos
-	const cuotaExacta = totalConIVA / totalPagos;
+  // Validar que los 4 datos existan, sean numéricos y distintos de 0
+  if (!monto || isNaN(parseFloat(monto)) || parseFloat(monto) === 0 ||
+      !tasaAnual || isNaN(parseFloat(tasaAnual)) || parseFloat(tasaAnual) === 0 ||
+      !plazo || isNaN(parseInt(plazo)) || parseInt(plazo) === 0 ||
+      !frecuencia || frecuencia === "0") {
+    return; // 🚫 No ejecuta nada
+  }
 
-	// Redondear cuota a 2 decimales
-	const cuotaRedondeada = parseFloat(cuotaExacta.toFixed(2));
+  // ✅ Si todo está correcto, llama al SP
+  await generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
+}
 
-	// Calcular el total redondeado que se pagará si todas las cuotas son iguales
-	const totalRedondeado = cuotaRedondeada * totalPagos;
 
-	// Diferencia por redondeo
-	const diferencia = totalConIVA - totalRedondeado;
 
-	// Ajustar la diferencia repartida entre todas las cuotas
-	const ajustePorCuota = diferencia / totalPagos;
 
-	// Cuota final ajustada para que sumen exactamente el total
-	const cuotaFinal = parseFloat((cuotaRedondeada + ajustePorCuota).toFixed(2));
+/* Eliminé los listeners duplicados de #montoSolicitado 
+   (input/change/blur) que llamaban a actualizarPP, porque ahora
+   los adjuntamos centralizados en attachMontoDescontarListeners(). */
 
+
+// Llama al endpoint que ejecuta el SP y escribe #montoDescontar
+async function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 	const inputMontoDescontar = document.querySelector("#montoDescontar");
-	if (inputMontoDescontar) inputMontoDescontar.value = cuotaFinal;
 
-	return cuotaFinal;
+	try {
+		const resp = await fetch(urlPrincipal + "simulador_credito_convenios", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				monto: Number(monto),
+				tasaAnual: Number(tasaAnual),
+				plazo: Number(plazo),
+				frecuencia: String(frecuencia) // '1','2','3','4','5'
+			})
+		});
+
+		if (!resp.ok) throw new Error("HTTP " + resp.status);
+
+		const data = await resp.json();
+		// Esperamos: { cuotaDescontar: number|null, errorMessage: string|null }
+
+		if (data.errorMessage) {
+			console.error("SP error:", data.errorMessage);
+			if (inputMontoDescontar) inputMontoDescontar.value = "";
+			Swal.fire({
+				icon: "error",
+				title: "No se pudo calcular",
+				text: data.errorMessage
+			});
+			return null;
+		}
+
+		if (typeof data.cuotaDescontar === "number") {
+			if (inputMontoDescontar) inputMontoDescontar.value = data.cuotaDescontar;
+			return data.cuotaDescontar;
+		}
+
+		// Respuesta inesperada
+		if (inputMontoDescontar) inputMontoDescontar.value = "";
+		console.warn("Respuesta inesperada del backend:", data);
+		return null;
+
+	} catch (e) {
+		console.error("Fallo al invocar el simulador:", e);
+		if (inputMontoDescontar) inputMontoDescontar.value = "";
+		Swal.fire({
+			icon: "error",
+			title: "Error de conexión",
+			text: "No fue posible contactar al simulador. Intenta de nuevo."
+		});
+		return null;
+	}
 }
+
+
 
 document.addEventListener("DOMContentLoaded", function() {
 	limpiarModal();
@@ -519,11 +530,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		guardarSolicitud();
 	});
 
+	// <-- NUEVO: al iniciar, por si los elementos ya existen
+	attachMontoDescontarListeners();
 });
 
+
 // Evento para pasar a mayúsculas el textarea de comentarios
-document.getElementById('comentariosSolicitud').addEventListener('input', function () {
-    this.value = this.value.toUpperCase();
+document.getElementById('comentariosSolicitud').addEventListener('input', function() {
+	this.value = this.value.toUpperCase();
 });
 
 function limpiarModal() {
@@ -562,15 +576,6 @@ function guardarSolicitud() {
 
 	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
 
-	/*	let montoDescontarValue = getInputValue("montoDescontar");
-	let montoDescontarParsed = parseFloat(montoDescontarValue);
-	if (isNaN(montoDescontarParsed)) {
-		// Si no hay valor, intenta obtener el texto visible (por ejemplo, de un <span> o similar)
-		const montoDOM = document.querySelector("#montoDescontar")?.textContent?.trim();
-		montoDescontarParsed = parseFloat(montoDOM) || null;
-	}*/
-
-
 	const solicitudData = {
 		id: parseInt(getInputValue("idSolicitud", 0)), // Tomar el ID si existe
 		empresa: getInputValue("buscarEmpresa"),
@@ -589,8 +594,6 @@ function guardarSolicitud() {
 		renovacion: esRenovacion,
 		comentarios: getInputValue("comentariosSolicitud")
 	};
-
-
 
 	let validacion = 0;
 	if (!solicitudData.empresa) {
@@ -632,8 +635,6 @@ function guardarSolicitud() {
 		validacion = 0;
 	}
 
-
-
 	if (!solicitudData.montoDescontar) {
 		document.getElementById("montoDescontar").classList.add("is-invalid");
 		validacion = 1;
@@ -656,17 +657,6 @@ function guardarSolicitud() {
 
 		return;
 	}
-
-	// Validar campos obligatorios
-	/*if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado || !solicitudData.montoSolicitado || !solicitudData.montoDescontar) {
-		Swal.fire({
-			icon: "warning",
-			title: "Campos incompletos",
-			text: "Por favor, completa todos los campos obligatorios.",
-			confirmButtonColor: "#ffc107",
-		});
-		return;
-	}*/
 
 	const url = solicitudData.id
 		? urlPrincipal + `editarSolicitud/${solicitudData.id}`
@@ -746,20 +736,6 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
-
-	//cargarEmpresasFiltro();
-
-	/*document.getElementById("btnAnterior").addEventListener("click", function() {
-		if (paginaActual > 0) {
-			paginaActual--;
-			cargarSolicitudes(paginaActual);
-		}
-	});
-
-	document.getElementById("btnSiguiente").addEventListener("click", function() {
-		paginaActual++;
-		cargarSolicitudes(paginaActual);
-	});*/
 });
 
 function obtenerEstatus(estatus) {
@@ -782,11 +758,8 @@ function cargarSolicitudes(pagina) {
 	fetch(urlPrincipal + `listarSolicitudes`)
 		.then(response => response.json())
 		.then(data => {
-			//let tabla = document.getElementById("tablaSolicitudes");
-			//tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
-
-			const solicitudes = data.contenido; // Cambiado
-			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
+			const solicitudes = data.contenido;
+			const permiso = data.permiso;
 			const botonExcel = document.getElementById("contenedorBotonExcel");
 
 			console.log("Permiso:", permiso); // Diagnóstico
@@ -848,61 +821,12 @@ function cargarSolicitudes(pagina) {
 			// Add all rows at once
 			tablaSolicitudes.rows.add(registrosTotalesSol).draw();
 
-			/*
-						let filas = solicitudes.map((solicitud) => {
-							return `<tr>
-								<td>${solicitud.id}</td>
-								<td>${solicitud.empleado}</td>
-								<td>${solicitud.fechaSolicitud}</td>
-								<td>${solicitud.empresa}</td>
-								<td>$ ${solicitud.montoSolicitado}</td>
-								<td>$ ${solicitud.montoDescontar}</td>
-								<td>${solicitud.usuarioReg.vc_nombre_usuario}</td>
-								<td>${solicitud.sucursal}</td>
-								<td>${obtenerEstatus(solicitud.estatus)}</td>
-								<td>
-									${permiso ? `
-										<button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-											<i class="fas fa-edit"></i>
-										</button>
-										${solicitud.estatus === 1 ? `
-											<button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-												onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
-												<i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
-											</button>` : ''}
-									` : ''}
-								    
-									${solicitud.estatus === 3 ? `
-										<button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
-											<i class="fas fa-file-pdf"></i>
-										</button>` : ''}
-								</td>
-							</tr>`;
-						}).join('');
-			
-			
-						tabla.innerHTML = filas;
-			
-						// Actualizar paginación
-						document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
-						document.getElementById("btnAnterior").disabled = pagina === 0;
-						document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
-			*/
-
-
-
-
-
-			// Ocultar spinner
 			//document.getElementById("spinner").style.display = "none";
 
-			// (Opcional) Si quieres condicionar algún botón con permiso:
 			if (permiso) {
 				console.log("Tiene permiso de aprobación.");
-				// document.getElementById("btnAprobarMasivo").style.display = "inline-block";
 			} else {
 				console.log("No tiene permiso.");
-				// document.getElementById("btnAprobarMasivo").style.display = "none";
 			}
 		})
 		.catch(error => {
@@ -1028,6 +952,7 @@ $(document).on("click", ".btn-editar", function() {
 							$("#puesto").val(dataSolicitud.puesto).change();
 							$("#plazoCredito").val(dataSolicitud.plazo).change();
 							$("#montoSolicitado").val(dataSolicitud.montoSolicitado);
+							recalcMontoDescontar(); // <-- NUEVO: asegurar cálculo con los valores cargados
 						}, 500);
 
 						// 🛠 **Forzar actualización de los campos tipo search**
@@ -1238,23 +1163,3 @@ document.getElementById("buscarProducto").addEventListener("change", function() 
 		document.getElementById("checkNomiprestamo").checked = false;
 	}
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

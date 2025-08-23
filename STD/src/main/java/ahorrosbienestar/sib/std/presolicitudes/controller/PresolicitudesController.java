@@ -2,6 +2,11 @@ package ahorrosbienestar.sib.std.presolicitudes.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.mail.internet.InternetAddress;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,6 +33,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -47,6 +54,7 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.presolicitudes.dto.CondicionesDTO;
+import ahorrosbienestar.sib.std.presolicitudes.dto.SimuladorRequest;
 import ahorrosbienestar.sib.std.presolicitudes.model.Empleado;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.model.Puesto;
@@ -116,10 +124,13 @@ public class PresolicitudesController {
 
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
-	
+
 	@Autowired
 	private ParametrosimuladorRepository parametrosimuladorRepository;
-
+	
+	@Autowired
+	private  JdbcTemplate jdbcTemplate;
+	
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion = "";
@@ -142,7 +153,7 @@ public class PresolicitudesController {
 			
 			if (validarAcceso(userDetails.getUsername()) == 1) {
 				model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
-				
+
 				rutaDireccion = "presolicitudes_nomina/presolicitudes";
 			} else {
 				rutaDireccion = rutaError;
@@ -305,7 +316,7 @@ public class PresolicitudesController {
 	public ResponseEntity<?> listarSolicitudes() {
 
 		try {
-			//Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+			// Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
 			logger.info("idEmpleado: " + idEmpleado);
 			logger.info("idRol: " + idRol);
@@ -321,7 +332,7 @@ public class PresolicitudesController {
 			List<Integer> rolesPermitidos = Arrays.stream(rolesVobo.split(",")).map(String::trim).map(Integer::parseInt)
 					.collect(Collectors.toList());
 
-			if (rolesPermitidos.contains(idRol)) { 
+			if (rolesPermitidos.contains(idRol)) {
 				solicitudes = solicitudCreditoService.listarTodasSolicitudes();
 				response.put("permiso", true);
 			} else {
@@ -424,7 +435,7 @@ public class PresolicitudesController {
 			workbook.close();
 
 			// Llamar al servicio para actualizar estatus
-			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes,obtUsuario());
+			solicitudCreditoService.actualizarEstatusSolicitudes(solicitudes, obtUsuario());
 			logger.info("[INFO] Estatus de solicitudes actualizado.");
 
 			// Obtener IDs de solicitudes
@@ -460,8 +471,7 @@ public class PresolicitudesController {
 					procesoPorSucursal.put(sucursal, procesos.iterator().next());
 				} else {
 					// Si hay más de un valor, indicamos inconsistencia
-					logger.info(
-							"[ERROR] Inconsistencia en procesos para la sucursal " + sucursal + ": " + procesos);
+					logger.info("[ERROR] Inconsistencia en procesos para la sucursal " + sucursal + ": " + procesos);
 					procesoPorSucursal.put(sucursal, 0);
 				}
 			}
@@ -594,17 +604,71 @@ public class PresolicitudesController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
 		}
 	}
-	
-	 public Usuario obtUsuario() {
-	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	        
-	        if (!(principal instanceof UserDetails)) {
-	            logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
-	        }
-	        
-	        UserDetails userDetails = (UserDetails) principal;
-	        usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-	        return usuario.get(0);
-	        
-	    }
+
+	public Usuario obtUsuario() {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		if (!(principal instanceof UserDetails)) {
+			logger.error(Constantes.USUARIO_NO_AUNTENTICADO);
+		}
+
+		UserDetails userDetails = (UserDetails) principal;
+		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		return usuario.get(0);
+
+	}
+
+	@PostMapping(value = "/simulador_credito_convenios", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> procesoSimuladorConvenios(@RequestBody SimuladorRequest req) {
+        Connection connection = null;
+        CallableStatement cs = null;
+
+        String errorMessage = null;
+        BigDecimal cuotaDescontar = null;
+
+        try {
+            DataSource ds = jdbcTemplate.getDataSource();
+            if (ds == null) throw new SQLException("DataSource no disponible");
+            connection = ds.getConnection();
+
+            cs = connection.prepareCall("{ call PROCESO_SIMULADOR_CREDITO_CONVENIOS(?, ?, ?, ?, ?, ?) }");
+
+            // OUT
+            cs.registerOutParameter(1, Types.VARCHAR); // error_message
+            cs.registerOutParameter(2, Types.DECIMAL); // cuotaDescontar
+
+            // IN
+            cs.setBigDecimal(3, req.getMonto());       // D_MONTO
+            cs.setBigDecimal(4, req.getTasaAnual());   // D_TASA_ANUAL
+            cs.setInt(5, req.getPlazo());              // PLAZO
+            cs.setString(6, req.getFrecuencia());      // FRECUENCIA
+
+            cs.execute();
+
+            errorMessage = cs.getString(1);
+            Object cuotaObj = cs.getObject(2);
+            if (cuotaObj != null) {
+                cuotaDescontar = (cuotaObj instanceof BigDecimal)
+                        ? (BigDecimal) cuotaObj
+                        : new BigDecimal(cuotaObj.toString());
+            }
+        } catch (SQLException e) {
+            errorMessage = "Error al ejecutar el procedimiento: " + e.getMessage();
+        } finally {
+            if (cs != null) {
+                try { cs.close(); } catch (SQLException e) {
+                }
+            }
+            if (connection != null) {
+                try { connection.close(); } catch (SQLException e) {
+                }
+            }
+        }
+
+        Map<String, Object> body = new HashMap<String, Object>();
+        body.put("errorMessage", errorMessage);
+        body.put("cuotaDescontar", cuotaDescontar);
+
+        return ResponseEntity.ok(body);
+    }
 }
