@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,10 +181,9 @@ public class RptReporteClientesOpeController {
             @RequestParam("fechaFin") String fechaFin,
             HttpServletResponse response) {
 
-        logger.info("=== INICIO generarReporteClientesOperaciones ===");
         try {
-            Timestamp ini = Timestamp.valueOf(fechaInicio + " 00:00:00");
-            Timestamp fin = Timestamp.valueOf(fechaFin + " 23:59:59");
+            LocalDate ini = LocalDate.parse(fechaInicio); // yyyy-MM-dd
+            LocalDate fin = LocalDate.parse(fechaFin);
 
             String filename = "Reporte_Clientes_Operaciones_" + fechaInicio + "_a_" + fechaFin + ".xlsx";
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -194,13 +194,11 @@ public class RptReporteClientesOpeController {
                 out.flush();
             }
 
-            logger.info("=== FIN generarReporteClientesOperaciones: reporte generado con éxito ===");
-
         } catch (Exception e) {
-            logger.error("❌ ERROR en generarReporteClientesOperaciones", e);
-            throw new RuntimeException("Error al generar el reporte: " + e.getMessage(), e);
+            throw new RuntimeException("Error al generar el reporte", e);
         }
     }
+
 
 
     @GetMapping("/download")
@@ -211,16 +209,18 @@ public class RptReporteClientesOpeController {
         logger.info("=== INICIO download ===");
         logger.info("Parámetros recibidos -> inicio: {}, fin: {}");
 
-        Timestamp ini = Timestamp.valueOf(inicio + " 00:00:00");
-        Timestamp fini = Timestamp.valueOf(fin + " 23:59:59");
+        // Convertir los parámetros a LocalDate
+        LocalDate ini = LocalDate.parse(inicio); // formato: yyyy-MM-dd
+        LocalDate fini = LocalDate.parse(fin);
+
         logger.info("Fechas convertidas -> ini: {}, fin: {}");
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=Reporte_Clientes_Operaciones.xlsx");
-        logger.debug("Cabeceras HTTP configuradas correctamente");
+        logger.info("Cabeceras HTTP configuradas correctamente");
 
         try (ServletOutputStream out = response.getOutputStream()) {
-            logger.debug("OutputStream obtenido correctamente en download()");
+            logger.info("OutputStream obtenido correctamente en download()");
             excelReportService.generarExcelClientesYOperaciones(ini, fini, out);
             logger.info("Método excelReportService.generarExcelClientesYOperaciones ejecutado con éxito en download()");
         } catch (Exception e) {
@@ -230,6 +230,7 @@ public class RptReporteClientesOpeController {
 
         logger.info("=== FIN download ===");
     }
+
 
 
 

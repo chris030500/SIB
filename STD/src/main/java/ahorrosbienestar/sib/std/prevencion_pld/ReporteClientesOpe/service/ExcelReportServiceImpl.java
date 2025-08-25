@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class ExcelReportServiceImpl implements ExcelReportService {
     }
 
     @Override
-    public void generarExcelClientesYOperaciones(Timestamp inicio, Timestamp fin, OutputStream out) throws IOException {
+    public void generarExcelClientesYOperaciones(LocalDate inicio, LocalDate fin, OutputStream out) throws IOException {
         try (SXSSFWorkbook workbook = new SXSSFWorkbook(1000)) {
             workbook.setCompressTempFiles(true);
 
@@ -44,14 +43,13 @@ public class ExcelReportServiceImpl implements ExcelReportService {
             Sheet operacionesSheet = workbook.createSheet("OPERACIONES");
             escribirOperaciones(operacionesSheet, inicio, fin);
 
-            // Escribir al OutputStream (HTTP response)
             workbook.write(out);
             out.flush();
         }
     }
 
     // ================== CLIENTES ==================
-    private void escribirClientes(Sheet sheet, Timestamp inicio, Timestamp fin) {
+    private void escribirClientes(Sheet sheet, LocalDate inicio, LocalDate fin) {
         int rowNum = 0;
 
         // Encabezados
@@ -67,13 +65,9 @@ public class ExcelReportServiceImpl implements ExcelReportService {
         Row header = sheet.createRow(rowNum++);
         for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
 
-        // Datos
-        LocalDate ini = inicio.toLocalDateTime().toLocalDate();
-        LocalDate finD = fin.toLocalDateTime().toLocalDate();
-
         Pageable page = PageRequest.of(0, BATCH_SIZE);
         while (true) {
-            List<ClienteRowDTO> clientes = repo.fetchClientesSinPaginacion(ini, finD, page);
+        	List<ClienteRowDTO> clientes = repo.fetchClientesSinPaginacion(inicio, fin, page);
             if (clientes.isEmpty()) break;
 
             for (ClienteRowDTO x : clientes) {
@@ -126,7 +120,7 @@ public class ExcelReportServiceImpl implements ExcelReportService {
     }
 
     // ================== OPERACIONES ==================
-    private void escribirOperaciones(Sheet sheet, Timestamp inicio, Timestamp fin) {
+    private void escribirOperaciones(Sheet sheet, LocalDate inicio, LocalDate fin) {
         int rowNum = 0;
 
         // Encabezados
@@ -139,13 +133,9 @@ public class ExcelReportServiceImpl implements ExcelReportService {
         Row header = sheet.createRow(rowNum++);
         for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
 
-        // Datos
-        LocalDate ini = inicio.toLocalDateTime().toLocalDate();
-        LocalDate finD = fin.toLocalDateTime().toLocalDate();
-
         Pageable page = PageRequest.of(0, BATCH_SIZE);
         while (true) {
-            List<OperacionRowDTO> operaciones = repo.fetchOpsSinPaginacion(ini, finD, page);
+        	List<OperacionRowDTO> operaciones = repo.fetchOpsSinPaginacion(inicio, fin, page);
             if (operaciones.isEmpty()) break;
 
             for (OperacionRowDTO x : operaciones) {
