@@ -1,11 +1,11 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
 import java.io.IOException;
-import java.nio.file.Path;
+//import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+//import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
-import java.io.OutputStream;
+//import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +174,6 @@ public class RptReporteClientesOpeController {
 
  
  
- // ================== CLIENTES + OPERACIONES ==================
     @PostMapping("/generarRptReporteClientesOpeController")
     public void generarReporteClientesOperaciones(
             @RequestParam("fechaInicio") String fechaInicio,
@@ -183,22 +182,27 @@ public class RptReporteClientesOpeController {
 
         try {
             LocalDate ini = LocalDate.parse(fechaInicio); // yyyy-MM-dd
-            LocalDate fin = LocalDate.parse(fechaFin);
+            LocalDate fin = LocalDate.parse(fechaFin).plusDays(1); // 🔹 incluir todo el día fin
 
             String filename = "Reporte_Clientes_Operaciones_" + fechaInicio + "_a_" + fechaFin + ".xlsx";
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
+            logger.info(">>> Iniciando generación del Excel: {} a {}");
+
             try (ServletOutputStream out = response.getOutputStream()) {
                 excelReportService.generarExcelClientesYOperaciones(ini, fin, out);
                 out.flush();
+                out.close(); // 🔹 importante en Linux
             }
 
+            logger.info(">>> Excel generado y enviado correctamente: {}");
+
         } catch (Exception e) {
+            logger.error("❌ Error al generar el reporte", e);
             throw new RuntimeException("Error al generar el reporte", e);
         }
     }
-
 
 
     @GetMapping("/download")

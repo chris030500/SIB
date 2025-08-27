@@ -2,8 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Path;
-import java.sql.Timestamp;
+//import java.nio.file.Path;
+//import java.sql.Timestamp;
 import java.time.LocalDate;
 
 public interface ExcelReportService {

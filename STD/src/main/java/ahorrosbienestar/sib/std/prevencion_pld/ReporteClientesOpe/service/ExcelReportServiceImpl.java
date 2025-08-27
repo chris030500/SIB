@@ -1,8 +1,11 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
+//import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller.RptReporteClientesOpeController;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.dto.ClienteRowDTO;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.dto.OperacionRowDTO;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.ReporteClientesOpeRepository;
+
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -22,6 +25,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ExcelReportServiceImpl implements ExcelReportService {
 
+	private static final Logger logger = Logger.getLogger(ExcelReportServiceImpl.class);
     private final ReporteClientesOpeRepository repo;
     private static final int BATCH_SIZE = 5000;
 
@@ -32,6 +36,8 @@ public class ExcelReportServiceImpl implements ExcelReportService {
 
     @Override
     public void generarExcelClientesYOperaciones(LocalDate inicio, LocalDate fin, OutputStream out) throws IOException {
+        logger.info(">>> [ExcelReportService] Generando Excel con rango {} - {}");
+
         try (SXSSFWorkbook workbook = new SXSSFWorkbook(1000)) {
             workbook.setCompressTempFiles(true);
 
@@ -45,8 +51,13 @@ public class ExcelReportServiceImpl implements ExcelReportService {
 
             workbook.write(out);
             out.flush();
+            // 🔹 No se cierra aquí el out, se cierra en el controller
         }
+
+        logger.info(">>> [ExcelReportService] Excel finalizado correctamente.");
     }
+
+
 
     // ================== CLIENTES ==================
     private void escribirClientes(Sheet sheet, LocalDate inicio, LocalDate fin) {
