@@ -185,6 +185,7 @@ public class Constantes {
 	
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
+    public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
     
 	//constantes marketing
 	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
