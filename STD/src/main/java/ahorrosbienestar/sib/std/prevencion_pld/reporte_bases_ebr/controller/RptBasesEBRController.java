@@ -79,6 +79,9 @@ public class RptBasesEBRController {
 			case 2:
 				reporte = Constantes.RPT_EBR_BASE_OPERACIONES;
 				break;
+			case 3:
+				reporte = Constantes.RPT_EBR_BASE_REMESAS;
+				break;
 		}
 		
 		try {

@@ -187,6 +187,7 @@ public class Constantes {
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
     public static final String RPT_EBR_BASE_OPERACIONES = "rpt_ebr_base_operaciones";
+    public static final String RPT_EBR_BASE_REMESAS = "rpt_ebr_base_remesas";
     
 	//constantes marketing
 	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
