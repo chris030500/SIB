@@ -77,7 +77,7 @@ public class RptBasesEBRController {
 				reporte = Constantes.RPT_EBR_BASE_CLIENTES;
 				break;
 			case 2:
-				System.out.println("Opción dos");
+				reporte = Constantes.RPT_EBR_BASE_OPERACIONES;
 				break;
 		}
 		
