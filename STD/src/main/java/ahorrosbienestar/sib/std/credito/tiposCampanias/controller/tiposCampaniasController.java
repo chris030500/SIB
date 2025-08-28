@@ -191,8 +191,12 @@ public class tiposCampaniasController {
 		
 	@GetMapping("/api/catProductos")
 	@ResponseBody
-    public ResponseEntity<List<ProductoColocacion>> getProductos() {
+    /*public ResponseEntity<List<ProductoColocacion>> getProductos() {
         return ResponseEntity.ok(productoColocacionService.obtenerProductosActivos());
+    }*/
+	
+	public List<ProductoColocacion> getProductosColocacion() {
+        return productoColocacionService.getProductosColocacion();
     }
 	
 	//llenar las opciones de es renovacion

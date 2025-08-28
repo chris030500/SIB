@@ -57,7 +57,7 @@ function buscarCampanias() {
         cargarCatalogoConvivenciaCamp(0);
         cargarCatalogoProductosCamp(0);
         cargarChecksEsRenovacion(0);
-        cargarChecksEsRenovacionOferta(0);
+        //cargarChecksEsRenovacionOferta(0);
         cargarChecksActiva(0);
         //let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
 		cargarCatalogoProductos([]);
@@ -107,19 +107,20 @@ function limpiarFormulario() {
     document.getElementById("EdadMinima").value = "";
     document.getElementById("MontoMinimo").value = "";
     document.getElementById("MontoMaximo").value = "";
-    document.getElementById("MoraMaxima").value = "";
+    //document.getElementById("MoraMaxima").value = "";
     document.getElementById("PorceCubiertoCap").value = "";
     document.getElementById("PorceCubiertoCap").value = "";
     document.getElementById("DiasGracia").value = "";
     document.getElementById("DiasMora").value = "";
     document.getElementById("PlazoMaximoAnios").value = "";
     document.getElementById("MinimoVida").value = "";
+    document.getElementById("MinimoVidaR").value = "";
     document.getElementById("VigenciaBC").value = "";
     document.getElementById("VigenciaCampania").value = "";
     document.getElementById("CreditosLiquidados").value = "";
     //document.getElementById("ProdCredito").value = "";
     document.getElementById("PorceIncremento").value = "";
-    document.getElementById("VigenciaCampaniaOferta").value = "";
+    //document.getElementById("VigenciaCampaniaOferta").value = "";
     document.getElementById("TasaOrdinaria").value = "";
     document.getElementById("MontoMaximoOferta").value = "";
     // limpia todos los demás campos...
@@ -194,11 +195,12 @@ input.addEventListener('input', function () {
                 document.getElementById("Ventana").value = data.i_ventana_anios;
                 document.getElementById("MontoMinimo").value = data.d_monto_minimo;
                 document.getElementById("MinimoVida").value = data.i_minimo_vida_credito;
+                document.getElementById("MinimoVidaR").value = data.i_minimo_vida_credito_r;
                 document.getElementById("CreditosLiquidados").value = data.i_creditos_liquidados;
                 document.getElementById("EdadMaxima").value = data.i_edad_maxima;
                 document.getElementById("EdadMinima").value = data.i_edad_minima;
                 document.getElementById("MontoMaximo").value = data.d_monto_maximo;
-                document.getElementById("MoraMaxima").value = data.i_mora_maxima;
+                //document.getElementById("MoraMaxima").value = data.i_dias_mora;
                 document.getElementById("PorceCubiertoCap").value = data.d_porc_cubierto_capital;
                 document.getElementById("DiasGracia").value = data.i_dias_gracia;
                 document.getElementById("DiasMora").value = data.i_dias_mora;
@@ -207,7 +209,7 @@ input.addEventListener('input', function () {
                 document.getElementById("VigenciaCampania").value = data.i_vigencia_campania;
                 //document.getElementById("ProdCredito").value = data.i_prod_credito_id_oferta;
                 document.getElementById("PorceIncremento").value = data.d_porc_inc_oferta;
-                document.getElementById("VigenciaCampaniaOferta").value = data.i_vigencia_oferta;
+                //document.getElementById("VigenciaCampaniaOferta").value = data.i_vigencia_oferta;
                 document.getElementById("TasaOrdinaria").value = data.d_tasa_ordinaria_oferta;
                 document.getElementById("MontoMaximoOferta").value = data.d_monto_maximo_oferta;
                 //console.log(data.i_tipo_campania);
@@ -217,7 +219,7 @@ input.addEventListener('input', function () {
                 cargarCatalogoConvivenciaCamp(data.i_convivencia);
                 cargarCatalogoProductosCamp(data.i_prod_credito_id_oferta);
                 cargarChecksEsRenovacion(data.vc_es_renovacion);
-                cargarChecksEsRenovacionOferta(data.vc_es_renovacion_oferta);
+                //cargarChecksEsRenovacionOferta(data.vc_es_renovacion_oferta);
                 
                 //console.log("vc_es_renovacion:", data.vc_es_renovacion);
                 if(data.vc_es_renovacion === 'S'){
@@ -388,7 +390,7 @@ function cargarChecksEsRenovacion(valorSeleccionado) {
 }
 
 //cargar Checks es renovacionOferta
-function cargarChecksEsRenovacionOferta(valorSeleccionado) {
+/*function cargarChecksEsRenovacionOferta(valorSeleccionado) {
     $.ajax({
         url: newUrlBase + 'credito/api/catEsRenovacionOferta',
         type: 'GET',
@@ -424,7 +426,7 @@ function cargarChecksEsRenovacionOferta(valorSeleccionado) {
             console.error('Error al cargar catálogos', err);
         }
     });
-}
+}*/
 
 //cargar Checks es Activa
 function cargarChecksActiva(valorSeleccionado) {
@@ -540,16 +542,16 @@ function modificarTiposCampanias(){
 											
 										} else if (document.getElementById('MontoMaximo').value != '' && document.getElementById('MontoMaximo').value > 0) {
 											if(esDecimalPositivo(document.getElementById('MontoMaximo').value)){
-												if (document.getElementById('MoraMaxima').value == '') {
+												//if (document.getElementById('MoraMaxima').value == '') {
 						
-													swal({
+													/*swal({
 														title: "",
 														text: "Debe ingresar el campo Mora Máxima.",
 														icon: "warning",
-													});
+													});*/
 													
-												} else if (document.getElementById('MoraMaxima').value != '') {
-													if(esDecimalPositivo(document.getElementById('MoraMaxima').value)){
+												//} else if (document.getElementById('MoraMaxima').value != '') {
+													//if(esDecimalPositivo(document.getElementById('MoraMaxima').value)){
 														if (document.getElementById('PorceCubiertoCap').value == '') {
 							
 															swal({
@@ -685,9 +687,9 @@ function modificarTiposCampanias(){
 																																		} else if (document.getElementById('PorceIncremento').value != '') {
 																																			if(esEntero(document.getElementById('PorceIncremento').value)){
 																																				
-																																				let seleccionOferta = document.querySelector('input[name="checksEsRenovacionOferta"]:checked');
+																																				//let seleccionOferta = document.querySelector('input[name="checksEsRenovacionOferta"]:checked');
 																														
-																																				if (!seleccionOferta) {
+																																				/*if (!seleccionOferta) {
 																																					
 																																					swal({
 																																						title: "",
@@ -695,17 +697,17 @@ function modificarTiposCampanias(){
 																																						icon: "warning",
 																																					});
 																																					
-																																				} else {
+																																				} else {*/
 																																					
-																																					if (document.getElementById('VigenciaCampaniaOferta').value == '') {
+																																					/*if (document.getElementById('VigenciaCampaniaOferta').value == '') {
 																																						swal({
 																																							title: "",
 																																							text: "Debe ingresar el campo VigenciaCampaniaOferta.",
 																																							icon: "warning",
 																																						});
 																																						
-																																					} else if (document.getElementById('VigenciaCampaniaOferta').value != '') {
-																																						if(esEntero(document.getElementById('VigenciaCampaniaOferta').value)){
+																																					} else if (document.getElementById('VigenciaCampaniaOferta').value != '') {*/
+																																						//if(esEntero(document.getElementById('VigenciaCampaniaOferta').value)){
 																																							
 																																							if (document.getElementById('TasaOrdinaria').value == '') {
 																	
@@ -804,20 +806,20 @@ function modificarTiposCampanias(){
 																																												/////////////////////////////////////////////////////////////////////////////////////////
 																																												//va un if si renovacion es Si entonces validar que el otro campo este lleno
 																																												if(minimovidaCredR === 1){
-																																													console.log("entra a solo deberia ser correcto o es N");
+																																													//console.log("entra a solo deberia ser correcto o es N");
 																																													const selectElement = document.getElementById("Productos");
 																																													const selectedProductos = Array.from(selectElement.selectedOptions).map(option => option.value);
 																																												    const productosSelect = selectedProductos.join(",");
 																																												    //console.log(productosSelect);
 																																													
-																																													const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
-																																												    let vc_es_renovacion_oferta_checkbox = "";
+																																													//const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
+																																												    /*let vc_es_renovacion_oferta_checkbox = "";
 																																												    for (let radio of checksEsRenovacionOferta) {
 																																												        if (radio.checked) {
 																																												            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2"
 																																												            break;
 																																												        }
-																																												    }
+																																												    }*/
 																																													
 																																													const checksActiva = document.getElementsByName("checksActiva");
 																																												    let activa_checkbox = "";
@@ -851,7 +853,7 @@ function modificarTiposCampanias(){
 																																												        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
 																																												        d_monto_minimo: parseFloat(document.getElementById("MontoMinimo").value),
 																																												        d_monto_maximo: parseFloat(document.getElementById("MontoMaximo").value),
-																																												        i_mora_maxima: parseInt(document.getElementById("MoraMaxima").value),
+																																												        //i_dias_mora: parseInt(document.getElementById("MoraMaxima").value),
 																																												        d_porc_cubierto_capital: parseFloat(document.getElementById("PorceCubiertoCap").value),
 																																												        i_dias_gracia: parseInt(document.getElementById("DiasGracia").value),
 																																												        i_dias_mora: parseInt(document.getElementById("DiasMora").value),
@@ -865,8 +867,8 @@ function modificarTiposCampanias(){
 																																												        vc_productos: productosSelect,
 																																												        i_prod_credito_id_oferta: parseInt(document.getElementById("prodCredito").value),
 																																												        d_porc_inc_oferta: parseFloat(document.getElementById("PorceIncremento").value),
-																																												        vc_es_renovacion_oferta:vc_es_renovacion_oferta_checkbox,
-																																												        i_vigencia_oferta: parseInt(document.getElementById("VigenciaCampaniaOferta").value),
+																																												        
+																																												        //i_vigencia_oferta: parseInt(document.getElementById("VigenciaCampaniaOferta").value),
 																																												        d_tasa_ordinaria_oferta: parseInt(document.getElementById("TasaOrdinaria").value),
 																																												        i_activa_oferta: parseInt(activa_checkbox),
 																																												        d_monto_maximo_oferta: parseFloat(document.getElementById("MontoMaximoOferta").value),
@@ -970,16 +972,16 @@ function modificarTiposCampanias(){
 																																						}
 																																						
 																																						
-																																					}
-																																				}
+																																					//}
+																																				//}
 																																				//aqui termina
-																																			}else{
+																																			/*}else{
 																																				swal({
 																																					title: "",
 																																					text: mensajeError,
 																																					icon: "warning",
 																																				});
-																																			}
+																																			}*/
 																																			
 																																		}
 																																	}
@@ -1057,14 +1059,14 @@ function modificarTiposCampanias(){
 															icon: "warning",
 														});
 													}
-												}
-											}else {
+												//}
+											/*}else {
 												swal({
 													title: "",
 													text: mensajeError,
 													icon: "warning",
 												});
-											}
+											}*/
 										}
 									}else{
 										swal({

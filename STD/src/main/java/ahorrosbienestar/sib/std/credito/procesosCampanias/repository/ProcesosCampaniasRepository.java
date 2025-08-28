@@ -35,4 +35,12 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		    @Param("tipos") List<Integer> tipos
 		);*/
 	
+	@Query(value = "SELECT COUNT(*) " +
+            "FROM SIB.TBL_PROCESO_CAMPANIA " +
+            "WHERE I_ID_ESTATUS_CAMPANIA = 1 " +
+            "AND I_BANDERA_EXTRACCION = 1 " +
+            "AND I_ESTATUS_REG = 1",
+    nativeQuery = true)
+	int contarProcesosExtraccion();
+	
 }

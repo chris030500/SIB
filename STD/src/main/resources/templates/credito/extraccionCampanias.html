@@ -33,6 +33,14 @@
 								<div id="divTodos" class="container">
 									<div class="row">
 						            	<div class="col-md-6">
+											<input type="hidden" class="form-control" id="idUser"
+												th:value="${idUsuario}" readonly>
+											<input type="hidden" class="form-control" id="idFecha"
+												th:value="${idFecha}" readonly>
+											<input type="hidden" class="form-control" id="configIdCron"
+												th:value="${configIdCron}" readonly>
+											<input type="hidden" class="form-control" id="configIdBandera"
+												th:value="${configIdBandera}" readonly>
 							                <input type="hidden" class="form-control" id="idUser" th:value="${idUsuario}" readonly>
 							                <label for="Campania" class="form-label">Campaña:</label>
 											<select class="form-control" id="Campania">
@@ -65,19 +73,19 @@
 									
 									<div class="row mt-4 g-2">
 									    <div class="col">
-									        <button type="button" class="btn btn-primary w-100" onclick="btnExtraer()">Buscar</button>
+									        <button type="button" class="btn btn-primary w-100" onclick="btnExtraerFn()" disabled id="btnExtraer">Extraer</button>
 									    </div>
 									    <div class="col">
-									        <button type="button" class="btn btn-primary w-100" onclick="btnGenerarArchivoBuro()">Generar Archivo Buró</button>
+									        <button type="button" class="btn btn-primary w-100" onclick="btnGenerarArchivoBuro()" disabled id="btnGenerar">Generar Archivo Buró</button>
 									    </div>
 									    <div class="col">
-									        <button type="button" class="btn btn-primary w-100" onclick="btnCargarRespuestaBuro()">Cargar Respuesta Buró</button>
+									        <button type="button" class="btn btn-primary w-100" onclick="btnCargarRespuestaBuro()" disabled id="btnCargar">Cargar Respuesta Buró</button>
 									    </div>
 									    <div class="col">
-									        <button type="button" class="btn btn-primary w-100" onclick="btnDepuracionBuro()">Depuración Buró</button>
+									        <button type="button" class="btn btn-primary w-100" onclick="btnDepuracionBuro()" disabled id="btnDepuracion">Depuración Buró</button>
 									    </div>
 									    <div class="col">
-									        <button type="button" class="btn btn-secondary w-100" onclick="btnCancelar()">Cancelar</button>
+									        <button type="button" class="btn btn-primary w-100" onclick="btnCancelar()" disabled id="btnCancelar">Cancelar</button>
 									    </div>
 									</div>
 									

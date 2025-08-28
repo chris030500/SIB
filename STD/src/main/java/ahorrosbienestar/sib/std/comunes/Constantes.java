@@ -208,6 +208,7 @@ public class Constantes {
 	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
 	public static final String CAMPANIAS_PROCESOS = "credito/procesosCampanias";
 	public static final String CAMPANIAS_EXTRACCION = "credito/extraccionCampanias";
+	public static final String CAMPANIAS_EXCLUSIONES = "credito/exclusiones";
 	
 	
 	//nombres reportes Crédito

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -21,6 +22,10 @@ public class ProcesosCampaniasService {
     public List<ProcesosCampaniasModel> buscarCampanias(LocalDate inicio, LocalDate fin, String tipoCampania) {
         return procesosCampaniasRepository.buscarPorFiltros(inicio, fin, tipoCampania);
     }
+    
+    public ProcesosCampaniasModel save(ProcesosCampaniasModel model) {
+		return procesosCampaniasRepository.save(model);
+	}
 	
 	/*public List<ProcesosCampaniasModel> buscarCampanias(LocalDate inicio, LocalDate fin, List<Integer> tipoCampania) {
 	    return procesosCampaniasRepository.buscarPorFiltros(inicio, fin, tipoCampania);

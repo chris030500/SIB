@@ -1,22 +1,34 @@
 package ahorrosbienestar.sib.std.credito.extraccioncampanias.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.service.EstatusCampaniasService;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.service.ProcesosCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampaniasService;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
@@ -30,7 +42,9 @@ public class ExtraccionCampaniasController {
 
 private static final Logger logger = Logger.getLogger(ExtraccionCampaniasController.class);
 	
-	
+	private static final String nomPropiedad = "cronCampanias";
+	private static final String nomPropiedadBandera = "extraccionCampanias";
+
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
@@ -45,6 +59,21 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@Autowired
 	private EstatusCampaniasService estatusCampaniasService;
+	
+	@Autowired
+    private ProcesosCampaniasRepository procesosCampaniasRepository;
+	
+	@Autowired
+	private ProcesosCampaniasService procesosCampaniasService;
+	
+	@Autowired
+	private ConfiguracionService configiracionService;
+	
+	@Autowired
+	private HisTiposCampaniasService serviceHis;
+	
+	@Autowired
+	ConfigService configService;
 
 	
 	List<Usuario> usuario = null;
@@ -67,6 +96,15 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 				//System.out.print("idUsuario:" + idUsuario);
 				model.addAttribute("idUsuario", idUsuario);
 				////
+				// Obtener la fecha actual sin tiempo
+		        LocalDate fechaActual = LocalDate.now();
+		        model.addAttribute("idFecha", fechaActual);
+		        
+		        Configuracion configuracion = configService.valorPropiedad(nomPropiedad);
+		        model.addAttribute("configIdCron", configuracion.getPk_id_configuracion());
+		        
+		        Configuracion configuracionBandera = configService.valorPropiedad(nomPropiedadBandera);
+		        model.addAttribute("configIdBandera", configuracionBandera.getPk_id_configuracion());
 				
 				rutaDireccion = Constantes.CAMPANIAS_EXTRACCION;
 			} else {
@@ -122,6 +160,82 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
      }
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
+    }
+	
+	//alta de proceso para extracción
+	/*@PostMapping("/api/crearExtraccion")
+	public ResponseEntity<String> crear(@RequestBody ProcesosCampaniasModel procesos) {
+	    try {
+	        
+	    	if(procesosCampaniasService.save(procesos) !=null) {
+				return ResponseEntity.ok("Proceso guardadoa correctamente");
+			}else {
+				return ResponseEntity.ok("Error al guardar proceso");
+			}
+	    	
+	        
+	    } catch (Exception e) {
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear proceso: " + e.getMessage());
+	    }
+	}*/
+	@PostMapping("/api/crearExt")
+    public ResponseEntity<String> crear(@RequestBody ProcesosCampaniasModel procesos) {
+		
+        try {
+            if (procesosCampaniasService.save(procesos) != null) {
+                return ResponseEntity.ok("Proceso guardado correctamente");
+            } else {
+            	logger.error("Error al guardar");
+                return ResponseEntity.ok("Error al guardar proceso");
+                
+            }
+        } catch (Exception e) {
+        	logger.error("Error al crear" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error al crear proceso: " + e.getMessage());
+        }
+    }
+	
+	@PostMapping("/api/actualizarParamExt")
+	
+	public ResponseEntity<String> actualizar(@RequestBody Configuracion paramtero) {
+	    try {
+	        boolean actualizado = configiracionService.actualizarConfiguracion(paramtero);
+	        if (actualizado) {
+	            return ResponseEntity.ok("Actualizado correctamente");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parametro cron no encontrada o sin cambios");
+	        }
+	    } catch (Exception e) {
+	        // Log the error here to get more information about what went wrong
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar el parametro: " + e.getMessage());
+	    }
+	}
+	
+	@PostMapping("/api/crearHisExt")
+	public ResponseEntity<String> crearHis(@RequestBody HisTiposCampaniasModel campania) {
+	    try {
+	        boolean creada = serviceHis.crearHisCampania(campania);
+	        if (creada) {
+	            return ResponseEntity.ok("Campaña creada correctamente");
+	        } else {
+	        	
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo crear el historico del proceso");
+	        }
+	    } catch (Exception e) {
+	    	
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear el historico del proceso: " + e.getMessage());
+	    }
+	}
+	
+	@GetMapping("/api/countExtraccion")
+    @ResponseBody
+    public int contarProcesosExtraccion() {
+        return procesosCampaniasRepository.contarProcesosExtraccion();
     }
     
     public int validarAcceso(String rutaController) {

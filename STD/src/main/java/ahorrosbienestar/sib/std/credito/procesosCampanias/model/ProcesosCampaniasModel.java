@@ -28,9 +28,12 @@ public class ProcesosCampaniasModel {
 	@Column(name = "PK_ID_PROCESO_CAMPANIA")
 	private Integer pk_id_proceso_campania;
 	
-	@ManyToOne
-	@JoinColumn(name = "I_ID_TIPO_CAMPANIA")
-	private TiposCampaniasModel tipoCampania;
+	//@ManyToOne
+	//@JoinColumn(name = "I_ID_TIPO_CAMPANIA")
+	//private TiposCampaniasModel i_id_tipo_campania;
+	
+	@Column(name = "I_ID_TIPO_CAMPANIA")
+	private Integer i_id_tipo_campania;
  
 	@Column(name = "DT_FECHA_EXTRACCION")
 	private LocalDate dt_fecha_extraccion;
@@ -50,24 +53,22 @@ public class ProcesosCampaniasModel {
 	@Column(name = "I_ESTATUS_REG")
 	private Integer i_estatus_reg;
 	
-	@ManyToOne
-	@JoinColumn(name = "I_ID_ESTATUS_CAMPANIA")
-	private EstatusCampaniasModel estatusCampania;
+	//@ManyToOne
+	//@JoinColumn(name = "I_ID_ESTATUS_CAMPANIA")
+	//private EstatusCampaniasModel i_id_estatus_campania;
+	
+	@Column(name = "I_ID_ESTATUS_CAMPANIA")
+	private Integer i_id_estatus_campania;
 	
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
 	
-	@OneToOne
+	/*@OneToOne
 	@JoinColumn(name = "I_USER_REG")
-	private Usuario i_user_reg;
-
-	public TiposCampaniasModel getTipoCampania() {
-		return tipoCampania;
-	}
-
-	public void setTipoCampania(TiposCampaniasModel tipoCampania) {
-		this.tipoCampania = tipoCampania;
-	}
+	private Usuario i_user_reg;*/
+	
+	@Column(name = "I_USER_REG")
+	private Integer i_user_reg;
 
 	public Integer getPk_id_proceso_campania() {
 		return pk_id_proceso_campania;
@@ -87,6 +88,24 @@ public class ProcesosCampaniasModel {
 
 	public LocalDate getDt_fecha_extraccion() {
 		return dt_fecha_extraccion;
+	}
+
+	
+
+	public Integer getI_id_tipo_campania() {
+		return i_id_tipo_campania;
+	}
+
+	public void setI_id_tipo_campania(Integer i_id_tipo_campania) {
+		this.i_id_tipo_campania = i_id_tipo_campania;
+	}
+
+	public Integer getI_id_estatus_campania() {
+		return i_id_estatus_campania;
+	}
+
+	public void setI_id_estatus_campania(Integer i_id_estatus_campania) {
+		this.i_id_estatus_campania = i_id_estatus_campania;
 	}
 
 	public void setDt_fecha_extraccion(LocalDate dt_fecha_extraccion) {
@@ -133,14 +152,6 @@ public class ProcesosCampaniasModel {
 		this.i_estatus_reg = i_estatus_reg;
 	}
 
-	public EstatusCampaniasModel getEstatusCampania() {
-		return estatusCampania;
-	}
-
-	public void setEstatusCampania(EstatusCampaniasModel estatusCampania) {
-		this.estatusCampania = estatusCampania;
-	}
-
 	public LocalDate getDt_fecha_registro() {
 		return dt_fecha_registro;
 	}
@@ -149,11 +160,11 @@ public class ProcesosCampaniasModel {
 		this.dt_fecha_registro = dt_fecha_registro;
 	}
 
-	public Usuario getI_user_reg() {
+	public Integer getI_user_reg() {
 		return i_user_reg;
 	}
 
-	public void setI_user_reg(Usuario i_user_reg) {
+	public void setI_user_reg(Integer i_user_reg) {
 		this.i_user_reg = i_user_reg;
 	}
 
