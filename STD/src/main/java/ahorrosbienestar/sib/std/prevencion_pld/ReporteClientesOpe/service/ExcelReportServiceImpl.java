@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
+/*package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller.RptReporteClientesOpeController;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.dto.ClienteRowDTO;
@@ -27,7 +27,7 @@ public class ExcelReportServiceImpl implements ExcelReportService {
 
 	private static final Logger logger = Logger.getLogger(ExcelReportServiceImpl.class);
     private final ReporteClientesOpeRepository repo;
-    private static final int BATCH_SIZE = 5000;
+    private static final int BATCH_SIZE = 2500;
 
     @Autowired
     public ExcelReportServiceImpl(ReporteClientesOpeRepository repo) {
@@ -179,4 +179,4 @@ public class ExcelReportServiceImpl implements ExcelReportService {
     private double d(BigDecimal b) { return b == null ? 0d : b.doubleValue(); }
     private long n(Long v) { return v == null ? 0L : v; }
     private int n(Integer v) { return v == null ? 0 : v; }
-}
+}*/

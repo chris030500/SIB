@@ -171,74 +171,51 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
-
- 
- 
-    @PostMapping("/generarRptReporteClientesOpeController")
-    public void generarReporteClientesOperaciones(
-            @RequestParam("fechaInicio") String fechaInicio,
-            @RequestParam("fechaFin") String fechaFin,
-            HttpServletResponse response) {
-
-        try {
-            LocalDate ini = LocalDate.parse(fechaInicio); // yyyy-MM-dd
-            LocalDate fin = LocalDate.parse(fechaFin).plusDays(1); // 🔹 incluir todo el día fin
-
-            String filename = "Reporte_Clientes_Operaciones_" + fechaInicio + "_a_" + fechaFin + ".xlsx";
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-
-            logger.info(">>> Iniciando generación del Excel: {} a {}");
-
-            try (ServletOutputStream out = response.getOutputStream()) {
-                excelReportService.generarExcelClientesYOperaciones(ini, fin, out);
-                out.flush();
-                out.close(); // 🔹 importante en Linux
-            }
-
-            logger.info(">>> Excel generado y enviado correctamente: {}");
-
-        } catch (Exception e) {
-            logger.error("❌ Error al generar el reporte", e);
-            throw new RuntimeException("Error al generar el reporte", e);
-        }
-    }
-
-
-    @GetMapping("/download")
-    public void download(@RequestParam("fechaInicio") String inicio,
-                         @RequestParam("fechaFin") String fin,
-                         HttpServletResponse response) throws IOException {
-
-        logger.info("=== INICIO download ===");
-        logger.info("Parámetros recibidos -> inicio: {}, fin: {}");
-
-        // Convertir los parámetros a LocalDate
-        LocalDate ini = LocalDate.parse(inicio); // formato: yyyy-MM-dd
-        LocalDate fini = LocalDate.parse(fin);
-
-        logger.info("Fechas convertidas -> ini: {}, fin: {}");
-
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=Reporte_Clientes_Operaciones.xlsx");
-        logger.info("Cabeceras HTTP configuradas correctamente");
-
-        try (ServletOutputStream out = response.getOutputStream()) {
-            logger.info("OutputStream obtenido correctamente en download()");
-            excelReportService.generarExcelClientesYOperaciones(ini, fini, out);
-            logger.info("Método excelReportService.generarExcelClientesYOperaciones ejecutado con éxito en download()");
-        } catch (Exception e) {
-            logger.error("❌ ERROR en download()", e);
-            throw e;
-        }
-
-        logger.info("=== FIN download ===");
-    }
-
-
-
-
     
+    @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
+                                                @RequestParam("fechaFin") String fechaFin) {
+ 
+        List<String> respuesta = new ArrayList<>();
+ 
+        try {
+            
+            
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=?FechaInicio="+fechaInicio+"~FechaFin="+fechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OP";
+                    
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+    
+    @RequestMapping(value = { "/generarRptOperacionesAuditoria" }, method = RequestMethod.POST)
+    public ResponseEntity<List<String>> reporteOperacionesAuditoria(@RequestParam("fechaInicio") String fechaInicio,
+                                                         @RequestParam("fechaFin") String fechaFin) {
+ 
+        List<String> respuesta = new ArrayList<>();
+ 
+        try {
+            // Buscar el reporte en base a la constante
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_OPERACIONES_AUDITORIA);
+            
+            // Armar la URL
+            String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)+datosReporte.getPk_id_reporte()+ "&parametros=?FechaInicio="+fechaInicio+"~FechaFin="+fechaFin+"&tipoDocumento="+datosReporte.getVc_extension()+"&identificadorDoc=OP";
+            
+            respuesta.add(reporteURL);
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            logger.error("Error al generar reporte operaciones auditoría: " + e.getMessage(), e);
+            respuesta.add(e.getMessage());
+            return ResponseEntity.ok(respuesta);
+        }
+    }
+
     @RequestMapping(value = { "/generarRptHistoricoClientes" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptHistoricoClientes(@RequestParam("id") Long id) {
         List<String> respuesta = new ArrayList<>();
