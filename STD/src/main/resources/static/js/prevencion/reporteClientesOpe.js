@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
  
 // Evento click del botón para generar el reporte
-btnProcesar.addEventListener("click", async (event) => {
+/*btnProcesar.addEventListener("click", async (event) => {
   event.preventDefault();
 
   const inicio = inputInicio.value;
@@ -120,6 +120,63 @@ btnProcesar.addEventListener("click", async (event) => {
     btnProcesar.textContent = "Generar Reporte";
   }
 });
+});*/
+
+ btnProcesar.addEventListener("click", async (event) => {
+    event.preventDefault();
+ 
+    const inicio = inputInicio.value;
+    const fin = inputFin.value;
+ 
+    if (fechasInvalidas(inicio, fin)) return;
+ 
+    try {
+      const res = await fetch("generarRptReporteClientesOpeController", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
+      });
+ 
+      if (!res.ok) throw new Error("Error generando el reporte.");
+ 
+      const respuesta = await res.json();
+      url = respuesta[0];
+      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
+      window.focus();
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
+  });
+ 
+  // Evento click del botón para generar proceso
+  btnProcesarProceso.addEventListener("click", async (event) => {
+    event.preventDefault();
+ 
+    const inicio = inputInicio.value;
+    const fin = inputFin.value;
+ 
+ console.log(inicio, fin);
+    if (fechasInvalidas(inicio, fin)) return;
+ 
+    try {
+      const res = await fetch("generarRptOperacionesAuditoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin })
+      });
+ 
+      if (!res.ok) throw new Error("Error generando el reporte.");
+ 
+      const respuesta = await res.json();
+      url = respuesta[0];
+      window.open(window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]);
+      window.focus();
+    } catch (error) {
+      console.error("Error al generar el reporte:", error);
+      alert("Se produjo un error al generar el reporte.");
+    }
+  });
 });
  
 // Evento para cuando se selecciona "No"

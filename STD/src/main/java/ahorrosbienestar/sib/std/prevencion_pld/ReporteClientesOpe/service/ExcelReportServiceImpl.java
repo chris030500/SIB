@@ -27,7 +27,7 @@ public class ExcelReportServiceImpl implements ExcelReportService {
 
 	private static final Logger logger = Logger.getLogger(ExcelReportServiceImpl.class);
     private final ReporteClientesOpeRepository repo;
-    private static final int BATCH_SIZE = 5000;
+    private static final int BATCH_SIZE = 2500;
 
     @Autowired
     public ExcelReportServiceImpl(ReporteClientesOpeRepository repo) {
