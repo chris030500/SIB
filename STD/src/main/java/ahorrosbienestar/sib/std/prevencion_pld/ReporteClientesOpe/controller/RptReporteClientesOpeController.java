@@ -89,9 +89,6 @@ public class RptReporteClientesOpeController {
     @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
     
-    @Autowired
-    private ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ExcelReportService excelReportService;
- 
     
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
