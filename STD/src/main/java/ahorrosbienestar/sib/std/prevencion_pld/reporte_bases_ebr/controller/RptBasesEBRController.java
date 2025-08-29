@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.controller;
 
 import java.io.IOException;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
@@ -40,6 +43,9 @@ public class RptBasesEBRController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
 	private IReporteRepository iReporteRepository;
 	
 	@Autowired
@@ -51,10 +57,24 @@ public class RptBasesEBRController {
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
-			
+			List<Catalogo> periodos = iCatalogoRepository.generarOpciones(Constantes.PLD_CAT_PERIODO_EJECUCION_EBR);
 			String rutaDireccion;
+			int anioActual = Year.now().getValue();
+			
+			periodos.forEach(p -> {
+				String valor = p.getV_valor();
+				
+				if (valor.contains("Semestre")) {
+					valor = valor.replace(")", " " + anioActual + ")");
+					p.setV_valor(valor);
+				} else if (valor.equalsIgnoreCase("Año actual")) {
+					p.setV_valor("Año " + anioActual);
+				}
+			});
 					
 			if (validarAcceso() == 1) {
+				model.addAttribute("cat_periodo_ejecucion_ebr", periodos);
+				
 				rutaDireccion = Constantes.PLD_REPORTE_BASES_EBR;
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
