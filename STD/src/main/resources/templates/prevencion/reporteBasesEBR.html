@@ -99,7 +99,7 @@
 
                     <label class="col-form-label">Periodo de generación de información EBR</label>
                     <div class="mb-3 col-md-3 gap-3 align-items-center mt-3">
-                        <select class="form-select w-auto" aria-label="Default select example">
+                        <select id="periodoSelect" class="form-select w-auto" aria-label="Default select example">
                             <option value="0" selected>Seleccionar periodo</option>
                             <option th:each="listaPeriodo : ${cat_periodo_ejecucion_ebr}" 
                                     th:value="${listaPeriodo.i_opcion}" 

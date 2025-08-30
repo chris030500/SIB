@@ -7,12 +7,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,8 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -54,6 +58,9 @@ public class RptBasesEbrController {
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
 	
+	@Autowired
+	private ProcesoBasesEbrService procesoBasesEbrService;
+	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
@@ -84,6 +91,36 @@ public class RptBasesEbrController {
 			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
 			return null;
 		}
+	}
+	
+	@PostMapping("/ejecutarProcesoBasesEbr")
+	public ResponseEntity<?> ejecutarProcesoBasesEbr(@RequestParam int periodo) {
+		// Obtener usuario autenticado
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		if (!(principal instanceof UserDetails)) {
+            logger.error("El usuario no está autenticado.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("El usuario no está autenticado.");
+		}
+		
+		UserDetails userDetails = (UserDetails) principal;
+		
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+		
+	    try {
+	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(periodo, idUsuario);
+	        return ResponseEntity.ok(proceso);
+	    } catch (IllegalArgumentException e) {
+	        // error de validación
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    } catch (RuntimeException e) {
+	        // error inesperado en la BD
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("Ocurrió un error al registrar el proceso: " + e.getMessage());
+	    }
 	}
 	
 	@RequestMapping(value = { "/generarBasesEBR" }, method = RequestMethod.POST)

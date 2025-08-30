@@ -4,6 +4,23 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+function procesarBasesEBR() {
+	
+	const selectValue = document.getElementById('periodoSelect').value;
+	console.log("Periodo seleccionado:", selectValue);
+	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?periodo=${selectValue}`;
+	
+	fetch(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ periodo: selectValue })
+	})
+		.then(response => response.json)
+		.then(data => console.log("Insertado: " + data))
+		.catch(err => console.error(err));
+	
+}
+
 function generarBasesEBR(tipoReporte) {
 	let urlCompleta = '';
 	
