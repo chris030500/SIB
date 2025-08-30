@@ -16,9 +16,53 @@ function procesarBasesEBR() {
 		body: JSON.stringify({ periodo: selectValue })
 	})
 		.then(response => response.json)
-		.then(data => console.log("Insertado: " + data))
-		.catch(err => console.error(err));
+		.then(data => {
+			swal({
+				title: "¡Éxito!",
+                text: "Se registró el proceso correctamente",
+                icon: "success",
+                timer: 2000,
+                buttons: false
+            });			
+		})
+		.catch(err => {
+			swal({
+				title: "¡Error!",
+				text: `Se ha generado un error ${err}, inténtelo más tarde`,
+				icon: "error"
+			});				
+		});
 	
+}
+
+function ejecutarVoBoBasesEBR() {
+	const url = `${getAbsolutePath()}voBoBasesEbr`;
+	
+	fetch(url, {
+		method: 'POST'
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Error en la petición: ' + response.status);
+		}
+		return response.text();
+	})
+	.then(data => {
+		swal({
+			title: "¡Visto Bueno exitoso!",
+			text: data,
+			icon: "success",
+			timer: 2000,
+			buttons: false
+		});
+	})
+	.catch(err => {
+		swal({
+			title: "¡Error!",
+			text: `Se ha generado un error ${err}, inténtelo más tarde`,
+			icon: "error"
+		});		
+	});
 }
 
 function generarBasesEBR(tipoReporte) {
@@ -50,9 +94,9 @@ function peticionPost(urlServicio) {
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
-				title: "Error, ",
+				title: "¡Error!",
 				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
+				icon: "error",
 			});
 		}
 	});

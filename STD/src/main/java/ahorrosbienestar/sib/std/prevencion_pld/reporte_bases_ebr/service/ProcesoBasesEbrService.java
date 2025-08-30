@@ -24,8 +24,8 @@ public class ProcesoBasesEbrService {
 		proceso.setI_estatus_vobo(null);
 		proceso.setI_usuario_vobo(null);
 		proceso.setDt_fecha_vobo(null);
-		return procesoEbrRepository.save(proceso);
 		
+		return procesoEbrRepository.save(proceso);
 	}
 
 }

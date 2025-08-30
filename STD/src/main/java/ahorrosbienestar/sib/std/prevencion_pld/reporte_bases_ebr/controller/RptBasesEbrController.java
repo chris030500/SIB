@@ -27,6 +27,7 @@ import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.VoboBasesEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -60,6 +61,9 @@ public class RptBasesEbrController {
 	
 	@Autowired
 	private ProcesoBasesEbrService procesoBasesEbrService;
+	
+	@Autowired
+	private VoboBasesEbrService voboBasesEbrService;
 	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -95,20 +99,7 @@ public class RptBasesEbrController {
 	
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<?> ejecutarProcesoBasesEbr(@RequestParam int periodo) {
-		// Obtener usuario autenticado
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		if (!(principal instanceof UserDetails)) {
-            logger.error("El usuario no está autenticado.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("El usuario no está autenticado.");
-		}
-		
-		UserDetails userDetails = (UserDetails) principal;
-		
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+		Integer idUsuario = obtenerIdUsuario();
 		
 	    try {
 	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(periodo, idUsuario);
@@ -122,6 +113,14 @@ public class RptBasesEbrController {
 	                             .body("Ocurrió un error al registrar el proceso: " + e.getMessage());
 	    }
 	}
+	
+    @PostMapping("/voBoBasesEbr")
+    public ResponseEntity<String> ejecutarVistoBueno() {
+    	Integer idUsuario = obtenerIdUsuario();
+    	
+        voboBasesEbrService.ejecutarVoBo(idUsuario);
+        return ResponseEntity.ok("Visto bueno ejecutado correctamente!");
+    }
 	
 	@RequestMapping(value = { "/generarBasesEBR" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteBasesEBR(@RequestParam("tipoReporte") Integer tipoReporte) {
@@ -163,6 +162,23 @@ public class RptBasesEbrController {
 			return ResponseEntity.ok(respuesta);
 		}
 
+	}
+	
+	public int obtenerIdUsuario() {
+		// Obtener usuario autenticado
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		if (!(principal instanceof UserDetails)) {
+            logger.error("El usuario no está autenticado.");
+		}
+		
+		UserDetails userDetails = (UserDetails) principal;
+		
+		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+		
+		Integer idUsuario = usuario.get(0).getPk_id_usuario();
+		
+		return idUsuario;
 	}
 	
 	public int validarAcceso() {
