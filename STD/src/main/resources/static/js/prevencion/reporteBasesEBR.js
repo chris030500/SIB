@@ -1,3 +1,18 @@
+document.addEventListener("DOMContentLoaded", function () {
+	const radios = document.querySelectorAll('input[name="info_correcta"]');
+	radios.forEach(radio => {
+		radio.addEventListener("change", function() {
+			let voboDiv = document.getElementById('voboDiv');
+		
+			if (this.value === "si") {
+				voboDiv.style.display = "flex";
+			} else {
+				voboDiv.style.display = "none";
+			}
+		})
+	});
+});
+
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -32,7 +47,6 @@ function procesarBasesEBR() {
 				icon: "error"
 			});				
 		});
-	
 }
 
 function ejecutarVoBoBasesEBR() {
