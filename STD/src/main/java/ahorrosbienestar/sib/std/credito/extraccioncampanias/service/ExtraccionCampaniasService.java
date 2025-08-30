@@ -1,5 +1,11 @@
 package ahorrosbienestar.sib.std.credito.extraccioncampanias.service;
 
-public class ExtraccionCampaniasService {
+import org.springframework.stereotype.Service;
 
+
+
+@Service
+public class ExtraccionCampaniasService {
+	
+	
 }

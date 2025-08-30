@@ -17,7 +17,7 @@ var newUrlBase = urlPrincipal.replace("/credito", "");
 let idCliente = null;
 
 function ocultarMostrar(btn) {
-	console.log(newUrlBase);
+	//console.log(newUrlBase);
 	const tabs = document.querySelectorAll('#pant-tabs > div[id$="-tab1"]');
 	// @ts-ignore
 	tabs.forEach(tab => tab.style.display = 'none'); // Oculta todos
@@ -35,7 +35,7 @@ function ocultarMostrar(btn) {
 }
 
 function cargarArchivoExcel() {
-	const input = document.getElementById('inputArchivo');
+	/*const input = document.getElementById('inputArchivo');
 	// @ts-ignore
 	const archivo = input.files[0];
 
@@ -63,7 +63,110 @@ function cargarArchivoExcel() {
 		.catch(error => {
 			console.error("Error:", error);
 			alert("Ocurrió un error al cargar el archivo.");
+		});*/
+		//////////////
+	const input = document.getElementById('inputArchivo');
+	// @ts-ignore
+	const archivo = input.files[0];
+
+	if (!archivo) {
+		alert("Por favor, selecciona un archivo.");
+		return;
+	}
+
+	const reader = new FileReader();
+	reader.onload = function (e) {
+		// @ts-ignore
+		const data = new Uint8Array(e.target.result);
+		// @ts-ignore
+		const workbook = XLSX.read(data, { type: "array" });
+
+		// Tomamos la primera hoja
+		const primeraHoja = workbook.SheetNames[0];
+		const hoja = workbook.Sheets[primeraHoja];
+
+		// Convertimos a JSON con todas las filas
+		// @ts-ignore
+		const datos = XLSX.utils.sheet_to_json(hoja, { header: 1 }); 
+		// `header: 1` → genera un array de arrays (sin nombres de columnas)
+
+		// Primera fila = encabezados
+		const primeraFila = datos[0];
+
+		// Encabezados esperados
+		const encabezadosEsperados = [
+			"d_codigo",
+			"d_asenta",
+			"d_tipo_asenta",
+			"D_mnpio",
+			"d_estado",
+			"d_ciudad",
+			"d_CP",
+			"c_estado",
+			"Cobertura"
+		];
+
+		// Validación encabezados
+		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
+
+		if (!esValidoEncabezado) {
+			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
+				+ encabezadosEsperados.join(", ") 
+				+ "\n\nEncontrados:\n" 
+				+ primeraFila.join(", "));
+			return; // Detenemos aquí
+		}
+
+		// Validar que haya al menos una fila con datos después del encabezado
+		const filasDatos = datos.slice(1); // todas menos la primera
+		const tieneInformacion = filasDatos.some(fila => fila.some(celda => celda !== null && celda !== "" && celda !== undefined));
+
+		if (!tieneInformacion) {
+			alert("El archivo no contiene información en las filas después del encabezado.");
+			return; //Detenemos aquí
+		}
+
+		// Si pasa todas las validaciones, enviamos al backend
+		const formData = new FormData();
+	formData.append("archivo", archivo);
+	
+	// Mostrar pantalla de carga
+    // @ts-ignore
+    Swal.fire({
+        title: "Cargando...",
+        text: "Por favor espera mientras se procesa el archivo",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            // @ts-ignore
+            Swal.showLoading();
+        }
+    });
+
+
+	fetch(newUrlBase + "credito/cargarMunicipios", {
+		method: "POST",
+		body: formData
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error("Error en la solicitud: " + response.statusText);
+			}
+			return response.text();
+		})
+		.then(data => {
+			 // @ts-ignore
+			 Swal.close(); // Cierra el loading
+			alert(data); // Mensaje del backend
+			listaMunicipiosExclusion();
+		})
+		.catch(error => {
+			console.error("Error:", error);
+			alert("Ocurrió un error al cargar el archivo.");
 		});
+	};
+	reader.readAsArrayBuffer(archivo);
+	
 }
 
 function listaMunicipiosExclusion() {

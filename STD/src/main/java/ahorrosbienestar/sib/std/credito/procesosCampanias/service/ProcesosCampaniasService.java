@@ -27,8 +27,8 @@ public class ProcesosCampaniasService {
 		return procesosCampaniasRepository.save(model);
 	}
 	
-	/*public List<ProcesosCampaniasModel> buscarCampanias(LocalDate inicio, LocalDate fin, List<Integer> tipoCampania) {
-	    return procesosCampaniasRepository.buscarPorFiltros(inicio, fin, tipoCampania);
-	}*/
+    public int contarProcesosExtraccionFin(int tipoCampania) {
+        return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania);
+    }
 	
 }

@@ -65,17 +65,42 @@ document.getElementById("Estatus").addEventListener("change", function() {
         //en desarrollo tiene una hora adelantada
         //hacer insert en procesos con los datos de la campaña, bandera = 1 y estatus = 1
     } 
+    if (valor === "1") { // Extraccion
+    	// @ts-ignore
+    	var tipoCampania = parseInt(document.getElementById("Campania").value);
+    	console.log("tipoCampania:",tipoCampania);
+    	fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania)
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error("Error al activar boton generar archivo buro");
+            }
+            return resp.json(); // porque el backend regresa un int
+        })
+        .then(count => {
+			console.log("Total procesos extracción:", count);
+			if(count > 0){
+				// @ts-ignore
+        		document.getElementById("btnGenerar").disabled = false;
+			}
+            
+            
+        })
+        .catch(err => {
+            console.error("Error al activar boton generar archivo buro: ", err);
+        });
+        
+    } 
     if (valor === "2") { // Generar Archivo Buró
         // @ts-ignore
-        document.getElementById("btnGenerar").disabled = false;
+        //document.getElementById("btnGenerar").disabled = false;
     } 
     if (valor === "3") { // Cargar Respuesta Buró
         // @ts-ignore
-        document.getElementById("btnCargar").disabled = false;
+        //document.getElementById("btnCargar").disabled = false;
     } 
     if (valor === "4") { // Depuración Buró
         // @ts-ignore
-        document.getElementById("btnDepuracion").disabled = false;
+        //document.getElementById("btnDepuracion").disabled = false;
     }
 });
 
@@ -267,6 +292,11 @@ function btnExtraerFn() {
 	        confirmButtonText: "Cerrar"
 	    });
 	});
+	
+}
+
+
+function btnGenerarArchivoBuro() {
 	
 }
 

@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
+import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
@@ -65,6 +67,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@Autowired
 	private ProcesosCampaniasService procesosCampaniasService;
+	
+	@Autowired
+	private ExtraccionCampaniasService extraccionCampaniasService;
 	
 	@Autowired
 	private ConfiguracionService configiracionService;
@@ -236,6 +241,13 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     @ResponseBody
     public int contarProcesosExtraccion() {
         return procesosCampaniasRepository.contarProcesosExtraccion();
+    }
+	
+	@GetMapping("/api/countExtraccionTerm")
+	@ResponseBody
+    public int contarProcesosExtraccionTerm(@RequestParam("tipoCampania") int tipoCampania) {
+		
+        return procesosCampaniasService.contarProcesosExtraccionFin(tipoCampania);
     }
     
     public int validarAcceso(String rutaController) {
