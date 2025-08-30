@@ -32,9 +32,9 @@ import lombok.AllArgsConstructor;
 @Controller
 @AllArgsConstructor
 @RequestMapping("prevencion")
-public class RptBasesEBRController {
+public class RptBasesEbrController {
 	
-	private static final Logger logger = Logger.getLogger(RptBasesEBRController.class);
+	private static final Logger logger = Logger.getLogger(RptBasesEbrController.class);
 	
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
