@@ -56,20 +56,11 @@ function procesarBasesEBR() {
 				const idProceso = data.pk_proceso_id;
 
 				const interval = setInterval(() => {
-					clearInterval(interval);
-
-					spinnerModal.hide();
-					swal({
-						title: "¡Proceso ejecutado!",
-						text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
-						icon: "success",
-						timer: 2000,
-						buttons: false
-					});
+					obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
 				}, 3000);
 			})
 			.catch(err => {
-				document.getElementById("spinner").style.display = "none";
+				spinnerModal.hide();
 				swal({
 					title: "¡Error!",
 					text: `Se ha generado un error ${err}, inténtelo más tarde`,
@@ -79,11 +70,7 @@ function procesarBasesEBR() {
 	}
 }
 
-/*function obtenerProcesoBasesEbr(idProceso, interval, modal) {
-	const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
-	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
-	const infoCorrectaDiv = document.getElementById('infoCorrectaDiv');
-	const msgBasesEbrDiv = document.getElementById('msgBasesEbrDiv');
+function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	
 	const url = `${getAbsolutePath()}obtenerProcesoBasesEbr?idProceso=${idProceso}`;
 	
@@ -95,11 +82,6 @@ function procesarBasesEBR() {
 				
 				modal.hide();
 				
-				msgBasesEbrDiv.style.display = "none";
-				dtBasesEbrDiv.style.display = "block";
-				rptBasesEbrDiv.style.display = "block";
-				infoCorrectaDiv.style.display = "block";
-				
 				swal({
 					title: "¡Proceso ejecutado!",
                 	text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
@@ -107,14 +89,10 @@ function procesarBasesEBR() {
                 	timer: 2000,
                 	buttons: false
             	});
-			} else {
-				rptBasesEbrDiv.style.display = "none";
-				dtBasesEbrDiv.style.display = "none";
-				infoCorrectaDiv.style.display = "none";
 			}
 		})
 		.catch(err => {`Error: ${err}`});
-}*/
+}
 
 function ejecutarVoBoBasesEBR() {
 	const url = `${getAbsolutePath()}voBoBasesEbr`;
