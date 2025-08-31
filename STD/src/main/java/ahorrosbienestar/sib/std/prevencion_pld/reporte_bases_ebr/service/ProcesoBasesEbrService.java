@@ -35,9 +35,9 @@ public class ProcesoBasesEbrService {
 		return procesoEbrRepository.save(proceso);
 	}
 	
-	public ProcesoBasesEbr obtenerLastProcesoBasesEbr(int idProceso) {
+	/*public ProcesoBasesEbr obtenerLastProcesoBasesEbr(int idProceso) {
 		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
 		
 		return proceso;
-	}
+	}*/
 }

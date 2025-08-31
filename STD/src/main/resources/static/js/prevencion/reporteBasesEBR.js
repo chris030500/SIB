@@ -56,7 +56,16 @@ function procesarBasesEBR() {
 				const idProceso = data.pk_proceso_id;
 
 				const interval = setInterval(() => {
-					obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
+					clearInterval(interval);
+
+					spinnerModal.hide();
+					swal({
+						title: "¡Proceso ejecutado!",
+						text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
+						icon: "success",
+						timer: 2000,
+						buttons: false
+					});
 				}, 3000);
 			})
 			.catch(err => {
@@ -70,7 +79,7 @@ function procesarBasesEBR() {
 	}
 }
 
-function obtenerProcesoBasesEbr(idProceso, interval, modal) {
+/*function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
 	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
 	const infoCorrectaDiv = document.getElementById('infoCorrectaDiv');
@@ -105,10 +114,16 @@ function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 			}
 		})
 		.catch(err => {`Error: ${err}`});
-}
+}*/
 
 function ejecutarVoBoBasesEBR() {
 	const url = `${getAbsolutePath()}voBoBasesEbr`;
+	
+	const voboModalEl = document.getElementById('voboModal');
+	const voboModal = bootstrap.Modal.getInstance(voboModalEl);
+	if (voboModal) {
+		voboModal.hide();
+	}
 	
 	fetch(url, {
 		method: 'POST'

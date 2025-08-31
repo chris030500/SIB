@@ -123,7 +123,7 @@
                 <div class="mb-4 p-3 border rounded bg-light">
 
                     <!-- Rango de fechas -->
-                    <div id="dtBasesEbrDiv" style="display: none;" class="mb-3">
+                    <div id="dtBasesEbrDiv" class="mb-3">
                         <label class="form-label">Rango de fechas para el reporte:</label>
                         <div class="d-flex flex-wrap gap-2 align-items-center">
                             <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
@@ -133,7 +133,7 @@
                     </div>
 
                     <!-- Botones de generación -->
-                    <div id="rptBasesEbrDiv" style="display: none;" class="mb-4">
+                    <div id="rptBasesEbrDiv" class="mb-4">
                         <label class="form-label fw-bold">Acciones disponibles:</label>
                         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="btn-group me-2" role="group">
@@ -152,7 +152,7 @@
                     </div>
 
                     <!-- Confirmación -->
-                    <div id="infoCorrectaDiv" style="display: none;" class="mb-3">
+                    <div id="infoCorrectaDiv" class="mb-3">
                         <label class="form-label">¿La información del reporte es correcta?</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si">
@@ -166,14 +166,10 @@
 
                     <!-- Visto bueno -->
                     <div id="voboDiv" style="display: none;" class="mb-3 gap-3 align-items-center">
-                        <button class="btn btn-success" id="btnVistoBueno" onclick="ejecutarVoBoBasesEBR()">Registrar Visto bueno</button>
-                        <span id="progresoTexto" class="text-muted"></span>
+                        <button type="button" class="btn btn-success" id="btnVistoBueno" data-bs-toggle="modal" data-bs-target="#voboModal">Registrar Visto bueno</button>
+                        <!-- <span id="progresoTexto" class="text-muted"></span> -->
                     </div>
-                    
-                    <!-- Alerta -->
-					<div id="msgBasesEbrDiv" class="alert alert-warning mt-3">
-						Debes procesar las Bases EBR para generar los reportes.
-					</div>
+
                 </div>
             </div>
             
@@ -204,23 +200,23 @@
             </div>
         </div>
 
-        <!-- MODAL CONFIRMACIÓN -->
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        <!-- Modal vobo -->
+        <div class="modal fade" id="voboModal" tabindex="-1" aria-labelledby="voboModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">Confirmar reporte</h5>
+                        <h5 class="modal-title" id="voboModalLabel">Confirmar reporte</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
                     <div class="modal-body">
-                        <p>¿Está seguro de que los datos del reporte son correctos?</p>
+                        <p>¿Está seguro de que los datos de las Bases EBR son correctos?</p>
                     </div>
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="confirmarReporte">Confirmar</button>
+                        <button type="button" class="btn btn-primary" id="voboReporte" onclick="ejecutarVoBoBasesEBR()">Confirmar</button>
                     </div>
                 </div>
             </div>

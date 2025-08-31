@@ -122,12 +122,12 @@ public class RptBasesEbrController {
         return ResponseEntity.ok("Visto bueno ejecutado correctamente!");
     }
     
-    @GetMapping("/obtenerProcesoBasesEbr")
+    /*@GetMapping("/obtenerProcesoBasesEbr")
     public ResponseEntity<?> obtenerPrecesoBasesEbr(@RequestParam int idProceso) {
     	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerLastProcesoBasesEbr(idProceso);
     	
     	return ResponseEntity.ok(proceso);
-    }
+    }*/
 	
 	@RequestMapping(value = { "/generarBasesEBR" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteBasesEBR(@RequestParam("tipoReporte") Integer tipoReporte) {
