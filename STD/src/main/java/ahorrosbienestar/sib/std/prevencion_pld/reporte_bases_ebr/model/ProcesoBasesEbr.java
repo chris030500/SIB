@@ -30,6 +30,12 @@ public class ProcesoBasesEbr {
 	@Column(name = "DT_FECHA_EJECUCION")
 	private LocalDateTime dt_fecha_ejecucion;
 	
+	@Column(name = "I_ESTATUS_EJECUCION")
+	private Boolean i_estatus_ejecucion;
+	
+	@Column(name = "VC_CRON")
+	private String vc_cron;
+	
 	@Column(name = "I_ESTATUS_VOBO")
 	private Boolean i_estatus_vobo;
 	
@@ -72,6 +78,22 @@ public class ProcesoBasesEbr {
 		this.dt_fecha_ejecucion = dt_fecha_ejecucion;
 	}
 
+	public Boolean getI_estatus_ejecucion() {
+		return i_estatus_ejecucion;
+	}
+
+	public void setI_estatus_ejecucion(Boolean i_estatus_ejecucion) {
+		this.i_estatus_ejecucion = i_estatus_ejecucion;
+	}
+
+	public String getVc_cron() {
+		return vc_cron;
+	}
+
+	public void setVc_cron(String vc_cron) {
+		this.vc_cron = vc_cron;
+	}
+
 	public Boolean getI_estatus_vobo() {
 		return i_estatus_vobo;
 	}
@@ -100,7 +122,7 @@ public class ProcesoBasesEbr {
 	public String toString() {
 		return "ProcesoBasesEbr [pk_proceso_id=" + pk_proceso_id + ", i_periodo_ejecucion=" + i_periodo_ejecucion
 				+ ", i_usuario_ejecuto=" + i_usuario_ejecuto + ", dt_fecha_ejecucion=" + dt_fecha_ejecucion
-				+ ", i_estatus_vobo=" + i_estatus_vobo + ", i_usuario_vobo=" + i_usuario_vobo + ", dt_fecha_vobo="
-				+ dt_fecha_vobo + "]";
+				+ ", i_estatus_ejecucion=" + i_estatus_ejecucion + ", vc_cron=" + vc_cron + ", i_estatus_vobo="
+				+ i_estatus_vobo + ", i_usuario_vobo=" + i_usuario_vobo + ", dt_fecha_vobo=" + dt_fecha_vobo + "]";
 	}
 }

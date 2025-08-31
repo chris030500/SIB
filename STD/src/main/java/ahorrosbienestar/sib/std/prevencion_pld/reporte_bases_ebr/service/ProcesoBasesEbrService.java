@@ -17,15 +17,27 @@ public class ProcesoBasesEbrService {
 	public ProcesoBasesEbr registrarProcesoBasesEbr(int periodo, int idUsuario) {
 		ProcesoBasesEbr proceso = new ProcesoBasesEbr();
 		LocalDateTime currentDateTime = LocalDateTime.now();
+		LocalDateTime currentTime = LocalDateTime.now();
+		LocalDateTime newTime = currentTime.plusMinutes(15);
+		int minute = newTime.getMinute();
+		int hour = newTime.getHour();
+		String cron = String.format("0 %d %d * * *", minute, hour);
 		
 		proceso.setI_periodo_ejecucion(periodo);
 		proceso.setI_usuario_ejecuto(idUsuario);
 		proceso.setDt_fecha_ejecucion(currentDateTime);
+		proceso.setI_estatus_ejecucion(true);
+		proceso.setVc_cron(cron);
 		proceso.setI_estatus_vobo(null);
 		proceso.setI_usuario_vobo(null);
 		proceso.setDt_fecha_vobo(null);
 		
 		return procesoEbrRepository.save(proceso);
 	}
-
+	
+	public ProcesoBasesEbr obtenerLastProcesoBasesEbr(int idProceso) {
+		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
+		
+		return proceso;
+	}
 }

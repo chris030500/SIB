@@ -7,5 +7,5 @@ import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBa
 
 @Repository
 public interface IProcesoBasesEbrRepository extends JpaRepository<ProcesoBasesEbr, Integer> {
-
+	
 }

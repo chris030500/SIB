@@ -8,6 +8,12 @@ document.addEventListener("DOMContentLoaded", function () {
 				voboDiv.style.display = "flex";
 			} else {
 				voboDiv.style.display = "none";
+				swal({
+                	text: "Intente procesar nuevamente las bases EBR",
+                	icon: "warning",
+                	timer: 2000,
+                	buttons: false
+            });	
 			}
 		})
 	});
@@ -23,30 +29,68 @@ function procesarBasesEBR() {
 	
 	const selectValue = document.getElementById('periodoSelect').value;
 	console.log("Periodo seleccionado:", selectValue);
-	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?periodo=${selectValue}`;
 	
-	fetch(url, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ periodo: selectValue })
-	})
-		.then(response => response.json)
-		.then(data => {
-			swal({
-				title: "¡Éxito!",
-                text: "Se registró el proceso correctamente",
-                icon: "success",
-                timer: 2000,
-                buttons: false
-            });			
-		})
-		.catch(err => {
-			swal({
-				title: "¡Error!",
-				text: `Se ha generado un error ${err}, inténtelo más tarde`,
-				icon: "error"
-			});				
+	if (Number(selectValue) === 0) {
+		swal({
+			title: "¡Error!",
+			text: "Selecciona una opción válida.",
+			icon: "warning"
 		});
+	} else {
+		const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?periodo=${selectValue}`;
+
+		// Mostrar el spinner
+		document.getElementById("spinner").style.display = "block";
+
+		fetch(url, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ periodo: selectValue })
+		})
+			.then(response => response.json())
+			.then(data => {
+				const idProceso = data.pk_proceso_id;
+
+				const interval = setInterval(() => {
+					obtenerProcesoBasesEbr(idProceso, interval);
+				}, 3000);
+			})
+			.catch(err => {
+				document.getElementById("spinner").style.display = "none";
+				swal({
+					title: "¡Error!",
+					text: `Se ha generado un error ${err}, inténtelo más tarde`,
+					icon: "error"
+				});
+			});
+	}
+}
+
+function obtenerProcesoBasesEbr(idProceso, interval) {
+	const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
+	const url = `${getAbsolutePath()}obtenerProcesoBasesEbr?idProceso=${idProceso}`;
+	
+	fetch(url)
+		.then(response => response.json())
+		.then(data => {
+			if (!data.i_estatus_ejecucion) {
+				clearInterval(interval);
+				
+				document.getElementById("spinner").style.display = "none";
+				rptBasesEbrDiv.style.display = "block";
+				
+				swal({
+					title: "¡Proceso ejecutado!",
+                	text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
+                	icon: "success",
+                	timer: 2000,
+                	buttons: false
+            	});
+			} else {
+				rptBasesEbrDiv.style.display = "none";
+			}
+		})
+		.catch(err => {`Error: ${err}`});
 }
 
 function ejecutarVoBoBasesEBR() {

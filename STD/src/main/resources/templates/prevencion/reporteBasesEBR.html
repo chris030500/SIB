@@ -115,6 +115,13 @@
                         </button>
                         <span class="text-muted">Procesar reporte de Bases EBR</span>
                     </div>
+					<!-- Spinner oculto inicialmente -->
+					<div id="spinner" class="text-center mt-3" style="display:none;">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Cargando...</span>
+						</div>
+						<p>Procesando, por favor espere...</p>
+					</div>
                 </fieldset>
             </div>
             
@@ -141,7 +148,7 @@
                     </div>
 
                     <!-- Botones de generación -->
-                    <div class="mb-4">
+                    <div id="rptBasesEbrDiv" style="display: none;" class="mb-4">
                         <label class="form-label fw-bold">Acciones disponibles:</label>
                         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="btn-group me-2" role="group">
@@ -177,10 +184,6 @@
                         <button class="btn btn-success" id="btnVistoBueno" onclick="ejecutarVoBoBasesEBR()">Registrar Visto bueno</button>
                         <span id="progresoTexto" class="text-muted"></span>
                     </div>
-
-                    <!-- <div id="mensajeAviso" class="alert alert-info d-none">
-                        El archivo se guardará en el apartado de descargas para futuras consultas.
-                    </div> -->
                 </div>
             </div>
             
