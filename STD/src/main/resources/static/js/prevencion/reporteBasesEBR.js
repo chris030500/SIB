@@ -39,8 +39,12 @@ function procesarBasesEBR() {
 	} else {
 		const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?periodo=${selectValue}`;
 
-		// Mostrar el spinner
-		document.getElementById("spinner").style.display = "block";
+		const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
+			backdrop: 'static',
+			keyboard: false
+		});
+		
+		spinnerModal.show();
 
 		fetch(url, {
 			method: 'POST',
@@ -52,7 +56,7 @@ function procesarBasesEBR() {
 				const idProceso = data.pk_proceso_id;
 
 				const interval = setInterval(() => {
-					obtenerProcesoBasesEbr(idProceso, interval);
+					obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
 				}, 3000);
 			})
 			.catch(err => {
@@ -66,8 +70,12 @@ function procesarBasesEBR() {
 	}
 }
 
-function obtenerProcesoBasesEbr(idProceso, interval) {
+function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
+	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
+	const infoCorrectaDiv = document.getElementById('infoCorrectaDiv');
+	const msgBasesEbrDiv = document.getElementById('msgBasesEbrDiv');
+	
 	const url = `${getAbsolutePath()}obtenerProcesoBasesEbr?idProceso=${idProceso}`;
 	
 	fetch(url)
@@ -76,8 +84,12 @@ function obtenerProcesoBasesEbr(idProceso, interval) {
 			if (!data.i_estatus_ejecucion) {
 				clearInterval(interval);
 				
-				document.getElementById("spinner").style.display = "none";
+				modal.hide();
+				
+				msgBasesEbrDiv.style.display = "none";
+				dtBasesEbrDiv.style.display = "block";
 				rptBasesEbrDiv.style.display = "block";
+				infoCorrectaDiv.style.display = "block";
 				
 				swal({
 					title: "¡Proceso ejecutado!",
@@ -88,6 +100,8 @@ function obtenerProcesoBasesEbr(idProceso, interval) {
             	});
 			} else {
 				rptBasesEbrDiv.style.display = "none";
+				dtBasesEbrDiv.style.display = "none";
+				infoCorrectaDiv.style.display = "none";
 			}
 		})
 		.catch(err => {`Error: ${err}`});

@@ -115,13 +115,6 @@
                         </button>
                         <span class="text-muted">Procesar reporte de Bases EBR</span>
                     </div>
-					<!-- Spinner oculto inicialmente -->
-					<div id="spinner" class="text-center mt-3" style="display:none;">
-						<div class="spinner-border text-primary" role="status">
-							<span class="visually-hidden">Cargando...</span>
-						</div>
-						<p>Procesando, por favor espere...</p>
-					</div>
                 </fieldset>
             </div>
             
@@ -130,21 +123,13 @@
                 <div class="mb-4 p-3 border rounded bg-light">
 
                     <!-- Rango de fechas -->
-                    <div class="mb-3">
+                    <div id="dtBasesEbrDiv" style="display: none;" class="mb-3">
                         <label class="form-label">Rango de fechas para el reporte:</label>
                         <div class="d-flex flex-wrap gap-2 align-items-center">
                             <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
                             <span>a</span>
                             <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
                         </div>
-                    </div>
-
-                    <!-- Validaciones de fechas -->
-                    <div id="avisoRangoFechas" class="alert alert-success d-none">
-                        El rango de fechas se validó correctamente.
-                    </div>
-                    <div id="errorRangoFechas" class="alert alert-danger d-none">
-                        La fecha de inicio no puede ser anterior a 2 años desde hoy.
                     </div>
 
                     <!-- Botones de generación -->
@@ -167,7 +152,7 @@
                     </div>
 
                     <!-- Confirmación -->
-                    <div class="mb-3">
+                    <div id="infoCorrectaDiv" style="display: none;" class="mb-3">
                         <label class="form-label">¿La información del reporte es correcta?</label>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si">
@@ -184,6 +169,11 @@
                         <button class="btn btn-success" id="btnVistoBueno" onclick="ejecutarVoBoBasesEBR()">Registrar Visto bueno</button>
                         <span id="progresoTexto" class="text-muted"></span>
                     </div>
+                    
+                    <!-- Alerta -->
+					<div id="msgBasesEbrDiv" class="alert alert-warning mt-3">
+						Debes procesar las Bases EBR para generar los reportes.
+					</div>
                 </div>
             </div>
             
@@ -235,6 +225,21 @@
                 </div>
             </div>
         </div>
+        
+		<!-- Modal con Spinner -->
+		<div class="modal fade" id="spinnerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+			data-bs-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content text-center p-4">
+					<div class="d-flex justify-content-center align-items-center flex-column my-3">
+						<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+							<span class="visually-hidden">Cargando...</span>
+						</div>
+						<p class="mt-3 mb-0">Procesando Bases EBR, por favor espere...</p>
+					</div>
+				</div>
+			</div>
+		</div>
     </div>
 </section>
 
