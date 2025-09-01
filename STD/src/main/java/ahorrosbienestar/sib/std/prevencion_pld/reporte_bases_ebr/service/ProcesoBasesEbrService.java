@@ -2,6 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,9 +32,9 @@ public class ProcesoBasesEbrService {
 		proceso.setDt_fecha_inicio(fechaInicio);
 		proceso.setDt_fecha_fin(fechaFin);
 		proceso.setI_usuario_ejecuto(idUsuario);
-		proceso.setDt_fecha_ejecucion(currentDateTime);
+		proceso.setDt_fecha_ejecucion(null);
 		proceso.setI_estatus_ejecucion(true);
-		proceso.setVc_cron(cron);
+		proceso.setVc_cron(null);
 		proceso.setI_estatus_vobo(null);
 		proceso.setI_usuario_vobo(null);
 		proceso.setDt_fecha_vobo(null);
@@ -52,5 +54,9 @@ public class ProcesoBasesEbrService {
 		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
 		
 		return proceso;
+	}
+	
+	public List<Map<String, Object>> listaHistoricoBases() {
+		return procesoEbrRepository.listaHistoricoBases();
 	}
 }

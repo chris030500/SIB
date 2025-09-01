@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +145,30 @@ public class RptBasesEbrController {
     	
     	return ResponseEntity.ok(proceso);
     }
-	
+    
+    @GetMapping("/historicoBasesEbr")
+    public ResponseEntity<?> listaHistoricoBasesEbr() {
+		Map<String, Object> res = new HashMap<>();
+		String mensajeError = null;
+		
+		List<Map<String, Object>> bases = procesoBasesEbrService.listaHistoricoBases();
+		
+		try {
+			if (bases != null && !bases.isEmpty()) {
+				res.put("bases", bases);
+				return ResponseEntity.ok(res);
+			} else {
+				res.put("bases", Collections.emptyList());
+				return ResponseEntity.ok(res);
+			}
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
+    }
+    
 	@RequestMapping(value = { "/generarBasesEBR" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteBasesEBR(@RequestParam("tipoReporte") Integer tipoReporte) {
 

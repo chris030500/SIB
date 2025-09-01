@@ -1,13 +1,22 @@
-document.addEventListener("DOMContentLoaded", function () {
-	mostrarVoboDiv();
-	mostrarRangoFechas();
-	mostrarAlertUltimoProceso();
-});
+function mostrarTabs() {
+	document.querySelectorAll('#pntConf button[data-bs-toggle="tab"]').forEach(tab => {
+		tab.addEventListener('shown.bs.tab', function() {
+			const target = document.querySelector(this.dataset.bsTarget);
+			const forValue = target.getAttribute("for");
 
-function getAbsolutePath() {
-	var loc = window.location;
-	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+			switch (forValue) {
+				case "1":
+					console.log("Procesar Bases EBR");
+					break;
+				case "2":
+					console.log("Generar Bases EBR");
+					break;
+				case "3":
+					listaHistoricoBases();
+					break;
+			}
+		});
+	});
 }
 
 function mostrarRangoFechas() {
@@ -248,3 +257,10 @@ function peticionPost(urlServicio) {
 		}
 	});
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+	mostrarTabs();
+	mostrarVoboDiv();
+	mostrarRangoFechas();
+	mostrarAlertUltimoProceso();
+});
