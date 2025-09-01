@@ -2,6 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +22,11 @@ public class ProcesoBasesEbrService {
 	public ProcesoBasesEbr registrarProcesoBasesEbr(LocalDate fechaInicio, LocalDate fechaFin, int idUsuario) {
 		ProcesoBasesEbr proceso = new ProcesoBasesEbr();
 		
-		LocalDateTime currentDateTime = LocalDateTime.now();
-		LocalDateTime currentTime = LocalDateTime.now();
-		LocalDateTime newTime = currentTime.plusMinutes(15);
+		ZoneId zoneChihuahua = ZoneId.of("America/Chihuahua");
+		ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneChihuahua);
+		ZonedDateTime newTime = zonedDateTime.plusMinutes(5);
+		
+		LocalDateTime currentDateTime = zonedDateTime.toLocalDateTime();;
 		
 		int minute = newTime.getMinute();
 		int hour = newTime.getHour();
@@ -32,9 +36,9 @@ public class ProcesoBasesEbrService {
 		proceso.setDt_fecha_inicio(fechaInicio);
 		proceso.setDt_fecha_fin(fechaFin);
 		proceso.setI_usuario_ejecuto(idUsuario);
-		proceso.setDt_fecha_ejecucion(null);
+		proceso.setDt_fecha_ejecucion(currentDateTime);
 		proceso.setI_estatus_ejecucion(true);
-		proceso.setVc_cron(null);
+		proceso.setVc_cron(cron);
 		proceso.setI_estatus_vobo(null);
 		proceso.setI_usuario_vobo(null);
 		proceso.setDt_fecha_vobo(null);

@@ -27,10 +27,10 @@ function listaHistoricoBases() {
 
 			//console.log(opt);
 			const botones = `<div class="d-inline-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-success btn-xs base-cliente" title="Base Clientes"><i class="bi bi-file-earmark-excel-fill"></i></button>
+                    <button type="button" class="btn btn-primary btn-xs base-cliente" title="Base Clientes"><i class="bi bi-file-earmark-excel-fill"></i></button>
                     <button type="button" class="btn btn-success btn-xs base-operaciones" title="Base Operaciones"><i class="bi bi-file-earmark-excel-fill"></i></button>
-                    <button type="button" class="btn btn-success btn-xs base-remesas" title="Base Remesas"><i class="bi bi-file-earmark-excel-fill"></i></button>
-                    <button type="button" class="btn btn-success btn-xs base-desembolsos" title="Base Desembolsos"><i class="bi bi-file-earmark-excel-fill"></i></button>
+                    <button type="button" class="btn btn-secondary btn-xs base-remesas" title="Base Remesas"><i class="bi bi-file-earmark-excel-fill"></i></button>
+                    <button type="button" class="btn btn-warning btn-xs base-desembolsos" title="Base Desembolsos"><i class="bi bi-file-earmark-excel-fill"></i></button>
                 </div>`;
                 
 			tblHistoricoBases.row.add([
