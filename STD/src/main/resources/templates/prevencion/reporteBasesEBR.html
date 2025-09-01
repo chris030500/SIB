@@ -96,41 +96,40 @@
             <div class="tab-pane fade show active" id="archivos" role="tabpanel" aria-labelledby="archivos-tab">
                 <fieldset class="border p-2 card">
                     <legend class="float-none w-auto p-2">Procesar Bases EBR</legend>
-
-                    <label class="col-form-label">Periodo de generación de información EBR</label>
-                    <div class="mb-3 col-md-3 gap-3 align-items-center mt-3">
-                        <select id="periodoSelect" class="form-select w-auto" aria-label="Default select example">
-                            <option value="0" selected>Seleccionar periodo</option>
-                            <option th:each="listaPeriodo : ${cat_periodo_ejecucion_ebr}" 
-                                    th:value="${listaPeriodo.i_opcion}" 
-                                    th:text="${listaPeriodo.v_valor}">
-                            </option>
-                        </select>
-                    </div>
+                    <label class="col-form-label">Periodo de generación de información EBR:</label>
+					<div class="row mb-3 align-items-center">
+						<!-- Select -->
+						<div class="col-md-4">
+							<select id="periodoSelect" class="form-select" aria-label="Default select example">
+								<option value="0" selected>Seleccionar periodo</option>
+								<option th:each="listaPeriodo : ${cat_periodo_ejecucion_ebr}" th:value="${listaPeriodo.i_opcion}"
+									th:text="${listaPeriodo.v_valor}">
+								</option>
+							</select>
+						</div>
+						<!-- Rango de fechas -->
+						<div id="dtBasesEbrDiv" class="col-md-8 d-none">
+							<div class="d-flex flex-wrap align-items-center gap-2">
+								<input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
+								<span>-</span>
+								<input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
+							</div>
+						</div>
+					</div>
 
                     <div class="mb-3 d-flex gap-3 align-items-center mt-3">
-                        <button class="btn btn-success btn-sm" id="btnProcesarBasesEBR" 
-                                onclick="procesarBasesEBR()" title="Procesar Bases EBR">
+                        <button class="btn btn-success btn-sm" id="btnProcesarBasesEBR" title="Procesar Bases EBR">
                             <i class="fas fa-play"></i>
                         </button>
                         <span class="text-muted">Procesar reporte de Bases EBR</span>
                     </div>
+					<div id="msgProcesoEbr" class="alert alert-info mt-3 d-none"></div>
                 </fieldset>
             </div>
             
             <!-- TAB: PROCESO -->
             <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
                 <div class="mb-4 p-3 border rounded bg-light">
-
-                    <!-- Rango de fechas -->
-                    <div id="dtBasesEbrDiv" class="mb-3">
-                        <label class="form-label">Rango de fechas para el reporte:</label>
-                        <div class="d-flex flex-wrap gap-2 align-items-center">
-                            <input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;">
-                            <span>a</span>
-                            <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
-                        </div>
-                    </div>
 
                     <!-- Botones de generación -->
                     <div id="rptBasesEbrDiv" class="mb-4">
@@ -169,6 +168,8 @@
                         <button type="button" class="btn btn-success" id="btnVistoBueno" data-bs-toggle="modal" data-bs-target="#voboModal">Registrar Visto bueno</button>
                         <!-- <span id="progresoTexto" class="text-muted"></span> -->
                     </div>
+                    
+                    <div id="msgVoboBasesEbr" class="alert alert-info mt-3 d-none"></div>
 
                 </div>
             </div>

@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +15,20 @@ public class ProcesoBasesEbrService {
 	@Autowired
 	private IProcesoBasesEbrRepository procesoEbrRepository;
 	
-	public ProcesoBasesEbr registrarProcesoBasesEbr(int periodo, int idUsuario) {
+	public ProcesoBasesEbr registrarProcesoBasesEbr(LocalDate fechaInicio, LocalDate fechaFin, int idUsuario) {
 		ProcesoBasesEbr proceso = new ProcesoBasesEbr();
+		
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		LocalDateTime currentTime = LocalDateTime.now();
 		LocalDateTime newTime = currentTime.plusMinutes(15);
+		
 		int minute = newTime.getMinute();
 		int hour = newTime.getHour();
+		
 		String cron = String.format("0 %d %d * * *", minute, hour);
 		
-		proceso.setI_periodo_ejecucion(periodo);
+		proceso.setDt_fecha_inicio(fechaInicio);
+		proceso.setDt_fecha_fin(fechaFin);
 		proceso.setI_usuario_ejecuto(idUsuario);
 		proceso.setDt_fecha_ejecucion(currentDateTime);
 		proceso.setI_estatus_ejecucion(true);
@@ -35,7 +40,15 @@ public class ProcesoBasesEbrService {
 		return procesoEbrRepository.save(proceso);
 	}
 	
-	public ProcesoBasesEbr obtenerLastProcesoBasesEbr(int idProceso) {
+	public ProcesoBasesEbr obtenerProcesoBasesEbr(int idProceso) {
+		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
+		
+		return proceso;
+	}
+	
+	public ProcesoBasesEbr obtenerLasProcesoBasesEbr() {
+		Integer idProceso = procesoEbrRepository.findMaxProceso();
+		
 		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
 		
 		return proceso;

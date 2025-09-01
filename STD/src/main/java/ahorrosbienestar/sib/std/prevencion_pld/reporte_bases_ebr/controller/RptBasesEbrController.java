@@ -1,9 +1,11 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -98,11 +101,16 @@ public class RptBasesEbrController {
 	}
 	
 	@PostMapping("/ejecutarProcesoBasesEbr")
-	public ResponseEntity<?> ejecutarProcesoBasesEbr(@RequestParam int periodo) {
+	public ResponseEntity<?> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
+	    //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	    LocalDate fechaInicio = LocalDate.parse(periodo.get("fechaInicio"));
+	    LocalDate fechaFin = LocalDate.parse(periodo.get("fechaFin"));
+	    
 		Integer idUsuario = obtenerIdUsuario();
 		
 	    try {
-	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(periodo, idUsuario);
+	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(fechaInicio, fechaFin, idUsuario);
 	        return ResponseEntity.ok(proceso);
 	    } catch (IllegalArgumentException e) {
 	        // error de validación
@@ -123,8 +131,15 @@ public class RptBasesEbrController {
     }
     
     @GetMapping("/obtenerProcesoBasesEbr")
-    public ResponseEntity<?> obtenerPrecesoBasesEbr(@RequestParam int idProceso) {
-    	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerLastProcesoBasesEbr(idProceso);
+    public ResponseEntity<?> obtenerProcesoBasesEbr(@RequestParam int idProceso) {
+    	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerProcesoBasesEbr(idProceso);
+    	
+    	return ResponseEntity.ok(proceso);
+    }
+    
+    @GetMapping("/obtenerLastProcesoBasesEbr")
+    public ResponseEntity<?> obtenerLastProcesoBasesEbr() {
+    	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerLasProcesoBasesEbr();
     	
     	return ResponseEntity.ok(proceso);
     }

@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -20,8 +21,13 @@ public class ProcesoBasesEbr {
 	@Column(name = "PK_PROCESO_EBR_ID")	
 	private Integer pk_proceso_id;
 	
-	@Column(name = "I_PERIODO_EJECUCION")
-	private Integer i_periodo_ejecucion;
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_INICIO")
+	private LocalDate dt_fecha_inicio;
+	
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "DT_FECHA_FIN")
+	private LocalDate dt_fecha_fin;
 	
 	@Column(name = "I_USUARIO_EJECUTO")
 	private Integer i_usuario_ejecuto;
@@ -54,12 +60,20 @@ public class ProcesoBasesEbr {
 		this.pk_proceso_id = pk_proceso_id;
 	}
 
-	public Integer getI_periodo_ejecucion() {
-		return i_periodo_ejecucion;
+	public LocalDate getDt_fecha_inicio() {
+		return dt_fecha_inicio;
 	}
 
-	public void setI_periodo_ejecucion(Integer i_periodo_ejecucion) {
-		this.i_periodo_ejecucion = i_periodo_ejecucion;
+	public void setDt_fecha_inicio(LocalDate dt_fecha_inicio) {
+		this.dt_fecha_inicio = dt_fecha_inicio;
+	}
+
+	public LocalDate getDt_fecha_fin() {
+		return dt_fecha_fin;
+	}
+
+	public void setDt_fecha_fin(LocalDate dt_fecha_fin) {
+		this.dt_fecha_fin = dt_fecha_fin;
 	}
 
 	public Integer getI_usuario_ejecuto() {
@@ -120,9 +134,10 @@ public class ProcesoBasesEbr {
 
 	@Override
 	public String toString() {
-		return "ProcesoBasesEbr [pk_proceso_id=" + pk_proceso_id + ", i_periodo_ejecucion=" + i_periodo_ejecucion
-				+ ", i_usuario_ejecuto=" + i_usuario_ejecuto + ", dt_fecha_ejecucion=" + dt_fecha_ejecucion
-				+ ", i_estatus_ejecucion=" + i_estatus_ejecucion + ", vc_cron=" + vc_cron + ", i_estatus_vobo="
-				+ i_estatus_vobo + ", i_usuario_vobo=" + i_usuario_vobo + ", dt_fecha_vobo=" + dt_fecha_vobo + "]";
+		return "ProcesoBasesEbr [pk_proceso_id=" + pk_proceso_id + ", dt_fecha_inicio=" + dt_fecha_inicio
+				+ ", dt_fecha_fin=" + dt_fecha_fin + ", i_usuario_ejecuto=" + i_usuario_ejecuto
+				+ ", dt_fecha_ejecucion=" + dt_fecha_ejecucion + ", i_estatus_ejecucion=" + i_estatus_ejecucion
+				+ ", vc_cron=" + vc_cron + ", i_estatus_vobo=" + i_estatus_vobo + ", i_usuario_vobo=" + i_usuario_vobo
+				+ ", dt_fecha_vobo=" + dt_fecha_vobo + "]";
 	}
 }

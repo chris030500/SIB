@@ -1,22 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-	const radios = document.querySelectorAll('input[name="info_correcta"]');
-	radios.forEach(radio => {
-		radio.addEventListener("change", function() {
-			let voboDiv = document.getElementById('voboDiv');
-		
-			if (this.value === "si") {
-				voboDiv.style.display = "flex";
-			} else {
-				voboDiv.style.display = "none";
-				swal({
-                	text: "Intente procesar nuevamente las bases EBR",
-                	icon: "warning",
-                	timer: 2000,
-                	buttons: false
-            });	
-			}
-		})
-	});
+	mostrarVoboDiv();
+	mostrarRangoFechas();
+	mostrarAlertUltimoProceso();
 });
 
 function getAbsolutePath() {
@@ -25,49 +10,93 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
-function procesarBasesEBR() {
+function mostrarRangoFechas() {
+	const periodoSelect = document.getElementById('periodoSelect');
+	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
+	const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
 	
-	const selectValue = document.getElementById('periodoSelect').value;
-	console.log("Periodo seleccionado:", selectValue);
-	
-	if (Number(selectValue) === 0) {
-		swal({
-			title: "¡Error!",
-			text: "Selecciona una opción válida.",
-			icon: "warning"
-		});
-	} else {
-		const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?periodo=${selectValue}`;
-
-		const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
-			backdrop: 'static',
-			keyboard: false
-		});
+	btnProcesarBasesEBR.addEventListener('click', () => {
+		let selectValue = parseInt(periodoSelect.value);
+		let fechaActual = new Date();
+		let anioActual = fechaActual.getFullYear();
+		let fechaInicio, fechaFin;
 		
-		spinnerModal.show();
-
-		fetch(url, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ periodo: selectValue })
-		})
-			.then(response => response.json())
-			.then(data => {
-				const idProceso = data.pk_proceso_id;
-
-				const interval = setInterval(() => {
-					obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
-				}, 3000);
-			})
-			.catch(err => {
-				spinnerModal.hide();
-				swal({
-					title: "¡Error!",
-					text: `Se ha generado un error ${err}, inténtelo más tarde`,
-					icon: "error"
-				});
+		console.log(selectValue);
+		
+		if (selectValue === 0) {
+			swal({
+				title: "¡Error!",
+				text: "Selecciona una opción válida.",
+				icon: "warning"
 			});
-	}
+		} else {
+					
+			switch (selectValue) {
+				case 1:
+					fechaInicio = `${anioActual}-01-01`;
+					fechaFin = `${anioActual}-06-30`;
+					break;
+				case 2:
+					fechaInicio = `${anioActual}-07-01`;
+					fechaFin = `${anioActual}-12-31`;
+					break;
+				case 3:
+					fechaInicio = `${anioActual}-01-01`;
+					fechaFin = `${anioActual}-12-31`;
+					break;
+				case 4:
+					dtBasesEbrDiv.classList.remove('d-none');
+					fechaInicio = document.getElementById('fechaInicio').value;
+					fechaFin = document.getElementById('fechaFin').value;
+					break;
+			}
+
+			procesarBasesEBR(fechaInicio, fechaFin);
+		}
+		
+	});
+
+	periodoSelect.addEventListener('change', () => {
+		if (parseInt(periodoSelect.value) === 4) {
+			dtBasesEbrDiv.classList.remove("d-none");
+		} else {
+			dtBasesEbrDiv.classList.add("d-none");
+		}
+	});
+};
+
+function procesarBasesEBR(fechaInicio, fechaFin) {
+
+	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?fechaInicio=${fechaInicio}&fechaFin${fechaFin}`;
+
+	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
+		backdrop: 'static',
+		keyboard: false
+	});
+
+	spinnerModal.show();
+
+	fetch(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ fechaInicio: fechaInicio, fechaFin: fechaFin })
+	})
+		.then(response => response.json())
+		.then(data => {
+			const idProceso = data.pk_proceso_id;
+
+			const interval = setInterval(() => {
+				obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
+			}, 3000);
+		})
+		.catch(err => {
+			spinnerModal.hide();
+			swal({
+				title: "¡Error!",
+				text: `Se ha generado un error ${err}, inténtelo más tarde`,
+				icon: "error"
+			});
+		});
 }
 
 function obtenerProcesoBasesEbr(idProceso, interval, modal) {
@@ -88,10 +117,61 @@ function obtenerProcesoBasesEbr(idProceso, interval, modal) {
                 	icon: "success",
                 	timer: 2000,
                 	buttons: false
-            	});
+            	}).then(() => {
+					location.reload();
+				});
 			}
 		})
-		.catch(err => {`Error: ${err}`});
+		.catch(err => {console.log(`Error: ${err}`)});
+}
+
+function mostrarAlertUltimoProceso() {
+	const msgProceso = document.getElementById('msgProcesoEbr');
+	const msgVobo = document.getElementById('msgVoboBasesEbr');
+	
+	const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
+	
+	fetch(url)
+		.then(response => response.json())
+		.then(data => {
+			if (data) {
+				const rango = `${data.dt_fecha_inicio} - ${data.dt_fecha_fin}`;
+				msgProceso.innerText = `Último periodo de generación de información EBR: ${rango}`;
+				msgProceso.classList.remove('d-none');
+				
+				msgVobo.classList.remove('alert-info', 'alert-warning');
+				if (data.i_estatus_vobo) {
+					msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
+					msgVobo.classList.add('alert-info');
+				} else {
+					msgVobo.innerText = `Aún queda pendiente el vobo de las bases EBR del periodo: ${rango}`;
+					msgVobo.classList.add('alert-warning');
+				}
+				 msgVobo.classList.remove('d-none');
+			}
+		})
+		.catch(err => {console.log(`Error: ${err}`)});
+}
+
+function mostrarVoboDiv() {
+	const radios = document.querySelectorAll('input[name="info_correcta"]');
+	radios.forEach(radio => {
+		radio.addEventListener("change", function() {
+			let voboDiv = document.getElementById('voboDiv');
+
+			if (this.value === "si") {
+				voboDiv.style.display = "flex";
+			} else {
+				voboDiv.style.display = "none";
+				swal({
+					text: "Intente procesar nuevamente las bases EBR",
+					icon: "warning",
+					timer: 2000,
+					buttons: false
+				});
+			}
+		})
+	});
 }
 
 function ejecutarVoBoBasesEBR() {
@@ -119,6 +199,8 @@ function ejecutarVoBoBasesEBR() {
 			icon: "success",
 			timer: 2000,
 			buttons: false
+		}).then(() => {
+			mostrarAlertUltimoProceso();
 		});
 	})
 	.catch(err => {
