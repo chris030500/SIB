@@ -222,15 +222,14 @@ function ejecutarVoBoBasesEBR() {
 }
 
 function generarBasesEBR(tipoReporte) {
-	let urlCompleta = '';
 	
-	urlCompleta = getAbsolutePath() + "generarBasesEBR?tipoReporte=" + Number(tipoReporte); 
+	const urlCompleta = getAbsolutePath() + "generarBasesEBR?tipoReporte=" + Number(tipoReporte); 
     	
 	peticionPost(urlCompleta);
 
 }
 
-function peticionPost(urlServicio) {
+/*function peticionPost(urlServicio) {
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
@@ -256,7 +255,7 @@ function peticionPost(urlServicio) {
 			});
 		}
 	});
-}
+}*/
 
 document.addEventListener("DOMContentLoaded", function () {
 	mostrarTabs();

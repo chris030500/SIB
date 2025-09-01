@@ -1,7 +1,38 @@
 var tblHistoricoBases;
 
+function peticionPost(urlServicio) {
+	$.ajax({
+		url: urlServicio,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			swal({
+				title: "¡Error!",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "error",
+			});
+		}
+	});
+}
+
 function generarHistoricoEBR(idProceso, tipoReporte) {
 	
+	const urlCompleta = `${getAbsolutePath()}generarHistoricoBasesEBR?idProceso=${Number(idProceso)}&tipoReporte=${tipoReporte}`; 
+    	
+	peticionPost(urlCompleta);
 }
 
 $(document).ready(function() {

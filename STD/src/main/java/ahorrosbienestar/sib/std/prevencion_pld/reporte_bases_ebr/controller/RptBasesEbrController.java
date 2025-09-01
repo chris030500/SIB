@@ -211,6 +211,49 @@ public class RptBasesEbrController {
 
 	}
 	
+	@RequestMapping(value = { "/generarHistoricoBasesEBR" }, method = RequestMethod.POST)
+	public ResponseEntity<?> reporteHistoricoBasesEBR(@RequestParam("idProceso") Integer idProceso, @RequestParam("tipoReporte") Integer tipoReporte) {
+
+		List<String> respuesta = new ArrayList<>();
+		String reporte = "";
+		
+		switch (tipoReporte) {
+			case 1: 
+				reporte = Constantes.RPT_HISTORICO_EBR_BASE_CLIENTES;
+				break;
+			case 2:
+				reporte = Constantes.RPT_HISTORICO_EBR_BASE_OPERACIONES;
+				break;
+			case 3:
+				reporte = Constantes.RPT_HISTORICO_EBR_BASE_REMESAS;
+				break;
+			case 4:
+				reporte = Constantes.RPT_HISTORICO_EBR_BASE_DESEMBOLSOS;
+				break;
+		}
+		
+		try {
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(reporte);
+			
+			StringBuilder reporteURL = new StringBuilder();
+			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
+			.append(datosReporte.getPk_id_reporte())
+			.append("&parametros=?idProceso=")
+			.append(idProceso)
+			.append("&tipoDocumento=")
+			.append(datosReporte.getVc_extension())
+			.append("&identificadorDoc=");
+
+			respuesta.add(reporteURL.toString());
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error al generar reporte Bases EBR: " + e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+
+	}
+	
 	public int obtenerIdUsuario() {
 		// Obtener usuario autenticado
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
