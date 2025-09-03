@@ -4,6 +4,7 @@ import java.io.IOException;
 //import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 //import java.sql.Timestamp;
 import java.sql.Types;
@@ -266,108 +267,105 @@ public class RptReporteClientesOpeController {
         return generacionReporteService.confirmarReporte(confirmado);
     }
     
-    @PostMapping("/ejecutarDatosProceso")
-    public ResponseEntity<Map<String, Object>> ejecutarDatosProceso(){
     
-        logger.info("/ejecutarDatosProceso");
-        String envio = Constantes.NO_ENVIA_CORREO_ASIGNACION;
-        String procesoPeps ="";
+    @PostMapping("/procesarAuditoria")
+    public ResponseEntity<Map<String, Object>> procesarAuditoria(
+            @RequestParam("fechaInicio") Date fechaInicio,
+            @RequestParam("fechaFin") Date fechaFin) {
+
+        logger.info("/procesarAuditoria - fechaInicio: " + fechaInicio + ", fechaFin: " + fechaFin);
         Map<String, Object> respuesta = new HashMap<>();
-        
+
+        Connection connection = null;
+        CallableStatement callableStatement = null;
+
         try {
-            procesoPeps = procesoGestionAsignado();
-            
-            if(procesoPeps != null) {
-                respuesta.put(Constantes.TEXTO_MNS,procesoPeps);
-                respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
-                
-            }else {
-                respuesta.put(Constantes.TEXTO_MNS,"PROCESO OK");
-                respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_OK);
+            connection = jdbcTemplate.getDataSource().getConnection();
+            // Llamada al SP con parámetros (IN fechaInicio, IN fechaFin, OUT error_message)
+            callableStatement = connection.prepareCall("{CALL SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?)}");
+
+            // Parámetros IN
+            callableStatement.setDate(1, fechaInicio);
+            callableStatement.setDate(2, fechaFin);
+
+            // Parámetro OUT
+            callableStatement.registerOutParameter(3, Types.VARCHAR);
+
+            callableStatement.execute();
+
+            String errorMessage = callableStatement.getString(3);
+
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                respuesta.put(Constantes.TEXTO_MNS, errorMessage);
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+            } else {
+                respuesta.put(Constantes.TEXTO_MNS, "Proceso de auditoría ejecutado correctamente.");
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
             }
-            
+
             return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
-            respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
-            respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
+
+        } catch (SQLException e) {
+            logger.error("Error al ejecutar SP Auditoría: " + e.getMessage(), e);
+            respuesta.put(Constantes.TEXTO_MNS, "Error al ejecutar SP: " + e.getMessage());
+            respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
+        } finally {
+            try {
+                if (callableStatement != null) callableStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                logger.error("Error al cerrar conexión: " + e.getMessage());
+            }
         }
     }
- 
-    public String procesoGestionAsignado() {
-         Connection connection = null;
-            CallableStatement callableStatement = null;
-            String errorMessage = null;
- 
-            try {
-                connection = jdbcTemplate.getDataSource().getConnection();
-                callableStatement = connection.prepareCall(Constantes.PEPS_CLIENTES);
-                callableStatement.registerOutParameter(1, Types.VARCHAR);
-                callableStatement.execute();
-                errorMessage = callableStatement.getString(1);
-            } catch (SQLException e) {
-                logger.error("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
-                errorMessage = "Error al ejecutar el procedimiento almacenado: " + e.getMessage();
-            } finally {
-                if (callableStatement != null) {
-                    try {
-                        callableStatement.close();
-                    } catch (SQLException e) {
-                        logger.error("Error al cerrar el CallableStatement: " + e.getMessage());
-                    }
-                }
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch (SQLException e) {
-                        logger.error("Error al cerrar la conexión: " + e.getMessage());
-                    }
-                }
-            }
- 
-            return errorMessage;
-     }
+
     
     @PostMapping("/ejecutarVistoBueno")
-    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno() {
-        logger.info("/ejecutarVistoBueno");
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno(
+            @RequestParam("fechaInicio") Date fechaInicio,
+            @RequestParam("fechaFin") Date fechaFin) {
+        
+        logger.info("/ejecutarVistoBueno - fechaInicio: " + fechaInicio + ", fechaFin: " + fechaFin);
         Map<String, Object> respuesta = new HashMap<>();
- 
+
         String errorMessage = null;
         Connection connection = null;
         CallableStatement callableStatement = null;
- 
+
         try {
             // Obtener usuario logueado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = null;
             Integer idUsuario = null;
- 
+
             if (principal instanceof UserDetails) {
                 userDetails = (UserDetails) principal;
                 usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
                 if (!usuarios.isEmpty()) {
-                    idUsuario = usuarios.get(0).getPk_id_usuario(); 
+                    idUsuario = usuarios.get(0).getPk_id_usuario();
                 }
             }
- 
+
             if (idUsuario == null) {
                 respuesta.put(Constantes.TEXTO_MNS, "No se pudo obtener el ID del usuario.");
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
                 return ResponseEntity.ok(respuesta);
             }
- 
+
             connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
- 
-            callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT param
-            callableStatement.setInt(2, idUsuario);                  // IN param
- 
+
+
+            callableStatement.registerOutParameter(1, Types.VARCHAR);
+            callableStatement.setInt(2, idUsuario);
+            callableStatement.setDate(3, fechaInicio);
+            callableStatement.setDate(4, fechaFin);
+            
+
             callableStatement.execute();
             errorMessage = callableStatement.getString(1);
- 
+
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put(Constantes.TEXTO_MNS, errorMessage);
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
@@ -375,8 +373,9 @@ public class RptReporteClientesOpeController {
                 respuesta.put(Constantes.TEXTO_MNS, "VISTO BUENO OK");
                 respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
             }
- 
+
             return ResponseEntity.ok(respuesta);
+
         } catch (SQLException e) {
             logger.error("Error al ejecutar SP Visto Bueno: " + e.getMessage());
             respuesta.put(Constantes.TEXTO_MNS, "Error al ejecutar SP: " + e.getMessage());
@@ -391,6 +390,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+
     
     @PostMapping("/activar-ejecucion/{id}")
     public ResponseEntity<?> activarEjecucion(@PathVariable("id") Integer id,

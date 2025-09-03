@@ -3,15 +3,35 @@ var url = "";
 var tblHistorico;
  
 $(document).ready(function() {
-  tblHistorico = $("#tblHistorico").DataTable({
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+tblHistorico = $("#tblHistorico").DataTable({
+    language: {
+        processing:     "Procesando...",
+        search:         "Buscar:",
+        lengthMenu:     "Mostrar _MENU_ registros",
+        info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+        infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0",
+        infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+        infoPostFix:    "",
+        loadingRecords: "Cargando...",
+        zeroRecords:    "No se encontraron resultados",
+        emptyTable:     "Ningún dato disponible en esta tabla",
+        paginate: {
+            first:      "Primero",
+            previous:   "Anterior",
+            next:       "Siguiente",
+            last:       "Último"
+        },
+        aria: {
+            sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+            sortDescending: ": Activar para ordenar la columna de manera descendente"
+        }
     },
-    'aoColumnDefs': [{
-      'bSortable': false,
-      'aTargets': [-1]
+    order: [[0, "desc"]], // Opcional: ordenar por la primera columna en orden descendente
+    aoColumnDefs: [{
+        bSortable: false,
+        aTargets: [-1] // La última columna no es ordenable
     }]
-  });
+});
  
   iniciaTblHistorico();
 });
@@ -380,43 +400,55 @@ function confirmar(valor) {
  
  
  
-function peticionPost() {
-  url = "ejecutarDatosProceso";
- 
+function procesarAuditoria() {
+  var fechaInicio = $("#fechaInicio").val();
+  var fechaFin = $("#fechaFin").val();
+
+  // 🔹 Validar que ambas fechas estén seleccionadas
+  if (!fechaInicio || !fechaFin) {
+    swal("Debe seleccionar fecha inicio y fecha fin.", { icon: "error" });
+    return;
+  }
+
   swal({
-    title: "Procesando información.",
+    title: "Procesando auditoría...",
     content: {
       element: "div",
       attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        innerHTML: '<div class="spinner-border text-primary"></div>',
+        style: "display:flex;justify-content:center;padding:20px;",
       },
     },
     buttons: false,
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
- 
-  $.ajax({
-    url: getAbsolutePath() + url,
+
+$.ajax({
+  url: getAbsolutePath() + "procesarAuditoria",
     type: "POST",
     dataType: "JSON",
-    complete: function() {
+    data: {
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
+    },
+    complete: function () {
       swal.close();
     },
-    success: function(respuesta) {
+    success: function (respuesta) {
       swal("", respuesta.mensaje, respuesta.tipo).then(() => {
-        url = "";
+        // 🔹 Si quieres refrescar la tabla histórico después de procesar
+        if (typeof iniciaTblHistorico === "function") {
+          iniciaTblHistorico();
+        }
       });
     },
-    error: function(XMLHttpRequest, textStatus, errorThrown) {
-      swal("Se presentó un error, intente más tarde.", {
-        icon: "error",
-        closeOnClickOutside: false,
-      });
-    }
+    error: function () {
+      swal("Error al procesar auditoría.", { icon: "error" });
+    },
   });
 }
+
  
  
 function ejecutarVistoBueno() {
@@ -441,45 +473,63 @@ function ejecutarVistoBueno() {
     dangerMode: true,
   }).then((willExecute) => {
     if (willExecute) {
+      var fechaInicio = $("#fechaInicio").val();
+      var fechaFin = $("#fechaFin").val();
+
+      if (!fechaInicio || !fechaFin) {
+        swal("Debe seleccionar fecha inicio y fecha fin.", {
+          icon: "error",
+          closeOnClickOutside: false,
+        });
+        return;
+      }
+
       swal({
         title: "Procesando información.",
         content: {
           element: "div",
           attributes: {
-            innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-            style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+            innerHTML:
+              '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+            style:
+              "display: flex; justify-content: center; align-items: center; padding: 20px;",
           },
         },
         buttons: false,
         closeOnClickOutside: false,
         closeOnEsc: false,
       });
- 
-      url = "ejecutarVistoBueno";
- 
+
+      var url = "ejecutarVistoBueno";
+
       $.ajax({
         url: getAbsolutePath() + url,
         type: "POST",
         dataType: "JSON",
-        complete: function() {
+        data: {
+          fechaInicio: fechaInicio,
+          fechaFin: fechaFin,
+        },
+        complete: function () {
           swal.close();
         },
-        success: function(respuesta) {
+        success: function (respuesta) {
           swal("", respuesta.mensaje, respuesta.tipo).then(() => {
             iniciaTblHistorico();
             url = "";
           });
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
           swal("Se presentó un error, intente más tarde.", {
             icon: "error",
             closeOnClickOutside: false,
           });
-        }
+        },
       });
     }
   });
 }
+
  
 var btnsROpera = "";
 var btnsRCientes = "";
@@ -494,12 +544,12 @@ function iniciaTblHistorico() {
       btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
         + " title='Reporte Historico de operaciones' data-bs-target='#' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-tools'></i></button>";
+        + " <i class='bi bi-file-earmark-diff'></i></button>";
  
       btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
         + " title='Reporte Historico de clientes' aria-controls='table-datatable' type='button'"
         + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-file-play-fill'></i></button>";
+        + " <i class='bi bi-file-earmark-person'></i></button>";
  
       tblHistorico.row.add([
         opt.fechaGeneracion,

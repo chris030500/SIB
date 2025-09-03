@@ -48,12 +48,6 @@
                         <input type="file" id="fileUploadPEP" name="file" accept=".xls,.xlsx" class="form-control" />
                         <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
                     </form>
-                    <div class="mb-3 d-flex gap-3 align-items-center mt-3">
-                        <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="peticionPost()" title="Procesar Auditoría">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <span class="text-muted">Procesar reporte de Auditoría</span>
-                    </div>
                 </fieldset>
             </div>
             
@@ -99,6 +93,13 @@
                             <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
                         </div>
                     </div>
+                    <div class="mb-3 d-flex gap-3 align-items-center mt-3">
+    <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="procesarAuditoria()" title="Procesar Auditoría">
+        <i class="fas fa-play"></i>
+    </button>
+    <span class="text-muted">Procesar reporte de Auditoría</span>
+</div>
+
 
                     <div id="avisoRangoFechas" class="alert alert-success d-none">El rango de fechas se validó correctamente.</div>
                     <div id="errorRangoFechas" class="alert alert-danger d-none">La fecha de inicio no puede ser anterior a 2 años desde hoy.</div>
