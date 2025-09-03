@@ -1,15 +1,23 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
@@ -31,7 +40,9 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.TipoEmpresaService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.VoboBasesEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
@@ -69,6 +80,11 @@ public class RptBasesEbrController {
 	
 	@Autowired
 	private VoboBasesEbrService voboBasesEbrService;
+	
+	@Autowired
+	private TipoEmpresaService tipoEmpresaService;
+	
+	private LocalDate currentDate = LocalDate.now();
 	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -199,7 +215,8 @@ public class RptBasesEbrController {
 			.append("&parametros=")
 			.append("&tipoDocumento=")
 			.append(datosReporte.getVc_extension())
-			.append("&identificadorDoc=");
+			.append("&identificadorDoc=")
+			.append(currentDate);
 
 			respuesta.add(reporteURL.toString());
 			return ResponseEntity.ok(respuesta);
@@ -242,7 +259,8 @@ public class RptBasesEbrController {
 			.append(idProceso)
 			.append("&tipoDocumento=")
 			.append(datosReporte.getVc_extension())
-			.append("&identificadorDoc=");
+			.append("&identificadorDoc=")
+			.append(currentDate);
 
 			respuesta.add(reporteURL.toString());
 			return ResponseEntity.ok(respuesta);
@@ -253,6 +271,93 @@ public class RptBasesEbrController {
 		}
 
 	}
+
+	@PostMapping("/uploadTipoEmpresa")
+	public ResponseEntity<String> uploadExcelTipoEmpresa(@RequestParam("file") MultipartFile file) {
+	    if (file.isEmpty()) {
+	        logger.error("El archivo está vacío.");
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
+	    }
+
+	    String filename = file.getOriginalFilename();
+	    if (filename == null || !(filename.endsWith(".xls") || filename.endsWith(".xlsx"))) {
+	        logger.error("Formato de archivo no válido.");
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
+	    }
+
+	    try (InputStream inputStream = file.getInputStream();
+	         Workbook workbook = filename.endsWith(".xlsx") ? new XSSFWorkbook(inputStream) : new HSSFWorkbook(inputStream)) {
+
+	        logger.info("Iniciando procesamiento del archivo...");
+
+	        Sheet sheet = workbook.getSheetAt(0);
+	        Iterator<Row> rowIterator = sheet.iterator();
+
+	        if (!rowIterator.hasNext()) {
+	            logger.error("La hoja está vacía.");
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo Excel no tiene datos.");
+	        }
+
+	        // Leer encabezados
+	        Row headerRow = rowIterator.next();
+	        List<String> headers = new ArrayList<>();
+	        for (Cell cell : headerRow) {
+	            headers.add(getCellStringValue(cell));
+	        }
+	        logger.info("Encabezados detectados: " + headers);
+
+	        // Leer datos
+	        List<TipoEmpresa> empresas = new ArrayList<>();
+	        while (rowIterator.hasNext()) {
+	            Row row = rowIterator.next();
+	            TipoEmpresa tipoEmpresa = new TipoEmpresa();
+
+	            tipoEmpresa.setI_empresa_id((int) getCellNumericValue(row.getCell(0)));
+	            tipoEmpresa.setVc_nombre_empresa(getCellStringValue(row.getCell(1)));
+	            tipoEmpresa.setVc_estatus(getCellStringValue(row.getCell(2)));
+	            tipoEmpresa.setVc_ubicacion(getCellStringValue(row.getCell(3)));
+	            tipoEmpresa.setVc_sector(getCellStringValue(row.getCell(4)));
+
+	            empresas.add(tipoEmpresa);
+	        }
+	        tipoEmpresaService.eliminarTodos();
+	        tipoEmpresaService.registrarTipoEmpresas(empresas);
+            logger.info("Archivo procesado correctamente con " +  empresas.size() + " empresas.");
+            return ResponseEntity.ok("Archivo procesado con " + empresas.size() + " empresas.");
+
+	    } catch (Exception e) {
+	        logger.error("Excepción capturada: ", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error al procesar el archivo: " + e.getMessage());
+	    }
+	}
+
+	// Métodos auxiliares para leer celdas
+	private String getCellStringValue(Cell cell) {
+	    if (cell == null) return "";
+	    switch (cell.getCellType()) {
+	        case STRING: return cell.getStringCellValue().trim();
+	        case NUMERIC: return String.valueOf((int) cell.getNumericCellValue());
+	        case BOOLEAN: return String.valueOf(cell.getBooleanCellValue());
+	        case FORMULA: return cell.getCellFormula();
+	        default: return "";
+	    }
+	}
+
+	private double getCellNumericValue(Cell cell) {
+	    if (cell == null) return 0;
+	    switch (cell.getCellType()) {
+	        case NUMERIC: return cell.getNumericCellValue();
+	        case STRING:
+	            try {
+	                return Double.parseDouble(cell.getStringCellValue());
+	            } catch (NumberFormatException e) {
+	                return 0;
+	            }
+	        default: return 0;
+	    }
+	}
+
 	
 	public int obtenerIdUsuario() {
 		// Obtener usuario autenticado
