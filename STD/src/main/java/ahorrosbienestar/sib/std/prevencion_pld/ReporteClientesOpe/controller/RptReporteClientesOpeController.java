@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
-import java.io.IOException;
+//import java.io.IOException;
 //import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -8,14 +8,14 @@ import java.sql.Date;
 import java.sql.SQLException;
 //import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDate;
+//import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
+//import javax.servlet.http.HttpServletResponse;
+//import javax.servlet.ServletOutputStream;
 //import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
