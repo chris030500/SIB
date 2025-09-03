@@ -441,45 +441,63 @@ function ejecutarVistoBueno() {
     dangerMode: true,
   }).then((willExecute) => {
     if (willExecute) {
+      var fechaInicio = $("#fechaInicio").val();
+      var fechaFin = $("#fechaFin").val();
+
+      if (!fechaInicio || !fechaFin) {
+        swal("Debe seleccionar fecha inicio y fecha fin.", {
+          icon: "error",
+          closeOnClickOutside: false,
+        });
+        return;
+      }
+
       swal({
         title: "Procesando información.",
         content: {
           element: "div",
           attributes: {
-            innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-            style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+            innerHTML:
+              '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+            style:
+              "display: flex; justify-content: center; align-items: center; padding: 20px;",
           },
         },
         buttons: false,
         closeOnClickOutside: false,
         closeOnEsc: false,
       });
- 
-      url = "ejecutarVistoBueno";
- 
+
+      var url = "ejecutarVistoBueno";
+
       $.ajax({
         url: getAbsolutePath() + url,
         type: "POST",
         dataType: "JSON",
-        complete: function() {
+        data: {
+          fechaInicio: fechaInicio,
+          fechaFin: fechaFin,
+        },
+        complete: function () {
           swal.close();
         },
-        success: function(respuesta) {
+        success: function (respuesta) {
           swal("", respuesta.mensaje, respuesta.tipo).then(() => {
             iniciaTblHistorico();
             url = "";
           });
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
           swal("Se presentó un error, intente más tarde.", {
             icon: "error",
             closeOnClickOutside: false,
           });
-        }
+        },
       });
     }
   });
 }
+
  
 var btnsROpera = "";
 var btnsRCientes = "";
