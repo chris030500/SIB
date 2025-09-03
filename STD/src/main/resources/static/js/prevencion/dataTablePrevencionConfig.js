@@ -9,7 +9,7 @@ $(document).ready(function() {
 		'aoColumnDefs': [
 			{ 'bSortable': false, 'aTargets': [-1] },
 			{ 'bVisible': false, 'aTargets': [0] },
-			{ 'className': 'text-center', 'aTargets': [1,2,3,4,5,6] }
+			{ 'className': 'text-center text-nowrap', 'aTargets': [1,2,3,4,5,6] }
 		]
 	});
 });

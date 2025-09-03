@@ -21,18 +21,18 @@ public class ProcesoBasesEbr {
 	@Column(name = "PK_PROCESO_EBR_ID")	
 	private Integer pk_proceso_id;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "DT_FECHA_INICIO")
 	private LocalDate dt_fecha_inicio;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "DT_FECHA_FIN")
 	private LocalDate dt_fecha_fin;
 	
 	@Column(name = "I_USUARIO_EJECUTO")
 	private Integer i_usuario_ejecuto;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_EJECUCION")
 	private LocalDateTime dt_fecha_ejecucion;
 	
@@ -48,7 +48,7 @@ public class ProcesoBasesEbr {
 	@Column(name = "I_USUARIO_VOBO")
 	private Integer i_usuario_vobo;
 	
-	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_VOBO")
 	private LocalDateTime dt_fecha_vobo;
 
