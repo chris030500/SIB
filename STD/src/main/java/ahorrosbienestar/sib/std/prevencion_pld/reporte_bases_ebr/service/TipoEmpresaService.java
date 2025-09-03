@@ -31,8 +31,8 @@ public class TipoEmpresaService {
 		}
 	}
 	
-	public void eliminarTodos() {
+	/*public void eliminarTodos() {
 		tipoEmpresaRepository.deleteAll();
-	}
+	}*/
 
 }

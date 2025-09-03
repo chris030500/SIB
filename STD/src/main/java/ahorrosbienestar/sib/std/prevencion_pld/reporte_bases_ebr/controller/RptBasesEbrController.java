@@ -320,7 +320,7 @@ public class RptBasesEbrController {
 
 	            empresas.add(tipoEmpresa);
 	        }
-	        tipoEmpresaService.eliminarTodos();
+	        //tipoEmpresaService.eliminarTodos();
 	        tipoEmpresaService.registrarTipoEmpresas(empresas);
             logger.info("Archivo procesado correctamente con " +  empresas.size() + " empresas.");
             return ResponseEntity.ok("Archivo procesado con " + empresas.size() + " empresas.");
