@@ -33,7 +33,7 @@ function mostrarRangoFechas() {
 		console.log(selectValue);
 		
 		if (selectValue === 0) {
-			swal({
+			Swal.fire({
 				title: "¡Error!",
 				text: "Selecciona una opción válida.",
 				icon: "warning"
@@ -99,7 +99,7 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 
 	} catch (err) {
 		spinnerModal.hide();
-		swal({
+		Swal.fire({
 			title: "¡Error!",
 			text: `Se ha generado un error: ${err.message}, inténtelo más tarde`,
 			icon: "error"
@@ -118,19 +118,20 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 			clearInterval(interval);
 			modal.hide();
 
-			swal({
+			Swal.fire({
 				title: "¡Proceso ejecutado!",
 				text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
-				icon: "success",
-				timer: 2000,
-				buttons: false
+				icon: "success"
 			}).then(() => {
-				location.reload();
+				const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
+				let tab = new bootstrap.Tab(nextTab);
+				tab.show();
+				mostrarAlertUltimoProceso();
 			});
 		}
 	} catch (err) {
 		modal.hide();
-        swal({
+        Swal.fire({
             title: "¡Error!",
             text: `Ocurrió un error al verificar el proceso: ${err.message}`,
             icon: "error"
@@ -156,13 +157,13 @@ async function mostrarAlertUltimoProceso() {
                 msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-info');
             } else {
-                msgVobo.innerText = `Aún queda pendiente el vobo de las bases EBR del periodo: ${rango}`;
+                msgVobo.innerText = `Pendiente el vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
             }
             msgVobo.classList.remove('d-none');
         }
     } catch (err) {
-        swal({
+        Swal.fire({
             title: "¡Error!",
             text: `No se pudo obtener el último proceso: ${err.message}`,
             icon: "error"
@@ -180,11 +181,9 @@ function mostrarVoboDiv() {
 				voboDiv.style.display = "flex";
 			} else {
 				voboDiv.style.display = "none";
-				swal({
+				Swal.fire({
 					text: "Intente procesar nuevamente las bases EBR",
-					icon: "warning",
-					timer: 2000,
-					buttons: false
+					icon: "warning"
 				});
 			}
 		})
@@ -208,18 +207,19 @@ async function ejecutarVoBoBasesEBR() {
         }
         const data = await response.text();
 
-        swal({
+        Swal.fire({
             title: "¡Visto Bueno exitoso!",
             text: data,
-            icon: "success",
-            timer: 2000,
-            buttons: false
+            icon: "success"
         }).then(() => {
+			const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#historico"]');
+			let tab = new bootstrap.Tab(nextTab);
+			tab.show();
             mostrarAlertUltimoProceso();
         });
 
     } catch (err) {
-        swal({
+        Swal.fire({
             title: "¡Error!",
             text: `Se ha generado un error: ${err.message}, inténtelo más tarde`,
             icon: "error"
@@ -261,7 +261,7 @@ function peticionPost(urlServicio) {
 			window.focus();
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
