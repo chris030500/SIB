@@ -285,15 +285,11 @@ public class RptReporteClientesOpeController {
             callableStatement = connection.prepareCall("{CALL SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?)}");
 
             // Parámetros IN
-            callableStatement.setDate(1, fechaInicio);
-            callableStatement.setDate(2, fechaFin);
-
-            // Parámetro OUT
-            callableStatement.registerOutParameter(3, Types.VARCHAR);
+            callableStatement.registerOutParameter(1, Types.VARCHAR);
 
             callableStatement.execute();
 
-            String errorMessage = callableStatement.getString(3);
+            String errorMessage = callableStatement.getString(1);
 
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put(Constantes.TEXTO_MNS, errorMessage);
