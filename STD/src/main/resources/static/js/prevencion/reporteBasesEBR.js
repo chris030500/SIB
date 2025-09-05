@@ -92,7 +92,7 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 		}); 
 		
 		const proceso = response.data;
-		const idProceso = proceso.pk_proceso_id;
+		const idProceso = proceso.procesoId;
 
 		// Inicia polling cada 3s
 		const interval = setInterval(() => {
@@ -115,7 +115,7 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	try {
 		const data = await fetchJSON(url);
 		
-		if (!data.i_estatus_ejecucion) {
+		if (!data.estatusEjecucion) {
 			clearInterval(interval);
 			modal.hide();
 
@@ -149,7 +149,7 @@ async function mostrarAlertUltimoProceso() {
         const data = await fetchJSON(url);
 
         if (data) {
-            const rango = `${data.dt_fecha_inicio} - ${data.dt_fecha_fin}`;
+            const rango = `${data.fechaInicio} - ${data.fechaFin}`;
             msgProceso.innerText = `Último periodo de generación de información EBR: ${rango}`;
             msgProceso.classList.remove('d-none');
 

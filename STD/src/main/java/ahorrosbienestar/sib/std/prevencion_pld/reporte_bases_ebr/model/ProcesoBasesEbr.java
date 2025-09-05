@@ -19,125 +19,124 @@ public class ProcesoBasesEbr {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PK_PROCESO_EBR_ID")	
-	private Integer pk_proceso_id;
+	private Integer procesoId;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "DT_FECHA_INICIO")
-	private LocalDate dt_fecha_inicio;
+	private LocalDate fechaInicio;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "DT_FECHA_FIN")
-	private LocalDate dt_fecha_fin;
+	private LocalDate fechaFin;
 	
 	@Column(name = "I_USUARIO_EJECUTO")
-	private Integer i_usuario_ejecuto;
+	private Integer usuarioEjecuto;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_EJECUCION")
-	private LocalDateTime dt_fecha_ejecucion;
+	private LocalDateTime fechaEjecucion;
 	
 	@Column(name = "I_ESTATUS_EJECUCION")
-	private Boolean i_estatus_ejecucion;
+	private Boolean estatusEjecucion;
 	
 	@Column(name = "VC_CRON")
-	private String vc_cron;
+	private String cron;
 	
 	@Column(name = "I_ESTATUS_VOBO")
-	private Boolean i_estatus_vobo;
+	private Boolean estatusVobo;
 	
 	@Column(name = "I_USUARIO_VOBO")
-	private Integer i_usuario_vobo;
+	private Integer usuarioVobo;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_VOBO")
-	private LocalDateTime dt_fecha_vobo;
+	private LocalDateTime fechaVobo;
 
-	public Integer getPk_proceso_id() {
-		return pk_proceso_id;
+	public Integer getProcesoId() {
+		return procesoId;
 	}
 
-	public void setPk_proceso_id(Integer pk_proceso_id) {
-		this.pk_proceso_id = pk_proceso_id;
+	public void setProcesoId(Integer procesoId) {
+		this.procesoId = procesoId;
 	}
 
-	public LocalDate getDt_fecha_inicio() {
-		return dt_fecha_inicio;
+	public LocalDate getFechaInicio() {
+		return fechaInicio;
 	}
 
-	public void setDt_fecha_inicio(LocalDate dt_fecha_inicio) {
-		this.dt_fecha_inicio = dt_fecha_inicio;
+	public void setFechaInicio(LocalDate fechaInicio) {
+		this.fechaInicio = fechaInicio;
 	}
 
-	public LocalDate getDt_fecha_fin() {
-		return dt_fecha_fin;
+	public LocalDate getFechaFin() {
+		return fechaFin;
 	}
 
-	public void setDt_fecha_fin(LocalDate dt_fecha_fin) {
-		this.dt_fecha_fin = dt_fecha_fin;
+	public void setFechaFin(LocalDate fechaFin) {
+		this.fechaFin = fechaFin;
 	}
 
-	public Integer getI_usuario_ejecuto() {
-		return i_usuario_ejecuto;
+	public Integer getUsuarioEjecuto() {
+		return usuarioEjecuto;
 	}
 
-	public void setI_usuario_ejecuto(Integer i_usuario_ejecuto) {
-		this.i_usuario_ejecuto = i_usuario_ejecuto;
+	public void setUsuarioEjecuto(Integer usuarioEjecuto) {
+		this.usuarioEjecuto = usuarioEjecuto;
 	}
 
-	public LocalDateTime getDt_fecha_ejecucion() {
-		return dt_fecha_ejecucion;
+	public LocalDateTime getFechaEjecucion() {
+		return fechaEjecucion;
 	}
 
-	public void setDt_fecha_ejecucion(LocalDateTime dt_fecha_ejecucion) {
-		this.dt_fecha_ejecucion = dt_fecha_ejecucion;
+	public void setFechaEjecucion(LocalDateTime fechaEjecucion) {
+		this.fechaEjecucion = fechaEjecucion;
 	}
 
-	public Boolean getI_estatus_ejecucion() {
-		return i_estatus_ejecucion;
+	public Boolean getEstatusEjecucion() {
+		return estatusEjecucion;
 	}
 
-	public void setI_estatus_ejecucion(Boolean i_estatus_ejecucion) {
-		this.i_estatus_ejecucion = i_estatus_ejecucion;
+	public void setEstatusEjecucion(Boolean estatusEjecucion) {
+		this.estatusEjecucion = estatusEjecucion;
 	}
 
-	public String getVc_cron() {
-		return vc_cron;
+	public String getCron() {
+		return cron;
 	}
 
-	public void setVc_cron(String vc_cron) {
-		this.vc_cron = vc_cron;
+	public void setCron(String cron) {
+		this.cron = cron;
 	}
 
-	public Boolean getI_estatus_vobo() {
-		return i_estatus_vobo;
+	public Boolean getEstatusVobo() {
+		return estatusVobo;
 	}
 
-	public void setI_estatus_vobo(Boolean i_estatus_vobo) {
-		this.i_estatus_vobo = i_estatus_vobo;
+	public void setEstatusVobo(Boolean estatusVobo) {
+		this.estatusVobo = estatusVobo;
 	}
 
-	public Integer getI_usuario_vobo() {
-		return i_usuario_vobo;
+	public Integer getUsuarioVobo() {
+		return usuarioVobo;
 	}
 
-	public void setI_usuario_vobo(Integer i_usuario_vobo) {
-		this.i_usuario_vobo = i_usuario_vobo;
+	public void setUsuarioVobo(Integer usuarioVobo) {
+		this.usuarioVobo = usuarioVobo;
 	}
 
-	public LocalDateTime getDt_fecha_vobo() {
-		return dt_fecha_vobo;
+	public LocalDateTime getFechaVobo() {
+		return fechaVobo;
 	}
 
-	public void setDt_fecha_vobo(LocalDateTime dt_fecha_vobo) {
-		this.dt_fecha_vobo = dt_fecha_vobo;
+	public void setFechaVobo(LocalDateTime fechaVobo) {
+		this.fechaVobo = fechaVobo;
 	}
 
 	@Override
 	public String toString() {
-		return "ProcesoBasesEbr [pk_proceso_id=" + pk_proceso_id + ", dt_fecha_inicio=" + dt_fecha_inicio
-				+ ", dt_fecha_fin=" + dt_fecha_fin + ", i_usuario_ejecuto=" + i_usuario_ejecuto
-				+ ", dt_fecha_ejecucion=" + dt_fecha_ejecucion + ", i_estatus_ejecucion=" + i_estatus_ejecucion
-				+ ", vc_cron=" + vc_cron + ", i_estatus_vobo=" + i_estatus_vobo + ", i_usuario_vobo=" + i_usuario_vobo
-				+ ", dt_fecha_vobo=" + dt_fecha_vobo + "]";
+		return "ProcesoBasesEbr [procesoId=" + procesoId + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin
+				+ ", usuarioEjecuto=" + usuarioEjecuto + ", fechaEjecucion=" + fechaEjecucion + ", estatusEjecucion="
+				+ estatusEjecucion + ", cron=" + cron + ", estatusVobo=" + estatusVobo + ", usuarioVobo=" + usuarioVobo
+				+ ", fechaVobo=" + fechaVobo + "]";
 	}
 }

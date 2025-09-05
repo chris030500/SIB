@@ -30,12 +30,12 @@ async function listaHistoricoBases() {
             </div>`;
 
             tblHistoricoBases.row.add([
-                opt.pk_proceso_id,
-                opt.dt_fecha_generacion,
-                opt.vc_usuario_ejecuto,
-                opt.dt_fecha_vobo,
-                opt.vc_usuario_vobo,              
-                opt.vc_periodo,
+                opt.procesoId,
+                opt.fechaGeneracion,
+                opt.usuarioEjecuto,
+                opt.fechaVobo,
+                opt.usuarioVobo,              
+                opt.periodo,
                 botones
             ]).draw(false);
         });

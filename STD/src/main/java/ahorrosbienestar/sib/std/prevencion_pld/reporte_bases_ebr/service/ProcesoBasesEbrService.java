@@ -33,15 +33,15 @@ public class ProcesoBasesEbrService {
 		
 		String cron = String.format("0 %d %d * * *", minute, hour);
 		
-		proceso.setDt_fecha_inicio(fechaInicio);
-		proceso.setDt_fecha_fin(fechaFin);
-		proceso.setI_usuario_ejecuto(idUsuario);
-		proceso.setDt_fecha_ejecucion(currentDateTime);
-		proceso.setI_estatus_ejecucion(true);
-		proceso.setVc_cron(cron);
-		proceso.setI_estatus_vobo(null);
-		proceso.setI_usuario_vobo(null);
-		proceso.setDt_fecha_vobo(null);
+		proceso.setFechaInicio(fechaInicio);
+		proceso.setFechaFin(fechaFin);
+		proceso.setUsuarioEjecuto(idUsuario);
+		proceso.setFechaEjecucion(currentDateTime);
+		proceso.setEstatusEjecucion(true);
+		proceso.setCron(cron);
+		proceso.setEstatusVobo(null);
+		proceso.setUsuarioVobo(null);
+		proceso.setFechaVobo(null);
 		
 		return procesoEbrRepository.save(proceso);
 	}
