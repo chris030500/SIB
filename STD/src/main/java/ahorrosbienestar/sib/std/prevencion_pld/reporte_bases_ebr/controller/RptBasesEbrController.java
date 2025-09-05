@@ -110,6 +110,7 @@ public class RptBasesEbrController {
 			} else {
 				rutaDireccion = Constantes.RUTA_ERROR;
 			}
+			
 			return rutaDireccion;
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
@@ -129,6 +130,7 @@ public class RptBasesEbrController {
 	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(fechaInicio, fechaFin, idUsuario);
 	        return ResponseEntity.ok(new BasesEbrResponse<>("proceso", proceso));
 	    } catch (RuntimeException e) {
+	    	logger.error("Ocurrió un error al registrar el proceso: " + e.getMessage());
 	        // error inesperado en la BD
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                             .body(new BasesEbrResponse<>("Ocurrió un error al registrar el proceso.", null));
@@ -350,24 +352,31 @@ public class RptBasesEbrController {
 		
 		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 		
-		Integer idUsuario = usuario.get(0).getPk_id_usuario();
-		
-		return idUsuario;
+		return usuario.get(0).getPk_id_usuario();
 	}
 	
 	public int validarAcceso() {
 		try {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
+			
+	        if (!(principal instanceof UserDetails)) {
+	            logger.error("El usuario no está autenticado o el principal no es válido.");
+	            return 0; // o lanza excepción si quieres forzar validación
+	        }
+	        
+	        UserDetails userDetails = (UserDetails) principal;
+	        
 			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.error("No se encontró información del usuario: " + userDetails.getUsername());
+	            return 0;
+	        }
 
 			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.PLD_REPORTE_BASES_EBR));
 
 		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
+			logger.error("Error en validar acceso: " + e.getMessage());
 			return 0;
 		}
 	}
