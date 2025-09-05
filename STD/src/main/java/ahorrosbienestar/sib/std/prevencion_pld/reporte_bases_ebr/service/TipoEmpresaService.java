@@ -30,9 +30,4 @@ public class TipoEmpresaService {
 			return false;
 		}
 	}
-	
-	/*public void eliminarTodos() {
-		tipoEmpresaRepository.deleteAll();
-	}*/
-
 }
