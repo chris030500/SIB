@@ -143,6 +143,9 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 async function mostrarAlertUltimoProceso() {
     const msgProceso = document.getElementById('msgProcesoEbr');
     const msgVobo = document.getElementById('msgVoboBasesEbr');
+    const infoDiv = document.getElementById('infoCorrectaDiv');
+    const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
+    
     const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
 
     try {
@@ -154,12 +157,16 @@ async function mostrarAlertUltimoProceso() {
             msgProceso.classList.remove('d-none');
 
             msgVobo.classList.remove('alert-info', 'alert-warning');
-            if (data.i_estatus_vobo) {
+            if (data.estatusVobo) {
                 msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-info');
+                infoDiv.classList.add('d-none');
+                rptBasesEbrDiv.classList.add('d-none');
             } else {
                 msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
+                infoDiv.classList.remove('d-none');
+                rptBasesEbrDiv.classList.remove('d-none');
             }
             msgVobo.classList.remove('d-none');
         }
@@ -200,6 +207,16 @@ async function ejecutarVoBoBasesEBR() {
     if (voboModal) {
         voboModal.hide();
     }
+    
+	Swal.fire({
+		title: "Procesando Vobo...",
+		text: "Por favor espere",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		didOpen: () => {
+			Swal.showLoading();
+		}
+	});
 
     try {
         const response = await fetch(url, { method: 'POST' });
@@ -211,18 +228,21 @@ async function ejecutarVoBoBasesEBR() {
         Swal.fire({
             title: "¡Visto Bueno exitoso!",
             text: data,
-            icon: "success"
-        }).then(() => {
-			const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#historico"]');
-			let tab = new bootstrap.Tab(nextTab);
-			tab.show();
-            mostrarAlertUltimoProceso();
-        });
+            icon: "success",
+			didClose: () => {
+				const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#historico"]');
+				if (nextTab) {
+					let tab = new bootstrap.Tab(nextTab);
+					tab.show();
+				}
+				mostrarAlertUltimoProceso();
+			}
+		});
 
     } catch (err) {
         Swal.fire({
             title: "¡Error!",
-            text: `Se ha generado un error: ${err.message}, inténtelo más tarde`,
+            text: `${err.message}, inténtelo más tarde`,
             icon: "error"
         });
     }

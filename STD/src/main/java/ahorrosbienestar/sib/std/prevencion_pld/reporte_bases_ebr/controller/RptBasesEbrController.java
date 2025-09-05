@@ -142,7 +142,7 @@ public class RptBasesEbrController {
     	Integer idUsuario = obtenerIdUsuario();
     	
         voboBasesEbrService.ejecutarVoBo(idUsuario);
-        return ResponseEntity.ok("Visto bueno ejecutado correctamente!");
+        return ResponseEntity.ok("Vobo ejecutado correctamente, ya se agregaron las bases en el histórico.");
     }
     
     @GetMapping("/obtenerProcesoBasesEbr")
