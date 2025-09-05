@@ -17,10 +17,8 @@ public class VoboBasesEbrRepository {
         try {
             jdbcTemplate.update(sql, idUsuario);
             logger.info("SP ejecutado correctamente para usuario: " + idUsuario);
-            System.out.println("SP ejecutado correctamente para usuario: " + idUsuario);
         } catch (Exception e) {
         	logger.error("Error al ejecutar SP: " + e.getMessage());
-            System.err.println("Error al ejecutar SP: " + e.getMessage());
             throw e;
         }
     }
