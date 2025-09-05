@@ -26,7 +26,7 @@ public class ProcesoBasesEbrService {
 		ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneChihuahua);
 		ZonedDateTime newTime = zonedDateTime.plusMinutes(5);
 		
-		LocalDateTime currentDateTime = zonedDateTime.toLocalDateTime();;
+		LocalDateTime currentDateTime = zonedDateTime.toLocalDateTime();
 		
 		int minute = newTime.getMinute();
 		int hour = newTime.getHour();
@@ -47,17 +47,14 @@ public class ProcesoBasesEbrService {
 	}
 	
 	public ProcesoBasesEbr obtenerProcesoBasesEbr(int idProceso) {
-		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
 		
-		return proceso;
+		return procesoEbrRepository.findById(idProceso).orElse(null);
 	}
 	
 	public ProcesoBasesEbr obtenerLasProcesoBasesEbr() {
-		Integer idProceso = procesoEbrRepository.findMaxProceso();
+		Integer idProceso = procesoEbrRepository.findMaxProceso(); 
 		
-		ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso).orElse(null);
-		
-		return proceso;
+		return procesoEbrRepository.findById(idProceso).orElse(null);
 	}
 	
 	public List<Map<String, Object>> listaHistoricoBases() {
