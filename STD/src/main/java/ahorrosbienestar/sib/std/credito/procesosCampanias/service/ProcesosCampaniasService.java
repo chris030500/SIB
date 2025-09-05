@@ -27,6 +27,10 @@ public class ProcesosCampaniasService {
 		return procesosCampaniasRepository.save(model);
 	}
 	
+    public int reporteBuroCredito(int tipoCampania) {
+        return procesosCampaniasRepository.reporteBuroCredito(tipoCampania);
+    }
+    
     public int contarProcesosExtraccionFin(int tipoCampania) {
         return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania);
     }

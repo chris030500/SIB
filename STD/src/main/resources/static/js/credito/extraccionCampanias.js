@@ -51,8 +51,6 @@ document.getElementById("Estatus").addEventListener("change", function() {
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
 	
-	alert(valor);
-	
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
         // @ts-ignore
@@ -68,7 +66,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
     if (valor === "1") { // Extraccion
     	// @ts-ignore
     	var tipoCampania = parseInt(document.getElementById("Campania").value);
-    	console.log("tipoCampania:",tipoCampania);
+    	//console.log("tipoCampania:",tipoCampania);
     	fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania)
         .then(resp => {
             if (!resp.ok) {
@@ -77,10 +75,12 @@ document.getElementById("Estatus").addEventListener("change", function() {
             return resp.json(); // porque el backend regresa un int
         })
         .then(count => {
-			console.log("Total procesos extracción:", count);
+			//console.log("Total procesos extracción:", count);
 			if(count > 0){
 				// @ts-ignore
         		document.getElementById("btnGenerar").disabled = false;
+        		// @ts-ignore
+        		document.getElementById("btnCancelar").disabled = false;
 			}
             
             
@@ -297,6 +297,66 @@ function btnExtraerFn() {
 
 
 function btnGenerarArchivoBuro() {
+	var urlServicio;
+	//seleccionar el id proceso actual por tipo de campania
+	//seleccionar el minimo por si hay dos que sea el primero que se hizo 
+	
+	// @ts-ignore
+	var tipoCampania = parseInt(document.getElementById("Campania").value);
+	//console.log("tipoCampania:",tipoCampania);
+	fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
+    .then(resp => {
+        if (!resp.ok) {
+            throw new Error("Error al validar campania para generar archivo buro");
+        }
+        return resp.json(); // porque el backend regresa un int
+    })
+    .then(data => {
+		//console.log("data:",data);
+		//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+		// @ts-ignore
+		urlServicio = newUrlBase + "credito/rpt_archivo_buro?ProcesoCampania=" + data + "&TipoCampania=" + document.getElementById("Campania").value;
+		//console.log("urlServicio:", urlServicio);
+		//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+		
+		$.ajax({
+		url: urlServicio,
+		type: "POST",
+		dataType: "JSON",
+		beforeSend: function() {
+			// @ts-ignore
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			// @ts-ignore
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+	
+			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+	
+			//console.log(urlReporte);
+			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+			window.open(urlReporte);
+			window.focus();
+	
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			// @ts-ignore
+			swal({
+				title: "Error, ",
+				text: "Se presento un error al generar reporte de buro credito, intente mas tarde.",
+				icon: "warning",
+			});
+		}
+		});
+	        
+	        
+    })
+    .catch(err => {
+        console.error("Error al validar campania para generar archivo buro: ", err);
+    });
+	
 	
 }
 

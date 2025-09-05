@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.credito.extraccioncampanias.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
@@ -34,6 +37,8 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampanias
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
+import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
@@ -46,9 +51,13 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	private static final String nomPropiedad = "cronCampanias";
 	private static final String nomPropiedadBandera = "extraccionCampanias";
+	private static final String controllerReporte = "generarReporte";
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
+	
+	@Autowired
+	private IConfiguracionRepository iConfiguracionRepository;
 	
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -79,6 +88,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@Autowired
 	ConfigService configService;
+	
+	@Autowired
+	private IReporteRepository iReporteRepository;
 
 	
 	List<Usuario> usuario = null;
@@ -249,6 +261,38 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		
         return procesosCampaniasService.contarProcesosExtraccionFin(tipoCampania);
     }
+	
+	@GetMapping("/api/reporteBuroCredito")
+	@ResponseBody
+    public int reporteBuroCredito(@RequestParam("tipoCampania") int tipoCampania) {
+		
+        return procesosCampaniasService.reporteBuroCredito(tipoCampania);
+    }
+	
+	@RequestMapping(value = { "/rpt_archivo_buro" }, method = RequestMethod.POST)
+	public ResponseEntity<?> generaReporteBuroCredito(@RequestParam("ProcesoCampania") Integer ProcesoCampania,
+													@RequestParam("TipoCampania") Integer TipoCampania) {
+
+		ArrayList<String> respuesta = new ArrayList<String>();
+		try {
+			
+			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_BURO_CREDITO);
+
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
+					+ datosReporte.getPk_id_reporte() + "&parametros=?ProcesoCampania=" + ProcesoCampania + "~TipoCampania="
+					+ TipoCampania + "&tipoDocumento=" +datosReporte.getVc_extension()+ "&identificadorDoc=OA";
+
+			//System.out.println("reporteURL: " + reporteURL);
+			
+			respuesta.add(reporteURL);
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			logger.error("Error:" + e.getMessage());
+			respuesta.add(e.getMessage());
+			return ResponseEntity.ok(respuesta);
+		}
+
+	}
     
     public int validarAcceso(String rutaController) {
 		try {

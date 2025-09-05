@@ -150,8 +150,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function generarReportProcesosCampanias() {
     
-    
-    
     const seleccionados = document.querySelectorAll('input[name="seleccion"]:checked');
   	if (seleccionados.length > 0) {
     	
@@ -159,13 +157,13 @@ function generarReportProcesosCampanias() {
     	document.querySelectorAll('input[name="seleccion"]:checked').forEach(cb => {
       		ids.push(cb.value);
     	});
-    	console.log("IDs seleccionados:", ids);
+    	//console.log("IDs seleccionados:", ids);
     	
     	///////////////////////////////
     	var urlServicio;
     	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
     	urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
-    	console.log("urlServicio:", urlServicio);
+    	//console.log("urlServicio:", urlServicio);
     	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
     	
     	$.ajax({

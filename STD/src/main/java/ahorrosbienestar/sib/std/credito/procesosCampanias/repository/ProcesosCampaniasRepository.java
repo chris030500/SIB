@@ -52,4 +52,13 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
        nativeQuery = true)
 	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania);
 	
+	@Query(value = "select min(pk_id_proceso_campania) "
+			+ "from SIB.TBL_PROCESO_CAMPANIA "
+			+ "where i_id_tipo_campania = :tipoCampania "
+			+ "and i_estatus_reg = 1 "
+			+ "and i_id_estatus_campania = 1 "
+			+ "and i_bandera_extraccion = 2",
+       nativeQuery = true)
+	int reporteBuroCredito(@Param("tipoCampania") int tipoCampania);
+	
 }

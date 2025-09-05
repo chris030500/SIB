@@ -73,7 +73,19 @@ function cargarArchivoExcel() {
 		alert("Por favor, selecciona un archivo.");
 		return;
 	}
-
+	// Mostrar pantalla de carga
+    // @ts-ignore
+    Swal.fire({
+	    title: "Cargando...",
+	    text: "Por favor espera mientras se procesa el archivo",
+	    allowOutsideClick: false,   // evita cerrar con clic afuera
+	    allowEscapeKey: false,      // evita cerrar con ESC
+	    showConfirmButton: false,   // oculta el botón "Aceptar"
+	    didOpen: () => {
+	        // @ts-ignore
+	        Swal.showLoading();     // muestra el spinner
+	    }
+	});
 	const reader = new FileReader();
 	reader.onload = function (e) {
 		// @ts-ignore
@@ -110,6 +122,8 @@ function cargarArchivoExcel() {
 		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
 
 		if (!esValidoEncabezado) {
+			// @ts-ignore
+			 Swal.close(); // Cierra el loading
 			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
 				+ encabezadosEsperados.join(", ") 
 				+ "\n\nEncontrados:\n" 
@@ -122,26 +136,17 @@ function cargarArchivoExcel() {
 		const tieneInformacion = filasDatos.some(fila => fila.some(celda => celda !== null && celda !== "" && celda !== undefined));
 
 		if (!tieneInformacion) {
+			// @ts-ignore
+			 Swal.close(); // Cierra el loading
 			alert("El archivo no contiene información en las filas después del encabezado.");
 			return; //Detenemos aquí
 		}
 
 		// Si pasa todas las validaciones, enviamos al backend
 		const formData = new FormData();
-	formData.append("archivo", archivo);
+		formData.append("archivo", archivo);
 	
-	// Mostrar pantalla de carga
-    // @ts-ignore
-    Swal.fire({
-        title: "Cargando...",
-        text: "Por favor espera mientras se procesa el archivo",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-            // @ts-ignore
-            Swal.showLoading();
-        }
-    });
+	
 
 
 	fetch(newUrlBase + "credito/cargarMunicipios", {
