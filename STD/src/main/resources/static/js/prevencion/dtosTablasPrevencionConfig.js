@@ -16,11 +16,12 @@ async function listaHistoricoBases() {
 			throw new Error(`Error HTTP: ${response.status}`);
 		}
         
-        const data = await response.json();
+        const res = await response.json();
+        const bases = res.data;
 
         tblHistoricoBases.clear().draw();
 
-        data.bases.forEach(opt => {
+        bases.forEach(opt => {
             const botones = `<div class="d-inline-flex justify-content-center gap-2">
                 <button class="btn btn-primary btn-xs base-cliente" title="Base Clientes"><i class="bi bi-file-earmark-excel-fill"></i></button>
                 <button class="btn btn-success btn-xs base-operaciones" title="Base Operaciones"><i class="bi bi-file-earmark-excel-fill"></i></button>

@@ -75,7 +75,7 @@ function mostrarRangoFechas() {
 };
 
 async function procesarBasesEBR(fechaInicio, fechaFin) {
-	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr`;
 
 	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
 		backdrop: 'static',
@@ -85,12 +85,14 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 	try {
 		spinnerModal.show();
 
-		const data = await fetchJSON(url, {
+		const response = await fetchJSON(url, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ fechaInicio: fechaInicio, fechaFin: fechaFin })
-		});
-		const idProceso = data.pk_proceso_id;
+		}); 
+		
+		const proceso = response.data;
+		const idProceso = proceso.pk_proceso_id;
 
 		// Inicia polling cada 3s
 		const interval = setInterval(() => {
@@ -98,12 +100,11 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 		}, 3000);
 
 	} catch (err) {
-		spinnerModal.hide();
 		Swal.fire({
 			title: "¡Error!",
-			text: `Se ha generado un error: ${err.message}, inténtelo más tarde`,
+			text: `${err.message}, inténtelo más tarde`,
 			icon: "error"
-		});
+		}).then(() => {spinnerModal.hide();});
 	}
 }
 
@@ -157,7 +158,7 @@ async function mostrarAlertUltimoProceso() {
                 msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-info');
             } else {
-                msgVobo.innerText = `Pendiente el vobo de las bases EBR del periodo: ${rango}`;
+                msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
             }
             msgVobo.classList.remove('d-none');
@@ -165,7 +166,7 @@ async function mostrarAlertUltimoProceso() {
     } catch (err) {
         Swal.fire({
             title: "¡Error!",
-            text: `No se pudo obtener el último proceso: ${err.message}`,
+            text: "No se pudo obtener el último proceso.",
             icon: "error"
         });
     }
@@ -229,9 +230,9 @@ async function ejecutarVoBoBasesEBR() {
 
 function generarBasesEBR(tipoReporte) {
 	
-	const urlCompleta = getAbsolutePath() + "generarBasesEBR?tipoReporte=" + Number(tipoReporte); 
+	const urlCompleta = `${getAbsolutePath()}generarBasesEBR?tipoReporte=${Number(tipoReporte)}`;
     	
-	peticionPost(urlCompleta);
+	descargarBasesEbr(urlCompleta);
 
 }
 
@@ -239,35 +240,46 @@ function generarHistoricoEBR(idProceso, tipoReporte) {
 	
 	const urlCompleta = `${getAbsolutePath()}generarHistoricoBasesEBR?idProceso=${Number(idProceso)}&tipoReporte=${tipoReporte}`; 
     	
-	peticionPost(urlCompleta);
+	descargarBasesEbr(urlCompleta);
 }
 
-function peticionPost(urlServicio) {
-	$.ajax({
-		url: urlServicio,
-		type: "POST",
-		dataType: "JSON",
-		beforeSend: function() {
-			$.blockUI({ message: 'Espere un momento...' });
-		},
-		complete: function() {
-			setTimeout($.unblockUI, 500);
-		},
-		success: function(respuesta) {
+function descargarBasesEbr(urlServicio) {
+    $.blockUI({ message: 'Espere un momento...' });
 
-			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-
-			window.open(urlReporte);
-			window.focus();
-
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			Swal.fire({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
-			});
-		}
-	});
+    fetch(urlServicio, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(function(response) {
+        setTimeout($.unblockUI, 500);
+        
+        return response.json().then(dto => {
+            if (!response.ok) {
+                throw new Error(dto.mensaje);
+            }
+            return dto;
+        });       
+    })
+    .then(dto => {
+		let baseUrl = window.location.href.substring(
+			0,
+			window.location.href.indexOf("STD/") + 4
+		);
+		let urlReporte = baseUrl + dto.data;
+		let nuevaVentana = window.open(urlReporte, "_blank");
+		if (nuevaVentana) nuevaVentana.focus();
+		else Swal.fire("Aviso", "El navegador bloqueó la ventana emergente.", "info");
+    })
+    .catch(function(err) {
+        setTimeout($.unblockUI, 500);
+        Swal.fire({
+            title: "Error",
+            text: `${err.message}, intente más tarde.`,
+            icon: "error",
+        });
+    });
 }
 
 function onclickBotonesHistoricoBases() {
@@ -292,12 +304,13 @@ function onclickBotonesHistoricoBases() {
 async function fetchJSON(url, options = {}) {
 	try {
 		const response = await fetch(url, options);
+		const result = await response.json();
 
 		if (!response.ok) {
-			throw new Error(`Error HTTP: ${response.status}`);
+			throw new Error(result.status);
 		}
 
-		return await response.json();
+		return await result;
 	} catch (err) {
 		console.error(`fetchJSON error: ${err.message}`);
 		throw err;
@@ -340,7 +353,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 		Swal.fire({
 			icon: "warning",
 			title: "Nombre incorrecto",
-			text: `El archivo debe llamarse exactamente: ${expectedName}.xls o ${expectedName2}.xlsx`,
+			text: `El archivo debe llamarse exactamente: ${expectedName} o ${expectedName2}`,
 		});
 		fileInput.value = "";
 		return;

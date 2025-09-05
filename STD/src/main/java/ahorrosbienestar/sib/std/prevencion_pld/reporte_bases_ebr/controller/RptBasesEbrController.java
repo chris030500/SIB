@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +37,7 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.dto.BasesEbrResponse;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
@@ -119,8 +118,7 @@ public class RptBasesEbrController {
 	}
 	
 	@PostMapping("/ejecutarProcesoBasesEbr")
-	public ResponseEntity<?> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
-	    //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
 
 	    LocalDate fechaInicio = LocalDate.parse(periodo.get("fechaInicio"));
 	    LocalDate fechaFin = LocalDate.parse(periodo.get("fechaFin"));
@@ -129,14 +127,11 @@ public class RptBasesEbrController {
 		
 	    try {
 	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(fechaInicio, fechaFin, idUsuario);
-	        return ResponseEntity.ok(proceso);
-	    } catch (IllegalArgumentException e) {
-	        // error de validación
-	        return ResponseEntity.badRequest().body(e.getMessage());
+	        return ResponseEntity.ok(new BasesEbrResponse<>("proceso", proceso));
 	    } catch (RuntimeException e) {
 	        // error inesperado en la BD
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Ocurrió un error al registrar el proceso: " + e.getMessage());
+	                             .body(new BasesEbrResponse<>("Ocurrió un error al registrar el proceso.", null));
 	    }
 	}
 	
@@ -149,46 +144,37 @@ public class RptBasesEbrController {
     }
     
     @GetMapping("/obtenerProcesoBasesEbr")
-    public ResponseEntity<?> obtenerProcesoBasesEbr(@RequestParam int idProceso) {
+    public ResponseEntity<ProcesoBasesEbr> obtenerProcesoBasesEbr(@RequestParam int idProceso) {
     	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerProcesoBasesEbr(idProceso);
     	
     	return ResponseEntity.ok(proceso);
     }
     
     @GetMapping("/obtenerLastProcesoBasesEbr")
-    public ResponseEntity<?> obtenerLastProcesoBasesEbr() {
+    public ResponseEntity<ProcesoBasesEbr> obtenerLastProcesoBasesEbr() {
     	ProcesoBasesEbr proceso = procesoBasesEbrService.obtenerLasProcesoBasesEbr();
     	
     	return ResponseEntity.ok(proceso);
     }
     
     @GetMapping("/historicoBasesEbr")
-    public ResponseEntity<?> listaHistoricoBasesEbr() {
-		Map<String, Object> res = new HashMap<>();
-		String mensajeError = null;
-		
+    public ResponseEntity<BasesEbrResponse<List<Map<String, Object>>>> listaHistoricoBasesEbr() {
 		List<Map<String, Object>> bases = procesoBasesEbrService.listaHistoricoBases();
 		
 		try {
 			if (bases != null && !bases.isEmpty()) {
-				res.put("bases", bases);
-				return ResponseEntity.ok(res);
+				return ResponseEntity.ok(new BasesEbrResponse<>("bases", bases));
 			} else {
-				res.put("bases", Collections.emptyList());
-				return ResponseEntity.ok(res);
+				return ResponseEntity.ok(new BasesEbrResponse<>("bases", Collections.emptyList()));
 			}
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
-			res.put(Constantes.MENSAJE_ERROR, mensajeError);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BasesEbrResponse<>(Constantes.MENSAJE_DE_ERROR + e.getMessage(), null));
 		}
     }
     
-	@RequestMapping(value = { "/generarBasesEBR" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteBasesEBR(@RequestParam("tipoReporte") Integer tipoReporte) {
-
-		List<String> respuesta = new ArrayList<>();
+	@GetMapping("/generarBasesEBR")
+	public ResponseEntity<BasesEbrResponse<String>> reporteBasesEBR(@RequestParam("tipoReporte") Integer tipoReporte) {
 		String reporte = "";
 		
 		switch (tipoReporte) {
@@ -204,34 +190,30 @@ public class RptBasesEbrController {
 			case 4:
 				reporte = Constantes.RPT_EBR_BASE_DESEMBOLSOS;
 				break;
+			default:
+	            return ResponseEntity.badRequest()
+	            		.body(new BasesEbrResponse<>("Tipo de reporte no válido", null));
 		}
 		
 		try {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(reporte);
 			
-			StringBuilder reporteURL = new StringBuilder();
-			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
-			.append(datosReporte.getPk_id_reporte())
-			.append("&parametros=")
-			.append("&tipoDocumento=")
-			.append(datosReporte.getVc_extension())
-			.append("&identificadorDoc=")
-			.append(currentDate);
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+			        + datosReporte.getPk_id_reporte()
+			        + "&parametros="
+			        + "&tipoDocumento=" + datosReporte.getVc_extension()
+			        + "&identificadorDoc=" + currentDate;
 
-			respuesta.add(reporteURL.toString());
-			return ResponseEntity.ok(respuesta);
+			return ResponseEntity.ok(new BasesEbrResponse<>("Reporte generado", reporteURL));
 		} catch (Exception e) {
 			logger.error("Error al generar reporte Bases EBR: " + e.getMessage());
-			respuesta.add(e.getMessage());
-			return ResponseEntity.ok(respuesta);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BasesEbrResponse<>(e.getMessage(), null));
 		}
-
 	}
 	
-	@RequestMapping(value = { "/generarHistoricoBasesEBR" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteHistoricoBasesEBR(@RequestParam("idProceso") Integer idProceso, @RequestParam("tipoReporte") Integer tipoReporte) {
-
-		List<String> respuesta = new ArrayList<>();
+	@GetMapping("/generarHistoricoBasesEBR" )
+	public ResponseEntity<BasesEbrResponse<String>> reporteHistoricoBasesEBR(@RequestParam("idProceso") Integer idProceso, @RequestParam("tipoReporte") Integer tipoReporte) {
 		String reporte = "";
 		
 		switch (tipoReporte) {
@@ -247,29 +229,26 @@ public class RptBasesEbrController {
 			case 4:
 				reporte = Constantes.RPT_HISTORICO_EBR_BASE_DESEMBOLSOS;
 				break;
+			default:
+	            return ResponseEntity.badRequest()
+	            		.body(new BasesEbrResponse<>("Tipo de reporte no válido", null));
 		}
 		
 		try {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(reporte);
 			
-			StringBuilder reporteURL = new StringBuilder();
-			reporteURL.append(iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF))
-			.append(datosReporte.getPk_id_reporte())
-			.append("&parametros=?idProceso=")
-			.append(idProceso)
-			.append("&tipoDocumento=")
-			.append(datosReporte.getVc_extension())
-			.append("&identificadorDoc=")
-			.append(currentDate);
+			String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+			        + datosReporte.getPk_id_reporte()
+			        + "&parametros=?idProceso=" + idProceso
+			        + "&tipoDocumento=" + datosReporte.getVc_extension()
+			        + "&identificadorDoc=" + currentDate;
 
-			respuesta.add(reporteURL.toString());
-			return ResponseEntity.ok(respuesta);
+			return ResponseEntity.ok(new BasesEbrResponse<>("Reporte generado", reporteURL));
 		} catch (Exception e) {
-			logger.error("Error al generar reporte Bases EBR: " + e.getMessage());
-			respuesta.add(e.getMessage());
-			return ResponseEntity.ok(respuesta);
+			logger.error("Error al generar reporte Histórico Bases EBR: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BasesEbrResponse<>(e.getMessage(), null));
 		}
-
 	}
 
 	@PostMapping("/uploadTipoEmpresa")
@@ -326,9 +305,9 @@ public class RptBasesEbrController {
             return ResponseEntity.ok("Archivo procesado con " + empresas.size() + " empresas.");
 
 	    } catch (Exception e) {
-	        logger.error("Excepción capturada: ", e);
+	        logger.error("Excepción capturada: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error al procesar el archivo: " + e.getMessage());
+	                .body("Error al procesar el archivo.");
 	    }
 	}
 
