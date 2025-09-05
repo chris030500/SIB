@@ -11,63 +11,63 @@ public class TipoEmpresa {
 	
 	@Id
 	@Column(name = "I_EMPRESA_ID")	
-	private Integer i_empresa_id;
+	private Integer empresaId;
 	
 	@Column(name = "VC_NOMBRE_EMPRESA")	
-	private String vc_nombre_empresa;
+	private String nombreEmpresa;
 	
 	@Column(name = "VC_ESTATUS")	
-	private String vc_estatus;
+	private String estatus;
 	
 	@Column(name = "VC_UBICACION")	
-	private String vc_ubicacion;
+	private String ubicacion;
 	
 	@Column(name = "VC_SECTOR")	
-	private String vc_sector;
+	private String sector;
 
-	public Integer getI_empresa_id() {
-		return i_empresa_id;
+	public Integer getEmpresaId() {
+		return empresaId;
 	}
 
-	public void setI_empresa_id(Integer i_empresa_id) {
-		this.i_empresa_id = i_empresa_id;
+	public void setEmpresaId(Integer empresaId) {
+		this.empresaId = empresaId;
 	}
 
-	public String getVc_nombre_empresa() {
-		return vc_nombre_empresa;
+	public String getNombreEmpresa() {
+		return nombreEmpresa;
 	}
 
-	public void setVc_nombre_empresa(String vc_nombre_empresa) {
-		this.vc_nombre_empresa = vc_nombre_empresa;
+	public void setNombreEmpresa(String nombreEmpresa) {
+		this.nombreEmpresa = nombreEmpresa;
 	}
 
-	public String getVc_estatus() {
-		return vc_estatus;
+	public String getEstatus() {
+		return estatus;
 	}
 
-	public void setVc_estatus(String vc_estatus) {
-		this.vc_estatus = vc_estatus;
+	public void setEstatus(String estatus) {
+		this.estatus = estatus;
 	}
 
-	public String getVc_ubicacion() {
-		return vc_ubicacion;
+	public String getUbicacion() {
+		return ubicacion;
 	}
 
-	public void setVc_ubicacion(String vc_ubicacion) {
-		this.vc_ubicacion = vc_ubicacion;
+	public void setUbicacion(String ubicacion) {
+		this.ubicacion = ubicacion;
 	}
 
-	public String getVc_sector() {
-		return vc_sector;
+	public String getSector() {
+		return sector;
 	}
 
-	public void setVc_sector(String vc_sector) {
-		this.vc_sector = vc_sector;
+	public void setSector(String sector) {
+		this.sector = sector;
 	}
 
 	@Override
 	public String toString() {
-		return "TipoEmpresa [i_empresa_id=" + i_empresa_id + ", vc_nombre_empresa=" + vc_nombre_empresa
-				+ ", vc_estatus=" + vc_estatus + ", vc_ubicacion=" + vc_ubicacion + ", vc_sector=" + vc_sector + "]";
+		return "TipoEmpresa [empresaId=" + empresaId + ", nombreEmpresa=" + nombreEmpresa + ", estatus=" + estatus
+				+ ", ubicacion=" + ubicacion + ", sector=" + sector + "]";
 	}
 }

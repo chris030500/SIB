@@ -293,11 +293,11 @@ public class RptBasesEbrController {
 	            Row row = rowIterator.next();
 	            TipoEmpresa tipoEmpresa = new TipoEmpresa();
 
-	            tipoEmpresa.setI_empresa_id((int) getCellNumericValue(row.getCell(0)));
-	            tipoEmpresa.setVc_nombre_empresa(getCellStringValue(row.getCell(1)));
-	            tipoEmpresa.setVc_estatus(getCellStringValue(row.getCell(2)));
-	            tipoEmpresa.setVc_ubicacion(getCellStringValue(row.getCell(3)));
-	            tipoEmpresa.setVc_sector(getCellStringValue(row.getCell(4)));
+	            tipoEmpresa.setEmpresaId((int) getCellNumericValue(row.getCell(0)));
+	            tipoEmpresa.setNombreEmpresa(getCellStringValue(row.getCell(1)));
+	            tipoEmpresa.setEstatus(getCellStringValue(row.getCell(2)));
+	            tipoEmpresa.setUbicacion(getCellStringValue(row.getCell(3)));
+	            tipoEmpresa.setSector(getCellStringValue(row.getCell(4)));
 
 	            empresas.add(tipoEmpresa);
 	        }
