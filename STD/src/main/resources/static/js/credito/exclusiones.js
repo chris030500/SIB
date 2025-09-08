@@ -175,7 +175,7 @@ function cargarArchivoExcel() {
 }
 
 function listaMunicipiosExclusion() {
-	url = newUrlBase + "credito/listarMunicipios";
+	/*url = newUrlBase + "credito/listarMunicipios";
 	$.getJSON(url, {}, function(data) {
 		tblExclusionMunicipios.clear().draw();
 		$.each(data, function(idx, opt) {
@@ -191,7 +191,75 @@ function listaMunicipiosExclusion() {
 				opt.codigoEstado,
 				opt.cobertura]).draw(false);
 		});
+	});*/
+	
+	// @ts-ignore
+	Swal.fire({
+	    title: 'Consultando información...',
+	    html: 'Espere por favor...',
+	    allowOutsideClick: false,
+	    showConfirmButton: false,
+	    didOpen: () => {
+	        // @ts-ignore
+	        Swal.showLoading();
+	    }
 	});
+	
+	$.ajax({
+	    url: newUrlBase + "credito/listarMunicipios",
+	    type: "GET",
+	    dataType: "JSON",
+	    async: true,
+	    success: function(respuesta) {
+	        // Cierra el Swal de carga
+	        // @ts-ignore
+	        Swal.close();
+	
+	        if (!respuesta || respuesta.length === 0) {
+	            // @ts-ignore
+	            Swal.fire({
+	                text: "No se encontraron municipios.",
+	                icon: "warning",
+	                confirmButtonText: "Aceptar"
+	            });
+	            return;
+	        }
+	
+	        // Limpia la tabla
+	        tblExclusionMunicipios.clear().draw();
+	
+	        // Arreglo temporal para acumular filas
+	        const registrosTotales = [];
+	
+	        $.each(respuesta, function(idx, opt) {
+	            registrosTotales.push([
+	                opt.codigo,
+	                opt.asentamiento,
+	                opt.tipoAsentamiento,
+	                opt.municipio,
+	                opt.estado,
+	                opt.ciudad,
+	                opt.codigoPostal,
+	                opt.codigoEstado,
+	                opt.cobertura
+	            ]);
+	        });
+	
+	        // Inserta todas las filas de golpe
+	        tblExclusionMunicipios.rows.add(registrosTotales).draw();
+	    },
+	    error: function(error) {
+	        // @ts-ignore
+	        Swal.close();
+	        // @ts-ignore
+	        Swal.fire({
+	            text: "Error al consultar municipios.",
+	            icon: "error",
+	            confirmButtonText: "Aceptar"
+	        });
+	    }
+	});
+	
 }
 
 function listaClientes() {
