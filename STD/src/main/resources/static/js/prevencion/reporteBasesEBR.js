@@ -150,6 +150,7 @@ async function mostrarAlertUltimoProceso() {
 
     try {
         const data = await fetchJSON(url);
+        console.log(data);
 
         if (data) {
             const rango = `${data.fechaInicio} - ${data.fechaFin}`;
@@ -162,7 +163,7 @@ async function mostrarAlertUltimoProceso() {
                 msgVobo.classList.add('alert-info');
                 infoDiv.classList.add('d-none');
                 rptBasesEbrDiv.classList.add('d-none');
-            } else {
+            } else if (!data.estatusVobo) {
                 msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
                 infoDiv.classList.remove('d-none');
@@ -171,11 +172,9 @@ async function mostrarAlertUltimoProceso() {
             msgVobo.classList.remove('d-none');
         }
     } catch (err) {
-        Swal.fire({
-            title: "¡Error!",
-            text: "No se pudo obtener el último proceso.",
-            icon: "error"
-        });
+		console.log('No se encuentra último proceso de ejecución.')
+		infoDiv.classList.add('d-none');
+		rptBasesEbrDiv.classList.add('d-none');
     }
 }
 
