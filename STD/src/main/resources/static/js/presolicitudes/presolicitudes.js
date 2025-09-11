@@ -172,7 +172,7 @@ function listaPlazos(producto, idEmpresa) {
 
 	// Caso especial: producto "NOMINA PRESTACIONES"
 	if (producto.trim().toUpperCase() === "NOMINA PRESTACIONES") {
-		selectFrecuencia.value = "UNICO"; // O "DIARIA" si así está definido en tu <option>
+		selectFrecuencia.value = "5"; // O "DIARIA" si así está definido en tu <option>
 		selectFrecuencia.disabled = true; // Opcional: desactiva el select para evitar que lo cambien
 		// Reemplaza el select por un input number
 		container.innerHTML = `
