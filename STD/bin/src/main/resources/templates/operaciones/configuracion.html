@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="row">
+			<div class="col-sm-12">
+
+				<!-- Titulo y Tabs -->
+				<div class="border p-2 card">
+					<div class="bg-info text-white">
+						<div class="row no-gutters">
+							<div class="col-md-2"></div>
+							<div class="col-md-8">
+								<div>
+									<h2 style="text-align:center; padding-top: 10px; padding-bottom: 10px;">Parametros
+										de
+										Configuración</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row" style="padding: 20px;">
+						<div class="col-sm-12">
+							<div class="">
+								<ul class="nav nav-pills nav-justified">
+									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
+										<a class="nav-link active"
+											onclick="cambiarContenido('telefonos', this)">Teléfonos
+											(Sucursales y Call Center)</a>
+									</li>
+									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
+										<a class="nav-link" onclick="cambiarContenido('codigos', this)">Códigos de
+											Acción y
+											Resultado</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Teléfonos -->
+				<div id="telefonos" style="padding: 20px; display: block;" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
+					<div class="border p-2 card">
+						<div class="">
+							<div class="col-sm-12">
+								<fieldset class="border p-2">
+									<legend class="float-none w-auto p-2">Teléfonos para Sucursales y Call Center
+									</legend>
+									<div class="row" style="text-align: right;">
+										<div class="col-sm-12">
+											<button style="background: #0dcaf0; border-color: #0dcaf0;"
+												class="btn btn-primary" type="button" data-toggle="modal"
+												data-target="#telefonoModal">Registrar
+												teléfono</button>
+										</div>
+									</div>
+									<div class="row" style="padding: 20px;">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="tablaTel">
+													<thead style="text-align: center;">
+														<tr>
+															<th>N°</th>
+															<th>Sucursal</th>
+															<th>Dirección Sucursal</th>
+															<th>Teléfono</th>
+															<th>Extensión</th>
+															<th>Correo electrónico</th>
+															<th>Comentarios</th>
+															<th>Vigente</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody style="text-align: center;">
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Códigos -->
+				<div id="codigos" style="padding: 20px; display: none;" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
+					<!-- Acción -->
+					<div class="border p-2 card" style="padding-top: 20px;">
+						<div class="">
+							<div class="col-sm-12">
+								<fieldset class="border p-2">
+									<legend class="float-none w-auto p-2">Códigos de Acción</legend>
+									<div class="row" style="text-align: right;">
+										<div class="col-sm-12">
+											<button style="background: #0dcaf0; border-color: #0dcaf0;"
+												class="btn btn-primary" type="button" data-toggle="modal"
+												data-target="#modal-codigoAccion">Registrar código de acción</button>
+										</div>
+									</div>
+									<div class="row" style="padding: 20px;">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="tablaCA">
+													<thead style="text-align: center;">
+														<tr>
+															<th>N°</th>
+															<th>Código de Acción</th>
+															<th>Descripción</th>
+															<th>Estatus</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody style="text-align: center;">
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+
+					<!-- Resultado -->
+					<div class="border p-2 card" style="padding-top: 20px;">
+						<div class="">
+							<div class="col-sm-12">
+								<fieldset class="border p-2">
+									<legend class="float-none w-auto p-2">Códigos de Resultado</legend>
+									<div class="row" style="text-align: right;">
+										<div class="col-sm-12">
+											<button style="background: #0dcaf0; border-color: #0dcaf0;"
+												class="btn btn-primary" type="button" data-toggle="modal"
+												data-target="#modal-codigoResultado">Registrar código de
+												resultado</button>
+										</div>
+									</div>
+									<div class="row" style="padding: 20px;">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="tablaCR">
+													<thead style="text-align: center;">
+														<tr>
+															<th>N°</th>
+															<th>Código de Resultado</th>
+															<th>Descripción</th>
+															<th>Estatus</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody style="text-align: center;">
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+
+					<!-- Relación -->
+					<div class="border p-2 card" style="padding-top: 20px;">
+						<div class="">
+							<div class="col-sm-12">
+								<fieldset class="border p-2">
+									<legend class="float-none w-auto p-2">Relación entre códigos</legend>
+									<div class="row" style="text-align: right;">
+										<div class="col-sm-12">
+											<button style="background: #0dcaf0; border-color: #0dcaf0;"
+												class="btn btn-primary" type="button"
+												onclick="abrirModalRelacion()">Registrar relación</button>
+										</div>
+									</div>
+									<div class="row" style="padding: 20px;">
+										<div class="col-sm-12">
+											<div class="table-responsive">
+												<table class="table table-sm" style="width: 100%;" id="tablaRelacion">
+													<thead style="text-align: center;">
+														<tr>
+															<th>N°</th>
+															<th>Código de Acción</th>
+															<th>Código de Resultado</th>
+															<th>Acción a Realizar</th>
+															<th>Última Gestión Vigente</th>
+															<th>Bloqueo en Listas Negras</th>
+															<th>Estatus</th>
+															<th>Tipo de Gestion</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+													<tbody style="text-align: center;">
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal agregar telefonos -->
+				<div class="modal fade" id="telefonoModal" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Teléfonos para Sucursales y Call Center</strong></h5>
+								<button type="button" class="btn-close" onclick="limpiarFormTelefonos()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formulario" id="formTelefono">
+											<div class="row">
+												<div class="col-sm-12">
+													<label for="searchInput">Buscar sucursal:</label><span
+														style="color: red;">*</span>
+													<!-- Utilizamos el atributo "list" para vincular con el elemento "datalist" -->
+													<input type="search" class="form-control" id="searchInput"
+														list="opciones" autocomplete="off"
+														placeholder="Nombre sucursal">
+													<!-- Lista de opciones para el datalist -->
+													<datalist id="opciones">
+														<!-- Las opciones se agregarán dinámicamente aquí -->
+													</datalist>
+													<p id="errorSucursal"
+														style="color: red;display: none; font-size: small; padding-left: 5px;">
+														<i><b>Campo Requerido</b><br><b>(Si el campo no esta vacio puede ser que la sucrsal no existe o ya fue registrada)</b></i>
+													</p>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label>Teléfono:</label><span style="color: red;">*</span>
+														<input type="text" pattern="[0-9]*" maxlength="10"
+															class="form-control" id="telefono" required>
+														<p id="errorTelefono"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+														<p id="soloTelefono"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>solo números, 10 carácteres</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label>Extensión:</label><span style="color: red;">*</span>
+														<input type="text" pattern="[0-9]*" maxlength="5"
+															class="form-control" id="extension" required>
+														<p id="errorExtension"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+														<p id="soloExtension"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>solo números, 5 carácteres</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-8">
+													<label>Correos electrónicos:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="correoElectronico"
+														required oninput="verificarInput()">
+													<p id="minimoUno"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>agregar mínimo un correo</b></i>
+													</p>
+													<p id="soloCorreos"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>ingrese un correo electrónico válido</b></i>
+													</p>
+												</div>
+												<div class="col-sm-4" style="padding-top: 24px;">
+													<button id="agregarCorreo" onmousedown="agregarChip()"
+														style='background: rgb(0, 128, 0); border-color: rgb(0, 128, 0);'
+														type="button" class="btn btn-primary" disabled>Agregar</button>
+												</div>
+												<!-- Contenedor para los chips -->
+												<div id="chipsContainer" class="mt-2"></div>
+											</div>
+
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Comentarios:</label>
+														<textarea class="form-control" id="comentarios"></textarea>
+														<p id="errorComentarios"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarFormTelefonos()" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="limpiarFormTelefonos()" data-dismiss="modal"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Modal editar telefonos -->
+				<div class="modal fade" id="editarTelModal" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Teléfonos para Sucursales y Call Center</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModal()" data-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="editarTel" id="editarTel">
+											<div class="row">
+												<div class="col-sm-6">
+													<label>Sucursal:</label>
+													<input type="text" class="form-control" id="sucursalE" disabled>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Dirección:</label>
+													<textarea type="text" class="form-control" id="direccionE"
+														disabled></textarea>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label>Teléfono:</label><span style="color: red;">*</span>
+														<input type="text" pattern="[0-9]*" maxlength="10"
+															class="form-control" id="telefonoE" required>
+														<p id="alertaTel"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+														<p id="alertaTel1"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>solo números, 10 carácteres</b></i>
+														</p>
+													</div>
+												</div>
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label>Extensión:</label><span style="color: red;">*</span>
+														<input type="text" class="form-control" id="extensionE"
+															pattern="[0-9]*" maxlength="5" required>
+														<p id="alertaExt"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>campo requerido</b></i>
+														</p>
+														<p id="alertaExt1"
+															style="color: red;display: none; font-size: small; padding-left: 5px;">
+															<i><b>solo números, 5 carácteres</b></i>
+														</p>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-8">
+													<label>Correos electrónicos:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="correoElectronicoE"
+														required oninput="verificarInputE()">
+													<p id="minimoUnoE"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>agregar mínimo un correo</b></i>
+													</p>
+													<p id="soloCorreosE"
+														style="color: red; display: none; font-size: small; padding-left: 5px;">
+														<i><b>ingrese un correo electrónico válido</b></i>
+													</p>
+												</div>
+												<div class="col-sm-4" style="padding-top: 24px;">
+													<button id="agregarCorreoE" onmousedown="agregarChipE()"
+														style='background: rgb(0, 128, 0); border-color: rgb(0, 128, 0);'
+														type="button" class="btn btn-primary" disabled>Agregar</button>
+												</div>
+												<!-- Contenedor para los chips -->
+												<div id="chipsContainerE" class="mt-2"></div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Comentarios:</label>
+														<textarea class="form-control" id="comentariosE"></textarea>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarEditarTel(idTel)" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="cerrarModal()" class="btn btn-light">Salir</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Modal agregar código acción -->
+				<div class="modal fade" id="modal-codigoAccion" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Código de Acción</strong></h5>
+								<button type="button" class="btn-close" onclick="limpiarFormAccion()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formulario" id="form-accion">
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Código:</label><span
+														style="color: red;">*</span>
+														<input type="text" class="form-control" id="nombreAccion"
+															required>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Descripción:</label><span
+														style="color: red;">*</span>
+														<input type="text" class="form-control" id="descripcionAccion"
+															required>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarFormAccion()" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="limpiarFormAccion()" data-dismiss="modal"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal editar código de acción -->
+				<div class="modal fade" id="modalEditar-codigoAccion" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Código de Acción</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalAccion()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="editarCodigoAccion" id="editarCodigoAccion">
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Código:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="nombreAccionE" required>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Descripción:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="descripcionAccionE"
+														required>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarEditarAccion(idAccion)" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="cerrarModalAccion()" class="btn btn-light">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal agregar código resultado -->
+				<div class="modal fade" id="modal-codigoResultado" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Código de Resultado</strong></h5>
+								<button type="button" class="btn-close" onclick="limpiarFormResultado()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formulario" id="form-accion">
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Código:</label><span
+														style="color: red;">*</span>
+														<input type="text" class="form-control" id="nombreResultado"
+															required>
+													</div>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<div class="form-group">
+														<label>Descripción:</label><span
+														style="color: red;">*</span>
+														<input type="text" class="form-control"
+															id="descripcionResultado" required>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarFormResultado()" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="limpiarFormResultado()" data-dismiss="modal"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal editar código de resultado -->
+				<div class="modal fade" id="modalEditar-codigoResultado" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Código de Resultado</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalResultado()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="editarCodigoResultado" id="editarCodigoResultado">
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Código:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="nombreResultadoE"
+														required>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Descripción:</label><span
+														style="color: red;">*</span>
+													<input type="text" class="form-control" id="descripcionResultadoE"
+														required>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarEditarResultado(idResultado)"
+									class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="cerrarModalResultado()"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- Modal agregar relacion -->
+				<div class="modal fade" id="modal-agregarRelacion" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Relación entre códigos</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalRelacionA()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formulario" id="formRelacion">
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Código acción:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectAccion">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Código resultado:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectResultado">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Acción a realizar:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectRealizar">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Última gestión vigente:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectGestion">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Tipo de bloqueo:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectBloqueo">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Tipo de gestion:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="tipoGestion">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarFormRelacion()" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="cerrarModalRelacionA()" data-dismiss="modal"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Modal editar relacion -->
+				<div class="modal fade" id="modal-editarRelacion" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"><strong>Relación entre códigos</strong></h5>
+								<button type="button" class="btn-close" onclick="cerrarModalRelacionB()"
+									data-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-sm-12">
+										<form name="formulario" id="formEditarRelacion">
+											<div class="row">
+												<div class="col-sm-12">
+													<label>Código acción:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectAccionE">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Código resultado:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectResultadoE">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Acción a realizar:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectRealizarE">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Última gestión vigente:</label><span
+														style="color: red;">*</span>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectGestionE">
+														<option value="" disabled selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Tipo de bloqueo:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="selectBloqueoE">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+											<div class="row" style="padding-top: 10px;">
+												<div class="col-sm-12">
+													<label>Tipo de gestion:</label>
+													<select style="width: 470px; height: 40px; border-radius: 5px;"
+														id="tipoGestionE">
+														<option value="" selected>Elige una opción</option>
+													</select>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+									onclick="validarFormRelacionE()" class="btn btn-primary">Guardar</button>
+								<button type="button" onclick="cerrarModalRelacionB()" data-dismiss="modal"
+									class="btn btn-light">Salir</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/operaciones/configuracion.js}"></script>
+		<script th:src="@{/js/operaciones/tablas/configuracionTablas.js}"></script>
+		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+	</th:block>
+</body>
+
+
+</html>
