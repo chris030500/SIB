@@ -1,21 +1,24 @@
 package ahorrosbienestar.sib.std.presolicitudes.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.presolicitudes.model.SolicitudCredito;
 import ahorrosbienestar.sib.std.presolicitudes.repository.SolicitudCreditoRepository;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 @Service
 public class SolicitudCreditoService {
+
+	private final Logger logger = Logger.getLogger(SolicitudCreditoService.class); // Corregido para no ser estático
 
 	@Autowired
     private SolicitudCreditoRepository solicitudCreditoRepository;
@@ -28,16 +31,16 @@ public class SolicitudCreditoService {
         return solicitudCreditoRepository.findById(id);
     }
 	
-	public Page<SolicitudCredito> listarSolicitudes(Integer idEmpleado, Pageable pageable) {
-	    return solicitudCreditoRepository.findAllByEjecutivoOrderByIdDesc(idEmpleado, pageable);
+	public List<SolicitudCredito> listarSolicitudes(Integer idEmpleado) {
+	    return solicitudCreditoRepository.findAllByEjecutivoOrderByIdDesc(idEmpleado);
 	}
 	
-	public Page<SolicitudCredito> listarSolicitudesPorSucursales(List<Integer> sucursales, Pageable pageable) {
-	    return solicitudCreditoRepository.findAllBySucursalIn(sucursales, pageable);
+	public List<SolicitudCredito> listarSolicitudesPorSucursales(List<Integer> sucursales) {
+	    return solicitudCreditoRepository.findAllBySucursalIn(sucursales);
 	}
 
-	public Page<SolicitudCredito> listarTodasSolicitudes(Pageable pageable) {
-	    return solicitudCreditoRepository.findAll(pageable);
+	public List<SolicitudCredito> listarTodasSolicitudes() {
+	    return solicitudCreditoRepository.findAll();
 	}
 	
 	// Método para obtener una solicitud por su ID
@@ -52,10 +55,13 @@ public class SolicitudCreditoService {
     }
 	
     @Transactional
-    public void actualizarEstatusSolicitudes(List<Map<String, String>> solicitudes) {
+    public void actualizarEstatusSolicitudes(List<Map<String, String>> solicitudes, Usuario usuarioRespuesta) {
         for (Map<String, String> solicitud : solicitudes) {
             String noSolicitudStr = solicitud.get("NoSolicitud");
             String autoriza = solicitud.get("Autoriza SI/NO");
+            String comentariosEmpresa = solicitud.get("Comentarios Empresa") == null
+            	    ? ""
+            	    : solicitud.get("Comentarios Empresa").toUpperCase();
 
             if (noSolicitudStr == null || autoriza == null) {
                 System.out.println("Datos faltantes en la solicitud.");
@@ -68,21 +74,24 @@ public class SolicitudCreditoService {
 
                 if (solicitudOptional.isPresent()) {
                     SolicitudCredito solicitudCredito = solicitudOptional.get();
-
+                    solicitudCredito.setFechaRegistroRespuestaEmp(LocalDate.now());
+                    solicitudCredito.setComentariosEmpresa(comentariosEmpresa);
+                    solicitudCredito.setUsuarioRegRespuesta(usuarioRespuesta);
                     if ("SI".equalsIgnoreCase(autoriza)) {
                         solicitudCredito.setEstatus(3); // Aprobada
-                        System.out.println("Solicitud " + noSolicitud + " ha sido APROBADA.");
+                       
+                        logger.info("Solicitud " + noSolicitud + " ha sido APROBADA.");
                     } else {
                         solicitudCredito.setEstatus(4); // Rechazada
-                        System.out.println("Solicitud " + noSolicitud + " ha sido RECHAZADA.");
+                        logger.info("Solicitud " + noSolicitud + " ha sido RECHAZADA.");
                     }
 
                     solicitudCreditoRepository.save(solicitudCredito);
                 } else {
-                    System.out.println("No se encontró la solicitud con ID " + noSolicitud);
+                	logger.info("No se encontró la solicitud con ID " + noSolicitud);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Número de solicitud inválido: " + noSolicitudStr);
+            	logger.error("Número de solicitud inválido: " + noSolicitudStr);
             }
         }
     }
