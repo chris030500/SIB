@@ -83,8 +83,6 @@ public class RptBasesEbrController {
 	@Autowired
 	private TipoEmpresaService tipoEmpresaService;
 	
-	private LocalDate currentDate = LocalDate.now();
-	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
@@ -204,7 +202,7 @@ public class RptBasesEbrController {
 			        + datosReporte.getPk_id_reporte()
 			        + "&parametros="
 			        + "&tipoDocumento=" + datosReporte.getVc_extension()
-			        + "&identificadorDoc=" + currentDate;
+			        + "&identificadorDoc=" + LocalDate.now();
 
 			return ResponseEntity.ok(new BasesEbrResponse<>("Reporte generado", reporteURL));
 		} catch (Exception e) {
@@ -243,7 +241,7 @@ public class RptBasesEbrController {
 			        + datosReporte.getPk_id_reporte()
 			        + "&parametros=?idProceso=" + idProceso
 			        + "&tipoDocumento=" + datosReporte.getVc_extension()
-			        + "&identificadorDoc=" + currentDate;
+			        + "&identificadorDoc=" + LocalDate.now();
 
 			return ResponseEntity.ok(new BasesEbrResponse<>("Reporte generado", reporteURL));
 		} catch (Exception e) {
