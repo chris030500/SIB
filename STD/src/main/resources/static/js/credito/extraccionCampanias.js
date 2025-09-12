@@ -30,7 +30,7 @@ document.getElementById("Campania").addEventListener("change", function() {
 			
 	        if(data === 0){
 				
-				//habilta el boton Extraer
+				//habilita el boton Extraer
 				// @ts-ignore
         		document.getElementById("btnExtraer").disabled = false;
         		// @ts-ignore
@@ -54,7 +54,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
         // @ts-ignore
-        document.getElementById("btnBuscar").disabled = false;
+        //document.getElementById("btnBuscar").disabled = false;
         //cuando le de clic al boton
         //campaña debe ser difernete de 0
         //estatus = 0
@@ -91,8 +91,11 @@ document.getElementById("Estatus").addEventListener("change", function() {
         
     } 
     if (valor === "2") { // Generar Archivo Buró
+        
         // @ts-ignore
-        //document.getElementById("btnGenerar").disabled = false;
+		document.getElementById("btnCargar").disabled = false;
+		// @ts-ignore
+		document.getElementById("btnCancelar").disabled = false;
     } 
     if (valor === "3") { // Cargar Respuesta Buró
         // @ts-ignore
@@ -167,8 +170,8 @@ function btnExtraerFn() {
         vc_valor_propiedad: bandera,
         
     };
-    console.log(data);
-    console.log(dataParam);
+    //console.log(data);
+    //console.log(dataParam);
     const jsonBitacora = JSON.stringify(data);
     let tabla = 'TBL_PROCESO_CAMPANIA';
     console.log(jsonBitacora);
@@ -297,6 +300,10 @@ function btnExtraerFn() {
 
 
 function btnGenerarArchivoBuro() {
+	//deshabilita el boton Generar Archivo Buro
+	// @ts-ignore
+	document.getElementById("btnGenerar").disabled = true;
+	
 	var urlServicio;
 	//seleccionar el id proceso actual por tipo de campania
 	//seleccionar el minimo por si hay dos que sea el primero que se hizo 
@@ -304,6 +311,31 @@ function btnGenerarArchivoBuro() {
 	// @ts-ignore
 	var tipoCampania = parseInt(document.getElementById("Campania").value);
 	//console.log("tipoCampania:",tipoCampania);
+	
+	const dataExtCargaBuro = {
+        
+        // @ts-ignore
+        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+        
+        // @ts-ignore
+        dt_fecha_extraccion: document.getElementById("idFecha").value,
+        i_bandera_extraccion: 0,
+        // @ts-ignore
+        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
+        // @ts-ignore
+        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
+        // @ts-ignore
+        dt_fecha_envio_mc: document.getElementById("idFecha").value,
+        i_estatus_reg: 1,
+        //2	Generar Archivo
+        i_id_estatus_campania: 2,
+        // @ts-ignore
+        dt_fecha_registro: document.getElementById("idFecha").value,
+        // @ts-ignore
+        i_user_reg: parseInt(document.getElementById("idUser").value),
+        
+    };
+	
 	fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
     .then(resp => {
         if (!resp.ok) {
@@ -312,6 +344,12 @@ function btnGenerarArchivoBuro() {
         return resp.json(); // porque el backend regresa un int
     })
     .then(data => {
+		
+		const dataProceso = {
+	        pk_id_proceso_campania: data,
+	        i_estatus_reg: 2,
+	    };
+		
 		//console.log("data:",data);
 		//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
 		// @ts-ignore
@@ -332,15 +370,73 @@ function btnGenerarArchivoBuro() {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-	
-			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-	
-			//console.log(urlReporte);
-			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-			window.open(urlReporte);
-			window.focus();
-	
+			
+			//update TBL_PROCESO_CAMPANIA I_ESTATUS_REG = 2
+			//insert TBL_PROCESO_CAMPANIA
+			
+			fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        },
+		        body: JSON.stringify(dataProceso)
+		    })
+		    .then(resp => {
+			    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
+			    return resp.text();
+			})
+			.then(() => {
+				
+				///--
+				fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
+				    method: 'POST',
+				    headers: { 'Content-Type': 'application/json' },
+				    body: JSON.stringify(dataExtCargaBuro)
+				})
+				.then(async resp => {
+				    if (!resp.ok) {
+				        const errorText = await resp.text();
+				        throw new Error(errorText || "Error desconocido");
+				    }
+				    return resp.text();
+				})
+				.then(() => {
+				    // 
+				    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+					//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+			
+					//console.log(urlReporte);
+					//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+					window.open(urlReporte);
+					window.focus();
+				    
+				})
+				.catch(err => {
+				    console.error("Error:", err);
+				    // @ts-ignore
+				    Swal.fire({
+				        title: "Error",
+				        text: err.message,
+				        icon: "error",
+				        confirmButtonText: "Cerrar"
+				    });
+				});
+				///--
+				
+				
+				
+			})
+			.catch(err => {
+			    //console.error("Error al actualizar Proceso Campania:", err);
+			   // @ts-ignore
+			   swal({
+				title: "",
+				text: 'Error al actualizar Proceso Campania',
+			        icon: 'error'
+			    });
+			});
+				///////////////////////
+			
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			// @ts-ignore
 			swal({
@@ -404,5 +500,234 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Error al cargar estatus', err);
         }
     });
+    
+    //funcion para mostrar catalogo de tipos buro de credito (Adviser/Prospector)
+    $.ajax({
+        url: newUrlBase + 'credito/api/catTipoBuro',
+        type: 'GET',
+        success: function(data) {
+            let select = $('#tipoArchivoBuro');
+            select.empty();
+            select.append('<option value="0">Seleccione</option>');
+
+            data.forEach(function(item) {
+                select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+            });
+        },
+        error: function(err) {
+            console.error('Error al cargar catálogos', err);
+        }
+    });
 });
 
+// Abrir modal CargarRespuestaBuro
+  function btnCargarRespuestaBuro() {
+    let modal = new bootstrap.Modal(document.getElementById('modalCargarBuro'));
+    modal.show();
+  }
+
+// Seleccionar archivo buro
+  function seleccionarArchivoBuro() {
+    const input = document.getElementById("inputArchivo");
+    const span = document.getElementById("nombreArchivo");
+    // @ts-ignore
+    if (input.files.length > 0) {
+      // @ts-ignore
+      span.textContent = input.files[0].name;
+    } else {
+      span.textContent = "Ningún archivo seleccionado";
+    }
+  }
+  
+ // Validar y simular subida
+  function subirArchivo() {
+    // @ts-ignore
+    const tipo = document.getElementById("tipoArchivoBuro").value;
+    // @ts-ignore
+    const archivo = document.getElementById("inputArchivo").files[0];
+
+    if (!tipo) {
+      	// @ts-ignore
+		swal({
+			title: "",
+			text: 'Seleccione un tipo de archivo.',
+			icon: "error",
+	    
+	    });
+      return;
+    }
+
+    if (!archivo) {
+      
+      // @ts-ignore
+		swal({
+			title: "",
+			text: 'Adjunte un archivo Excel.',
+			icon: "error",
+	    
+	    });
+      return;
+    }
+
+    //console.log("Tipo:", tipo);
+    //console.log("Archivo:", archivo.name);
+    
+    const reader = new FileReader();
+  	reader.onload = function(ev) {
+    // @ts-ignore
+    const data = new Uint8Array(ev.target.result);
+    // @ts-ignore
+    const workbook = XLSX.read(data, { type: "array" });
+
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    // @ts-ignore
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    let registros = [];
+    if (tipo==1) {
+		let rfcCliente = rows.slice(3).map(fila => fila[2]);
+	    // Extraer columna KB desde fila 4-Procentaje de uso maximo de Total de Créditos Abiertos
+	    let valoresBK = rows.slice(3).map(fila => fila[62]); 
+	    //multiplicar por 100 y redondear los decimales
+	    // Extraer columna BO desde fila 4-MOP máximo de Estrategia Bienestar
+	    let valoresBO = rows.slice(3).map(fila => fila[66]); 
+	    // Extraer columna BP desde fila 4-BCS mínimo de Estrategia Bienestar
+	    let valoresBP = rows.slice(3).map(fila => fila[67]);
+	    // Extraer columna BQ desde fila 4-ICC mínimo de Estrategia Bienestar
+	    let valoresBQ = rows.slice(3).map(fila => fila[68]);
+	    // Extraer columna BR desde fila 4-Riesgo máximo de Estrategia Bienestar
+	    let valoresBR = rows.slice(3).map(fila => fila[69]);
+	    /*console.log("Tipo seleccionado:", tipo);
+	    console.log("Valores columna rfcCliente:", rfcCliente);
+	    console.log("Valores columna valoresBK:", valoresBK);
+	    console.log("Valores columna valoresBO:", valoresBO);
+	    console.log("Valores columna valoresBP:", valoresBP);
+	    console.log("Valores columna valoresBQ:", valoresBQ);
+	    console.log("Valores columna valoresBQ:", valoresBR);*/
+	    
+	    // @ts-ignore
+	    /*const data = {
+	        vc_rfc_cliente: rfcCliente,
+	        i_tipo_buro_credito: tipo,
+	        d_porc_uso_maximo_adviser: valoresBK,
+	        d_mop_maximo_adviser: valoresBO,
+	        d_bcs_minimo_adviser: valoresBP,
+	        d_icc_minimo_adviser: valoresBQ,
+	        i_riesgo_maximo_adviser: valoresBR,
+	        i_estatus_reg: 1,
+	        // @ts-ignore
+	        dt_fecha_registro:document.getElementById("idFecha").value,
+	        // @ts-ignore
+	        i_user_reg: parseInt(document.getElementById("idUser").value),
+	    };*/
+	    
+	    // Construir array de objetos
+		registros = rfcCliente.map((rfc, idx) => ({
+		    vc_rfc_cliente: rfc,
+		    i_tipo_buro_credito: tipo,
+		    d_porc_uso_maximo_adviser: cortarDecimales(valoresBK[idx],3),
+		    d_mop_maximo_adviser: valoresBO[idx],
+		    d_bcs_minimo_adviser: valoresBP[idx],
+		    d_icc_minimo_adviser: valoresBQ[idx],
+		    vc_riesgo_maximo_adviser: valoresBR[idx],
+		    d_bcs_minnimo_prospector: 0,
+		    d_icc_minnimo_prospector: 0,
+		    vc_riesgo_maximo_prospector: '0',
+		    i_estatus_reg: 1,
+		    // @ts-ignore
+		    dt_fecha_registro: document.getElementById("idFecha").value,
+		    // @ts-ignore
+		    i_user_reg: parseInt(document.getElementById("idUser").value),
+		}));
+	    
+	}else if(tipo==2){
+		
+	}else{
+		// @ts-ignore
+		swal({
+			title: "",
+			text: 'Seleccione un tipo de archivo.',
+			icon: "error",
+	    
+	    });
+	    return;
+	}
+    //console.log("Registros a enviar:", registros);
+    //console.log("Cantidad de registros construidos:", registros.length);
+	console.table(registros);
+    
+    fetch(newUrlBase + 'credito/api/crearValBuroCredito', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registros)
+    })
+    .then(resp => {
+	    if (!resp.ok) throw new Error("Error al actualizar datos Tipo Buro de Credito");
+	    return resp.text();
+	})
+	.then(() => {
+		
+		///
+		
+		///
+		
+		// @ts-ignore
+		swal({
+		title: "",
+		text: 'Actualizado correctamente',
+		icon: "success",
+	    // @ts-ignore
+	    }).then(() => {
+	        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+	    });
+	})
+	.catch(err => {
+	    console.error("Error al actualizar datos Tipo Buro de Credito:", err);
+	   // @ts-ignore
+	   swal({
+		title: "",
+		text: 'Error al actualizar',
+	        icon: 'error'
+	    });
+	});
+
+    // Aquí podrías enviar solo esos valores al backend
+    /*
+    fetch("/guardar-kb", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tipoArchivo: tipo, valoresKB: valoresKB })
+    }).then(r => r.json()).then(res => {
+      alert("Guardado exitoso: " + res.message);
+    });
+    */
+  };
+  reader.readAsArrayBuffer(archivo);
+
+    // Aquí puedes enviar al backend con fetch/AJAX
+    /*
+    let formData = new FormData();
+    formData.append("tipo", tipo);
+    formData.append("archivo", archivo);
+
+    fetch("/endpoint-subida", {
+      method: "POST",
+      body: formData
+    }).then(resp => resp.text())
+      .then(msg => alert("Respuesta del servidor: " + msg));
+    */
+
+    alert("Archivo cargado correctamente!");
+
+    // Cerrar modal
+    let modal = bootstrap.Modal.getInstance(document.getElementById('modalCargarBuro'));
+    modal.hide();
+  }
+
+function cortarDecimales(valor, decimales) {
+    let str = String(valor);                // asegurar que sea string
+    let punto = str.indexOf(".");           // buscar la posición del punto
+    if (punto === -1) return str;           // si no hay punto, se regresa igual
+    return str.substring(0, punto + decimales + 1); // cortar hasta 3 después del punto
+}

@@ -3,7 +3,10 @@ package ahorrosbienestar.sib.std.credito.procesosCampanias.repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -60,5 +63,15 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 			+ "and i_bandera_extraccion = 2",
        nativeQuery = true)
 	int reporteBuroCredito(@Param("tipoCampania") int tipoCampania);
+	
+	@Modifying
+	@Transactional // Necesario para ejecutar updates
+	@Query(value = "UPDATE SIB.TBL_PROCESO_CAMPANIA SET "
+		+ "I_ESTATUS_REG = :i_estatus_reg "
+        + "WHERE PK_ID_PROCESO_CAMPANIA = :pk_id_proceso_campania", nativeQuery = true)
+	int actualizarProcesoCampania(
+	    @Param("pk_id_proceso_campania") Integer pk_id_proceso_campania,
+	    @Param("i_estatus_reg") Integer i_estatus_reg
+	);
 	
 }

@@ -3,12 +3,13 @@ package ahorrosbienestar.sib.std.credito.procesosCampanias.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -33,6 +34,15 @@ public class ProcesosCampaniasService {
     
     public int contarProcesosExtraccionFin(int tipoCampania) {
         return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania);
+    }
+    
+    @Transactional
+    public boolean actualizarProcesoCampania(ProcesosCampaniasModel procesos) {
+        int filasAfectadas = procesosCampaniasRepository.actualizarProcesoCampania(
+        		procesos.getPk_id_proceso_campania(),
+        		procesos.getI_estatus_reg()
+        );
+        return filasAfectadas > 0;
     }
 	
 }

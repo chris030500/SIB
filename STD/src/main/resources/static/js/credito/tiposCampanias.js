@@ -877,7 +877,7 @@ function modificarTiposCampanias(){
 																																												        i_estatus: 1,
 																																												        dt_fecha_registro:document.getElementById("idFecha").value,
 																																												    };
-																																												    console.log(data);
+																																												    //console.log(data);
 																																												    const jsonBitacora = JSON.stringify(data);
 																																												    let tabla = 'TBL_TIPOS_CAMPANIA';
 																																												    console.log(jsonBitacora);

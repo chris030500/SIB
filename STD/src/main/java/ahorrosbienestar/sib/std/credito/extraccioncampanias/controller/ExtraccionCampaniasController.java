@@ -20,12 +20,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
+import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
+import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.ValBuroCreditoCampaniaModel;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
+import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ValBuroCreditoCampaniaService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
@@ -87,10 +91,18 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	private HisTiposCampaniasService serviceHis;
 	
 	@Autowired
+	private ValBuroCreditoCampaniaService serviceValBuroCredito;
+	
+	@Autowired
 	ConfigService configService;
 	
 	@Autowired
 	private IReporteRepository iReporteRepository;
+	
+	@Autowired
+	private ICatalogoRepository iCatalogoRepository;
+	
+	private static final int opcBusquedaGrupo = 38;
 
 	
 	List<Usuario> usuario = null;
@@ -249,6 +261,35 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	    }
 	}
 	
+	//alta datos Tipo Buro de Credito 1: PROSPECTOR, 2: ADVISER
+	/*@PostMapping("/api/crearValBuroCredito")
+	public ResponseEntity<String> crear(@RequestBody ValBuroCreditoCampaniaModel buroCredito) {
+	    try {
+	        
+	    	if(serviceValBuroCredito.save(buroCredito) !=null) {
+				return ResponseEntity.ok("Datos Tipo Buro de Credito guardada correctamente");
+			}else {
+				return ResponseEntity.ok("Error al guardar datos Tipo Buro de Credito");
+			}
+	    	
+	    } catch (Exception e) {
+	    	
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear datos Tipo Buro de Credito: " + e.getMessage());
+	    }
+	}*/
+	//inserta todo el array
+	@PostMapping("/api/crearValBuroCredito")
+	public ResponseEntity<String> crear(@RequestBody List<ValBuroCreditoCampaniaModel> buroCreditos) {
+	    try {
+	        serviceValBuroCredito.saveAll(buroCreditos);
+	        return ResponseEntity.ok("Se guardaron " + buroCreditos.size() + " registros de Buro de Credito correctamente");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear datos Tipo Buro de Credito: " + e.getMessage());
+	    }
+	}
+	
 	@GetMapping("/api/countExtraccion")
     @ResponseBody
     public int contarProcesosExtraccion() {
@@ -292,6 +333,47 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 			return ResponseEntity.ok(respuesta);
 		}
 
+	}
+	
+	@PostMapping("/api/actualizarProcesoCampania")
+	public ResponseEntity<String> actualizar(@RequestBody ProcesosCampaniasModel procesos) {
+	    try {
+	        boolean actualizado = procesosCampaniasService.actualizarProcesoCampania(procesos);
+	        if (actualizado) {
+	            return ResponseEntity.ok("Actualizado correctamente");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proceso campania no encontrada o sin cambios");
+	        }
+	    } catch (Exception e) {
+	        // Log the error here to get more information about what went wrong
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar el proceso campania: " + e.getMessage());
+	    }
+	}
+	
+	@PostMapping("/api/crearExtCargaBuro")
+    public ResponseEntity<String> crearExtCargaBc(@RequestBody ProcesosCampaniasModel procesos) {
+		
+        try {
+            if (procesosCampaniasService.save(procesos) != null) {
+                return ResponseEntity.ok("Proceso guardado correctamente");
+            } else {
+            	logger.error("Error al guardar");
+                return ResponseEntity.ok("Error al guardar proceso de extraccion de carga buro");
+                
+            }
+        } catch (Exception e) {
+        	logger.error("Error al crear" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Error al crear proceso de extraccion de carga buro: " + e.getMessage());
+        }
+    }
+	
+	//llenar el combo de tipos buro de credito (Adviser/Prospector)
+	@GetMapping("/api/catTipoBuro")
+	@ResponseBody
+	public List<Catalogo> getCatalogoTipoCampanias() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo);
 	}
     
     public int validarAcceso(String rutaController) {

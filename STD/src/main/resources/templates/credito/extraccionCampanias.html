@@ -89,6 +89,42 @@
 									    </div>
 									</div>
 									
+									<!-- Modal -->
+									<div class="modal fade" id="modalCargarBuro" tabindex="-1" aria-labelledby="modalCargarBuroLabel" aria-hidden="true">
+									  <div class="modal-dialog">
+									    <div class="modal-content rounded-3 shadow">
+									      <div class="modal-header">
+									        <h5 class="modal-title" id="modalCargarBuroLabel">Cargar Respuesta Buró</h5>
+									        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+									      </div>
+									
+									      <div class="modal-body">
+									        <!-- ComboBox -->
+									        <div class="mb-3">
+									          <label for="tipoArchivoBuro" class="form-label">Tipo de Archivo</label>
+									          <select class="form-select" id="tipoArchivoBuro">
+									            
+									          </select>
+									        </div>
+									
+									        <!-- Botón para seleccionar archivo -->
+									        <div class="mb-3">
+									          <label class="form-label">Archivo Excel</label><br>
+									          <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('inputArchivo').click();">
+									            Seleccionar Archivo
+									          </button>
+									          <span id="nombreArchivo" class="ms-2 text-muted">Ningún archivo seleccionado</span>
+									          <input type="file" id="inputArchivo" style="display: none;" accept=".xlsx,.xls,.csv" onchange="seleccionarArchivoBuro()" />
+									        </div>
+									      </div>
+									
+									      <div class="modal-footer">
+									        <button type="button" class="btn btn-primary" onclick="subirArchivo()">Subir</button>
+									      </div>
+									    </div>
+									  </div>
+									</div>
+									<!-- Fin Modal -->
 								</div>
 						</fieldset>
 					</div>
@@ -105,6 +141,8 @@
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/vendor/js/xlsx.full.min.js}"></script>
+		<!--script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script-->
 		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
 		<script th:src="@{/js/credito/fillDataTableConfig.js}"></script>
 		<script th:src="@{/js/credito/extraccionCampanias.js}"></script>
