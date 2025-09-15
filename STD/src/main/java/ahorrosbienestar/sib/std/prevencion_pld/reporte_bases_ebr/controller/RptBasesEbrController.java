@@ -164,15 +164,16 @@ public class RptBasesEbrController {
 
 	
 	@PostMapping("/ejecutarProcesoBasesEbr")
-	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
-
-	    LocalDate fechaInicio = LocalDate.parse(periodo.get("fechaInicio"));
-	    LocalDate fechaFin = LocalDate.parse(periodo.get("fechaFin"));
+	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> payload) {
+		
+		Integer idPeriodo = Integer.parseInt(payload.get("idPeriodo"));
+	    LocalDate fechaInicio = LocalDate.parse(payload.get("fechaInicio"));
+	    LocalDate fechaFin = LocalDate.parse(payload.get("fechaFin"));
 	    
 		Integer idUsuario = obtenerIdUsuario();
 		
 	    try {
-	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(fechaInicio, fechaFin, idUsuario);
+	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(idPeriodo, fechaInicio, fechaFin, idUsuario);
 	        return ResponseEntity.ok(new BasesEbrResponse<>("proceso", proceso));
 	    } catch (RuntimeException e) {
 	    	logger.error("Ocurrió un error al registrar el proceso: " + e.getMessage());

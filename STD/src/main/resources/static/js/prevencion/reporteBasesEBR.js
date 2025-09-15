@@ -51,13 +51,10 @@ function validarPeriodo(fechaInicio, fechaFin) {
                     text: "Las fechas no corresponden a un periodo válido (primer semestre, segundo semestre o anual)",
                     icon: "warning"
                 });
-                return false;
+                return null;
             }
 
-            return res.json().then(data => {
-                //console.log("Periodo válido:", data.periodo);
-                return true;
-            });
+            return res.json();
         })
         .catch(err => {
             console.error("Error en fetch:", err);
@@ -66,7 +63,7 @@ function validarPeriodo(fechaInicio, fechaFin) {
                 text: "No se pudo validar el periodo.",
                 icon: "error"
             });
-            return false;
+            return null;
         });
 }
 
@@ -112,9 +109,10 @@ function mostrarRangoFechas() {
 					break;
 			}
 			
-			validarPeriodo(fechaInicio, fechaFin).then(esValido => {
-				if (!esValido) return;
-				procesarBasesEBR(fechaInicio, fechaFin);
+			validarPeriodo(fechaInicio, fechaFin).then(data => {
+				if (!data) return;
+				console.log(data.periodo.periodoId);
+				procesarBasesEBR(data.periodo.periodoId, fechaInicio, fechaFin);
 			});
 		}
 	});
@@ -128,7 +126,7 @@ function mostrarRangoFechas() {
 	});
 };
 
-async function procesarBasesEBR(fechaInicio, fechaFin) {
+async function procesarBasesEBR(idPeriodo, fechaInicio, fechaFin) {
 	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr`;
 
 	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
@@ -142,7 +140,7 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 		const response = await fetchJSON(url, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ fechaInicio: fechaInicio, fechaFin: fechaFin })
+			body: JSON.stringify({ idPeriodo: idPeriodo, fechaInicio: fechaInicio, fechaFin: fechaFin })
 		}); 
 		
 		const proceso = response.data;

@@ -19,29 +19,25 @@ public class ProcesoBasesEbrService {
 	@Autowired
 	private IProcesoBasesEbrRepository procesoEbrRepository;
 	
-	public ProcesoBasesEbr registrarProcesoBasesEbr(LocalDate fechaInicio, LocalDate fechaFin, int idUsuario) {
+	public ProcesoBasesEbr registrarProcesoBasesEbr(int idPeriodo, LocalDate fechaInicio, LocalDate fechaFin, int idUsuario) {
 		ProcesoBasesEbr proceso = new ProcesoBasesEbr();
 		
 		ZoneId zoneChihuahua = ZoneId.of("America/Chihuahua");
 		ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneChihuahua);
-		ZonedDateTime newTime = zonedDateTime.plusMinutes(5);
 		
 		LocalDateTime currentDateTime = zonedDateTime.toLocalDateTime();
 		
-		int minute = newTime.getMinute();
-		int hour = newTime.getHour();
-		
-		String cron = String.format("0 %d %d * * *", minute, hour);
-		
+		proceso.setPeriodoId(idPeriodo);
 		proceso.setFechaInicio(fechaInicio);
 		proceso.setFechaFin(fechaFin);
 		proceso.setUsuarioEjecuto(idUsuario);
 		proceso.setFechaEjecucion(currentDateTime);
 		proceso.setEstatusEjecucion(true);
-		proceso.setCron(cron);
 		proceso.setEstatusVobo(null);
 		proceso.setUsuarioVobo(null);
 		proceso.setFechaVobo(null);
+		proceso.setEstatusProceso(1);
+		proceso.setFechaTermino(null);
 		
 		return procesoEbrRepository.save(proceso);
 	}
