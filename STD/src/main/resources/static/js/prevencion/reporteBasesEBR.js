@@ -19,6 +19,27 @@ function mostrarTabs() {
 	});
 }
 
+async function generarRangoFechas() {
+	const fechaInicio = document.getElementById("fechaInicio");
+	const fechaFin = document.getElementById("fechaFin");
+	
+	const url = `${getAbsolutePath()}rangoFechasEbr`;
+	
+	try {
+		const data = await fetchJSON(url);
+		const { minYear, maxYear } = data;
+		
+		fechaInicio.setAttribute("min", `${minYear}-01-01`);
+		fechaInicio.setAttribute("max", `${maxYear}-12-31`);
+
+		fechaFin.setAttribute("min", `${minYear}-01-01`);
+		fechaFin.setAttribute("max", `${maxYear}-12-31`);
+
+	} catch(err) {
+		console.error("Error cargando rango de fechas:", err);
+	}
+} 
+
 function mostrarRangoFechas() {
 	const periodoSelect = document.getElementById('periodoSelect');
 	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
@@ -384,7 +405,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 
 	// Mostrar alerta de carga
 	Swal.fire({
-		title: "Subiendo archivo...",
+		title: "Procesando archivo...",
 		text: "Por favor espera mientras se procesa.",
 		allowOutsideClick: false,
 		allowEscapeKey: false,
@@ -416,7 +437,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 			if (ok) {
 				Swal.fire({
 					icon: "success",
-					title: "Archivo subido correctamente",
+					title: "Archivo cargado correctamente",
 					text: body,
 				}).then(() => {
 					procesoDiv.classList.remove('d-none');
@@ -447,6 +468,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 document.addEventListener("DOMContentLoaded", function () {
 	mostrarTabs();
 	mostrarVoboDiv();
+	generarRangoFechas();
 	mostrarRangoFechas();
 	mostrarAlertUltimoProceso();
 	onclickBotonesHistoricoBases();

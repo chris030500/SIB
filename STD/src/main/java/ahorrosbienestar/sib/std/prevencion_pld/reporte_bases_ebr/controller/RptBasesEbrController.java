@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -42,7 +43,7 @@ import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBa
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.TipoEmpresaService;
-import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.VoboBasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.BasesEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -78,7 +79,7 @@ public class RptBasesEbrController {
 	private ProcesoBasesEbrService procesoBasesEbrService;
 	
 	@Autowired
-	private VoboBasesEbrService voboBasesEbrService;
+	private BasesEbrService basesEbrService;
 	
 	@Autowired
 	private TipoEmpresaService tipoEmpresaService;
@@ -116,6 +117,21 @@ public class RptBasesEbrController {
 		}
 	}
 	
+    @GetMapping("/rangoFechasEbr")
+    public ResponseEntity<Map<String, Integer>>obtenerRangoFechas() {
+        try {
+            Map<String, Integer> rango = basesEbrService.obtenerRangoFechas();
+            return ResponseEntity.ok(rango);
+        } catch (Exception e) {
+            // Fallback: año actual si falla algo
+            int currentYear = java.time.Year.now().getValue();
+            Map<String, Integer> fallback = new HashMap<>();
+            fallback.put("minYear", currentYear);
+            fallback.put("maxYear", currentYear);
+            return ResponseEntity.ok(fallback);
+        }
+    }
+	
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
 
@@ -139,7 +155,7 @@ public class RptBasesEbrController {
     public ResponseEntity<String> ejecutarVistoBueno() {
     	Integer idUsuario = obtenerIdUsuario();
     	
-        voboBasesEbrService.ejecutarVoBo(idUsuario);
+        basesEbrService.ejecutarVoBo(idUsuario);
         return ResponseEntity.ok("Vobo ejecutado correctamente, ya se agregaron las bases en el histórico.");
     }
     
