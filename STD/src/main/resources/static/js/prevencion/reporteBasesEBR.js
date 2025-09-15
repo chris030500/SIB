@@ -40,6 +40,37 @@ async function generarRangoFechas() {
 	}
 } 
 
+function validarPeriodo(fechaInicio, fechaFin) {
+    const url = `${getAbsolutePath()}validarPeriodoEbr?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+    return fetch(url)
+        .then(res => {
+            if (!res.ok) {
+                Swal.fire({
+                    title: "¡Error!",
+                    text: "Las fechas no corresponden a un periodo válido (primer semestre, segundo semestre o anual)",
+                    icon: "warning"
+                });
+                return false;
+            }
+
+            return res.json().then(data => {
+                //console.log("Periodo válido:", data.periodo);
+                return true;
+            });
+        })
+        .catch(err => {
+            console.error("Error en fetch:", err);
+            Swal.fire({
+                title: "¡Error!",
+                text: "No se pudo validar el periodo.",
+                icon: "error"
+            });
+            return false;
+        });
+}
+
+
 function mostrarRangoFechas() {
 	const periodoSelect = document.getElementById('periodoSelect');
 	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
@@ -80,10 +111,12 @@ function mostrarRangoFechas() {
 					fechaFin = document.getElementById('fechaFin').value;
 					break;
 			}
-
-			procesarBasesEBR(fechaInicio, fechaFin);
+			
+			validarPeriodo(fechaInicio, fechaFin).then(esValido => {
+				if (!esValido) return;
+				procesarBasesEBR(fechaInicio, fechaFin);
+			});
 		}
-		
 	});
 
 	periodoSelect.addEventListener('change', () => {
@@ -171,7 +204,7 @@ async function mostrarAlertUltimoProceso() {
 
     try {
         const data = await fetchJSON(url);
-        console.log(data);
+        //console.log(data);
 
         if (data) {
             const rango = `${data.fechaInicio} - ${data.fechaFin}`;

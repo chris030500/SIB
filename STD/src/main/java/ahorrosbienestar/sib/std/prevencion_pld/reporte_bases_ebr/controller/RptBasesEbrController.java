@@ -39,11 +39,13 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.dto.BasesEbrResponse;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.PeriodoEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.TipoEmpresaService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.BasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.PeriodoEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -83,6 +85,10 @@ public class RptBasesEbrController {
 	
 	@Autowired
 	private TipoEmpresaService tipoEmpresaService;
+	
+	@Autowired
+	private PeriodoEbrService periodoService;
+	
 	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -131,6 +137,31 @@ public class RptBasesEbrController {
             return ResponseEntity.ok(fallback);
         }
     }
+    
+    @GetMapping("/validarPeriodoEbr")
+    public ResponseEntity<Map<String, Object>> validarPeriodo(
+            @RequestParam String fechaInicio,
+            @RequestParam String fechaFin) {
+
+        LocalDate inicio = LocalDate.parse(fechaInicio);
+        LocalDate fin = LocalDate.parse(fechaFin);
+        int anio = inicio.getYear();
+
+        try {
+            PeriodoEbr periodo = periodoService.obtenerPeriodoEbr(anio, inicio, fin);
+            Map<String, Object> response = new HashMap<>();
+            response.put("periodo", periodo);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+            return ResponseEntity.badRequest()
+                                 .body(Map.of("error", e.getMessage()));
+        }catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno del servidor"));
+        }
+    }
+
 	
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
