@@ -27,6 +27,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -191,7 +193,20 @@ public class RptBasesEbrController {
             return ResponseEntity.status(500)
                     .body("Error al ejecutar la extracción: " + e.getMessage());
         }
-    }	
+    }
+    
+
+    @PatchMapping("actualizarVobo/{idProceso}")
+    public ResponseEntity<String> actualizarEstatus(
+            @PathVariable int idProceso,
+            @RequestBody Map<String, String> proceso) {
+    	
+    	Boolean estatusVobo = Boolean.parseBoolean(proceso.get("estatusVobo"));
+    	
+        procesoBasesEbrService.actualizarVobo(idProceso, estatusVobo);
+        return ResponseEntity.ok("Estatus actualizado correctamente");
+    }   
+    
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> payload) {
 		

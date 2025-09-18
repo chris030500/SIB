@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.repository.IProcesoBasesEbrRepository;
@@ -56,4 +57,12 @@ public class ProcesoBasesEbrService {
 	public List<Map<String, Object>> listaHistoricoBases() {
 		return procesoEbrRepository.listaHistoricoBases();
 	}
+	
+	@Transactional
+	public void actualizarVobo(int idProceso, Boolean estatusVobo) {
+	    ProcesoBasesEbr proceso = procesoEbrRepository.findById(idProceso)
+	        .orElseThrow(() -> new RuntimeException("Proceso no encontrado"));
+	    proceso.setEstatusVobo(false);
+	}
+
 }

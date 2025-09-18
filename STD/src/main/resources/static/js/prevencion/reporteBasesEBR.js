@@ -210,17 +210,53 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	}
 }
 
+function actualizarVobo(idProceso, estatusVobo) {
+	const url = `${getAbsolutePath()}actualizarVobo/${idProceso}`;
+	
+    fetch(url, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ estatusVobo: estatusVobo })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Error al actualizar estatus");
+        return response.text();
+    })
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+async function actualizarProcesoEbr() {
+	const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
+	
+	try {
+		const data = await fetchJSON(url);
+		const idProceso = data.procesoId;
+		
+		actualizarVobo(idProceso, 0);
+	} catch (err) {
+		console.log('No se encuentra último proceso de ejecución.');
+	}
+}
+
 async function mostrarAlertUltimoProceso() {
     const msgProceso = document.getElementById('msgProcesoEbr');
     const msgVobo = document.getElementById('msgVoboBasesEbr');
-    const infoDiv = document.getElementById('infoCorrectaDiv');
-    const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
+    const btnVistoBueno = document.getElementById('btnVistoBueno');
+    const voboSi = document.getElementById('voboSi');
+    const voboNo = document.getElementById('voboNo');
     
     const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
 
     try {
         const data = await fetchJSON(url);
-        //console.log(data);
+        console.log(data);
 
         if (data) {
             const rango = `${data.fechaInicio} - ${data.fechaFin}`;
@@ -228,23 +264,22 @@ async function mostrarAlertUltimoProceso() {
             msgProceso.classList.remove('d-none');
 
             msgVobo.classList.remove('alert-info', 'alert-warning');
-            if (data.estatusVobo) {
+            if (data.estatusVobo === true) {
                 msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-info');
-                infoDiv.classList.add('d-none');
-                rptBasesEbrDiv.classList.add('d-none');
-            } else if (!data.estatusVobo) {
+                voboSi.checked = true;
+                voboSi.disabled = true;
+                voboNo.disabled = true;
+                btnVistoBueno.disabled = true;
+            } else if (data.estatusVobo === false) {
                 msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
-                infoDiv.classList.remove('d-none');
-                rptBasesEbrDiv.classList.remove('d-none');
+                voboNo.checked = true;
             }
             msgVobo.classList.remove('d-none');
         }
     } catch (err) {
 		console.log('No se encuentra último proceso de ejecución.')
-		infoDiv.classList.add('d-none');
-		rptBasesEbrDiv.classList.add('d-none');
     }
 }
 
@@ -258,6 +293,7 @@ function mostrarVoboDiv() {
 				voboDiv.style.display = "flex";
 			} else {
 				voboDiv.style.display = "none";
+				actualizarProcesoEbr();
 				Swal.fire({
 					text: "Intente procesar nuevamente las bases EBR",
 					icon: "warning"
