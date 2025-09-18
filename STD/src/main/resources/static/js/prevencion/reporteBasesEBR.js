@@ -256,7 +256,6 @@ async function mostrarAlertUltimoProceso() {
 
     try {
         const data = await fetchJSON(url);
-        console.log(data);
 
         if (data) {
             const rango = `${data.fechaInicio} - ${data.fechaFin}`;
