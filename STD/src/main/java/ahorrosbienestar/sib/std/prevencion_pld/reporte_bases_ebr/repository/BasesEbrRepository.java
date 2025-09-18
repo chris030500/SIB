@@ -1,7 +1,9 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.repository;
 
 import java.sql.CallableStatement;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +58,26 @@ public class BasesEbrRepository {
                 return result;
             } catch (SQLException e) {
                 logger.error("Error al ejecutar SP obtenerRangoFechas: " + e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        });
+    }
+    
+    public int ejecutarExtraccionAuditoriaEbr(int idPeriodo, LocalDate fechaInicio, LocalDate fechaFin) {
+        return jdbcTemplate.execute((ConnectionCallback<Integer>) con -> {
+            try (CallableStatement cs = con.prepareCall("{CALL SIB.SP_PLD_EXTRACCION_AUDITORIA_EBR(?, ?, ?, ?)}")) {
+                cs.setInt(1, idPeriodo);
+                cs.setDate(2, Date.valueOf(fechaInicio));
+                cs.setDate(3, Date.valueOf(fechaFin));
+                cs.registerOutParameter(4, java.sql.Types.INTEGER);
+
+                cs.execute();
+
+                int flag = cs.getInt(4);
+                logger.info("SP ejecutado correctamente, flag:" + flag);
+                return flag;
+            } catch (SQLException e) {
+                logger.error("Error al ejecutar SP ejecutarExtraccionAuditoriaEbr: " + e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         });

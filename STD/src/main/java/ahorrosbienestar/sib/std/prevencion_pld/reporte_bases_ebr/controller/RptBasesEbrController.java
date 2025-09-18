@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -161,8 +162,36 @@ public class RptBasesEbrController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno del servidor"));
         }
     }
+    
+    @GetMapping("/extraccionAuditoriaEbr")
+    public ResponseEntity<?> ejecutarExtraccion(
+            @RequestParam int idPeriodo,
+            @RequestParam String fechaInicio,
+            @RequestParam String fechaFin) {
 
-	
+        try {
+            LocalDate inicio = LocalDate.parse(fechaInicio);  // convierte directamente a LocalDate
+            LocalDate fin = LocalDate.parse(fechaFin);
+
+            boolean hayRegistros = basesEbrService.ejecutarExtraccion(idPeriodo, inicio, fin);
+
+            if (!hayRegistros) {
+            	logger.error("No existen registros para las fechas seleccionadas");
+                return ResponseEntity.badRequest()
+                        .body("No existen registros para las fechas seleccionadas");
+            }
+
+            return ResponseEntity.ok("Extracción ejecutada correctamente");
+        } catch (DateTimeParseException e) {
+        	logger.error("Formato de fecha incorrecto: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Formato de fecha incorrecto. Debe ser yyyy-MM-dd");
+        } catch (Exception e) {
+        	logger.error("Error al ejecutar la extracción: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body("Error al ejecutar la extracción: " + e.getMessage());
+        }
+    }	
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> payload) {
 		

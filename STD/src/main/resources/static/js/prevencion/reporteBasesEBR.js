@@ -111,8 +111,26 @@ function mostrarRangoFechas() {
 			
 			validarPeriodo(fechaInicio, fechaFin).then(data => {
 				if (!data) return;
-				console.log(data.periodo.periodoId);
-				procesarBasesEBR(data.periodo.periodoId, fechaInicio, fechaFin);
+            const periodoId = data.periodo.periodoId;
+
+            const urlExtraccion = `${getAbsolutePath()}extraccionAuditoriaEbr?idPeriodo=${periodoId}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+            fetch(urlExtraccion)
+                .then(res => {
+                    if (!res.ok) throw new Error("No hay registros para las fechas seleccionadas");
+                    return res.text();
+                })
+                .then(() => {
+                    procesarBasesEBR(periodoId, fechaInicio, fechaFin);
+                })
+                .catch(err => {
+                    console.error("Error en extraccionAuditoriaEbr: ", err);
+                    Swal.fire({
+                        title: "¡Error!",
+                        text: "No se encuentra información del periodo de fecha ingresado.",
+                        icon: "warning"
+                    });
+                });
 			});
 		}
 	});
@@ -167,7 +185,7 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	try {
 		const data = await fetchJSON(url);
 		
-		if (!data.estatusEjecucion) {
+		if (data.estatusProceso === 3) {
 			clearInterval(interval);
 			modal.hide();
 
