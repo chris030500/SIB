@@ -19,6 +19,55 @@ function mostrarTabs() {
 	});
 }
 
+async function generarRangoFechas() {
+	const fechaInicio = document.getElementById("fechaInicio");
+	const fechaFin = document.getElementById("fechaFin");
+	
+	const url = `${getAbsolutePath()}rangoFechasEbr`;
+	
+	try {
+		const data = await fetchJSON(url);
+		const { minYear, maxYear } = data;
+		
+		fechaInicio.setAttribute("min", `${minYear}-01-01`);
+		fechaInicio.setAttribute("max", `${maxYear}-12-31`);
+
+		fechaFin.setAttribute("min", `${minYear}-01-01`);
+		fechaFin.setAttribute("max", `${maxYear}-12-31`);
+
+	} catch(err) {
+		console.error("Error cargando rango de fechas:", err);
+	}
+} 
+
+function validarPeriodo(fechaInicio, fechaFin) {
+    const url = `${getAbsolutePath()}validarPeriodoEbr?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+    return fetch(url)
+        .then(res => {
+            if (!res.ok) {
+                Swal.fire({
+                    title: "¡Error!",
+                    text: "Las fechas no corresponden a un periodo válido (primer semestre, segundo semestre o anual)",
+                    icon: "warning"
+                });
+                return null;
+            }
+
+            return res.json();
+        })
+        .catch(err => {
+            console.error("Error en fetch:", err);
+            Swal.fire({
+                title: "¡Error!",
+                text: "No se pudo validar el periodo.",
+                icon: "error"
+            });
+            return null;
+        });
+}
+
+
 function mostrarRangoFechas() {
 	const periodoSelect = document.getElementById('periodoSelect');
 	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
@@ -59,10 +108,31 @@ function mostrarRangoFechas() {
 					fechaFin = document.getElementById('fechaFin').value;
 					break;
 			}
+			
+			validarPeriodo(fechaInicio, fechaFin).then(data => {
+				if (!data) return;
+            const periodoId = data.periodo.periodoId;
 
-			procesarBasesEBR(fechaInicio, fechaFin);
+            const urlExtraccion = `${getAbsolutePath()}extraccionAuditoriaEbr?idPeriodo=${periodoId}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+            fetch(urlExtraccion)
+                .then(res => {
+                    if (!res.ok) throw new Error("No hay registros para las fechas seleccionadas");
+                    return res.text();
+                })
+                .then(() => {
+                    procesarBasesEBR(periodoId, fechaInicio, fechaFin);
+                })
+                .catch(err => {
+                    console.error("Error en extraccionAuditoriaEbr: ", err);
+                    Swal.fire({
+                        title: "¡Error!",
+                        text: "No se encuentra información del periodo de fecha ingresado.",
+                        icon: "warning"
+                    });
+                });
+			});
 		}
-		
 	});
 
 	periodoSelect.addEventListener('change', () => {
@@ -74,7 +144,7 @@ function mostrarRangoFechas() {
 	});
 };
 
-async function procesarBasesEBR(fechaInicio, fechaFin) {
+async function procesarBasesEBR(idPeriodo, fechaInicio, fechaFin) {
 	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr`;
 
 	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
@@ -88,7 +158,7 @@ async function procesarBasesEBR(fechaInicio, fechaFin) {
 		const response = await fetchJSON(url, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ fechaInicio: fechaInicio, fechaFin: fechaFin })
+			body: JSON.stringify({ idPeriodo: idPeriodo, fechaInicio: fechaInicio, fechaFin: fechaFin })
 		}); 
 		
 		const proceso = response.data;
@@ -115,7 +185,7 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	try {
 		const data = await fetchJSON(url);
 		
-		if (!data.estatusEjecucion) {
+		if (data.estatusProceso === 3) {
 			clearInterval(interval);
 			modal.hide();
 
@@ -140,17 +210,52 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 	}
 }
 
+function actualizarVobo(idProceso, estatusVobo) {
+	const url = `${getAbsolutePath()}actualizarVobo/${idProceso}`;
+	
+    fetch(url, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ estatusVobo: estatusVobo })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Error al actualizar estatus");
+        return response.text();
+    })
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+async function actualizarProcesoEbr() {
+	const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
+	
+	try {
+		const data = await fetchJSON(url);
+		const idProceso = data.procesoId;
+		
+		actualizarVobo(idProceso, 0);
+	} catch (err) {
+		console.log('No se encuentra último proceso de ejecución.');
+	}
+}
+
 async function mostrarAlertUltimoProceso() {
     const msgProceso = document.getElementById('msgProcesoEbr');
     const msgVobo = document.getElementById('msgVoboBasesEbr');
-    const infoDiv = document.getElementById('infoCorrectaDiv');
-    const rptBasesEbrDiv = document.getElementById('rptBasesEbrDiv');
+    const btnVistoBueno = document.getElementById('btnVistoBueno');
+    const voboSi = document.getElementById('voboSi');
+    const voboNo = document.getElementById('voboNo');
     
     const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
 
     try {
         const data = await fetchJSON(url);
-        console.log(data);
 
         if (data) {
             const rango = `${data.fechaInicio} - ${data.fechaFin}`;
@@ -158,23 +263,22 @@ async function mostrarAlertUltimoProceso() {
             msgProceso.classList.remove('d-none');
 
             msgVobo.classList.remove('alert-info', 'alert-warning');
-            if (data.estatusVobo) {
+            if (data.estatusVobo === true) {
                 msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-info');
-                infoDiv.classList.add('d-none');
-                rptBasesEbrDiv.classList.add('d-none');
-            } else if (!data.estatusVobo) {
+                voboSi.checked = true;
+                voboSi.disabled = true;
+                voboNo.disabled = true;
+                btnVistoBueno.disabled = true;
+            } else if (data.estatusVobo === false) {
                 msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
                 msgVobo.classList.add('alert-warning');
-                infoDiv.classList.remove('d-none');
-                rptBasesEbrDiv.classList.remove('d-none');
+                voboNo.checked = true;
             }
             msgVobo.classList.remove('d-none');
         }
     } catch (err) {
 		console.log('No se encuentra último proceso de ejecución.')
-		infoDiv.classList.add('d-none');
-		rptBasesEbrDiv.classList.add('d-none');
     }
 }
 
@@ -188,6 +292,7 @@ function mostrarVoboDiv() {
 				voboDiv.style.display = "flex";
 			} else {
 				voboDiv.style.display = "none";
+				actualizarProcesoEbr();
 				Swal.fire({
 					text: "Intente procesar nuevamente las bases EBR",
 					icon: "warning"
@@ -384,7 +489,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 
 	// Mostrar alerta de carga
 	Swal.fire({
-		title: "Subiendo archivo...",
+		title: "Procesando archivo...",
 		text: "Por favor espera mientras se procesa.",
 		allowOutsideClick: false,
 		allowEscapeKey: false,
@@ -416,7 +521,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 			if (ok) {
 				Swal.fire({
 					icon: "success",
-					title: "Archivo subido correctamente",
+					title: "Archivo cargado correctamente",
 					text: body,
 				}).then(() => {
 					procesoDiv.classList.remove('d-none');
@@ -447,6 +552,7 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 document.addEventListener("DOMContentLoaded", function () {
 	mostrarTabs();
 	mostrarVoboDiv();
+	generarRangoFechas();
 	mostrarRangoFechas();
 	mostrarAlertUltimoProceso();
 	onclickBotonesHistoricoBases();

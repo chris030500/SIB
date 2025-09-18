@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -25,6 +27,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,11 +42,13 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.dto.BasesEbrResponse;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.PeriodoEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.TipoEmpresaService;
-import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.VoboBasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.BasesEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.PeriodoEbrService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -78,10 +84,14 @@ public class RptBasesEbrController {
 	private ProcesoBasesEbrService procesoBasesEbrService;
 	
 	@Autowired
-	private VoboBasesEbrService voboBasesEbrService;
+	private BasesEbrService basesEbrService;
 	
 	@Autowired
 	private TipoEmpresaService tipoEmpresaService;
+	
+	@Autowired
+	private PeriodoEbrService periodoService;
+	
 	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
@@ -116,16 +126,98 @@ public class RptBasesEbrController {
 		}
 	}
 	
-	@PostMapping("/ejecutarProcesoBasesEbr")
-	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> periodo) {
+    @GetMapping("/rangoFechasEbr")
+    public ResponseEntity<Map<String, Integer>>obtenerRangoFechas() {
+        try {
+            Map<String, Integer> rango = basesEbrService.obtenerRangoFechas();
+            return ResponseEntity.ok(rango);
+        } catch (Exception e) {
+            // Fallback: año actual si falla algo
+            int currentYear = java.time.Year.now().getValue();
+            Map<String, Integer> fallback = new HashMap<>();
+            fallback.put("minYear", currentYear);
+            fallback.put("maxYear", currentYear);
+            return ResponseEntity.ok(fallback);
+        }
+    }
+    
+    @GetMapping("/validarPeriodoEbr")
+    public ResponseEntity<Map<String, Object>> validarPeriodo(
+            @RequestParam String fechaInicio,
+            @RequestParam String fechaFin) {
 
-	    LocalDate fechaInicio = LocalDate.parse(periodo.get("fechaInicio"));
-	    LocalDate fechaFin = LocalDate.parse(periodo.get("fechaFin"));
+        LocalDate inicio = LocalDate.parse(fechaInicio);
+        LocalDate fin = LocalDate.parse(fechaFin);
+        int anio = inicio.getYear();
+
+        try {
+            PeriodoEbr periodo = periodoService.obtenerPeriodoEbr(anio, inicio, fin);
+            Map<String, Object> response = new HashMap<>();
+            response.put("periodo", periodo);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+            return ResponseEntity.badRequest()
+                                 .body(Map.of("error", e.getMessage()));
+        }catch (Exception e) {
+        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno del servidor"));
+        }
+    }
+    
+    @GetMapping("/extraccionAuditoriaEbr")
+    public ResponseEntity<?> ejecutarExtraccion(
+            @RequestParam int idPeriodo,
+            @RequestParam String fechaInicio,
+            @RequestParam String fechaFin) {
+
+        try {
+            LocalDate inicio = LocalDate.parse(fechaInicio);  // convierte directamente a LocalDate
+            LocalDate fin = LocalDate.parse(fechaFin);
+
+            boolean hayRegistros = basesEbrService.ejecutarExtraccion(idPeriodo, inicio, fin);
+
+            if (!hayRegistros) {
+            	logger.error("No existen registros para las fechas seleccionadas");
+                return ResponseEntity.badRequest()
+                        .body("No existen registros para las fechas seleccionadas");
+            }
+
+            return ResponseEntity.ok("Extracción ejecutada correctamente");
+        } catch (DateTimeParseException e) {
+        	logger.error("Formato de fecha incorrecto: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Formato de fecha incorrecto. Debe ser yyyy-MM-dd");
+        } catch (Exception e) {
+        	logger.error("Error al ejecutar la extracción: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body("Error al ejecutar la extracción: " + e.getMessage());
+        }
+    }
+    
+
+    @PatchMapping("actualizarVobo/{idProceso}")
+    public ResponseEntity<String> actualizarEstatus(
+            @PathVariable int idProceso,
+            @RequestBody Map<String, String> proceso) {
+    	
+    	Boolean estatusVobo = Boolean.parseBoolean(proceso.get("estatusVobo"));
+    	
+        procesoBasesEbrService.actualizarVobo(idProceso, estatusVobo);
+        return ResponseEntity.ok("Estatus actualizado correctamente");
+    }   
+    
+	@PostMapping("/ejecutarProcesoBasesEbr")
+	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> payload) {
+		
+		Integer idPeriodo = Integer.parseInt(payload.get("idPeriodo"));
+	    LocalDate fechaInicio = LocalDate.parse(payload.get("fechaInicio"));
+	    LocalDate fechaFin = LocalDate.parse(payload.get("fechaFin"));
 	    
 		Integer idUsuario = obtenerIdUsuario();
 		
 	    try {
-	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(fechaInicio, fechaFin, idUsuario);
+	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(idPeriodo, fechaInicio, fechaFin, idUsuario);
 	        return ResponseEntity.ok(new BasesEbrResponse<>("proceso", proceso));
 	    } catch (RuntimeException e) {
 	    	logger.error("Ocurrió un error al registrar el proceso: " + e.getMessage());
@@ -139,7 +231,7 @@ public class RptBasesEbrController {
     public ResponseEntity<String> ejecutarVistoBueno() {
     	Integer idUsuario = obtenerIdUsuario();
     	
-        voboBasesEbrService.ejecutarVoBo(idUsuario);
+        basesEbrService.ejecutarVoBo(idUsuario);
         return ResponseEntity.ok("Vobo ejecutado correctamente, ya se agregaron las bases en el histórico.");
     }
     
@@ -299,7 +391,7 @@ public class RptBasesEbrController {
 
 	            empresas.add(tipoEmpresa);
 	        }
-	        
+	        tipoEmpresaService.eliminarTodos();
 	        tipoEmpresaService.registrarTipoEmpresas(empresas);
             logger.info("Archivo procesado correctamente con " +  empresas.size() + " empresas.");
             return ResponseEntity.ok("Archivo procesado con " + empresas.size() + " empresas.");

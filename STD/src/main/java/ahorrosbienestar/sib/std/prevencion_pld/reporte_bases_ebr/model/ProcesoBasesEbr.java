@@ -21,6 +21,9 @@ public class ProcesoBasesEbr {
 	@Column(name = "PK_PROCESO_EBR_ID")	
 	private Integer procesoId;
 	
+	@Column(name = "I_PERIODO_ID")	
+	private Integer periodoId;
+	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@Column(name = "DT_FECHA_INICIO")
 	private LocalDate fechaInicio;
@@ -39,9 +42,6 @@ public class ProcesoBasesEbr {
 	@Column(name = "I_ESTATUS_EJECUCION")
 	private Boolean estatusEjecucion;
 	
-	@Column(name = "VC_CRON")
-	private String cron;
-	
 	@Column(name = "I_ESTATUS_VOBO")
 	private Boolean estatusVobo;
 	
@@ -51,6 +51,13 @@ public class ProcesoBasesEbr {
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
 	@Column(name = "DT_FECHA_VOBO")
 	private LocalDateTime fechaVobo;
+	
+	@Column(name = "I_ESTATUS_PROCESO")
+	private Integer estatusProceso;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	@Column(name = "DT_FECHA_TERMINO")
+	private LocalDateTime fechaTermino;
 
 	public Integer getProcesoId() {
 		return procesoId;
@@ -58,6 +65,14 @@ public class ProcesoBasesEbr {
 
 	public void setProcesoId(Integer procesoId) {
 		this.procesoId = procesoId;
+	}
+
+	public Integer getPeriodoId() {
+		return periodoId;
+	}
+
+	public void setPeriodoId(Integer periodoId) {
+		this.periodoId = periodoId;
 	}
 
 	public LocalDate getFechaInicio() {
@@ -100,14 +115,6 @@ public class ProcesoBasesEbr {
 		this.estatusEjecucion = estatusEjecucion;
 	}
 
-	public String getCron() {
-		return cron;
-	}
-
-	public void setCron(String cron) {
-		this.cron = cron;
-	}
-
 	public Boolean getEstatusVobo() {
 		return estatusVobo;
 	}
@@ -132,11 +139,28 @@ public class ProcesoBasesEbr {
 		this.fechaVobo = fechaVobo;
 	}
 
+	public Integer getEstatusProceso() {
+		return estatusProceso;
+	}
+
+	public void setEstatusProceso(Integer estatusProceso) {
+		this.estatusProceso = estatusProceso;
+	}
+
+	public LocalDateTime getFechaTermino() {
+		return fechaTermino;
+	}
+
+	public void setFechaTermino(LocalDateTime fechaTermino) {
+		this.fechaTermino = fechaTermino;
+	}
+
 	@Override
 	public String toString() {
-		return "ProcesoBasesEbr [procesoId=" + procesoId + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin
-				+ ", usuarioEjecuto=" + usuarioEjecuto + ", fechaEjecucion=" + fechaEjecucion + ", estatusEjecucion="
-				+ estatusEjecucion + ", cron=" + cron + ", estatusVobo=" + estatusVobo + ", usuarioVobo=" + usuarioVobo
-				+ ", fechaVobo=" + fechaVobo + "]";
+		return "ProcesoBasesEbr [procesoId=" + procesoId + ", periodoId=" + periodoId + ", fechaInicio=" + fechaInicio
+				+ ", fechaFin=" + fechaFin + ", usuarioEjecuto=" + usuarioEjecuto + ", fechaEjecucion=" + fechaEjecucion
+				+ ", estatusEjecucion=" + estatusEjecucion + ", estatusVobo=" + estatusVobo + ", usuarioVobo="
+				+ usuarioVobo + ", fechaVobo=" + fechaVobo + ", estatusProceso=" + estatusProceso + ", fechaTermino="
+				+ fechaTermino + "]";
 	}
 }
