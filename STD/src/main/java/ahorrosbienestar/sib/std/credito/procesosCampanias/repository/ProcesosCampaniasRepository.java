@@ -74,4 +74,16 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	    @Param("i_estatus_reg") Integer i_estatus_reg
 	);
 	
+	@Query(value = "select min(pk_id_proceso_campania) "
+			+ "from SIB.TBL_PROCESO_CAMPANIA "
+			+ "where i_id_tipo_campania = :tipoCampania "
+			+ "and i_estatus_reg = 1 "
+			+ "and i_id_estatus_campania = :estatusCampania "
+			+ "and i_bandera_extraccion = :banderaCampania",
+       nativeQuery = true)
+	int procesoCamEstatus(
+			@Param("tipoCampania") int tipoCampania,
+			@Param("estatusCampania") int estatusCampania,
+			@Param("banderaCampania") int banderaCampania);
+	
 }

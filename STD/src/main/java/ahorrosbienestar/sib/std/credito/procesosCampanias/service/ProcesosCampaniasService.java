@@ -32,6 +32,10 @@ public class ProcesosCampaniasService {
         return procesosCampaniasRepository.reporteBuroCredito(tipoCampania);
     }
     
+    public int procesoCamEstatus(int tipoCampania, int estatusCampania, int banderaCampania) {
+        return procesosCampaniasRepository.procesoCamEstatus(tipoCampania, estatusCampania, banderaCampania);
+    }
+    
     public int contarProcesosExtraccionFin(int tipoCampania) {
         return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania);
     }

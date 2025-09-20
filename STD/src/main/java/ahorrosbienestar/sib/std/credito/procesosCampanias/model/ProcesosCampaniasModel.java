@@ -7,13 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
-import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -53,6 +48,9 @@ public class ProcesosCampaniasModel {
 	@Column(name = "I_ESTATUS_REG")
 	private Integer i_estatus_reg;
 	
+	@Column(name = "VC_CODIGO_CAM")
+	private String vc_codigo_cam;
+	
 	//@ManyToOne
 	//@JoinColumn(name = "I_ID_ESTATUS_CAMPANIA")
 	//private EstatusCampaniasModel i_id_estatus_campania;
@@ -89,8 +87,6 @@ public class ProcesosCampaniasModel {
 	public LocalDate getDt_fecha_extraccion() {
 		return dt_fecha_extraccion;
 	}
-
-	
 
 	public Integer getI_id_tipo_campania() {
 		return i_id_tipo_campania;
@@ -166,6 +162,14 @@ public class ProcesosCampaniasModel {
 
 	public void setI_user_reg(Integer i_user_reg) {
 		this.i_user_reg = i_user_reg;
+	}
+
+	public String getVc_codigo_cam() {
+		return vc_codigo_cam;
+	}
+
+	public void setVc_codigo_cam(String vc_codigo_cam) {
+		this.vc_codigo_cam = vc_codigo_cam;
 	}
 
 }

@@ -107,10 +107,20 @@ document.getElementById("Estatus").addEventListener("change", function() {
     }
 });
 
+function generarUUIDCorto(longitud = 8) {
+  return 'xxxxxxxxxxxxxxxx'.substring(0, longitud).replace(/x/g, () => {
+    return (Math.random() * 16 | 0).toString(16);
+  });
+}
+
 function btnExtraerFn() {
 	//deshabilita el boton Extraer
 	// @ts-ignore
 	document.getElementById("btnExtraer").disabled = true;
+	
+	// @ts-ignore
+	let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
+	console.log("UUID corto:", codigoCamp);  
 	
 	//insert en procesos
 	
@@ -136,6 +146,7 @@ function btnExtraerFn() {
         dt_fecha_registro: document.getElementById("idFecha").value,
         // @ts-ignore
         i_user_reg: parseInt(document.getElementById("idUser").value),
+        vc_codigo_cam: codigoCamp,
         
     };
     
@@ -312,6 +323,9 @@ function btnGenerarArchivoBuro() {
 	var tipoCampania = parseInt(document.getElementById("Campania").value);
 	//console.log("tipoCampania:",tipoCampania);
 	
+	// @ts-ignore
+	let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
+	
 	const dataExtCargaBuro = {
         
         // @ts-ignore
@@ -319,7 +333,7 @@ function btnGenerarArchivoBuro() {
         
         // @ts-ignore
         dt_fecha_extraccion: document.getElementById("idFecha").value,
-        i_bandera_extraccion: 0,
+        i_bandera_extraccion: 2,
         // @ts-ignore
         dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
         // @ts-ignore
@@ -333,6 +347,7 @@ function btnGenerarArchivoBuro() {
         dt_fecha_registro: document.getElementById("idFecha").value,
         // @ts-ignore
         i_user_reg: parseInt(document.getElementById("idUser").value),
+        vc_codigo_cam:codigoCamp,
         
     };
 	
@@ -584,6 +599,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     let registros = [];
     if (tipo==1) {
+		//Adviser
 		let rfcCliente = rows.slice(3).map(fila => fila[2]);
 	    // Extraer columna KB desde fila 4-Procentaje de uso maximo de Total de Créditos Abiertos
 	    let valoresBK = rows.slice(3).map(fila => fila[62]); 
@@ -640,7 +656,33 @@ document.addEventListener("DOMContentLoaded", function() {
 		}));
 	    
 	}else if(tipo==2){
-		
+		//Prospector
+		let rfcClienteP = rows.slice(3).map(fila => fila[2]);
+		// Extraer columna-BCS mínimo
+	    let valoresBCS = rows.slice(3).map(fila => fila[13]);
+	    // Extraer columna-ICC mínimo
+	    let valoresICC = rows.slice(3).map(fila => fila[14]);
+	    // Extraer columna-Riesgo máximo
+	    let valoresRM = rows.slice(3).map(fila => fila[15]);
+	    
+	    // Construir array de objetos
+		registros = rfcClienteP.map((rfc, idx) => ({
+		    vc_rfc_cliente: rfc,
+		    i_tipo_buro_credito: tipo,
+		    d_porc_uso_maximo_adviser: 0,
+		    d_mop_maximo_adviser: 0,
+		    d_bcs_minimo_adviser: 0,
+		    d_icc_minimo_adviser: 0,
+		    vc_riesgo_maximo_adviser: '0',
+		    d_bcs_minnimo_prospector: valoresBCS[idx],
+		    d_icc_minnimo_prospector: valoresICC[idx],
+		    vc_riesgo_maximo_prospector: valoresRM[idx],
+		    i_estatus_reg: 1,
+		    // @ts-ignore
+		    dt_fecha_registro: document.getElementById("idFecha").value,
+		    // @ts-ignore
+		    i_user_reg: parseInt(document.getElementById("idUser").value),
+		}));
 	}else{
 		// @ts-ignore
 		swal({
@@ -654,6 +696,14 @@ document.addEventListener("DOMContentLoaded", function() {
     //console.log("Registros a enviar:", registros);
     //console.log("Cantidad de registros construidos:", registros.length);
 	console.table(registros);
+	//selecionar id proceso 
+    //update TBL_PROCESO_CAMPANIA
+    //insert TBL_PROCESO_CAMPANIA
+    
+    
+    
+		///////////////////////
+		///////////////////////
     
     fetch(newUrlBase + 'credito/api/crearValBuroCredito', {
         method: 'POST',
@@ -663,13 +713,13 @@ document.addEventListener("DOMContentLoaded", function() {
         body: JSON.stringify(registros)
     })
     .then(resp => {
-	    if (!resp.ok) throw new Error("Error al actualizar datos Tipo Buro de Credito");
+	    if (!resp.ok) throw new Error("Error al procesar datos Tipo Buro de Credito");
 	    return resp.text();
 	})
 	.then(() => {
 		
 		///
-		
+		//mandar llmar SP de proceso de buro de credito SP_CAM_DEPURACION_BC
 		///
 		
 		// @ts-ignore
