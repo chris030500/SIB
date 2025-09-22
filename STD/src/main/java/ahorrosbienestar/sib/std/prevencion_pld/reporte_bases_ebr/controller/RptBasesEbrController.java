@@ -13,12 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -350,14 +349,8 @@ public class RptBasesEbrController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
 	    }
 
-	    String filename = file.getOriginalFilename();
-	    if (filename == null || !(filename.endsWith(".xls") || filename.endsWith(".xlsx"))) {
-	        logger.error("Formato de archivo no válido.");
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
-	    }
-
 	    try (InputStream inputStream = file.getInputStream();
-	         Workbook workbook = filename.endsWith(".xlsx") ? new XSSFWorkbook(inputStream) : new HSSFWorkbook(inputStream)) {
+	    		Workbook workbook = WorkbookFactory.create(inputStream)) {
 
 	        logger.info("Iniciando procesamiento del archivo...");
 
