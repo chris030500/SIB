@@ -200,6 +200,22 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 				mostrarAlertUltimoProceso();
 			});
 		}
+		
+		if (data.estatusProceso === 4) {
+			clearInterval(interval);
+			modal.hide();
+
+			Swal.fire({
+				title: "¡Error!",
+				text: "Se generó un error al procesar las bases, intenté nuevamente.",
+				icon: "error"
+			}).then(() => {
+				/*const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
+				let tab = new bootstrap.Tab(nextTab);
+				tab.show();*/
+				mostrarAlertUltimoProceso();
+			});
+		}
 	} catch (err) {
 		modal.hide();
         Swal.fire({
