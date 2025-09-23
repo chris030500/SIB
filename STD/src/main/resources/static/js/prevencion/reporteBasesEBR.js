@@ -200,6 +200,22 @@ async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 				mostrarAlertUltimoProceso();
 			});
 		}
+		
+		if (data.estatusProceso === 4) {
+			clearInterval(interval);
+			modal.hide();
+
+			Swal.fire({
+				title: "¡Error!",
+				text: "Se generó un error al procesar las bases, intenté nuevamente.",
+				icon: "error"
+			}).then(() => {
+				/*const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
+				let tab = new bootstrap.Tab(nextTab);
+				tab.show();*/
+				mostrarAlertUltimoProceso();
+			});
+		}
 	} catch (err) {
 		modal.hide();
         Swal.fire({
@@ -245,8 +261,41 @@ async function actualizarProcesoEbr() {
 	}
 }
 
+async function deshabilitarProcesoEBR() {
+	 const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
+	 const msgProceso = document.getElementById('msgProcesoEbr');
+	 
+	 const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
+	 
+	try {
+		const data = await fetchJSON(url);
+
+		if (data) {
+			const rango = `${data.fechaInicio} - ${data.fechaFin}`;
+			msgProceso.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+			if (data.estatusProceso === 2) {
+				msgProceso.innerText = `Aún se está procesando la generación de información EBR: ${rango}`;
+				msgProceso.classList.remove('d-none');
+				msgProceso.classList.add('alert-warning');
+				btnProcesarBasesEBR.disabled = true;
+			} else if (data.estatusProceso === 3) {
+				msgProceso.innerText = `Último periodo de generación de información EBR: ${rango}`;
+				msgProceso.classList.remove('d-none');
+				msgProceso.classList.add('alert-info');
+			} else if (data.estatusProceso === 4) {
+				msgProceso.innerText = `Se presentó un error al procesar la generación de información EBR: ${rango}`;
+				msgProceso.classList.remove('d-none');
+				msgProceso.classList.add('alert-danger');
+			}
+			
+			btnProcesarBasesEBR.disabled = false;
+		}
+	} catch (err) {
+		console.log('No se encuentra último proceso de ejecución.')
+	}
+}
+
 async function mostrarAlertUltimoProceso() {
-    const msgProceso = document.getElementById('msgProcesoEbr');
     const msgVobo = document.getElementById('msgVoboBasesEbr');
     const btnVistoBueno = document.getElementById('btnVistoBueno');
     const voboSi = document.getElementById('voboSi');
@@ -258,9 +307,7 @@ async function mostrarAlertUltimoProceso() {
         const data = await fetchJSON(url);
 
         if (data) {
-            const rango = `${data.fechaInicio} - ${data.fechaFin}`;
-            msgProceso.innerText = `Último periodo de generación de información EBR: ${rango}`;
-            msgProceso.classList.remove('d-none');
+			const rango = `${data.fechaInicio} - ${data.fechaFin}`;
 
             msgVobo.classList.remove('alert-info', 'alert-warning');
             if (data.estatusVobo === true) {
@@ -555,5 +602,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	generarRangoFechas();
 	mostrarRangoFechas();
 	mostrarAlertUltimoProceso();
+	deshabilitarProcesoEBR();
 	onclickBotonesHistoricoBases();
 });
