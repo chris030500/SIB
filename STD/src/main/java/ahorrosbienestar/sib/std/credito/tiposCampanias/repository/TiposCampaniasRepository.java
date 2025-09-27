@@ -61,7 +61,8 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
         + "D_MONTO_MAXIMO_OFERTA = :d_monto_maximo_oferta, "
         + "I_MINIMO_VIDA_CREDITO_R = :i_minimo_vida_credito_r, "
         + "DT_FECHA_REGISTRO = :dt_fecha_registro, "
-        + "I_ESTATUS = :i_estatus "
+        + "I_ESTATUS = :i_estatus, "
+        + "I_TIPO_BURO = :i_tipo_buro "
         //+ "I_USER_REG = :i_user_reg "
         + "WHERE PK_ID_TIPO_CAMPANIA = :pk_id_tipo_campania", nativeQuery = true)
 	int actualizarCampania(
@@ -90,7 +91,8 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	    @Param("d_monto_maximo_oferta") Double d_monto_maximo_oferta,
 	    @Param("i_minimo_vida_credito_r") Integer i_minimo_vida_credito_r,
 	    @Param("i_estatus") Integer i_estatus,
-	    @Param("dt_fecha_registro") LocalDate dt_fecha_registro
+	    @Param("dt_fecha_registro") LocalDate dt_fecha_registro,
+	    @Param("i_tipo_buro") Integer i_tipo_buro
 	    //@Param("i_user_reg") Integer i_user_reg
 	);
 	
@@ -103,7 +105,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        + "I_CREDITOS_LIQUIDADOS, VC_ES_RENOVACION, I_CONVIVENCIA, VC_PRODUCTOS, "
 	        + "I_PROD_CREDITO_ID_OFERTA, D_PORC_INC_OFERTA, "
 	        + "D_TASA_ORDINARIA_OFERTA, I_ACTIVA_OFERTA, D_MONTO_MAXIMO_OFERTA, "
-	        +"I_MINIMO_VIDA_CREDITO_R , I_ESTATUS, DT_FECHA_REGISTRO"
+	        +"I_MINIMO_VIDA_CREDITO_R , I_ESTATUS, DT_FECHA_REGISTRO, I_TIPO_BURO"
 	        + ") VALUES ("
 	        + ":vc_tipo_campania, :i_tipo_campania, :i_ventana_anios, :i_edad_maxima, :i_edad_minima, :d_monto_minimo, :d_monto_maximo, "
 	        + ":i_mora_maxima, :d_porc_cubierto_capital, :i_dias_gracia, :i_dias_mora, "
@@ -111,7 +113,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        + ":i_creditos_liquidados, :vc_es_renovacion, :i_convivencia, :vc_productos, "
 	        + ":i_prod_credito_id_oferta, :d_porc_inc_oferta, :vc_es_renovacion_oferta, "
 	        + ":i_vigencia_oferta, :d_tasa_ordinaria_oferta, :i_activa_oferta, :d_monto_maximo_oferta, :i_minimo_vida_credito_r, "
-	        + ":i_estatus, :dt_fecha_registro "
+	        + ":i_estatus, :dt_fecha_registro, :i_tipo_buro "
 	        + ")", nativeQuery = true)
 	int insertarCampania(
 			@Param("vc_tipo_campania") String vc_tipo_campania,
@@ -139,7 +141,8 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        @Param("d_monto_maximo_oferta") Double d_monto_maximo_oferta,
 	        @Param("i_minimo_vida_credito_r") Integer i_minimo_vida_credito_r,
 	        @Param("i_estatus") Integer i_estatus,
-	        @Param("dt_fecha_registro") LocalDate dt_fecha_registro
+	        @Param("dt_fecha_registro") LocalDate dt_fecha_registro,
+	        @Param("i_tipo_buro") Integer i_tipo_buro
 	);
 
 

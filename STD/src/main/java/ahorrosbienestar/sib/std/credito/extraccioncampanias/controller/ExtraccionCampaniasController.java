@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.credito.extraccioncampanias.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,9 +299,10 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@GetMapping("/api/countExtraccionTerm")
 	@ResponseBody
-    public int contarProcesosExtraccionTerm(@RequestParam("tipoCampania") int tipoCampania) {
+    public int contarProcesosExtraccionTerm(@RequestParam("tipoCampania") int tipoCampania,
+    										@RequestParam("estatus") int estatus) {
 		
-        return procesosCampaniasService.contarProcesosExtraccionFin(tipoCampania);
+        return procesosCampaniasService.contarProcesosExtraccionFin(tipoCampania, estatus);
     }
 	
 	@GetMapping("/api/reporteBuroCredito")
@@ -308,6 +310,27 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     public int reporteBuroCredito(@RequestParam("tipoCampania") int tipoCampania) {
 		
         return procesosCampaniasService.reporteBuroCredito(tipoCampania);
+    }
+	
+	@GetMapping("/api/consultaCodigoCam")
+	/*@ResponseBody
+    public String consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+		
+        return procesosCampaniasService.consultaCodigoCam(procesoCampania);
+    }*/
+	@ResponseBody
+	public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
+	    return Map.of("codigo", codigo);
+	}
+	
+	@GetMapping("/api/procesoCamEstatus")
+	@ResponseBody
+    public int procesoCamEstatus(@RequestParam("tipoCampania") int tipoCampania, 
+    							@RequestParam("estatusCampania") int estatusCampania,
+    							@RequestParam("banderaCampania") int banderaCampania) {
+		
+        return procesosCampaniasService.procesoCamEstatus(tipoCampania, estatusCampania, banderaCampania);
     }
 	
 	@RequestMapping(value = { "/rpt_archivo_buro" }, method = RequestMethod.POST)
@@ -375,6 +398,19 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	public List<Catalogo> getCatalogoTipoCampanias() {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo);
 	}
+	
+	@GetMapping("/api/ejecutarDepuracionBc")
+    public ResponseEntity<String> ejecutarDepuracionBc(
+            @RequestParam("tipoCampania") int tipoCampania,
+            @RequestParam("procesoCampania") int procesoCampania) {
+        try {
+        	procesosCampaniasService.ejecutarDepuracionBC(tipoCampania, procesoCampania);
+            return ResponseEntity.ok("Procedimiento ejecutado correctamente depuracion buro");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al ejecutar el procedimiento depuracion buro: " + e.getMessage());
+        }
+    }
     
     public int validarAcceso(String rutaController) {
 		try {

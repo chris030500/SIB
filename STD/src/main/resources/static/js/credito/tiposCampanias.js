@@ -59,6 +59,7 @@ function buscarCampanias() {
         cargarChecksEsRenovacion(0);
         //cargarChecksEsRenovacionOferta(0);
         cargarChecksActiva(0);
+        cargarTipoBuro(0);
         //let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
 		cargarCatalogoProductos([]);
 		
@@ -217,6 +218,7 @@ input.addEventListener('input', function () {
                 //console.log(data.vc_es_renovacion);
                 cargarCatalogoTipoCampanias(data.i_tipo_campania);
                 cargarCatalogoConvivenciaCamp(data.i_convivencia);
+                cargarTipoBuro(data.i_tipo_buro);
                 cargarCatalogoProductosCamp(data.i_prod_credito_id_oferta);
                 cargarChecksEsRenovacion(data.vc_es_renovacion);
                 //cargarChecksEsRenovacionOferta(data.vc_es_renovacion_oferta);
@@ -291,6 +293,29 @@ function cargarCatalogoConvivenciaCamp(valorSeleccionado) {
         },
         error: function(err) {
             console.error('Error al cargar catálogos', err);
+        }
+    });
+}
+
+//funcion para mostrar catalogo de tipos buro de credito (Adviser/Prospector)
+function cargarTipoBuro(valorSeleccionado) {
+    $.ajax({
+        url: newUrlBase + 'credito/api/catTipoBuroCam',
+        type: 'GET',
+        success: function(data) {
+            let select = $('#tipoArchivoBuro');
+            select.empty();
+            select.append('<option value="0">Seleccione</option>');
+
+            data.forEach(function(item) {
+                select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+            });
+            if (valorSeleccionado) {
+                select.val(valorSeleccionado);
+            }
+        },
+        error: function(err) {
+            console.error('Error al cargar catálogos tipo Buro', err);
         }
     });
 }
@@ -876,6 +901,7 @@ function modificarTiposCampanias(){
 																																												        //i_user_reg: parseInt(document.getElementById("idUser").value),
 																																												        i_estatus: 1,
 																																												        dt_fecha_registro:document.getElementById("idFecha").value,
+																																												        i_tipo_buro: parseInt(document.getElementById("tipoArchivoBuro").value),
 																																												    };
 																																												    //console.log(data);
 																																												    const jsonBitacora = JSON.stringify(data);

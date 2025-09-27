@@ -49,11 +49,12 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	@Query(value = "SELECT COUNT(*) " +
             "FROM SIB.TBL_PROCESO_CAMPANIA " +
             "WHERE I_ID_TIPO_CAMPANIA = :tipoCampania " +
-            "AND I_ID_ESTATUS_CAMPANIA = 1 " +
+            "AND I_ID_ESTATUS_CAMPANIA = :estatus " +
             "AND I_BANDERA_EXTRACCION = 2 " +
             "AND I_ESTATUS_REG = 1",
        nativeQuery = true)
-	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania);
+	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania,
+									@Param("estatus") int estatus);
 	
 	@Query(value = "select min(pk_id_proceso_campania) "
 			+ "from SIB.TBL_PROCESO_CAMPANIA "
@@ -85,5 +86,17 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 			@Param("tipoCampania") int tipoCampania,
 			@Param("estatusCampania") int estatusCampania,
 			@Param("banderaCampania") int banderaCampania);
+	
+	@Query(value = "select VC_CODIGO_CAM "
+			+ "from SIB.TBL_PROCESO_CAMPANIA "
+			+ "where pk_id_proceso_campania = :procesoCampania ",
+       nativeQuery = true)
+	String consultaCodigoCam(@Param("procesoCampania") int procesoCampania);
+	
+	 @Modifying
+	    @Transactional
+	    @Query(value = "CALL SIB.SP_CAM_DEPURACION_BC(:tipoCampania, :procesoCampania)", nativeQuery = true)
+	    void ejecutarDepuracionBC(@Param("tipoCampania") Integer tipoCampania,
+	                              @Param("procesoCampania") Integer procesoCampania);
 	
 }

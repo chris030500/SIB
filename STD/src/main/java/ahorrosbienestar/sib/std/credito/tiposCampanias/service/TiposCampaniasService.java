@@ -61,7 +61,8 @@ public class TiposCampaniasService {
             campania.getD_monto_maximo_oferta(),
             campania.getI_minimo_vida_credito_r(),
             campania.getI_estatus(),
-            campania.getDt_fecha_registro()
+            campania.getDt_fecha_registro(),
+            campania.getI_tipo_buro()
             
         );
         return filasAfectadas > 0;
@@ -95,7 +96,8 @@ public class TiposCampaniasService {
 	        c.getD_monto_maximo_oferta(),
 	        c.getI_minimo_vida_credito_r(),
 	        c.getI_estatus(),
-	        c.getDt_fecha_registro()
+	        c.getDt_fecha_registro(),
+	        c.getI_tipo_buro()
 	    );
 	    return filas > 0;
 	}

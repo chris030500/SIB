@@ -36,8 +36,8 @@ public class ProcesosCampaniasService {
         return procesosCampaniasRepository.procesoCamEstatus(tipoCampania, estatusCampania, banderaCampania);
     }
     
-    public int contarProcesosExtraccionFin(int tipoCampania) {
-        return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania);
+    public int contarProcesosExtraccionFin(int tipoCampania, int estatus) {
+        return procesosCampaniasRepository.contarProcesosExtraccionFin(tipoCampania, estatus);
     }
     
     @Transactional
@@ -47,6 +47,14 @@ public class ProcesosCampaniasService {
         		procesos.getI_estatus_reg()
         );
         return filasAfectadas > 0;
+    }
+    
+    public String consultaCodigoCam(int procesoCampania) {
+        return procesosCampaniasRepository.consultaCodigoCam(procesoCampania);
+    }
+    
+    public void ejecutarDepuracionBC(int tipoCampania, int procesoCampania) {
+    	procesosCampaniasRepository.ejecutarDepuracionBC(tipoCampania, procesoCampania);
     }
 	
 }

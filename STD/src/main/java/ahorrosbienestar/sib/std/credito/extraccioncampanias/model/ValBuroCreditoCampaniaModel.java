@@ -68,6 +68,12 @@ public class ValBuroCreditoCampaniaModel {
 	
 	@Column(name = "I_USER_REG")
 	private Integer i_user_reg;
+	
+	@Column(name = "I_TIPO_CAMPANIA")
+	private Integer i_tipo_campania;
+	
+	@Column(name = "I_PROCESO_CAMPANIA")
+	private Integer i_proceso_campania;
 
 	public Integer getPk_id_val_buro_cred_campania() {
 		return pk_id_val_buro_cred_campania;
@@ -179,6 +185,22 @@ public class ValBuroCreditoCampaniaModel {
 
 	public void setI_user_reg(Integer i_user_reg) {
 		this.i_user_reg = i_user_reg;
+	}
+
+	public Integer getI_tipo_campania() {
+		return i_tipo_campania;
+	}
+
+	public void setI_tipo_campania(Integer i_tipo_campania) {
+		this.i_tipo_campania = i_tipo_campania;
+	}
+
+	public Integer getI_proceso_campania() {
+		return i_proceso_campania;
+	}
+
+	public void setI_proceso_campania(Integer i_proceso_campania) {
+		this.i_proceso_campania = i_proceso_campania;
 	}
 
 }

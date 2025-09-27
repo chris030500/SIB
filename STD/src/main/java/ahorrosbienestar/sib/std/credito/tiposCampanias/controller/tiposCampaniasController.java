@@ -72,6 +72,7 @@ public class tiposCampaniasController {
 	private static String rutaDireccion = "";
 	private static final int opcBusquedaGrupo = 32;
 	private static final int opcBusquedaGrupo2 = 33;
+	private static final int opcBusquedaGrupo3 = 38;
 	
 	
 	@GetMapping("/tiposCampanias")
@@ -218,6 +219,13 @@ public class tiposCampaniasController {
 	@ResponseBody
 	public List<Catalogo> getCatalogoActiva() {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+	}
+	
+	//llenar el combo de tipos buro de credito (Adviser/Prospector)
+	@GetMapping("/api/catTipoBuroCam")
+	@ResponseBody
+	public List<Catalogo> getCatalogoTipoBuroCam() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo3);
 	}
 	
 	//update de datos campaña
