@@ -245,55 +245,7 @@ function btnExtraerFn() {
         
     };
     
-    console.log(newUrlBase);
-    
-    /*fetch(newUrlBase + 'credito/api/crearExt', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-	})
-	.then(async resp => {
-	    if (!resp.ok) {
-	        const errorText = await resp.text();
-	        throw new Error(errorText || "Error desconocido");
-	    }
-	    return resp.text();
-	})
-	.then(() => {
-	    // Aquí ya no mostramos mensaje, llamamos directo al segundo fetch
-	    return fetch(newUrlBase + 'credito/api/actualizarParamExt', {
-	        method: 'POST',
-	        headers: { 'Content-Type': 'application/json' },
-	        body: JSON.stringify(dataParam)
-	    });
-	})
-	.then(async resp => {
-	    if (!resp.ok) {
-	        const errorText = await resp.text();
-	        throw new Error(errorText || "Error desconocido");
-	    }
-	    return resp.text();
-	})
-	.then(msg => {
-	    // Un solo mensaje final
-	    // @ts-ignore
-	    Swal.fire({
-	        title: "",
-	        text: msg,
-	        icon: "success",
-	        confirmButtonText: "Aceptar"
-	    });
-	})
-	.catch(err => {
-	    console.error("Error:", err);
-	    // @ts-ignore
-	    Swal.fire({
-	        title: "Error",
-	        text: err.message,
-	        icon: "error",
-	        confirmButtonText: "Cerrar"
-	    });
-	});*/
+    //console.log(newUrlBase);
 	
 	fetch(newUrlBase + 'credito/api/crearExt', {
 	    method: 'POST',
@@ -1049,7 +1001,7 @@ function btnDepuracionBuro() {
 				        
 				        // @ts-ignore
 				        dt_fecha_extraccion: document.getElementById("idFecha").value,
-				        i_bandera_extraccion: 2,
+				        i_bandera_extraccion: 1,
 				        // @ts-ignore
 				        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
 				        // @ts-ignore
@@ -1094,15 +1046,100 @@ function btnDepuracionBuro() {
 					    })
 					    .then(dataSP => {
 							
-							// @ts-ignore
-							swal({
-							title: "",
-							text: 'Actualizado correctamente',
-							icon: "success",
-						    // @ts-ignore
-						    }).then(() => {
-						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-						    });
+							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
+							const ahora = new Date();
+						    ahora.setMinutes(ahora.getMinutes() + 10);
+						    //por ser desarrollo el tomcat tiene una hora mas
+						    //esta quitarla en QA y en produccion
+						    ahora.setHours(ahora.getHours() + 1);
+						    
+							const hora = ahora.getHours();      // Hora (0-23)
+							const minutos = ahora.getMinutes(); // Minutos (0-59)
+							
+							const newCron = '0 ' + minutos + ' '+ hora + ' * * 1-6';
+						    //datos del cron
+						    const dataParam = {
+						        
+						        // @ts-ignore
+						        pk_id_configuracion: parseInt(document.getElementById("configIdCronExc").value),
+						        
+						        // @ts-ignore
+						        vc_valor_propiedad: newCron,
+						        
+						    };
+						    const bandera=1;
+						    //datos de la bandera
+						    const dataParam2 = {
+						        
+						        // @ts-ignore
+						        pk_id_configuracion: parseInt(document.getElementById("configIdBanderaExc").value),
+						        
+						        // @ts-ignore
+						        vc_valor_propiedad: bandera,
+						        
+						    };
+						    fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+						        method: 'POST',
+						        headers: { 'Content-Type': 'application/json' },
+						        body: JSON.stringify(dataParam)
+						    })
+						    .then(async resp => {
+							    if (!resp.ok) {
+							        const errorText = await resp.text();
+							        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+							    }
+							    return resp.text();
+							})
+							.then(() => {
+								//////
+								fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+							        method: 'POST',
+							        headers: { 'Content-Type': 'application/json' },
+							        body: JSON.stringify(dataParam2)
+							    })
+							    .then(async resp => {
+								    if (!resp.ok) {
+								        const errorText = await resp.text();
+								        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+								    }
+								    return resp.text();
+								})
+								.then(() => {
+									////////////
+									// @ts-ignore
+									swal({
+									title: "",
+									text: 'Actualizado correctamente',
+									icon: "success",
+								    // @ts-ignore
+								    }).then(() => {
+								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+								    });
+									///////////
+							    })
+								.catch(err => {
+								    console.error("Error: actualizarParamExt", err);
+								    // @ts-ignore
+								    Swal.fire({
+								        title: "Error",
+								        text: err.message,
+								        icon: "error",
+								        confirmButtonText: "Cerrar"
+								    });
+								});
+								/////
+						    })
+							.catch(err => {
+							    console.error("Error: actualizarParamExt", err);
+							    // @ts-ignore
+							    Swal.fire({
+							        title: "Error",
+							        text: err.message,
+							        icon: "error",
+							        confirmButtonText: "Cerrar"
+							    });
+							});
+							
 							
 						})
 					    .catch(err => {

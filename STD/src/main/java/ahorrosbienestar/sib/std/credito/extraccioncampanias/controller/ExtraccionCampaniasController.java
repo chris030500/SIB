@@ -56,6 +56,8 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	private static final String nomPropiedad = "cronCampanias";
 	private static final String nomPropiedadBandera = "extraccionCampanias";
+	private static final String nomPropiedadExc = "cronCampaniasExc";
+	private static final String nomPropiedadBanderaExc = "extraccionCampaniasExc";
 	private static final String controllerReporte = "generarReporte";
 
 	@Autowired
@@ -135,6 +137,12 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		        
 		        Configuracion configuracionBandera = configService.valorPropiedad(nomPropiedadBandera);
 		        model.addAttribute("configIdBandera", configuracionBandera.getPk_id_configuracion());
+		        
+		        Configuracion configuracionExc = configService.valorPropiedad(nomPropiedadExc);
+		        model.addAttribute("configIdCronExc", configuracionExc.getPk_id_configuracion());
+		        
+		        Configuracion configuracionBanderaExc = configService.valorPropiedad(nomPropiedadBanderaExc);
+		        model.addAttribute("configIdBanderaExc", configuracionBanderaExc.getPk_id_configuracion());
 				
 				rutaDireccion = Constantes.CAMPANIAS_EXTRACCION;
 			} else {
