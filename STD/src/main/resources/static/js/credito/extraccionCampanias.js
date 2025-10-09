@@ -139,7 +139,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
         fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania + "&estatus=" + valor)
         .then(resp => {
             if (!resp.ok) {
-                throw new Error("Error al activar boton cancelar");
+                throw new Error("Error al activar boton Generar Archivo MC");
             }
             return resp.json(); // porque el backend regresa un int
         })
@@ -147,6 +147,8 @@ document.getElementById("Estatus").addEventListener("change", function() {
 			
 			if(count > 0){
 				
+				// @ts-ignore
+				document.getElementById("btnArchivoMc").disabled = false;
 				// @ts-ignore
 				document.getElementById("btnCancelar").disabled = false;
 			}
@@ -156,6 +158,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
         });
         
     }
+    
 });
 
 function generarUUIDCorto(longitud = 8) {
@@ -537,7 +540,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     //funcion para mostrar catalogo de tipos buro de credito (Adviser/Prospector)
-    $.ajax({
+    /*$.ajax({
         url: newUrlBase + 'credito/api/catTipoBuro',
         type: 'GET',
         success: function(data) {
@@ -552,11 +555,59 @@ document.addEventListener("DOMContentLoaded", function() {
         error: function(err) {
             console.error('Error al cargar catálogos', err);
         }
-    });
+    });*/
 });
 
 // Abrir modal CargarRespuestaBuro
   function btnCargarRespuestaBuro() {
+	  
+	//funcion para mostrar catalogo de tipos buro de credito (Adviser/Prospector)
+    // @ts-ignore
+    /*let tipoCampania = parseInt(document.getElementById("Campania").value);
+
+	$.ajax({
+	    url: newUrlBase + 'credito/api/catTipoBuro',
+	    type: 'GET',
+	    data: {
+	        tipoCampania: tipoCampania
+	    },
+	    success: function(data) {
+	        let select = $('#tipoArchivoBuro');
+	        select.empty();
+	        select.append('<option value="0">Seleccione</option>');
+	
+	        data.forEach(function(item) {
+	            select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+	        });
+	    },
+	    error: function(err) {
+	        console.error('Error al cargar catálogos tipo buro', err);
+	    }
+	});*/
+	// @ts-ignore
+	let tipoCampania = parseInt(document.getElementById("Campania").value);
+	let idGrupo = 38; // <- Asegúrate de usar el grupo correcto
+	
+	$.ajax({
+	    url: newUrlBase + 'credito/api/catTipoBuro',
+	    type: 'GET',
+	    data: {
+	        idGrupo: idGrupo,
+	        tipoCampania: tipoCampania
+	    },
+	    success: function(data) {
+	        let select = $('#tipoArchivoBuro');
+	        select.empty();
+	        select.append('<option value="0">Seleccione</option>');
+	
+	        data.forEach(function(item) {
+	            select.append('<option value="' + item.i_opcion + '">' + item.v_valor + '</option>');
+	        });
+	    },
+	    error: function(err) {
+	        console.error('Error al cargar catálogos tipo buro', err);
+	    }
+	});
 	 
     let modal = new bootstrap.Modal(document.getElementById('modalCargarBuro'));
     modal.show();
@@ -1187,4 +1238,171 @@ function btnDepuracionBuro() {
         console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
     });
 	
+}
+
+function btnArchivoMc() {
+	//deshabilita el boton Cargar Arhcivo MC
+	// @ts-ignore
+	document.getElementById("btnArchivoMc").disabled = true;
+	
+	// @ts-ignore
+	var tipoCampania = parseInt(document.getElementById("Campania").value);
+	
+	// @ts-ignore
+	var estatusCampania = parseInt(document.getElementById("Estatus").value);
+	
+	let banderaCampania = 2;
+	
+	fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&banderaCampania=" + banderaCampania)
+    //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
+    .then(resp => {
+        if (!resp.ok) {
+            throw new Error("Error al validar campania para procesar archivo MC");
+        }
+        return resp.json(); // porque el backend regresa un int
+    })
+    .then(data => {
+		
+		const dataProceso = {
+	        pk_id_proceso_campania: data,
+	        i_estatus_reg: 2,
+	    };
+	    ///
+	    ///
+	    fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        },
+		        body: JSON.stringify(dataProceso)
+		    })
+		    .then(resp => {
+			    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania en archivo MC");
+			    return resp.text();
+			})
+			.then(() => {
+				
+				///--
+				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + data)
+			    .then(resp => {
+			        if (!resp.ok) {
+			            throw new Error("Error al validar campania para obtener codigo campania en archivo MC ");
+			        }
+			        return resp.json(); // porque el backend regresa un int
+			    })
+			    .then(datas => {
+					const dataExtCargaBuro = {
+        
+				        // @ts-ignore
+				        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+				        
+				        // @ts-ignore
+				        dt_fecha_extraccion: document.getElementById("idFecha").value,
+				        i_bandera_extraccion: 1,
+				        // @ts-ignore
+				        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
+				        // @ts-ignore
+				        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
+				        // @ts-ignore
+				        dt_fecha_envio_mc: document.getElementById("idFecha").value,
+				        i_estatus_reg: 1,
+				        //4	Depuracion respuesta Buro
+				        i_id_estatus_campania: 5,
+				        // @ts-ignore
+				        dt_fecha_registro: document.getElementById("idFecha").value,
+				        // @ts-ignore
+				        i_user_reg: parseInt(document.getElementById("idUser").value),
+				        vc_codigo_cam:datas.codigo,
+				        
+				    };
+					/////aqui inicia
+					
+					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
+					    method: 'POST',
+					    headers: { 'Content-Type': 'application/json' },
+					    body: JSON.stringify(dataExtCargaBuro)
+					})
+					.then(async resp => {
+					    if (!resp.ok) {
+					        const errorText = await resp.text();
+					        throw new Error(errorText || "Error desconocido en archivo MC");
+					    }
+					    return resp.text();
+					})
+					.then(() => {
+					    // 
+					    //
+					    //
+						//mandar llamar SP 
+						fetch(newUrlBase + "credito/api/ejecutarArchivoMc?tipoCampania=" + tipoCampania)
+					    .then(resp => {
+					        if (!resp.ok) {
+					            throw new Error("Error en el proceso de SP_CAM_EXTRACCIONCAMPCRED.");
+					        }
+					        return resp.text(); // porque el backend regresa un int
+					    })
+					    .then(dataSP => {
+							
+							//////
+							// @ts-ignore
+							swal({
+							title: "",
+							text: 'Actualizado correctamente',
+							icon: "success",
+						    // @ts-ignore
+						    }).then(() => {
+						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+						    });
+							/////
+							
+						})
+					    .catch(err => {
+					        console.error("Error en el proceso de SP_CAM_EXTRACCIONCAMPCRED: ", err);
+					    });
+						///termina llamada del SP
+					    //
+					    //
+					    //
+					})
+					.catch(err => {
+					    console.error("Error:", err);
+					    // @ts-ignore
+					    Swal.fire({
+					        title: "Error",
+					        text: err.message,
+					        icon: "error",
+					        confirmButtonText: "Cerrar"
+					    });
+					});
+					/////aqui termina
+				})
+				.catch(err => {
+			        console.error("Error al validar campania para obtener codigo campania archivo MC: ", err);
+			    });
+				///--
+				
+				
+				
+			})
+			.catch(err => {
+			    //console.error("Error al actualizar Proceso Campania:", err);
+			   // @ts-ignore
+			   swal({
+				title: "",
+				text: 'Error al actualizar Proceso Campania de archivo MC',
+			        icon: 'error'
+			    });
+			});
+	    ///
+	    ///
+    
+    })
+    .catch(err => {
+        console.error("Error al validar campania para procesar validacion archivo MC: ", err);
+    });
+	
+	//al final se debe activar el boton
+	//activa el boton Cargar Arhcivo MC
+	// @ts-ignore
+	document.getElementById("btnArchivoMc").disabled = false;
 }

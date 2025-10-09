@@ -56,5 +56,9 @@ public class ProcesosCampaniasService {
     public void ejecutarDepuracionBC(int tipoCampania, int procesoCampania) {
     	procesosCampaniasRepository.ejecutarDepuracionBC(tipoCampania, procesoCampania);
     }
+    
+    public void ejecutarArchivoMc(int tipoCampania) {
+    	procesosCampaniasRepository.ejecutarArchivoMc(tipoCampania);
+    }
 	
 }

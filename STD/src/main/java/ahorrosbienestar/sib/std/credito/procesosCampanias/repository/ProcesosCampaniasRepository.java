@@ -98,5 +98,10 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	    @Query(value = "CALL SIB.SP_CAM_DEPURACION_BC(:tipoCampania, :procesoCampania)", nativeQuery = true)
 	    void ejecutarDepuracionBC(@Param("tipoCampania") Integer tipoCampania,
 	                              @Param("procesoCampania") Integer procesoCampania);
+	 
+	 @Modifying
+	    @Transactional
+	    @Query(value = "CALL SIB.SP_CAM_EXTRACCIONCAMPCRED(:tipoCampania)", nativeQuery = true)
+	    void ejecutarArchivoMc(@Param("tipoCampania") Integer tipoCampania);
 	
 }

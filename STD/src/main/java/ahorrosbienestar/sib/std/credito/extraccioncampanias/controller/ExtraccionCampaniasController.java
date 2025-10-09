@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -401,11 +402,35 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     }
 	
 	//llenar el combo de tipos buro de credito (Adviser/Prospector)
+	/*@GetMapping("/api/catTipoBuro")
+	@ResponseBody
+	public List<Catalogo> getCatalogoTipoBuro(@RequestParam("idGrupo") Integer idGrupo,@RequestParam("tipoCampania") int tipoCampania) {
+	    return iCatalogoRepository.listaTipoBuro(idGrupo, tipoCampania);
+	}*/
 	@GetMapping("/api/catTipoBuro")
 	@ResponseBody
-	public List<Catalogo> getCatalogoTipoCampanias() {
-	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo);
+	public ResponseEntity<List<Map<String, Object>>> getCatalogoTipoBuro(
+	    @RequestParam("idGrupo") Integer idGrupo,
+	    @RequestParam("tipoCampania") Integer tipoCampania
+	) {
+	    try {
+	        List<Object[]> resultados = iCatalogoRepository.listaTipoBuro(idGrupo, tipoCampania);
+	        List<Map<String, Object>> lista = new ArrayList<>();
+
+	        for (Object[] row : resultados) {
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("i_opcion", row[0]);
+	            map.put("v_valor", row[1]);
+	            lista.add(map);
+	        }
+
+	        return ResponseEntity.ok(lista);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // 
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
 	}
+	
 	
 	@GetMapping("/api/ejecutarDepuracionBc")
     public ResponseEntity<String> ejecutarDepuracionBc(
@@ -446,5 +471,18 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 			return 0;
 		}
 	}
+    
+    //SP_CAM_EXTRACCIONCAMPCRED
+    @GetMapping("/api/ejecutarArchivoMc")
+    public ResponseEntity<String> ejecutarArchivoMc(
+            @RequestParam("tipoCampania") int tipoCampania) {
+        try {
+        	procesosCampaniasService.ejecutarArchivoMc(tipoCampania);
+            return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC ");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al ejecutar el procedimiento archivo MC: " + e.getMessage());
+        }
+    }
 	
 }
