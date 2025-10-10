@@ -811,7 +811,7 @@ function cargarSolicitudes(pagina) {
 					opt.empresa,
 					opt.montoSolicitado,
 					opt.montoDescontar,
-					opt.usuarioReg.vc_nombre_usuario,
+					opt.usuarioReg?.vc_nombre_usuario ?? '',
 					opt.sucursal,
 					obtenerEstatus(opt.estatus),
 					acciones
