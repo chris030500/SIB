@@ -306,6 +306,12 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         return procesosCampaniasRepository.contarProcesosExtraccion();
     }
 	
+	@GetMapping("/api/countDepuracionBc")
+    @ResponseBody
+    public int contarProcesosDepuracionBc() {
+        return procesosCampaniasRepository.contarProcesosDepuracionBc();
+    }
+	
 	@GetMapping("/api/countExtraccionTerm")
 	@ResponseBody
     public int contarProcesosExtraccionTerm(@RequestParam("tipoCampania") int tipoCampania,
@@ -472,16 +478,16 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		}
 	}
     
-    //SP_CAM_EXTRACCIONCAMPCRED
+    //SP_DEP_CAM_EXTRACCIONCAMPCRED
     @GetMapping("/api/ejecutarArchivoMc")
     public ResponseEntity<String> ejecutarArchivoMc(
             @RequestParam("tipoCampania") int tipoCampania) {
         try {
         	procesosCampaniasService.ejecutarArchivoMc(tipoCampania);
-            return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC ");
+            return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ejecutar el procedimiento archivo MC: " + e.getMessage());
+                    .body("Error al ejecutar el procedimiento archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED: " + e.getMessage());
         }
     }
 	

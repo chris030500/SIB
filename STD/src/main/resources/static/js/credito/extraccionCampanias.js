@@ -38,7 +38,7 @@ document.getElementById("Campania").addEventListener("change", function() {
 			}
 	    },
 	    error: function(err) {
-	        console.error("Error al obtener el conteo:", err);
+	        console.error("Error al obtener el conteo para activar boton extraer :", err);
 	    }
 	});
 });
@@ -123,11 +123,26 @@ document.getElementById("Estatus").addEventListener("change", function() {
         .then(count => {
 			
 			if(count > 0){
-				//activa boton depuracion buro
-		        // @ts-ignore
-				document.getElementById("btnDepuracion").disabled = false;
-				// @ts-ignore
-				document.getElementById("btnCancelar").disabled = false;
+				
+				$.ajax({
+				    url: newUrlBase + "credito/api/countDepuracionBc",
+				    type: "GET",
+				    success: function(data) {
+						
+				        if(data === 0){
+							
+							//activa boton depuracion buro
+					        // @ts-ignore
+							document.getElementById("btnDepuracion").disabled = false;
+							// @ts-ignore
+							document.getElementById("btnCancelar").disabled = false;
+						}
+				    },
+				    error: function(err) {
+				        console.error("Error al obtener el conteo para ctivar boton depuracion buro:", err);
+				    }
+				});
+				
 			}
         })
         .catch(err => {
@@ -1241,6 +1256,7 @@ function btnDepuracionBuro() {
 }
 
 function btnArchivoMc() {
+	console.log("Botón clickeado, ejecutando función");
 	//deshabilita el boton Cargar Arhcivo MC
 	// @ts-ignore
 	document.getElementById("btnArchivoMc").disabled = true;
@@ -1316,7 +1332,7 @@ function btnArchivoMc() {
 				        
 				    };
 					/////aqui inicia
-					
+					console.log("inserta estatus 5");
 					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
 					    method: 'POST',
 					    headers: { 'Content-Type': 'application/json' },
@@ -1325,7 +1341,7 @@ function btnArchivoMc() {
 					.then(async resp => {
 					    if (!resp.ok) {
 					        const errorText = await resp.text();
-					        throw new Error(errorText || "Error desconocido en archivo MC");
+					        throw new Error(errorText || "Error desconocido al insertar proceso en archivo MC");
 					    }
 					    return resp.text();
 					})
@@ -1333,11 +1349,12 @@ function btnArchivoMc() {
 					    // 
 					    //
 					    //
+					    console.log("va a mandar llamar el SP SP_DEP_CAM_EXTRACCIONCAMPCRED");
 						//mandar llamar SP 
 						fetch(newUrlBase + "credito/api/ejecutarArchivoMc?tipoCampania=" + tipoCampania)
 					    .then(resp => {
 					        if (!resp.ok) {
-					            throw new Error("Error en el proceso de SP_CAM_EXTRACCIONCAMPCRED.");
+					            throw new Error("Error en el proceso de SP_DEP_CAM_EXTRACCIONCAMPCRED.");
 					        }
 					        return resp.text(); // porque el backend regresa un int
 					    })
@@ -1354,10 +1371,13 @@ function btnArchivoMc() {
 						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 						    });
 							/////
+							//activa el boton Cargar Arhcivo MC
+							// @ts-ignore
+							document.getElementById("btnArchivoMc").disabled = false;
 							
 						})
 					    .catch(err => {
-					        console.error("Error en el proceso de SP_CAM_EXTRACCIONCAMPCRED: ", err);
+					        console.error("Error en el proceso de SP_DEP_CAM_EXTRACCIONCAMPCRED: ", err);
 					    });
 						///termina llamada del SP
 					    //
@@ -1400,9 +1420,4 @@ function btnArchivoMc() {
     .catch(err => {
         console.error("Error al validar campania para procesar validacion archivo MC: ", err);
     });
-	
-	//al final se debe activar el boton
-	//activa el boton Cargar Arhcivo MC
-	// @ts-ignore
-	document.getElementById("btnArchivoMc").disabled = false;
 }

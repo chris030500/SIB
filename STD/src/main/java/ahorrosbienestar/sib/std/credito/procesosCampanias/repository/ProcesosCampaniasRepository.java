@@ -48,6 +48,14 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	
 	@Query(value = "SELECT COUNT(*) " +
             "FROM SIB.TBL_PROCESO_CAMPANIA " +
+            "WHERE I_ID_ESTATUS_CAMPANIA = 4 " +
+            "AND I_BANDERA_EXTRACCION = 1 " +
+            "AND I_ESTATUS_REG = 1",
+    nativeQuery = true)
+	int contarProcesosDepuracionBc();
+	
+	@Query(value = "SELECT COUNT(*) " +
+            "FROM SIB.TBL_PROCESO_CAMPANIA " +
             "WHERE I_ID_TIPO_CAMPANIA = :tipoCampania " +
             "AND I_ID_ESTATUS_CAMPANIA = :estatus " +
             "AND I_BANDERA_EXTRACCION = 2 " +
@@ -101,7 +109,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	 
 	 @Modifying
 	    @Transactional
-	    @Query(value = "CALL SIB.SP_CAM_EXTRACCIONCAMPCRED(:tipoCampania)", nativeQuery = true)
+	    @Query(value = "CALL SIB.SP_DEP_CAM_EXTRACCIONCAMPCRED(:tipoCampania)", nativeQuery = true)
 	    void ejecutarArchivoMc(@Param("tipoCampania") Integer tipoCampania);
 	
 }
