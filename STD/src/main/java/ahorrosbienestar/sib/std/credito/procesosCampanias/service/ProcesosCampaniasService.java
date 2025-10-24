@@ -2,14 +2,18 @@ package ahorrosbienestar.sib.std.credito.procesosCampanias.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -60,5 +64,12 @@ public class ProcesosCampaniasService {
     public void ejecutarArchivoMc(int tipoCampania) {
     	procesosCampaniasRepository.ejecutarArchivoMc(tipoCampania);
     }
+    
+    public List<ProcesosCampaniasDTO> buscarProcesosCampania(LocalDate inicio, LocalDate fin, String tipo) {
+		List<Object[]> resultados = procesosCampaniasRepository.listaProcesosCampania(inicio, fin, tipo);
+	    return resultados.stream()
+	    		.map(r -> new ProcesosCampaniasDTO((Integer) r[0], (LocalDate) r[1], (String) r[2], (String) r[3], (LocalDate) r[4],(LocalDate) r[5], (String) r[6]))
+	            .collect(Collectors.toList());
+	}
 	
 }

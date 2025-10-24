@@ -27,6 +27,27 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		   @Param("tipo") String tipo
 		);
 	
+	@Query(value = "select t1.pk_id_proceso_campania " +
+					",t1.dt_fecha_extraccion " +
+					",t4.vc_nombre_usuario " +
+					",t2.vc_tipo_campania "  + 
+					",t1.dt_fecha_inicio_vigencia " +
+					",t1.dt_fecha_fin_vigencia " +
+					",t3.vc_estatus " +
+					"from SIB.TBL_PROCESO_CAMPANIA t1 " +
+					"inner join SIB.TBL_TIPOS_CAMPANIA t2 " +
+					"on t1.I_ID_TIPO_CAMPANIA = t2.PK_ID_TIPO_CAMPANIA " +
+					"inner join SIB.TBL_ESTATUS_CAMPANIA t3 " +
+					"on t3.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA " +
+					"inner join SIB.TBL_CAT_USUARIOS t4 " +
+					"on t4.PK_ID_USUARIO = t1.I_USER_REG" +
+					"WHERE I_ID_TIPO_CAMPANIA in ( :tipo) " +
+				    "AND (DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin " +
+				    "OR DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin)", nativeQuery = true)
+	List<Object[]> listaProcesosCampania(@Param("inicio") LocalDate inicio,
+										   @Param("fin") LocalDate fin,
+										   @Param("tipo") String tipo);
+	
 	
 	/*@Query(value = "SELECT * FROM SIB.TBL_PROCESO_CAMPANIA " +
 		       "WHERE (DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin " +
