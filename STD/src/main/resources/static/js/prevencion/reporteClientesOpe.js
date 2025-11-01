@@ -399,58 +399,6 @@ function confirmar(valor) {
 }
  
  
- 
-function procesarAuditoria() {
-  var fechaInicio = $("#fechaInicio").val();
-  var fechaFin = $("#fechaFin").val();
-
-  // 🔹 Validar que ambas fechas estén seleccionadas
-  if (!fechaInicio || !fechaFin) {
-    swal("Debe seleccionar fecha inicio y fecha fin.", { icon: "error" });
-    return;
-  }
-
-  swal({
-    title: "Procesando auditoría...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary"></div>',
-        style: "display:flex;justify-content:center;padding:20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
-
-$.ajax({
-  url: getAbsolutePath() + "procesarAuditoria",
-    type: "POST",
-    dataType: "JSON",
-    data: {
-      fechaInicio: fechaInicio,
-      fechaFin: fechaFin,
-    },
-    complete: function () {
-      swal.close();
-    },
-    success: function (respuesta) {
-      swal("", respuesta.mensaje, respuesta.tipo).then(() => {
-        // 🔹 Si quieres refrescar la tabla histórico después de procesar
-        if (typeof iniciaTblHistorico === "function") {
-          iniciaTblHistorico();
-        }
-      });
-    },
-    error: function () {
-      swal("Error al procesar auditoría.", { icon: "error" });
-    },
-  });
-}
-
- 
- 
 function ejecutarVistoBueno() {
   swal({
     title: "¿Validó correctamente?",
@@ -715,4 +663,219 @@ function mostrarMensajeMigracion(data) {
     }
     mensaje.style.display = "block";
 }
+
+//  Función para mostrar/ocultar opciones según el tipo de reporte seleccionado
+function mostrarOpcionesPorTipo() {
+  const tipo = document.getElementById("tipoReporte").value;
+  const bloqueClientes = document.getElementById("bloqueClientes");
+  const bloqueOperaciones = document.getElementById("bloqueOperaciones");
+  const btnClientes = document.getElementById("btnProcesarClientes");
+  const btnOperaciones = document.getElementById("btnProcesarOperaciones");
+
+  // Reiniciar visibilidad
+  bloqueClientes.style.display = "none";
+  bloqueOperaciones.style.display = "none";
+  btnClientes.disabled = true;
+  btnOperaciones.disabled = true;
+
+  if (tipo === "clientes") {
+    bloqueClientes.style.display = "block";
+    btnClientes.disabled = false;
+  } else if (tipo === "operaciones") {
+    bloqueOperaciones.style.display = "block";
+    btnOperaciones.disabled = false;
+  }
+}
+
+// ========================================================
+//  Generar reporte de CLIENTES filtrado por año
+// ========================================================
+async function generarReporteClientes() {
+  const anio = document.getElementById("anioReporte") ? document.getElementById("anioReporte").value : null;
+
+  if (!anio) {
+    swal("Debe seleccionar un año antes de generar el reporte.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Generando reporte de clientes...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    // Cambiado al endpoint real
+    const res = await fetch("generarRptClientesPorAnio", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio })
+    });
+
+    if (!res.ok) throw new Error("Error generando el reporte.");
+
+    const respuesta = await res.json();
+    const url = respuesta[0];
+
+    // Abrir el archivo generado en una nueva pestaña
+    window.open(
+      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
+    );
+    window.focus();
+
+    swal.close();
+    swal({
+      title: "¡Éxito!",
+      text: "El reporte de clientes se generó correctamente.",
+      icon: "success",
+      button: "Aceptar"
+    });
+  } catch (error) {
+    console.error("❌ Error al generar el reporte de clientes:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al generar el reporte de clientes.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
+// ========================================================
+//  Procesar Auditoría de CLIENTES (llama SP en backend)
+// ========================================================
+async function procesarAuditoriaClientes() {
+  const anio = document.getElementById("anioReporte")?.value;
+
+  if (!anio) {
+    swal("Debe seleccionar un año antes de procesar la auditoría.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Procesando auditoría de clientes...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    //  Este endpoint corresponde al @PostMapping("/procesarAuditoriaClientes")
+    const res = await fetch("procesarAuditoriaClientes", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio })
+    });
+
+    if (!res.ok) throw new Error("Error procesando auditoría.");
+
+    const data = await res.json();
+    swal.close();
+
+    if (data.tipo === "success") {
+      swal({
+        title: "¡Éxito!",
+        text: data.mensaje,
+        icon: "success",
+        button: "Aceptar"
+      });
+    } else {
+      swal({
+        title: "Error",
+        text: data.mensaje,
+        icon: "error",
+        button: "Aceptar"
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error al procesar auditoría de clientes:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al procesar la auditoría.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
+// ========================================================
+//  Generar reporte de OPERACIONES filtrado por rango de fechas
+// ========================================================
+async function generarReporteOperaciones() {
+  const fechaInicio = document.getElementById("fechaInicio")?.value;
+  const fechaFin = document.getElementById("fechaFin")?.value;
+
+  if (!fechaInicio || !fechaFin) {
+    swal("Debe seleccionar un rango de fechas antes de generar el reporte.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Generando reporte de operaciones...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    const res = await fetch("generarRptOperacionesAuditoria", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio, fechaFin })
+    });
+
+    if (!res.ok) throw new Error("Error generando el reporte.");
+
+    const respuesta = await res.json();
+    const url = respuesta[0];
+
+    // Abrir el reporte Jasper generado
+    window.open(
+      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
+    );
+    window.focus();
+
+    swal.close();
+    swal({
+      title: "¡Éxito!",
+      text: "El reporte de operaciones se generó correctamente.",
+      icon: "success",
+      button: "Aceptar"
+    });
+  } catch (error) {
+    console.error("❌ Error al generar el reporte de operaciones:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al generar el reporte de operaciones.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
 
