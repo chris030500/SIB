@@ -326,6 +326,9 @@ public class RptReporteClientesOpeController {
         CallableStatement callableStatement = null;
 
         try {
+            // ======================
+            // Obtener usuario actual
+            // ======================
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = null;
             Integer idUsuario = null;
@@ -344,31 +347,45 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.ok(respuesta);
             }
 
+            // ======================
+            // Convertir el año a fechas
+            // ======================
+            int year = Integer.parseInt(anio);
+            Date fechaInicio = Date.valueOf(year + "-01-01");
+            Date fechaFin = Date.valueOf(year + "-12-31");
+
+            // ======================
+            // Llamar al SP con las fechas correctas
+            // ======================
             connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?)}");
-            callableStatement.registerOutParameter(1, Types.VARCHAR); // error_message
-            callableStatement.setInt(2, idUsuario);
-            callableStatement.setNull(3, Types.DATE);
-            callableStatement.setNull(4, Types.DATE);
+
+            callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
+            callableStatement.setInt(2, idUsuario);                   // IN iusuario
+            callableStatement.setDate(3, fechaInicio);                // IN fechaInicio
+            callableStatement.setDate(4, fechaFin);                   // IN fechaFin
 
             callableStatement.execute();
+
             String errorMessage = callableStatement.getString(1);
 
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
             } else {
-                respuesta.put("mensaje", "Visto bueno de clientes ejecutado correctamente.");
+                respuesta.put("mensaje", "Visto bueno ejecutado correctamente para el año " + anio
+                        + " (" + fechaInicio + " a " + fechaFin + ")");
                 respuesta.put("tipo", "success");
             }
 
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("Error al ejecutar SP Visto Bueno Clientes: " + e.getMessage());
+            logger.error("Error al ejecutar SP Visto Bueno Clientes: " + e.getMessage(), e);
             respuesta.put("mensaje", "Error al ejecutar SP: " + e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
+
         } finally {
             try {
                 if (callableStatement != null) callableStatement.close();
@@ -378,6 +395,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+
 
 
     

@@ -542,28 +542,46 @@ function iniciaTblHistorico() {
   url = getAbsolutePath() + cargatblHistorico;
   $.getJSON(url, {}, function(data) {
     tblHistorico.clear().draw();
+
+    if (!data || data.length === 0) {
+      console.warn("No se encontraron registros en el historial.");
+      return;
+    }
+
     $.each(data, function(idx, opt) {
- 
-      btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-        + " title='Reporte Historico de operaciones' data-bs-target='#' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-file-earmark-diff'></i></button>";
- 
-      btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
-        + " title='Reporte Historico de clientes' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-file-earmark-person'></i></button>";
- 
+      const rangoFechas = (opt.fechaInicio && opt.fechaFin)
+        ? `${opt.fechaInicio.split("T")[0]} a ${opt.fechaFin.split("T")[0]}`
+        : "N/A";
+
+      const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
+      const confirmado = opt.estatus === 1 ? "Sí" : "No";
+      const fechaVobo = opt.fechaGeneracionvobo
+        ? opt.fechaGeneracionvobo.split("T")[0]
+        : "-";
+
+      const btns = `
+        <button class='btn btn-primary btn-sm' title='Histórico de operaciones'
+          onclick='generarHistoricoOperaciones(${opt.id})'>
+          <i class='bi bi-file-earmark-diff'></i>
+        </button>
+        <button class='btn btn-success btn-sm' title='Histórico de clientes'
+          onclick='generarHistoricoClientes(${opt.id})'>
+          <i class='bi bi-file-earmark-person'></i>
+        </button>`;
+
       tblHistorico.row.add([
-        opt.fechaGeneracion,
-        opt.i_usuario.vc_nombre_usuario,
-        opt.i_usuario.vc_nombre_usuario,
-        opt.fechaGeneracionvobo,
-        btnsROpera + btnsRCientes
+        opt.fechaGeneracion.split("T")[0],
+        rangoFechas,
+        usuario,
+        confirmado,
+        fechaVobo,
+        btns
       ]).draw(false);
     });
   });
 }
+
+
  
 function generarHistoricoOperaciones(idBuscarHO) {
   fetch("generarRptHistoricoOperaciones", {
