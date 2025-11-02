@@ -321,72 +321,106 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
  
  
  
+// ==========================================================
+//  Validar archivo Excel antes de subirlo
+// ==========================================================
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
- 
+
   const input = document.getElementById("fileUploadPEP");
-  const files = input.files;
- 
-  if (!files || files.length === 0) {
-    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
+  const file = input.files[0];
+
+  //  Validar si se seleccionó un archivo
+  if (!file) {
+    swal("Debes seleccionar un archivo.", { icon: "warning" });
     return;
   }
- 
-  const fd = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    fd.append("file", files[i]); 
+
+  //  Validar extensión
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!["xls", "xlsx"].includes(extension)) {
+    swal("Solo se permiten archivos Excel (.xls o .xlsx).", { icon: "error" });
+    input.value = ""; // limpia el input
+    return;
   }
- 
-  swal({
-    title: "Procesando archivo(s)...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
- 
+
+  //  Leer y validar encabezados del archivo
+  const encabezadosValidos = ["ClienteID", "nombre_completo"];
+
   try {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: "array" });
+    const primeraHoja = workbook.SheetNames[0];
+    const hoja = workbook.Sheets[primeraHoja];
+    const encabezados = XLSX.utils.sheet_to_json(hoja, { header: 1 })[0]; // primera fila
+
+    // Normalizar nombres (elimina espacios y minúsculas)
+    const headersNormalizados = encabezados.map(h =>
+      h ? h.toString().trim().toLowerCase() : ""
+    );
+
+    const requeridosNormalizados = encabezadosValidos.map(h => h.toLowerCase());
+
+    const faltantes = requeridosNormalizados.filter(h => !headersNormalizados.includes(h));
+
+    if (faltantes.length > 0) {
+      swal({
+        title: "Error en encabezados",
+        text: `El archivo no contiene las columnas requeridas: ${faltantes.join(", ")}`,
+        icon: "error"
+      });
+      input.value = "";
+      return;
+    }
+
+    //  Si todo está correcto, procesar envío
+    const fd = new FormData();
+    fd.append("file", file);
+
+    swal({
+      title: "Procesando archivo...",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+          style: "display:flex;justify-content:center;padding:20px;"
+        }
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false
+    });
+
     const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
       method: "POST",
       body: fd
     });
- 
-    const respuesta = await res.json(); 
+
+    const respuesta = await res.json();
     swal.close();
- 
+
     if (res.ok && Array.isArray(respuesta)) {
       swal({
         title: "¡Éxito!",
         text: respuesta[0],
         icon: "success",
-        button: "Aceptar",
-      }).then(() => {
-       
+        button: "Aceptar"
       });
     } else {
       swal({
         title: "Error",
         text: respuesta[0] || "Ocurrió un error inesperado.",
         icon: "error",
-        button: "Aceptar",
+        button: "Aceptar"
       });
     }
- 
+
   } catch (error) {
-    swal.close();
-    console.error("Error en fetch:", error);
-    swal("Se presentó un error, intente más tarde.", {
-      icon: "error",
-      closeOnClickOutside: false,
-    });
+    console.error("❌ Error al validar archivo Excel:", error);
+    swal("Error al leer el archivo. Asegúrate de que no esté dañado.", { icon: "error" });
   }
 });
+
  
  
  
@@ -421,15 +455,28 @@ function ejecutarVistoBueno() {
     dangerMode: true,
   }).then((willExecute) => {
     if (willExecute) {
-      var fechaInicio = $("#fechaInicio").val();
-      var fechaFin = $("#fechaFin").val();
+      const tipoReporte = $("#tipoReporte").val();
+      const fechaInicio = $("#fechaInicio").val();
+      const fechaFin = $("#fechaFin").val();
+      const anio = $("#anioReporte").val();
 
-      if (!fechaInicio || !fechaFin) {
-        swal("Debe seleccionar fecha inicio y fecha fin.", {
-          icon: "error",
-          closeOnClickOutside: false,
-        });
-        return;
+      // Validación condicional
+      if (tipoReporte === "operaciones") {
+        if (!fechaInicio || !fechaFin) {
+          swal("Debe seleccionar fecha inicio y fecha fin.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+          return;
+        }
+      } else if (tipoReporte === "clientes") {
+        if (!anio) {
+          swal("Debe seleccionar el año del reporte de clientes.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+          return;
+        }
       }
 
       swal({
@@ -448,26 +495,33 @@ function ejecutarVistoBueno() {
         closeOnEsc: false,
       });
 
-      var url = "ejecutarVistoBueno";
+      let url = "";
+      let data = {};
+
+      //  Si es CLIENTES, no se mandan fechas
+      if (tipoReporte === "clientes") {
+        url = getAbsolutePath() + "ejecutarVistoBuenoClientes";
+        data = { anio: anio };
+      } else {
+        url = getAbsolutePath() + "ejecutarVistoBueno";
+        data = { fechaInicio: fechaInicio, fechaFin: fechaFin };
+      }
 
       $.ajax({
-        url: getAbsolutePath() + url,
+        url: url,
         type: "POST",
         dataType: "JSON",
-        data: {
-          fechaInicio: fechaInicio,
-          fechaFin: fechaFin,
-        },
+        data: data,
         complete: function () {
           swal.close();
         },
         success: function (respuesta) {
-          swal("", respuesta.mensaje, respuesta.tipo).then(() => {
-            iniciaTblHistorico();
-            url = "";
-          });
+          swal("", respuesta.mensaje || respuesta.mensaje || "Operación completada.", respuesta.tipo || "success")
+            .then(() => {
+              iniciaTblHistorico();
+            });
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        error: function () {
           swal("Se presentó un error, intente más tarde.", {
             icon: "error",
             closeOnClickOutside: false,
@@ -477,6 +531,7 @@ function ejecutarVistoBueno() {
     }
   });
 }
+
 
  
 var btnsROpera = "";

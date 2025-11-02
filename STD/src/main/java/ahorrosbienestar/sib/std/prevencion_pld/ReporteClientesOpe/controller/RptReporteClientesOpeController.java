@@ -317,20 +317,15 @@ public class RptReporteClientesOpeController {
     }
 
     
-    @PostMapping("/ejecutarVistoBueno")
-    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno(
-            @RequestParam("fechaInicio") Date fechaInicio,
-            @RequestParam("fechaFin") Date fechaFin) {
-        
-        logger.info("/ejecutarVistoBueno - fechaInicio: " + fechaInicio + ", fechaFin: " + fechaFin);
+    @PostMapping("/ejecutarVistoBuenoClientes")
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBuenoClientes(@RequestParam("anio") String anio) {
+        logger.info("/ejecutarVistoBuenoClientes - Año recibido: " + anio);
         Map<String, Object> respuesta = new HashMap<>();
 
-        String errorMessage = null;
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
-            // Obtener usuario logueado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = null;
             Integer idUsuario = null;
@@ -344,38 +339,35 @@ public class RptReporteClientesOpeController {
             }
 
             if (idUsuario == null) {
-                respuesta.put(Constantes.TEXTO_MNS, "No se pudo obtener el ID del usuario.");
-                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+                respuesta.put("mensaje", "No se pudo obtener el ID del usuario.");
+                respuesta.put("tipo", "error");
                 return ResponseEntity.ok(respuesta);
             }
 
             connection = jdbcTemplate.getDataSource().getConnection();
-            callableStatement = connection.prepareCall(Constantes.VISTO_BUENO);
-
-
-            callableStatement.registerOutParameter(1, Types.VARCHAR);
+            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?)}");
+            callableStatement.registerOutParameter(1, Types.VARCHAR); // error_message
             callableStatement.setInt(2, idUsuario);
-            callableStatement.setDate(3, fechaInicio);
-            callableStatement.setDate(4, fechaFin);
-            
+            callableStatement.setNull(3, Types.DATE);
+            callableStatement.setNull(4, Types.DATE);
 
             callableStatement.execute();
-            errorMessage = callableStatement.getString(1);
+            String errorMessage = callableStatement.getString(1);
 
             if (errorMessage != null && !errorMessage.isEmpty()) {
-                respuesta.put(Constantes.TEXTO_MNS, errorMessage);
-                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+                respuesta.put("mensaje", errorMessage);
+                respuesta.put("tipo", "error");
             } else {
-                respuesta.put(Constantes.TEXTO_MNS, "VISTO BUENO OK");
-                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
+                respuesta.put("mensaje", "Visto bueno de clientes ejecutado correctamente.");
+                respuesta.put("tipo", "success");
             }
 
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("Error al ejecutar SP Visto Bueno: " + e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS, "Error al ejecutar SP: " + e.getMessage());
-            respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+            logger.error("Error al ejecutar SP Visto Bueno Clientes: " + e.getMessage());
+            respuesta.put("mensaje", "Error al ejecutar SP: " + e.getMessage());
+            respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
         } finally {
             try {
@@ -386,6 +378,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+
 
     
     @PostMapping("/activar-ejecucion/{id}")
