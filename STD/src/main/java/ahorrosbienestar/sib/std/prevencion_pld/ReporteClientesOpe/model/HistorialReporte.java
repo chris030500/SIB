@@ -37,56 +37,38 @@ public class HistorialReporte {
     
     @Column(name = "DT_FECHA_VOBO", nullable = false)
     private LocalDateTime fechaGeneracionvobo;
+    
+    @Column(name = "DT_FechaInicio")
+    private LocalDateTime fechaInicio;
 
-	public Integer getId() {
-		return id;
-	}
+    @Column(name = "DT_FechaFinal")
+    private LocalDateTime fechaFin;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-	public LocalDateTime getFechaGeneracion() {
-		return fechaGeneracion;
-	}
+    public LocalDateTime getFechaGeneracion() { return fechaGeneracion; }
+    public void setFechaGeneracion(LocalDateTime fechaGeneracion) { this.fechaGeneracion = fechaGeneracion; }
 
-	public void setFechaGeneracion(LocalDateTime fechaGeneracion) {
-		this.fechaGeneracion = fechaGeneracion;
-	}
+    public Usuario getI_usuario() { return i_usuario; }
+    public void setI_usuario(Usuario i_usuario) { this.i_usuario = i_usuario; }
 
-	public Usuario getI_usuario() {
-		return i_usuario;
-	}
+    public Usuario getI_usuario_vobo() { return i_usuario_vobo; }
+    public void setI_usuario_vobo(Usuario i_usuario_vobo) { this.i_usuario_vobo = i_usuario_vobo; }
 
-	public void setI_usuario(Usuario i_usuario) {
-		this.i_usuario = i_usuario;
-	}
+    public Integer getEstatus() { return estatus; }
+    public void setEstatus(Integer estatus) { this.estatus = estatus; }
 
-	public Usuario getI_usuario_vobo() {
-		return i_usuario_vobo;
-	}
+    public LocalDateTime getFechaGeneracionvobo() { return fechaGeneracionvobo; }
+    public void setFechaGeneracionvobo(LocalDateTime fechaGeneracionvobo) { this.fechaGeneracionvobo = fechaGeneracionvobo; }
 
-	public void setI_usuario_vobo(Usuario i_usuario_vobo) {
-		this.i_usuario_vobo = i_usuario_vobo;
-	}
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
 
-	public Integer getEstatus() {
-		return estatus;
-	}
-
-	public void setEstatus(Integer estatus) {
-		this.estatus = estatus;
-	}
-
-	public LocalDateTime getFechaGeneracionvobo() {
-		return fechaGeneracionvobo;
-	}
-
-	public void setFechaGeneracionvobo(LocalDateTime fechaGeneracionvobo) {
-		this.fechaGeneracionvobo = fechaGeneracionvobo;
-	}
-
+    public LocalDateTime getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
+}
     // Getters y Setters
 
     
-}
+

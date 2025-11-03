@@ -321,72 +321,106 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
  
  
  
+// ==========================================================
+//  Validar archivo Excel antes de subirlo
+// ==========================================================
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
- 
+
   const input = document.getElementById("fileUploadPEP");
-  const files = input.files;
- 
-  if (!files || files.length === 0) {
-    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
+  const file = input.files[0];
+
+  //  Validar si se seleccionó un archivo
+  if (!file) {
+    swal("Debes seleccionar un archivo.", { icon: "warning" });
     return;
   }
- 
-  const fd = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    fd.append("file", files[i]); 
+
+  //  Validar extensión
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!["xls", "xlsx"].includes(extension)) {
+    swal("Solo se permiten archivos Excel (.xls o .xlsx).", { icon: "error" });
+    input.value = ""; // limpia el input
+    return;
   }
- 
-  swal({
-    title: "Procesando archivo(s)...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
- 
+
+  //  Leer y validar encabezados del archivo
+  const encabezadosValidos = ["ClienteID", "nombre_completo"];
+
   try {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: "array" });
+    const primeraHoja = workbook.SheetNames[0];
+    const hoja = workbook.Sheets[primeraHoja];
+    const encabezados = XLSX.utils.sheet_to_json(hoja, { header: 1 })[0]; // primera fila
+
+    // Normalizar nombres (elimina espacios y minúsculas)
+    const headersNormalizados = encabezados.map(h =>
+      h ? h.toString().trim().toLowerCase() : ""
+    );
+
+    const requeridosNormalizados = encabezadosValidos.map(h => h.toLowerCase());
+
+    const faltantes = requeridosNormalizados.filter(h => !headersNormalizados.includes(h));
+
+    if (faltantes.length > 0) {
+      swal({
+        title: "Error en encabezados",
+        text: `El archivo no contiene las columnas requeridas: ${faltantes.join(", ")}`,
+        icon: "error"
+      });
+      input.value = "";
+      return;
+    }
+
+    //  Si todo está correcto, procesar envío
+    const fd = new FormData();
+    fd.append("file", file);
+
+    swal({
+      title: "Procesando archivo...",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+          style: "display:flex;justify-content:center;padding:20px;"
+        }
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false
+    });
+
     const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
       method: "POST",
       body: fd
     });
- 
-    const respuesta = await res.json(); 
+
+    const respuesta = await res.json();
     swal.close();
- 
+
     if (res.ok && Array.isArray(respuesta)) {
       swal({
         title: "¡Éxito!",
         text: respuesta[0],
         icon: "success",
-        button: "Aceptar",
-      }).then(() => {
-       
+        button: "Aceptar"
       });
     } else {
       swal({
         title: "Error",
         text: respuesta[0] || "Ocurrió un error inesperado.",
         icon: "error",
-        button: "Aceptar",
+        button: "Aceptar"
       });
     }
- 
+
   } catch (error) {
-    swal.close();
-    console.error("Error en fetch:", error);
-    swal("Se presentó un error, intente más tarde.", {
-      icon: "error",
-      closeOnClickOutside: false,
-    });
+    console.error("❌ Error al validar archivo Excel:", error);
+    swal("Error al leer el archivo. Asegúrate de que no esté dañado.", { icon: "error" });
   }
 });
+
  
  
  
@@ -397,58 +431,6 @@ function confirmar(valor) {
       else return r.text().then(alert);
     });
 }
- 
- 
- 
-function procesarAuditoria() {
-  var fechaInicio = $("#fechaInicio").val();
-  var fechaFin = $("#fechaFin").val();
-
-  // 🔹 Validar que ambas fechas estén seleccionadas
-  if (!fechaInicio || !fechaFin) {
-    swal("Debe seleccionar fecha inicio y fecha fin.", { icon: "error" });
-    return;
-  }
-
-  swal({
-    title: "Procesando auditoría...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary"></div>',
-        style: "display:flex;justify-content:center;padding:20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
-
-$.ajax({
-  url: getAbsolutePath() + "procesarAuditoria",
-    type: "POST",
-    dataType: "JSON",
-    data: {
-      fechaInicio: fechaInicio,
-      fechaFin: fechaFin,
-    },
-    complete: function () {
-      swal.close();
-    },
-    success: function (respuesta) {
-      swal("", respuesta.mensaje, respuesta.tipo).then(() => {
-        // 🔹 Si quieres refrescar la tabla histórico después de procesar
-        if (typeof iniciaTblHistorico === "function") {
-          iniciaTblHistorico();
-        }
-      });
-    },
-    error: function () {
-      swal("Error al procesar auditoría.", { icon: "error" });
-    },
-  });
-}
-
  
  
 function ejecutarVistoBueno() {
@@ -473,15 +455,28 @@ function ejecutarVistoBueno() {
     dangerMode: true,
   }).then((willExecute) => {
     if (willExecute) {
-      var fechaInicio = $("#fechaInicio").val();
-      var fechaFin = $("#fechaFin").val();
+      const tipoReporte = $("#tipoReporte").val();
+      const fechaInicio = $("#fechaInicio").val();
+      const fechaFin = $("#fechaFin").val();
+      const anio = $("#anioReporte").val();
 
-      if (!fechaInicio || !fechaFin) {
-        swal("Debe seleccionar fecha inicio y fecha fin.", {
-          icon: "error",
-          closeOnClickOutside: false,
-        });
-        return;
+      // Validación condicional
+      if (tipoReporte === "operaciones") {
+        if (!fechaInicio || !fechaFin) {
+          swal("Debe seleccionar fecha inicio y fecha fin.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+          return;
+        }
+      } else if (tipoReporte === "clientes") {
+        if (!anio) {
+          swal("Debe seleccionar el año del reporte de clientes.", {
+            icon: "error",
+            closeOnClickOutside: false,
+          });
+          return;
+        }
       }
 
       swal({
@@ -500,26 +495,33 @@ function ejecutarVistoBueno() {
         closeOnEsc: false,
       });
 
-      var url = "ejecutarVistoBueno";
+      let url = "";
+      let data = {};
+
+      //  Si es CLIENTES, no se mandan fechas
+      if (tipoReporte === "clientes") {
+        url = getAbsolutePath() + "ejecutarVistoBuenoClientes";
+        data = { anio: anio };
+      } else {
+        url = getAbsolutePath() + "ejecutarVistoBueno";
+        data = { fechaInicio: fechaInicio, fechaFin: fechaFin };
+      }
 
       $.ajax({
-        url: getAbsolutePath() + url,
+        url: url,
         type: "POST",
         dataType: "JSON",
-        data: {
-          fechaInicio: fechaInicio,
-          fechaFin: fechaFin,
-        },
+        data: data,
         complete: function () {
           swal.close();
         },
         success: function (respuesta) {
-          swal("", respuesta.mensaje, respuesta.tipo).then(() => {
-            iniciaTblHistorico();
-            url = "";
-          });
+          swal("", respuesta.mensaje || respuesta.mensaje || "Operación completada.", respuesta.tipo || "success")
+            .then(() => {
+              iniciaTblHistorico();
+            });
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        error: function () {
           swal("Se presentó un error, intente más tarde.", {
             icon: "error",
             closeOnClickOutside: false,
@@ -530,6 +532,7 @@ function ejecutarVistoBueno() {
   });
 }
 
+
  
 var btnsROpera = "";
 var btnsRCientes = "";
@@ -539,28 +542,46 @@ function iniciaTblHistorico() {
   url = getAbsolutePath() + cargatblHistorico;
   $.getJSON(url, {}, function(data) {
     tblHistorico.clear().draw();
+
+    if (!data || data.length === 0) {
+      console.warn("No se encontraron registros en el historial.");
+      return;
+    }
+
     $.each(data, function(idx, opt) {
- 
-      btnsROpera = " <button class='btn btn-primary btn-sm' tabindex='0' data-bs-toggle='modal'"
-        + " title='Reporte Historico de operaciones' data-bs-target='#' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoOperaciones(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-file-earmark-diff'></i></button>";
- 
-      btnsRCientes = " <button class='btn btn-success btn-sm' tabindex='0'"
-        + " title='Reporte Historico de clientes' aria-controls='table-datatable' type='button'"
-        + " onclick='generarHistoricoClientes(" + opt.id + ")' id=" + opt.id + ">"
-        + " <i class='bi bi-file-earmark-person'></i></button>";
- 
+      const rangoFechas = (opt.fechaInicio && opt.fechaFin)
+        ? `${opt.fechaInicio.split("T")[0]} a ${opt.fechaFin.split("T")[0]}`
+        : "N/A";
+
+      const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
+      const confirmado = opt.estatus === 1 ? "Sí" : "No";
+      const fechaVobo = opt.fechaGeneracionvobo
+        ? opt.fechaGeneracionvobo.split("T")[0]
+        : "-";
+
+      const btns = `
+        <button class='btn btn-primary btn-sm' title='Histórico de operaciones'
+          onclick='generarHistoricoOperaciones(${opt.id})'>
+          <i class='bi bi-file-earmark-diff'></i>
+        </button>
+        <button class='btn btn-success btn-sm' title='Histórico de clientes'
+          onclick='generarHistoricoClientes(${opt.id})'>
+          <i class='bi bi-file-earmark-person'></i>
+        </button>`;
+
       tblHistorico.row.add([
-        opt.fechaGeneracion,
-        opt.i_usuario.vc_nombre_usuario,
-        opt.i_usuario.vc_nombre_usuario,
-        opt.fechaGeneracionvobo,
-        btnsROpera + btnsRCientes
+        opt.fechaGeneracion.split("T")[0],
+        rangoFechas,
+        usuario,
+        confirmado,
+        fechaVobo,
+        btns
       ]).draw(false);
     });
   });
 }
+
+
  
 function generarHistoricoOperaciones(idBuscarHO) {
   fetch("generarRptHistoricoOperaciones", {
@@ -715,4 +736,219 @@ function mostrarMensajeMigracion(data) {
     }
     mensaje.style.display = "block";
 }
+
+//  Función para mostrar/ocultar opciones según el tipo de reporte seleccionado
+function mostrarOpcionesPorTipo() {
+  const tipo = document.getElementById("tipoReporte").value;
+  const bloqueClientes = document.getElementById("bloqueClientes");
+  const bloqueOperaciones = document.getElementById("bloqueOperaciones");
+  const btnClientes = document.getElementById("btnProcesarClientes");
+  const btnOperaciones = document.getElementById("btnProcesarOperaciones");
+
+  // Reiniciar visibilidad
+  bloqueClientes.style.display = "none";
+  bloqueOperaciones.style.display = "none";
+  btnClientes.disabled = true;
+  btnOperaciones.disabled = true;
+
+  if (tipo === "clientes") {
+    bloqueClientes.style.display = "block";
+    btnClientes.disabled = false;
+  } else if (tipo === "operaciones") {
+    bloqueOperaciones.style.display = "block";
+    btnOperaciones.disabled = false;
+  }
+}
+
+// ========================================================
+//  Generar reporte de CLIENTES filtrado por año
+// ========================================================
+async function generarReporteClientes() {
+  const anio = document.getElementById("anioReporte") ? document.getElementById("anioReporte").value : null;
+
+  if (!anio) {
+    swal("Debe seleccionar un año antes de generar el reporte.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Generando reporte de clientes...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    // Cambiado al endpoint real
+    const res = await fetch("generarRptClientesPorAnio", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio })
+    });
+
+    if (!res.ok) throw new Error("Error generando el reporte.");
+
+    const respuesta = await res.json();
+    const url = respuesta[0];
+
+    // Abrir el archivo generado en una nueva pestaña
+    window.open(
+      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
+    );
+    window.focus();
+
+    swal.close();
+    swal({
+      title: "¡Éxito!",
+      text: "El reporte de clientes se generó correctamente.",
+      icon: "success",
+      button: "Aceptar"
+    });
+  } catch (error) {
+    console.error("❌ Error al generar el reporte de clientes:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al generar el reporte de clientes.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
+// ========================================================
+//  Procesar Auditoría de CLIENTES (llama SP en backend)
+// ========================================================
+async function procesarAuditoriaClientes() {
+  const anio = document.getElementById("anioReporte")?.value;
+
+  if (!anio) {
+    swal("Debe seleccionar un año antes de procesar la auditoría.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Procesando auditoría de clientes...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    //  Este endpoint corresponde al @PostMapping("/procesarAuditoriaClientes")
+    const res = await fetch("procesarAuditoriaClientes", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio })
+    });
+
+    if (!res.ok) throw new Error("Error procesando auditoría.");
+
+    const data = await res.json();
+    swal.close();
+
+    if (data.tipo === "success") {
+      swal({
+        title: "¡Éxito!",
+        text: data.mensaje,
+        icon: "success",
+        button: "Aceptar"
+      });
+    } else {
+      swal({
+        title: "Error",
+        text: data.mensaje,
+        icon: "error",
+        button: "Aceptar"
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error al procesar auditoría de clientes:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al procesar la auditoría.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
+// ========================================================
+//  Generar reporte de OPERACIONES filtrado por rango de fechas
+// ========================================================
+async function generarReporteOperaciones() {
+  const fechaInicio = document.getElementById("fechaInicio")?.value;
+  const fechaFin = document.getElementById("fechaFin")?.value;
+
+  if (!fechaInicio || !fechaFin) {
+    swal("Debe seleccionar un rango de fechas antes de generar el reporte.", { icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Generando reporte de operaciones...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+
+  try {
+    const res = await fetch("generarRptOperacionesAuditoria", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio, fechaFin })
+    });
+
+    if (!res.ok) throw new Error("Error generando el reporte.");
+
+    const respuesta = await res.json();
+    const url = respuesta[0];
+
+    // Abrir el reporte Jasper generado
+    window.open(
+      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
+    );
+    window.focus();
+
+    swal.close();
+    swal({
+      title: "¡Éxito!",
+      text: "El reporte de operaciones se generó correctamente.",
+      icon: "success",
+      button: "Aceptar"
+    });
+  } catch (error) {
+    console.error("❌ Error al generar el reporte de operaciones:", error);
+    swal.close();
+    swal({
+      title: "Error",
+      text: "Ocurrió un problema al generar el reporte de operaciones.",
+      icon: "error",
+      button: "Aceptar"
+    });
+  }
+}
+
 
