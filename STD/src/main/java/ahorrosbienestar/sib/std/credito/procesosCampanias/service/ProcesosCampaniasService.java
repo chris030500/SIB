@@ -1,6 +1,8 @@
 package ahorrosbienestar.sib.std.credito.procesosCampanias.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,11 +67,40 @@ public class ProcesosCampaniasService {
     	procesosCampaniasRepository.ejecutarArchivoMc(tipoCampania);
     }
     
-    public List<ProcesosCampaniasDTO> buscarProcesosCampania(LocalDate inicio, LocalDate fin, String tipo) {
+    /*public List<ProcesosCampaniasDTO> buscarProcesosCampania(LocalDate inicio, LocalDate fin, String tipo) {
 		List<Object[]> resultados = procesosCampaniasRepository.listaProcesosCampania(inicio, fin, tipo);
 	    return resultados.stream()
 	    		.map(r -> new ProcesosCampaniasDTO((Integer) r[0], (LocalDate) r[1], (String) r[2], (String) r[3], (LocalDate) r[4],(LocalDate) r[5], (String) r[6]))
 	            .collect(Collectors.toList());
-	}
+	}*/
+    
+    public List<ProcesosCampaniasDTO> buscarProcesosCampania(LocalDate inicio, LocalDate fin, String tipo) {
+        List<Integer> listaTipos = Arrays.stream(tipo.split(","))
+                                         .map(Integer::parseInt)
+                                         .collect(Collectors.toList());
+
+        List<Object[]> resultados = procesosCampaniasRepository.listaProcesosCampania(inicio, fin, listaTipos);
+
+        return resultados.stream()
+            .map(r -> new ProcesosCampaniasDTO(
+                (Integer) r[0],
+                toLocalDateTime(r[1]),   //  conversión segura a LocalDateTime
+                (String) r[2],
+                (String) r[3],
+                toLocalDateTime(r[4]),   // 
+                toLocalDateTime(r[5]),   // 
+                (String) r[6]
+            ))
+            .collect(Collectors.toList());
+    }
+
+    // Conversor auxiliar
+    private LocalDateTime toLocalDateTime(Object fecha) {
+        if (fecha == null) return null;
+        if (fecha instanceof LocalDateTime) return (LocalDateTime) fecha;
+        if (fecha instanceof java.sql.Timestamp) return ((java.sql.Timestamp) fecha).toLocalDateTime();
+        if (fecha instanceof java.sql.Date) return ((java.sql.Date) fecha).toLocalDate().atStartOfDay();
+        return null;
+    }
 	
 }

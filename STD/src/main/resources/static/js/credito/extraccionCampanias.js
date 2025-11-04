@@ -220,10 +220,11 @@ function btnExtraerFn() {
     };
     
     const ahora = new Date();
-    ahora.setMinutes(ahora.getMinutes() + 10);
+    ahora.setMinutes(ahora.getMinutes() + 5);
     //por ser desarrollo el tomcat tiene una hora mas
     //esta quitarla en QA y en produccion
-    ahora.setHours(ahora.getHours() + 1);
+    //ahora.setHours(ahora.getHours() + 1);
+    ahora.setHours(ahora.getHours());
     
 	const hora = ahora.getHours();      // Hora (0-23)
 	const minutos = ahora.getMinutes(); // Minutos (0-59)
@@ -312,7 +313,7 @@ function btnExtraerFn() {
 	    // @ts-ignore
 	    Swal.fire({
 	        title: "",
-	        text: msg,
+	        text: "Proceso guardado correctamente, se ejecutará en 5 minutos con una duración de aproximadamente de 10 minutos.",
 	        icon: "success",
 	        confirmButtonText: "Aceptar"
 	    });
@@ -365,7 +366,7 @@ function btnGenerarArchivoBuro() {
 		//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
 		// @ts-ignore
 		urlServicio = newUrlBase + "credito/rpt_archivo_buro?ProcesoCampania=" + data + "&TipoCampania=" + document.getElementById("Campania").value;
-		//console.log("urlServicio:", urlServicio);
+		console.log("urlServicio:", urlServicio);
 		//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
 		
 		$.ajax({
@@ -1114,10 +1115,11 @@ function btnDepuracionBuro() {
 							
 							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
 							const ahora = new Date();
-						    ahora.setMinutes(ahora.getMinutes() + 10);
+						    ahora.setMinutes(ahora.getMinutes() + 5);
 						    //por ser desarrollo el tomcat tiene una hora mas
 						    //esta quitarla en QA y en produccion
-						    ahora.setHours(ahora.getHours() + 1);
+						    //ahora.setHours(ahora.getHours() + 1);
+						    ahora.setHours(ahora.getHours());
 						    
 							const hora = ahora.getHours();      // Hora (0-23)
 							const minutos = ahora.getMinutes(); // Minutos (0-59)
@@ -1175,7 +1177,7 @@ function btnDepuracionBuro() {
 									// @ts-ignore
 									swal({
 									title: "",
-									text: 'Actualizado correctamente',
+									text: 'Proceso guardado correctamente, se ejecutará en 5 minutos con una duración de aproximadamente de 10 minutos.',
 									icon: "success",
 								    // @ts-ignore
 								    }).then(() => {

@@ -2,11 +2,14 @@ package ahorrosbienestar.sib.std.credito.procesosCampanias.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +34,7 @@ import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 
 @Controller
 @RequestMapping("credito")
@@ -136,17 +140,17 @@ public class ProcesosCampaniasController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}*/
-	public ResponseEntity<List<ProcesosCampaniasModel>> buscarProcesosJson(
+	/*public ResponseEntity<List<ProcesosCampaniasModel>> buscarProcesosJson(
 		    @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
 		    @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
 		    @RequestParam("Campania") String tipoCampania
 		) {
 		try {
 			List<ProcesosCampaniasModel> resultado = procesosCampaniasService.buscarCampanias(fechaInicio, fechaFin, tipoCampania);
-			/*for (ProcesosCampaniasModel c : resultado) {
-			    System.out.println("Campaña ID: " + c.getTipoCampania().getPk_id_tipo_campania() +
-			                       ", Nombre: " + c.getTipoCampania().getVc_tipo_campania());
-			}*/
+			//for (ProcesosCampaniasModel c : resultado) {
+			  //  System.out.println("Campaña ID: " + c.getTipoCampania().getPk_id_tipo_campania() +
+			    //                   ", Nombre: " + c.getTipoCampania().getVc_tipo_campania());
+			//}
 		    return ResponseEntity.ok(resultado);
 		}catch(Exception e) {
 	    	 
@@ -154,7 +158,27 @@ public class ProcesosCampaniasController {
 				return null;
 	     }
 		    
+		}*/
+	
+	/////
+	
+	public ResponseEntity<Map<String, Object>> listaCam(
+		    @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+		    @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+		    @RequestParam("campania") String tipoCampania) {
+
+		    Map<String, Object> respuesta = new HashMap<>();
+
+		    try {
+		        List<ProcesosCampaniasDTO> lista = procesosCampaniasService.buscarProcesosCampania(fechaInicio, fechaFin, tipoCampania);
+		        respuesta.put("lista", lista);
+		        return ResponseEntity.ok(respuesta);
+		    } catch (Exception e) {
+		        respuesta.put("error", e.getMessage());
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		    }
 		}
+	////
 	
 	@RequestMapping(value = { "/reporteProcesosCampania" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reporteProcesosCampania(@RequestParam("dtFechaInicio") String dtFechaInicio,

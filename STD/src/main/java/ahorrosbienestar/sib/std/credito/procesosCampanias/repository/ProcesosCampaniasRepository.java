@@ -27,7 +27,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		   @Param("tipo") String tipo
 		);
 	
-	@Query(value = "select t1.pk_id_proceso_campania " +
+	/*@Query(value = "select t1.pk_id_proceso_campania " +
 					",t1.dt_fecha_extraccion " +
 					",t4.vc_nombre_usuario " +
 					",t2.vc_tipo_campania "  + 
@@ -46,7 +46,27 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 				    "OR DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin)", nativeQuery = true)
 	List<Object[]> listaProcesosCampania(@Param("inicio") LocalDate inicio,
 										   @Param("fin") LocalDate fin,
-										   @Param("tipo") String tipo);
+										   @Param("tipo") String tipo);*/
+	
+	@Query(value = "SELECT t1.pk_id_proceso_campania, " +
+            "t1.dt_fecha_extraccion, " +
+            "t4.vc_nombre_usuario, " +
+            "t2.vc_tipo_campania, " +
+            "t1.dt_fecha_inicio_vigencia, " +
+            "t1.dt_fecha_fin_vigencia, " +
+            "t3.vc_estatus " +
+            "FROM SIB.TBL_PROCESO_CAMPANIA t1 " +
+            "INNER JOIN SIB.TBL_TIPOS_CAMPANIA t2 ON t1.I_ID_TIPO_CAMPANIA = t2.PK_ID_TIPO_CAMPANIA " +
+            "INNER JOIN SIB.TBL_ESTATUS_CAMPANIA t3 ON t3.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA " +
+            "INNER JOIN SIB.TBL_CAT_USUARIOS t4 ON t4.PK_ID_USUARIO = t1.I_USER_REG " +
+            "WHERE t1.I_ID_TIPO_CAMPANIA IN (:tipos) " +
+            "AND (t1.DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin " +
+            "OR t1.DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin)" +
+            "AND t1.I_ID_ESTATUS_CAMPANIA = 1",
+    nativeQuery = true)
+	List<Object[]> listaProcesosCampania(@Param("inicio") LocalDate inicio,
+                                  @Param("fin") LocalDate fin,
+                                  @Param("tipos") List<Integer> tipos);
 	
 	
 	/*@Query(value = "SELECT * FROM SIB.TBL_PROCESO_CAMPANIA " +
@@ -85,12 +105,12 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania,
 									@Param("estatus") int estatus);
 	
-	@Query(value = "select min(pk_id_proceso_campania) "
-			+ "from SIB.TBL_PROCESO_CAMPANIA "
-			+ "where i_id_tipo_campania = :tipoCampania "
-			+ "and i_estatus_reg = 1 "
-			+ "and i_id_estatus_campania = 1 "
-			+ "and i_bandera_extraccion = 2",
+	@Query(value = "select min(t1.pk_id_proceso_campania) "
+			+ "from SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
+			+ "where t1.i_id_tipo_campania = :tipoCampania "
+			+ "and t1.i_estatus_reg = 1 "
+			+ "and t1.i_id_estatus_campania = 1 "
+			+ "and t1.i_bandera_extraccion = 2 ",
        nativeQuery = true)
 	int reporteBuroCredito(@Param("tipoCampania") int tipoCampania);
 	

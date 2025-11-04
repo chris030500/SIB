@@ -69,7 +69,7 @@ function buscarProcesosCampanias() {
 			
 		}else{
 			console.log("entra a todo ok");
-			let fechaInicio = document.getElementById("FechaInicio").value;
+			/*let fechaInicio = document.getElementById("FechaInicio").value;
 			let fechaFin = document.getElementById("FechaFin").value;
 			//let tipoCampania = seleccionProd[0].value; // Si solo se permite una
 			
@@ -110,6 +110,72 @@ function buscarProcesosCampanias() {
 				},
 			    error: function(err) {
 			        console.error("Error al obtener procesos campañas:", err);
+			    }
+			});*/
+			// Obtiene los valores desde los inputs del formulario
+			let fechaInicio = document.getElementById("FechaInicio").value; 
+			let fechaFin = document.getElementById("FechaFin").value;
+			
+			// Obtiene los valores seleccionados de un <select multiple>
+			const selectedCam = Array.from(select.selectedOptions).map(option => option.value);
+			let campaniasSelect = selectedCam.join(",");
+			
+			// Ejecuta la llamada AJAX
+			$.ajax({
+			    url: newUrlBase + 'credito/api/procesosCampanias',  // <- tu endpoint en Spring Boot
+			    type: 'GET',
+			    dataType: 'json',
+			    data: {
+			        fechaInicio: fechaInicio,
+			        fechaFin: fechaFin,
+			        campania: campaniasSelect   // 👈 debe coincidir con @RequestParam("campania")
+			    },
+			    success: function(data) {
+			        console.log("Respuesta del backend:", data);
+			
+			        let tbody = $("#tablaProcesosBody");
+			        tbody.empty(); // Limpia el cuerpo de la tabla antes de agregar nuevos datos
+			
+			        // Si no hay resultados
+			        if (!data.lista || data.lista.length === 0) {
+			            tbody.append('<tr><td colspan="7" class="text-center">No se encontraron resultados.</td></tr>');
+			            return;
+			        }
+			
+			        // Si hay resultados, se construyen las filas
+			        data.lista.forEach(function(item) {
+						
+						// Función para formatear la fecha
+			            const formatearFecha = fechaStr => {
+			                if (!fechaStr) return '';
+			                const fecha = new Date(fechaStr);
+			                return fecha.toLocaleDateString('es-ES'); // Solo fecha
+			            };
+						
+			            let fila = `
+			                <tr>
+			                    <td><input type="checkbox" name="seleccion" value="${item.pk_id_proceso_campania}"></td>
+			                    <td>${formatearFecha(item.dt_fecha_extraccion)}</td>
+			                    <td>${item.vc_nombre_usuario || ''}</td>
+			                    <td>${item.vc_tipo_campania || ''}</td>
+			                    <td>${formatearFecha(item.dt_fecha_inicio_vigencia)}</td>
+			                    <td>${formatearFecha(item.dt_fecha_fin_vigencia)}</td>
+			                    <td>${item.vc_estatus || ''}</td>
+			                </tr>`;
+			            tbody.append(fila);
+			        });
+			    },
+			    error: function(err) {
+			        console.error("Error al obtener procesos campañas:", err);
+			
+			        // Si el backend envía un mensaje de error, lo mostramos
+			        if (err.responseJSON && err.responseJSON.error) {
+			            console.error("Detalle del error del backend:", err.responseJSON.error);
+			            alert("Error del servidor: " + err.responseJSON.error);
+			        } else {
+			            console.error("Respuesta completa:", err.responseText);
+			            alert("Ocurrió un error al consultar los procesos de campaña.");
+			        }
 			    }
 			});
 		}
