@@ -220,7 +220,7 @@ function btnExtraerFn() {
     };
     
     const ahora = new Date();
-    ahora.setMinutes(ahora.getMinutes() + 5);
+    ahora.setMinutes(ahora.getMinutes() + 6);
     //por ser desarrollo el tomcat tiene una hora mas
     //esta quitarla en QA y en produccion
     //ahora.setHours(ahora.getHours() + 1);
@@ -313,7 +313,7 @@ function btnExtraerFn() {
 	    // @ts-ignore
 	    Swal.fire({
 	        title: "",
-	        text: "Proceso guardado correctamente, se ejecutará en 5 minutos con una duración de aproximadamente de 10 minutos.",
+	        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
 	        icon: "success",
 	        confirmButtonText: "Aceptar"
 	    });
@@ -1115,7 +1115,7 @@ function btnDepuracionBuro() {
 							
 							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
 							const ahora = new Date();
-						    ahora.setMinutes(ahora.getMinutes() + 5);
+						    ahora.setMinutes(ahora.getMinutes() + 6);
 						    //por ser desarrollo el tomcat tiene una hora mas
 						    //esta quitarla en QA y en produccion
 						    //ahora.setHours(ahora.getHours() + 1);
@@ -1177,7 +1177,7 @@ function btnDepuracionBuro() {
 									// @ts-ignore
 									swal({
 									title: "",
-									text: 'Proceso guardado correctamente, se ejecutará en 5 minutos con una duración de aproximadamente de 10 minutos.',
+									text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
 									icon: "success",
 								    // @ts-ignore
 								    }).then(() => {
@@ -1351,7 +1351,7 @@ function btnArchivoMc() {
 					    // 
 					    //
 					    //
-					    console.log("va a mandar llamar el SP SP_DEP_CAM_EXTRACCIONCAMPCRED");
+					    //console.log("va a mandar llamar el SP SP_DEP_CAM_EXTRACCIONCAMPCRED");
 						//mandar llamar SP 
 						fetch(newUrlBase + "credito/api/ejecutarArchivoMc?tipoCampania=" + tipoCampania)
 					    .then(resp => {
@@ -1375,7 +1375,7 @@ function btnArchivoMc() {
 							/////
 							//activa el boton Cargar Arhcivo MC
 							// @ts-ignore
-							document.getElementById("btnArchivoMc").disabled = false;
+							//document.getElementById("btnArchivoMc").disabled = false;
 							
 						})
 					    .catch(err => {

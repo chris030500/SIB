@@ -181,9 +181,7 @@ public class ProcesosCampaniasController {
 	////
 	
 	@RequestMapping(value = { "/reporteProcesosCampania" }, method = RequestMethod.POST)
-	public ResponseEntity<?> reporteProcesosCampania(@RequestParam("dtFechaInicio") String dtFechaInicio,
-													@RequestParam("dtFechaFin") String dtFechaFin,
-													@RequestParam("campania") Integer campania) {
+	public ResponseEntity<?> reporteProcesosCampania(@RequestParam("proceso") Integer proceso) {
 
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
@@ -191,8 +189,7 @@ public class ProcesosCampaniasController {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_PROCESOS_CAMPANIA);
 
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
-					+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + dtFechaInicio + "~FechaFin="
-					+ dtFechaFin + "~Campania=" + campania + "&tipoDocumento=" +datosReporte.getVc_extension()+ "&identificadorDoc=OA";
+					+ datosReporte.getPk_id_reporte() + "&parametros=?Proceso=" + proceso + "&tipoDocumento=" +datosReporte.getVc_extension()+ "&identificadorDoc=OA";
 
 			//System.out.println("reporteURL: " + reporteURL);
 			

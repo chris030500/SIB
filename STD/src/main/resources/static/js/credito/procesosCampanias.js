@@ -63,7 +63,7 @@ function buscarProcesosCampanias() {
 
 			swal({
 				title: "",
-				text: "Debe seleccionar al menos un producto.",
+				text: "Debe seleccionar al menos una campaña.",
 				icon: "warning",
 			});
 			
@@ -164,6 +164,13 @@ function buscarProcesosCampanias() {
 			                </tr>`;
 			            tbody.append(fila);
 			        });
+			        
+			        // Permitir solo un checkbox seleccionado
+					$("#tablaProcesosBody").on("change", "input[type='checkbox'][name='seleccion']", function() {
+					    if (this.checked) {
+					        $("input[type='checkbox'][name='seleccion']").not(this).prop("checked", false);
+					    }
+					});
 			    },
 			    error: function(err) {
 			        console.error("Error al obtener procesos campañas:", err);
@@ -223,12 +230,13 @@ function generarReportProcesosCampanias() {
     	document.querySelectorAll('input[name="seleccion"]:checked').forEach(cb => {
       		ids.push(cb.value);
     	});
-    	//console.log("IDs seleccionados:", ids);
+    	console.log("IDs seleccionados:", ids);
     	
     	///////////////////////////////
     	var urlServicio;
     	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
-    	urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+    	urlServicio = newUrlBase + "credito/reporteProcesosCampania?proceso="+ids;
     	//console.log("urlServicio:", urlServicio);
     	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
     	
