@@ -102,11 +102,11 @@ public class RptReporteClientesOpeController {
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
     public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
- 
+
         String mensaje = "";
         ArrayList<String> respuesta = new ArrayList<>();
         logger.info("1");
- 
+
         try {
             // Verificación de usuario autenticado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -116,18 +116,18 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("2");
- 
+
             UserDetails userDetails = (UserDetails) principal;
             List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
             logger.info("3");
- 
+
             if (usuarios == null || usuarios.isEmpty()) {
                 mensaje = "Error: Usuario no encontrado en base de datos.";
                 respuesta.add(mensaje);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
             }
             logger.info("4");
- 
+
             // 3) Validar archivo
             if (files == null || files.length == 0 || files[0].isEmpty()) {
                 mensaje = "No se subió ningún archivo.";
@@ -136,32 +136,32 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.badRequest().body(respuesta);
             }
             logger.info("Paso 4: {} archivo(s) recibido(s)");
- 
+
             // 4) Registrar proceso
             logger.info("Paso 5: registrando proceso para usuario ID={}");
             ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
             logger.info("Paso 6: proceso registrado = {}");
- 
+
             if (proceso == null || proceso.getPk_id_peps() == 0) {
                 mensaje = "Error interno al registrar el proceso.";
                 respuesta.add(mensaje);
                 logger.error(mensaje);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
             }
- 
+
             // 5) Procesar archivo(s) recibido(s)
             for (MultipartFile file : files) {
                 logger.info("Paso 7: Archivo recibido -> nombre={} | tamaño={} bytes");
                 // Aquí podrías meter tu lógica de parseo si aplica
             }
- 
+
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
             respuesta.add(mensaje);
             logger.info("Paso 8: {}");
- 
+
             logger.info("=== FIN uploadPEP ===");
             return ResponseEntity.ok(respuesta);
- 
+
         } catch (Exception e) {
             mensaje = "Error procesando archivo(s): " + e.getMessage();
             respuesta.add(mensaje);
@@ -317,28 +317,24 @@ public class RptReporteClientesOpeController {
     }
 
     
-    @PostMapping("/ejecutarVistoBuenoClientes")
-    public ResponseEntity<Map<String, Object>> ejecutarVistoBuenoClientes(@RequestParam("anio") String anio) {
-        logger.info("/ejecutarVistoBuenoClientes - Año recibido: " + anio);
-        Map<String, Object> respuesta = new HashMap<>();
+    @PostMapping("/ejecutarVistoBueno")
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno(
+        @RequestParam("anio") String anio,
+        @RequestParam("fechaInicio") String fechaInicio,
+        @RequestParam("fechaFin") String fechaFin) {
 
+        logger.info("/ejecutarVistoBueno - Año: " + anio + ", Rango: " + fechaInicio + " a " + fechaFin);
+        Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
-            // ======================
-            // Obtener usuario actual
-            // ======================
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserDetails userDetails = null;
             Integer idUsuario = null;
-
             if (principal instanceof UserDetails) {
-                userDetails = (UserDetails) principal;
-                usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-                if (!usuarios.isEmpty()) {
-                    idUsuario = usuarios.get(0).getPk_id_usuario();
-                }
+                String username = ((UserDetails) principal).getUsername();
+                List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
+                if (!usuarios.isEmpty()) idUsuario = usuarios.get(0).getPk_id_usuario();
             }
 
             if (idUsuario == null) {
@@ -347,42 +343,33 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.ok(respuesta);
             }
 
-            // ======================
-            // Convertir el año a fechas
-            // ======================
             int year = Integer.parseInt(anio);
-            Date fechaInicio = Date.valueOf(year + "-01-01");
-            Date fechaFin = Date.valueOf(year + "-12-31");
+            Date fInicio = Date.valueOf(fechaInicio);
+            Date fFin = Date.valueOf(fechaFin);
 
-            // ======================
-            // Llamar al SP con las fechas correctas
-            // ======================
             connection = jdbcTemplate.getDataSource().getConnection();
-            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?)}");
+            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?)}");
 
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
-            callableStatement.setInt(2, idUsuario);                   // IN iusuario
-            callableStatement.setDate(3, fechaInicio);                // IN fechaInicio
-            callableStatement.setDate(4, fechaFin);                   // IN fechaFin
-
+            callableStatement.setInt(2, idUsuario);                   // p_iusuario
+            callableStatement.setInt(3, year);                        // p_ianio
+            callableStatement.setDate(4, fInicio);                    // p_fechaInicio
+            callableStatement.setDate(5, fFin);                       // p_fechaFin
             callableStatement.execute();
 
             String errorMessage = callableStatement.getString(1);
-
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
             } else {
-                respuesta.put("mensaje", "Visto bueno ejecutado correctamente para el año " + anio
-                        + " (" + fechaInicio + " a " + fechaFin + ")");
+                respuesta.put("mensaje", "Visto bueno registrado correctamente para CLIENTES y OPERACIONES.");
                 respuesta.put("tipo", "success");
             }
-
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("Error al ejecutar SP Visto Bueno Clientes: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error al ejecutar SP: " + e.getMessage());
+            logger.error("Error al ejecutar SP visto bueno: " + e.getMessage(), e);
+            respuesta.put("mensaje", "Error SQL: " + e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
 

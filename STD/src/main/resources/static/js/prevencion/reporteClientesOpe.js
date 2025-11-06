@@ -404,103 +404,59 @@ function confirmar(valor) {
  
  
 function ejecutarVistoBueno() {
+  const anio = $("#anioReporte").val();
+  const fechaInicio = $("#fechaInicio").val();
+  const fechaFin = $("#fechaFin").val();
+
   swal({
-    title: "¿Validó correctamente?",
-    text: "Confirme si desea ejecutar el visto bueno.",
+    title: "¿Desea registrar el visto bueno global?",
+    text: "Esto consolidará los reportes de CLIENTES y OPERACIONES en el histórico.",
     icon: "warning",
-    buttons: {
-      cancel: {
-        text: "No",
-        value: false,
-        visible: true,
-        closeModal: true,
-      },
-      confirm: {
-        text: "Sí",
-        value: true,
-        visible: true,
-        closeModal: false,
-      },
-    },
+    buttons: ["Cancelar", "Sí, continuar"],
     dangerMode: true,
   }).then((willExecute) => {
-    if (willExecute) {
-      const tipoReporte = $("#tipoReporte").val();
-      const fechaInicio = $("#fechaInicio").val();
-      const fechaFin = $("#fechaFin").val();
-      const anio = $("#anioReporte").val();
+    if (!willExecute) return;
 
-      // Validación condicional
-      if (tipoReporte === "operaciones") {
-        if (!fechaInicio || !fechaFin) {
-          swal("Debe seleccionar fecha inicio y fecha fin.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-          return;
+    swal({
+      title: "Registrando visto bueno...",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary"></div>',
+          style: "display:flex;justify-content:center;padding:20px;"
         }
-      } else if (tipoReporte === "clientes") {
-        if (!anio) {
-          swal("Debe seleccionar el año del reporte de clientes.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-          return;
-        }
-      }
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false
+    });
 
+    fetch("ejecutarVistoBueno", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio, fechaInicio, fechaFin })
+    })
+    .then(res => res.json())
+    .then(data => {
+      swal.close();
       swal({
-        title: "Procesando información.",
-        content: {
-          element: "div",
-          attributes: {
-            innerHTML:
-              '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-            style:
-              "display: flex; justify-content: center; align-items: center; padding: 20px;",
-          },
-        },
-        buttons: false,
-        closeOnClickOutside: false,
-        closeOnEsc: false,
+        title: data.tipo === "success" ? "¡Éxito!" : "Error",
+        text: data.mensaje,
+        icon: data.tipo,
+        button: "Aceptar"
+      }).then(() => {
+        if (data.tipo === "success") iniciaTblHistorico();
       });
-
-      let url = "";
-      let data = {};
-
-      //  Si es CLIENTES, no se mandan fechas
-      if (tipoReporte === "clientes") {
-        url = getAbsolutePath() + "ejecutarVistoBuenoClientes";
-        data = { anio: anio };
-      } else {
-        url = getAbsolutePath() + "ejecutarVistoBueno";
-        data = { fechaInicio: fechaInicio, fechaFin: fechaFin };
-      }
-
-      $.ajax({
-        url: url,
-        type: "POST",
-        dataType: "JSON",
-        data: data,
-        complete: function () {
-          swal.close();
-        },
-        success: function (respuesta) {
-          swal("", respuesta.mensaje || respuesta.mensaje || "Operación completada.", respuesta.tipo || "success")
-            .then(() => {
-              iniciaTblHistorico();
-            });
-        },
-        error: function () {
-          swal("Se presentó un error, intente más tarde.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-        },
-      });
-    }
+    })
+    .catch(err => {
+      swal.close();
+      swal("Error", "No se pudo registrar el visto bueno. Intente más tarde.", "error");
+      console.error("Error en fetch:", err);
+    });
   });
 }
+
+
 
 
  
@@ -509,43 +465,64 @@ var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
  
 function iniciaTblHistorico() {
-  url = getAbsolutePath() + cargatblHistorico;
-  $.getJSON(url, {}, function(data) {
+  url = getAbsolutePath() + "obtHistoricoProcesos";
+  $.getJSON(url, {}, function (data) {
     tblHistorico.clear().draw();
 
     if (!data || data.length === 0) {
       console.warn("No se encontraron registros en el historial.");
+      $("#sinResultados").removeClass("d-none");
       return;
+    } else {
+      $("#sinResultados").addClass("d-none");
     }
 
-    $.each(data, function(idx, opt) {
-      const rangoFechas = (opt.fechaInicio && opt.fechaFin)
-        ? `${opt.fechaInicio.split("T")[0]} a ${opt.fechaFin.split("T")[0]}`
-        : "N/A";
+    $.each(data, function (idx, opt) {
+      const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
+
+      // Mostrar rango adecuado según el tipo
+      let rangoFechas = "";
+      if (tipo === "CLIENTES") {
+        const anio = opt.anioGeneracion || new Date().getFullYear(); // Si viene nulo usa el actual
+        rangoFechas = `<span class="text-success fw-bold">${anio}-01-01 a ${anio}-12-31</span>`;
+      } else if (tipo === "OPERACIONES") {
+        const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
+        const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+        rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
+      } else {
+        rangoFechas = `<span class="text-muted">Sin rango definido</span>`;
+      }
 
       const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
       const confirmado = opt.estatus === 1 ? "Sí" : "No";
-      const fechaVobo = opt.fechaGeneracionvobo
-        ? opt.fechaGeneracionvobo.split("T")[0]
-        : "-";
+      const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
 
-      const btns = `
-        <button class='btn btn-primary btn-sm' title='Histórico de operaciones'
-          onclick='generarHistoricoOperaciones(${opt.id})'>
-          <i class='bi bi-file-earmark-diff'></i>
-        </button>
-        <button class='btn btn-success btn-sm' title='Histórico de clientes'
-          onclick='generarHistoricoClientes(${opt.id})'>
-          <i class='bi bi-file-earmark-person'></i>
-        </button>`;
+      //  Mostrar solo el botón del tipo correspondiente
+      let btn = "";
+      if (tipo === "CLIENTES") {
+        btn = `<button class='btn btn-success btn-sm' title='Descargar histórico de clientes'
+                 onclick='generarHistoricoClientes(${opt.id})'>
+                 <i class='bi bi-file-earmark-person'></i>
+               </button>`;
+      } else if (tipo === "OPERACIONES") {
+        btn = `<button class='btn btn-primary btn-sm' title='Descargar histórico de operaciones'
+                 onclick='generarHistoricoOperaciones(${opt.id})'>
+                 <i class='bi bi-file-earmark-diff'></i>
+               </button>`;
+      } else {
+        btn = `<button class='btn btn-secondary btn-sm' disabled title='Tipo desconocido'>
+                 <i class='bi bi-question-circle'></i>
+               </button>`;
+      }
 
       tblHistorico.row.add([
-        opt.fechaGeneracion.split("T")[0],
+        opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
+        tipo,
         rangoFechas,
         usuario,
         confirmado,
         fechaVobo,
-        btns
+        btn
       ]).draw(false);
     });
   });
@@ -714,19 +691,23 @@ function mostrarOpcionesPorTipo() {
   const bloqueOperaciones = document.getElementById("bloqueOperaciones");
   const btnClientes = document.getElementById("btnProcesarClientes");
   const btnOperaciones = document.getElementById("btnProcesarOperaciones");
+  const bloqueVistoBueno = document.getElementById("bloqueVistoBueno"); // nuevo
 
   // Reiniciar visibilidad
   bloqueClientes.style.display = "none";
   bloqueOperaciones.style.display = "none";
+  bloqueVistoBueno.style.display = "none"; // Ocultar por defecto
   btnClientes.disabled = true;
   btnOperaciones.disabled = true;
 
   if (tipo === "clientes") {
     bloqueClientes.style.display = "block";
     btnClientes.disabled = false;
+    bloqueVistoBueno.style.display = "none"; // ocultar pregunta y botón
   } else if (tipo === "operaciones") {
     bloqueOperaciones.style.display = "block";
     btnOperaciones.disabled = false;
+    bloqueVistoBueno.style.display = "block"; // mostrar solo para operaciones
   }
 }
 
@@ -756,7 +737,7 @@ async function generarReporteClientes() {
   });
 
   try {
-    // Cambiado al endpoint real
+    // Llamar endpoint backend
     const res = await fetch("generarRptClientesPorAnio", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -780,6 +761,47 @@ async function generarReporteClientes() {
       text: "El reporte de clientes se generó correctamente.",
       icon: "success",
       button: "Aceptar"
+    }).then(() => {
+      // Mostrar la pregunta debajo del botón de clientes
+      const confirmacionDiv = document.getElementById("confirmacionClientes");
+      if (confirmacionDiv) confirmacionDiv.style.display = "block";
+
+      // Limpiar selección anterior
+      $("input[name='clientes_correcto']").prop("checked", false);
+
+      // Evento para "Sí"
+      $("#clientesSi").off("change").on("change", function () {
+        if ($(this).is(":checked")) {
+          swal({
+            title: "Continuar con Operaciones",
+            text: "El reporte de clientes fue correcto. Ahora puede generar el reporte de operaciones.",
+            icon: "info",
+            button: "Aceptar"
+          }).then(() => {
+            // Cambiar automáticamente a tipo 'operaciones'
+            $("#tipoReporte").val("operaciones").trigger("change");
+            // Ocultar pregunta nuevamente
+            confirmacionDiv.style.display = "none";
+          });
+        }
+      });
+
+      // Evento para "No"
+      $("#clientesNo").off("change").on("change", function () {
+        if ($(this).is(":checked")) {
+          swal({
+            title: "Volver a cargar archivo",
+            text: "Por favor revisa el archivo y vuelve a generar el reporte de clientes.",
+            icon: "warning",
+            button: "Aceptar"
+          }).then(() => {
+            // Redirigir a pestaña de carga
+            $("#archivos-tab").click();
+            // Ocultar pregunta nuevamente
+            confirmacionDiv.style.display = "none";
+          });
+        }
+      });
     });
   } catch (error) {
     console.error("❌ Error al generar el reporte de clientes:", error);
@@ -792,6 +814,7 @@ async function generarReporteClientes() {
     });
   }
 }
+
 
 // ========================================================
 //  Procesar Auditoría de CLIENTES (llama SP en backend)

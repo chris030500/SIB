@@ -79,7 +79,6 @@
                         </button>
                     </div>
 
-                    <!-- Mensaje de migración -->
                     <div id="mensajeResultado" style="display: none; margin-top: 10px; color: green; font-weight: bold;"></div>
                     <hr />
 
@@ -92,7 +91,9 @@
                         </select>
                     </div>
 
-                    <!-- Bloque para CLIENTES -->
+                    <!-- ======================= -->
+                    <!--      BLOQUE CLIENTES     -->
+                    <!-- ======================= -->
                     <div id="bloqueClientes" style="display:none;">
                         <div class="mb-3">
                             <label class="form-label">Seleccione el año del reporte:</label>
@@ -109,9 +110,30 @@
                             </button>
                             <span class="text-muted">Procesar reporte de Auditoría</span>
                         </div>
+
+                        <div class="mb-4">
+                            <button class="btn btn-primary w-100" id="btnProcesarClientes" onclick="generarReporteClientes()" disabled>
+                                Generar Reporte de Clientes
+                            </button>
+                        </div>
+
+                        <!-- ✅ Confirmación al terminar el reporte de CLIENTES -->
+                        <div id="confirmacionClientes" style="display:none; margin-top:20px;">
+                            <label class="form-label">¿El reporte de clientes se generó correctamente?</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesSi" value="si">
+                                <label class="form-check-label" for="clientesSi">Sí</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesNo" value="no">
+                                <label class="form-check-label" for="clientesNo">No</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Bloque para OPERACIONES -->
+                    <!-- ======================= -->
+                    <!--      BLOQUE OPERACIONES  -->
+                    <!-- ======================= -->
                     <div id="bloqueOperaciones" style="display:none;">
                         <div class="mb-3">
                             <label class="form-label">Rango de fechas para el reporte:</label>
@@ -121,100 +143,70 @@
                                 <input type="date" class="form-control" id="fechaFin" style="max-width: 200px;">
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Acciones disponibles -->
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Acciones disponibles:</label>
-                        <div class="d-flex flex-column flex-md-row gap-3 mb-2">
-                            <button class="btn btn-primary w-100" id="btnProcesarClientes" onclick="generarReporteClientes()" disabled>
-                                Generar Reporte de Clientes
-                            </button>
+                        <div class="mb-4">
                             <button class="btn btn-danger w-100" id="btnProcesarOperaciones" onclick="generarReporteOperaciones()" disabled>
                                 Generar Reporte de Operaciones
                             </button>
                         </div>
                     </div>
 
-                    <!-- Validación de información -->
-                    <div class="mb-3">
-                        <label class="form-label">¿La información del reporte es correcta?</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si">
-                            <label class="form-check-label" for="infoSi">Sí</label>
+                    <!-- ======================= -->
+                    <!--    BLOQUE VISTO BUENO    -->
+                    <!-- ======================= -->
+                    <div id="bloqueVistoBueno" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">¿La información del reporte es correcta?</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="info_correcta" id="infoSi" value="si">
+                                <label class="form-check-label" for="infoSi">Sí</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="info_correcta" id="infoNo" value="no">
+                                <label class="form-check-label" for="infoNo">No</label>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="info_correcta" id="infoNo" value="no">
-                            <label class="form-check-label" for="infoNo">No</label>
+
+                        <div class="mb-3 d-flex gap-3 align-items-center">
+                            <button class="btn btn-success" id="btnVistoBueno">Registrar Visto bueno</button>
+                            <span id="progresoTexto" class="text-muted"></span>
                         </div>
-                    </div>
-
-                    <!-- Botón visto bueno -->
-                    <div class="mb-3 d-flex gap-3 align-items-center">
-                        <button class="btn btn-success" id="btnVistoBueno">Registrar Visto bueno</button>
-                        <span id="progresoTexto" class="text-muted"></span>
-                    </div>
-
-                    <!-- Aviso final -->
-                    <div id="mensajeAviso" class="alert alert-info d-none">
-                        El archivo se guardará en el apartado de descargas para futuras consultas.
                     </div>
 
                 </div>
-            </div> 
+            </div>
 
-           <!-- ======================= -->
-           <!--        DESCARGAS         -->
-           <!-- ======================= -->
-<div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
-    <div class="border p-2 card">
-        <h4 class="mb-4">Historial de reportes generados</h4>
-        <div class="table-responsive">
-            <table class="table table-sm" style="width: 100%;" id="tblHistorico">
-                <thead>
-                    <tr>
-                        <th>Fecha de generación</th>
-                        <th>Rango de fechas</th>
-                        <th>Usuario</th>
-                        <th>Confirmado</th>
-                        <th>Fecha de vo.bo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaReportesGenerados"></tbody>
-            </table>
-        </div>
-        <div id="sinResultados" class="alert alert-warning mt-3 d-none">
-            No se encontraron reportes con los filtros aplicados.
-        </div>
-    </div>
-</div>
-
-        </div> 
-
-        <!-- ======================= -->
-        <!--       MODAL CONFIRMAR   -->
-        <!-- ======================= -->
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">Confirmar reporte</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- ======================= -->
+            <!--        DESCARGAS         -->
+            <!-- ======================= -->
+            <div class="tab-pane fade" id="descargas" role="tabpanel" aria-labelledby="descargas-tab">
+                <div class="border p-2 card">
+                    <h4 class="mb-4">Historial de reportes generados</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm" style="width: 100%;" id="tblHistorico">
+                            <thead>
+  <tr>
+    <th>Fecha de generación</th>
+    <th>Tipo de reporte</th>
+    <th>Rango</th>
+    <th>Usuario</th>
+    <th>Confirmado</th>
+    <th>Fecha de Vo.Bo</th>
+    <th>Acciones</th>
+  </tr>
+</thead>
+                            <tbody id="tablaReportesGenerados"></tbody>
+                        </table>
                     </div>
-                    <div class="modal-body">
-                        <p>¿Está seguro de que los datos del reporte son correctos?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="confirmarReporte">Confirmar</button>
+                    <div id="sinResultados" class="alert alert-warning mt-3 d-none">
+                        No se encontraron reportes con los filtros aplicados.
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div> 
-</section> 
+        </div>
+    </div>
+</section>
 
 <th:block layout:fragment="page-scripts">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
