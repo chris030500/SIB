@@ -48,7 +48,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 										   @Param("fin") LocalDate fin,
 										   @Param("tipo") String tipo);*/
 	
-	@Query(value = "SELECT t1.pk_id_proceso_campania, " +
+	/*@Query(value = "SELECT t1.pk_id_proceso_campania, " +
             "t1.dt_fecha_extraccion, " +
             "t4.vc_nombre_usuario, " +
             "t2.vc_tipo_campania, " +
@@ -63,6 +63,44 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
             "AND (t1.DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin " +
             "OR t1.DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin)" +
             "AND t1.I_ID_ESTATUS_CAMPANIA = 1",
+    nativeQuery = true)
+	List<Object[]> listaProcesosCampania(@Param("inicio") LocalDate inicio,
+                                  @Param("fin") LocalDate fin,
+                                  @Param("tipos") List<Integer> tipos);*/
+	
+	@Query(value = "select t.pk_id_proceso_campania\r\n"
+			+ "      ,t.dt_fecha_extraccion\r\n"
+			+ "      ,t.vc_nombre_usuario\r\n"
+			+ "      ,t.vc_tipo_campania\r\n"
+			+ "     ,IFNULL(date(t5.dt_fecha_inicio_vigencia), date('1900-01-01')) AS dt_fecha_inicio_vigencia\r\n"
+			+ "     ,IFNULL(date(t5.dt_fecha_fin_vigencia), date('1900-01-01')) AS dt_fecha_fin_vigencia\r\n"
+			+ "      ,t.vc_estatus\r\n"
+			+ "from(\r\n"
+			+ "      SELECT min(t1.pk_id_proceso_campania) pk_id_proceso_campania\r\n"
+			+ "            ,t2.vc_tipo_campania\r\n"
+			+ "            ,t1.vc_codigo_cam\r\n"
+			+ "            ,GROUP_CONCAT(CAST(t3.vc_estatus AS CHAR) ORDER BY t3.pk_id_estatus_campania SEPARATOR ', ') AS vc_estatus\r\n"
+			+ "            ,min(date(t1.dt_fecha_extraccion)) dt_fecha_extraccion\r\n"
+			+ "            ,GROUP_CONCAT(CAST(t4.vc_nombre_usuario AS CHAR) ORDER BY t4.vc_nombre_usuario SEPARATOR ', ') AS vc_nombre_usuario\r\n"
+			+ "      FROM SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
+			+ "      INNER JOIN SIB.TBL_TIPOS_CAMPANIA t2 \r\n"
+			+ "      ON t1.I_ID_TIPO_CAMPANIA = t2.PK_ID_TIPO_CAMPANIA \r\n"
+			+ "      INNER JOIN SIB.TBL_ESTATUS_CAMPANIA t3 \r\n"
+			+ "      ON t3.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA \r\n"
+			+ "      INNER JOIN SIB.TBL_CAT_USUARIOS t4 \r\n"
+			+ "      ON t4.PK_ID_USUARIO = t1.I_USER_REG \r\n"
+			+ "      WHERE t1.I_ID_TIPO_CAMPANIA IN (:tipos)\r\n"
+			+ "      AND (t1.DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin\r\n"
+			+ "          OR t1.DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin\r\n"
+			+ "          )\r\n"
+			+ "      GROUP BY \r\n"
+			+ "          t2.vc_tipo_campania\r\n"
+			+ "          ,t1.vc_codigo_cam\r\n"
+			+ ")t\r\n"
+			+ "left join SIB.TBL_PROCESO_CAMPANIA t5\r\n"
+			+ "on t.vc_codigo_cam = t5.vc_codigo_cam\r\n"
+			+ "and t5.I_ID_ESTATUS_CAMPANIA = 5\r\n"
+			+ "order by t.pk_id_proceso_campania",
     nativeQuery = true)
 	List<Object[]> listaProcesosCampania(@Param("inicio") LocalDate inicio,
                                   @Param("fin") LocalDate fin,

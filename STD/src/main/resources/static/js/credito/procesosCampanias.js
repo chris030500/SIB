@@ -68,7 +68,7 @@ function buscarProcesosCampanias() {
 			});
 			
 		}else{
-			console.log("entra a todo ok");
+			//console.log("entra a todo ok");
 			/*let fechaInicio = document.getElementById("FechaInicio").value;
 			let fechaFin = document.getElementById("FechaFin").value;
 			//let tipoCampania = seleccionProd[0].value; // Si solo se permite una
@@ -146,20 +146,40 @@ function buscarProcesosCampanias() {
 			        data.lista.forEach(function(item) {
 						
 						// Función para formatear la fecha
-			            const formatearFecha = fechaStr => {
+			            /*const formatearFecha = fechaStr => {
 			                if (!fechaStr) return '';
 			                const fecha = new Date(fechaStr);
 			                return fecha.toLocaleDateString('es-ES'); // Solo fecha
-			            };
+			            };*/
+			            
+			            const formatearFecha = fechaStr => {
+						    if (!fechaStr) return '';
+						    // Si es el texto de IFNULL
+						    if (fechaStr === 'Sin fecha') return 'Sin fecha';
+						    // Reemplaza el espacio por 'T' para que el formato sea ISO 8601
+						    const fecha = new Date(fechaStr.replace(' ', 'T'));
+						    if (isNaN(fecha)) return fechaStr; // si aún no se puede parsear, muestra el texto tal cual
+						    return fecha.toLocaleDateString('es-ES');
+						};
+						
+						const formatearFechas = fechaStr => {
+						    if (!fechaStr) return '';
+						    const fecha = new Date(fechaStr);
+						    return fecha.toLocaleDateString('es-ES', {
+						        year: 'numeric',
+						        month: '2-digit',
+						        day: '2-digit'
+						    });
+						};
 						
 			            let fila = `
 			                <tr>
 			                    <td><input type="checkbox" name="seleccion" value="${item.pk_id_proceso_campania}"></td>
-			                    <td>${formatearFecha(item.dt_fecha_extraccion)}</td>
+			                    <td>${formatearFechas(item.dt_fecha_extraccion)}</td>
 			                    <td>${item.vc_nombre_usuario || ''}</td>
 			                    <td>${item.vc_tipo_campania || ''}</td>
-			                    <td>${formatearFecha(item.dt_fecha_inicio_vigencia)}</td>
-			                    <td>${formatearFecha(item.dt_fecha_fin_vigencia)}</td>
+			                    <td>${formatearFechas(item.dt_fecha_inicio_vigencia)}</td>
+			                    <td>${formatearFechas(item.dt_fecha_fin_vigencia)}</td>
 			                    <td>${item.vc_estatus || ''}</td>
 			                </tr>`;
 			            tbody.append(fila);

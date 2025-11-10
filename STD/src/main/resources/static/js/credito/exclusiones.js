@@ -375,7 +375,11 @@ $('#formExclusionCliente').on('submit', function (e) {
             motivo,
             observaciones,
 	};
-    const jsonBitacora = JSON.stringify(data);
+    //const jsonBitacora = JSON.stringify(data);
+    const jsonBitacora = JSON.stringify({
+	    ...data,
+	    estatusCliente: 1
+	});
 	let tabla = 'TBL_EXCLUSION_CLIENTES';
 	//console.log(jsonBitacora);
 	const dataHis = {

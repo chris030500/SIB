@@ -92,7 +92,7 @@ public class Constantes {
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
-    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_procesos_campanias";
+    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     
     //NOMBRE DE PANTALLAS
