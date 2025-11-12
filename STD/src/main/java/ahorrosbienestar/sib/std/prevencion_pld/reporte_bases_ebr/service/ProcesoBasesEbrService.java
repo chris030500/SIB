@@ -1,6 +1,5 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,7 +19,7 @@ public class ProcesoBasesEbrService {
 	@Autowired
 	private IProcesoBasesEbrRepository procesoEbrRepository;
 	
-	public ProcesoBasesEbr registrarProcesoBasesEbr(int idPeriodo, LocalDate fechaInicio, LocalDate fechaFin, int idUsuario) {
+	public ProcesoBasesEbr registrarProcesoBasesEbr(int anioAuditoria, int idUsuario) {
 		ProcesoBasesEbr proceso = new ProcesoBasesEbr();
 		
 		ZoneId zoneChihuahua = ZoneId.of("America/Chihuahua");
@@ -28,9 +27,7 @@ public class ProcesoBasesEbrService {
 		
 		LocalDateTime currentDateTime = zonedDateTime.toLocalDateTime();
 		
-		proceso.setPeriodoId(idPeriodo);
-		proceso.setFechaInicio(fechaInicio);
-		proceso.setFechaFin(fechaFin);
+		proceso.setAnioAuditoria(anioAuditoria);
 		proceso.setUsuarioEjecuto(idUsuario);
 		proceso.setFechaEjecucion(currentDateTime);
 		proceso.setEstatusEjecucion(true);

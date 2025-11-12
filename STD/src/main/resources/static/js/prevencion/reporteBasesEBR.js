@@ -7,11 +7,14 @@ function mostrarTabs() {
 			switch (forValue) {
 				case "1":
 					console.log("Procesar Bases EBR");
+					actualizarEstadoProcesoEBR(1);
 					break;
 				case "2":
 					console.log("Generar Bases EBR");
+					actualizarEstadoProcesoEBR(2);
 					break;
 				case "3":
+					actualizarEstadoProcesoEBR(3);
 					listaHistoricoBases();
 					break;
 			}
@@ -19,211 +22,127 @@ function mostrarTabs() {
 	});
 }
 
-async function generarRangoFechas() {
-	const fechaInicio = document.getElementById("fechaInicio");
-	const fechaFin = document.getElementById("fechaFin");
-	
-	const url = `${getAbsolutePath()}rangoFechasEbr`;
-	
-	try {
-		const data = await fetchJSON(url);
-		const { minYear, maxYear } = data;
-		
-		fechaInicio.setAttribute("min", `${minYear}-01-01`);
-		fechaInicio.setAttribute("max", `${maxYear}-12-31`);
-
-		fechaFin.setAttribute("min", `${minYear}-01-01`);
-		fechaFin.setAttribute("max", `${maxYear}-12-31`);
-
-	} catch(err) {
-		console.error("Error cargando rango de fechas:", err);
-	}
-} 
-
-function validarPeriodo(fechaInicio, fechaFin) {
-    const url = `${getAbsolutePath()}validarPeriodoEbr?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-
-    return fetch(url)
-        .then(res => {
-            if (!res.ok) {
-                Swal.fire({
-                    title: "¡Error!",
-                    text: "Las fechas no corresponden a un periodo válido (primer semestre, segundo semestre o anual)",
-                    icon: "warning"
-                });
-                return null;
-            }
-
-            return res.json();
-        })
-        .catch(err => {
-            console.error("Error en fetch:", err);
-            Swal.fire({
-                title: "¡Error!",
-                text: "No se pudo validar el periodo.",
-                icon: "error"
-            });
-            return null;
-        });
-}
-
-
 function mostrarRangoFechas() {
-	const periodoSelect = document.getElementById('periodoSelect');
-	const dtBasesEbrDiv = document.getElementById('dtBasesEbrDiv');
+	const auditoriasSelect = document.getElementById('auditoriasSelect');
 	const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
-	
-	btnProcesarBasesEBR.addEventListener('click', () => {
-		let selectValue = parseInt(periodoSelect.value);
-		let fechaActual = new Date();
-		let anioActual = fechaActual.getFullYear();
-		let fechaInicio, fechaFin;
-		
-		console.log(selectValue);
-		
-		if (selectValue === 0) {
+
+	btnProcesarBasesEBR.addEventListener('click', function () {
+		let selectValue = parseInt(auditoriasSelect.value, 10);
+
+		if (isNaN(selectValue) || selectValue === 0) {
 			Swal.fire({
 				title: "¡Error!",
 				text: "Selecciona una opción válida.",
 				icon: "warning"
 			});
-		} else {
-					
-			switch (selectValue) {
-				case 1:
-					fechaInicio = `${anioActual}-01-01`;
-					fechaFin = `${anioActual}-06-30`;
-					break;
-				case 2:
-					fechaInicio = `${anioActual}-07-01`;
-					fechaFin = `${anioActual}-12-31`;
-					break;
-				case 3:
-					fechaInicio = `${anioActual}-01-01`;
-					fechaFin = `${anioActual}-12-31`;
-					break;
-				case 4:
-					dtBasesEbrDiv.classList.remove('d-none');
-					fechaInicio = document.getElementById('fechaInicio').value;
-					fechaFin = document.getElementById('fechaFin').value;
-					break;
-			}
-			
-			validarPeriodo(fechaInicio, fechaFin).then(data => {
-				if (!data) return;
-            const periodoId = data.periodo.periodoId;
+			return;
+		}
 
-            const urlExtraccion = `${getAbsolutePath()}extraccionAuditoriaEbr?idPeriodo=${periodoId}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+		const urlExtraccion = getAbsolutePath() + "extraccionAuditoriaEbr?anioAuditoria=" + selectValue;
 
-            fetch(urlExtraccion)
-                .then(res => {
-                    if (!res.ok) throw new Error("No hay registros para las fechas seleccionadas");
-                    return res.text();
-                })
-                .then(() => {
-                    procesarBasesEBR(periodoId, fechaInicio, fechaFin);
-                })
-                .catch(err => {
-                    console.error("Error en extraccionAuditoriaEbr: ", err);
-                    Swal.fire({
-                        title: "¡Error!",
-                        text: "No se encuentra información del periodo de fecha ingresado.",
-                        icon: "warning"
-                    });
-                });
+		fetch(urlExtraccion)
+			.then(function (res) {
+				if (!res.ok) {
+					throw new Error("No hay registros para las fechas seleccionadas");
+				}
+				return res.text();
+			})
+			.then(function () {
+				procesarBasesEBR(selectValue);
+			})
+			.catch(function (err) {
+				console.error("Error en extraccionAuditoriaEbr:", err);
+				Swal.fire({
+					title: "¡Error!",
+					text: "No se encuentra información del periodo de fecha ingresado.",
+					icon: "warning"
+				});
 			});
-		}
 	});
+}
 
-	periodoSelect.addEventListener('change', () => {
-		if (parseInt(periodoSelect.value) === 4) {
-			dtBasesEbrDiv.classList.remove("d-none");
-		} else {
-			dtBasesEbrDiv.classList.add("d-none");
-		}
-	});
-};
-
-async function procesarBasesEBR(idPeriodo, fechaInicio, fechaFin) {
-	const url = `${getAbsolutePath()}ejecutarProcesoBasesEbr`;
-
+function procesarBasesEBR(anioAuditoria) {
+	const url = getAbsolutePath() + "ejecutarProcesoBasesEbr";
 	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
 		backdrop: 'static',
 		keyboard: false
 	});
 
-	try {
-		spinnerModal.show();
+	spinnerModal.show();
 
-		const response = await fetchJSON(url, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ idPeriodo: idPeriodo, fechaInicio: fechaInicio, fechaFin: fechaFin })
-		}); 
-		
-		const proceso = response.data;
-		const idProceso = proceso.procesoId;
+	fetchJSON(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ anioAuditoria: anioAuditoria })
+	})
+		.then(function (response) {
+			if (!response || !response.data || !response.data.procesoId) {
+				throw new Error("Respuesta inválida del servidor");
+			}
 
-		// Inicia polling cada 3s
-		const interval = setInterval(() => {
-			obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
-		}, 3000);
+			let idProceso = response.data.procesoId;
 
-	} catch (err) {
-		Swal.fire({
-			title: "¡Error!",
-			text: `${err.message}, inténtelo más tarde`,
-			icon: "error"
-		}).then(() => {spinnerModal.hide();});
-	}
+			// Inicia polling cada 3s
+			const interval = setInterval(function () {
+				obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
+			}, 3000);
+		})
+		.catch(function (err) {
+			console.error("Error en procesarBasesEBR:", err);
+			Swal.fire({
+				title: "¡Error!",
+				text: err.message + ". Inténtelo más tarde.",
+				icon: "error"
+			}).then(function () {
+				spinnerModal.hide();
+			});
+		});
 }
 
-async function obtenerProcesoBasesEbr(idProceso, interval, modal) {
-	
-	const url = `${getAbsolutePath()}obtenerProcesoBasesEbr?idProceso=${idProceso}`;
-	
-	try {
-		const data = await fetchJSON(url);
-		
-		if (data.estatusProceso === 3) {
-			clearInterval(interval);
-			modal.hide();
+function obtenerProcesoBasesEbr(idProceso, interval, modal) {
+	var url = getAbsolutePath() + "obtenerProcesoBasesEbr?idProceso=" + idProceso;
 
-			Swal.fire({
-				title: "¡Proceso ejecutado!",
-				text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
-				icon: "success"
-			}).then(() => {
-				const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
-				let tab = new bootstrap.Tab(nextTab);
-				tab.show();
-				mostrarAlertUltimoProceso();
-			});
-		}
-		
-		if (data.estatusProceso === 4) {
-			clearInterval(interval);
+	fetchJSON(url)
+		.then(function (data) {
+			if (data.estatusProceso === 3) {
+				clearInterval(interval);
+				modal.hide();
+
+				Swal.fire({
+					title: "¡Proceso ejecutado!",
+					text: "Ya puedes generar las bases EBR en la siguiente pestaña.",
+					icon: "success"
+				}).then(function () {
+					var nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
+					var tab = new bootstrap.Tab(nextTab);
+					tab.show();
+					actualizarEstadoProcesoEBR(1);
+				});
+			}
+
+			if (data.estatusProceso === 4) {
+				clearInterval(interval);
+				modal.hide();
+
+				Swal.fire({
+					title: "¡Error!",
+					text: "Se generó un error al procesar las bases, inténtalo nuevamente.",
+					icon: "error"
+				}).then(function () {
+					actualizarEstadoProcesoEBR(1);
+				});
+			}
+		})
+		.catch(function (err) {
+			console.error("Error en obtenerProcesoBasesEbr:", err);
 			modal.hide();
 
 			Swal.fire({
 				title: "¡Error!",
-				text: "Se generó un error al procesar las bases, intenté nuevamente.",
+				text: "Ocurrió un error al verificar el proceso: " + err.message,
 				icon: "error"
-			}).then(() => {
-				/*const nextTab = document.querySelector('#pntConf button[data-bs-toggle="tab"][data-bs-target="#bases"]');
-				let tab = new bootstrap.Tab(nextTab);
-				tab.show();*/
-				mostrarAlertUltimoProceso();
 			});
-		}
-	} catch (err) {
-		modal.hide();
-        Swal.fire({
-            title: "¡Error!",
-            text: `Ocurrió un error al verificar el proceso: ${err.message}`,
-            icon: "error"
-        });
-	}
+		});
 }
 
 function actualizarVobo(idProceso, estatusVobo) {
@@ -248,85 +167,85 @@ function actualizarVobo(idProceso, estatusVobo) {
     });
 }
 
-async function actualizarProcesoEbr() {
-	const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
-	
-	try {
-		const data = await fetchJSON(url);
-		const idProceso = data.procesoId;
-		
-		actualizarVobo(idProceso, 0);
-	} catch (err) {
-		console.log('No se encuentra último proceso de ejecución.');
-	}
+function actualizarProcesoEbr() {
+    var url = getAbsolutePath() + 'obtenerLastProcesoBasesEbr';
+
+    fetchJSON(url)
+        .then(function (data) {
+            let idProceso = data.procesoId;
+            actualizarVobo(idProceso, 0);
+        })
+        .catch(function (err) {
+            console.log('No se encuentra último proceso de ejecución.');
+        });
 }
 
-async function deshabilitarProcesoEBR() {
-	 const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
-	 const msgProceso = document.getElementById('msgProcesoEbr');
-	 
-	 const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
-	 
-	try {
-		const data = await fetchJSON(url);
-
-		if (data) {
-			const rango = `${data.fechaInicio} - ${data.fechaFin}`;
-			msgProceso.classList.remove('alert-info', 'alert-warning', 'alert-danger');
-			if (data.estatusProceso === 2) {
-				msgProceso.innerText = `Aún se está procesando la generación de información EBR: ${rango}`;
-				msgProceso.classList.remove('d-none');
-				msgProceso.classList.add('alert-warning');
-				btnProcesarBasesEBR.disabled = true;
-			} else if (data.estatusProceso === 3) {
-				msgProceso.innerText = `Último periodo de generación de información EBR: ${rango}`;
-				msgProceso.classList.remove('d-none');
-				msgProceso.classList.add('alert-info');
-			} else if (data.estatusProceso === 4) {
-				msgProceso.innerText = `Se presentó un error al procesar la generación de información EBR: ${rango}`;
-				msgProceso.classList.remove('d-none');
-				msgProceso.classList.add('alert-danger');
-			}
-			
-			btnProcesarBasesEBR.disabled = false;
-		}
-	} catch (err) {
-		console.log('No se encuentra último proceso de ejecución.')
-	}
-}
-
-async function mostrarAlertUltimoProceso() {
-    const msgVobo = document.getElementById('msgVoboBasesEbr');
+function actualizarEstadoProcesoEBR(tab) {
+    
+    const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
+    const msg = document.getElementById('msgProcesoEbr');
     const btnVistoBueno = document.getElementById('btnVistoBueno');
     const voboSi = document.getElementById('voboSi');
     const voboNo = document.getElementById('voboNo');
     
-    const url = `${getAbsolutePath()}obtenerLastProcesoBasesEbr`;
+    const url = getAbsolutePath() + 'obtenerLastProcesoBasesEbr';
 
-    try {
-        const data = await fetchJSON(url);
+    fetchJSON(url)
+        .then(function (data) {
+            if (!data) return;
 
-        if (data) {
-			const rango = `${data.fechaInicio} - ${data.fechaFin}`;
+            let rango = data.anioAuditoria;
+            msg.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'd-none');
 
-            msgVobo.classList.remove('alert-info', 'alert-warning');
-            if (data.estatusVobo === true) {
-                msgVobo.innerText = `Vobo de las bases EBR del periodo: ${rango}`;
-                msgVobo.classList.add('alert-info');
-                voboSi.checked = true;
-                voboSi.disabled = true;
-                voboNo.disabled = true;
-                btnVistoBueno.disabled = true;
-            } else if (data.estatusVobo === false) {
-                msgVobo.innerText = `Vobo pendiente de las bases EBR del periodo: ${rango}`;
-                msgVobo.classList.add('alert-warning');
-                voboNo.checked = true;
-            }
-            msgVobo.classList.remove('d-none');
-        }
-    } catch (err) {
-		console.log('No se encuentra último proceso de ejecución.')
-    }
+ 			// --- Pestaña 1: estado general del proceso ---
+			if (tab === 1) {
+				if (data.estatusProceso === 2) {
+					msg.innerText = 'Aún se está procesando la generación de información EBR: ' + rango;
+					msg.classList.add('alert-warning');
+					btnProcesarBasesEBR.disabled = true;
+				} else if (data.estatusProceso === 3) {
+					msg.innerText = 'Último periodo de generación de información EBR: ' + rango;
+					msg.classList.add('alert-info');
+					btnProcesarBasesEBR.disabled = false;
+				} else if (data.estatusProceso === 4) {
+					msg.innerText = 'Se presentó un error al procesar la generación de información EBR: ' + rango;
+					msg.classList.add('alert-danger');
+					btnProcesarBasesEBR.disabled = false;
+				}
+			}
+			
+			// --- Pestaña 2: VoBo ---
+			if (tab === 2) {
+				if (data.estatusVobo === true) {
+					msg.innerText = 'VoBo de las bases EBR del periodo: ' + rango;
+					msg.classList.add('alert-info');
+					voboSi.checked = true;
+					voboSi.disabled = true;
+					voboNo.disabled = true;
+					btnVistoBueno.disabled = true;
+				} else if (data.estatusVobo === false) {
+					msg.innerText = 'VoBo pendiente de las bases EBR del periodo: ' + rango;
+					msg.classList.add('alert-warning');
+					voboNo.checked = true;
+					voboSi.disabled = false;
+					voboNo.disabled = false;
+					btnVistoBueno.disabled = false;
+				} else {
+					msg.classList.add('d-none');
+					voboNo.checked = false;
+					voboSi.disabled = false;
+					voboNo.disabled = false;
+					btnVistoBueno.disabled = false;
+				}
+			}
+			
+			if (tab === 3) {
+				msg.classList.add('d-none');
+			}
+        })
+        .catch(function (err) {
+            console.log('No se encuentra último proceso de ejecución.');
+        });
 }
 
 function mostrarVoboDiv() {
@@ -386,7 +305,7 @@ async function ejecutarVoBoBasesEBR() {
 					let tab = new bootstrap.Tab(nextTab);
 					tab.show();
 				}
-				mostrarAlertUltimoProceso();
+				actualizarEstadoProcesoEBR();
 			}
 		});
 
@@ -599,9 +518,8 @@ document.getElementById("uploadTipoEmpresaForm").addEventListener("submit", func
 document.addEventListener("DOMContentLoaded", function () {
 	mostrarTabs();
 	mostrarVoboDiv();
-	generarRangoFechas();
+	//generarRangoFechas();
+	actualizarEstadoProcesoEBR(1);
 	mostrarRangoFechas();
-	mostrarAlertUltimoProceso();
-	deshabilitarProcesoEBR();
 	onclickBotonesHistoricoBases();
 });

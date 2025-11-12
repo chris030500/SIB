@@ -1,6 +1,5 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -21,16 +20,8 @@ public class ProcesoBasesEbr {
 	@Column(name = "PK_PROCESO_EBR_ID")	
 	private Integer procesoId;
 	
-	@Column(name = "I_PERIODO_ID")	
-	private Integer periodoId;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "DT_FECHA_INICIO")
-	private LocalDate fechaInicio;
-	
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@Column(name = "DT_FECHA_FIN")
-	private LocalDate fechaFin;
+	@Column(name = "I_ANIO_AUDITORIA")	
+	private Integer anioAuditoria;
 	
 	@Column(name = "I_USUARIO_EJECUTO")
 	private Integer usuarioEjecuto;
@@ -63,32 +54,12 @@ public class ProcesoBasesEbr {
 		return procesoId;
 	}
 
-	public void setProcesoId(Integer procesoId) {
-		this.procesoId = procesoId;
+	public Integer getAnioAuditoria() {
+		return anioAuditoria;
 	}
 
-	public Integer getPeriodoId() {
-		return periodoId;
-	}
-
-	public void setPeriodoId(Integer periodoId) {
-		this.periodoId = periodoId;
-	}
-
-	public LocalDate getFechaInicio() {
-		return fechaInicio;
-	}
-
-	public void setFechaInicio(LocalDate fechaInicio) {
-		this.fechaInicio = fechaInicio;
-	}
-
-	public LocalDate getFechaFin() {
-		return fechaFin;
-	}
-
-	public void setFechaFin(LocalDate fechaFin) {
-		this.fechaFin = fechaFin;
+	public void setAnioAuditoria(Integer anioAuditoria) {
+		this.anioAuditoria = anioAuditoria;
 	}
 
 	public Integer getUsuarioEjecuto() {
@@ -155,12 +126,16 @@ public class ProcesoBasesEbr {
 		this.fechaTermino = fechaTermino;
 	}
 
+	public void setProcesoId(Integer procesoId) {
+		this.procesoId = procesoId;
+	}
+
 	@Override
 	public String toString() {
-		return "ProcesoBasesEbr [procesoId=" + procesoId + ", periodoId=" + periodoId + ", fechaInicio=" + fechaInicio
-				+ ", fechaFin=" + fechaFin + ", usuarioEjecuto=" + usuarioEjecuto + ", fechaEjecucion=" + fechaEjecucion
-				+ ", estatusEjecucion=" + estatusEjecucion + ", estatusVobo=" + estatusVobo + ", usuarioVobo="
-				+ usuarioVobo + ", fechaVobo=" + fechaVobo + ", estatusProceso=" + estatusProceso + ", fechaTermino="
-				+ fechaTermino + "]";
+		return "ProcesoBasesEbr [procesoId=" + procesoId + ", anioAuditoria=" + anioAuditoria + ", usuarioEjecuto="
+				+ usuarioEjecuto + ", fechaEjecucion=" + fechaEjecucion + ", estatusEjecucion=" + estatusEjecucion
+				+ ", estatusVobo=" + estatusVobo + ", usuarioVobo=" + usuarioVobo + ", fechaVobo=" + fechaVobo
+				+ ", estatusProceso=" + estatusProceso + ", fechaTermino=" + fechaTermino + "]";
 	}
+	
 }
