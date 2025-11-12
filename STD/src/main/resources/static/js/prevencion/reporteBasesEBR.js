@@ -326,7 +326,7 @@ async function ejecutarVoBoBasesEBR() {
 					let tab = new bootstrap.Tab(nextTab);
 					tab.show();
 				}
-				actualizarEstadoProcesoEBR();
+				actualizarEstadoProcesoEBR(3);
 			}
 		});
 
