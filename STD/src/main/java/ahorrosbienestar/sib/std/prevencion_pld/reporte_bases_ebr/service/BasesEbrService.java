@@ -1,8 +1,5 @@
 package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
-import java.time.LocalDate;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +15,8 @@ public class BasesEbrService {
 		basesEbrRepository.ejecutarVoBo(idUsuario);
 	}
 	
-    public Map<String, Integer> obtenerRangoFechas() {
-        return basesEbrRepository.obtenerRangoFechas();
-    }
-    
-    public boolean ejecutarExtraccion(int idPeriodo, LocalDate fechaInicio, LocalDate fechaFin) {
-        int flag = basesEbrRepository.ejecutarExtraccionAuditoriaEbr(idPeriodo, fechaInicio, fechaFin);
+    public boolean ejecutarExtraccion(int anioAuditoria) {
+        int flag = basesEbrRepository.ejecutarExtraccionAuditoriaEbr(anioAuditoria);
         return flag == 1; 
     }
 }

@@ -3,13 +3,11 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -34,20 +32,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
-import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.dto.BasesEbrResponse;
-import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.PeriodoEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.ProcesoBasesEbr;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model.TipoEmpresa;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.ProcesoBasesEbrService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.TipoEmpresaService;
 import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.BasesEbrService;
-import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.PeriodoEbrService;
+import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service.HistReportesAuditoriaService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
@@ -68,9 +63,6 @@ public class RptBasesEbrController {
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
 	@Autowired
-	private ICatalogoRepository iCatalogoRepository;
-	
-	@Autowired
 	private IReporteRepository iReporteRepository;
 	
 	@Autowired
@@ -89,29 +81,18 @@ public class RptBasesEbrController {
 	private TipoEmpresaService tipoEmpresaService;
 	
 	@Autowired
-	private PeriodoEbrService periodoService;
+	private HistReportesAuditoriaService auditoriaService;
 	
 	
 	@GetMapping("/reporteBasesEBR")
 	public String paramsConfiguracion(Model model) throws IOException {
 		try {
-			List<Catalogo> periodos = iCatalogoRepository.generarOpciones(Constantes.PLD_CAT_PERIODO_EJECUCION_EBR);
-			String rutaDireccion;
-			int anioActual = Year.now().getValue();
 			
-			periodos.forEach(p -> {
-				String valor = p.getV_valor();
-				
-				if (valor.contains("Semestre")) {
-					valor = valor.replace(")", " " + anioActual + ")");
-					p.setV_valor(valor);
-				} else if (valor.equalsIgnoreCase("Año actual")) {
-					p.setV_valor("Año " + anioActual);
-				}
-			});
+			List<Integer> auditorias = auditoriaService.listaAnioAuditorias();
+			String rutaDireccion;
 					
 			if (validarAcceso() == 1) {
-				model.addAttribute("cat_periodo_ejecucion_ebr", periodos);
+				model.addAttribute("lista_anio_auditorias", auditorias);
 				
 				rutaDireccion = Constantes.PLD_REPORTE_BASES_EBR;
 			} else {
@@ -124,57 +105,14 @@ public class RptBasesEbrController {
 			return null;
 		}
 	}
-	
-    @GetMapping("/rangoFechasEbr")
-    public ResponseEntity<Map<String, Integer>>obtenerRangoFechas() {
-        try {
-            Map<String, Integer> rango = basesEbrService.obtenerRangoFechas();
-            return ResponseEntity.ok(rango);
-        } catch (Exception e) {
-            // Fallback: año actual si falla algo
-            int currentYear = java.time.Year.now().getValue();
-            Map<String, Integer> fallback = new HashMap<>();
-            fallback.put("minYear", currentYear);
-            fallback.put("maxYear", currentYear);
-            return ResponseEntity.ok(fallback);
-        }
-    }
-    
-    @GetMapping("/validarPeriodoEbr")
-    public ResponseEntity<Map<String, Object>> validarPeriodo(
-            @RequestParam String fechaInicio,
-            @RequestParam String fechaFin) {
-
-        LocalDate inicio = LocalDate.parse(fechaInicio);
-        LocalDate fin = LocalDate.parse(fechaFin);
-        int anio = inicio.getYear();
-
-        try {
-            PeriodoEbr periodo = periodoService.obtenerPeriodoEbr(anio, inicio, fin);
-            Map<String, Object> response = new HashMap<>();
-            response.put("periodo", periodo);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
-            return ResponseEntity.badRequest()
-                                 .body(Map.of("error", e.getMessage()));
-        }catch (Exception e) {
-        	logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno del servidor"));
-        }
-    }
     
     @GetMapping("/extraccionAuditoriaEbr")
     public ResponseEntity<?> ejecutarExtraccion(
-            @RequestParam int idPeriodo,
-            @RequestParam String fechaInicio,
-            @RequestParam String fechaFin) {
+            @RequestParam int anioAuditoria) {
 
         try {
-            LocalDate inicio = LocalDate.parse(fechaInicio);  // convierte directamente a LocalDate
-            LocalDate fin = LocalDate.parse(fechaFin);
 
-            boolean hayRegistros = basesEbrService.ejecutarExtraccion(idPeriodo, inicio, fin);
+            boolean hayRegistros = basesEbrService.ejecutarExtraccion(anioAuditoria);
 
             if (!hayRegistros) {
             	logger.error("No existen registros para las fechas seleccionadas");
@@ -209,14 +147,12 @@ public class RptBasesEbrController {
 	@PostMapping("/ejecutarProcesoBasesEbr")
 	public ResponseEntity<BasesEbrResponse<ProcesoBasesEbr>> ejecutarProcesoBasesEbr(@RequestBody Map<String, String> payload) {
 		
-		Integer idPeriodo = Integer.parseInt(payload.get("idPeriodo"));
-	    LocalDate fechaInicio = LocalDate.parse(payload.get("fechaInicio"));
-	    LocalDate fechaFin = LocalDate.parse(payload.get("fechaFin"));
+		Integer anioAuditoria = Integer.parseInt(payload.get("anioAuditoria"));
 	    
 		Integer idUsuario = obtenerIdUsuario();
 		
 	    try {
-	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(idPeriodo, fechaInicio, fechaFin, idUsuario);
+	        ProcesoBasesEbr proceso = procesoBasesEbrService.registrarProcesoBasesEbr(anioAuditoria, idUsuario);
 	        return ResponseEntity.ok(new BasesEbrResponse<>("proceso", proceso));
 	    } catch (RuntimeException e) {
 	    	logger.error("Ocurrió un error al registrar el proceso: " + e.getMessage());

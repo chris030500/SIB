@@ -61,12 +61,13 @@
     <div class="border p-2 card">
         
         <!-- Título -->
-        <div class="bg-info text-white text-center py-2 rounded mb-3">
+        <div class="bg-info text-white text-center py-2 rounded">
             <h2>Reporte Bases EBR</h2>
         </div>
+        <div id="msgProcesoEbr" class="alert alert-info d-none"></div>
 
         <!-- Tabs -->
-        <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
+        <ul class="nav nav-pills mb-3 mt-3" id="pntConf" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="proceso-tab"
                 		data-bs-toggle="tab" data-bs-target="#proceso"
@@ -116,20 +117,12 @@
 						<div class="row mb-3 align-items-center">
 							<!-- Select -->
 							<div class="col-md-4">
-								<select id="periodoSelect" class="form-select" aria-label="Default select example">
+								<select id="auditoriasSelect" class="form-select" aria-label="Default select example">
 									<option value="0" selected>Seleccionar periodo</option>
-									<option th:each="listaPeriodo : ${cat_periodo_ejecucion_ebr}" th:value="${listaPeriodo.i_opcion}"
-										th:text="${listaPeriodo.v_valor}">
+									<option th:each="anio : ${lista_anio_auditorias}" th:value="${anio}"
+										th:text="${anio}">
 									</option>
 								</select>
-							</div>
-							<!-- Rango de fechas -->
-							<div id="dtBasesEbrDiv" class="col-md-8 d-none">
-								<div class="d-flex flex-wrap align-items-center gap-2">
-									<input type="date" class="form-control" id="fechaInicio" style="max-width: 200px;" min="2024-01-01">
-									<span>-</span>
-									<input type="date" class="form-control" id="fechaFin" style="max-width: 200px;" min="2024-01-01">
-								</div>
 							</div>
 						</div>
 					
@@ -140,7 +133,6 @@
 							<span class="text-muted">Procesar reporte de Bases EBR</span>
 						</div>
 					</div>
-					<div id="msgProcesoEbr" class="alert alert-info mt-3 d-none"></div>
                 </fieldset>
             </div>
             
@@ -153,25 +145,25 @@
                         <label class="form-label fw-bold">Acciones disponibles:</label>
                         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="btn-group me-2" role="group">
-                                <button type="button" class="btn btn-primary btn-xs" onclick="generarBasesEBR(1)">
+                                <button id="btnBaseClientesEbr" type="button" class="btn btn-primary btn-xs" onclick="generarBasesEBR(1)">
                                       <i class="bi bi-file-earmark-excel-fill"></i>
                                       <span>Base Clientes</span>
                                 </button>
                             </div>
                             <div class="btn-group me-2" role="group">
-                                <button type="button" class="btn btn-success btn-xs" onclick="generarBasesEBR(2)">
+                                <button id="btnBaseOperacionesEbr" type="button" class="btn btn-success btn-xs" onclick="generarBasesEBR(2)">
                                       <i class="bi bi-file-earmark-excel-fill"></i>
                                       <span>Base Operaciones</span>
                                 </button>
                             </div>
                             <div class="btn-group me-2" role="group">
-                                <button type="button" class="btn btn-secondary btn-xs" onclick="generarBasesEBR(3)">
+                                <button id="btnBaseRemesasEbr" type="button" class="btn btn-secondary btn-xs" onclick="generarBasesEBR(3)">
                                       <i class="bi bi-file-earmark-excel-fill"></i>
                                       <span>Base Remesas</span>
                                 </button>
                             </div>
                             <div class="btn-group me-2" role="group">
-                                <button type="button" class="btn btn-warning btn-xs" onclick="generarBasesEBR(4)">
+                                <button id="btnBaseDesembolsosEbr" type="button" class="btn btn-warning btn-xs" onclick="generarBasesEBR(4)">
                                       <i class="bi bi-file-earmark-excel-fill"></i>
                                       <span>Base Desembolsos</span>
                                 </button>
@@ -196,8 +188,6 @@
                     <div id="voboDiv" style="display: none;" class="mb-3 gap-3 align-items-center">
                         <button type="button" class="btn btn-success" id="btnVistoBueno" data-bs-toggle="modal" data-bs-target="#voboModal">Registrar Visto bueno</button>
                     </div>
-                    
-                    <div id="msgVoboBasesEbr" class="alert alert-info mt-3 d-none"></div>
 
                 </div>
             </div>
