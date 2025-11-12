@@ -187,6 +187,11 @@ function actualizarEstadoProcesoEBR(tab) {
     const btnVistoBueno = document.getElementById('btnVistoBueno');
     const voboSi = document.getElementById('voboSi');
     const voboNo = document.getElementById('voboNo');
+    const btnBaseClientesEbr = document.getElementById('btnBaseClientesEbr');
+    const btnBaseOperacionesEbr = document.getElementById('btnBaseOperacionesEbr');
+    const btnBaseRemesasEbr = document.getElementById('btnBaseRemesasEbr');
+    const btnBaseDesembolsosEbr = document.getElementById('btnBaseDesembolsosEbr');
+    const infoCorrectaDiv = document.getElementById('infoCorrectaDiv');
     
     const url = getAbsolutePath() + 'obtenerLastProcesoBasesEbr';
 
@@ -194,42 +199,58 @@ function actualizarEstadoProcesoEBR(tab) {
         .then(function (data) {
             if (!data) return;
 
-            let rango = data.anioAuditoria;
+            let anio = data.anioAuditoria;
+            let fechaEjecucion = data.fechaEjecucion;
+            
+            infoCorrectaDiv.classList.remove('d-none');
             msg.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'd-none');
 
  			// --- Pestaña 1: estado general del proceso ---
 			if (tab === 1) {
 				if (data.estatusProceso === 2) {
-					msg.innerText = 'Aún se está procesando la generación de información EBR: ' + rango;
+					msg.innerText = 'Aún se está procesando la generación de información EBR del ' + anio;
 					msg.classList.add('alert-warning');
 					btnProcesarBasesEBR.disabled = true;
 				} else if (data.estatusProceso === 3) {
-					msg.innerText = 'Último periodo de generación de información EBR: ' + rango;
+					msg.innerText = 'Última ejecución de generación de información EBR ' + anio + ": " + fechaEjecucion;
 					msg.classList.add('alert-info');
 					btnProcesarBasesEBR.disabled = false;
 				} else if (data.estatusProceso === 4) {
-					msg.innerText = 'Se presentó un error al procesar la generación de información EBR: ' + rango;
+					msg.innerText = 'Se intentó procesar la generación de información EBR del ' + anio + ": " + fechaEjecucion;
 					msg.classList.add('alert-danger');
-					btnProcesarBasesEBR.disabled = false;
 				}
 			}
 			
 			// --- Pestaña 2: VoBo ---
 			if (tab === 2) {
+				
+				btnBaseClientesEbr.disabled = false;
+				btnBaseOperacionesEbr.disabled = false;
+				btnBaseRemesasEbr.disabled = false;
+				btnBaseDesembolsosEbr.disabled = false;
+				
 				if (data.estatusVobo === true) {
-					msg.innerText = 'VoBo de las bases EBR del periodo: ' + rango;
+					msg.innerText = 'VoBo de las bases EBR del periodo ' + anio;
 					msg.classList.add('alert-info');
 					voboSi.checked = true;
 					voboSi.disabled = true;
 					voboNo.disabled = true;
 					btnVistoBueno.disabled = true;
 				} else if (data.estatusVobo === false) {
-					msg.innerText = 'VoBo pendiente de las bases EBR del periodo: ' + rango;
+					msg.innerText = 'VoBo pendiente de las bases EBR del periodo ' + anio;
 					msg.classList.add('alert-warning');
 					voboNo.checked = true;
 					voboSi.disabled = false;
 					voboNo.disabled = false;
 					btnVistoBueno.disabled = false;
+				} else if (data.estatusProceso === 4) {
+					msg.classList.add('d-none');
+					btnProcesarBasesEBR.disabled = false;
+					btnBaseClientesEbr.disabled = true;
+					btnBaseOperacionesEbr.disabled = true;
+					btnBaseRemesasEbr.disabled = true;
+					btnBaseDesembolsosEbr.disabled = true;
+					infoCorrectaDiv.classList.add('d-none');
 				} else {
 					msg.classList.add('d-none');
 					voboNo.checked = false;
