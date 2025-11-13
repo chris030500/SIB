@@ -93,6 +93,9 @@ public class Constantes {
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
     public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS = "rpt_exclusiones_internas";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_ESTATUS = "rpt_exclusiones_internas_estatus";
+    public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     
     //NOMBRE DE PANTALLAS
@@ -227,6 +230,7 @@ public class Constantes {
 	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
 	
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
+	public static final int CAT_REPORTES_CAMPANIAS = 39;
 	
     private Constantes() {
         

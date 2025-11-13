@@ -445,7 +445,7 @@ function eliminarCliente() {
 	
 	const data = {
 	    idCliente: idCliente,
-	    estatusCliente: 0,
+	    estatusCliente: 2,
 	};
 	//console.log(data);
 	const jsonBitacora = JSON.stringify(data);
