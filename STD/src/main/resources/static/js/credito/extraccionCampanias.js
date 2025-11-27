@@ -18,6 +18,11 @@ var newUrlBase = urlPrincipal.replace("/credito", "");
 var mensajeError = "Datos incorrectos, favor de validar.";
 
 document.getElementById("Campania").addEventListener("change", function() {
+	// @ts-ignore
+	document.getElementById("FechaExtraccion").value = ""; // Limpiar
+	// @ts-ignore
+	document.getElementById("FechaAlta").value = ""; // Limpiar
+	
 	//si seleccionan una campaña
 	$.ajax({
 	    url: newUrlBase + "credito/api/countExtraccion",
@@ -41,6 +46,55 @@ document.getElementById("Campania").addEventListener("change", function() {
 	        console.error("Error al obtener el conteo para activar boton extraer :", err);
 	    }
 	});
+	//
+	// @ts-ignore
+	const tipoCampania = this.value;
+    // Ejecuta la llamada AJAX
+			$.ajax({
+			    url: newUrlBase + 'credito/api/consultaFechas',  // <- tu endpoint en Spring Boot
+			    type: 'GET',
+			    dataType: 'json',
+			    data: {
+			        tipoCampania: tipoCampania
+			    },
+			    success: function(data) {
+			        //console.log("Respuesta del backend:", data);
+			
+			        data.lista.forEach(function(item) {
+						
+						const formatearFechas = fechaStr => {
+						    if (!fechaStr) return '';
+						    const fecha = new Date(fechaStr);
+						    return fecha.toLocaleDateString('es-ES', {
+						        year: 'numeric',
+						        month: '2-digit',
+						        day: '2-digit'
+						    });
+						};
+						//console.log("fechassss:", formatearFechas(item.dt_fecha_extraccion));
+						const fechaExtraccionInput = document.getElementById("FechaExtraccion");
+						const fechaAltaInput = document.getElementById("FechaAlta");
+						// @ts-ignore
+						fechaExtraccionInput.value = formatearFechas(item.dt_fecha_extraccion);
+						
+						// @ts-ignore
+						fechaAltaInput.value = formatearFechas(item.dt_fecha_inicio_vigencia);
+						
+						});
+			    },
+			    error: function(err) {
+			        console.error("Error al obtener fechas campañas:", err);
+			
+			        // Si el backend envía un mensaje de error, lo mostramos
+			        if (err.responseJSON && err.responseJSON.error) {
+			            console.error("Detalle del error del backend:", err.responseJSON.error);
+			            alert("Error del servidor: " + err.responseJSON.error);
+			        } else {
+			            console.error("Respuesta completa:", err.responseText);
+			            alert("Ocurrió un error al consultar las fechas de campaña.");
+			        }
+			    }
+			});
 });
 
 

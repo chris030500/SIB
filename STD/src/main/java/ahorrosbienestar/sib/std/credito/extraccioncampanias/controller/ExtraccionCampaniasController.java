@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,7 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.ValBuroCreditoCampaniaModel;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ValBuroCreditoCampaniaService;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
@@ -338,6 +340,25 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
 	    return Map.of("codigo", codigo);
 	}
+	
+	@GetMapping("/api/consultaFechas")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> consultaFechas(
+		    @RequestParam("tipoCampania") Integer tipoCampania) {
+
+		    Map<String, Object> respuesta = new HashMap<>();
+
+		    try {
+		        List<ProcesosCampaniasDTO> lista = procesosCampaniasService.buscarFechaCampania(tipoCampania);
+		        respuesta.put("lista", lista);
+		        return ResponseEntity.ok(respuesta);
+		    } catch (Exception e) {
+		        respuesta.put("error", e.getMessage());
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		    }
+		}
+	
+	
 	
 	@GetMapping("/api/procesoCamEstatus")
 	@ResponseBody

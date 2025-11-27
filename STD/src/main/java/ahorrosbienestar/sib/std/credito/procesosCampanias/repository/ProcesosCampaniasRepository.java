@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 
 @Repository
@@ -179,6 +180,33 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 			+ "where pk_id_proceso_campania = :procesoCampania ",
        nativeQuery = true)
 	String consultaCodigoCam(@Param("procesoCampania") int procesoCampania);
+	
+	@Query(value = "select t1.PK_ID_PROCESO_CAMPANIA as pk_id_proceso_campania, "
+			+ "        t1.DT_FECHA_REGISTRO as dt_fecha_extraccion, "
+			+ "        t3.VC_NOMBRE_USUARIO as vc_nombre_usuario, "
+			+ "        t4.VC_TIPO_CAMPANIA as vc_tipo_campania, "
+			+ "        t2.DT_FECHA_REGISTRO as dt_fecha_inicio_vigencia, "
+			+ "        t1.DT_FECHA_FIN_VIGENCIA as dt_fecha_fin_vigencia, "
+			+ "        t5.VC_ESTATUS as vc_estatus "
+			+ "from SIB.TBL_PROCESO_CAMPANIA t1 "
+			+ "inner join SIB.TBL_PROCESO_CAMPANIA t2 "
+			+ "on t1.I_ID_TIPO_CAMPANIA = t2.I_ID_TIPO_CAMPANIA "
+			+ "inner join SIB.TBL_CAT_USUARIOS t3 "
+			+ "on t3.PK_ID_USUARIO = t2.I_USER_REG "
+			+ "inner join SIB.TBL_TIPOS_CAMPANIA t4 "
+			+ "on t4.PK_ID_TIPO_CAMPANIA = t2.I_ID_TIPO_CAMPANIA "
+			+ "inner join SIB.TBL_ESTATUS_CAMPANIA t5 "
+			+ "on t5.PK_ID_ESTATUS_CAMPANIA = t2.I_ID_ESTATUS_CAMPANIA "
+			+ "where t1.I_ID_TIPO_CAMPANIA = :tipoCampania "
+			+ "and t1.VC_CODIGO_CAM = t2.VC_CODIGO_CAM "
+			+ "and t1.I_ID_ESTATUS_CAMPANIA = 1 "
+			+ "and t2.I_ID_ESTATUS_CAMPANIA = 2 "
+			+ "and t1.PK_ID_PROCESO_CAMPANIA = (select IFNULL(max(PK_ID_PROCESO_CAMPANIA),0) "
+			+ "                                  from SIB.TBL_PROCESO_CAMPANIA "
+			+ "                                  where I_ID_TIPO_CAMPANIA = :tipoCampania "
+			+ "                                  and I_ID_ESTATUS_CAMPANIA = 1)",
+			nativeQuery = true)
+	List<Object[]> listaFechasCampania(@Param("tipoCampania") Integer tipoCampania);
 	
 	 @Modifying
 	    @Transactional

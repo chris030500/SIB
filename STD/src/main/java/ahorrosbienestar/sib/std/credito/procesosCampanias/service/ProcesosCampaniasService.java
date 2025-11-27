@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.transaction.Transactional;
 
@@ -17,6 +19,7 @@ import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampania
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import lombok.AllArgsConstructor;
+import java.sql.Timestamp;
 
 @Service
 @AllArgsConstructor
@@ -59,6 +62,13 @@ public class ProcesosCampaniasService {
         return procesosCampaniasRepository.consultaCodigoCam(procesoCampania);
     }
     
+    
+
+    // Función auxiliar dentro del mismo service
+    private LocalDateTime safeToLocalDateTime(Object obj) {
+        return obj != null ? ((Timestamp) obj).toLocalDateTime() : null;
+    }
+    
     public void ejecutarDepuracionBC(int tipoCampania, int procesoCampania) {
     	procesosCampaniasRepository.ejecutarDepuracionBC(tipoCampania, procesoCampania);
     }
@@ -80,6 +90,23 @@ public class ProcesosCampaniasService {
                                          .collect(Collectors.toList());
 
         List<Object[]> resultados = procesosCampaniasRepository.listaProcesosCampania(inicio, fin, listaTipos);
+
+        return resultados.stream()
+            .map(r -> new ProcesosCampaniasDTO(
+                (Integer) r[0],
+                toLocalDateTime(r[1]),   //  conversión segura a LocalDateTime
+                (String) r[2],
+                (String) r[3],
+                toLocalDateTime(r[4]),   // 
+                toLocalDateTime(r[5]),   // 
+                (String) r[6]
+            ))
+            .collect(Collectors.toList());
+    }
+    
+    public List<ProcesosCampaniasDTO> buscarFechaCampania(Integer tipoCampania) {
+
+        List<Object[]> resultados = procesosCampaniasRepository.listaFechasCampania(tipoCampania);
 
         return resultados.stream()
             .map(r -> new ProcesosCampaniasDTO(

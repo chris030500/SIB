@@ -131,7 +131,7 @@ function buscarProcesosCampanias() {
 			        campania: campaniasSelect   // 👈 debe coincidir con @RequestParam("campania")
 			    },
 			    success: function(data) {
-			        console.log("Respuesta del backend:", data);
+			        //console.log("Respuesta del backend:", data);
 			
 			        let tbody = $("#tablaProcesosBody");
 			        tbody.empty(); // Limpia el cuerpo de la tabla antes de agregar nuevos datos
