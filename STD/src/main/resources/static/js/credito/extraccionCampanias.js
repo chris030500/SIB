@@ -39,7 +39,7 @@ document.getElementById("Campania").addEventListener("change", function() {
 				// @ts-ignore
         		document.getElementById("btnExtraer").disabled = false;
         		// @ts-ignore
-        		document.getElementById("btnCancelar").disabled = false;
+        		//document.getElementById("btnCancelar").disabled = false;
 			}
 	    },
 	    error: function(err) {
@@ -95,6 +95,27 @@ document.getElementById("Campania").addEventListener("change", function() {
 			        }
 			    }
 			});
+			//carga el combo de estatus
+			$.ajax({
+	        url: newUrlBase + 'credito/api/catEstatusCam?tipoCampania=' + tipoCampania,
+	        type: 'GET',
+	        success: function(data) {
+				//console.log("Datos recibidos:", data);
+	            let select = $('#Estatus');
+	            select.empty();
+	            select.append('<option value="0">Seleccione</option>');
+	            data.forEach(function(item) {
+	                select.append('<option value="' + item.pk_id_estatus_campania + '">' + item.vc_estatus + '</option>');
+	            });
+	            
+	            // Marcar seleccionados
+	        	//select.val(valoresSeleccionados.map(String));
+	            
+	        },
+	        error: function(err) {
+	            console.error('Error al cargar estatus', err);
+	        }
+	    });
 });
 
 
@@ -105,6 +126,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+	console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
@@ -143,7 +165,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
         
     } 
     if (valor === "2") { // Generar Archivo Buró
-        
+        console.log("entra al dos:", valor);
 		fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania + "&estatus=" + valor)
         .then(resp => {
             if (!resp.ok) {
@@ -588,7 +610,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     //llena combo de estatus
-    $.ajax({
+    /*$.ajax({
         url: newUrlBase + 'credito/api/catEstatusCam',
         type: 'GET',
         success: function(data) {
@@ -607,7 +629,7 @@ document.addEventListener("DOMContentLoaded", function() {
         error: function(err) {
             console.error('Error al cargar estatus', err);
         }
-    });
+    });*/
     
     //funcion para mostrar catalogo de tipos buro de credito (Adviser/Prospector)
     /*$.ajax({

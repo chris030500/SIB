@@ -33,12 +33,14 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.ValBuroCreditoCampaniaModel;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ValBuroCreditoCampaniaService;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.EstatusCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.service.EstatusCampaniasService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.service.ProcesosCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampaniasService;
@@ -180,11 +182,18 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
     }
-	
+
 	//llenar el combo de estatus campañas
 	@GetMapping("/api/catEstatusCam")
 	@ResponseBody
-    public ResponseEntity<List<EstatusCampaniasModel>> getEstatusCampanias() {
+	public List<Map<String, Object>> listar(@RequestParam Integer tipoCampania) {
+        // Ahora el controller solo llama al service
+        return estatusCampaniasService.listaEstatus(tipoCampania);
+    }
+	/*public List<EstatusCampaniasDTO> obtEstatus(@RequestParam Integer tipoCampania) {
+	    return estatusCampaniasService.buscarEstatus(tipoCampania);
+	}*/
+    /*public ResponseEntity<List<EstatusCampaniasModel>> getEstatusCampanias() {
      try {
     	 List<EstatusCampaniasModel> credenciales = estatusCampaniasService.getEstatusCampaniasModel();
     	 
@@ -201,7 +210,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
      }
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
-    }
+    }*/
 	
 	//alta de proceso para extracción
 	/*@PostMapping("/api/crearExtraccion")
