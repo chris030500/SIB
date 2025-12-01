@@ -37,38 +37,19 @@ function mostrarRangoFechas() {
 			});
 			return;
 		}
-
-		const urlExtraccion = getAbsolutePath() + "extraccionAuditoriaEbr?anioAuditoria=" + selectValue;
-
-		fetch(urlExtraccion)
-			.then(function (res) {
-				if (!res.ok) {
-					throw new Error("No hay registros para las fechas seleccionadas");
-				}
-				return res.text();
-			})
-			.then(function () {
-				procesarBasesEBR(selectValue);
-			})
-			.catch(function (err) {
-				console.error("Error en extraccionAuditoriaEbr:", err);
-				Swal.fire({
-					title: "¡Error!",
-					text: "No se encuentra información del periodo de fecha ingresado.",
-					icon: "warning"
-				});
-			});
+		
+		procesarBasesEBR(selectValue);
 	});
 }
 
 function procesarBasesEBR(anioAuditoria) {
 	const url = getAbsolutePath() + "ejecutarProcesoBasesEbr";
-	const spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'), {
-		backdrop: 'static',
-		keyboard: false
-	});
+	const spinner = document.getElementById('spinnerEBR');
+	const btnProcesarBasesEBR = document.getElementById('btnProcesarBasesEBR');
+	
+	btnProcesarBasesEBR.disabled = true;
 
-	spinnerModal.show();
+	spinner.classList.remove('d-none');
 
 	fetchJSON(url, {
 		method: 'POST',
@@ -84,7 +65,7 @@ function procesarBasesEBR(anioAuditoria) {
 
 			// Inicia polling cada 3s
 			const interval = setInterval(function () {
-				obtenerProcesoBasesEbr(idProceso, interval, spinnerModal);
+				obtenerProcesoBasesEbr(idProceso, interval, spinner);
 			}, 3000);
 		})
 		.catch(function (err) {
@@ -93,20 +74,30 @@ function procesarBasesEBR(anioAuditoria) {
 				title: "¡Error!",
 				text: err.message + ". Inténtelo más tarde.",
 				icon: "error"
-			}).then(function () {
-				spinnerModal.hide();
 			});
+			
+			spinner.classList.add('d-none');
+            btnProcesarBasesEBR.disabled = false;
 		});
 }
 
-function obtenerProcesoBasesEbr(idProceso, interval, modal) {
+function obtenerProcesoBasesEbr(idProceso, interval, spinner) {
+	const tabBases = document.querySelector('#bases-tab');
+	const tabHistorico = document.querySelector('#historico-tab');
+	
 	var url = getAbsolutePath() + "obtenerProcesoBasesEbr?idProceso=" + idProceso;
 
 	fetchJSON(url)
 		.then(function (data) {
+			if (data.estatusProceso === 1 || data.estatusProceso === 2) {
+				if (spinner) spinner.style.display = "block";
+				tabBases.disabled = true;
+    			tabHistorico.disabled = true;
+			}
+			
 			if (data.estatusProceso === 3) {
 				clearInterval(interval);
-				modal.hide();
+				if (spinner) spinner.style.display = "none";
 
 				Swal.fire({
 					title: "¡Proceso ejecutado!",
@@ -122,7 +113,7 @@ function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 
 			if (data.estatusProceso === 4) {
 				clearInterval(interval);
-				modal.hide();
+				if (spinner) spinner.style.display = "none";
 
 				Swal.fire({
 					title: "¡Error!",
@@ -135,7 +126,7 @@ function obtenerProcesoBasesEbr(idProceso, interval, modal) {
 		})
 		.catch(function (err) {
 			console.error("Error en obtenerProcesoBasesEbr:", err);
-			modal.hide();
+			if (spinner) spinner.style.display = "none";
 
 			Swal.fire({
 				title: "¡Error!",
@@ -192,6 +183,8 @@ function actualizarEstadoProcesoEBR(tab) {
     const btnBaseRemesasEbr = document.getElementById('btnBaseRemesasEbr');
     const btnBaseDesembolsosEbr = document.getElementById('btnBaseDesembolsosEbr');
     const infoCorrectaDiv = document.getElementById('infoCorrectaDiv');
+    const tabBases = document.querySelector('#bases-tab');
+	const tabHistorico = document.querySelector('#historico-tab');
     
     const url = getAbsolutePath() + 'obtenerLastProcesoBasesEbr';
 
@@ -208,16 +201,22 @@ function actualizarEstadoProcesoEBR(tab) {
  			// --- Pestaña 1: estado general del proceso ---
 			if (tab === 1) {
 				if (data.estatusProceso === 2) {
-					msg.innerText = 'Aún se está procesando la generación de información EBR del ' + anio;
+					msg.innerText = 'Aún se está procesando la generación de información EBR del ' + anio + " ejecutado a las: " + fechaEjecucion;
 					msg.classList.add('alert-warning');
 					btnProcesarBasesEBR.disabled = true;
+					tabBases.disabled = true;
+    				tabHistorico.disabled = true;
 				} else if (data.estatusProceso === 3) {
 					msg.innerText = 'Última ejecución de generación de información EBR ' + anio + ": " + fechaEjecucion;
 					msg.classList.add('alert-info');
 					btnProcesarBasesEBR.disabled = false;
+					tabBases.disabled = false;
+    				tabHistorico.disabled = false;
 				} else if (data.estatusProceso === 4) {
 					msg.innerText = 'Se intentó procesar la generación de información EBR del ' + anio + ": " + fechaEjecucion;
 					msg.classList.add('alert-danger');
+					tabBases.disabled = false;
+    				tabHistorico.disabled = false;
 				}
 			}
 			
@@ -251,7 +250,8 @@ function actualizarEstadoProcesoEBR(tab) {
 					btnBaseRemesasEbr.disabled = true;
 					btnBaseDesembolsosEbr.disabled = true;
 					infoCorrectaDiv.classList.add('d-none');
-				} else {
+				}
+				else {
 					msg.classList.add('d-none');
 					voboNo.checked = false;
 					voboSi.disabled = false;

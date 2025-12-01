@@ -3,7 +3,6 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -105,33 +104,6 @@ public class RptBasesEbrController {
 			return null;
 		}
 	}
-    
-    @GetMapping("/extraccionAuditoriaEbr")
-    public ResponseEntity<?> ejecutarExtraccion(
-            @RequestParam int anioAuditoria) {
-
-        try {
-
-            boolean hayRegistros = basesEbrService.ejecutarExtraccion(anioAuditoria);
-
-            if (!hayRegistros) {
-            	logger.error("No existen registros para las fechas seleccionadas");
-                return ResponseEntity.badRequest()
-                        .body("No existen registros para las fechas seleccionadas");
-            }
-
-            return ResponseEntity.ok("Extracción ejecutada correctamente");
-        } catch (DateTimeParseException e) {
-        	logger.error("Formato de fecha incorrecto: " + e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body("Formato de fecha incorrecto. Debe ser yyyy-MM-dd");
-        } catch (Exception e) {
-        	logger.error("Error al ejecutar la extracción: " + e.getMessage());
-            return ResponseEntity.status(500)
-                    .body("Error al ejecutar la extracción: " + e.getMessage());
-        }
-    }
-    
 
     @PatchMapping("actualizarVobo/{idProceso}")
     public ResponseEntity<String> actualizarEstatus(
