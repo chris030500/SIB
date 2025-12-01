@@ -14,9 +14,4 @@ public class BasesEbrService {
 	public void ejecutarVoBo(int idUsuario) {
 		basesEbrRepository.ejecutarVoBo(idUsuario);
 	}
-	
-    public boolean ejecutarExtraccion(int anioAuditoria) {
-        int flag = basesEbrRepository.ejecutarExtraccionAuditoriaEbr(anioAuditoria);
-        return flag == 1; 
-    }
 }
