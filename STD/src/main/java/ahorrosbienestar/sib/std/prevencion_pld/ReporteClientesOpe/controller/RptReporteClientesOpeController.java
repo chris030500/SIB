@@ -497,25 +497,62 @@ public class RptReporteClientesOpeController {
         }
     }
     
+    @PostMapping("/generarRptClientesPorFechaCorte")
+    public ResponseEntity<List<String>> generarRptClientesPorFechaCorte(
+            @RequestParam("fechaCorte") String fechaCorte) {
+
+        List<String> respuesta = new ArrayList<>();
+
+        try {
+            // Validar formato
+            if (fechaCorte == null || fechaCorte.trim().isEmpty()) {
+                respuesta.add("La fecha de corte no puede estar vacía.");
+                return ResponseEntity.badRequest().body(respuesta);
+            }
+
+            // Buscar el reporte asociado en Jasper
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
+
+            // Construir URL para Jasper
+            String reporteURL =
+                    iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+                            + datosReporte.getPk_id_reporte()
+                            + "&parametros=?FechaCorte=" + fechaCorte
+                            + "&tipoDocumento=" + datosReporte.getVc_extension()
+                            + "&identificadorDoc=CLI";
+
+            respuesta.add(reporteURL);
+
+            logger.info("✔ Reporte CLIENTES por FECHA CORTE generado: " + fechaCorte);
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            logger.error("❌ Error al generar reporte clientes FECHA CORTE: " + e.getMessage(), e);
+            respuesta.add("Error al generar reporte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+        }
+    }
+    
     @PostMapping("/procesarAuditoriaClientes")
     public ResponseEntity<Map<String, Object>> procesarAuditoriaClientes(
-            @RequestParam("anio") String anio) {
+            @RequestParam("fechaCorte") String fechaCorte) {
 
-        logger.info("/procesarAuditoriaClientes - Año recibido: " + anio);
+        logger.info("/procesarAuditoriaClientes - Año recibido: " + fechaCorte);
         Map<String, Object> respuesta = new HashMap<>();
 
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
-            connection = jdbcTemplate.getDataSource().getConnection();
+        	connection = jdbcTemplate.getDataSource().getConnection();
+        	callableStatement = connection.prepareCall("{CALL microfin.SP_AUDITORIAS_ANUAL(?)}");
 
-            // Aquí llamas a tu SP específico para clientes
-            callableStatement = connection.prepareCall("{CALL SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?)}");
-            callableStatement.setString(1, anio);
-            callableStatement.execute();
+        	callableStatement.setDate(1, Date.valueOf(fechaCorte));
 
-            respuesta.put("mensaje", "Auditoría de clientes para el año " + anio + " procesada correctamente.");
+        	callableStatement.execute();
+
+            respuesta.put("mensaje", "Auditoría de clientes para el año " + fechaCorte + " procesada correctamente.");
             respuesta.put("tipo", "success");
             return ResponseEntity.ok(respuesta);
 

@@ -95,42 +95,37 @@
                     <!--      BLOQUE CLIENTES     -->
                     <!-- ======================= -->
                     <div id="bloqueClientes" style="display:none;">
-                        <div class="mb-3">
-                            <label class="form-label">Seleccione el año del reporte:</label>
-                            <select id="anioReporte" class="form-select" style="max-width: 200px;">
-                                <option value="">Seleccione...</option>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                            </select>
-                        </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Fecha de corte (último día del mes):</label>
+        <input type="date" class="form-control" id="fechaCorteClientes" style="max-width: 250px;">
+    </div>
 
-                        <div class="mb-3 d-flex gap-3 align-items-center mt-3">
-                            <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="procesarAuditoriaClientes()" title="Procesar Auditoría">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <span class="text-muted">Procesar reporte de Auditoría</span>
-                        </div>
+    <div class="mb-3 d-flex gap-3 align-items-center mt-3">
+        <button class="btn btn-success btn-sm" id="btnProcesarAuditoria" onclick="procesarAuditoriaClientes()" title="Procesar Auditoría">
+            <i class="fas fa-play"></i>
+        </button>
+        <span class="text-muted">Procesar reporte de Auditoría</span>
+    </div>
 
-                        <div class="mb-4">
-                            <button class="btn btn-primary w-100" id="btnProcesarClientes" onclick="generarReporteClientes()" disabled>
-                                Generar Reporte de Clientes
-                            </button>
-                        </div>
+    <div class="mb-4">
+        <button class="btn btn-primary w-100" id="btnProcesarClientes" onclick="generarReporteClientes()" disabled>
+            Generar Reporte de Clientes
+        </button>
+    </div>
 
-                        <!-- ✅ Confirmación al terminar el reporte de CLIENTES -->
-                        <div id="confirmacionClientes" style="display:none; margin-top:20px;">
-                            <label class="form-label">¿El reporte de clientes se generó correctamente?</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesSi" value="si">
-                                <label class="form-check-label" for="clientesSi">Sí</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesNo" value="no">
-                                <label class="form-check-label" for="clientesNo">No</label>
-                            </div>
-                        </div>
-                    </div>
-
+    <div id="confirmacionClientes" style="display:none; margin-top:20px;">
+        <label class="form-label">¿El reporte de clientes se generó correctamente?</label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesSi" value="si">
+            <label class="form-check-label" for="clientesSi">Sí</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="clientes_correcto" id="clientesNo" value="no">
+            <label class="form-check-label" for="clientesNo">No</label>
+        </div>
+    </div>
+</div>
                     <!-- ======================= -->
                     <!--      BLOQUE OPERACIONES  -->
                     <!-- ======================= -->
