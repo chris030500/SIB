@@ -43,6 +43,12 @@ public class HistorialReporte {
 
     @Column(name = "DT_FechaFinal")
     private LocalDateTime fechaFin;
+ 
+    @Column(name = "I_ANIO_GENERACION")
+    private Integer añoGeneracion;
+    
+    @Column(name = "VC_TIPO_REPORTE")
+    private String tipoReporte;
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -67,6 +73,12 @@ public class HistorialReporte {
 
     public LocalDateTime getFechaFin() { return fechaFin; }
     public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
+    
+    public Integer getAñoGeneracion() { return añoGeneracion; }
+    public void setañoGeneracion(Integer añoGeneracion) { this.añoGeneracion = añoGeneracion; }
+    
+    public String getTipoReporte() { return tipoReporte; }
+    public void setTipoReporte(String tipoReporte) { this.tipoReporte = tipoReporte; }
 }
     // Getters y Setters
 

@@ -317,28 +317,24 @@ public class RptReporteClientesOpeController {
     }
 
     
-    @PostMapping("/ejecutarVistoBuenoClientes")
-    public ResponseEntity<Map<String, Object>> ejecutarVistoBuenoClientes(@RequestParam("anio") String anio) {
-        logger.info("/ejecutarVistoBuenoClientes - Año recibido: " + anio);
-        Map<String, Object> respuesta = new HashMap<>();
+    @PostMapping("/ejecutarVistoBueno")
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBueno(
+        @RequestParam("anio") String anio,
+        @RequestParam("fechaInicio") String fechaInicio,
+        @RequestParam("fechaFin") String fechaFin) {
 
+        logger.info("/ejecutarVistoBueno - Año: " + anio + ", Rango: " + fechaInicio + " a " + fechaFin);
+        Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
-            // ======================
-            // Obtener usuario actual
-            // ======================
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            UserDetails userDetails = null;
             Integer idUsuario = null;
-
             if (principal instanceof UserDetails) {
-                userDetails = (UserDetails) principal;
-                usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-                if (!usuarios.isEmpty()) {
-                    idUsuario = usuarios.get(0).getPk_id_usuario();
-                }
+                String username = ((UserDetails) principal).getUsername();
+                List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
+                if (!usuarios.isEmpty()) idUsuario = usuarios.get(0).getPk_id_usuario();
             }
 
             if (idUsuario == null) {
@@ -347,42 +343,33 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.ok(respuesta);
             }
 
-            // ======================
-            // Convertir el año a fechas
-            // ======================
             int year = Integer.parseInt(anio);
-            Date fechaInicio = Date.valueOf(year + "-01-01");
-            Date fechaFin = Date.valueOf(year + "-12-31");
+            Date fInicio = Date.valueOf(fechaInicio);
+            Date fFin = Date.valueOf(fechaFin);
 
-            // ======================
-            // Llamar al SP con las fechas correctas
-            // ======================
             connection = jdbcTemplate.getDataSource().getConnection();
-            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?)}");
+            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?)}");
 
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
-            callableStatement.setInt(2, idUsuario);                   // IN iusuario
-            callableStatement.setDate(3, fechaInicio);                // IN fechaInicio
-            callableStatement.setDate(4, fechaFin);                   // IN fechaFin
-
+            callableStatement.setInt(2, idUsuario);                   // p_iusuario
+            callableStatement.setInt(3, year);                        // p_ianio
+            callableStatement.setDate(4, fInicio);                    // p_fechaInicio
+            callableStatement.setDate(5, fFin);                       // p_fechaFin
             callableStatement.execute();
 
             String errorMessage = callableStatement.getString(1);
-
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
             } else {
-                respuesta.put("mensaje", "Visto bueno ejecutado correctamente para el año " + anio
-                        + " (" + fechaInicio + " a " + fechaFin + ")");
+                respuesta.put("mensaje", "Visto bueno registrado correctamente para CLIENTES y OPERACIONES.");
                 respuesta.put("tipo", "success");
             }
-
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("Error al ejecutar SP Visto Bueno Clientes: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error al ejecutar SP: " + e.getMessage());
+            logger.error("Error al ejecutar SP visto bueno: " + e.getMessage(), e);
+            respuesta.put("mensaje", "Error SQL: " + e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
 
@@ -510,25 +497,62 @@ public class RptReporteClientesOpeController {
         }
     }
     
+    @PostMapping("/generarRptClientesPorFechaCorte")
+    public ResponseEntity<List<String>> generarRptClientesPorFechaCorte(
+            @RequestParam("fechaCorte") String fechaCorte) {
+
+        List<String> respuesta = new ArrayList<>();
+
+        try {
+            // Validar formato
+            if (fechaCorte == null || fechaCorte.trim().isEmpty()) {
+                respuesta.add("La fecha de corte no puede estar vacía.");
+                return ResponseEntity.badRequest().body(respuesta);
+            }
+
+            // Buscar el reporte asociado en Jasper
+            ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
+
+            // Construir URL para Jasper
+            String reporteURL =
+                    iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
+                            + datosReporte.getPk_id_reporte()
+                            + "&parametros=?FechaCorte=" + fechaCorte
+                            + "&tipoDocumento=" + datosReporte.getVc_extension()
+                            + "&identificadorDoc=CLI";
+
+            respuesta.add(reporteURL);
+
+            logger.info("✔ Reporte CLIENTES por FECHA CORTE generado: " + fechaCorte);
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            logger.error("❌ Error al generar reporte clientes FECHA CORTE: " + e.getMessage(), e);
+            respuesta.add("Error al generar reporte: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+        }
+    }
+    
     @PostMapping("/procesarAuditoriaClientes")
     public ResponseEntity<Map<String, Object>> procesarAuditoriaClientes(
-            @RequestParam("anio") String anio) {
+            @RequestParam("fechaCorte") String fechaCorte) {
 
-        logger.info("/procesarAuditoriaClientes - Año recibido: " + anio);
+        logger.info("/procesarAuditoriaClientes - Año recibido: " + fechaCorte);
         Map<String, Object> respuesta = new HashMap<>();
 
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
-            connection = jdbcTemplate.getDataSource().getConnection();
+        	connection = jdbcTemplate.getDataSource().getConnection();
+        	callableStatement = connection.prepareCall("{CALL microfin.SP_AUDITORIAS_ANUAL(?)}");
 
-            // Aquí llamas a tu SP específico para clientes
-            callableStatement = connection.prepareCall("{CALL SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?)}");
-            callableStatement.setString(1, anio);
-            callableStatement.execute();
+        	callableStatement.setDate(1, Date.valueOf(fechaCorte));
 
-            respuesta.put("mensaje", "Auditoría de clientes para el año " + anio + " procesada correctamente.");
+        	callableStatement.execute();
+
+            respuesta.put("mensaje", "Auditoría de clientes para el año " + fechaCorte + " procesada correctamente.");
             respuesta.put("tipo", "success");
             return ResponseEntity.ok(respuesta);
 

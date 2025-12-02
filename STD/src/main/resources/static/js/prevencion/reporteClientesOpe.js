@@ -326,98 +326,68 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
 // ==========================================================
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
-
+ 
   const input = document.getElementById("fileUploadPEP");
-  const file = input.files[0];
-
-  //  Validar si se seleccionó un archivo
-  if (!file) {
-    swal("Debes seleccionar un archivo.", { icon: "warning" });
+  const files = input.files;
+ 
+  if (!files || files.length === 0) {
+    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
     return;
   }
-
-  //  Validar extensión
-  const extension = file.name.split('.').pop().toLowerCase();
-  if (!["xls", "xlsx"].includes(extension)) {
-    swal("Solo se permiten archivos Excel (.xls o .xlsx).", { icon: "error" });
-    input.value = ""; // limpia el input
-    return;
+ 
+  const fd = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    fd.append("file", files[i]); 
   }
-
-  //  Leer y validar encabezados del archivo
-  const encabezadosValidos = ["ClienteID", "nombre_completo"];
-
-  try {
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data, { type: "array" });
-    const primeraHoja = workbook.SheetNames[0];
-    const hoja = workbook.Sheets[primeraHoja];
-    const encabezados = XLSX.utils.sheet_to_json(hoja, { header: 1 })[0]; // primera fila
-
-    // Normalizar nombres (elimina espacios y minúsculas)
-    const headersNormalizados = encabezados.map(h =>
-      h ? h.toString().trim().toLowerCase() : ""
-    );
-
-    const requeridosNormalizados = encabezadosValidos.map(h => h.toLowerCase());
-
-    const faltantes = requeridosNormalizados.filter(h => !headersNormalizados.includes(h));
-
-    if (faltantes.length > 0) {
-      swal({
-        title: "Error en encabezados",
-        text: `El archivo no contiene las columnas requeridas: ${faltantes.join(", ")}`,
-        icon: "error"
-      });
-      input.value = "";
-      return;
-    }
-
-    //  Si todo está correcto, procesar envío
-    const fd = new FormData();
-    fd.append("file", file);
-
-    swal({
-      title: "Procesando archivo...",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-          style: "display:flex;justify-content:center;padding:20px;"
-        }
+ 
+  swal({
+    title: "Procesando archivo(s)...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
       },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false
-    });
-
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false,
+  });
+ 
+  try {
     const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
       method: "POST",
       body: fd
     });
-
-    const respuesta = await res.json();
+ 
+    const respuesta = await res.json(); 
     swal.close();
-
+ 
     if (res.ok && Array.isArray(respuesta)) {
       swal({
         title: "¡Éxito!",
         text: respuesta[0],
         icon: "success",
-        button: "Aceptar"
+        button: "Aceptar",
+      }).then(() => {
+       
       });
     } else {
       swal({
         title: "Error",
         text: respuesta[0] || "Ocurrió un error inesperado.",
         icon: "error",
-        button: "Aceptar"
+        button: "Aceptar",
       });
     }
-
+ 
   } catch (error) {
-    console.error("❌ Error al validar archivo Excel:", error);
-    swal("Error al leer el archivo. Asegúrate de que no esté dañado.", { icon: "error" });
+    swal.close();
+    console.error("Error en fetch:", error);
+    swal("Se presentó un error, intente más tarde.", {
+      icon: "error",
+      closeOnClickOutside: false,
+    });
   }
 });
 
@@ -431,106 +401,74 @@ function confirmar(valor) {
       else return r.text().then(alert);
     });
 }
- 
+
+function esFinDeMes(fechaStr) {
+    // formato: yyyy-MM-dd
+    const fecha = new Date(fechaStr + "T00:00:00");
+
+    const anio = fecha.getFullYear();
+    const mes = fecha.getMonth(); // 0–11
+    const dia = fecha.getDate();
+
+    const ultimoDia = new Date(anio, mes + 1, 0).getDate();
+
+    return dia === ultimoDia;
+}
  
 function ejecutarVistoBueno() {
+  const anio = $("#anioReporte").val();
+  const fechaInicio = $("#fechaInicio").val();
+  const fechaFin = $("#fechaFin").val();
+
   swal({
-    title: "¿Validó correctamente?",
-    text: "Confirme si desea ejecutar el visto bueno.",
+    title: "¿Desea registrar el visto bueno global?",
+    text: "Esto consolidará los reportes de CLIENTES y OPERACIONES en el histórico.",
     icon: "warning",
-    buttons: {
-      cancel: {
-        text: "No",
-        value: false,
-        visible: true,
-        closeModal: true,
-      },
-      confirm: {
-        text: "Sí",
-        value: true,
-        visible: true,
-        closeModal: false,
-      },
-    },
+    buttons: ["Cancelar", "Sí, continuar"],
     dangerMode: true,
   }).then((willExecute) => {
-    if (willExecute) {
-      const tipoReporte = $("#tipoReporte").val();
-      const fechaInicio = $("#fechaInicio").val();
-      const fechaFin = $("#fechaFin").val();
-      const anio = $("#anioReporte").val();
+    if (!willExecute) return;
 
-      // Validación condicional
-      if (tipoReporte === "operaciones") {
-        if (!fechaInicio || !fechaFin) {
-          swal("Debe seleccionar fecha inicio y fecha fin.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-          return;
+    swal({
+      title: "Registrando visto bueno...",
+      content: {
+        element: "div",
+        attributes: {
+          innerHTML: '<div class="spinner-border text-primary"></div>',
+          style: "display:flex;justify-content:center;padding:20px;"
         }
-      } else if (tipoReporte === "clientes") {
-        if (!anio) {
-          swal("Debe seleccionar el año del reporte de clientes.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-          return;
-        }
-      }
+      },
+      buttons: false,
+      closeOnClickOutside: false,
+      closeOnEsc: false
+    });
 
+    fetch("ejecutarVistoBueno", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ anio, fechaInicio, fechaFin })
+    })
+    .then(res => res.json())
+    .then(data => {
+      swal.close();
       swal({
-        title: "Procesando información.",
-        content: {
-          element: "div",
-          attributes: {
-            innerHTML:
-              '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-            style:
-              "display: flex; justify-content: center; align-items: center; padding: 20px;",
-          },
-        },
-        buttons: false,
-        closeOnClickOutside: false,
-        closeOnEsc: false,
+        title: data.tipo === "success" ? "¡Éxito!" : "Error",
+        text: data.mensaje,
+        icon: data.tipo,
+        button: "Aceptar"
+      }).then(() => {
+        if (data.tipo === "success") iniciaTblHistorico();
       });
-
-      let url = "";
-      let data = {};
-
-      //  Si es CLIENTES, no se mandan fechas
-      if (tipoReporte === "clientes") {
-        url = getAbsolutePath() + "ejecutarVistoBuenoClientes";
-        data = { anio: anio };
-      } else {
-        url = getAbsolutePath() + "ejecutarVistoBueno";
-        data = { fechaInicio: fechaInicio, fechaFin: fechaFin };
-      }
-
-      $.ajax({
-        url: url,
-        type: "POST",
-        dataType: "JSON",
-        data: data,
-        complete: function () {
-          swal.close();
-        },
-        success: function (respuesta) {
-          swal("", respuesta.mensaje || respuesta.mensaje || "Operación completada.", respuesta.tipo || "success")
-            .then(() => {
-              iniciaTblHistorico();
-            });
-        },
-        error: function () {
-          swal("Se presentó un error, intente más tarde.", {
-            icon: "error",
-            closeOnClickOutside: false,
-          });
-        },
-      });
-    }
+    })
+    .catch(err => {
+      swal.close();
+      swal("Error", "No se pudo registrar el visto bueno. Intente más tarde.", "error");
+      console.error("Error en fetch:", err);
+    });
   });
 }
+
+
 
 
  
@@ -539,43 +477,64 @@ var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
  
 function iniciaTblHistorico() {
-  url = getAbsolutePath() + cargatblHistorico;
-  $.getJSON(url, {}, function(data) {
+  url = getAbsolutePath() + "obtHistoricoProcesos";
+  $.getJSON(url, {}, function (data) {
     tblHistorico.clear().draw();
 
     if (!data || data.length === 0) {
       console.warn("No se encontraron registros en el historial.");
+      $("#sinResultados").removeClass("d-none");
       return;
+    } else {
+      $("#sinResultados").addClass("d-none");
     }
 
-    $.each(data, function(idx, opt) {
-      const rangoFechas = (opt.fechaInicio && opt.fechaFin)
-        ? `${opt.fechaInicio.split("T")[0]} a ${opt.fechaFin.split("T")[0]}`
-        : "N/A";
+    $.each(data, function (idx, opt) {
+      const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
+
+      // Mostrar rango adecuado según el tipo
+      let rangoFechas = "";
+      if (tipo === "CLIENTES") {
+        const anio = opt.anioGeneracion || new Date().getFullYear(); // Si viene nulo usa el actual
+        rangoFechas = `<span class="text-success fw-bold">${anio}-01-01 a ${anio}-12-31</span>`;
+      } else if (tipo === "OPERACIONES") {
+        const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
+        const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+        rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
+      } else {
+        rangoFechas = `<span class="text-muted">Sin rango definido</span>`;
+      }
 
       const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
       const confirmado = opt.estatus === 1 ? "Sí" : "No";
-      const fechaVobo = opt.fechaGeneracionvobo
-        ? opt.fechaGeneracionvobo.split("T")[0]
-        : "-";
+      const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
 
-      const btns = `
-        <button class='btn btn-primary btn-sm' title='Histórico de operaciones'
-          onclick='generarHistoricoOperaciones(${opt.id})'>
-          <i class='bi bi-file-earmark-diff'></i>
-        </button>
-        <button class='btn btn-success btn-sm' title='Histórico de clientes'
-          onclick='generarHistoricoClientes(${opt.id})'>
-          <i class='bi bi-file-earmark-person'></i>
-        </button>`;
+      //  Mostrar solo el botón del tipo correspondiente
+      let btn = "";
+      if (tipo === "CLIENTES") {
+        btn = `<button class='btn btn-success btn-sm' title='Descargar histórico de clientes'
+                 onclick='generarHistoricoClientes(${opt.id})'>
+                 <i class='bi bi-file-earmark-person'></i>
+               </button>`;
+      } else if (tipo === "OPERACIONES") {
+        btn = `<button class='btn btn-primary btn-sm' title='Descargar histórico de operaciones'
+                 onclick='generarHistoricoOperaciones(${opt.id})'>
+                 <i class='bi bi-file-earmark-diff'></i>
+               </button>`;
+      } else {
+        btn = `<button class='btn btn-secondary btn-sm' disabled title='Tipo desconocido'>
+                 <i class='bi bi-question-circle'></i>
+               </button>`;
+      }
 
       tblHistorico.row.add([
-        opt.fechaGeneracion.split("T")[0],
+        opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
+        tipo,
         rangoFechas,
         usuario,
         confirmado,
         fechaVobo,
-        btns
+        btn
       ]).draw(false);
     });
   });
@@ -744,148 +703,187 @@ function mostrarOpcionesPorTipo() {
   const bloqueOperaciones = document.getElementById("bloqueOperaciones");
   const btnClientes = document.getElementById("btnProcesarClientes");
   const btnOperaciones = document.getElementById("btnProcesarOperaciones");
+  const bloqueVistoBueno = document.getElementById("bloqueVistoBueno"); // nuevo
 
   // Reiniciar visibilidad
   bloqueClientes.style.display = "none";
   bloqueOperaciones.style.display = "none";
+  bloqueVistoBueno.style.display = "none"; // Ocultar por defecto
   btnClientes.disabled = true;
   btnOperaciones.disabled = true;
 
   if (tipo === "clientes") {
     bloqueClientes.style.display = "block";
     btnClientes.disabled = false;
+    bloqueVistoBueno.style.display = "none"; // ocultar pregunta y botón
   } else if (tipo === "operaciones") {
     bloqueOperaciones.style.display = "block";
     btnOperaciones.disabled = false;
+    bloqueVistoBueno.style.display = "block"; // mostrar solo para operaciones
   }
 }
 
 // ========================================================
 //  Generar reporte de CLIENTES filtrado por año
 // ========================================================
+// Función completa para generar reporte de clientes
 async function generarReporteClientes() {
-  const anio = document.getElementById("anioReporte") ? document.getElementById("anioReporte").value : null;
+    const fechaCorte = document.getElementById("fechaCorteClientes")
+        ? document.getElementById("fechaCorteClientes").value
+        : null;
 
-  if (!anio) {
-    swal("Debe seleccionar un año antes de generar el reporte.", { icon: "warning" });
-    return;
-  }
+    if (!fechaCorte) {
+        swal("Debe seleccionar una fecha de corte.", { icon: "warning" });
+        return;
+    }
 
-  swal({
-    title: "Generando reporte de clientes...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
-  });
+    // ✔ Validar fin de mes correcto
+    if (!esFinDeMes(fechaCorte)) {
+        swal("La fecha seleccionada NO es fin de mes. Debe ser el último día del mes.", {
+            icon: "error"
+        });
+        return;
+    }
 
-  try {
-    // Cambiado al endpoint real
-    const res = await fetch("generarRptClientesPorAnio", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ anio })
-    });
-
-    if (!res.ok) throw new Error("Error generando el reporte.");
-
-    const respuesta = await res.json();
-    const url = respuesta[0];
-
-    // Abrir el archivo generado en una nueva pestaña
-    window.open(
-      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
-    );
-    window.focus();
-
-    swal.close();
     swal({
-      title: "¡Éxito!",
-      text: "El reporte de clientes se generó correctamente.",
-      icon: "success",
-      button: "Aceptar"
+        title: "Generando reporte de clientes...",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+                style: "display:flex;justify-content:center;padding:20px;"
+            }
+        },
+        buttons: false,
+        closeOnClickOutside: false,
+        closeOnEsc: false
     });
-  } catch (error) {
-    console.error("❌ Error al generar el reporte de clientes:", error);
-    swal.close();
-    swal({
-      title: "Error",
-      text: "Ocurrió un problema al generar el reporte de clientes.",
-      icon: "error",
-      button: "Aceptar"
-    });
-  }
+
+    try {
+        // ✔ Enviar fecha al backend
+        const res = await fetch("generarRptClientesPorFechaCorte", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ fechaCorte })
+        });
+
+        if (!res.ok) throw new Error("Error generando el reporte.");
+
+        const respuesta = await res.json();
+        const url = respuesta[0];
+
+        // ✔ Abrir el archivo generado
+        const base = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4);
+        window.open(base + url);
+        window.focus();
+
+        swal.close();
+        swal({
+            title: "¡Éxito!",
+            text: "El reporte de clientes se generó correctamente.",
+            icon: "success",
+            button: "Aceptar"
+        }).then(() => {
+            const confirmacionDiv = document.getElementById("confirmacionClientes");
+            if (confirmacionDiv) confirmacionDiv.style.display = "block";
+
+            // Resetear radios
+            $("input[name='clientes_correcto']").prop("checked", false);
+
+            // ✔ Evento SI
+            $("#clientesSi").off("change").on("change", function () {
+                if ($(this).is(":checked")) {
+                    swal({
+                        title: "Continuar con Operaciones",
+                        text: "Ahora puede generar el reporte de operaciones.",
+                        icon: "info",
+                        button: "Aceptar"
+                    }).then(() => {
+                        $("#tipoReporte").val("operaciones").trigger("change");
+                        confirmacionDiv.style.display = "none";
+                    });
+                }
+            });
+
+            // ✔ Evento NO
+            $("#clientesNo").off("change").on("change", function () {
+                if ($(this).is(":checked")) {
+                    swal({
+                        title: "Volver a cargar archivo",
+                        text: "Revisa el archivo y vuelve a generar el reporte.",
+                        icon: "warning",
+                        button: "Aceptar"
+                    }).then(() => {
+                        $("#archivos-tab").click();
+                        confirmacionDiv.style.display = "none";
+                    });
+                }
+            });
+        });
+
+    } catch (error) {
+        swal.close();
+        console.error("❌ Error al generar el reporte de clientes:", error);
+        swal({
+            title: "Error",
+            text: "Ocurrió un problema al generar el reporte de clientes.",
+            icon: "error",
+            button: "Aceptar"
+        });
+    }
 }
+
 
 // ========================================================
 //  Procesar Auditoría de CLIENTES (llama SP en backend)
 // ========================================================
 async function procesarAuditoriaClientes() {
-  const anio = document.getElementById("anioReporte")?.value;
+    const fechaCorte = document.getElementById("fechaCorteClientes")?.value;
 
-  if (!anio) {
-    swal("Debe seleccionar un año antes de procesar la auditoría.", { icon: "warning" });
-    return;
-  }
-
-  swal({
-    title: "Procesando auditoría de clientes...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
-  });
-
-  try {
-    //  Este endpoint corresponde al @PostMapping("/procesarAuditoriaClientes")
-    const res = await fetch("procesarAuditoriaClientes", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ anio })
-    });
-
-    if (!res.ok) throw new Error("Error procesando auditoría.");
-
-    const data = await res.json();
-    swal.close();
-
-    if (data.tipo === "success") {
-      swal({
-        title: "¡Éxito!",
-        text: data.mensaje,
-        icon: "success",
-        button: "Aceptar"
-      });
-    } else {
-      swal({
-        title: "Error",
-        text: data.mensaje,
-        icon: "error",
-        button: "Aceptar"
-      });
+    if (!fechaCorte) {
+        swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
+        return;
     }
-  } catch (error) {
-    console.error("❌ Error al procesar auditoría de clientes:", error);
-    swal.close();
+
+    // ✔ Validar que sea fin de mes ANTES de llamar al SP
+    if (!esFinDeMes(fechaCorte)) {
+        swal("La fecha seleccionada NO es fin de mes.", { icon: "error" });
+        return;
+    }
+
     swal({
-      title: "Error",
-      text: "Ocurrió un problema al procesar la auditoría.",
-      icon: "error",
-      button: "Aceptar"
+        title: "Procesando auditoría...",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: '<div class="spinner-border text-primary"></div>',
+                style: "display:flex;justify-content:center;padding:20px;"
+            }
+        },
+        buttons: false
     });
-  }
+
+    try {
+        const res = await fetch("procesarAuditoriaClientes", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ fechaCorte })
+        });
+
+        const data = await res.json();
+        swal.close();
+
+        swal({
+            title: data.tipo === "success" ? "¡Éxito!" : "Error",
+            text: data.mensaje,
+            icon: data.tipo,
+            button: "Aceptar"
+        });
+
+    } catch (error) {
+        swal.close();
+        swal("Ocurrió un error", { icon: "error" });
+    }
 }
 
 // ========================================================
