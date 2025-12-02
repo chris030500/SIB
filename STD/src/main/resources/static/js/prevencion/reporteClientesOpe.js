@@ -838,16 +838,22 @@ async function generarReporteClientes() {
 //  Procesar Auditoría de CLIENTES (llama SP en backend)
 // ========================================================
 async function procesarAuditoriaClientes() {
-    const fechaCorte = document.getElementById("fechaCorteClientes")?.value;
+    const fechaCorte = document.getElementById("fechaCorteClientes").value;
 
     if (!fechaCorte) {
         swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
         return;
     }
 
-    // ✔ Validar que sea fin de mes ANTES de llamar al SP
+    // Validar solo fechas >= 2024
+    if (fechaCorte < "2024-01-01") {
+        swal("La fecha debe ser del año 2024 en adelante.", { icon: "error" });
+        return;
+    }
+
+    // Validar fin de mes
     if (!esFinDeMes(fechaCorte)) {
-        swal("La fecha seleccionada NO es fin de mes.", { icon: "error" });
+        swal("La fecha seleccionada NO es el último día del mes.", { icon: "error" });
         return;
     }
 
@@ -855,24 +861,21 @@ async function procesarAuditoriaClientes() {
         title: "Procesando auditoría...",
         content: {
             element: "div",
-            attributes: {
-                innerHTML: '<div class="spinner-border text-primary"></div>',
-                style: "display:flex;justify-content:center;padding:20px;"
-            }
+            attributes: { innerHTML: '<div class="spinner-border text-primary"></div>' }
         },
         buttons: false
     });
 
     try {
-        const res = await fetch("procesarAuditoriaClientes", {
+        const res = await fetch("procesarAuditoria", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({ fechaCorte })
         });
 
         const data = await res.json();
-        swal.close();
 
+        swal.close();
         swal({
             title: data.tipo === "success" ? "¡Éxito!" : "Error",
             text: data.mensaje,
@@ -882,9 +885,10 @@ async function procesarAuditoriaClientes() {
 
     } catch (error) {
         swal.close();
-        swal("Ocurrió un error", { icon: "error" });
+        swal("Ocurrió un error al procesar la auditoría", { icon: "error" });
     }
 }
+
 
 // ========================================================
 //  Generar reporte de OPERACIONES filtrado por rango de fechas
