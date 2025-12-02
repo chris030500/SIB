@@ -270,42 +270,46 @@ public class RptReporteClientesOpeController {
     
     @PostMapping("/procesarAuditoria")
     public ResponseEntity<Map<String, Object>> procesarAuditoria(
-            @RequestParam("fechaInicio") Date fechaInicio,
-            @RequestParam("fechaFin") Date fechaFin) {
+            @RequestParam("fechaCorte") String fechaCorte) {
 
-        logger.info("/procesarAuditoria - fechaInicio: " + fechaInicio + ", fechaFin: " + fechaFin);
+        logger.info("Ejecutando SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES con fechaCorte = " + fechaCorte);
+
         Map<String, Object> respuesta = new HashMap<>();
-
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
             connection = jdbcTemplate.getDataSource().getConnection();
-            // Llamada al SP con parámetros (IN fechaInicio, IN fechaFin, OUT error_message)
-            callableStatement = connection.prepareCall("{CALL SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?)}");
 
-            // Parámetros IN
-            callableStatement.registerOutParameter(1, Types.VARCHAR);
+            // el SP recibirá la fecha
+            callableStatement = connection.prepareCall("{CALL SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?, ?)}");
+
+            // PARAMETRO 1 (IN)
+            callableStatement.setDate(1, Date.valueOf(fechaCorte));
+
+            // PARAMETRO 2 (OUT)
+            callableStatement.registerOutParameter(2, Types.VARCHAR);
 
             callableStatement.execute();
 
-            String errorMessage = callableStatement.getString(1);
+            String errorMessage = callableStatement.getString(2);
 
             if (errorMessage != null && !errorMessage.isEmpty()) {
-                respuesta.put(Constantes.TEXTO_MNS, errorMessage);
-                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+                respuesta.put("mensaje", errorMessage);
+                respuesta.put("tipo", "error");
             } else {
-                respuesta.put(Constantes.TEXTO_MNS, "Proceso de auditoría ejecutado correctamente.");
-                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_OK);
+                respuesta.put("mensaje", "Proceso ejecutado correctamente con fecha " + fechaCorte);
+                respuesta.put("tipo", "success");
             }
 
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("Error al ejecutar SP Auditoría: " + e.getMessage(), e);
-            respuesta.put(Constantes.TEXTO_MNS, "Error al ejecutar SP: " + e.getMessage());
-            respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+            logger.error("❌ Error al ejecutar SP: " + e.getMessage(), e);
+            respuesta.put("mensaje", "Error SQL: " + e.getMessage());
+            respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
+
         } finally {
             try {
                 if (callableStatement != null) callableStatement.close();
@@ -315,6 +319,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+
 
     
     @PostMapping("/ejecutarVistoBueno")

@@ -196,7 +196,7 @@ public class Constantes {
       
       public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
       
-      public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?)}";
+      public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
     
       public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?)}";
     //constantes marketing
