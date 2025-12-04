@@ -416,9 +416,15 @@ function esFinDeMes(fechaStr) {
 }
  
 function ejecutarVistoBueno() {
-  const anio = $("#anioReporte").val();
   const fechaInicio = $("#fechaInicio").val();
   const fechaFin = $("#fechaFin").val();
+
+  if (!fechaInicio || !fechaFin) {
+    swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
+    return;
+  }
+
+  const anio = fechaInicio.substring(0, 4);  // ← CALCULA AÑO AUTOMÁTICAMENTE
 
   swal({
     title: "¿Desea registrar el visto bueno global?",
@@ -468,10 +474,6 @@ function ejecutarVistoBueno() {
   });
 }
 
-
-
-
- 
 var btnsROpera = "";
 var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
