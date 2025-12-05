@@ -313,9 +313,13 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@GetMapping("/api/countExtraccion")
     @ResponseBody
-    public int contarProcesosExtraccion() {
+    /*public int contarProcesosExtraccion() {
         return procesosCampaniasRepository.contarProcesosExtraccion();
-    }
+    }*/
+	public int contarProcesosExtraccion(@RequestParam("tipoCampania") int tipoCampania) {
+
+		return procesosCampaniasRepository.contarProcesosExtraccion(tipoCampania);
+	}
 	
 	@GetMapping("/api/countDepuracionBc")
     @ResponseBody
@@ -518,6 +522,21 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al ejecutar el procedimiento archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED: " + e.getMessage());
+        }
+    }
+    
+  //SP_CAM_CANCELAR_PROCESO
+    @GetMapping("/api/ejecutarCancelar")
+    public ResponseEntity<String> ejecutarCancelar(
+            @RequestParam("tipoCampania") int tipoCampania,
+            @RequestParam("estatusCampania") int estatusCampania,
+            @RequestParam("userReg") int userReg) {
+        try {
+        	procesosCampaniasService.ejecutarCancelar(tipoCampania,estatusCampania,userReg);
+            return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC SP_CAM_CANCELAR_PROCESO");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: " + e.getMessage());
         }
     }
 	

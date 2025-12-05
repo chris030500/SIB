@@ -22,10 +22,11 @@ document.getElementById("Campania").addEventListener("change", function() {
 	document.getElementById("FechaExtraccion").value = ""; // Limpiar
 	// @ts-ignore
 	document.getElementById("FechaAlta").value = ""; // Limpiar
-	
+	// @ts-ignore
+	const tipoCampania = this.value;
 	//si seleccionan una campaña
 	$.ajax({
-	    url: newUrlBase + "credito/api/countExtraccion",
+	    url: newUrlBase + "credito/api/countExtraccion?tipoCampania=" + tipoCampania,
 	    type: "GET",
 	    success: function(data) {
 	        
@@ -47,8 +48,7 @@ document.getElementById("Campania").addEventListener("change", function() {
 	    }
 	});
 	//
-	// @ts-ignore
-	const tipoCampania = this.value;
+	
     // Ejecuta la llamada AJAX
 			$.ajax({
 			    url: newUrlBase + 'credito/api/consultaFechas',  // <- tu endpoint en Spring Boot
@@ -126,7 +126,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
-	console.log("valor:", valor);
+	//console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
@@ -165,7 +165,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
         
     } 
     if (valor === "2") { // Generar Archivo Buró
-        console.log("entra al dos:", valor);
+        
 		fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania + "&estatus=" + valor)
         .then(resp => {
             if (!resp.ok) {
@@ -331,7 +331,7 @@ function btnExtraerFn() {
     //console.log(dataParam);
     const jsonBitacora = JSON.stringify(data);
     let tabla = 'TBL_PROCESO_CAMPANIA';
-    console.log(jsonBitacora);
+    //console.log(jsonBitacora);
     const dataHis = {
         vc_json_entrada: jsonBitacora,
         vc_tabla: tabla,
@@ -393,6 +393,7 @@ function btnExtraerFn() {
 	        icon: "success",
 	        confirmButtonText: "Aceptar"
 	    });
+	    window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 	})
 	.catch(err => {
 	    console.error("Error:", err);
@@ -412,6 +413,9 @@ function btnGenerarArchivoBuro() {
 	//deshabilita el boton Generar Archivo Buro
 	// @ts-ignore
 	document.getElementById("btnGenerar").disabled = true;
+	
+	// @ts-ignore
+	document.getElementById("btnCancelar").disabled = true;
 	
 	var urlServicio;
 	//seleccionar el id proceso actual por tipo de campania
@@ -534,6 +538,8 @@ function btnGenerarArchivoBuro() {
 						//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
 						window.open(urlReporte);
 						window.focus();
+						
+						window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 					    
 					})
 					.catch(err => {
@@ -979,6 +985,7 @@ document.addEventListener("DOMContentLoaded", function() {
 										//deshabilita el boton Cargar Respuesta Buro
 										// @ts-ignore
 										document.getElementById("btnCargar").disabled = true;
+										window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 								    });
 									///
@@ -1089,6 +1096,9 @@ function btnDepuracionBuro() {
 	//deshabilita el boton Depuracion Buro
 	// @ts-ignore
 	document.getElementById("btnDepuracion").disabled = true;
+	
+	// @ts-ignore
+	document.getElementById("btnCancelar").disabled = true;
 	
 	// @ts-ignore
 	var tipoCampania = parseInt(document.getElementById("Campania").value);
@@ -1257,6 +1267,7 @@ function btnDepuracionBuro() {
 									icon: "success",
 								    // @ts-ignore
 								    }).then(() => {
+										window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 								    });
 									///////////
@@ -1334,10 +1345,13 @@ function btnDepuracionBuro() {
 }
 
 function btnArchivoMc() {
-	console.log("Botón clickeado, ejecutando función");
+	//console.log("Botón clickeado, ejecutando función");
 	//deshabilita el boton Cargar Arhcivo MC
 	// @ts-ignore
 	document.getElementById("btnArchivoMc").disabled = true;
+	
+	// @ts-ignore
+	document.getElementById("btnCancelar").disabled = true;
 	
 	// @ts-ignore
 	var tipoCampania = parseInt(document.getElementById("Campania").value);
@@ -1410,7 +1424,7 @@ function btnArchivoMc() {
 				        
 				    };
 					/////aqui inicia
-					console.log("inserta estatus 5");
+					//console.log("inserta estatus 5");
 					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
 					    method: 'POST',
 					    headers: { 'Content-Type': 'application/json' },
@@ -1446,6 +1460,7 @@ function btnArchivoMc() {
 							icon: "success",
 						    // @ts-ignore
 						    }).then(() => {
+								window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 						    });
 							/////
@@ -1498,4 +1513,58 @@ function btnArchivoMc() {
     .catch(err => {
         console.error("Error al validar campania para procesar validacion archivo MC: ", err);
     });
+}
+
+function btnCancelar() {
+	// @ts-ignore
+	document.getElementById("btnCancelar").disabled = true;
+	
+	// @ts-ignore
+	var tipoCampania = parseInt(document.getElementById("Campania").value);
+	
+	// @ts-ignore
+	var estatusCampania = parseInt(document.getElementById("Estatus").value);
+	
+	// @ts-ignore
+	var userReg = parseInt(document.getElementById("idUser").value);
+	
+	//if si el esatatus es correcto
+	// 
+    //
+    //
+    //console.log("va a mandar llamar el SP SP_CAM_CANCELAR_PROCESO");
+	//mandar llamar SP 
+	fetch(newUrlBase + "credito/api/ejecutarCancelar?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&userReg=" + userReg)
+    .then(resp => {
+        if (!resp.ok) {
+            throw new Error("Error en el proceso de SP_CAM_CANCELAR_PROCESO.");
+        }
+        return resp.text(); // porque el backend regresa un int
+    })
+    .then(dataSP => {
+		
+		//////
+		// @ts-ignore
+		swal({
+		title: "",
+		text: 'Actualizado correctamente',
+		icon: "success",
+	    // @ts-ignore
+	    }).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+	        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+	    });
+		/////
+		//activa el boton Cargar Arhcivo MC
+		// @ts-ignore
+		//document.getElementById("btnArchivoMc").disabled = false;
+		
+	})
+    .catch(err => {
+        console.error("Error en el proceso de SP_CAM_CANCELAR_PROCESO: ", err);
+    });
+	///termina llamada del SP
+    //
+    //
+    //
 }

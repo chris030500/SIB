@@ -118,13 +118,30 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		    @Param("tipos") List<Integer> tipos
 		);*/
 	
-	@Query(value = "SELECT COUNT(*) " +
-            "FROM SIB.TBL_PROCESO_CAMPANIA " +
-            "WHERE I_ID_ESTATUS_CAMPANIA = 1 " +
-            "AND I_BANDERA_EXTRACCION = 1 " +
-            "AND I_ESTATUS_REG = 1",
+	@Query(value = "select SUM(t.cant) AS total "
+			+ "from( "
+			+ "SELECT COUNT(*) cant "
+			+ "FROM SIB.TBL_PROCESO_CAMPANIA "
+			+ "WHERE I_ID_ESTATUS_CAMPANIA = 1 "
+			+ "AND I_BANDERA_EXTRACCION = 1 "
+			+ "AND I_ESTATUS_REG = 1 "
+			+ "union all "
+			+ "SELECT COUNT(*) cant "
+			+ "FROM SIB.TBL_PROCESO_CAMPANIA "
+			+ "WHERE I_ID_TIPO_CAMPANIA = :tipoCampania "
+			+ "and I_ID_ESTATUS_CAMPANIA in(1,2,3,4) "
+			+ "AND I_BANDERA_EXTRACCION in(1,2) "
+			+ "AND I_ESTATUS_REG = 1 "
+			+ "union all "
+			+ "SELECT COUNT(*) cant "
+			+ "FROM SIB.TBL_PROCESO_CAMPANIA "
+			+ "WHERE I_ID_TIPO_CAMPANIA = :tipoCampania "
+			+ "and I_ID_ESTATUS_CAMPANIA in(5) "
+			+ "AND I_BANDERA_EXTRACCION in(1) "
+			+ "AND I_ESTATUS_REG = 1 "
+			+ ")t",
     nativeQuery = true)
-	int contarProcesosExtraccion();
+	int contarProcesosExtraccion(@Param("tipoCampania") int tipoCampania);
 	
 	@Query(value = "SELECT COUNT(*) " +
             "FROM SIB.TBL_PROCESO_CAMPANIA " +
@@ -218,5 +235,12 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	    @Transactional
 	    @Query(value = "CALL SIB.SP_DEP_CAM_EXTRACCIONCAMPCRED(:tipoCampania)", nativeQuery = true)
 	    void ejecutarArchivoMc(@Param("tipoCampania") Integer tipoCampania);
+	 
+	 @Modifying
+	    @Transactional
+	    @Query(value = "CALL SIB.SP_CAM_CANCELAR_PROCESO(:tipoCampania, :estatusCampania, :userReg)", nativeQuery = true)
+	    void ejecutarCancelar(@Param("tipoCampania") Integer tipoCampania,
+	    		@Param("estatusCampania") Integer estatusCampania,
+	    		@Param("userReg") Integer userReg);
 	
 }

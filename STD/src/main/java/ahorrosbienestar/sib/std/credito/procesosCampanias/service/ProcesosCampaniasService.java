@@ -77,6 +77,10 @@ public class ProcesosCampaniasService {
     	procesosCampaniasRepository.ejecutarArchivoMc(tipoCampania);
     }
     
+    public void ejecutarCancelar(int tipoCampania, int estatusCampania, int userReg) {
+    	procesosCampaniasRepository.ejecutarCancelar(tipoCampania, estatusCampania, userReg);
+    }
+    
     /*public List<ProcesosCampaniasDTO> buscarProcesosCampania(LocalDate inicio, LocalDate fin, String tipo) {
 		List<Object[]> resultados = procesosCampaniasRepository.listaProcesosCampania(inicio, fin, tipo);
 	    return resultados.stream()
