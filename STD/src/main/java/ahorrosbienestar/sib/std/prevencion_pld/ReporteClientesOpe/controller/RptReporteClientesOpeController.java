@@ -324,16 +324,23 @@ public class RptReporteClientesOpeController {
     
     @PostMapping("/ejecutarVistoBueno")
     public ResponseEntity<Map<String, Object>> ejecutarVistoBueno(
-        @RequestParam("anio") String anio,
-        @RequestParam("fechaInicio") String fechaInicio,
-        @RequestParam("fechaFin") String fechaFin) {
+            @RequestParam("anio") String anio,
+            @RequestParam("fechaInicioOper") String fechaInicioOper,
+            @RequestParam("fechaFinOper") String fechaFinOper,
+            @RequestParam("fechaCorteClientes") String fechaCorteClientes) {
 
-        logger.info("/ejecutarVistoBueno - Año: " + anio + ", Rango: " + fechaInicio + " a " + fechaFin);
+        logger.info("/ejecutarVistoBueno - Año: " + anio 
+                    + ", Operaciones: " + fechaInicioOper + " a " + fechaFinOper
+                    + ", CorteClientes: " + fechaCorteClientes);
+
         Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
 
         try {
+            // ===========================
+            //   OBTENER USUARIO LOGEADO
+            // ===========================
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Integer idUsuario = null;
             if (principal instanceof UserDetails) {
@@ -348,28 +355,43 @@ public class RptReporteClientesOpeController {
                 return ResponseEntity.ok(respuesta);
             }
 
+            // ===========================
+            //   PARSEAR FECHAS
+            // ===========================
             int year = Integer.parseInt(anio);
-            Date fInicio = Date.valueOf(fechaInicio);
-            Date fFin = Date.valueOf(fechaFin);
 
+            Date fInicioOper = Date.valueOf(fechaInicioOper);
+            Date fFinOper    = Date.valueOf(fechaFinOper);
+            Date fCorteClientes = Date.valueOf(fechaCorteClientes);
+
+            // ===========================
+            //   LLAMADA AL SP
+            // ===========================
             connection = jdbcTemplate.getDataSource().getConnection();
-            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?)}");
+            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?, ?)}");
 
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
             callableStatement.setInt(2, idUsuario);                   // p_iusuario
             callableStatement.setInt(3, year);                        // p_ianio
-            callableStatement.setDate(4, fInicio);                    // p_fechaInicio
-            callableStatement.setDate(5, fFin);                       // p_fechaFin
+            callableStatement.setDate(4, fInicioOper);                // p_fechaInicio OPERACIONES
+            callableStatement.setDate(5, fFinOper);                   // p_fechaFin OPERACIONES
+            callableStatement.setDate(6, fCorteClientes);             // p_fechaFin CLIENTES
+
             callableStatement.execute();
 
+            // ===========================
+            //   RESULTADO
+            // ===========================
             String errorMessage = callableStatement.getString(1);
+
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
             } else {
-                respuesta.put("mensaje", "Visto bueno registrado correctamente para CLIENTES y OPERACIONES.");
+                respuesta.put("mensaje", "Visto bueno registrado correctamente.");
                 respuesta.put("tipo", "success");
             }
+
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {

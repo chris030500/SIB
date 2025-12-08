@@ -449,11 +449,17 @@ function ejecutarVistoBueno() {
       closeOnEsc: false
     });
 
-    fetch("ejecutarVistoBueno", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ anio, fechaInicio, fechaFin })
+fetch("ejecutarVistoBueno", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+        anio,
+        fechaInicioOper: $("#fechaInicio").val(),
+        fechaFinOper: $("#fechaFin").val(),
+        fechaCorteClientes: $("#fechaCorteClientes").val()
     })
+})
+
     .then(res => res.json())
     .then(data => {
       swal.close();
@@ -497,9 +503,10 @@ function iniciaTblHistorico() {
       // Mostrar rango adecuado según el tipo
       let rangoFechas = "";
       if (tipo === "CLIENTES") {
-        const anio = opt.anioGeneracion || new Date().getFullYear(); // Si viene nulo usa el actual
-        rangoFechas = `<span class="text-success fw-bold">${anio}-01-01 a ${anio}-12-31</span>`;
-      } else if (tipo === "OPERACIONES") {
+    const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+    rangoFechas =
+        `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
+     } else if (tipo === "OPERACIONES") {
         const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
         const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
         rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
