@@ -1,40 +1,39 @@
-
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
-    
-    //Constantes Rutas de Acceso
-    public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
-    public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
-    public static final String RUTA_ERROR = "errores/error_403";
-    public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
-    
-    
-    //Rutas de Seguimiento
-    public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
-    public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
-    public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
-    
-    //Constantes de usuarios
-    public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
-    public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
-    
-    
-    //Constantes de estatus
-    public static final int ACTIVO = 1;
-    
-    //Constantes tipo de Base
-    public static final int FIDELIDAD = 2;
-    public static final int CAMPANAS_VIP = 3;
-    
-    //Constante mensajes y propiedades 
-    public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
-    
-    // constantes logger
-    public static final String MENSAJE_DE_ERROR = "Error";
-    public static final String MENSAJE_LOGGER_ERROR = "Error: ";
-    
-    // Ejemplo de constantes para tipo de Mensaje
+	
+	//Constantes Rutas de Acceso
+	public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
+	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
+	public static final String RUTA_ERROR = "errores/error_403";
+	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
+	
+	
+	//Rutas de Seguimiento
+	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
+	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
+	public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
+	
+	//Constantes de usuarios
+	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
+	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
+	
+	
+	//Constantes de estatus
+	public static final int ACTIVO = 1;
+	
+	//Constantes tipo de Base
+	public static final int FIDELIDAD = 2;
+	public static final int CAMPANAS_VIP = 3;
+	
+	//Constante mensajes y propiedades 
+	public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
+	
+	// constantes logger
+	public static final String MENSAJE_DE_ERROR = "Error";
+	public static final String MENSAJE_LOGGER_ERROR = "Error: ";
+	
+	// Ejemplo de constantes para tipo de Mensaje
     public static final String MENSAJE_ERROR = "error";
     public static final String MENSAJE_OK = "success";
     
@@ -93,6 +92,12 @@ public class Constantes {
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
+    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS = "rpt_exclusiones_internas";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_ESTATUS = "rpt_exclusiones_internas_estatus";
+    public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
+    public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
+    
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
     
@@ -106,12 +111,12 @@ public class Constantes {
     
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
-    public static final int BUSQUEDA_POR_USUARIO = 1;
-    
-    //MENSAJES SEGUIMIENTOS 
-    public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
-    public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
-    public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
+	public static final int BUSQUEDA_POR_USUARIO = 1;
+	
+	//MENSAJES SEGUIMIENTOS 
+	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
+	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
 	//CATALOGOS DE PANTALLAS
 	public static final int CATALOGO_GESTION = 14;
@@ -205,31 +210,49 @@ public class Constantes {
     public static final String RPT_HISTORICO_EBR_BASE_CLIENTES = "rpt_historico_ebr_base_clientes";
     public static final String RPT_HISTORICO_EBR_BASE_OPERACIONES = "rpt_historico_ebr_base_operaciones";
     public static final String RPT_HISTORICO_EBR_BASE_REMESAS = "rpt_historico_ebr_base_remesas";
-    public static final String RPT_HISTORICO_EBR_BASE_DESEMBOLSOS = "rpt_historico_ebr_base_desembolsos";
-    
-	//constantes marketing
-    public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
-    public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
-    public static final String HORA_FIN_SEMANAL = "HORA_FIN_SEMANAL_SMS";
-    public static final String HORA_INICIO_FIN_SEMANA = "HORA_INICIO_FIN_SEMANA_SMS";
-    public static final String HORA_FIN_FIN_SEMANA = "HORA_FIN_FIN_SEMANA_SMS";
-    public static final String RECURRENCIA_SMS = "RECURRENCIA_ENVIO_SMS";
-    
-    //permisos de pantallas marketing
-    public static final String USUARIO_ADMIN_MARKETING = "usrAdmin";
-    public static final String USUARIOS_EDITOR_MARKETING = "usrEditor";
-    
-    //constantes credito
-    public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
-    public static final String CREDITO_REPORTES = "credito/reportes";
-    
-    //nombres reportes Crédito
-    public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
-    
-    //Mensajes de error de autenticación
-    public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
-    public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
+    public static final String RPT_HISTORICO_EBR_BASE_DESEMBOLSOS = "rpt_historico_ebr_base_desembolsos";    
 
+	//constantes marketing
+	public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
+	public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
+	public static final String HORA_FIN_SEMANAL = "HORA_FIN_SEMANAL_SMS";
+	public static final String HORA_INICIO_FIN_SEMANA = "HORA_INICIO_FIN_SEMANA_SMS";
+	public static final String HORA_FIN_FIN_SEMANA = "HORA_FIN_FIN_SEMANA_SMS";
+	public static final String RECURRENCIA_SMS = "RECURRENCIA_ENVIO_SMS";
+	
+	//permisos de pantallas marketing
+	public static final String USUARIO_ADMIN_MARKETING = "usrAdmin";
+	public static final String USUARIOS_EDITOR_MARKETING = "usrEditor";
+	
+	//constantes credito
+	public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
+	public static final String CREDITO_REPORTES = "credito/reportes";
+	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
+	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
+	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
+	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
+	public static final String CAMPANIAS_PROCESOS = "credito/procesosCampanias";
+	public static final String CAMPANIAS_EXTRACCION = "credito/extraccionCampanias";
+	public static final String CAMPANIAS_EXCLUSIONES = "credito/exclusiones";
+	
+	
+	//nombres reportes Crédito
+	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
+	
+	//Mensajes de error de autenticación
+	public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
+	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
+	//Pantalla parametros buro de credito
+	public static final int CAT_TIPO_RIESGO = 34;
+	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
+	
+	//contantes parametros buro de credito
+	public static final String PARAM_BURO_ADVISER = "ADVISER";
+	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
+	
+	public static final int CAT_ESTATUS_CAMPANIAS = 16;
+	public static final int CAT_REPORTES_CAMPANIAS = 39;
+	
     private Constantes() {
         
     }

@@ -293,10 +293,11 @@
 					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li th:id="M_O29" class="nav-item" style="display:none;">
 							<a th:href="@{/prevencion/reportesPLD}">
-								<i class="bi bi-receipt-cutoff"></i><span>Reportes PLD</span>
+								<i class="bi bi-receipt-cutoff"></i><span>Histórico de Operaciones</span>
 							</a>
 						</li>
 					</ul>
+					
 					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li th:id="M_O37" class="nav-item" style="display:none;">
 							<a th:href="@{/prevencion/reporteOperacionesInusuales}">
@@ -372,29 +373,29 @@
 							</a>
 						</li>
 					</ul>
-
+					
 				</li>
 				<!-- Productos -->
 
 				<!-- Operaciones -->
-				<li style="display:none;" class="nav-item" th:id="10">
+				<li  style="display:none;"  class="nav-item" th:id="10">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-operaciones"
 						data-bs-toggle="collapse">
 						<i class="fa-solid fa-comments-dollar"></i><span>Gestion de ventas.</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-operaciones" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-						<li th:id="M_O25" class="nav-item" style="display:none;">
+						<li th:id="M_O25" class="nav-item"  style="display:none;">
 							<a th:href="@{/operaciones/configuracion}">
 								<i class="bi bi-gear-wide"></i><span>Configuracion</span>
 							</a>
 						</li>
-						<li th:id="M_O26" class="nav-item" style="display:none;">
+						<li th:id="M_O26" class="nav-item"  style="display:none;">
 							<a th:href="@{/operaciones/seguimientoGestion}">
 								<i class="bi bi-card-checklist"></i><span>Seguimiento de Gestiones</span>
 							</a>
 						</li>
-						<li th:id="M_O27" class="nav-item" style="display:none;">
+						<li th:id="M_O27" class="nav-item"  style="display:none;">
 							<a th:href="@{/operaciones/reportes}">
 								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
 							</a>
@@ -402,33 +403,34 @@
 					</ul>
 				</li>
 				<!-- Fin Operaciones -->
-
+				
 				<!-- SCCB -->
-				<li style="display:none;" class="nav-item" th:id="11">
-					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-sccb" data-bs-toggle="collapse">
+				<li  style="display:none;"  class="nav-item" th:id="11">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-sccb"
+						data-bs-toggle="collapse">
 						<i class="bi bi-credit-card"></i><span>SCCB</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-sccb" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-
+						
 						<li th:id="M_O30" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/solicitudesCredito}">
 								<i class="bi bi-envelope-paper"></i><span>Solicitudes de Crédito</span>
 							</a>
 						</li>
-
+						
 						<li th:id="M_O31" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/historialCobranza}">
 								<i class="bi bi-cash"></i><span>Historial de Cobranza</span>
 							</a>
 						</li>
-
+						
 						<li th:id="M_O32" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/consultaPagares}">
 								<i class="bi bi-card-heading"></i><span>Consulta de Pagares</span>
 							</a>
 						</li>
-
+						
 						<li th:id="M_O33" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/expedientes}">
 								<i class="bi bi-file-earmark-text"></i><span>Consulta de Expedientes</span>
@@ -437,6 +439,7 @@
 					</ul>
 				</li>
 				<!-- Fin SCCB -->
+				
 				<!-- Marketing -->
 				<li  style="display:none;"  class="nav-item" th:id="13">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-marketing"
@@ -472,6 +475,41 @@
 						<li th:id="M_O40" class="nav-item" style="display:none;">
 							<a th:href="@{/credito/reportes}">
 								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
+							</a>
+						</li>
+						<li th:id="M_O44" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/tiposCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Tipos Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O45" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/paramBuroCredito}">
+								<i class="bi bi-clipboard2-data"></i><span>Parametros de Buró de Crédito</span>
+							</a>
+						</li>
+						<li th:id="M_O46" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/exclusiones}">
+								<i class="bi bi-clipboard2-data"></i><span>Exclusiones</span>
+							</a>
+						</li>
+						<li th:id="M_O47" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/campaniasTemporales}">
+								<i class="bi bi-clipboard2-data"></i><span>Campañas Temporales</span>
+							</a>
+						</li>
+						<li th:id="M_O48" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/procesosCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Procesos Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O49" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/reportesCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Reportes Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O50" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/extraccionCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Extracción Campañas</span>
 							</a>
 						</li>
 					</ul>

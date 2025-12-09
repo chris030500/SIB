@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Extracción Campañas</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divGenerarReporte" class="container">
+				<div class="m-3">
+					<div class="col-md-12">
+						<fieldset class="border p-3" style="width: 100%; min-height: 300px;">
+							<legend class="float-none w-auto p-2">Busqueda</legend>
+								<div id="divTodos" class="container">
+									<div class="row">
+						            	<div class="col-md-6">
+											<input type="hidden" class="form-control" id="idUser"
+												th:value="${idUsuario}" readonly>
+											<input type="hidden" class="form-control" id="idFecha"
+												th:value="${idFecha}" readonly>
+											<input type="hidden" class="form-control" id="configIdCron"
+												th:value="${configIdCron}" readonly>
+											<input type="hidden" class="form-control" id="configIdBandera"
+												th:value="${configIdBandera}" readonly>
+											<input type="hidden" class="form-control" id="configIdCronExc"
+												th:value="${configIdCronExc}" readonly>
+											<input type="hidden" class="form-control" id="configIdBanderaExc"
+												th:value="${configIdBanderaExc}" readonly>
+							                <input type="hidden" class="form-control" id="idUser" th:value="${idUsuario}" readonly>
+							                <label for="Campania" class="form-label">Campaña:</label>
+											<select class="form-control" id="Campania">
+												<!-- Se llena por js -->
+											</select>
+						            	</div>
+						            	<div class="col-md-6">
+						                    <div class="col-md-6">
+						                        <label for="FechaExtraccion" class="form-label">Fecha Última Extracción:</label>
+												<input id="FechaExtraccion" name="ventana" required class="form-control" type="text"
+										       placeholder="Fecha Extracción"
+										        />
+						                    </div>
+										</div>
+									</div>
+									<div class="row">
+						            	<div class="col-md-6">
+							                <label for="Estatus" class="form-label">Estatus:</label>
+											<select class="form-control" id="Estatus">
+												<!-- Se llena por js -->
+											</select>
+						            	</div>
+							            <div class="col-md-6">
+											<label for="FechaAlta" class="form-label">Fecha Alta:</label>
+					                        <input id="FechaAlta" name="ventana" required class="form-control" type="text"
+									       	placeholder="Fecha Alta"
+									        />
+										</div>
+									</div>
+									
+									<div class="row mt-4 g-2">
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnExtraerFn()" disabled id="btnExtraer">Extraer</button>
+									    </div>
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnGenerarArchivoBuro()" disabled id="btnGenerar">Generar Archivo Buró</button>
+									    </div>
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnCargarRespuestaBuro()" disabled id="btnCargar">Cargar Respuesta Buró</button>
+									    </div>
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnDepuracionBuro()" disabled id="btnDepuracion">Depuración Buró</button>
+									    </div>
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnArchivoMc()" disabled id="btnArchivoMc">Generar Archivo MC</button>
+									    </div>
+									    <div class="col">
+									        <button type="button" class="btn btn-primary w-100" onclick="btnCancelar()" disabled id="btnCancelar">Cancelar</button>
+									    </div>
+									</div>
+									
+									<!-- Modal -->
+									<div class="modal fade" id="modalCargarBuro" tabindex="-1" aria-labelledby="modalCargarBuroLabel" aria-hidden="true">
+									  <div class="modal-dialog">
+									    <div class="modal-content rounded-3 shadow">
+									      <div class="modal-header">
+									        <h5 class="modal-title" id="modalCargarBuroLabel">Cargar Respuesta Buró</h5>
+									        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+									      </div>
+									
+									      <div class="modal-body">
+									        <!-- ComboBox -->
+									        <div class="mb-3">
+									          <label for="tipoArchivoBuro" class="form-label">Tipo de Archivo</label>
+									          <select class="form-select" id="tipoArchivoBuro">
+									            
+									          </select>
+									        </div>
+									
+									        <!-- Botón para seleccionar archivo -->
+									        <div class="mb-3">
+									          <label class="form-label">Archivo Excel</label><br>
+									          <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('inputArchivo').click();">
+									            Seleccionar Archivo
+									          </button>
+									          <span id="nombreArchivo" class="ms-2 text-muted">Ningún archivo seleccionado</span>
+									          <input type="file" id="inputArchivo" style="display: none;" accept=".xlsx,.xls,.csv" onchange="seleccionarArchivoBuro()" />
+									        </div>
+									      </div>
+									
+									      <div class="modal-footer">
+									        <button type="button" class="btn btn-primary" onclick="subirArchivo()">Subir</button>
+									      </div>
+									    </div>
+									  </div>
+									</div>
+									<!-- Fin Modal -->
+								</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<!-- script th:src="@{/js/dataTables.bootstrap.min.js}"></script-->
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/vendor/js/xlsx.full.min.js}"></script>
+		<!--script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script-->
+		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
+		<script th:src="@{/js/credito/fillDataTableConfig.js}"></script>
+		<script th:src="@{/js/credito/extraccionCampanias.js}"></script>
+		
+		<!--script th:src="@{/js/jquery-3.5.1.js}"></script-->
+		
+	</th:block>
+</body>
+
+</html>

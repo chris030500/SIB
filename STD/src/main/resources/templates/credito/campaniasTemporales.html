@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Campañas Temporales</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divParametrosBuro">
+				<!-- FORMULARIO 1: Búsqueda de Campaña Temporales -->
+				<form id="formBuscarCampania">
+					<div class="row">
+						<!-- Campo de búsqueda -->
+						<div class="col-md-6">
+							<label class="col-form-label">Campañas Temporales</label>
+							<input type="search" class="form-control" id="buscarCampaniaTemporales" list="opcionCampania"
+							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampaniasTemporales()"/>
+						<datalist id="opcionCampania"></datalist>
+					</div>
+
+					</div>
+				</form>
+				<div id="divRegistro">
+					<!-- FORMULARIO 1: Registro de datos campaña -->
+					<form id="formDatosCampania" method="post">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Información Campaña Temporal</legend>
+							<input type="hidden" id="idCampaniaSeleccionada" name="idCampaniaSeleccionada" />
+							<!-- Nombre de Campaña -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Nombre de Campaña:</label>
+								</div>
+								<div class="col-md-4">
+									<input type="text" class="form-control" id="nombreCampania" name="nombreCampania"
+										placeholder="Ingrese nombre de campaña..." />
+								</div>
+							</div>
+
+							<!-- Descripción -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Descripción de la Campaña:</label>
+								</div>
+								<div class="col-md-4">
+									<textarea class="form-control" id="descripcionCampania" name="descripcionCampania"
+										rows="4" placeholder="Ingrese la descripción de la campaña..."></textarea>
+								</div>
+							</div>
+
+							<!-- Vigencia -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Vigencia (meses):</label>
+								</div>
+								<div class="col-md-4">
+									<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
+										min="1" />
+								</div>
+							</div>
+
+							<!-- Fechas -->
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Inicio:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaInicio"
+										name="fechaInicio" /></div>
+							</div>
+
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Fin:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaFin"
+										name="fechaFin" /></div>
+							</div>
+
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Registro:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaRegistro"
+										name="fechaRegistro" /></div>
+							</div>
+
+							<!-- Estatus -->
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Estatus:</label></div>
+								<div class="col-md-4">
+								<select class="form-control" name="estatusCampania" id="estatusCampania">
+									<option value="0">Seleccione</option>
+									<option th:each="opcionTipo : ${cat_estatus}"
+										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+										th:id="${opcionTipo.v_pantalla}">
+									</option>
+								</select>
+								</div>
+							</div>
+
+							<!-- Fecha de envío MC -->
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Envío a MC:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaEnvioMC"
+										name="fechaEnvioMC" /></div>
+							</div>
+
+							<!-- Checkbox -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<div class="form-check mt-1">
+										<input type="checkbox" class="form-check-input" id="checkRecurrente"
+											onchange="toggleFechaEnvioMC()" />
+										<label class="form-check-label" for="checkRecurrente">Recurrente</label>
+									</div>
+								</div>
+							</div>
+
+							<!-- Botón guardar -->
+							<div class="row mt-4">
+								<div class="col-md-12 text-right">
+									<button type="submit" class="btn btn-primary" id="btnGuardarCampania">Guardar
+										Campaña</button>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+
+					<hr />
+
+					<!-- FORMULARIO 2: Carga de archivo -->
+					<form id="formArchivoCampaniaTmp" enctype="multipart/form-data">
+						<div class="row mt-3">
+							<div class="col-md-4">
+								<label for="file" class="col-form-label">Seleccionar Archivo:</label>
+								<input class="form-control" type="file" id="file" name="file" accept=".xls,.xlsx"
+									required>
+							</div>
+							<div class="col-md-2 align-self-end">
+								<button type="button" class="btn btn-success" id="btnGuardarFile">Subir Archivo</button>
+							</div>
+						</div>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/credito/tiposCampaniasTemporales.js}"></script>
+	</th:block>
+</body>
+
+</html>
