@@ -289,15 +289,26 @@ function mostrarVoboDiv() {
 	});
 }
 
+document.getElementById("btnVistoBueno").addEventListener("click", function () {
+
+    Swal.fire({
+        title: "Confirmar vo.bo Bases EBR",
+        text: "¿Está seguro de que los datos de las Bases EBR son correctos?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true // opcional, para que los botones se vean como en Bootstrap
+    }).then((result) => {
+        if (result.isConfirmed) {
+            ejecutarVoBoBasesEBR();
+        }
+    });
+
+});
+
 async function ejecutarVoBoBasesEBR() {
     const url = `${getAbsolutePath()}voBoBasesEbr`;
-
-    const voboModalEl = document.getElementById('voboModal');
-    const voboModal = bootstrap.Modal.getInstance(voboModalEl);
-    
-    if (voboModal) {
-        voboModal.hide();
-    }
     
 	Swal.fire({
 		title: "Procesando Vobo...",
@@ -306,6 +317,24 @@ async function ejecutarVoBoBasesEBR() {
 		allowEscapeKey: false,
 		didOpen: () => {
 			Swal.showLoading();
+						const popup = Swal.getPopup();
+			const content = popup.querySelector('.swal2-html-container');
+			const title = popup.querySelector('#swal2-title');
+			const loader = popup.querySelector('.swal2-loader');
+
+			// Alinear todo vertical y horizontalmente
+			popup.style.display = "flex";
+			popup.style.flexDirection = "column";
+			popup.style.alignItems = "center";
+			popup.style.justifyContent = "center";
+			
+			title.style.marginTop = "30px";
+			title.style.textAlign = "center";
+			content.style.textAlign = "center";
+
+			if (loader) {
+				loader.style.marginTop = "10px";
+			}
 		}
 	});
 
