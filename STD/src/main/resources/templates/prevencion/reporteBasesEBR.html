@@ -119,7 +119,6 @@
 							<div class="col-md-4">
 								<select id="auditoriasSelect" class="form-select" aria-label="Default select example">
 									<option value="0" selected>Seleccionar periodo</option>
-									<option value="2024">2024</option>
 									<option th:each="anio : ${lista_anio_auditorias}" th:value="${anio}"
 										th:text="${anio}">
 									</option>
@@ -195,7 +194,7 @@
 
                     <!-- Visto bueno -->
                     <div id="voboDiv" style="display: none;" class="mb-3 gap-3 align-items-center">
-                        <button type="button" class="btn btn-success" id="btnVistoBueno" data-bs-toggle="modal" data-bs-target="#voboModal">Registrar Visto bueno</button>
+                        <button type="button" class="btn btn-success" id="btnVistoBueno">Registrar Visto bueno</button>
                     </div>
 
                 </div>
@@ -221,28 +220,6 @@
                             </thead>
                             <tbody></tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal vobo -->
-        <div class="modal fade" id="voboModal" tabindex="-1" aria-labelledby="voboModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="voboModalLabel">Confirmar reporte</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    
-                    <div class="modal-body">
-                        <p>¿Está seguro de que los datos de las Bases EBR son correctos?</p>
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="btnVoboReporte" onclick="ejecutarVoBoBasesEBR()">Confirmar</button>
                     </div>
                 </div>
             </div>
