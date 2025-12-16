@@ -155,7 +155,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
 			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
-			+ " WHERE I_TIPO_CAMPANIA=2"
+			+ " WHERE I_TIPO_CAMPANIA=1"
 			+ " AND VC_TIPO_CAMPANIA LIKE %:valorBusqueda%", nativeQuery = true)
 	List<Object[]> buscarCampaniasTemporales(@Param("valorBusqueda") String valorBusqueda);
 	

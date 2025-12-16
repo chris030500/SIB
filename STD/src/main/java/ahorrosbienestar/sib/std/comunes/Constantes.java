@@ -223,7 +223,7 @@ public class Constantes {
 	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
 	//Pantalla parametros buro de credito
 	public static final int CAT_TIPO_RIESGO = 34;
-	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
+	public static final int CAMPANIA_TIPO_TEMPORAL = 1;
 	
 	//contantes parametros buro de credito
 	public static final String PARAM_BURO_ADVISER = "ADVISER";

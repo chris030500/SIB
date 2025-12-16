@@ -158,11 +158,12 @@ private static final Logger logger = Logger.getLogger(ParamBuroCreditoController
 					 if (campaniaConsulta.isPresent()) {
 						    // Ya existe → ACTUALIZACIÓN
 						    TiposCampaniasModel existente = campaniaConsulta.get();
-						    existente.setVc_tipo_campania(cmptmpdto.getNombreCampania());
+						    existente.setVc_tipo_campania(cmptmpdto.getNombreCampania().toUpperCase());
 						    existente.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
 						    existente.setDt_fecha_registro(LocalDate.now());
 						    existente.setI_estatus(cmptmpdto.getEstatusCampania());
 						    existente.setI_user_reg(obtUsuario());
+						    //existente.setI_tipo_campania(cmptmpdto.get);
 
 						    if(tiposCampaniasService.save(existente) !=null) {
 						    	 mensaje = Constantes.ACTUALIZACION_OK;
