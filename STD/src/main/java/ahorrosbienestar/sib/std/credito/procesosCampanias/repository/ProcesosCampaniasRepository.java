@@ -161,7 +161,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania,
 									@Param("estatus") int estatus);
 	
-	@Query(value = "select IFNULL(min(t1.pk_id_proceso_campania),0) "
+	@Query(value = "select min(t1.pk_id_proceso_campania) "
 			+ "from SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
 			+ "where t1.i_id_tipo_campania = :tipoCampania "
 			+ "and t1.i_estatus_reg = 1 "
@@ -180,7 +180,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	    @Param("i_estatus_reg") Integer i_estatus_reg
 	);
 	
-	@Query(value = "select IFNULL(min(pk_id_proceso_campania),0) "
+	@Query(value = "select min(pk_id_proceso_campania) "
 			+ "from SIB.TBL_PROCESO_CAMPANIA "
 			+ "where i_id_tipo_campania = :tipoCampania "
 			+ "and i_estatus_reg = 1 "
