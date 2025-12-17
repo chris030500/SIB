@@ -31,6 +31,8 @@
 						<label class="col-form-label">Campaña de Crédito</label>
 						<input type="hidden" class="form-control" id="idUser"
 											th:value="${idUsuario}" readonly>
+						<input type="hidden" class="form-control" id="idFecha"
+											th:value="${idFecha}" readonly>
 						<input type="search" class="form-control" id="buscarCampania"
 						       list="opcionCampania" autocomplete="off"
 						       placeholder="Buscar campaña"
@@ -87,12 +89,12 @@
 										       placeholder="Monto Máximo" 
 										        />
 									</div>
-									<div class="col-md-3">
+									<!--div class="col-md-3">
 										<label for="MoraMaxima" class="form-label">Mora Máxima:</label>
 										<input id="MoraMaxima" name="moraMaxima" required class="form-control" type="text"
 										       placeholder="Mora Máxima" 
 										        />
-									</div>
+									</div-->
 									<div class="col-md-3">
 										<label for="PorceCubiertoCap" class="form-label">Porcentaje Cubierto Capital:</label>
 										<input id="PorceCubiertoCap" name="porceCubiertoCap" required class="form-control" type="text"
@@ -120,7 +122,7 @@
 									<div class="col-md-3">
 										<label for="MinimoVida" class="form-label">Minimo Vida del Crédito (meses):</label>
 										<input id="MinimoVida" name="minimoVida" required class="form-control" type="text"
-										       placeholder="Monto Minimo" 
+										       placeholder="Minimo Vida del Crédito(meses)" 
 										        />
 									</div>
 									<div class="col-md-3">
@@ -141,22 +143,40 @@
 										       placeholder="Créditos Liquidados" 
 										        />
 									</div>
+									<!-- ComboBox -->
+							        <div class="col-md-3">
+							          <label for="tipoArchivoBuro" class="form-label">Tipo de buró:</label>
+							          <select class="form-select" id="tipoArchivoBuro">
+							            
+							          </select>
+							        </div>
 									<div class="col-md-3">
 										<label for="EsRenovacion" class="form-label">Es Renovacion:</label>
 										<div id="checksEsRenovacion"></div>
 									</div>
 									<div class="col-md-3">
-										<label for="ConvivenciaCampanias" class="form-label">Convivencia entre Campañas:</label>
+										<div id="minimoVidaCreditoR" style="display: none;">
+											<label for="MinimoVidaR" class="form-label">Minimo Vida del Crédito Renovación(meses):</label>
+											<input id="MinimoVidaR" name="minimoVidaR" required class="form-control" type="text"
+										       placeholder="Minimo Vida del Crédito Renovación(meses)" 
+										        />
+										
+										</div>
+									</div>
+									
+									<div class="col-md-3">
+										<label for="ConvivenciaCampanias" class="form-label">Convivencia entre Campañas Temporales:</label>
 										<select class="form-control" id="convivenciaCamp">
 								
 										</select>
 									</div>
-									<div class="col-md-3">
+									<div class="col-md-6">
 										<label for="Productos" class="form-label">Productos:</label>
 										<select id="Productos" name="productos" multiple required class="form-control" size="5">
 										    <!-- Las opciones se llenan por JavaScript -->
 										</select>
 									</div>
+									
 								</div>
 							</div>
 						</fieldset>
@@ -179,16 +199,17 @@
 										       placeholder="Porcentaje de Incremento"
 										        />
 									</div>
-									<div class="col-md-3">
+									<!--div class="col-md-3">
 										<label for="EsRenovacionOferta" class="form-label">Es Renovación:</label>
 										<div id="checksEsRenovacionOferta"></div>
-									</div>
-									<div class="col-md-3">
+									</div-->
+									
+									<!--div class="col-md-3">
 										<label for="VigenciaCampaniaOferta" class="form-label">Vigencia Campaña:</label>
 										<input id="VigenciaCampaniaOferta" required name="vigenciaCampaniaOferta" class="form-control" type="text"
 										       placeholder="Vigencia Campaña" 
 										        />
-									</div>
+									</div-->
 									<div class="col-md-3">
 										<label for="TasaOrdinaria" class="form-label">Tasa Ordinaria:</label>
 										<input id="TasaOrdinaria" name="tasaOrdinaria" required class="form-control" type="text"

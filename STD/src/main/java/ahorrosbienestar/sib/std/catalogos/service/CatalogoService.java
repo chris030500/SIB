@@ -25,5 +25,8 @@ public class CatalogoService {
 	public Catalogo buscarPorId(Integer id) {
 		return iCatalogoRepository.findById(id).orElse(null);
 	}
-		
+	
+	public List<Object[]> listaTipoBuro(Integer id_group, Integer tipo_campania) {
+        return iCatalogoRepository.listaTipoBuro(id_group, tipo_campania);
+    }
 }

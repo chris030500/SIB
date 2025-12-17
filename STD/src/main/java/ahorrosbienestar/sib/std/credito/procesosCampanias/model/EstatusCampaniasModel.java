@@ -35,6 +35,9 @@ public class EstatusCampaniasModel {
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
 	
+	@Column(name = "VC_ESTATUS_I")
+	private String vc_estatus_i;
+	
 	@OneToOne
 	@JoinColumn(name = "I_USER_REG")
 	private Usuario i_user_reg;
@@ -77,6 +80,14 @@ public class EstatusCampaniasModel {
 
 	public void setI_user_reg(Usuario i_user_reg) {
 		this.i_user_reg = i_user_reg;
+	}
+
+	public String getVc_estatus_i() {
+		return vc_estatus_i;
+	}
+
+	public void setVc_estatus_i(String vc_estatus_i) {
+		this.vc_estatus_i = vc_estatus_i;
 	}
 
 }

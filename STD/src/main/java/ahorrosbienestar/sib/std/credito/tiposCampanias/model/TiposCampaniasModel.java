@@ -110,14 +110,8 @@ public class TiposCampaniasModel {
 	@Column(name = "I_CONVIVENCIA")
 	private Integer i_convivencia;
 	
-	@Column(name = "VC_ES_RENOVACION_OFERTA")
-	private String vc_es_renovacion_oferta;
-	
 	@Column(name = "I_ACTIVA_OFERTA")
 	private Integer i_activa_oferta;
-	
-	@Column(name = "I_VIGENCIA_OFERTA")
-	private Integer i_vigencia_oferta;
 	
 	@Column(name = "DT_FECHA_REGISTRO")
 	private LocalDate dt_fecha_registro;
@@ -129,17 +123,28 @@ public class TiposCampaniasModel {
 	@Column(name = "I_EDAD_MINIMA")
 	private Integer i_edad_minima;
 	
-	@Column(name = "I_MORA_MAXIMA")
-	private Integer i_mora_maxima;
-	
 	@Column(name = "I_PLAZO_MAXIMO_ANIOS")
 	private Integer i_plazo_maximo_anios;
 	
 	@Column(name = "I_VIGENCIA_BC")
 	private Integer i_vigencia_bc;
+	
+	@Column(name = "I_MINIMO_VIDA_CREDITO_R")
+	private Integer i_minimo_vida_credito_r;
+	
+	@Column(name = "I_TIPO_BURO")
+	private Integer i_tipo_buro;
 
 	public Integer getPk_id_tipo_campania() {
 		return pk_id_tipo_campania;
+	}
+
+	public Integer getI_minimo_vida_credito_r() {
+		return i_minimo_vida_credito_r;
+	}
+
+	public void setI_minimo_vida_credito_r(Integer i_minimo_vida_credito_r) {
+		this.i_minimo_vida_credito_r = i_minimo_vida_credito_r;
 	}
 
 	public void setPk_id_tipo_campania(Integer pk_id_tipo_campania) {
@@ -354,28 +359,12 @@ public class TiposCampaniasModel {
 		this.i_convivencia = i_convivencia;
 	}
 
-	public String getVc_es_renovacion_oferta() {
-		return vc_es_renovacion_oferta;
-	}
-
-	public void setVc_es_renovacion_oferta(String vc_es_renovacion_oferta) {
-		this.vc_es_renovacion_oferta = vc_es_renovacion_oferta;
-	}
-
 	public Integer getI_activa_oferta() {
 		return i_activa_oferta;
 	}
 
 	public void setI_activa_oferta(Integer i_activa_oferta) {
 		this.i_activa_oferta = i_activa_oferta;
-	}
-
-	public Integer getI_vigencia_oferta() {
-		return i_vigencia_oferta;
-	}
-
-	public void setI_vigencia_oferta(Integer i_vigencia_oferta) {
-		this.i_vigencia_oferta = i_vigencia_oferta;
 	}
 
 	public LocalDate getDt_fecha_registro() {
@@ -403,14 +392,6 @@ public class TiposCampaniasModel {
 		this.i_edad_minima = i_edad_minima;
 	}
 
-	public Integer getI_mora_maxima() {
-		return i_mora_maxima;
-	}
-
-	public void setI_mora_maxima(Integer i_mora_maxima) {
-		this.i_mora_maxima = i_mora_maxima;
-	}
-
 	public Integer getI_plazo_maximo_anios() {
 		return i_plazo_maximo_anios;
 	}
@@ -425,6 +406,14 @@ public class TiposCampaniasModel {
 
 	public void setI_vigencia_bc(Integer i_vigencia_bc) {
 		this.i_vigencia_bc = i_vigencia_bc;
+	}
+
+	public Integer getI_tipo_buro() {
+		return i_tipo_buro;
+	}
+
+	public void setI_tipo_buro(Integer i_tipo_buro) {
+		this.i_tipo_buro = i_tipo_buro;
 	}
 
 }

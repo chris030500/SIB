@@ -43,7 +43,6 @@ public class TiposCampaniasService {
             campania.getI_edad_minima(),
             campania.getD_monto_minimo(),
             campania.getD_monto_maximo(),
-            campania.getI_mora_maxima(),
             campania.getD_porc_cubierto_capital(),
             campania.getI_dias_gracia(),
             campania.getI_dias_mora(),
@@ -57,11 +56,14 @@ public class TiposCampaniasService {
             campania.getVc_productos(),
             campania.getI_prod_credito_id_oferta(),
             campania.getD_porc_inc_oferta(),
-            campania.getVc_es_renovacion_oferta(),
-            campania.getI_vigencia_oferta(),
             campania.getD_tasa_ordinaria_oferta(),
             campania.getI_activa_oferta(),
-            campania.getD_monto_maximo_oferta()
+            campania.getD_monto_maximo_oferta(),
+            campania.getI_minimo_vida_credito_r(),
+            campania.getI_estatus(),
+            campania.getDt_fecha_registro(),
+            campania.getI_tipo_buro()
+            
         );
         return filasAfectadas > 0;
     }
@@ -76,7 +78,6 @@ public class TiposCampaniasService {
 	        c.getI_edad_minima(),
 	        c.getD_monto_minimo(),
 	        c.getD_monto_maximo(),
-	        c.getI_mora_maxima(),
 	        c.getD_porc_cubierto_capital(),
 	        c.getI_dias_gracia(),
 	        c.getI_dias_mora(),
@@ -90,11 +91,13 @@ public class TiposCampaniasService {
 	        c.getVc_productos(),
 	        c.getI_prod_credito_id_oferta(),
 	        c.getD_porc_inc_oferta(),
-	        c.getVc_es_renovacion_oferta(),
-	        c.getI_vigencia_oferta(),
 	        c.getD_tasa_ordinaria_oferta(),
 	        c.getI_activa_oferta(),
-	        c.getD_monto_maximo_oferta()
+	        c.getD_monto_maximo_oferta(),
+	        c.getI_minimo_vida_credito_r(),
+	        c.getI_estatus(),
+	        c.getDt_fecha_registro(),
+	        c.getI_tipo_buro()
 	    );
 	    return filas > 0;
 	}

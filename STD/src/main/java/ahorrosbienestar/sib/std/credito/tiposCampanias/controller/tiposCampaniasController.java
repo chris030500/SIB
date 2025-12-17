@@ -32,6 +32,7 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasSer
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,7 @@ public class tiposCampaniasController {
 	private static String rutaDireccion = "";
 	private static final int opcBusquedaGrupo = 32;
 	private static final int opcBusquedaGrupo2 = 33;
+	private static final int opcBusquedaGrupo3 = 38;
 	
 	
 	@GetMapping("/tiposCampanias")
@@ -90,6 +92,11 @@ public class tiposCampaniasController {
 				Integer idUsuario = usuario.get(0).getPk_id_usuario();
 				//System.out.print("idUsuario:" + idUsuario);
 				model.addAttribute("idUsuario", idUsuario);
+				
+				// Obtener la fecha actual sin tiempo
+		        LocalDate fechaActual = LocalDate.now();
+		        model.addAttribute("idFecha", fechaActual);
+				
 				////
 				
 				rutaDireccion = Constantes.CREDITO_CAMPANIAS;
@@ -185,8 +192,12 @@ public class tiposCampaniasController {
 		
 	@GetMapping("/api/catProductos")
 	@ResponseBody
-    public ResponseEntity<List<ProductoColocacion>> getProductos() {
+    /*public ResponseEntity<List<ProductoColocacion>> getProductos() {
         return ResponseEntity.ok(productoColocacionService.obtenerProductosActivos());
+    }*/
+	
+	public List<ProductoColocacion> getProductosColocacion() {
+        return productoColocacionService.getProductosColocacion();
     }
 	
 	//llenar las opciones de es renovacion
@@ -208,6 +219,13 @@ public class tiposCampaniasController {
 	@ResponseBody
 	public List<Catalogo> getCatalogoActiva() {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+	}
+	
+	//llenar el combo de tipos buro de credito (Adviser/Prospector)
+	@GetMapping("/api/catTipoBuroCam")
+	@ResponseBody
+	public List<Catalogo> getCatalogoTipoBuroCam() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo3);
 	}
 	
 	//update de datos campaña
