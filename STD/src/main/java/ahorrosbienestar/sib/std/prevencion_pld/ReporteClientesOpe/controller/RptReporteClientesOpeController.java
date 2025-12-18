@@ -414,11 +414,16 @@ public class RptReporteClientesOpeController {
 
     
     @PostMapping("/activar-ejecucion/{id}")
-    public ResponseEntity<?> activarEjecucion(@PathVariable("id") Integer id,
+    public ResponseEntity<?> activarEjecucion(@PathVariable Integer id,
                                               @AuthenticationPrincipal UserDetails userDetails) {
-        migracionesPService.activarEjecucion(id, userDetails.getUsername());
-        return ResponseEntity.ok().build();
+        try {
+            migracionesPService.activarEjecucion(id, userDetails.getUsername());
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
+
  
  
  

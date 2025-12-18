@@ -30,46 +30,53 @@ public class MigracionesPService {
 
     //  Activar ejecución
     public void activarEjecucion(Integer idMigracion, String usuario) {
+
         logger.info("==> Inicia activarEjecucion para ID: " + idMigracion + ", usuario: " + usuario);
 
         Optional<MigracionesP> optional = migracionesPRepository.findById(idMigracion);
         if (optional.isPresent()) {
+
             MigracionesP entidad = optional.get();
 
-            logger.info("Migración encontrada. Estableciendo valores...");
+            LocalDateTime ahora = LocalDateTime.now();
+            int horaActual = ahora.getHour();
+
+            String cron;
+            LocalDateTime fechaEjecucion;
+
+            if (horaActual < 13) {
+                throw new IllegalStateException(
+                    "La migración solo puede ejecutarse a partir de las 13:00 hrs"
+                );
+            } 
+            else if (horaActual >= 13 && horaActual < 17) {
+                cron = "17:00";
+                fechaEjecucion = ahora.withHour(17).withMinute(0).withSecond(0);
+            } 
+            else {
+                cron = "13:00";
+                fechaEjecucion = ahora.plusDays(1)
+                        .withHour(13).withMinute(0).withSecond(0);
+            }
 
             entidad.setEjecuta(1);
             entidad.setEstatus(1);
             entidad.setUsuarioEjecuta(usuario);
-
-            LocalDateTime ahora = LocalDateTime.now(); // <-- Fecha y hora del clic
-
-            int horaActual = ahora.getHour();
-            String siguienteHora;
-
-            if (horaActual < 13) {
-                siguienteHora = "15";
-            } else if (horaActual < 17) {
-                siguienteHora = "19";
-            } else {
-                siguienteHora = "13";
-                logger.info("Se programa para el día siguiente (solo VC_CRON, no DT_FECHA_EJECUCION)");
-            }
-
-            entidad.setCron(siguienteHora + ":00"); // <-- Se mantiene la programación lógica
-
-            entidad.setFechaEjecucion(ahora); // <-- Se guarda la hora REAL del clic, no la programada
-
-            logger.info("CRON programado: " + entidad.getCron());
-            logger.info("Fecha real de ejecución guardada: " + ahora);
+            entidad.setCron(cron);
+            entidad.setFechaEjecucion(fechaEjecucion);
 
             migracionesPRepository.save(entidad);
-            logger.info("Migración actualizada y guardada exitosamente.");
+
+
+            logger.info("Migración marcada para ejecución correctamente.");
+            logger.info("Hora real del clic: " + ahora);
+
         } else {
             logger.error("No se encontró la migración con ID: " + idMigracion);
             throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
         }
     }
+
 
     //  Finalizar migración
     public void finalizarMigracion(Integer idMigracion, String usuarioActualiza) {
