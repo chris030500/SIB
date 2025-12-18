@@ -112,7 +112,6 @@ public class JasperReportController {
     					ContentDisposition contentDisposition = null;
     					HttpHeaders h2 = new HttpHeaders();
                         MediaType mediaType = MediaType.APPLICATION_PDF;
-    					
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
     						//fecha de creacion
         					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
