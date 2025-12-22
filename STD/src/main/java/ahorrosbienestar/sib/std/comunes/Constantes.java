@@ -1,5 +1,5 @@
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
 	
 	//Constantes Rutas de Acceso
@@ -7,7 +7,6 @@ public class Constantes {
 	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
 	public static final String RUTA_ERROR = "errores/error_403";
 	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
-	
 	
 	//Rutas de Seguimiento
 	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
@@ -17,7 +16,6 @@ public class Constantes {
 	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
 	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
-	
 	
 	//Constantes de estatus
 	public static final int ACTIVO = 1;
@@ -43,7 +41,6 @@ public class Constantes {
     public static final String ENVIA_CORREOS = "envio";
     public static final String URL_REPORTE = "reporte";
     
-    
     // Ejemplo de constantes para descripcion de Mensajes
     public static final String REGISTRO_OK = "Se Registro Correctamente.";
     public static final String ACTUALIZACION_OK = "Actualizo Registro Correctamente.";
@@ -59,7 +56,7 @@ public class Constantes {
     public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
     public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
     
-  //Mensajes plantillas de SMS
+  	//Mensajes plantillas de SMS
     public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
     public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
     
@@ -88,6 +85,7 @@ public class Constantes {
     
     //PROPIEDAD DEL CONTROLLER DEL REPORTE
     public static final String CONTROLLER_JASPER_CONF = "generarReporte";
+    
     //NOMBRES DE REPORTES
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
@@ -103,7 +101,6 @@ public class Constantes {
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
     
-    
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
 
@@ -115,7 +112,6 @@ public class Constantes {
 	//CATALOGOS DE PANTALLAS
 	public static final int CATALOGO_GESTION = 14;
 	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
-	
 	
 	//PROCESO A EJECUTAR
 	public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
@@ -186,23 +182,17 @@ public class Constantes {
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
 
-  //constantes PLD ReporteClientesOpe
-      public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
-      
-      public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
-      
-      public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
-      
-      public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
-      
-      public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-      
-      public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-    
-      public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
+  	//constantes PLD ReporteClientesOpe
+    public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
+    public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
+    public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
+    public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
+    public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
+    public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
+   	public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
 
-//EBR
-public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
+	//nombres reportes bases EBR
+    public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
     public static final String RPT_EBR_BASE_OPERACIONES = "rpt_ebr_base_operaciones";
     public static final String RPT_EBR_BASE_REMESAS = "rpt_ebr_base_remesas";
     public static final String RPT_EBR_BASE_DESEMBOLSOS = "rpt_ebr_base_desembolsos";
