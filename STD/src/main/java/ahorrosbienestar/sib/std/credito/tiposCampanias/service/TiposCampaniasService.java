@@ -123,6 +123,13 @@ public class TiposCampaniasService {
 	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
 	            .collect(Collectors.toList());
 	}
+	
+	public List<TiposCampaniasDTO> listaCampaniasRecurrentes() {
+		List<Object[]> resultados = repository.listaCampaniasRecurrentes();
+	    return resultados.stream()
+	    		.map(r -> new TiposCampaniasDTO((Integer) r[0], (String) r[1]))
+	            .collect(Collectors.toList());
+	}
 
 	public List<TiposCampaniasModel> campaniasReportes() {
 	

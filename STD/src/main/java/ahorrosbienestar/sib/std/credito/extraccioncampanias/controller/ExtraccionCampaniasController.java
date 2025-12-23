@@ -182,6 +182,26 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
     }
+	/*@GetMapping("/api/catTipoCam")
+	@ResponseBody
+    public ResponseEntity<List<TiposCampaniasDTO>> getTiposCampanias() {
+     try {
+    	 List<TiposCampaniasDTO> credenciales = tiposCampaniasService.listaCampaniasRecurrentes();
+    	 
+		 if (credenciales == null) {
+		        return ResponseEntity.noContent().build(); // Devuelve 204
+		    }else {
+			    return ResponseEntity.ok(credenciales); // Devuelve JSON 200
+		    }
+    			 
+     }catch(Exception e) {
+    	 
+    	 logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return null;
+     }
+		
+        //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
+    }*/
 
 	//llenar el combo de estatus campañas
 	@GetMapping("/api/catEstatusCam")
