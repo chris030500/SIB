@@ -18,7 +18,7 @@ var mensajeError = "Datos incorrectos, favor de validar.";
 document.addEventListener("DOMContentLoaded", function () {
     const selectReporte = document.getElementById("idReporte");
     const divCampania = document.getElementById("divCampania");
-    const divEstatus = document.getElementById("divEstatus");
+    //const divEstatus = document.getElementById("divEstatus");
     
     //funcion para llenar combo opcion multiple de campañas
     $.ajax({
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //divEstatus.classList.remove("d-none");
     
     divCampania.classList.add("d-none");
-    divEstatus.classList.add("d-none");
+    //divEstatus.classList.add("d-none");
 
     selectReporte.addEventListener("change", function () {
         const valor = this.value;
@@ -54,15 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (valor === "1") { 
             // Primer reporte → ocultar campañas
             divCampania.classList.add("d-none");
-            divEstatus.classList.remove("d-none");
+            //divEstatus.classList.remove("d-none");
         } else if (valor === "2") { 
             // Segundo reporte → ocultar estatus
             divCampania.classList.remove("d-none");
-            divEstatus.classList.add("d-none");
+            //divEstatus.classList.add("d-none");
         } else {
             // Mostrar todo
             divCampania.classList.remove("d-none");
-            divEstatus.classList.remove("d-none");
+            //divEstatus.classList.remove("d-none");
         }
     });
 });
@@ -106,13 +106,48 @@ function generarReporte() {
 	if (valVacio() == false) {
 		
 		const idReporte = document.getElementById("idReporte").value;
-		const idEstatus = document.getElementById("estatusCampania").value;
-		console.log("idReporte: " + idReporte);
-		console.log("idEstatus: " + idEstatus);
+		//const idEstatus = document.getElementById("estatusCampania").value;
+		//console.log("idReporte: " + idReporte);
+		//console.log("idEstatus: " + idEstatus);
 		
 		if (idReporte === "1") { 
 			//Reporte Clientes Excluidos
-			if (idEstatus === "0") {
+			var urlServicio;
+	    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+	    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+	    	urlServicio = newUrlBase + "credito/reporteExclusionesInternas?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value ;
+	    	//console.log("urlServicio:", urlServicio);
+	    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+	    	
+	    	$.ajax({
+			url: urlServicio,
+			type: "POST",
+			dataType: "JSON",
+			beforeSend: function() {
+				$.blockUI({ message: 'Espere un momento...' });
+			},
+			complete: function() {
+				setTimeout($.unblockUI, 500);
+			},
+			success: function(respuesta) {
+	
+				var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+				//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+	
+				//console.log(urlReporte);
+				//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+				window.open(urlReporte);
+				window.focus();
+	
+			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+				swal({
+					title: "Error, ",
+					text: "Se presento un error, intente mas tarde.",
+					icon: "warning",
+				});
+			}
+			});
+			/*if (idEstatus === "0") {
 			
 				///////////////////////////////
 		    	var urlServicio;
@@ -193,7 +228,7 @@ function generarReporte() {
 				}
 				});
 		    	//////////////
-			}
+			}*/
 			
 		}else if (idReporte === "2") { 
 			
