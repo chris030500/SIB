@@ -101,74 +101,100 @@ public class RptReporteClientesOpeController {
     
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
-    public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files) {
+    @ResponseBody
+    public ResponseEntity<List<String>> adjuntar(
+            @RequestParam("file") MultipartFile[] files) {
 
-        String mensaje = "";
-        ArrayList<String> respuesta = new ArrayList<>();
-        logger.info("1");
+        List<String> respuesta = new ArrayList<>();
 
         try {
-            // Verificación de usuario autenticado
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            // =========================
+            // 1) VALIDAR USUARIO
+            // =========================
+            Object principal = SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
             if (!(principal instanceof UserDetails)) {
-                mensaje = "Error: Usuario no autenticado.";
-                respuesta.add(mensaje);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+                respuesta.add("Usuario no autenticado.");
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(respuesta);
             }
-            logger.info("2");
 
             UserDetails userDetails = (UserDetails) principal;
-            List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-            logger.info("3");
+            List<Usuario> usuarios =
+                    iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
             if (usuarios == null || usuarios.isEmpty()) {
-                mensaje = "Error: Usuario no encontrado en base de datos.";
-                respuesta.add(mensaje);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+                respuesta.add("Usuario no encontrado en base de datos.");
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(respuesta);
             }
-            logger.info("4");
 
-            // 3) Validar archivo
+            // =========================
+            // 2) VALIDAR ARCHIVO
+            // =========================
             if (files == null || files.length == 0 || files[0].isEmpty()) {
-                mensaje = "No se subió ningún archivo.";
-                respuesta.add(mensaje);
-                logger.warn(mensaje);
-                return ResponseEntity.badRequest().body(respuesta);
+                respuesta.add("No se subió ningún archivo.");
+                return ResponseEntity
+                        .badRequest()
+                        .body(respuesta);
             }
-            logger.info("Paso 4: {} archivo(s) recibido(s)");
 
-            // 4) Registrar proceso
-            logger.info("Paso 5: registrando proceso para usuario ID={}");
-            ProcesosPEPsModel proceso = procesosPEPsService.registrarProceso(usuarios.get(0).getPk_id_usuario());
-            logger.info("Paso 6: proceso registrado = {}");
+            // =========================
+            // 3) REGISTRAR PROCESO
+            // =========================
+            ProcesosPEPsModel proceso =
+                    procesosPEPsService.registrarProceso(
+                            usuarios.get(0).getPk_id_usuario()
+                    );
 
             if (proceso == null || proceso.getPk_id_peps() == 0) {
-                mensaje = "Error interno al registrar el proceso.";
-                respuesta.add(mensaje);
-                logger.error(mensaje);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+                respuesta.add("Error interno al registrar el proceso.");
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(respuesta);
             }
 
-            // 5) Procesar archivo(s) recibido(s)
+            // =========================
+            // 4) PROCESAR ARCHIVOS
+            // =========================
             for (MultipartFile file : files) {
-                logger.info("Paso 7: Archivo recibido -> nombre={} | tamaño={} bytes");
-                // Aquí podrías meter tu lógica de parseo si aplica
+                detallePEPsService.procesarCargaConUsuario(
+                        file,
+                        proceso.getPk_id_peps()
+                );
             }
 
-            mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
-            respuesta.add(mensaje);
-            logger.info("Paso 8: {}");
+            // =========================
+            // 5) RESPUESTA OK
+            // =========================
+            respuesta.add(
+                    "Archivo(s) procesado(s) correctamente. ID del proceso: "
+                            + proceso.getPk_id_peps()
+            );
 
-            logger.info("=== FIN uploadPEP ===");
             return ResponseEntity.ok(respuesta);
 
         } catch (Exception e) {
-            mensaje = "Error procesando archivo(s): " + e.getMessage();
-            respuesta.add(mensaje);
-            logger.error("❌ Paso X: excepción en uploadPEP", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+            logger.error("❌ Error en uploadPEP", e);
+
+            respuesta.add(
+                    e.getMessage() != null
+                            ? e.getMessage()
+                            : "Error al procesar el archivo Excel PEP"
+            );
+
+            // IMPORTANTE: error controlado, NO 500 mudo
+            return ResponseEntity
+                    .badRequest()
+                    .body(respuesta);
         }
     }
+
     
     @RequestMapping(value = { "/generarRptReporteClientesOpeController" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> reporteClientesOpe(@RequestParam("fechaInicio") String fechaInicio,
