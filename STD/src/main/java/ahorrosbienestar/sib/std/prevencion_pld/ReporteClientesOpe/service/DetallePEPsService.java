@@ -49,46 +49,18 @@ public class DetallePEPsService {
 
             logger.info("Filas leídas: " + filas.size());
 
-            AtomicInteger insertados = new AtomicInteger(0);
-            AtomicInteger actualizados = new AtomicInteger(0);
+            int insertados = 0;
 
             for (DetallePEPsModel fila : filas) {
 
-                // 🔹 BUSCAR POR I_CLIENTEID (CORRECTO)
-            	List<DetallePEPsModel> existentes =
-            	        detallePEPsRepository.buscarPorClienteId(
-            	                fila.getI_clienteid()
-            	        );
-
-            	if (!existentes.isEmpty()) {
-
-            	    // 👉 Tomamos el más reciente (o el primero)
-            	    DetallePEPsModel existente = existentes.get(0);
-
-            	    if (!Objects.equals(
-            	            existente.getVc_nombre_cliente(),
-            	            fila.getVc_nombre_cliente())) {
-
-            	        existente.setVc_nombre_cliente(
-            	                fila.getVc_nombre_cliente()
-            	        );
-            	        detallePEPsRepository.save(existente);
-            	        actualizados.incrementAndGet();
-            	    }
-
-            	} else {
-            	    fila.setFk_proceso(idProceso);
-            	    detallePEPsRepository.save(fila);
-            	    insertados.incrementAndGet();
-            	}
-
+                //  SIEMPRE INSERTAR
+                fila.setFk_proceso(idProceso);
+                detallePEPsRepository.save(fila);
+                insertados++;
             }
 
             logger.info(
-                "Proceso finalizado → Insertados: "
-                + insertados.get()
-                + " | Actualizados: "
-                + actualizados.get()
+                "Proceso finalizado → Registros insertados: " + insertados
             );
 
         } catch (Exception e) {
@@ -100,4 +72,5 @@ public class DetallePEPsService {
             );
         }
     }
+
 }
