@@ -11,18 +11,18 @@ import javax.persistence.Table;
 @Table(name="TBL_DETALLE_PEPS")
 public class DetallePEPsModel {
  
-    @Column(name = "PK_ID_DETALLE")
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pk_id_detalle;
-    
-    @Column(name = "FK_PROCESO")
-    private int fk_proceso;
-    
-    @Column(name = "I_CLIENTEID")
-    private int i_clienteid;
-    
-    @Column(name = "VC_NOMBRE_CLIENTE")
+    @Column(name = "PK_ID_DETALLE")
+    private Integer pk_id_detalle;
+
+    @Column(name = "FK_PROCESO", nullable = true)
+    private Integer fk_proceso;
+
+    @Column(name = "I_CLIENTEID", nullable = true)
+    private Integer i_clienteid;
+
+    @Column(name = "VC_NOMBRE_CLIENTE", length = 500, nullable = true)
     private String vc_nombre_cliente;
  
     public int getPk_id_detalle() {
