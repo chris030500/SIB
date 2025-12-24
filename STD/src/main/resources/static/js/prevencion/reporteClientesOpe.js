@@ -326,70 +326,77 @@ document.getElementById("btnVistoBueno").addEventListener("click", function() {
 // ==========================================================
 document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
   e.preventDefault();
- 
+
   const input = document.getElementById("fileUploadPEP");
   const files = input.files;
- 
+
   if (!files || files.length === 0) {
     swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
     return;
   }
- 
+
   const fd = new FormData();
   for (let i = 0; i < files.length; i++) {
-    fd.append("file", files[i]); 
+    fd.append("file", files[i]);
   }
- 
+
   swal({
     title: "Procesando archivo(s)...",
     content: {
       element: "div",
       attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
+        innerHTML:
+          '<div class="spinner-border text-primary" role="status"></div>',
+        style:
+          "display:flex;justify-content:center;align-items:center;padding:20px;",
       },
     },
     buttons: false,
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
- 
+
   try {
-    const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
-      method: "POST",
-      body: fd
-    });
- 
-    const respuesta = await res.json(); 
-    swal.close();
- 
-    if (res.ok && Array.isArray(respuesta)) {
-      swal({
-        title: "¡Éxito!",
-        text: respuesta[0],
-        icon: "success",
-        button: "Aceptar",
-      }).then(() => {
-       
-      });
+    const res = await fetch(
+      getAbsolutePath() + "reporteClientesOpe/uploadPEP",
+      {
+        method: "POST",
+        body: fd,
+      }
+    );
+
+    let respuesta;
+
+    if (res.ok) {
+      respuesta = await res.json();
     } else {
-      swal({
-        title: "Error",
-        text: respuesta[0] || "Ocurrió un error inesperado.",
-        icon: "error",
-        button: "Aceptar",
-      });
+      const texto = await res.text();
+      throw new Error(texto || "Error interno del servidor");
     }
- 
+
+    swal.close();
+
+    swal({
+      title: "¡Éxito!",
+      text: respuesta[0],
+      icon: "success",
+      button: "Aceptar",
+    });
+
   } catch (error) {
     swal.close();
-    console.error("Error en fetch:", error);
-    swal("Se presentó un error, intente más tarde.", {
+    console.error("❌ Error en upload PEP:", error);
+
+    swal({
+      title: "Error",
+      text: error.message || "Se presentó un error, intente más tarde.",
       icon: "error",
-      closeOnClickOutside: false,
+      button: "Aceptar",
     });
   }
 });
+
+
 
  
  
