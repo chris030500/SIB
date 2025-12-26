@@ -72,14 +72,14 @@ public class ExcelPEPReader {
                 DetallePEPsModel model = new DetallePEPsModel();
 
                 try {
-                    model.setI_clienteid(Integer.parseInt(clienteId));
+                    model.setIClienteId(Integer.parseInt(clienteId));
                 } catch (NumberFormatException ex) {
                     throw new RuntimeException(
                         "ClienteID inválido en fila " + (i + 1) + ": [" + clienteId + "]"
                     );
                 }
 
-                model.setVc_nombre_cliente(nombre);
+                model.setVcNombreCliente(nombre);
                 lista.add(model);
             }
 
