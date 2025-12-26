@@ -14,9 +14,10 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetalleP
 public interface DetallePEPsRepository
         extends JpaRepository<DetallePEPsModel, Integer> {
 
-	@Query("SELECT d FROM DetallePEPsModel d WHERE d.i_clienteid = :clienteId")
+	@Query("SELECT d FROM DetallePEPsModel d WHERE d.iClienteId = :clienteId")
 	List<DetallePEPsModel> buscarPorClienteId(
 	        @Param("clienteId") int clienteId
 	);
+
 
 }

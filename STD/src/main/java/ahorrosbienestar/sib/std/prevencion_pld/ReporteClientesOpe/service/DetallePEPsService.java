@@ -54,7 +54,7 @@ public class DetallePEPsService {
             for (DetallePEPsModel fila : filas) {
 
                 //  SIEMPRE INSERTAR
-                fila.setFk_proceso(idProceso);
+                fila.setFkProceso(idProceso);
                 detallePEPsRepository.save(fila);
                 insertados++;
             }
