@@ -191,6 +191,7 @@ public class Constantes {
 	
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
+    public static final String PLD_REPORTE_BASES_EBR = "prevencion/reporteBasesEBR";
 
 	//constantes PLD ReporteClientesOpe
     public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
