@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Exclusiones</h2>
+							<input type="hidden" class="form-control" id="idUser"
+											th:value="${idUsuario}" readonly>
+							<input type="hidden" class="form-control" id="idFecha"
+											th:value="${idFecha}" readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="p-4 border rounded-3 mb-4">
+				<ul class="nav nav-pills" id="pntConf" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link active" id="credenciales-tab"
+							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Municipios sin
+							Cobertura</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
+							type="button" role="tab" aria-selected="false" tabindex="-1">Agregar/Eliminar
+							Clientes</button>
+					</li>
+				</ul>
+			</div>
+			<div id="pant-tabs">
+				<div class="row" style="margin-top : 15px ">
+					<div class="col-lg-4"></div>
+					<div id="spinner-container" class="col-lg-4 d-flex justify-content-center"></div>
+					<div class="col-lg-4"></div>
+				</div>
+				<!-- Municipios sin Cobertura -->
+				<div id="credenciales-tab1" style="display:none;" for="1">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Municipios sin Cobertura</legend>
+
+						<!-- Botón Cargar Archivo -->
+						<div class="row mb-3">
+							<div class="col text-start">
+								<button class="btn btn-success"
+									onclick="document.getElementById('inputArchivo').click();">
+									Cargar Archivo
+								</button>
+								<input type="file" id="inputArchivo" style="display: none;" accept=".csv, .xlsx"
+									onchange="cargarArchivoExcel()" />
+							</div>
+						</div>
+
+						<!-- Tabla de Municipios -->
+						<div class="row">
+							<div class="col">
+								<div class="table-responsive">
+									<table class="table table-bordered table-sm table-hover"
+										id="tblExclusionMunicipios">
+										<thead class="table-light">
+											<tr>
+												<th>d_codigo</th>
+												<th>d_asenta</th>
+												<th>d_tipo_asenta</th>
+												<th>D_mnpio</th>
+												<th>d_estado</th>
+												<th>d_ciudad</th>
+												<th>d_CP</th>
+												<th>c_estado</th>
+												<th>Cobertura</th>
+											</tr>
+										</thead>
+										<tbody>
+											<!-- Las filas se llenarán dinámicamente -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+
+				<!-- Fin de credenciales -->
+				<!-- Agregar/Eliminar Clientes -->
+				<div id="plantillas-tab1" style="display:none;" for="2">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Agregar/Eliminar Clientes</legend>
+
+						<form id="formExclusionCliente">
+							<div class="container">
+								<div class="row mb-3">
+									<input type="hidden" name="clienteId" id="clienteIdSeleccionado">
+									<div class="col-md-2 text-end"><label for="cliente"
+											class="form-label">Cliente:</label></div>
+									<div class="col-md-10">
+										<!--input type="search" class="form-control" id="buscarEmpleado"
+											list="opcionEmpleado" autocomplete="off" placeholder="Buscar empleado">
+										<datalist id="opcionEmpleado"></datalist>
+										<div id="spinnerEmpleado" class="spinner-border text-primary"
+											style="display: none;"></div-->
+											
+										
+										<input type="search" class="form-control" id="buscarCliente" list="opcionCliente"
+											autocomplete="off" placeholder="Buscar cliente">
+										<datalist id="opcionCliente"></datalist>
+										
+										<div id="spinnerClientes" style="display:none; margin-top:5px;">
+										    Cargando clientes...
+										</div>
+									
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<div class="col-md-2 text-end"><label for="motivo"
+											class="form-label">Motivo:</label></div>
+									<div class="col-md-10">
+										<select class="form-select" id="motivo" name="motivo" required>
+											<option value="" disabled selected>Selecciona una opción</option>
+											<option value="NO LLAMADAS">NO QUIERE RECIBIR LLAMADAS</option>
+											<option value="FALLECIDO">CLIENTE FALLECIDO</option>
+											<option value="FRAUDE">FRAUDE</option>
+											<option value="NO SUJETO">CLIENTE NO SUJETO DE CRÉDITO</option>
+											<option value="OTRO">OTRO</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="row mb-4">
+									<div class="col-md-2 text-end"><label for="observaciones"
+											class="form-label">Observaciones:</label></div>
+									<div class="col-md-10">
+										<input type="text" class="form-control" id="observaciones" name="observaciones"
+											maxlength="500" required>
+									</div>
+								</div>
+
+								<div class="row text-center">
+									<div class="col-md-12">
+										<button type="submit" class="btn btn-primary mx-2" disabled id="btnAgregarCliente">Agregar</button>
+										<button type="button" class="btn btn-danger mx-2"
+											onclick="eliminarCliente()" disabled id="btnEliminarCliente">Eliminar</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</fieldset>
+				</div>
+
+				<!-- Fin de Agregar/Eliminar Clientes -->
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!--script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script-->
+		<script th:src="@{/vendor/js/xlsx.full.min.js}"></script>
+		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
+		<script th:src="@{/js/credito/exclusiones.js}"></script>
+	</th:block>
+</body>
+
+</html>
