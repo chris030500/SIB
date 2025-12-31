@@ -126,7 +126,7 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
-	//console.log("valor:", valor);
+	console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
