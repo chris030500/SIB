@@ -95,6 +95,7 @@ public class Constantes {
     public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
     public static final String REPORTE_EXCLUSIONES_INTERNAS = "rpt_exclusiones_internas";
     public static final String REPORTE_EXCLUSIONES_INTERNAS_ESTATUS = "rpt_exclusiones_internas_estatus";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_SIN_FECHA = "rpt_exclusiones_internas_sin_fecha";
     public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     

@@ -157,6 +157,31 @@ public class ReporteCampaniasController {
 
 		}
 		
+		@RequestMapping(value = { "/reporteExclusionesInternasSinFecha" }, method = RequestMethod.POST)
+		public ResponseEntity<?> reporteExclusionesInternasSinFecha(@RequestParam("dtFechaInicio") String dtFechaInicio, 
+														@RequestParam("dtFechaFin") String dtFechaFin) {
+
+			ArrayList<String> respuesta = new ArrayList<String>();
+			try {
+				
+				ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_EXCLUSIONES_INTERNAS_SIN_FECHA);
+				
+				String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
+						+ datosReporte.getPk_id_reporte() + "&parametros=?FechaInicio=" + dtFechaInicio + "~FechaFin="
+						+ dtFechaFin + "&tipoDocumento=" + datosReporte.getVc_extension() + "&identificadorDoc=OA";
+
+				//System.out.println("reporteURL: " + reporteURL);
+				
+				respuesta.add(reporteURL);
+				return ResponseEntity.ok(respuesta);
+			} catch (Exception e) {
+				logger.error("Error:" + e.getMessage());
+				respuesta.add(e.getMessage());
+				return ResponseEntity.ok(respuesta);
+			}
+
+		}
+		
 		@RequestMapping(value = { "/reporteBasesCampaniasMc" }, method = RequestMethod.POST)
 		public ResponseEntity<?> reporteBasesCampaniasMc(@RequestParam("dtFechaInicio") String dtFechaInicio, 
 														@RequestParam("dtFechaFin") String dtFechaFin,

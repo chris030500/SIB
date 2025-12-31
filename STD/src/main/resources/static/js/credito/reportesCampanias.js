@@ -113,45 +113,47 @@ function generarReporte() {
 		if (idReporte === "1") { 
 			//Reporte Clientes Excluidos
 			var urlServicio;
-	    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
-	    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
-	    	urlServicio = newUrlBase + "credito/reporteExclusionesInternas?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value ;
-	    	//console.log("urlServicio:", urlServicio);
-	    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
-	    	
-	    	$.ajax({
-			url: urlServicio,
-			type: "POST",
-			dataType: "JSON",
-			beforeSend: function() {
-				$.blockUI({ message: 'Espere un momento...' });
-			},
-			complete: function() {
-				setTimeout($.unblockUI, 500);
-			},
-			success: function(respuesta) {
-	
-				var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-				//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-	
-				//console.log(urlReporte);
-				//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-				window.open(urlReporte);
-				window.focus();
-	
-			}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-				swal({
-					title: "Error, ",
-					text: "Se presento un error, intente mas tarde.",
-					icon: "warning",
-				});
-			}
-			});
-			/*if (idEstatus === "0") {
 			
-				///////////////////////////////
-		    	var urlServicio;
-		    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+			
+			if (document.getElementById("FechaInicio").value === "" || document.getElementById("FechaFin").value === "") {
+				var fechaInicioSinFecha = "2025-12-30";
+				
+				urlServicio = newUrlBase + "credito/reporteExclusionesInternasSinFecha?dtFechaInicio=" + fechaInicioSinFecha + "&dtFechaFin=" + fechaInicioSinFecha ;
+		    	console.log("urlServicio:", urlServicio);
+		    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+		    	
+		    	$.ajax({
+				url: urlServicio,
+				type: "POST",
+				dataType: "JSON",
+				beforeSend: function() {
+					$.blockUI({ message: 'Espere un momento...' });
+				},
+				complete: function() {
+					setTimeout($.unblockUI, 500);
+				},
+				success: function(respuesta) {
+		
+					var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+					//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+		
+					//console.log(urlReporte);
+					//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+					window.open(urlReporte);
+					window.focus();
+		
+				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+					swal({
+						title: "Error, ",
+						text: "Se presento un error, intente mas tarde.",
+						icon: "warning",
+					});
+				}
+				});
+				
+			}else{
+				
+				//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
 		    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
 		    	urlServicio = newUrlBase + "credito/reporteExclusionesInternas?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value ;
 		    	//console.log("urlServicio:", urlServicio);
@@ -185,50 +187,92 @@ function generarReporte() {
 					});
 				}
 				});
-		    	//////////////
-			
-			}else{
+				/*if (idEstatus === "0") {
 				
-				///////////////////////////////
-		    	var urlServicio;
-		    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
-		    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
-		    	//urlServicio = newUrlBase + "credito/reporteExclusionesInternasEstatus?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&estatus=" + document.getElementById("idEstatus").value;
-		    	urlServicio = newUrlBase + "credito/reporteExclusionesInternasEstatus?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&estatus=" + parseInt(idEstatus);
-		    	//console.log("urlServicio:", urlServicio);
-		    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
-		    	console.log("urlServicio: " + urlServicio);
-		    	
-		    	$.ajax({
-				url: urlServicio,
-				type: "POST",
-				dataType: "JSON",
-				beforeSend: function() {
-					$.blockUI({ message: 'Espere un momento...' });
-				},
-				complete: function() {
-					setTimeout($.unblockUI, 500);
-				},
-				success: function(respuesta) {
-		
-					var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-					//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-		
-					//console.log(urlReporte);
-					//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-					window.open(urlReporte);
-					window.focus();
-		
-				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
-						title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
-						icon: "warning",
+					///////////////////////////////
+			    	var urlServicio;
+			    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+			    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+			    	urlServicio = newUrlBase + "credito/reporteExclusionesInternas?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value ;
+			    	//console.log("urlServicio:", urlServicio);
+			    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+			    	
+			    	$.ajax({
+					url: urlServicio,
+					type: "POST",
+					dataType: "JSON",
+					beforeSend: function() {
+						$.blockUI({ message: 'Espere un momento...' });
+					},
+					complete: function() {
+						setTimeout($.unblockUI, 500);
+					},
+					success: function(respuesta) {
+			
+						var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+						//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+			
+						//console.log(urlReporte);
+						//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+						window.open(urlReporte);
+						window.focus();
+			
+					}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+						swal({
+							title: "Error, ",
+							text: "Se presento un error, intente mas tarde.",
+							icon: "warning",
+						});
+					}
 					});
-				}
-				});
-		    	//////////////
-			}*/
+			    	//////////////
+				
+				}else{
+					
+					///////////////////////////////
+			    	var urlServicio;
+			    	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
+			    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+			    	//urlServicio = newUrlBase + "credito/reporteExclusionesInternasEstatus?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&estatus=" + document.getElementById("idEstatus").value;
+			    	urlServicio = newUrlBase + "credito/reporteExclusionesInternasEstatus?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&estatus=" + parseInt(idEstatus);
+			    	//console.log("urlServicio:", urlServicio);
+			    	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
+			    	console.log("urlServicio: " + urlServicio);
+			    	
+			    	$.ajax({
+					url: urlServicio,
+					type: "POST",
+					dataType: "JSON",
+					beforeSend: function() {
+						$.blockUI({ message: 'Espere un momento...' });
+					},
+					complete: function() {
+						setTimeout($.unblockUI, 500);
+					},
+					success: function(respuesta) {
+			
+						var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+						//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+			
+						//console.log(urlReporte);
+						//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+						window.open(urlReporte);
+						window.focus();
+			
+					}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+						swal({
+							title: "Error, ",
+							text: "Se presento un error, intente mas tarde.",
+							icon: "warning",
+						});
+					}
+					});
+			    	//////////////
+				}*/
+				
+			}
+			
+	    	
 			
 		}else if (idReporte === "2") { 
 			
