@@ -217,6 +217,7 @@ function cargarArchivoExcel() {
 	});
 	const reader = new FileReader();
 	reader.onload = function (e) {
+		console.log("Entra a función reader.onload");
 		// @ts-ignore
 		const data = new Uint8Array(e.target.result);
 		// @ts-ignore
@@ -251,6 +252,7 @@ function cargarArchivoExcel() {
 		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
 
 		if (!esValidoEncabezado) {
+			console.log("Entra a función esValidoEncabezado");
 			// @ts-ignore
 			 Swal.close(); // Cierra el loading
 			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
@@ -265,6 +267,7 @@ function cargarArchivoExcel() {
 		const tieneInformacion = filasDatos.some(fila => fila.some(celda => celda !== null && celda !== "" && celda !== undefined));
 
 		if (!tieneInformacion) {
+			console.log("Entra a función tieneInformacion");
 			// @ts-ignore
 			 Swal.close(); // Cierra el loading
 			alert("El archivo no contiene información en las filas después del encabezado.");
@@ -295,6 +298,8 @@ function cargarArchivoExcel() {
 			listaMunicipiosExclusion();
 		})
 		.catch(error => {
+			// @ts-ignore
+			Swal.close(); // Cierra el loading
 			console.error("Error:", error);
 			alert("Ocurrió un error al cargar el archivo.");
 		});

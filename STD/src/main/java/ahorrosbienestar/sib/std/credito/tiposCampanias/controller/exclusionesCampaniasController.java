@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.NumClienteM
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.ClientesActivosService;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.service.NumClienteService;
 import ahorrosbienestar.sib.std.comunes.Constantes;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.reportes.controller.ReportesCreditoController;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclisionesClientesModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclusionMunicipioModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
@@ -45,6 +46,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("/credito")
 public class exclusionesCampaniasController {
+	
+	private static final Logger logger = Logger.getLogger(exclusionesCampaniasController.class);
 
     @Autowired
     private ExclusionMunicipioService exclusionMunicipioService;
@@ -114,6 +117,7 @@ public class exclusionesCampaniasController {
             exclusionMunicipioService.procesarExcel(archivo);
             return ResponseEntity.ok("Archivo procesado correctamente");
         } catch (Exception e) {
+        	logger.info("Error al procesar el archivo: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar el archivo: " + e.getMessage());
         }
