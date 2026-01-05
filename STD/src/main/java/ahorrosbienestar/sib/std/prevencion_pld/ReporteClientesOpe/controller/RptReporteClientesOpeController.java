@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 //import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
 //import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -439,19 +440,40 @@ public class RptReporteClientesOpeController {
 
 
     
+  /*  @PostMapping("/activar-ejecucion/{id}")
+    public ResponseEntity<?> activarEjecucion(
+            @PathVariable Integer id,
+            @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        migracionesPService.activarEjecucion(
+                id,
+                fechaInicio,
+                fechaFin,
+                userDetails.getUsername()
+        );
+        return ResponseEntity.ok().build();
+    }*/
+
+
     @PostMapping("/activar-ejecucion/{id}")
-    public ResponseEntity<?> activarEjecucion(@PathVariable Integer id,
-                                              @AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            migracionesPService.activarEjecucion(id, userDetails.getUsername());
-            return ResponseEntity.ok().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        }
+    public ResponseEntity<?> activarEjecucion(
+            @PathVariable Integer id,
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        migracionesPService.activarEjecucion(
+                id,
+                LocalDate.parse(fechaInicio),
+                LocalDate.parse(fechaFin),
+                userDetails.getUsername()
+        );
+
+        return ResponseEntity.ok().build();
     }
 
- 
- 
  
     @PostMapping("/finalizar-migracion/{id}")
     public ResponseEntity<?> finalizarMigracion(@PathVariable("id") Integer id,
@@ -463,6 +485,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
  
  
     @GetMapping(value = "/obtener-migracion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -605,6 +605,8 @@ async function cargarEstadoInicial() {
 
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
+
+        // 🔴 AQUÍ CAMBIA INACTIVO / ACTIVO
         checkbox.checked = data.estatus === 1;
         label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
 
@@ -615,7 +617,6 @@ async function cargarEstadoInicial() {
             btnEjecutar.classList.toggle("disabled", enEjecucion);
         }
 
-        // Agrega esta línea para mostrar el mensaje siempre
         mostrarMensajeMigracion(data);
 
     } catch (error) {
@@ -625,50 +626,60 @@ async function cargarEstadoInicial() {
 
 
 async function activarMigracion() {
+
+    const inputInicio = document.getElementById("fechaInicioMigracion");
+    const inputFin    = document.getElementById("fechaFinMigracion");
+
+    const fechaInicio = inputInicio ? inputInicio.value : "";
+    const fechaFin    = inputFin ? inputFin.value : "";
+
+    if (!fechaFin) {
+        swal("Fecha requerida", "Debe seleccionar la fecha fin.", "warning");
+        return;
+    }
+
     const btn = document.getElementById("btnEjecutarMigracion");
 
-    if (btn.disabled) return;
-
+    // 🔒 Bloqueo inmediato
     btn.disabled = true;
     btn.classList.add("disabled");
 
     try {
         const res = await fetch(`${BASE_URL}/activar-ejecucion/${idMigracion}`, {
-            method: "POST"
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                fechaInicio,
+                fechaFin
+            })
         });
 
-        if (res.ok) {
-            Swal.fire({
-                title: "¡Éxito!",
-                text: "Migración programada correctamente.",
-                icon: "success",
-                timer: 2000,
-                showConfirmButton: false
-            });
-
-            // Re-consultar para obtener mensaje actualizado
-            setTimeout(async () => {
-                const estado = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
-                if (estado.ok) {
-                    const data = await estado.json();
-                    mostrarMensajeMigracion(data);
-                }
-                cargarEstadoInicial(); // También actualiza estados visuales
-            }, 2100);
-
-        } else {
-            Swal.fire("Error", "No se pudo programar la migración", "error");
-            btn.disabled = false;
-            btn.classList.remove("disabled");
+        if (!res.ok) {
+            throw new Error("Error backend");
         }
 
+        // ✅ ALERTA SIN ROMPER EJECUCIÓN
+        swal({
+            title: "Migración activada",
+            text: "La ejecución fue programada correctamente.",
+            icon: "success",
+            timer: 2000
+        });
+
+        // 🔄 Releer estado REAL (ejecuta = 1)
+        cargarEstadoInicial();
+
     } catch (error) {
-        console.error("→ Error de conexión:", error);
-        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        console.error(error);
+
+        // 🔓 SOLO revertir si FALLA el backend
         btn.disabled = false;
         btn.classList.remove("disabled");
+
+        swal("Error", "No se pudo activar la migración.", "error");
     }
 }
+
 
 
 async function cambiarEstatus(checkbox) {
@@ -683,34 +694,59 @@ async function cambiarEstatus(checkbox) {
         });
 
         if (res.ok) {
+            // 🔴 AQUÍ CAMBIA INACTIVO / ACTIVO
             label.innerText = estatus === 1 ? "Activo" : "Inactivo";
-            Swal.fire({ title: "¡Éxito!", text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, icon: "success", timer: 2000, showConfirmButton: false });
+
+            Swal.fire({
+                title: "¡Éxito!",
+                text: `Estatus cambiado a ${estatus === 1 ? "Activo" : "Inactivo"}`,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
             Swal.fire("Error", "No se pudo actualizar el estatus", "error");
-            checkbox.checked = !checkbox.checked;
+            checkbox.checked = !checkbox.checked; // rollback
         }
     } catch (error) {
         console.error("Error:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
-        checkbox.checked = !checkbox.checked;
+        checkbox.checked = !checkbox.checked; // rollback
     }
 }
+
+
+
+
 
  window.onload = cargarEstadoInicial;
 // Para cargar mensaje de resultado en pantalla
-function mostrarMensajeMigracion(data) {
+function renderAvisoMigracion(data) {
+
     const mensaje = document.getElementById("mensajeResultado");
     if (!mensaje) return;
 
-    mensaje.innerText = "";
-    if (data.mensajeResultado) {
-        mensaje.innerText = data.mensajeResultado;
+    let texto = "";
+    let clase = "text-muted";
+
+    if (data.ejecuta === 1) {
+        texto = "⏳ Migración en proceso…";
+        clase = "text-warning";
+    } 
+    else if (data.mensajeResultado) {
+        texto = `✔ ${data.mensajeResultado}`;
+        clase = "text-success";
     }
+
     if (data.cron) {
-        mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
+        texto += ` (Siguiente ejecución: ${data.cron})`;
     }
+
+    mensaje.className = `mt-2 fw-bold ${clase}`;
+    mensaje.innerText = texto;
     mensaje.style.display = "block";
 }
+
 
 //  Función para mostrar/ocultar opciones según el tipo de reporte seleccionado
 function mostrarOpcionesPorTipo() {
@@ -744,29 +780,13 @@ function mostrarOpcionesPorTipo() {
 // ========================================================
 // Función completa para generar reporte de clientes
 async function generarReporteClientes() {
-    const fechaCorte = document.getElementById("fechaCorteClientes")
-        ? document.getElementById("fechaCorteClientes").value
-        : null;
-
-    if (!fechaCorte) {
-        swal("Debe seleccionar una fecha de corte.", { icon: "warning" });
-        return;
-    }
-
-    // ✔ Validar fin de mes correcto
-    if (!esFinDeMes(fechaCorte)) {
-        swal("La fecha seleccionada NO es fin de mes. Debe ser el último día del mes.", {
-            icon: "error"
-        });
-        return;
-    }
 
     swal({
         title: "Generando reporte de clientes...",
         content: {
             element: "div",
             attributes: {
-                innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
+                innerHTML: '<div class="spinner-border text-primary"></div>',
                 style: "display:flex;justify-content:center;padding:20px;"
             }
         },
@@ -776,78 +796,32 @@ async function generarReporteClientes() {
     });
 
     try {
-        // ✔ Enviar fecha al backend
-        const res = await fetch("generarRptClientesPorFechaCorte", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ fechaCorte })
+        const res = await fetch("generarRptClientesDesdeMigracion", {
+            method: "POST"
         });
 
-        if (!res.ok) throw new Error("Error generando el reporte.");
+        if (!res.ok) throw new Error();
 
         const respuesta = await res.json();
         const url = respuesta[0];
 
-        // ✔ Abrir el archivo generado
-        const base = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4);
+        const base = window.location.href.substring(
+            0,
+            window.location.href.indexOf("STD/") + 4
+        );
+
         window.open(base + url);
         window.focus();
 
         swal.close();
-        swal({
-            title: "¡Éxito!",
-            text: "El reporte de clientes se generó correctamente.",
-            icon: "success",
-            button: "Aceptar"
-        }).then(() => {
-            const confirmacionDiv = document.getElementById("confirmacionClientes");
-            if (confirmacionDiv) confirmacionDiv.style.display = "block";
+        swal("¡Éxito!", "Reporte de clientes generado.", "success");
 
-            // Resetear radios
-            $("input[name='clientes_correcto']").prop("checked", false);
-
-            // ✔ Evento SI
-            $("#clientesSi").off("change").on("change", function () {
-                if ($(this).is(":checked")) {
-                    swal({
-                        title: "Continuar con Operaciones",
-                        text: "Ahora puede generar el reporte de operaciones.",
-                        icon: "info",
-                        button: "Aceptar"
-                    }).then(() => {
-                        $("#tipoReporte").val("operaciones").trigger("change");
-                        confirmacionDiv.style.display = "none";
-                    });
-                }
-            });
-
-            // ✔ Evento NO
-            $("#clientesNo").off("change").on("change", function () {
-                if ($(this).is(":checked")) {
-                    swal({
-                        title: "Volver a cargar archivo",
-                        text: "Revisa el archivo y vuelve a generar el reporte.",
-                        icon: "warning",
-                        button: "Aceptar"
-                    }).then(() => {
-                        $("#archivos-tab").click();
-                        confirmacionDiv.style.display = "none";
-                    });
-                }
-            });
-        });
-
-    } catch (error) {
+    } catch (e) {
         swal.close();
-        console.error("❌ Error al generar el reporte de clientes:", error);
-        swal({
-            title: "Error",
-            text: "Ocurrió un problema al generar el reporte de clientes.",
-            icon: "error",
-            button: "Aceptar"
-        });
+        swal("Error", "No se pudo generar el reporte.", "error");
     }
 }
+
 
 
 // ========================================================
@@ -910,63 +884,116 @@ async function procesarAuditoriaClientes() {
 //  Generar reporte de OPERACIONES filtrado por rango de fechas
 // ========================================================
 async function generarReporteOperaciones() {
-  const fechaInicio = document.getElementById("fechaInicio")?.value;
-  const fechaFin = document.getElementById("fechaFin")?.value;
 
-  if (!fechaInicio || !fechaFin) {
-    swal("Debe seleccionar un rango de fechas antes de generar el reporte.", { icon: "warning" });
-    return;
-  }
-
-  swal({
-    title: "Generando reporte de operaciones...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
-  });
-
-  try {
-    const res = await fetch("generarRptOperacionesAuditoria", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio, fechaFin })
-    });
-
-    if (!res.ok) throw new Error("Error generando el reporte.");
-
-    const respuesta = await res.json();
-    const url = respuesta[0];
-
-    // Abrir el reporte Jasper generado
-    window.open(
-      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
-    );
-    window.focus();
-
-    swal.close();
     swal({
-      title: "¡Éxito!",
-      text: "El reporte de operaciones se generó correctamente.",
-      icon: "success",
-      button: "Aceptar"
+        title: "Generando reporte de operaciones...",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: '<div class="spinner-border text-primary"></div>',
+                style: "display:flex;justify-content:center;padding:20px;"
+            }
+        },
+        buttons: false
     });
-  } catch (error) {
-    console.error("❌ Error al generar el reporte de operaciones:", error);
-    swal.close();
-    swal({
-      title: "Error",
-      text: "Ocurrió un problema al generar el reporte de operaciones.",
-      icon: "error",
-      button: "Aceptar"
-    });
-  }
+
+    try {
+        const res = await fetch("generarRptOperacionesDesdeMigracion", {
+            method: "POST"
+        });
+
+        if (!res.ok) throw new Error();
+
+        const respuesta = await res.json();
+        const url = respuesta[0];
+
+        const base = window.location.href.substring(
+            0,
+            window.location.href.indexOf("STD/") + 4
+        );
+
+        window.open(base + url);
+        window.focus();
+
+        swal.close();
+        swal("¡Éxito!", "Reporte de operaciones generado.", "success");
+
+    } catch (e) {
+        swal.close();
+        swal("Error", "No se pudo generar el reporte.", "error");
+    }
 }
 
+function renderEstadoMigracion(data) {
 
+    // ===== SWITCH + TEXTO =====
+    const checkbox = document.getElementById("estatusSwitch");
+    const label = document.getElementById("labelEstado");
+
+    if (checkbox && label) {
+        const activo = data.estatus === 1;
+
+        checkbox.checked = activo;
+        label.innerText = activo ? "Activo" : "Inactivo";
+        label.classList.toggle("text-success", activo);
+        label.classList.toggle("text-muted", !activo);
+    }
+
+    // ===== BOTÓN EJECUTAR =====
+    const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+    if (btnEjecutar) {
+        const enEjecucion = data.ejecuta === 1;
+
+        btnEjecutar.disabled = enEjecucion;
+
+        btnEjecutar.classList.toggle("btn-outline-primary", !enEjecucion);
+        btnEjecutar.classList.toggle("btn-secondary", enEjecucion);
+
+        btnEjecutar.innerHTML = enEjecucion
+            ? '<i class="fas fa-clock"></i> EN PROCESO'
+            : '<i class="fas fa-play"></i> EJECUTAR';
+    }
+
+    // ===== MENSAJE =====
+    renderAvisoMigracion(data);
+}
+
+//setInterval(() => {
+   // cargarEstadoInicial();
+//}, 20000); // cada 20 segundos
+
+
+function existeElemento(id) {
+    return document.getElementById(id) !== null;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const switchEstatus = document.getElementById("estatusSwitch");
+
+    if (switchEstatus) {
+        switchEstatus.addEventListener("change", function () {
+            cambiarEstatus(this);
+        });
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+    if (btnEjecutar) {
+        btnEjecutar.addEventListener("click", activarMigracion);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+
+    if (btnEjecutar) {
+        btnEjecutar.addEventListener("click", () => {
+            activarMigracion(); // ← AQUÍ SE DISPARA
+        });
+    }
+
+});
