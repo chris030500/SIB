@@ -384,7 +384,7 @@ function btnExtraerFn() {
 	    }
 	    return resp.text();
 	})
-	.then(msg => {
+	/*.then(msg => {
 	    // Mensaje final después de los 3 fetch
 	    // @ts-ignore
 	    Swal.fire({
@@ -394,6 +394,21 @@ function btnExtraerFn() {
 	        confirmButtonText: "Aceptar"
 	    });
 	    window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+	})*/
+	.then(msg => {
+	    // @ts-ignore
+	    Swal.fire({
+	        title: "",
+	        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+	        icon: "success",
+	        confirmButtonText: "Aceptar",
+	        allowOutsideClick: false,
+	        allowEscapeKey: false
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            window.location.href = newUrlBase + "credito/extraccionCampanias";
+	        }
+	    });
 	})
 	.catch(err => {
 	    console.error("Error:", err);
@@ -1258,7 +1273,7 @@ function btnDepuracionBuro() {
 								    }
 								    return resp.text();
 								})
-								.then(() => {
+								/*.then(() => {
 									////////////
 									// @ts-ignore
 									swal({
@@ -1271,7 +1286,22 @@ function btnDepuracionBuro() {
 								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 								    });
 									///////////
-							    })
+							    })*/
+							    .then(msg => {
+								    // @ts-ignore
+								    Swal.fire({
+								        title: "",
+								        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+								        icon: "success",
+								        confirmButtonText: "Aceptar",
+								        allowOutsideClick: false,
+								        allowEscapeKey: false
+								    }).then((result) => {
+								        if (result.isConfirmed) {
+								            window.location.href = newUrlBase + "credito/extraccionCampanias";
+								        }
+								    });
+								})
 								.catch(err => {
 								    console.error("Error: actualizarParamExt", err);
 								    // @ts-ignore

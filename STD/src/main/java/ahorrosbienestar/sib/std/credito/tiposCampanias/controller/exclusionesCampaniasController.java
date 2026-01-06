@@ -113,11 +113,18 @@ public class exclusionesCampaniasController {
 
     @PostMapping("/cargarMunicipios")
     public ResponseEntity<String> cargarExcel(@RequestParam("archivo") MultipartFile archivo) {
+    	logger.info("Entra a cargarMunicipios ");
         try {
+        	logger.info("Entra a cargarMunicipios2 ");
             exclusionMunicipioService.procesarExcel(archivo);
             return ResponseEntity.ok("Archivo procesado correctamente");
-        } catch (Exception e) {
+        /*} catch (Exception e) {
         	logger.info("Error al procesar el archivo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al procesar el archivo: " + e.getMessage());
+        }*/
+        } catch (Exception e) {
+            logger.error("Error al procesar el archivo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar el archivo: " + e.getMessage());
         }
