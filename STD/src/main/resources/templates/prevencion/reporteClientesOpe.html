@@ -121,6 +121,26 @@
 
     <hr>
 
+<!-- ================= AUDITORÍA CLIENTES (OBLIGATORIO) ================= -->
+<div class="mt-4">
+    <label class="fw-bold text-danger">
+        Paso obligatorio – Procesar Auditoría de Clientes
+    </label>
+
+    <button
+  id="btnProcesarAuditoriaClientes"
+  class="btn btn-warning w-100"
+  onclick="procesarAuditoriaClientes()">
+  <i class="bi bi-gear"></i> Procesar Auditoría de Clientes
+</button>
+
+    <small class="text-muted d-block mt-1">
+        Este proceso ejecuta el SP
+        <b>SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES</b>
+        y es obligatorio antes de generar reportes o registrar el visto bueno.
+    </small>
+</div>
+
     <!-- ================= CLIENTES ================= -->
     <div class="mt-4">
         <button class="btn btn-primary w-100"

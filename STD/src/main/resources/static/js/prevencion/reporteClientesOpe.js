@@ -423,15 +423,17 @@ function esFinDeMes(fechaStr) {
 }
  
 function ejecutarVistoBueno() {
-  const fechaInicio = $("#fechaInicio").val();
-  const fechaFin = $("#fechaFin").val();
+const fechaInicioOper = $("#fechaInicio").val() || $("#fechaInicioMigracion").val();
+const fechaFinOper    = $("#fechaFin").val()    || $("#fechaFinMigracion").val();
+const fechaCorteClientes = document.getElementById("fechaFinMigracion").value;
 
-  if (!fechaInicio || !fechaFin) {
-    swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
-    return;
-  }
+if (!fechaInicioOper || !fechaFinOper || !fechaCorteClientes) {
+  swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
+  return;
+}
 
-  const anio = fechaInicio.substring(0, 4);  // ← CALCULA AÑO AUTOMÁTICAMENTE
+
+  const anio = fechaInicioOper.substring(0, 4);  // ← CALCULA AÑO AUTOMÁTICAMENTE
 
   swal({
     title: "¿Desea registrar el visto bueno global?",
@@ -457,15 +459,16 @@ function ejecutarVistoBueno() {
     });
 
 fetch("ejecutarVistoBueno", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-        anio,
-        fechaInicioOper: $("#fechaInicio").val(),
-        fechaFinOper: $("#fechaFin").val(),
-        fechaCorteClientes: $("#fechaCorteClientes").val()
-    })
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({
+    anio: fechaInicioOper.substring(0, 4),
+    fechaInicioOper: fechaInicioOper,
+    fechaFinOper: fechaFinOper,
+    fechaCorteClientes: fechaCorteClientes
+  })
 })
+
 
     .then(res => res.json())
     .then(data => {
@@ -796,9 +799,14 @@ async function generarReporteClientes() {
     });
 
     try {
-        const res = await fetch("generarRptClientesDesdeMigracion", {
-            method: "POST"
-        });
+        const res = await fetch("generarRptClientesPorFechaCorte", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+        fechaCorte: document.getElementById("fechaFinMigracion").value
+    })
+});
+
 
         if (!res.ok) throw new Error();
 
@@ -828,9 +836,9 @@ async function generarReporteClientes() {
 //  Procesar Auditoría de CLIENTES (llama SP en backend)
 // ========================================================
 async function procesarAuditoriaClientes() {
-    const fechaCorte = document.getElementById("fechaCorteClientes").value;
+    const fechaCorte = document.getElementById("fechaFinMigracion").value;
 
-    if (!fechaCorte) {
+if (!fechaCorte) {
         swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
         return;
     }
@@ -885,6 +893,14 @@ async function procesarAuditoriaClientes() {
 // ========================================================
 async function generarReporteOperaciones() {
 
+    const fechaInicio = document.getElementById("fechaInicioMigracion").value;
+    const fechaFin    = document.getElementById("fechaFinMigracion").value;
+
+    if (!fechaInicio || !fechaFin) {
+        swal("Error", "Debe seleccionar fecha inicio y fecha fin.", "warning");
+        return;
+    }
+
     swal({
         title: "Generando reporte de operaciones...",
         content: {
@@ -894,12 +910,19 @@ async function generarReporteOperaciones() {
                 style: "display:flex;justify-content:center;padding:20px;"
             }
         },
-        buttons: false
+        buttons: false,
+        closeOnClickOutside: false,
+        closeOnEsc: false
     });
 
     try {
-        const res = await fetch("generarRptOperacionesDesdeMigracion", {
-            method: "POST"
+        const res = await fetch("generarRptOperacionesAuditoria", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                fechaInicio,
+                fechaFin
+            })
         });
 
         if (!res.ok) throw new Error();
@@ -923,6 +946,7 @@ async function generarReporteOperaciones() {
         swal("Error", "No se pudo generar el reporte.", "error");
     }
 }
+
 
 function renderEstadoMigracion(data) {
 
@@ -986,14 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    const btnEjecutar = document.getElementById("btnEjecutarMigracion");
 
-    if (btnEjecutar) {
-        btnEjecutar.addEventListener("click", () => {
-            activarMigracion(); // ← AQUÍ SE DISPARA
-        });
-    }
 
-});
+

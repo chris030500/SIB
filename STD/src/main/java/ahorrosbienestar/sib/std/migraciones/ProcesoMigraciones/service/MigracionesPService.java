@@ -76,10 +76,10 @@ public class MigracionesPService {
 
         LocalDateTime ejecucion13;
 
-        if (ahora.getHour() < 13) {
+        if (ahora.getHour() < 14) {
             // 👉 Hoy a las 13:00
             ejecucion13 = ahora
-                    .withHour(13)
+                    .withHour(14)
                     .withMinute(0)
                     .withSecond(0)
                     .withNano(0);
@@ -87,7 +87,7 @@ public class MigracionesPService {
             // 👉 Mañana a las 13:00
             ejecucion13 = ahora
                     .plusDays(1)
-                    .withHour(13)
+                    .withHour(14)
                     .withMinute(0)
                     .withSecond(0)
                     .withNano(0);
@@ -96,7 +96,7 @@ public class MigracionesPService {
         entidad.setFechaEjecucion(ejecucion13);
 
         // Informativo para UI
-        entidad.setCron("13:00");
+        entidad.setCron("14:00");
 
         migracionesPRepository.save(entidad);
     }
