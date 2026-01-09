@@ -496,7 +496,9 @@ function btnGenerarArchivoBuro() {
 				
 				///--
 				//console.log("data:::::::::::::",data);
-				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + data)
+				const procesoCampania = Number(data);
+				console.log("procesoCampania: ",procesoCampania);
+				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + procesoCampania)
 			    .then(resp => {
 			        if (!resp.ok) {
 			            throw new Error("Error al validar campania para obtener codigo campania");

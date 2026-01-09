@@ -370,6 +370,8 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     }*/
 	@ResponseBody
 	public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+		
+		logger.info("ConsultaCodigoCam: " + procesoCampania);
 	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
 	    return Map.of("codigo", codigo);
 	}
