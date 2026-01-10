@@ -373,6 +373,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		
 		logger.info("ConsultaCodigoCam: " + procesoCampania);
 	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
+	    logger.info("codigo: " + codigo);
 	    return Map.of("codigo", codigo);
 	}
 	
