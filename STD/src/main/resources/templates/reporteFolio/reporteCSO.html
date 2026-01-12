@@ -3,112 +3,106 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container border p-2 card">
-			<div class="bg-info text-white">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div>
-							<h2 style="text-align:center">Generar Reporte</h2>
+	<section class="section" layout:fragment="page-content">
+
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Generar Reporte</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Reportes</li>
+					<li class="breadcrumb-item active">Folios CSO</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Criterios de Búsqueda</h5>
+
+				<div id="divGenerarReporte">
+
+					<!-- Opción Todos -->
+					<div class="form-check mb-4">
+						<input class="form-check-input" type="checkbox" id="ckTodos" onchange="opcionTodos()">
+						<label class="form-check-label fw-bold" for="ckTodos">
+							Todos los registros
+						</label>
+					</div>
+
+					<!-- Fechas -->
+					<div class="row g-3 mb-4">
+						<div class="col-md-6">
+							<label class="form-label">Fecha Inicio</label>
+							<input class="form-control" type="date" id="dtFechaInicio">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Fecha Fin</label>
+							<input class="form-control" type="date" id="dtFechaFin">
 						</div>
 					</div>
-				</div>
-			</div>
-			<div id="divGenerarReporte" class="container">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Generar Reporte</legend>
-					<div id="divTodos" class="container">
-						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Busqueda Todos los registros.</legend>
-							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-4">
-									<label><input type="checkbox" id="ckTodos" value="first_checkbox" onchange="opcionTodos()"> Todos los
-										registros</label>
-								</div>
-								<div class="col-md-4">
-									<label class="col-form-label"> Fecha de inicio</label>
-									<input class="form-control" type="date" id="dtFechaInicio" placeholder="Fecha desde">
-								</div>
-								<div class="col-md-4">
-									<label class="col-form-label"> Fecha de fin</label>
-									<input class="form-control" type="date" id="dtFechaFin" placeholder="Fecha hasta">
-								</div>
+
+					<!-- Parámetros Específicos -->
+					<div id="divParamBusqueda" class="mb-4">
+						<h6 class="fw-bold mb-3">Filtros Adicionales</h6>
+						<div class="row g-3">
+							<div class="col-md-3">
+								<label class="form-label">Nro. Oficio</label>
+								<select class="form-select" id="nrOficio">
+									<option value="0">Seleccione...</option>
+									<option th:each="opcion : ${cat_lista_oficios}" th:value="${opcion.pk_id_folio}"
+										th:text="${opcion.i_folio}"></option>
+								</select>
 							</div>
-						</fieldset>
-					</div>
-					<div id="divParamBusqueda" class="container">
-						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Parametros de Busqueda.</legend>
-							<div class="row" style="margin-top : 15px ">
-								<div class="col-md-3">
-									<label class="col-form-label"> Nro. Oficio</label>
-									<select class="form-control" id="nrOficio">
-										<option value="0">Seleccione</option>
-										<option th:each="opcionTipo : ${cat_lista_oficios}"
-												th:value="${opcionTipo.pk_id_folio}" th:text="${opcionTipo.i_folio}">
-										</option>
-									</select>
-								</div>
-								<div class="col-md-3">
-									<label class="col-form-label"> Tipo Oficio</label>
-									<select class="form-control" id="iOficio">
-										<option value="0">Seleccione</option>
-										<option th:each="opcionTipo : ${cat_tipo_oficio}"
-												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-										</option>
-									</select>
-								</div>
-								<div class="col-md-3">
-									<label class="col-form-label"> Organo que la Emite</label>
-									<select class="form-control" id="iEmite">
-										<option value="0">Seleccione</option>
-										<option th:each="opcionTipo : ${cat_lista_reguladores}"
-												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-										</option>
-									</select>
-								</div>
-								<div class="col-md-3">
-									<label class="col-form-label"> Estatus del Oficio</label>
-									<select class="form-control" id="iEstatus">
-										<option value="0">Seleccione</option>
-										<option th:each="opcionTipo : ${cat_lista_estatus}"
-												th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}">
-										</option>
-									</select>
-								</div>
+							<div class="col-md-3">
+								<label class="form-label">Tipo Oficio</label>
+								<select class="form-select" id="iOficio">
+									<option value="0">Seleccione...</option>
+									<option th:each="opcion : ${cat_tipo_oficio}" th:value="${opcion.i_opcion}"
+										th:text="${opcion.v_valor}"></option>
+								</select>
 							</div>
-						</fieldset>
+							<div class="col-md-3">
+								<label class="form-label">Órgano Emisor</label>
+								<select class="form-select" id="iEmite">
+									<option value="0">Seleccione...</option>
+									<option th:each="opcion : ${cat_lista_reguladores}" th:value="${opcion.i_opcion}"
+										th:text="${opcion.v_valor}"></option>
+								</select>
+							</div>
+							<div class="col-md-3">
+								<label class="form-label">Estatus</label>
+								<select class="form-select" id="iEstatus">
+									<option value="0">Seleccione...</option>
+									<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
+										th:text="${opcion.v_valor}"></option>
+								</select>
+							</div>
+						</div>
 					</div>
-				</fieldset>
-				<div class="row" style="margin-top : 15px ">
-					<div class="col-md-8"></div>
-					<div class="col-md-4">
-						<button type="button" class="btn btn-primary form-control" id="btnGenerarReporte">Generar
-							Reporte</button>
+
+					<div class="text-end">
+						<button type="button" class="btn btn-primary" id="btnGenerarReporte">
+							<i class="bi bi-file-earmark-text me-1"></i> Generar Reporte
+						</button>
 					</div>
+
 				</div>
 			</div>
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-    	<script th:src="@{/js/bootstrap-table.min.js}"></script>
-        <script th:src="@{/js/jquery.min.js}"></script>
-        <script th:src="@{/js/jquery-3.2.1.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/sweetalert2.all.min.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!-- Scripts -->
+		<script th:src="@{/js/sweetalert2.all.min.js}"></script>
 		<script th:src="@{/js/reporteFolio/reporteFolio.js}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
 </body>
 

@@ -3,189 +3,147 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body onload="buscarSolicitudCredito();">
-	<section class="content" layout:fragment="page-content">
-		<div id="principalID" class="container" style="display: block;">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div class="card-body">
-							<h2 style="text-align:center">Solicitud</h2>
-							<hr>
-							<h6 style="text-align: center; font-size: 12px; font-weight: bold; color: red;"
-								id="mensaje"></h6>
-						</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Detalle de Solicitud</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Validación</li>
+					<li class="breadcrumb-item active">Ver Solicitud</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Información de la Solicitud</h5>
+
+				<div id="mensaje" class="alert alert-danger text-center fw-bold d-none"></div>
+
+				<div class="row g-3 mb-4">
+					<!-- IDs Ocultos y Visibles -->
+					<div class="col-md-4" id="divSolicitudEnvio" style="display:none;">
+						<label class="form-label">Id. Solicitud Envío</label>
+						<input type="text" class="form-control" id="solicitudEnvio" th:value="${solicitudEnvio}"
+							readonly>
 					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card">
-						<div class="card-body">
-							<h5 class="card-title"></h5>
+					<div class="col-md-4">
+						<label class="form-label">No. Solicitud</label>
+						<input type="text" class="form-control" id="i_no_solicitud_core"
+							th:value="${solicitud.i_no_solicitud_core}" readonly>
+					</div>
 
+					<!-- Datos del Crédito -->
+					<div class="col-md-4" id="divIdProducto" style="display:none;">
+						<label class="form-label">ID Producto</label>
+						<input type="text" class="form-control" id="producto" readonly>
+					</div>
+					<div class="col-md-4" id="divclienteId" style="display:none;">
+						<label class="form-label">Cliente ID</label>
+						<input type="text" class="form-control" id="clienteId" readonly>
+					</div>
 
-
-							<div class="row">
-								<div class="col-12">
-									<div class="row">
-										<div id="divSolicitudEnvio" class="col-4" style='display:none'>
-											<label for="solicitudEnvio" class="form-label">Id. Solicitud
-												Envio</label>
-											<input type="text" class="form-control" id="solicitudEnvio"
-												name="solicitudEnvio" th:value="${solicitudEnvio}" readonly>
-										</div>
-										<div class="col-4">
-											<label for="i_no_solicitud_core" class="form-label">No. Solicitud</label>
-											<input type="text" class="form-control" id="i_no_solicitud_core"
-												name="i_no_solicitud_core" th:value="${solicitud.i_no_solicitud_core}"
-												readonly>
-										</div>
-									</div>
-								</div>
-
-								<div class="col-lg-12" id='datoSolicitud'>
-									<div class="row">
-										<div id="divIdProducto" class="col-sm-3" style='display:none'>
-											<label for="producto" class="form-label">IDProducto</label>
-											<input type="text" class="form-control" id="producto" readonly>
-										</div>
-										
-										<div id="divclienteId" class="col-sm-3" style='display:none'>
-
-											<label for="clienteId" class="form-label">ClienteID</label>
-											<input type="text" class="form-control" id="clienteId" readonly>
-										</div>
-
-										<div class="col-sm-4">
-											<label for="producto" class="form-label">Producto</label>
-											<input type="text" class="form-control" id="Nombreproducto" readonly>
-										</div>
-										<div class="col-sm-4">
-											<label for="montoSolicitado" class="form-label">Monto Solicitado</label>
-											<input type="number" class="form-control" id="montoSolicitado" readonly>
-										</div>
-										<div class="col-sm-4">
-											<label for="montoAutorizado" class="form-label">Monto Autorizado</label>
-											<input type="number" class="form-control" id="montoAutorizado" readonly>
-										</div>
-										<div class="col-sm-4">
-											<label for="plazo" class="form-label">Plazo</label>
-											<input type="text" class="form-control" id="plazo" readonly>
-										</div>
-										<div class="col-sm-4">
-											<label for="tasaNormal" class="form-label">Tasa Normal</label>
-											<input type="number" class="form-control" id="tasaNormal" readonly>
-										</div>
-
-										<div class="col-sm-4">
-											<label for="estatus" class="form-label">Estatus</label>
-											<input type="text" class="form-control" id="estatus" readonly>
-										</div>
-									</div>
-								</div>
-
-								<div id="divParticipantes" class="container">
-									<div class="row" style="margin-top : 15px ">
-										<fieldset class="border p-2">
-											<legend class="w-auto">Participantes</legend>
-											<table id="participantes" class="table">
-												<thead>
-													<tr>
-														<th scope="col">Nombre</th>
-														<th scope="col">Rol</th>
-														<th scope="col">Tel. Celular</th>
-														<th scope="col">Correo</th>
-													</tr>
-												</thead>
-												<tbody>
-
-												</tbody>
-											</table>
-										</fieldset>
-									</div>
-								</div>
-
-								<div id="divDocumentos" class="container" style='display:none'>
-									<div class="row" style="margin-top : 15px">
-										<fieldset class="border p-2">
-											<legend class="w-auto">Archivos</legend>
-											<table class="table table-bordered table-striped" id="tablaDocumentos">
-												<thead>
-													<tr>
-														<th>Nombre de documento</th>
-														<th>Ver documento</th>
-														<th>Aprobar documento</th>
-													</tr>
-												</thead>
-												<tbody>
-												</tbody>
-											</table>
-										</fieldset>
-
-									</div>
-								</div>
-							</div>
-							<br>
-							<div id="btnVoBo" class="col-sm-2" style='display:none'>
-								<button id="btnVoBoDocumentos" type="button" class="btn btn-primary">
-									<span id="spanGuardar" style="display: block;"> Guardar </span>
-									<span id="spanCargando" style="display: none;"
-										class="spinner-border spinner-border-sm mr-2"></span>
-								</button>
-							</div>
-
-						</div>
+					<div class="col-md-4">
+						<label class="form-label">Producto</label>
+						<input type="text" class="form-control" id="Nombreproducto" readonly>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Monto Solicitado</label>
+						<input type="number" class="form-control" id="montoSolicitado" readonly>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Monto Autorizado</label>
+						<input type="number" class="form-control" id="montoAutorizado" readonly>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Plazo</label>
+						<input type="text" class="form-control" id="plazo" readonly>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Tasa Normal</label>
+						<input type="number" class="form-control" id="tasaNormal" readonly>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Estatus</label>
+						<input type="text" class="form-control" id="estatus" readonly>
 					</div>
 				</div>
 
+				<hr class="my-4">
+
+				<!-- Participantes -->
+				<div id="divParticipantes" class="mb-4">
+					<h5 class="card-title">Participantes</h5>
+					<div class="table-responsive">
+						<table id="participantes" class="table table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>Nombre</th>
+									<th>Rol</th>
+									<th>Tel. Celular</th>
+									<th>Correo</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Documentos -->
+				<div id="divDocumentos" class="mb-4" style="display:none;">
+					<h5 class="card-title">Documentos</h5>
+					<div class="table-responsive">
+						<table class="table table-hover" id="tablaDocumentos">
+							<thead class="table-light">
+								<tr>
+									<th>Nombre de documento</th>
+									<th>Ver documento</th>
+									<th>Aprobar documento</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Botón VoBo -->
+				<div id="btnVoBo" class="text-end" style="display:none;">
+					<button id="btnVoBoDocumentos" type="button" class="btn btn-primary">
+						<span id="spanGuardar">Guardar</span>
+						<span id="spanCargando" class="spinner-border spinner-border-sm ms-2"
+							style="display: none;"></span>
+					</button>
+				</div>
 
 			</div>
 		</div>
 
-		<div id="loader"></div>
-		<!--<div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; 
-			transform: translate(-50%, -50%); z-index: 9999; 
-			background-color: rgba(0, 0, 0, 0.5); color: #fff; padding: 16px;">
-			Cargando...
-		</div>-->
-
-		<div id="spinnerID" class="container" style="display: none;">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="card card-primary">
-						<div class="card-header">
-							<h2 style="color: black; text-align: center;">Carga de solicitud</h2>
-						</div>
-						<div class="card-body" style="padding-top: 20px; height: 300px;">
-							<div class="row" style="height: 90px;"></div>
-							<div class="row" style="text-align: center;">
-								<div class="col-sm-12">
-									<div class="spinner-border text-primary"></div>
-								</div>
-							</div>
-						</div>
-					</div>
+		<!-- Spinner Overlay -->
+		<div id="spinnerID"
+			class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center"
+			style="background: rgba(255,255,255,0.8); z-index: 9999;">
+			<div class="text-center">
+				<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+					<span class="visually-hidden">Cargando...</span>
 				</div>
+				<h4 class="mt-3 text-primary">Cargando solicitud...</h4>
 			</div>
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<!--<script th:src="@{/js/usuario/usuarios.js}"></script>-->
-		<!--<script th:src="@{/js/validacionDocumentos/dataTableValidacionDocumentos.js}"></script>-->
+		<!-- Scripts -->
 		<script th:src="@{/js/validacionDocumentos/validacionDocumentos.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
 </body>
 

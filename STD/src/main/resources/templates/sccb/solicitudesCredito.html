@@ -3,333 +3,272 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
-
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content" style="background-color: white;">
-		<div class="container">
-			<div class="border p-2 card">
+	<section class="section" layout:fragment="page-content">
 
-				<div class="bg-info text-white">
-					<div class="row no-gutters">
-						<div class="col-md-2"></div>
-						<div class="col-md-8">
-							<div>
-								<h2 style="text-align:center">Solicitudes de Crédito</h2>
-							</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Solicitudes de Crédito</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">SCCB</li>
+					<li class="breadcrumb-item active">Solicitudes</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Búsqueda de Solicitudes</h5>
+
+				<form class="row g-3 mb-4">
+					<div class="col-md-4">
+						<label class="form-label">Buscar por</label>
+						<select class="form-select" id="opciones">
+							<option value="0" selected>Seleccione...</option>
+							<option value="1">No. de crédito</option>
+							<option value="2">No. de cliente</option>
+							<option value="3">Nombre</option>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<!-- Búsqueda Crédito -->
+						<div id="divCredito" style="display: none;">
+							<label class="form-label">No. de Crédito</label>
+							<input type="text" class="form-control solo-numero" id="creditoBusqueda"
+								placeholder="Ingrese número de crédito">
+						</div>
+
+						<!-- Búsqueda Cliente -->
+						<div id="divCliente" style="display: none;">
+							<label class="form-label">No. de Cliente</label>
+							<input type="text" class="form-control solo-numero" id="clienteBusqueda"
+								placeholder="Ingrese número de cliente">
+						</div>
+
+						<!-- Búsqueda Nombre -->
+						<div id="divName" style="display: none;">
+							<label class="form-label">Nombre</label>
+							<input type="search" class="form-control mb-2" id="nameBusqueda"
+								placeholder="Buscar nombre..." onkeyup="buscarNombre(this.value);">
+							<select id="selectName" class="form-select" name="selectName" size="3"></select>
 						</div>
 					</div>
-				</div>
-        	</div>
-			<form>
-				<div class="row p-4">
-					<div class="col-5">
-						<div class="row">
-							<div class="col-2">
-								<label class="form-label">Buscar: </label>
-							</div>
-							<div class="col-8">
-								<select class="form-control" id="opciones">
-									<option value="0">Seleccione</option>
-									<option value="1">No. de crédito</option>
-									<option value="2">No. de cliente</option>
-									<option value="3">Nombre</option>
-								</select>
-							</div>
-						</div>
+
+					<div class="col-md-2 d-flex align-items-end gap-2">
+						<button class="btn btn-primary w-100" type="button" onclick="buscarDatos()" id="btnBuscar"
+							style="display: none;">
+							<i class="bi bi-search me-1"></i> Buscar
+						</button>
+						<button class="btn btn-secondary w-100" type="button" onclick="cleanView()" id="btnClean"
+							style="display: none;">
+							<i class="bi bi-eraser-fill me-1"></i> Limpiar
+						</button>
 					</div>
-					<div class="col-6">
-						<div class="row" style="display: none;" id="divCredito">
-							<div class="col-3">
-								<label for="creditoBusqueda" class="col-form-label">No. de Crédito</label>
-							</div>
-							<div class="col-8">
-								<input type="text" class="solo-numero form-control" id="creditoBusqueda"
-								placeholder="No. de crédito">
-							</div>
-						</div>
-						<div class="row" style="display: none;" id="divCliente">
-							<div class="col-3">
-								<label for="clienteBusqueda" class="col-form-label">No. de Cliente</label>
-							</div>
-							<div class="col-8">
-								<input type="text" class="solo-numero form-control" id="clienteBusqueda"
-								placeholder="No. de cliente">
-							</div>
-						</div>
-						<div class="row" style="display: none;" id="divName">
-							<div class="col-3">
-								<label for="nameBusqueda" class="col-form-label">Nombre</label>
-							</div>
-							<div class="col-8">
-								<div class="row">
-									<input type="search" class="form-control" id="nameBusqueda"
-									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
-								</div>
-							</div>
-							<div class="row p-2">
-								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
-										
-								</select>
-							</div>
-						</div>
-					</div>
-					<div class="col-1">
-						<div class="row">
-							<div class="col-12">
-								<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
-								title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
-								th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
-							
-									<i class="bi bi-search"></i>
-							
-								</button>
-								<button class="btn btn-secondary mt-1" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
-								title="Limpiar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
-								th:onclick="cleanView()" id="btnClean" style="display: none;">
-							
-									<i class="bi bi-eraser-fill"></i>
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</form>
-			<div id="divTable" class="row justify-content-center mb-3" style="display: none;">
-				<div class="table-responsive mb-3">
-					<table class="table table-bordered" style="width: 100%; font-size: small; text-align: center;" id="solicitudes">
-						<thead style="background-color: #0D6EFD;">
-							<tr class="text-white">
-								<th>Soicitud</th>
-								<th>Acuerdo</th>
-								<th>Nombre</th>
-								<th>Cliente</th>
-								<th>Rol</th>
-								<th>Centro</th>
-								<th>Etapa</th>
-								<th>Estatus</th>
-								<th>Monto</th>
-								<th>Recepción</th>
-								<th>Inicio trámite</th>
-								<th>Autorización</th>
-								<th>Desembolso</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-			</div>
-     
-			<div id="divDatosSolicitud" style="display: none;">
-				<div style="background-color: #D9D9D9;" class="content mb-2">
-					<h2 style="text-align: center;">Solicitud de Crédito</h2>
-				</div>
-				<div class="container">
-					<div class="row border mb-3" style="background-color: #D9D9D9;">
-						<h4>Datos del Crédito</h4>
-					</div>
-					<div class="row justify-content-center" style="text-align: center; font-size: small;">
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="font-weight: bold;">Folio Solicitud</p>
-							</div>
-							<div id="folioSolicitud" class="row border" style="height: 60px;">
-								
-							</div>
-						</div>
-						
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="font-weight: bold;">Ac. Crédito</p>
-							</div>
-							<div id="acCredito" class="row border" style="height: 60px;">
-								
-							</div>
-						</div>
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD; ">
-								<p style="font-weight: bold;">Ac. Dep. Respaldo</p>
-							</div>
-							<div id="acDepRespaldo" class="row border" style="height: 60px;">
-								
-							</div>
-						</div>
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="font-weight: bold;">Ac. Operativa</p>
-							</div>
-							<div id="acOperativa" class="row border" style="height: 60px;">
-								
-							</div>
-						</div>
-						
-						<div class="col-sm-2 mx-2">
-							<div class="row text-white border" style="background-color: #0D6EFD;">
-								<p style="font-weight: bold;">Recibe</p>
-							</div>
-							<div id="recibe" class="row border" style="height: 60px;">
-								
-							</div>
-						</div>
-					</div>
-					
-					<div class="row justify-content-center mt-3">
-						<div class="col-sm-4 mx-1">
-							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; font-weight: bold; font-size: medium; text-align: center;">Captura</h5>
-								<div id="captura" class="border" style="background-color: #D9D9D9;">
-									
-								</div>
-								<div class="card-body border mt-3" style="font-size: small; text-align: center; height: 400px;">
-									<div class="row border">
-										
-										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="font-weight: bold;">Fecha Recepción</p>
-											</div>
-											<div id="fechaRecepcion" class="row border">
-												
-											</div>
-										</div>
-										
-										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="font-weight: bold; ">Fecha Resultado</p>
-											</div>
-											<div id="fechaResultado" class="row">
-												
-											</div>
-										</div>
-										
-									</div>
-									<div class="row border mt-2">
-										
-										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;">
-												<p style="text-align: center; font-size: small; font-weight: bold;">Etapa Recepción</p>
-											</div>
-											<div id="etapaRecepción" class="row">
-												
-											</div>
-										</div>
-										
-										<div class="col">
-											<div class="row border" style="background-color: #D9D9D9;;">
-												<p style="text-align: center; font-size: small; font-weight: bold;">Estatus Resultado</p>
-											</div>
-											<div id="estatusResultado" class="row border">
-												
-											</div>
-										</div>
-										
-									</div>
-								</div>
-							</div>
-						</div>
-						
-						<div class="col-sm-4 mx-1">
-							<div class="card border">
-								<h5 class="card-header border text-white" style="background-color: #0D6EFD; text-align: center; font-weight: bold; font-size: medium;">Centro</h5>
-								<div id="centro" class="border" style="background-color: #D9D9D9;">
-									
-								</div>
-								<div class="card-body border mt-3" style="text-align: center; font-size: small; height: 400px;">
-									<div class="row border" style="background-color: #D9D9D9;">
-										<p style="font-weight: bold;">Fecha Inicio de Trámite</p>
-									</div>
-									<div id="fechaInicioTramite" class="row border">
-										
-									</div>
-									
-									<div class="row border mt-3" style="background-color: #D9D9D9;">
-										<p style="font-weight: bold;">Fecha Autorización</p>
-									</div>
-									<div id="fechaAutorizacion" class="row border">
-										
-									</div>
-									<div class="row border mt-2" style="background-color: #D9D9D9;">
-										<p style="font-weight: bold;">Fecha Desembolso</p>
-									</div>
-									<div id="fechaDesembolso" class="row border">
-										
-									</div>
-									
-									<div class="row border mt-2" style="background-color: #D9D9D9;">
-										<p style="font-weight: bold;">Fecha Reconsideración</p>
-									</div>
-									<div id="fechaReconsideracion" class="row border">
-										
-									</div>
-									
-									<div class="row border mt-2" style="background-color: #D9D9D9;">
-										<p style="font-weight: bold;">Monto del Avalúo</p>
-									</div>
-									<div id="montoAvaluo" class="row border">
-										
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="row border" style="background-color: #BDECFB;">
-						<h4>Datos de la Solicitud</h4>
-					</div>
-					<div class="row justify-content-center mt-3">
-						<table id="tblDatosCredito" class="table table-responsive table-bordered table-sm" style="width: 100%;">
-						
+				</form>
+
+				<!-- Tabla Resultados -->
+				<div id="divTable" style="display: none;" class="mb-4">
+					<div class="table-responsive">
+						<table id="solicitudes" class="table table-hover text-center">
+							<thead class="table-light">
+								<tr>
+									<th>Solicitud</th>
+									<th>Acuerdo</th>
+									<th>Nombre</th>
+									<th>Cliente</th>
+									<th>Rol</th>
+									<th>Centro</th>
+									<th>Etapa</th>
+									<th>Estatus</th>
+									<th>Monto</th>
+									<th>Recepción</th>
+									<th>Inicio trámite</th>
+									<th>Autorización</th>
+									<th>Desembolso</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
 						</table>
 					</div>
-					
-					<div class="row justify-content-between p-2">
-						<div class="col-sm-5">
-							<div class="row" style="font-size: small;">
-								<p style='font-weight: bold;'>Observaciones Responsables:</p>
+				</div>
+
+				<!-- Detalle Solicitud -->
+				<div id="divDatosSolicitud" style="display: none;">
+					<div class="alert alert-secondary text-center fw-bold mb-3">
+						Solicitud de Crédito
+					</div>
+
+					<!-- Datos del Crédito (Cards Superiores) -->
+					<div class="row g-3 mb-4 text-center">
+						<div class="col-md">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white fw-bold">Folio Solicitud</div>
+								<div class="card-body d-flex align-items-center justify-content-center">
+									<h5 class="card-title mb-0" id="folioSolicitud"></h5>
+								</div>
 							</div>
-							<div id="observacionesRes" class="row p-2" style="background-color: #D9D9D9; height: 300px; font-size: small;">
-								
-							</div>
-						
 						</div>
-						
-						<div class="col-sm-5">
-							<div class="row" style="font-size: small;">
-								<p style='font-weight: bold;'>Observaciones Centro Crédito:</p>
+						<div class="col-md">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white fw-bold">Ac. Crédito</div>
+								<div class="card-body d-flex align-items-center justify-content-center">
+									<h5 class="card-title mb-0" id="acCredito"></h5>
+								</div>
 							</div>
-							<div id="observacionesCC" class="row p-2" style="background-color: #D9D9D9; height: 300px; font-size: small;">
-								
+						</div>
+						<div class="col-md">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white fw-bold">Ac. Dep. Respaldo</div>
+								<div class="card-body d-flex align-items-center justify-content-center">
+									<h5 class="card-title mb-0" id="acDepRespaldo"></h5>
+								</div>
 							</div>
-						
+						</div>
+						<div class="col-md">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white fw-bold">Ac. Operativa</div>
+								<div class="card-body d-flex align-items-center justify-content-center">
+									<h5 class="card-title mb-0" id="acOperativa"></h5>
+								</div>
+							</div>
+						</div>
+						<div class="col-md">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white fw-bold">Recibe</div>
+								<div class="card-body d-flex align-items-center justify-content-center">
+									<h5 class="card-title mb-0" id="recibe"></h5>
+								</div>
+							</div>
 						</div>
 					</div>
-					
+
+					<!-- Captura y Centro -->
+					<div class="row g-3 mb-4">
+						<!-- Captura -->
+						<div class="col-md-6">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white text-center fw-bold">Captura</div>
+								<div class="card-body bg-light">
+									<div id="captura" class="mb-3 text-center fw-bold"></div>
+
+									<div class="row g-2">
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Fecha Recepción</small>
+												<span id="fechaRecepcion"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Fecha Resultado</small>
+												<span id="fechaResultado"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Etapa Recepción</small>
+												<span id="etapaRecepción"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Estatus Resultado</small>
+												<span id="estatusResultado"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Centro -->
+						<div class="col-md-6">
+							<div class="card border h-100">
+								<div class="card-header bg-primary text-white text-center fw-bold">Centro</div>
+								<div class="card-body bg-light">
+									<div id="centro" class="mb-3 text-center fw-bold"></div>
+
+									<div class="row g-2">
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Inicio Trámite</small>
+												<span id="fechaInicioTramite"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Autorización</small>
+												<span id="fechaAutorizacion"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Desembolso</small>
+												<span id="fechaDesembolso"></span>
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="border p-2 bg-white text-center h-100">
+												<small class="fw-bold d-block text-muted">Reconsideración</small>
+												<span id="fechaReconsideracion"></span>
+											</div>
+										</div>
+										<div class="col-12">
+											<div class="border p-2 bg-white text-center">
+												<small class="fw-bold d-block text-muted">Monto del Avalúo</small>
+												<span id="montoAvaluo"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Datos de la Solicitud -->
+					<div class="card border mb-4">
+						<div class="card-header bg-info text-white fw-bold">Datos de la Solicitud</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table id="tblDatosCredito" class="table table-bordered table-sm w-100"></table>
+							</div>
+						</div>
+					</div>
+
+					<!-- Observaciones -->
+					<div class="row g-3">
+						<div class="col-md-6">
+							<label class="fw-bold mb-2">Observaciones Responsables:</label>
+							<div id="observacionesRes" class="border p-3 bg-light rounded"
+								style="height: 200px; overflow-y: auto;"></div>
+						</div>
+						<div class="col-md-6">
+							<label class="fw-bold mb-2">Observaciones Centro Crédito:</label>
+							<div id="observacionesCC" class="border p-3 bg-light rounded"
+								style="height: 200px; overflow-y: auto;"></div>
+						</div>
+					</div>
+
 				</div>
+
 			</div>
 		</div>
-    </section>
-    <th:block layout:fragment="page-scripts">
-        <script th:src="@{/js/jquery.min.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/jquery-3.5.1.js}"></script>
-        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-         <script th:src="@{/js/datatables.min.js}"></script>
-        <script th:src="@{/js/sweetalert2@7.js}"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/sccb/solicitudes.js}"></script>
-    </th:block>
-</body>
 
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!-- Scripts -->
+		<script th:src="@{/js/sweetalert2@7.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/sccb/solicitudes.js}"></script>
+		<!-- Eliminados scripts legacy -->
+	</th:block>
+</body>
 
 </html>

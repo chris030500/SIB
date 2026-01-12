@@ -3,104 +3,95 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="row">
-				<div class="col-md-12">
-					<div class="card card-primary">
-						<div class="card-header">
-							<h2 style="color: black; text-align: center;">Parametros de bloqueo de sesiones</h2>
-						</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Bloqueo de Sesiones</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Configuración</li>
+					<li class="breadcrumb-item active">Bloqueo Sesiones</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Configurar Parámetros</h5>
+
+						<form th:action="@{/configuracion/guardarBloqueoSesiones}" method="post" class="row g-3">
+
+							<div class="col-12">
+								<label for="intento" class="form-label">Número máximo de intentos</label>
+								<input type="number" class="form-control" id="intento" name="intento"
+									placeholder="Ej: 3" autocomplete="off">
+								<div class="form-text">Intentos de inicio de sesión fallidos antes del bloqueo.</div>
+							</div>
+
+							<div class="col-12">
+								<label for="pBloqueo" class="form-label">Periodo de bloqueo (Minutos)</label>
+								<input type="number" class="form-control" id="pBloqueo" name="pBloqueo"
+									placeholder="Ej: 30" autocomplete="off">
+								<div class="form-text">Tiempo durante el cual el usuario no puede iniciar sesión.</div>
+							</div>
+
+							<div class="col-12">
+								<label for="pDias" class="form-label">Vigencia de la cuenta (Días)</label>
+								<input type="number" class="form-control" id="pDias" name="pDias" placeholder="Ej: 90"
+									autocomplete="off">
+								<div class="form-text">Periodo de inactividad tras el cual la cuenta se bloquea.</div>
+							</div>
+
+							<div class="col-12 text-end">
+								<button type="button" onclick="guardarConfSesion()" class="btn btn-primary">
+									<i class="bi bi-save me-1"></i> Guardar
+								</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 
+			<div class="col-lg-4">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Parámetros Actuales</h5>
 
-			<div class="row">
-				<div class="col-lg-8">
-					<div class="card mb-4">
-						<div class="card-header">Agregar parametros</div>
-						<div class="card-body">
-							<form th:action="@{/configuracion/guardarBloqueoSesiones}" method="post">
-
-								<div class="form-group">
-									<label for="intento">Número máximo de intentos:</label>
-									<input type="number" class="form-control" id="intento" name="intento"
-										placeholder="Intentos de inicio de sesión fallidos." autocomplete="off">
-								</div>
-
-								<!--Especifica el periodo de tiempo durante el cual un usuario no puede iniciar sesión 
-								en la aplicación después de exceder el número máximo de intentos de inicio de sesión fallidos. -->
-								<div class="form-group">
-									<label for="pBloqueo">Periodo de bloqueo (MINUTOS):</label> <input type="number"
-										class="form-control" id="pBloqueo" name="pBloqueo"
-										placeholder="Periodo durante el cual el usuario no puede iniciar sesión"
-										autocomplete="off">
-								</div>
-
-								<!--Especifica el periodo en días que tiene permitido estar activa . -->
-								<div class="form-group">
-									<label for="pDias">Periodo que se encontrará activa la cuenta (días):</label>
-									<input type="number" class="form-control" id="pDias" name="pDias"
-										placeholder="Periodo para la inactividad de la cuenta, la cuenta se bloquea."
-										autocomplete="off">
-								</div>
-
-								<br>
-								<div class="col-sm-2">
-									<button type="button" onclick="guardarConfSesion()"
-										class="btn btn-primary">Guardar</button>
-								</div>
-							</form>
+						<div class="mb-3">
+							<label class="form-label fw-bold">Máximo de intentos</label>
+							<input type="text" class="form-control bg-light" th:value="${intentos}" readonly>
 						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-bold">Periodo bloqueo (min)</label>
+							<input type="text" class="form-control bg-light" th:value="${pBloqueo}" readonly>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label fw-bold">Vigencia cuenta (días)</label>
+							<input type="text" class="form-control bg-light" th:value="${pDias}" readonly>
+						</div>
+
 					</div>
 				</div>
-
-				<div class="col-lg-4">
-					<div class="card mb-4">
-						<div class="card-header">Parametros actuales</div>
-						<div class="card-body">
-							<div class="form-group">
-								<label for="intentos">Número máximo de intentos:</label> <input type="number"
-									class="form-control" th:value="${intentos}"
-									placeholder="Intentos de inicio de sesión fallidos">
-							</div>
-
-							<div class="form-group">
-								<label for="pBloqueo">Periodo de bloqueo (MINUTOS):</label> <input type="number"
-									class="form-control" th:value="${pBloqueo}"
-									placeholder="Periodo durante el cual el usuario no puede iniciar sesión">
-							</div>
-
-							<div class="form-group">
-								<label for="pDias">Periodo que se encontrará activa la cuenta (días):</label> <input
-									type="number" class="form-control" th:value="${pDias}"
-									placeholder="Periodo para la inactividad de la cuenta, la cuenta se bloquea.">
-							</div>
-						</div>
-					</div>
-				</div>
-
-
 			</div>
 		</div>
+
 	</section>
 
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script th:src="@{/js/jquery-1.10.2.js}"></script>
-		<script th:src="@{/js/jquery-ui.js}"></script>
-	    <script th:src="@{/js/sweetalert.min.js}"></script>
+		<!-- Scripts -->
 		<script th:src="@{/js/configuracion.js}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
 
 </body>

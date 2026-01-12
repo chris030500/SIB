@@ -1,10 +1,10 @@
-var obtenerEstados = "exclusiones/getEstados"; 
+var obtenerEstados = "exclusiones/getEstados";
 var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarIndicadorMunicipios = "exclusiones/actualizarIndicadorMunicipios";
 var obtenerConvenios = "exclusiones/getConveniosNomina";
 var obtenerConveniosActivos = "exclusiones/getConveniosNominaActivos?descConvenio=";
 var obtenerConveniosDepurar = "exclusiones/getConveniosNominaDepurar?descConvenio=";
-var actualizarIndicadorConvenios  = "exclusiones/actualizarIndicadorConveniosNomina";
+var actualizarIndicadorConvenios = "exclusiones/actualizarIndicadorConveniosNomina";
 var obtenerPuestosOcupacionActivos = "exclusiones/getPuestosOcupacionActivos";
 var obtenerPuestosOcupacionDepurar = "exclusiones/getPuestosOcupacionDepurar";
 var actualizarIndicadorPuestos = "exclusiones/actualizarIndicadorPuestos";
@@ -29,12 +29,12 @@ function listaEstados() {
 
     // Hacer la solicitud AJAX para obtener los estados
     $.ajax({
-        url: getAbsolutePath() + obtenerEstados,
+        url: obtenerEstados,
         type: "GET",
         dataType: "JSON",
-        success: function(res) {
+        success: function (res) {
             // Iterar sobre los datos recibidos y agregar opciones al select
-            $.each(res.estados, function(index, estado) {
+            $.each(res.estados, function (index, estado) {
                 var option = $('<option>', {
                     value: estado.id_estado, // ID del estado
                     text: estado.nombre_estado // Nombre del estado
@@ -44,7 +44,7 @@ function listaEstados() {
                 selectEstados.append(option);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener los estados: " + error);
         }
     });
@@ -60,17 +60,17 @@ function listaMunicipios(estadoId) {
     selectMunicipios.append('<option value="">Seleccionar municipio</option>');
 
     // Hacer la solicitud AJAX para obtener los municipios por estado
-    
+
     $.ajax({
-        url: getAbsolutePath() + obtenerMunicipios,
+        url: obtenerMunicipios,
         type: "GET",
         dataType: "JSON",
         data: {
             idEstado: estadoId // Enviar el ID del estado seleccionado
         },
-        success: function(res) {
+        success: function (res) {
             // Iterar sobre los datos recibidos y agregar opciones al select
-            $.each(res.municipios, function(index, municipio) {
+            $.each(res.municipios, function (index, municipio) {
                 var option = $('<option>', {
                     value: municipio.id_municipio, // ID del municipio
                     text: municipio.nombre_municipio // Nombre del municipio
@@ -80,182 +80,185 @@ function listaMunicipios(estadoId) {
                 selectMunicipios.append(option);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener los municipios: " + error);
         }
     });
 }
 
-document.getElementById('btnAgregar').addEventListener('click', function() {
-    // Obtener los valores seleccionados
-    const idEstado = document.getElementById('opcionesEstado').value;
-    const idMunicipio = document.getElementById('opcionesMunicipio').value;
-    
+var btnAgregar = document.getElementById('btnAgregar');
+if (btnAgregar) {
+    btnAgregar.addEventListener('click', function () {
+        // Obtener los valores seleccionados
+        const idEstado = document.getElementById('opcionesEstado').value;
+        const idMunicipio = document.getElementById('opcionesMunicipio').value;
 
-    // Verificar que ambos valores están seleccionados
-    if (idEstado && idMunicipio) {
-        // Llamar a la función para actualizar
-       updateMunicipios(idEstado, idMunicipio, 0);
-    } else {
-        alert('Por favor, seleccione un estado y un municipio.');
-    }
-});
+
+        // Verificar que ambos valores están seleccionados
+        if (idEstado && idMunicipio) {
+            // Llamar a la función para actualizar
+            updateMunicipios(idEstado, idMunicipio, 0);
+        } else {
+            alert('Por favor, seleccione un estado y un municipio.');
+        }
+    });
+}
 
 
 function updateMunicipios(idEstado, idMunicipio, indicadorDepurar) {
-    
-   	var servicioURL = actualizarIndicadorMunicipios + "?idEstado=" + Number(idEstado) + "&idMunicipio=" + Number(idMunicipio) + "&indicadorDepurar=" + indicadorDepurar;
-   			
-   	$.ajax({
-		url: getAbsolutePath() + servicioURL,
-		type: "GET",
-		success: function(response) {
-            var mensaje =  response.municipio.i_indicador_depurar === 0 ? 
-            `Se ha guardado el municipio de ${response.municipio.vc_nombre} correctamente.` : 
-            `Se ha deshabilitado el municipio de ${response.municipio.vc_nombre} exitosamente.`;
-            
-            
+
+    var servicioURL = actualizarIndicadorMunicipios + "?idEstado=" + Number(idEstado) + "&idMunicipio=" + Number(idMunicipio) + "&indicadorDepurar=" + indicadorDepurar;
+
+    $.ajax({
+        url: servicioURL,
+        type: "GET",
+        success: function (response) {
+            var mensaje = response.municipio.i_indicador_depurar === 0 ?
+                `Se ha guardado el municipio de ${response.municipio.vc_nombre} correctamente.` :
+                `Se ha deshabilitado el municipio de ${response.municipio.vc_nombre} exitosamente.`;
+
+
             if (response.municipio.i_indicador_depurar === 0) {
-                
-                showSwal('¡Guardado exitoso!', mensaje, 'success');  
+
+                showSwal('¡Guardado exitoso!', mensaje, 'success');
             }
-            
+
             if (response.municipio.i_indicador_depurar === 1) {
-                
+
                 showSwal('¡Eliminado exitoso!', mensaje, 'success');
             }
-            
-			$('#opcionesMunicipio').empty();
-			listaEstados();
-			listaMunicipiosConCobertura();
-		},
-		error: function(xhr, status, error) {
-            
+
+            $('#opcionesMunicipio').empty();
+            listaEstados();
+            listaMunicipiosConCobertura();
+        },
+        error: function (xhr, status, error) {
+
             showSwal('Error!', `Hubo un problema al guardar los datos.`, 'error');
-		}
-	});
+        }
+    });
 }
 
 //Funcion para buscar convenio activo
 function search_convenioActivo(cadena) {
-	var divConveniosActivos = $('#conveniosActivos');
-	
-	// Limpiar el contenido actual antes de agregar nuevos resultados
+    var divConveniosActivos = $('#conveniosActivos');
+
+    // Limpiar el contenido actual antes de agregar nuevos resultados
     divConveniosActivos.empty();
 
-	$.ajax({
-		url: getAbsolutePath() + obtenerConveniosActivos + cadena,
-		type: "GET",
-		dataType: "JSON",
-		success: function(res) {
+    $.ajax({
+        url: obtenerConveniosActivos + cadena,
+        type: "GET",
+        dataType: "JSON",
+        success: function (res) {
             var convenios = res.conveniosActivos
-            
-			for (var i = 0; i < convenios.length; i++) {
-				
-				var div = $("<div>")
-                .addClass("convenioA border")
-                .text(convenios[i].desc_convenio)
-                .attr("convenio-id", convenios[i].id_convenio);
-                
-                div.on("click", function() {
+
+            for (var i = 0; i < convenios.length; i++) {
+
+                var div = $("<div>")
+                    .addClass("convenioA border")
+                    .text(convenios[i].desc_convenio)
+                    .attr("convenio-id", convenios[i].id_convenio);
+
+                div.on("click", function () {
                     $(".convenioA").removeClass("selected border-primary"); // Remover selección previa
                     $(this).addClass("selected border-primary");  // Añadir clase selected
-                    
+
                     // Obtener el ID del convenio seleccionado
                     var idConvenio = $(this).attr("convenio-id");
                     convenioSeleccionado = $(this);
-                    
+
                 });
 
-               divConveniosActivos.append(div);
-			}
+                divConveniosActivos.append(div);
+            }
 
-		}
-	});
+        }
+    });
 }
 
 //Funcion para buscar convenio depurar
 function search_convenioDepurar(cadena) {
-	var divConveniosDepurar = $('#conveniosDepurar');
-	
-	// Limpiar el contenido actual antes de agregar nuevos resultados
+    var divConveniosDepurar = $('#conveniosDepurar');
+
+    // Limpiar el contenido actual antes de agregar nuevos resultados
     divConveniosDepurar.empty();
 
-	$.ajax({
-		url: getAbsolutePath() + obtenerConveniosDepurar + cadena,
-		type: "GET",
-		dataType: "JSON",
-		success: function(res) {
-            
+    $.ajax({
+        url: obtenerConveniosDepurar + cadena,
+        type: "GET",
+        dataType: "JSON",
+        success: function (res) {
+
             var convenios = res.conveniosDepurar
-            
-			for (var i = 0; i < convenios.length; i++) {
-				
-				var div = $("<div>")
-                .addClass("convenioA border")
-                .text(convenios[i].desc_convenio)
-                .attr("convenio-id", convenios[i].id_convenio);
-                
-                div.on("click", function() {
+
+            for (var i = 0; i < convenios.length; i++) {
+
+                var div = $("<div>")
+                    .addClass("convenioA border")
+                    .text(convenios[i].desc_convenio)
+                    .attr("convenio-id", convenios[i].id_convenio);
+
+                div.on("click", function () {
                     $(".convenioA").removeClass("selected border-primary"); // Remover selección previa
                     $(this).addClass("selected border-primary");  // Añadir clase selected
-                    
+
                     // Obtener el ID del convenio seleccionado
                     var idConvenio = $(this).attr("convenio-id");
                     convenioSeleccionado = $(this);
-                    
+
                 });
 
-               divConveniosDepurar.append(div);
-			}
+                divConveniosDepurar.append(div);
+            }
 
-		}
-	});
+        }
+    });
 }
 
 function limpiarDivConvenio() {
-    
+
     $("#conveniosDepurar").empty();
     $("#conveniosActivos").empty();
-    
+
 }
 
 function updateIndicadorConvenio(idConvenio, indicadorDepurar) {
-    
+
     var servicioURL = actualizarIndicadorConvenios + "?idConvenio=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
 
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "GET",
-				success: function(response) {
-                    
-                    var mensaje = indicadorDepurar === 1 ?
-                    `Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios a Excluir.` : 
-                	`Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios Activos.`;
-                    
-                    showSwal('¡Guardado exitoso!', mensaje, 'success');
-                    
-                    setTimeout(function() { 
-						limpiarDivConvenio();
-						search_convenioDepurar("");
-						search_convenioActivo("");
-					}, 2000);
-				},
-				error: function(xhr, status, error) {
-                    
-                    var mensaje = indicadorDepurar === 1 ? 
-                    `Ha ocurrido un error al guardar el convenio en la lista de Convenios a Excluir.` :
-                    `Ha ocurrido un error al guardar el convenio en la lista de Convenios Activos.`;
-                    
-                    showSwal('¡Error!', mensaje, 'error');
-				}
-			});
+    $.ajax({
+        url: servicioURL,
+        type: "GET",
+        success: function (response) {
+
+            var mensaje = indicadorDepurar === 1 ?
+                `Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios a Excluir.` :
+                `Se ha guardado el convenio ${response.convenio.vc_descripcion} correctamente en la lista de Convenios Activos.`;
+
+            showSwal('¡Guardado exitoso!', mensaje, 'success');
+
+            setTimeout(function () {
+                limpiarDivConvenio();
+                search_convenioDepurar("");
+                search_convenioActivo("");
+            }, 2000);
+        },
+        error: function (xhr, status, error) {
+
+            var mensaje = indicadorDepurar === 1 ?
+                `Ha ocurrido un error al guardar el convenio en la lista de Convenios a Excluir.` :
+                `Ha ocurrido un error al guardar el convenio en la lista de Convenios Activos.`;
+
+            showSwal('¡Error!', mensaje, 'error');
+        }
+    });
 }
 
 function showSwal(titulo, mensaje, tipo) {
     swal(titulo, mensaje, tipo);
     setTimeout(() => {
-    	swal.close();
+        swal.close();
     }, 2000);
 }
 
@@ -263,31 +266,31 @@ function listaPuestosActivos() {
     var divPuestosActivos = $('#puestosActivos');
 
     $.ajax({
-        url: getAbsolutePath() + obtenerPuestosOcupacionActivos,
+        url: obtenerPuestosOcupacionActivos,
         type: "GET",
         dataType: "JSON",
-        success: function(res) {
-            
-            $.each(res.puestosActivos, function(index, puesto) {
-                
-                
-               	var div = $("<div>")
-               	.addClass("puestoA border")
-               	.text(puesto.desc_puesto)
-               	.attr("puesto-id", puesto.id_puesto);
-                
-                div.on("click", function() {
+        success: function (res) {
+
+            $.each(res.puestosActivos, function (index, puesto) {
+
+
+                var div = $("<div>")
+                    .addClass("puestoA border")
+                    .text(puesto.desc_puesto)
+                    .attr("puesto-id", puesto.id_puesto);
+
+                div.on("click", function () {
                     $(".puestoA").removeClass("selected border-primary"); // Remover selección previa
                     $(this).addClass("selected border-primary");  // Añadir clase selected
-                    
+
                     var idPuesto = $(this).attr("puesto-id");
                     puestoSeleccionado = $(this);  // Guardar el puesto seleccionado
                 });
 
-               divPuestosActivos.append(div);
+                divPuestosActivos.append(div);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener los puestos activos: " + error);
         }
     });
@@ -297,103 +300,103 @@ function listaPuestosDepurar() {
     var divPuestosDepurar = $('#puestosDepurar');
 
     $.ajax({
-        url: getAbsolutePath() + obtenerPuestosOcupacionDepurar,
+        url: obtenerPuestosOcupacionDepurar,
         type: "GET",
         dataType: "JSON",
-        success: function(res) {
-            
-            $.each(res.puestosDepurar, function(index, puesto) {
-                
+        success: function (res) {
+
+            $.each(res.puestosDepurar, function (index, puesto) {
+
                 var div = $("<div>")
-                .addClass("puestoD border")
-                .text(puesto.desc_puesto)
-                .attr("puesto-id", puesto.id_puesto);
-                
-                div.on("click", function() {
-                    $(".puestoD").removeClass("selected border-primary"); 
-                    $(this).addClass("selected border-primary");  
-                    
+                    .addClass("puestoD border")
+                    .text(puesto.desc_puesto)
+                    .attr("puesto-id", puesto.id_puesto);
+
+                div.on("click", function () {
+                    $(".puestoD").removeClass("selected border-primary");
+                    $(this).addClass("selected border-primary");
+
                     var idPuesto = $(this).attr("puesto-id");
-                    puestoSeleccionado = $(this); 
+                    puestoSeleccionado = $(this);
                 });
-                
-               divPuestosDepurar.append(div);
+
+                divPuestosDepurar.append(div);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener los puestos depurar: " + error);
         }
     });
 }
 
 function limpiarDivPuestos() {
-    
+
     $("#puestosDepurar").empty();
     $("#puestosActivos").empty();
-    
+
 }
 
 
 function updateIndicadorPuesto(idConvenio, indicadorDepurar) {
-    
+
     var servicioURL = actualizarIndicadorPuestos + "?idPuesto=" + Number(idConvenio) + "&indicadorDepurar=" + indicadorDepurar;
 
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "GET",
-				success: function(response) {
-                    var mensaje = indicadorDepurar === 1 ? 
-                    `Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos a Excluir.` : 
-                	`Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos Activos.`;
-                	
-                	showSwal('¡Guardado exitoso!', mensaje, 'success');
-                	
-                	setTimeout(function() {
-                        limpiarDivPuestos();
-						listaPuestosActivos();
-						listaPuestosDepurar();
-                    }, 2000);
-                    
-				},
-				error: function(xhr, status, error) {
-                    var mensaje = indicadorDepurar === 1 ?
-                    `Ha ocurrido un error al guardar el convenio en la lista de Puestos a Excluir.` :
-                    `Ha ocurrido un error al guardar el convenio en la lista de Puestos Activos.`;
-                    
-                    showSwal('¡Error!', mensaje, 'error');
-				}
-			});
+    $.ajax({
+        url: servicioURL,
+        type: "GET",
+        success: function (response) {
+            var mensaje = indicadorDepurar === 1 ?
+                `Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos a Excluir.` :
+                `Se ha guardado el puesto ${response.puesto.vc_descripcion} correctamente en la lista de Puestos Activos.`;
+
+            showSwal('¡Guardado exitoso!', mensaje, 'success');
+
+            setTimeout(function () {
+                limpiarDivPuestos();
+                listaPuestosActivos();
+                listaPuestosDepurar();
+            }, 2000);
+
+        },
+        error: function (xhr, status, error) {
+            var mensaje = indicadorDepurar === 1 ?
+                `Ha ocurrido un error al guardar el convenio en la lista de Puestos a Excluir.` :
+                `Ha ocurrido un error al guardar el convenio en la lista de Puestos Activos.`;
+
+            showSwal('¡Error!', mensaje, 'error');
+        }
+    });
 }
 
 function listaSucursalesActivos() {
     var divSucursalesActivos = $('#sucursalesActivos');
 
     $.ajax({
-        url: getAbsolutePath() + obtenerSucursalesActivos,
+        url: obtenerSucursalesActivos,
         type: "GET",
         dataType: "JSON",
-        success: function(res) {
-            
-            $.each(res.sucursalesActivos, function(index, sucursal) {
-                
-                
-               	var div = $("<div>")
-               	.addClass("sucursalA border")
-               	.text(sucursal.nombre_sucursal)
-               	.attr("sucursal-id", sucursal.id_sucursal);
-                
-                div.on("click", function() {
-                    $(".sucursalA").removeClass("selected border-primary"); 
-                    $(this).addClass("selected border-primary"); 
-                    
+        success: function (res) {
+
+            $.each(res.sucursalesActivos, function (index, sucursal) {
+
+
+                var div = $("<div>")
+                    .addClass("sucursalA border")
+                    .text(sucursal.nombre_sucursal)
+                    .attr("sucursal-id", sucursal.id_sucursal);
+
+                div.on("click", function () {
+                    $(".sucursalA").removeClass("selected border-primary");
+                    $(this).addClass("selected border-primary");
+
                     var idSucursal = $(this).attr("sucursal-id");
-                    sucursalSeleccionado = $(this); 
+                    sucursalSeleccionado = $(this);
                 });
 
-               divSucursalesActivos.append(div);
+                divSucursalesActivos.append(div);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener las sucursales activas: " + error);
         }
     });
@@ -403,90 +406,90 @@ function listaSucursalesDepurar() {
     var divSucursalesDepurar = $('#sucursalesDepurar');
 
     $.ajax({
-        url: getAbsolutePath() + obtenerSucursalesDepurar,
+        url: obtenerSucursalesDepurar,
         type: "GET",
         dataType: "JSON",
-        success: function(res) {
-     
-            $.each(res.sucursalesDepurar, function(index, sucursal) {
-                
+        success: function (res) {
+
+            $.each(res.sucursalesDepurar, function (index, sucursal) {
+
                 var div = $("<div>")
-                .addClass("sucursalD border")
-                .text(sucursal.nombre_sucursal)
-                .attr("sucursal-id", sucursal.id_sucursal);
-                
-                div.on("click", function() {
-                    $(".sucursalD").removeClass("selected border-primary"); 
-                    $(this).addClass("selected border-primary");  
-                    
+                    .addClass("sucursalD border")
+                    .text(sucursal.nombre_sucursal)
+                    .attr("sucursal-id", sucursal.id_sucursal);
+
+                div.on("click", function () {
+                    $(".sucursalD").removeClass("selected border-primary");
+                    $(this).addClass("selected border-primary");
+
                     var idSucursal = $(this).attr("sucursal-id");
-                    sucursalSeleccionado = $(this); 
+                    sucursalSeleccionado = $(this);
                 });
-                
-               divSucursalesDepurar.append(div);
+
+                divSucursalesDepurar.append(div);
             });
         },
-        error: function(error) {
+        error: function (error) {
             console.error("Error al obtener las sucursales a depurar: " + error);
         }
     });
 }
 
 function limpiarDivSucursales() {
-    
+
     $("#sucursalesDepurar").empty();
     $("#sucursalesActivos").empty();
-    
+
 }
 
 function updateIndicadorSucursal(idSucursal, indicadorDepurar) {
-    
+
     var servicioURL = actualizarIndicadorSucursales + "?idSucursal=" + Number(idSucursal) + "&indicadorDepurar=" + indicadorDepurar;
 
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "GET",
-				success: function(response) {
-                    var mensaje = indicadorDepurar === 1 ? 
-                    `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales a Excluir.` :
-                    `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales Activas.`;
-                    
-                    showSwal('¡Guardado exitoso!', mensaje, 'success');
-                    setTimeout(function() {
-                        limpiarDivSucursales();
-						listaSucursalesActivos();
-						listaSucursalesDepurar();
-                    }, 2000);
-				},
-				error: function(xhr, status, error) {
-                    var mensaje = indicadorDepurar === 1 ?
-                    `Ha ocurrido un error al guardar el convenio en la lista de Sucursales a Excluir.` :
-                    `Ha ocurrido un error al guardar el convenio en la lista de Sucursales Activas.`;
-                    
-                    showSwal('¡Error!', mensaje, 'error');
-				}
-			});
+    $.ajax({
+        url: servicioURL,
+        type: "GET",
+        success: function (response) {
+            var mensaje = indicadorDepurar === 1 ?
+                `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales a Excluir.` :
+                `Se ha guardado la sucursal ${response.sucursal.vc_nombre} correctamente en la lista de Sucursales Activas.`;
+
+            showSwal('¡Guardado exitoso!', mensaje, 'success');
+            setTimeout(function () {
+                limpiarDivSucursales();
+                listaSucursalesActivos();
+                listaSucursalesDepurar();
+            }, 2000);
+        },
+        error: function (xhr, status, error) {
+            var mensaje = indicadorDepurar === 1 ?
+                `Ha ocurrido un error al guardar el convenio en la lista de Sucursales a Excluir.` :
+                `Ha ocurrido un error al guardar el convenio en la lista de Sucursales Activas.`;
+
+            showSwal('¡Error!', mensaje, 'error');
+        }
+    });
 }
 
 function swalValidarSeleccion(seccion) {
-    
-	swal(
-		'¡Alerta!',
-		"Debe de seleccionar un " + seccion,
-		"error"
-	)
 
-	setTimeout(function() {
-		swal.close(); 
-	}, 2000);
+    swal(
+        '¡Alerta!',
+        "Debe de seleccionar un " + seccion,
+        "error"
+    )
+
+    setTimeout(function () {
+        swal.close();
+    }, 2000);
 }
 
 
 // Evento para mover el convenio seleccionado de Activos a Depurar
-$("#btnAddRightConvenio").on("click", function() {
+$("#btnAddRightConvenio").on("click", function () {
     if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosActivos") {
         var idConvenio = convenioSeleccionado.attr('convenio-id');
-       
+
         updateIndicadorConvenio(idConvenio, 1);
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
@@ -496,11 +499,11 @@ $("#btnAddRightConvenio").on("click", function() {
 });
 
 // Evento para mover el convenio seleccionado de Depurar a Activos
-$("#btnAddLeftConvenio").on("click", function() {
+$("#btnAddLeftConvenio").on("click", function () {
     if (convenioSeleccionado && convenioSeleccionado.parent().attr("id") === "conveniosDepurar") {
         var idConvenio = convenioSeleccionado.attr('convenio-id');
-        
-         updateIndicadorConvenio(idConvenio, 0);
+
+        updateIndicadorConvenio(idConvenio, 0);
         convenioSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         convenioSeleccionado = null;  // Limpiar la variable
     } else {
@@ -509,10 +512,10 @@ $("#btnAddLeftConvenio").on("click", function() {
 });
 
 // Evento para mover el puesto seleccionado de Activos a Depurar
-$("#btnAddRightPuesto").on("click", function() {
+$("#btnAddRightPuesto").on("click", function () {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosActivos") {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
-        
+
         updateIndicadorPuesto(idPuesto, 1);
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
@@ -522,10 +525,10 @@ $("#btnAddRightPuesto").on("click", function() {
 });
 
 // Evento para mover el puesto seleccionado de Depurar a Activos
-$("#btnAddLeftPuesto").on("click", function() {
+$("#btnAddLeftPuesto").on("click", function () {
     if (puestoSeleccionado && puestoSeleccionado.parent().attr("id") === "puestosDepurar") {
         var idPuesto = puestoSeleccionado.attr('puesto-id');
-        
+
         updateIndicadorPuesto(idPuesto, 0);
         puestoSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
         puestoSeleccionado = null;  // Limpiar la variable
@@ -536,24 +539,24 @@ $("#btnAddLeftPuesto").on("click", function() {
 
 
 // Evento para mover la sucursal seleccionada de Activos a Depurar
-$("#btnAddRightSucursal").on("click", function() {
+$("#btnAddRightSucursal").on("click", function () {
     if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesActivos") {
         var idSucursal = sucursalSeleccionado.attr('sucursal-id');
-        
+
         //$("#sucursalesDepurar").append(sucursalSeleccionado);  // Mover al contenedor de depurar
         updateIndicadorSucursal(idSucursal, 1);
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
-       	sucursalSeleccionado = null;  // Limpiar la variable
+        sucursalSeleccionado = null;  // Limpiar la variable
     } else {
         swalValidarSeleccion("sucursal.")
     }
 });
 
 // Evento para mover la sucursal seleccionada de Depurar a Activos
-$("#btnAddLeftSucursal").on("click", function() {
+$("#btnAddLeftSucursal").on("click", function () {
     if (sucursalSeleccionado && sucursalSeleccionado.parent().attr("id") === "sucursalesDepurar") {
         var idSucursal = sucursalSeleccionado.attr('sucursal-id');
-        
+
         //$("#sucursalesActivos").append(sucursalSeleccionado);  // Mover al contenedor de activos
         updateIndicadorSucursal(idSucursal, 0);
         sucursalSeleccionado.removeClass("selected border-primary");  // Remover la selección después de moverlo
@@ -564,7 +567,7 @@ $("#btnAddLeftSucursal").on("click", function() {
 });
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     listaEstados();
     search_convenioActivo("");
     search_convenioDepurar("");
@@ -572,9 +575,9 @@ $(document).ready(function() {
     listaPuestosDepurar();
     listaSucursalesActivos();
     listaSucursalesDepurar();
-    
-     // Escuchar el evento de cambio en el select de estados
-    $('#opcionesEstado').change(function() {
+
+    // Escuchar el evento de cambio en el select de estados
+    $('#opcionesEstado').change(function () {
         var estadoId = $(this).val(); // Obtener el ID del estado seleccionado
 
         if (estadoId) {

@@ -3,109 +3,104 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-3"></div>
-					<div class="col-md-9">
-						<div class="card-body">
-							<h2>Agregar Usuario</h2>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Agregar Usuario</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Usuarios</li>
+					<li class="breadcrumb-item active">Alta</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Datos del Nuevo Usuario</h5>
+
+				<form class="row g-3">
+
+					<div class="col-md-12">
+						<label for="busquedaEmpleado" class="form-label">Buscar empleado</label>
+						<div class="input-group">
+							<span class="input-group-text"><i class="bi bi-search"></i></span>
+							<input type="search" class="form-control" id="busquedaEmpleado" name="busquedaEmpleado"
+								placeholder="Nombre de empleado..." onkeyup="buscarEmpleado(this.value);" required>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card mb-12">
-						<div class="card-header"></div>
-						<br>
-						<div class="card-body">
-							<form class="row g-3">
-								<div class="col-12">
-									<label for="busquedaEmpleado" class="form-label">Buscar nombre de
-										usuario</label>
-									<input type="search" class="form-control" id="busquedaEmpleado"
-										name="busquedaEmpleado" placeholder="Nombre de empleado"
-										onkeyup="buscarEmpleado(this.value);" required>
 
-								</div>
-								<div class="col-sm-12">
-									<label for="selectEmpleado" class="form-label">Elige un
-										empleado</label>
+					<div class="col-md-12">
+						<label for="selectEmpleado" class="form-label">Seleccionar empleado</label>
+						<select class="form-select" multiple aria-label="multiple select example" id="selectEmpleado"
+							name="selectEmpleado" size="5">
+						</select>
+					</div>
 
-									<select class="form-select" multiple aria-label="multiple select example"
-										id="selectEmpleado" name="selectEmpleado">
-									</select>
-								</div>
-
-								<div class="col-lg-12" id='datosUsuario' style='display:none'>
-									<div class="row">
-										<div class="col-sm-2">
-											<label for="EmpleadoId" class="form-label">ID empleado</label>
-											<input id="EmpleadoId" class="form-control" type="text"
-												placeholder="EmpleadoId" readonly />
-										</div>
-										<div class="col-sm-6">
-											<label for="Nombre" class="form-label">Nombre empleado:</label>
-											<input id="Nombre" class="form-control" type="text" placeholder="Nombre"
-												readonly />
-										</div>
-										<div class="col-sm-4">
-											<label for="Puesto" class="form-label">Puesto:</label>
-											<input id="Puesto" class="form-control" type="text" placeholder="Puesto"
-												readonly />
-										</div>
+					<!-- Datos del Usuario (Oculto inicialmente) -->
+					<div id="datosUsuario" style="display:none" class="col-12">
+						<div class="card bg-light border-0">
+							<div class="card-body">
+								<h6 class="fw-bold mb-3">Información del Empleado</h6>
+								<div class="row g-3">
+									<div class="col-md-2">
+										<label for="EmpleadoId" class="form-label">ID</label>
+										<input id="EmpleadoId" class="form-control" type="text" readonly />
+									</div>
+									<div class="col-md-6">
+										<label for="Nombre" class="form-label">Nombre</label>
+										<input id="Nombre" class="form-control" type="text" readonly />
+									</div>
+									<div class="col-md-4">
+										<label for="Puesto" class="form-label">Puesto</label>
+										<input id="Puesto" class="form-control" type="text" readonly />
 									</div>
 								</div>
-								<div class="col-lg-12">
-									<div class="row">
-										<div class="col-4">
-											<label for="nombreUsuario" class="form-label">Nombre de
-												usuario:</label> (*)
-											<input type="text" class="form-control" id="nombreUsuario" required>
-										</div>
-
-										<div class="col-4">
-											<label for="contrasena" class="form-label">Contraseña:</label>
-											<input th:value="${contrasena}" type="password" class="form-control"
-												id="contrasena" name="contrasena" readonly>
-										</div>
-										<div class="col-4">
-											<label for="roles" class="form-label">Tipo de usuario:</label>
-
-											<select class="form-select" id="roles" name="tipoUsuario">
-												<option value="0">Seleccione un rol</option>
-												<option th:each="rol : ${roles}" th:text="${rol.vc_nombre_rol}"
-													th:value="${rol.pk_id_rol}" />
-											</select>
-
-										</div>
-									</div>
-								</div>
-
-								<button type="button" class="btn btn-primary" onclick="altaUsuario()">
-									Guardar
-								</button>
-
-							</form>
+							</div>
 						</div>
 					</div>
-				</div>
+
+					<div class="col-md-4">
+						<label for="nombreUsuario" class="form-label">Nombre de usuario <span
+								class="text-danger">*</span></label>
+						<input type="text" class="form-control" id="nombreUsuario" required>
+					</div>
+
+					<div class="col-md-4">
+						<label for="contrasena" class="form-label">Contraseña</label>
+						<input th:value="${contrasena}" type="password" class="form-control" id="contrasena"
+							name="contrasena" readonly>
+					</div>
+
+					<div class="col-md-4">
+						<label for="roles" class="form-label">Tipo de usuario</label>
+						<select class="form-select" id="roles" name="tipoUsuario">
+							<option value="0" selected>Seleccione un rol</option>
+							<option th:each="rol : ${roles}" th:text="${rol.vc_nombre_rol}"
+								th:value="${rol.pk_id_rol}" />
+						</select>
+					</div>
+
+					<div class="col-12 text-end mt-4">
+						<button type="button" class="btn btn-primary" onclick="altaUsuario()">
+							<i class="bi bi-person-plus-fill me-1"></i> Guardar Usuario
+						</button>
+					</div>
+
+				</form>
 			</div>
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
+		<!-- Scripts -->
 		<script th:src="@{/js/usuario/usuarios.js}"></script>
 	</th:block>
 </body>

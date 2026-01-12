@@ -5,28 +5,24 @@ var seguimiento = "obtenerID?idSeguimiento=";
 var modificarSeguimiento = "modSeguimiento?idSeguimiento=";
 var obsId = 0;
 
-$(document).ready(function() {
-	$("#btnCerrar").click(function() {
+$(document).ready(function () {
+	$("#btnCerrar").click(function () {
 		$("#modalAdjuntos").modal("hide");
 		document.getElementById("idFolioArchivo").value = 0;
 		tblAdjuntos.clear().draw();
 	});
-	$("#btnGuardarFile").click(function() {
+	$("#btnGuardarFile").click(function () {
 		if (document.getElementById("file").value.length > 0) {
-			
-		    Swal.fire({
+
+			swal({
 				title: 'Procesando.....',
-  				text: 'Espere un momento..',
-  				timer: 4000, // tiempo en milisegundos
- 				timerProgressBar: true,
-  				showConfirmButton: false
-			}).then((result) => {
-  				// Este código se ejecutará después de que el temporizador haya terminado
- 				 if (result.dismiss === Swal.DismissReason.timer) {
-    					var form = $('#adjuntoArchivoOficio')[0];
-						var data = new FormData(form);
-						addArchivos(data)
- 				 }
+				text: 'Espere un momento..',
+				timer: 4000, // tiempo en milisegundos
+				showConfirmButton: false
+			}).then(() => {
+				var form = $('#adjuntoArchivoOficio')[0];
+				var data = new FormData(form);
+				addArchivos(data)
 			});
 		} else {
 			swal({
@@ -46,59 +42,67 @@ $(document).ready(function() {
 function eventosContadorSeguimiento() {
 	const mensaje = document.getElementById('idtxtSeguimiento');
 	const contador = document.getElementById('contSeguimiento');
-	mensaje.addEventListener('input', function(e) {
-		const target = e.target;
-		const longitudMax = target.getAttribute('maxlength');
-		const longitudAct = target.value.length;
-		contador.innerHTML = `${longitudAct}/${longitudMax}`;
-	});
+	if (mensaje && contador) {
+		mensaje.addEventListener('input', function (e) {
+			const target = e.target;
+			const longitudMax = target.getAttribute('maxlength');
+			const longitudAct = target.value.length;
+			contador.innerHTML = `${longitudAct}/${longitudMax}`;
+		});
+	}
 }
 
 var tblSeguimiento;
 var tblPlanAccion;
 var tblAdjuntos;
 function inicioTabla() {
-	tblPlanAccion = $("#tblPlanAccion").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
-	});
-	tblSeguimiento = $("#tblSeguimiento").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
-	});
-	
-	tblAdjuntos = $("#tblAdjuntos").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
+	if ($("#tblPlanAccion").length) {
+		tblPlanAccion = $("#tblPlanAccion").DataTable({
+			"language": {
+				"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			},
+			'aoColumnDefs': [{
+				'bSortable': false,
+				'aTargets': [-1] /* 1st one, start by the right */
+			}]
+		});
+	}
+	if ($("#tblSeguimiento").length) {
+		tblSeguimiento = $("#tblSeguimiento").DataTable({
+			"language": {
+				"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			},
+			'aoColumnDefs': [{
+				'bSortable': false,
+				'aTargets': [-1] /* 1st one, start by the right */
+			}]
+		});
+	}
 
-	});
-	
-	
+	if ($("#tblAdjuntos").length) {
+		tblAdjuntos = $("#tblAdjuntos").DataTable({
+			"language": {
+				"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			},
+			'aoColumnDefs': [{
+				'bSortable': false,
+				'aTargets': [-1] /* 1st one, start by the right */
+			}]
+
+		});
+	}
+
+
 }
 
 function verActUpload(id) {
 	if (id > 0) {
-		
+
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + id+"&estatus="+document.getElementById("idEstatusFiltro").value;
-		$.getJSON(urlServicio, {}, function(data) {
+		var urlServicio = getAbsolutePath() + buscarActividades + id + "&estatus=" + document.getElementById("idEstatusFiltro").value;
+		$.getJSON(urlServicio, {}, function (data) {
 			tblPlanAccion.clear().draw();
-			$.each(data, function(idx, opt) {
+			$.each(data, function (idx, opt) {
 				var botones = " <button class='btn btn-info' tabindex='0'"
 					+ " title='Ver Seguimiento' type='button'"
 					+ " onclick='verSeguimiento(this)'"
@@ -119,12 +123,12 @@ function verActUpload(id) {
 
 function verActividades(idFolio) {
 	if (idFolio.value > 0) {
-		
+
 		$.blockUI({ message: 'Espere un momento...' });
-		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value+"&estatus="+document.getElementById("idEstatusFiltro").value;
-		$.getJSON(urlServicio, {}, function(data) {
+		var urlServicio = getAbsolutePath() + buscarActividades + idFolio.value + "&estatus=" + document.getElementById("idEstatusFiltro").value;
+		$.getJSON(urlServicio, {}, function (data) {
 			tblPlanAccion.clear().draw();
-			$.each(data, function(idx, opt) {
+			$.each(data, function (idx, opt) {
 				var botones = " <button class='btn btn-info' tabindex='0'"
 					+ " title='Ver Seguimiento' type='button'"
 					+ " onclick='verSeguimiento(this)'"
@@ -149,21 +153,21 @@ function verActividades(idFolio) {
 	}
 }
 
-function mnsExisteRegistros(tam){
-		if(tam > 0){
-			swal({
-				title: "Informacion.",
-				text: "Se consultaron las Actividades del Plan de Accion",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
-	}else{
-				swal({
-				title: "Informacion.",
-				text: "El Plan de Accion no cuenta con actividades registradas",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			})
+function mnsExisteRegistros(tam) {
+	if (tam > 0) {
+		swal({
+			title: "Informacion.",
+			text: "Se consultaron las Actividades del Plan de Accion",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "El Plan de Accion no cuenta con actividades registradas",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		})
 	}
 }
 
@@ -179,14 +183,14 @@ function guardarVacio() {
 	if (document.getElementById("idtxtSeguimiento").value.length == 0) {
 		document.getElementById("idtxtSeguimiento").style.borderColor = "#F70707";
 		validacion = true;
-	}else{
+	} else {
 		document.getElementById("idtxtSeguimiento").style.borderColor = '';
 		validacion = false;
 	}
 	if (document.getElementById("idFinActividad").value == 0) {
 		document.getElementById("idFinActividad").style.borderColor = "#F70707";
 		validacion = true;
-	}else{
+	} else {
 		document.getElementById("idFinActividad").style.borderColor = '';
 		validacion = false;
 	}
@@ -196,7 +200,7 @@ function guardarVacio() {
 
 function eventosBotones() {
 
-	$("#btnGuardar").click(function() {
+	$("#btnGuardar").click(function () {
 
 		if (guardarVacio() == false) {
 			if (document.getElementById("idActividad").value > 0) {
@@ -206,7 +210,7 @@ function eventosBotones() {
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
 				} else {
-					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId + "&idActividad="+document.getElementById("idActividad").value;
+					var urlServicio = getAbsolutePath() + modificarSeguimiento + obsId + "&idActividad=" + document.getElementById("idActividad").value;
 					urlServicio = urlServicio + "&desc_seguimiento=" + encodeURIComponent(document.getElementById("idtxtSeguimiento").value);
 					urlServicio = urlServicio + "&estatus=" + document.getElementById("idFinActividad").value;
 					peticionPost(urlServicio);
@@ -248,9 +252,9 @@ function buscaSeguimiento() {
 	if (document.getElementById("idActividad").value > 0) {
 		var url = getAbsolutePath() + buscarSeguimiento + document.getElementById("idActividad").value;
 		$.blockUI({ message: 'Espere un momento...' });
-		$.getJSON(url, {}, function(data) {
+		$.getJSON(url, {}, function (data) {
 			tblSeguimiento.clear().draw();
-			$.each(data, function(idx, opt) {
+			$.each(data, function (idx, opt) {
 				var botones = " <button class='btn btn-info' tabindex='0'"
 					+ " title='Editar Seguimiento' type='button'"
 					+ " onclick='editarSeguimiento(this)'"
@@ -273,21 +277,21 @@ function buscaSeguimiento() {
 		});
 	}
 }
-function msnExisteSeguimiento(tam){
-	if(tam > 0){
-			swal({
-				title: "Informacion.",
-				text: "Se consulta el seguimiento de la Actividad del Plan de Accion.",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			});
-	}else{
-			swal({
-				title: "Informacion.",
-				text: "No hay registro de seguimiento de Actividades del Plan de Accion.",
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			});
+function msnExisteSeguimiento(tam) {
+	if (tam > 0) {
+		swal({
+			title: "Informacion.",
+			text: "Se consulta el seguimiento de la Actividad del Plan de Accion.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
+	} else {
+		swal({
+			title: "Informacion.",
+			text: "No hay registro de seguimiento de Actividades del Plan de Accion.",
+			icon: "success",
+			confirmButtonText: 'Aceptar'
+		});
 	}
 }
 
@@ -296,13 +300,13 @@ function peticionPost(url) {
 		url: url,
 		type: "POST",
 		dataType: "JSON",
-		beforeSend: function() {
+		beforeSend: function () {
 			$.blockUI({ message: 'Espere un momento...' });
 		},
-		complete: function() {
+		complete: function () {
 			setTimeout($.unblockUI, 500);
 		},
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal({
 				title: "",
 				text: respuesta[0],
@@ -313,7 +317,7 @@ function peticionPost(url) {
 				buscaSeguimiento();
 				verActUpload(document.getElementById("idOficios").value);
 			});
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+		}, error: function (XMLHttpRequest, textStatus, errorThrown) {
 			swal({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
@@ -333,7 +337,7 @@ function editarSeguimiento(idSeguimiento) {
 	obsId = $(idSeguimiento).attr("id");
 	var urlServicio = getAbsolutePath() + seguimiento + obsId;
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(urlServicio, {}, function(data) {
+	$.getJSON(urlServicio, {}, function (data) {
 		setTimeout($.unblockUI, 100);
 		$('#idtxtSeguimiento').val(data.vc_desc_seguimiento);
 		document.getElementById("idFinActividad").value = data.i_confirmacion_responsable;
@@ -344,7 +348,7 @@ function editarSeguimiento(idSeguimiento) {
 function tamFile() {
 	const tamMaxFile = 31457280;
 	var fileTam = document.getElementById("file");
-	fileTam.onchange = function() {
+	fileTam.onchange = function () {
 		if (this.files[0].size > tamMaxFile) {
 			swal({
 				title: "",
@@ -359,12 +363,12 @@ function tamFile() {
 }
 
 var buscarArchivos = "buscarArchivos?idFolio=";
-function adjuntarFiles(){ 
-	if(document.getElementById("idOficios").value > 0){
+function adjuntarFiles() {
+	if (document.getElementById("idOficios").value > 0) {
 		var urlServicio = getAbsolutePath() + buscarArchivos + document.getElementById("idOficios").value;
 		obtDtostblAdjuntos(urlServicio);
 		document.getElementById("file").value = "";
-	}else{
+	} else {
 		$("#modalAdjuntos").modal("hide");
 		swal({
 			title: "Atencion.",
@@ -372,15 +376,15 @@ function adjuntarFiles(){
 			icon: "warning",
 			confirmButtonText: 'Aceptar'
 		});
-		
+
 	}
 }
 
 function obtDtostblAdjuntos(url) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		tblAdjuntos.clear().draw();
-		$.each(data, function(idx, opt) {
+		$.each(data, function (idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
@@ -389,7 +393,7 @@ function obtDtostblAdjuntos(url) {
 				+ opt.pk_id_archivo
 				+ " >"
 				+ " <i class='bi bi-download'></i></button>";
-			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto,opt.vc_nombre_adjunto,botones]).draw(false);
+			tblAdjuntos.row.add([opt.pk_id_archivo, opt.vc_nombre_docto, opt.vc_nombre_adjunto, botones]).draw(false);
 			tblAdjuntos.column(0).visible(false);
 		});
 		setTimeout($.unblockUI, 100);
@@ -425,7 +429,7 @@ function verPDF(id) {
 }
 var agregarArchivos = "subirArchivo?idFolio=";
 function addArchivos(data) {
-	
+
 	$.ajax({
 		async: false,
 		url: getAbsolutePath() + agregarArchivos + document.getElementById("idOficios").value,
@@ -434,10 +438,10 @@ function addArchivos(data) {
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
-		beforeSend: function() {
+		beforeSend: function () {
 			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
-		success: function(data) {
+		success: function (data) {
 			swal({
 				title: "",
 				text: data[0],
@@ -447,14 +451,14 @@ function addArchivos(data) {
 				adjuntarFiles(document.getElementById("idOficios").value);
 			});
 		},
-		error: function(data) {
+		error: function (data) {
 			swal({
 				title: "Alerta",
 				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
 				icon: "warning",
 			});
 		},
-		complete: function() {
+		complete: function () {
 			setTimeout($.unblockUI, 600);
 		}
 	});
@@ -466,7 +470,7 @@ function asignarArchivo(archivo) {
 	if (document.getElementById(archivo.id).value > 0) {
 		var opcionesArchivo = document.getElementById(archivo.id);
 		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
-		 document.getElementById("file").value = "";
+		document.getElementById("file").value = "";
 		$('#file').attr("accept", extension);
 		$('#file').attr("disabled", false);
 	} else {
@@ -489,21 +493,21 @@ function asignarArchivo(archivo) {
 }
 
 var obtFolios = "obtFolios?estatus=";
-function consultaDatos(idEstatus){
+function consultaDatos(idEstatus) {
 	iniciarPantalla();
-	if(idEstatus.value > 0){
+	if (idEstatus.value > 0) {
 		$.blockUI({ message: 'Espere un momento...' });
-			var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
-			$.getJSON(urlServicio, {}, function(data) {
-				if(data.length > 0){
-					$.each(data, function(idx, opt) {
-						$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
-					});
-				}
-				$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
-				setTimeout($.unblockUI, 100);
-			});
-	}else{
+		var urlServicio = getAbsolutePath() + obtFolios + idEstatus.value;
+		$.getJSON(urlServicio, {}, function (data) {
+			if (data.length > 0) {
+				$.each(data, function (idx, opt) {
+					$("#idOficios").prepend("<option value=" + opt.pkFolio + " text=" + opt.folio + ">" + opt.folio + "</opcion>");
+				});
+			}
+			$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
+			setTimeout($.unblockUI, 100);
+		});
+	} else {
 		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
 		swal({
 			title: "",
@@ -513,17 +517,17 @@ function consultaDatos(idEstatus){
 	}
 }
 
-function iniciarPantalla(){
+function iniciarPantalla() {
 	$("#idOficios").empty();
 	reiniciarSeccionPA();
 	reiniciarSeccionSeguiento();
 }
 
-function reiniciarSeccionPA(){
+function reiniciarSeccionPA() {
 	tblPlanAccion.clear().draw();
 }
 
-function reiniciarSeccionSeguiento(){
+function reiniciarSeccionSeguiento() {
 	tblSeguimiento.clear().draw();
 	document.getElementById("idActividad").value = 0;
 	$('#idNombreActividad').val('');

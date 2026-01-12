@@ -23,12 +23,10 @@ import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
-
-
 @Configuration
 @EnableWebSecurity
 public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
 
@@ -40,21 +38,24 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;
-	
+
 	@Autowired
 	private AccesoService accesoService;
-	
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+	@Autowired
+	private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		try {
 			// Aqui especificamos a que url el usuario tiene acceso
-			http.
-			csrf().disable()
-			.authorizeRequests()
-			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**", "/api/**").permitAll();
+			http.csrf().disable()
+					.authorizeRequests()
+					.antMatchers("/css/**", "/js/**", "/images/**", "/configuracion/sesionesInactiva",
+							"configuracion/mensajeContrasena/**", "/configuracion/**",
+							"/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**",
+							"/hist_contrasena/**", "/usuario/**", "/api/**")
+					.permitAll();
 			/*
 			 * List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
 			 * if(menuGeneral.size() > 0) { for (MenuGeneral permisos : menuGeneral) {
@@ -62,57 +63,59 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 			 * .antMatchers(permisos.getVc_nombre_controller().split(","))
 			 * .hasAnyRole(permisos.getVc_nombre_rol()); } }
 			 */
-	        http.csrf().disable()
-			.authorizeRequests()
-	        .anyRequest().authenticated().and()
-			.formLogin().successHandler((request, response, authentication) -> {
-					// Obtiene el nombre de usuario
-					String username = authentication.getName();
-					// Obteniendo  informacion del usuario con una consulta por por username
-					Usuario usuario = usuarioService.findByNombre(username);
-					int estatus = usuario.getPk_id_usuario();
-					// Setenado valores al modelo Acceso
-					Acceso acceso = new Acceso();
-					acceso.setDt_fecha_registro(new Date());
-					acceso.setI_cod_accion(1);
-					acceso.setI_id_usuario(estatus);
-					acceso.setVc_descripci("Ingreso");
-					LocalDateTime locaDate = LocalDateTime.now();
-					acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
-					acceso.setVc_host_remoto(request.getRemoteHost());
-					acceso.setVc_ip_remoto(request.getRemoteAddr());
-					acceso.setVc_nom_servidor(request.getServerName());
-					acceso.setVc_usuario(username);
-					//Guardanto los valores de acceso en la base de datos
-					accesoService.save(acceso);
-					System.out.println("Acceso registrado en bitacora correctamente");
+			http.csrf().disable()
+					.authorizeRequests()
+					// Permitir acceso público a recursos estáticos para la página de login
+					.antMatchers("/css/**", "/js/**", "/vendor/**", "/images/**").permitAll()
+					.anyRequest().authenticated().and()
+					.formLogin().successHandler((request, response, authentication) -> {
+						// Obtiene el nombre de usuario
+						String username = authentication.getName();
+						// Obteniendo informacion del usuario con una consulta por por username
+						Usuario usuario = usuarioService.findByNombre(username);
+						int estatus = usuario.getPk_id_usuario();
+						// Setenado valores al modelo Acceso
+						Acceso acceso = new Acceso();
+						acceso.setDt_fecha_registro(new Date());
+						acceso.setI_cod_accion(1);
+						acceso.setI_id_usuario(estatus);
+						acceso.setVc_descripci("Ingreso");
+						LocalDateTime locaDate = LocalDateTime.now();
+						acceso.setVc_hora_registro(
+								locaDate.getHour() + ":" + locaDate.getMinute() + ":" + locaDate.getSecond());
+						acceso.setVc_host_remoto(request.getRemoteHost());
+						acceso.setVc_ip_remoto(request.getRemoteAddr());
+						acceso.setVc_nom_servidor(request.getServerName());
+						acceso.setVc_usuario(username);
+						// Guardanto los valores de acceso en la base de datos
+						accesoService.save(acceso);
+						System.out.println("Acceso registrado en bitacora correctamente");
 
-					// Almacena el nombre de usuario en la sesión
-					request.getSession().setAttribute("username", username);
+						// Almacena el nombre de usuario en la sesión
+						request.getSession().setAttribute("username", username);
 
-					// Redirecciona a la página principal u otra página deseada
-					response.sendRedirect("/STD/inicio");
-				})
-				.loginPage("/login")
-				.failureHandler(customAuthenticationFailureHandler)
-				.permitAll()
-				.and()
-				.logout()
-				.permitAll()
-				.and()
-				.exceptionHandling()
-				.accessDeniedPage("/error_403");
+						// Redirecciona a la página principal u otra página deseada
+						response.sendRedirect("/STD/inicio");
+					})
+					.loginPage("/login")
+					.failureHandler(customAuthenticationFailureHandler)
+					.permitAll()
+					.and()
+					.logout()
+					.permitAll()
+					.and()
+					.exceptionHandling()
+					.accessDeniedPage("/error_403");
 
-		http.sessionManagement()
-		.maximumSessions(1)
-		.expiredUrl("/STD/inicio")
-		.maxSessionsPreventsLogin(false)
-		.and()
-		.invalidSessionUrl("/STD/inicio");
+			http.sessionManagement()
+					.maximumSessions(1)
+					.expiredUrl("/STD/inicio")
+					.maxSessionsPreventsLogin(false)
+					.and()
+					.invalidSessionUrl("/STD/inicio");
 
-			
 		} catch (Exception e) {
-			System.out.println("datos"+e.getMessage());
+			System.out.println("datos" + e.getMessage());
 		}
 	}
 
@@ -120,7 +123,6 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 	public static BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
@@ -141,5 +143,4 @@ public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
 	}
 
-	
 }

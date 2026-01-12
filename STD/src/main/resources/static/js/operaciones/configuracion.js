@@ -14,7 +14,7 @@ function getAbsolutePath() {
 var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
-window.onload = function() {
+window.onload = function () {
 	listaTelefonos();
 	listaCodigosAccion();
 	listaCodigosResultado();
@@ -34,7 +34,7 @@ function cambiarContenido(opcion, elemento) {
 	var pestanas = document.querySelectorAll('.nav-link');
 
 	// Remover la clase activa de todas las pestañas
-	pestanas.forEach(function(item) {
+	pestanas.forEach(function (item) {
 		item.classList.remove('active');
 	});
 
@@ -87,21 +87,21 @@ var errorSucursal = document.getElementById("errorSucursal");
 var minimoUno = document.getElementById("minimoUno");
 
 // Agrega un evento de entrada al campo de texto
-formTelefono.addEventListener("input", function() {
+formTelefono.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorTelefono.style.display = "none";
-	soloTelefono.style.display = "none";
+	if (errorTelefono) errorTelefono.style.display = "none";
+	if (soloTelefono) soloTelefono.style.display = "none";
 });
-formExtension.addEventListener("input", function() {
+formExtension.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorExtension.style.display = "none";
-	soloExtension.style.display = "none";
+	if (errorExtension) errorExtension.style.display = "none";
+	if (soloExtension) soloExtension.style.display = "none";
 });
-formSucursal.addEventListener("input", function() {
+formSucursal.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	errorSucursal.style.display = "none";
+	if (errorSucursal) errorSucursal.style.display = "none";
 });
-formCorreo.addEventListener("input", function() {
+formCorreo.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	minimoUno.style.display = "none";
 });
@@ -115,9 +115,23 @@ function validarFormTelefonos() {
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
 
-	telefono == "" ? errorTelefono.style.display = "block" : errorTelefono.style.display = "none";
-	extension == "" ? errorExtension.style.display = "block" : errorExtension.style.display = "none";
-	sucursal === "" || !sucuValid ? errorSucursal.style.display = "block" : errorSucursal.style.display = "none";
+	if (telefono == "") {
+		if (errorTelefono) errorTelefono.style.display = "block";
+	} else {
+		if (errorTelefono) errorTelefono.style.display = "none";
+	}
+
+	if (extension == "") {
+		if (errorExtension) errorExtension.style.display = "block";
+	} else {
+		if (errorExtension) errorExtension.style.display = "none";
+	}
+
+	if (sucursal === "" || !sucuValid) {
+		if (errorSucursal) errorSucursal.style.display = "block";
+	} else {
+		if (errorSucursal) errorSucursal.style.display = "none";
+	}
 	soloTelefono.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	soloExtension.style.display = pattern.test(extension) && extension.length === 5 ? "none" : "block";
 
@@ -156,17 +170,17 @@ var alertaExt = document.getElementById("alertaExt");
 var alertaExt1 = document.getElementById("alertaExt1");
 
 // Agrega un evento de entrada al campo de texto
-formTelefonoE.addEventListener("input", function() {
+formTelefonoE.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	alertaTel.style.display = "none";
-	alertaTel1.style.display = "none";
+	if (alertaTel) alertaTel.style.display = "none";
+	if (alertaTel1) alertaTel1.style.display = "none";
 });
-formExtensionE.addEventListener("input", function() {
+formExtensionE.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
-	alertaExt.style.display = "none";
-	alertaExt1.style.display = "none";
+	if (alertaExt) alertaExt.style.display = "none";
+	if (alertaExt1) alertaExt1.style.display = "none";
 });
-formCorreoE.addEventListener("input", function() {
+formCorreoE.addEventListener("input", function () {
 	// Oculta el elemento <p> cuando se está escribiendo en el campo de texto
 	minimoUnoE.style.display = "none";
 });
@@ -179,8 +193,17 @@ function validarEditarTel(id) {
 	// Asignamos las validaciones
 	var pattern = /^[0-9]*$/;
 
-	telefono == "" ? alertaTel.style.display = "block" : alertaTel.style.display = "none";
-	extension == "" ? alertaExt.style.display = "block" : alertaExt.style.display = "none";
+	if (telefono == "") {
+		if (alertaTel) alertaTel.style.display = "block";
+	} else {
+		if (alertaTel) alertaTel.style.display = "none";
+	}
+
+	if (extension == "") {
+		if (alertaExt) alertaExt.style.display = "block";
+	} else {
+		if (alertaExt) alertaExt.style.display = "none";
+	}
 	alertaTel1.style.display = pattern.test(telefono) && telefono.length === 10 ? "none" : "block";
 	alertaExt1.style.display = pattern.test(extension) && extension.length === 5 ? "none" : "block";
 
@@ -205,22 +228,22 @@ function validarEditarTel(id) {
 }
 
 function limpiarFormTelefonos() {
-	document.getElementById('telefono').value = '';
-	document.getElementById('extension').value = '';
-	document.getElementById('searchInput').value = '';
-	document.getElementById('comentarios').value = '';
-	document.getElementById('correoElectronico').value = '';
-	errorTelefono.style.display = "none";
-	errorExtension.style.display = "none";
-	errorSucursal.style.display = "none";
-	soloTelefono.style.display = "none";
-	soloExtension.style.display = "none";
-	document.getElementById('minimoUno').style.display = "none";
-	document.getElementById('soloCorreos').style.display = "none";
+	if (document.getElementById('telefono')) document.getElementById('telefono').value = '';
+	if (document.getElementById('extension')) document.getElementById('extension').value = '';
+	if (document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
+	if (document.getElementById('comentarios')) document.getElementById('comentarios').value = '';
+	if (document.getElementById('correoElectronico')) document.getElementById('correoElectronico').value = '';
+	if (errorTelefono) errorTelefono.style.display = "none";
+	if (errorExtension) errorExtension.style.display = "none";
+	if (errorSucursal) errorSucursal.style.display = "none";
+	if (soloTelefono) soloTelefono.style.display = "none";
+	if (soloExtension) soloExtension.style.display = "none";
+	if (document.getElementById('minimoUno')) document.getElementById('minimoUno').style.display = "none";
+	if (document.getElementById('soloCorreos')) document.getElementById('soloCorreos').style.display = "none";
 }
 
 // Agregar evento al documento para detectar clics
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
 	var modal = document.getElementById('telefonoModal'); // Reemplaza 'miModal' con el ID de tu modal
 
 	// Verificar si el clic no está dentro de la modal
@@ -246,7 +269,7 @@ function handleSearch() {
 		url: newUrlBase + "buscar_sucursal?sucursal=" + searchTerm,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			console.log(respuesta.sucursal);
 			if (respuesta.sucursal && respuesta.sucursal.length > 0) {
 				sucuValid = true;
@@ -255,7 +278,7 @@ function handleSearch() {
 			}
 			var opcionesDatalist = document.getElementById('opciones');
 			opcionesDatalist.innerHTML = '';
-			respuesta.sucursal.forEach(function(sucursal) {
+			respuesta.sucursal.forEach(function (sucursal) {
 				var option = document.createElement('option');
 				option.value = sucursal.vc_nombresucursal;
 				opcionesDatalist.appendChild(option);
@@ -267,7 +290,7 @@ function handleSearch() {
 var searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', handleSearch);
 
-searchInput.addEventListener('input', function() {
+searchInput.addEventListener('input', function () {
 	idSucursal = this.value;
 	//console.log(idSucursal);
 });
@@ -285,9 +308,9 @@ function listaTelefonos() {
 		url: newUrlBase + "lista_telefonos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			vistaTablaTel.clear().draw();
-			$.each(respuesta.telefonos, function(idx, opt) {
+			$.each(respuesta.telefonos, function (idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
@@ -328,7 +351,7 @@ function listaTelefonos() {
 
 			//console.log(telefonos);
 		},
-		error: function(error) {
+		error: function (error) {
 			//console.log(error);
 		}
 	});
@@ -350,7 +373,7 @@ function agregarTelefono(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(
 				"¡Procesado!",
 				"El estatus del mensaje ha sido actualizado.",
@@ -361,7 +384,7 @@ function agregarTelefono(dto) {
 			$("#telefonoModal").hide();
 			$('body').removeClass('modal-open');
 			$('.modal-backdrop').remove();
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -386,16 +409,16 @@ function cerrarModal() {
 }
 
 function limpiarAlertas() {
-	alertaTel.style.display = "none";
-	alertaTel1.style.display = "none";
-	alertaExt.style.display = "none";
-	alertaExt1.style.display = "none";
-	document.getElementById('correoElectronicoE').value = '';
-	document.getElementById('minimoUnoE').style.display = "none";
-	document.getElementById('soloCorreosE').style.display = "none";
+	if (alertaTel) alertaTel.style.display = "none";
+	if (alertaTel1) alertaTel1.style.display = "none";
+	if (alertaExt) alertaExt.style.display = "none";
+	if (alertaExt1) alertaExt1.style.display = "none";
+	if (document.getElementById('correoElectronicoE')) document.getElementById('correoElectronicoE').value = '';
+	if (document.getElementById('minimoUnoE')) document.getElementById('minimoUnoE').style.display = "none";
+	if (document.getElementById('soloCorreosE')) document.getElementById('soloCorreosE').style.display = "none";
 }
 
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
 	var modal = document.getElementById('editarTelModal'); // Reemplaza 'miModal' con el ID de tu modal
 
 	// Verificar si el clic no está dentro de la modal
@@ -420,7 +443,7 @@ function editarTelefono(id, dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(
 				"¡Procesado!",
 				"El estatus del mensaje ha sido actualizado.",
@@ -431,7 +454,7 @@ function editarTelefono(id, dto) {
 			$("#editarTelModal").hide();
 			$('body').removeClass('modal-open');
 			$('.modal-backdrop').remove();
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
@@ -465,7 +488,7 @@ function abrirTelefono(id) {
 		url: newUrlBase + "buscar_telefono?idTelefono=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			// Mostrar el modal de editar
 			$('#editarTelModal').modal('show');
 
@@ -477,7 +500,7 @@ function abrirTelefono(id) {
 			vistaDeCorreos(respuesta.telefono.vc_correo_electronico);
 			comentarios.value = respuesta.telefono.vc_comentarios;
 
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de mostrar la información", {
 				closeOnClickOutside: false,
@@ -519,7 +542,7 @@ function cambiarEstatusTelefono(id, estatus) {
 		url: newUrlBase + "vigencia_telefono?idTelefono=" + id + "&estatus=" + estatus,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -527,7 +550,7 @@ function cambiarEstatusTelefono(id, estatus) {
 				.then((value) => {
 					listaTelefonos();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
@@ -553,9 +576,9 @@ function listaCodigosAccion() {
 		url: newUrlBase + "lista_codigosAccion",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			vistaTablaCA.clear().draw();
-			$.each(respuesta.lista, function(idx, opt) {
+			$.each(respuesta.lista, function (idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
@@ -591,7 +614,7 @@ function listaCodigosAccion() {
 
 			//console.log(telefonos);
 		},
-		error: function(error) {
+		error: function (error) {
 			//console.log(error);
 		}
 	})
@@ -651,7 +674,7 @@ function agregarAccion(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modal-codigoAccion').style.display = 'none';
 			$('#modal-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
@@ -663,7 +686,7 @@ function agregarAccion(dto) {
 					$('body').removeClass('modal-open');
 					$('.modal-backdrop').remove();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -711,7 +734,7 @@ function editarAccion(id, dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modalEditar-codigoAccion').style.display = 'none';
 			$('#modalEditar-codigoAccion').modal('hide');
 			swal(respuesta.mensaje, {
@@ -721,7 +744,7 @@ function editarAccion(id, dto) {
 				.then((value) => {
 					listaCodigosAccion();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
@@ -742,14 +765,14 @@ function abrirAccion(id) {
 		url: newUrlBase + "buscar_codigoAccion?idCodigoAccion=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			// Mostrar el modal de editar
 			$('#modalEditar-codigoAccion').modal('show');
 
 			nombreAccionE.value = respuesta.codigoAccion.vc_codigo;
 			descripcionAccionE.value = respuesta.codigoAccion.vc_descripcion;
 
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de mostrar la información", {
 				closeOnClickOutside: false,
@@ -791,7 +814,7 @@ function cambiarEstatusAccion(id, estatus) {
 		url: newUrlBase + "estatus_codigoAccion?idCodigoAccion=" + id + "&estatus=" + estatus,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -799,7 +822,7 @@ function cambiarEstatusAccion(id, estatus) {
 				.then((value) => {
 					listaCodigosAccion();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
@@ -824,9 +847,9 @@ function listaCodigosResultado() {
 		url: newUrlBase + "lista_codigosResultado",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			vistaTablaCR.clear().draw();
-			$.each(respuesta.lista, function(idx, opt) {
+			$.each(respuesta.lista, function (idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
@@ -862,7 +885,7 @@ function listaCodigosResultado() {
 
 			//console.log(respuesta.lista);
 		},
-		error: function(error) {
+		error: function (error) {
 			//console.log(error);
 		}
 	})
@@ -920,7 +943,7 @@ function agregarResultado(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modal-codigoResultado').style.display = 'none';
 			$('#modal-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
@@ -932,7 +955,7 @@ function agregarResultado(dto) {
 					$('body').removeClass('modal-open');
 					$('.modal-backdrop').remove();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -979,7 +1002,7 @@ function editarResultado(id, dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modalEditar-codigoResultado').style.display = 'none';
 			$('#modalEditar-codigoResultado').modal('hide');
 			swal(respuesta.mensaje, {
@@ -989,7 +1012,7 @@ function editarResultado(id, dto) {
 				.then((value) => {
 					listaCodigosResultado();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
@@ -1010,14 +1033,14 @@ function abrirResultado(id) {
 		url: newUrlBase + "buscar_codigoResultado?idCodigoResultado=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			// Mostrar el modal de editar
 			$('#modalEditar-codigoResultado').modal('show');
 
 			nombreResultadoE.value = respuesta.codigoResultado.vc_codigo;
 			descripcionResultadoE.value = respuesta.codigoResultado.vc_descripcion;
 
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de mostrar la información", {
 				closeOnClickOutside: false,
@@ -1059,7 +1082,7 @@ function cambiarEstatusResultado(id, estatus) {
 		url: newUrlBase + "estatus_codigoResultado?idCodigoResultado=" + id + "&estatus=" + estatus,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1067,7 +1090,7 @@ function cambiarEstatusResultado(id, estatus) {
 				.then((value) => {
 					listaCodigosResultado();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
@@ -1125,7 +1148,7 @@ function catalogoCodigoA() {
 		url: newUrlBase + "lista_codigosA_activos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("selectAccion");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1133,10 +1156,10 @@ function catalogoCodigoA() {
 				opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorCodigoA = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1157,7 +1180,7 @@ function catalogoCodigoR() {
 		url: newUrlBase + "lista_codigosR_activos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("selectResultado");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1165,10 +1188,10 @@ function catalogoCodigoR() {
 				opcion.text = opcion.text = respuesta.lista[i].vc_descripcion + " (" + respuesta.lista[i].vc_codigo + ")";
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorCodigoR = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1188,7 +1211,7 @@ function catalogoAccionRealizar() {
 		url: newUrlBase + "lista_accionRealizar",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("selectRealizar");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1196,10 +1219,10 @@ function catalogoAccionRealizar() {
 				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorAccionR = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1219,7 +1242,7 @@ function catalogoBloqueo() {
 		url: newUrlBase + "lista_bloqueo",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("selectBloqueo");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1227,10 +1250,10 @@ function catalogoBloqueo() {
 				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorBloqueo = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1252,7 +1275,7 @@ function catalogoGestion() {
 		url: newUrlBase + "lista_gestionVigente",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("selectGestion");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1260,10 +1283,10 @@ function catalogoGestion() {
 				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorAccionR = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1288,7 +1311,7 @@ function catalogoTipoGestion() {
 		url: newUrlBase + "lista_tipoGestion",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opcionBusqueda = document.getElementById("tipoGestion");
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				const opcion = document.createElement("option");
@@ -1296,10 +1319,10 @@ function catalogoTipoGestion() {
 				opcion.text = respuesta.lista[i].v_valor;
 				opcionBusqueda.add(opcion);
 			}
-			opcionBusqueda.addEventListener("change", function() {
+			opcionBusqueda.addEventListener("change", function () {
 				valorAccionR = opcionBusqueda.value;
 			});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1374,7 +1397,7 @@ function agregarRelacion(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modal-agregarRelacion').style.display = 'none';
 			$('#modal-agregarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
@@ -1386,7 +1409,7 @@ function agregarRelacion(dto) {
 					$('body').removeClass('modal-open');
 					$('.modal-backdrop').remove();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -1409,9 +1432,9 @@ function listaDeRelaciones() {
 		url: newUrlBase + "lista_relacionCodigos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			vistaTablaRel.clear().draw();
-			$.each(respuesta.lista, function(idx, opt) {
+			$.each(respuesta.lista, function (idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
 					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
@@ -1456,7 +1479,7 @@ function listaDeRelaciones() {
 				]).draw(false);
 			});
 		},
-		error: function(error) {
+		error: function (error) {
 			//console.log(error);
 		}
 	});
@@ -1483,7 +1506,7 @@ function abrirRelacion(id) {
 		url: newUrlBase + "buscar_relacionCodigo?idRelacion=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			$('#modal-editarRelacion').modal('show');
 			//console.log(respuesta.relacion);
 			var relacion = respuesta.relacion;
@@ -1493,7 +1516,7 @@ function abrirRelacion(id) {
 			catalogoGestionE(selectGestion, relacion);
 			catalogoBloqueoE(selectBloqueo, relacion);
 			catalogoTipoGes(selectTipoGes, relacion);
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de mostrar la información", {
 				closeOnClickOutside: false,
@@ -1514,7 +1537,7 @@ function catalogoCodigoAe(select, relacion) {
 		url: newUrlBase + "lista_codigosA_activos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id_codigo_accion;
@@ -1525,7 +1548,7 @@ function catalogoCodigoAe(select, relacion) {
 					opcion.selected = true;
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1546,7 +1569,7 @@ function catalogoCodigoRe(select, relacion) {
 		url: newUrlBase + "lista_codigosR_activos",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id_codigo_resultado;
@@ -1557,7 +1580,7 @@ function catalogoCodigoRe(select, relacion) {
 					opcion.selected = true;
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1577,7 +1600,7 @@ function catalogoRealizarE(select, relacion) {
 		url: newUrlBase + "lista_accionRealizar",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id;
@@ -1598,7 +1621,7 @@ function catalogoRealizarE(select, relacion) {
 					}
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1619,7 +1642,7 @@ function catalogoGestionE(select, relacion) {
 		url: newUrlBase + "lista_gestionVigente",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id;
@@ -1630,7 +1653,7 @@ function catalogoGestionE(select, relacion) {
 					opcion.selected = true;
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1650,7 +1673,7 @@ function catalogoBloqueoE(select, relacion) {
 		url: newUrlBase + "lista_bloqueo",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id;
@@ -1663,7 +1686,7 @@ function catalogoBloqueoE(select, relacion) {
 					}
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1687,7 +1710,7 @@ function catalogoTipoGes(select, relacion) {
 		url: newUrlBase + "lista_tipoGes",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			for (var i = 0; i < respuesta.lista.length; i++) {
 				var opcion = document.createElement("option");
 				opcion.value = respuesta.lista[i].pk_id;
@@ -1700,7 +1723,7 @@ function catalogoTipoGes(select, relacion) {
 					}
 				}
 			}
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de mostrar la información",
@@ -1751,7 +1774,7 @@ function editarRelacion(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			document.getElementById('modal-editarRelacion').style.display = 'none';
 			$('#modal-editarRelacion').modal('hide');
 			swal(respuesta.mensaje, {
@@ -1761,7 +1784,7 @@ function editarRelacion(dto) {
 				.then((value) => {
 					listaDeRelaciones();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -1800,7 +1823,7 @@ function cambiarEstatusRelacion(id, estatus) {
 		url: newUrlBase + "estatus_Relacion?idRleacion=" + id + "&estatus=" + estatus,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal(respuesta.mensaje, {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1808,7 +1831,7 @@ function cambiarEstatusRelacion(id, estatus) {
 				.then((value) => {
 					listaDeRelaciones();
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			swal({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
@@ -2015,7 +2038,7 @@ function vistaDeCorreos(lista) {
 	// Usar el método split para dividir la cadena en un array
 	var arrayDeRegistros = lista.split(";");
 	// Itera sobre el array y crea un chip para cada registro
-	arrayDeRegistros.forEach(function(registro) {
+	arrayDeRegistros.forEach(function (registro) {
 		// Crear un nuevo elemento chip
 		var nuevoChip = document.createElement('span');
 		nuevoChip.className = 'badge badge-primary mr-2';
@@ -2040,7 +2063,7 @@ const selectElement = document.getElementById('selectRealizarE');
 const selectElement2 = document.getElementById('selectBloqueoE');
 
 // Agregar un evento 'change' al elemento select
-selectElement.addEventListener('change', function(event) {
+selectElement.addEventListener('change', function (event) {
 	// Obtener el valor seleccionado del select
 	const selectedValue = event.target.value;
 
@@ -2061,7 +2084,7 @@ const selectElement3 = document.getElementById('selectRealizar');
 const selectElement4 = document.getElementById('selectBloqueo');
 
 // Agregar un evento 'change' al elemento select
-selectElement3.addEventListener('change', function(event) {
+selectElement3.addEventListener('change', function (event) {
 	// Obtener el valor seleccionado del select
 	const selectedValue = event.target.value;
 

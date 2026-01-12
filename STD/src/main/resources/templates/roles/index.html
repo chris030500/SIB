@@ -3,242 +3,219 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
+<head>
+	<!-- Scripts específicos si son necesarios -->
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div class="card-body">
-							<h2 style="text-align:center">Roles</h2>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-3">
-					<!--<button th:onclick="altaRol()" class="btn btn-primary" id="altaRol">Registrar Rol</button>-->
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Roles</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Administración</li>
+					<li class="breadcrumb-item active">Roles</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h5 class="card-title m-0">Gestión de Roles</h5>
 					<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal" title="Agregar Rol"
-						data-bs-target="#modalRol" aria-controls="table-datatable" type="button" data-tooltip="Add">
-						<i class="bi bi-people-fill"></i>
+						data-bs-target="#modalRol" aria-controls="table-datatable" type="button">
+						<i class="bi bi-plus-lg me-1"></i> Nuevo Rol
 					</button>
 				</div>
-				<div class="col-lg-10"></div>
+
+				<div class="table-responsive">
+					<table class="table table-hover" id="rolTable">
+						<thead>
+							<tr>
+								<th style="display:none;">ID</th>
+								<th>Rol</th>
+								<th>Descripción</th>
+								<th>Estatus</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="rol: ${roles}">
+								<td style="display:none;" th:text="${rol.pk_id_rol}"></td>
+								<td th:text="${rol.vc_nombre_rol}" class="fw-bold"></td>
+								<td th:text="${rol.vc_descripcion_rol}"></td>
+								<td>
+									<span
+										th:class="${rol.vc_estatus == 'ACTIVO' ? 'badge bg-success' : 'badge bg-secondary'}"
+										th:text="${rol.vc_estatus}"></span>
+								</td>
+								<td>
+									<div class="d-flex gap-1">
+										<button class="btn btn-sm btn-info text-white" data-bs-toggle="modal"
+											title="Editar Rol" data-bs-target="#editarRol"
+											th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'">
+											<i class="bi bi-pencil-square"></i>
+										</button>
+										<button class="btn btn-sm btn-warning text-white" title="Actualizar Estatus"
+											th:onclick="inactivarRol(this)">
+											<i class="bi bi-arrow-repeat"></i>
+										</button>
+										<button class="btn btn-sm btn-secondary" data-bs-toggle="modal" title="Permisos"
+											data-bs-target="#rolMenu" th:onclick="consultarOpciones(this)"
+											th:id="${rol.pk_id_rol}">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(roles)}">
+								<td colspan="5" class="text-center py-4 text-muted">
+									<i class="bi bi-inbox fs-1 d-block mb-2"></i>
+									A&uacute;n no se registran roles en el sistema
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
+		</div>
 
-			<div class="row">
-				<table class="table table-bordered table-striped" style="width: 100%;" id="rolTable">
-
-					<thead>
-						<tr>
-							<th style="visibility:collapse; display:none;"></th>
-							<th>Rol</th>
-							<th>Descripcion</th>
-							<th>Estatus</th>
-							<th>Acciones </th>
-
-						</tr>
-					</thead>
-
-					<tbody>
-
-						<tr th:each="rol: ${roles}">
-							<td style="visibility:collapse; display:none;" th:text="${rol.pk_id_rol}"></td>
-							<td th:text="${rol.vc_nombre_rol}"></td>
-							<td th:text="${rol.vc_descripcion_rol}"></td>
-							<td th:text="${rol.vc_estatus}"></td>
-							<td>
-								<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Editar Rol"
-									data-bs-target="#editarRol" aria-controls="table-datatable" type="button"
-									th:onclick="'modalEditarRol(' + ${rol.pk_id_rol} + ')'" data-tooltip="Add">
-									<i class="bi bi-pencil-square"></i>
-								</button>
-								<button class="btn btn-info" tabindex="0" title="Actualizar Estatus"
-									aria-controls="table-datatable" type="button" th:onclick="inactivarRol(this)"
-									data-tooltip="Add">
-									<i class="bi bi-arrow-repeat"></i>
-								</button>
-								<button class="btn btn-info" tabindex="0" data-bs-toggle="modal"
-									title="Relacionar Opciones de Menu" aria-controls="table-datatable" type="button" data-bs-target="#rolMenu"
-									th:onclick="consultarOpciones(this)" th:id="${rol.pk_id_rol}" data-tooltip="Add">
-									<i class="bi bi-ui-checks"></i>
-								</button>
-							</td>
-						</tr>
-
-						<tr th:if="${#lists.isEmpty(roles)}">
-							<td colspan="6">
-								A&uacute;n no se registran roles en el sistema
-							</td>
-						</tr>
-
-					</tbody>
-
-				</table>
-			</div>
-			<div class="modal" id="modalRol">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title" id="lblTitulo">Nuevo Rol</h4>
-						</div>
-						<div class="modal-body">
-							<form>
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda" class="col-form-label"> Nombre Rol:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<input type="text" class="nombre-rol form-control col-sm-8" id="nombreRol"
-										placeholder="Nombre del Rol" maxlength="100">
-										<div id="nombreContador">0/100</div>
-								</div>
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda" class="col-form-label"> Descripcion Rol:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<textarea type="text-Area" class="form-control" id="descripcionRol"
-										placeholder="Descripcion del Rol" maxlength="250"></textarea>
-										<div id="desRolContador">0/250</div>
-								</div>
-							</form>
-						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnRegistrar">Registrar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCancelar">Cancelar</button>
-						</div>
+		<!-- Modal Nuevo Rol -->
+		<div class="modal fade" id="modalRol" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Nuevo Rol</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="nombreRol" class="form-label">Nombre Rol</label>
+								<input type="text" class="form-control" id="nombreRol" placeholder="Ej: Administrador"
+									maxlength="100">
+								<div id="nombreContador" class="form-text text-end">0/100</div>
+							</div>
+							<div class="mb-3">
+								<label for="descripcionRol" class="form-label">Descripción</label>
+								<textarea class="form-control" id="descripcionRol" rows="3"
+									placeholder="Descripción del rol..." maxlength="250"></textarea>
+								<div id="desRolContador" class="form-text text-end">0/250</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCancelar">Cancelar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+							id="btnRegistrar">Registrar</button>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="modal fade" id="editarRol">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title" id="lblTitulo">Editar Rol</h4>
-						</div>
-						<div class="modal-body">
-							<form id="edit-form" th:method="post" th:object="${roles}">
-								<input id="idRol" name="idRol" type="hidden">
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="lblnombreRol" class="form-label"> Nombre Rol:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<input type="text" class="form-control" id="inombreRol" placeholder="Nombre del Rol"
-										maxlength="100">
-										<div id="nomContadorE">0/100</div>
-								</div>
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="lblDescripcionRol" class="form-label"> Descripcion Rol:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<textarea type="text-Area" class="form-control" id="inputDescripcion"
-										placeholder="Descripcion del Rol" maxlength="250"></textarea>
-										<div id="desRolContadorE">0/250</div>
-								</div>
-							</form>
-						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnModificar">Modificar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCerrar">Cerrar</button>
-						</div>
+		<!-- Modal Editar Rol -->
+		<div class="modal fade" id="editarRol" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar Rol</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="edit-form">
+							<input id="idRol" name="idRol" type="hidden">
+							<div class="mb-3">
+								<label for="inombreRol" class="form-label">Nombre Rol</label>
+								<input type="text" class="form-control" id="inombreRol" maxlength="100">
+								<div id="nomContadorE" class="form-text text-end">0/100</div>
+							</div>
+							<div class="mb-3">
+								<label for="inputDescripcion" class="form-label">Descripción</label>
+								<textarea class="form-control" id="inputDescripcion" rows="3"
+									maxlength="250"></textarea>
+								<div id="desRolContadorE" class="form-text text-end">0/250</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCerrar">Cerrar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnModificar">Guardar
+							Cambios</button>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="modal fade" id="rolMenu">
-				<div class="modal-dialog modal-lg modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h2 class="modal-title" id="lblTituloRol"></h2>
-						</div>
-						<div class="modal-body">
-							<div class="table-responsive">
-							<table class="table table-bordered table-striped" style="width: 100%;" id="menuRol">
-								<thead>
+		<!-- Modal Permisos -->
+		<div class="modal fade" id="rolMenu" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblTituloRol">Permisos del Rol</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="table-responsive">
+							<table class="table table-hover" id="menuRol">
+								<thead class="table-light">
 									<tr>
-										<th>
-											<input type="checkbox" class="custom-control-input" name="" th:value="Todos"
-												th:id="idTodos" th:onclick="checkTodos(this)"/>
+										<th width="50">
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input" id="idTodos"
+													th:onclick="checkTodos(this)">
+											</div>
 										</th>
-										<th>Menu</th>
+										<th>Menú</th>
 										<th>Pantallas</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="menu: ${listaMenu}">
+										<td></td>
+										<td th:text="${menu.vc_nombre_menu}" class="fw-bold"></td>
 										<td>
-											<!--<input type="checkbox" class="custom-control-input" name=""
-												th:value="${menu.pk_id_menu}" th:id="'M'+${menu.pk_id_menu}" th:onclick="checkMenu(this)"/>-->
-										</td>
-										<td th:text="${menu.vc_nombre_menu}"></td>
-										<td>
-											<table class="table table-bordered table-striped" style="width: 100%;"
-												th:id="'O'+${menu.pk_id_menu}">
-												<thead>
-													<tr>
-														<th>
-															<!--<input type="checkbox" class="custom-control-input" name=""
-																th:onclick="checkOpciones(this)" th:id="'O'+${menu.pk_id_menu}" />-->
-														</th>
-														<th>Seleccionar pantalla</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr th:each="opciones: ${listaOpciones}"
-														th:if="${menu.pk_id_menu == opciones.pk_id_menu}">
-														<td>
-															<input type="checkbox" class="custom-control-input" name=""
-																th:value="'O'+${menu.pk_id_menu}"
-																th:id="${opciones.pk_id_opcion}" />
-														</td>
-														<td th:text="${opciones.vc_nombre_pantalla}"></td>
-													</tr>
-												</tbody>
-											</table>
+											<div class="d-flex flex-column gap-2">
+												<div th:each="opciones: ${listaOpciones}"
+													th:if="${menu.pk_id_menu == opciones.pk_id_menu}"
+													class="form-check">
+													<input type="checkbox" class="form-check-input"
+														th:value="'O'+${menu.pk_id_menu}"
+														th:id="${opciones.pk_id_opcion}">
+													<label class="form-check-label" th:for="${opciones.pk_id_opcion}"
+														th:text="${opciones.vc_nombre_pantalla}"></label>
+												</div>
+											</div>
 										</td>
 									</tr>
 								</tbody>
 							</table>
 							<input type="hidden" id="idRolRel">
-						 </div>
 						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnRelRolOpciones">Guardar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCerrarRelRol">Cerrar</button>
-						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCerrarRelRol">Cerrar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+							id="btnRelRolOpciones">Guardar Permisos</button>
 					</div>
 				</div>
 			</div>
-
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
-		
-        <script th:src="@{/js/bootstrap-table.min.js}"></script>
-        <script th:src="@{/js/jquery.min.js}"></script>
-        <script th:src="@{/js/jquery-3.2.1.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/sweetalert2.all.min.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
+		<script th:src="@{/js/bootstrap-table.min.js}"></script>
+		<!-- Eliminados scripts redundantes (jquery, bootstrap, sweetalert) ya incluidos en layout -->
+		<script th:src="@{/js/datatables.min.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/roles/rol.js}"></script>
 	</th:block>

@@ -3,367 +3,325 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
-
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="border p-2 card">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="bg-info text-white">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div>
-							<h2 style="text-align:center">Configuración de SMS Solicitudes Autorizadas</h2>
-						</div>
-					</div>
-				</div>
-			</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Configuración de SMS</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Crédito</li>
+					<li class="breadcrumb-item active">Solicitudes Autorizadas</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
 
-			<div class="p-4 border rounded-3 mb-4">
-				<ul class="nav nav-pills" id="pntConf" role="tablist">
+		<div class="card">
+			<div class="card-body pt-3">
+
+				<!-- Tabs -->
+				<ul class="nav nav-tabs nav-tabs-bordered" id="configTabs" role="tablist">
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link active" id="credenciales-tab"
-							data-bs-toggle="tab" type="button" role="tab" aria-selected="true">Credenciales</button>
+						<button class="nav-link active" id="credenciales-tab" data-bs-toggle="tab"
+							data-bs-target="#credenciales" type="button" role="tab" aria-controls="credenciales"
+							aria-selected="true">Credenciales</button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link" id="plantillas-tab" data-bs-toggle="tab"
-							type="button" role="tab" aria-selected="false" tabindex="-1">Plantillas</button>
+						<button class="nav-link" id="plantillas-tab" data-bs-toggle="tab" data-bs-target="#plantillas"
+							type="button" role="tab" aria-controls="plantillas"
+							aria-selected="false">Plantillas</button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link" id="gestion-tab" data-bs-toggle="tab"
-							type="button" role="tab" aria-selected="false" tabindex="-1">Gestión del mensaje</button>
+						<button class="nav-link" id="gestion-tab" data-bs-toggle="tab" data-bs-target="#gestion"
+							type="button" role="tab" aria-controls="gestion" aria-selected="false">Gestión del
+							mensaje</button>
 					</li>
 					<li class="nav-item" role="presentation">
-						<button onclick="ocultarMostrar(this)" class="nav-link" id="frecuencia-tab" data-bs-toggle="tab"
-							type="button" role="tab" aria-selected="false" tabindex="-1">Frecuencia de Envío de
-							Mensaje</button>
+						<button class="nav-link" id="frecuencia-tab" data-bs-toggle="tab" data-bs-target="#frecuencia"
+							type="button" role="tab" aria-controls="frecuencia" aria-selected="false">Frecuencia de
+							Envío</button>
 					</li>
 				</ul>
-			</div>
 
-			<div id="pant-tabs">
-				<div class="row" style="margin-top : 15px ">
-					<div class="col-lg-4"></div>
-					<div id="spinner-container" class="col-lg-4 d-flex justify-content-center"></div>
-					<div class="col-lg-4"></div>
-				</div>
-				<!-- Credenciales -->
-				<div id="credenciales-tab1" class="" style="display:none;" for="1">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Datos conexión al servicio de Calixta</legend>
-						<div class="row" style="margin-top : 15px ">
-							<form th:action="@{/credito/guardarCredenciales}" method="post" id="credencialesForm">
-								<div class="table-responsive">
-									<table class="table table-bordered">
-										<tbody>
-											<tr th:each="calixta, calixtaStat : ${credenciales}">
-												<td th:text="${calixta.descripcionCredencial}"></td>
-												<td>
-													<div th:switch="${calixta.descTipoCredencial}">
-														<input th:case="'number'" type="number" class="form-control"
-															autocomplete="off" placeholder="ID Cliente Calixta"
-															th:name="${calixta.nombreCredencial}"
-															th:value="${calixta.valorCredencial}" th:required="true">
+				<div class="tab-content pt-4" id="configTabsContent">
 
-														<input th:case="'text'" type="text" class="form-control"
-															autocomplete="off" placeholder="Usuario Calixta"
-															th:name="${calixta.nombreCredencial}"
-															th:value="${calixta.valorCredencial}" th:required="true">
-
-														<input th:case="'password'" type="password" class="form-control"
-															autocomplete="off" placeholder="Password"
-															th:name="${calixta.nombreCredencial}"
-															th:value="${calixta.valorCredencial}" th:required="true">
-
-														<input th:case="'readonly'" type="text" class="form-control"
-															autocomplete="off" style="background-color: #e9e9e9"
-															th:name="${calixta.nombreCredencial}"
-															th:value="${calixta.valorCredencial}" readonly>
-													</div>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-								<button type="submit" class="btn btn-primary mt-4">Guardar cambios</button>
-							</form>
-						</div>
-					</fieldset>
-				</div>
-				<!-- Fin de credenciales -->
-				<!-- Plantillas -->
-				<div id="plantillas-tab1" class="" style="display:none;" for="2">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Plantillas de Mensajes SMS</legend>
-						<div class="row" style="margin-top : 15px ">
+					<!-- Credenciales -->
+					<div class="tab-pane fade show active" id="credenciales" role="tabpanel"
+						aria-labelledby="credenciales-tab">
+						<h5 class="card-title">Datos conexión al servicio de Calixta</h5>
+						<form th:action="@{/credito/guardarCredenciales}" method="post" id="credencialesForm">
 							<div class="table-responsive">
-								<table class="table table-sm" style="width: 100%; text-align: center;"
-									id="tblPlantillas">
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Mensaje</th>
-											<th>Usuario Registra</th>
-											<th>Fecha Registro</th>
-											<th>Usuario Modifica</th>
-											<th>Fecha Modificación</th>
-											<th>Estatus</th>
-											<th>Acciones</th>
+								<table class="table table-bordered">
+									<tbody>
+										<tr th:each="calixta, calixtaStat : ${credenciales}">
+											<td th:text="${calixta.descripcionCredencial}" class="fw-bold align-middle">
+											</td>
+											<td>
+												<div th:switch="${calixta.descTipoCredencial}">
+													<input th:case="'number'" type="number" class="form-control"
+														autocomplete="off" placeholder="ID Cliente Calixta"
+														th:name="${calixta.nombreCredencial}"
+														th:value="${calixta.valorCredencial}" th:required="true">
+
+													<input th:case="'text'" type="text" class="form-control"
+														autocomplete="off" placeholder="Usuario Calixta"
+														th:name="${calixta.nombreCredencial}"
+														th:value="${calixta.valorCredencial}" th:required="true">
+
+													<input th:case="'password'" type="password" class="form-control"
+														autocomplete="off" placeholder="Password"
+														th:name="${calixta.nombreCredencial}"
+														th:value="${calixta.valorCredencial}" th:required="true">
+
+													<input th:case="'readonly'" type="text"
+														class="form-control bg-light" autocomplete="off"
+														th:name="${calixta.nombreCredencial}"
+														th:value="${calixta.valorCredencial}" readonly>
+												</div>
+											</td>
 										</tr>
-									</thead>
-									<tbody></tbody>
+									</tbody>
 								</table>
 							</div>
-						</div>
-					</fieldset>
-				</div>
-				<!-- Fin de plantillas -->
-				<!-- Gestión SMS -->
-				<div id="gestion-tab1" class="" style="display:none;" for="3">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Gestión del mensaje</legend>
-						<div class="row" style="margin-top : 15px ">
-							<div class="table-responsive">
-								<table class="table table-sm" style="width: 100%; text-align: center;"
-									id="tblGestionSMS">
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Mes</th>
-											<th>Plantilla</th>
-											<th>Limite SMS</th>
-											<th>Máximo SMS</th>
-											<th>SMS Disponibles</th>
-											<th>SMS Enviados</th>
-											<th>SMS No Enviados</th>
-											<th>Estatus Proceso</th>
-											<th>Acciones</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-								</table>
+							<div class="text-end mt-3">
+								<button type="submit" class="btn btn-primary">
+									<i class="bi bi-save me-1"></i> Guardar cambios
+								</button>
 							</div>
+						</form>
+					</div>
+
+					<!-- Plantillas -->
+					<div class="tab-pane fade" id="plantillas" role="tabpanel" aria-labelledby="plantillas-tab">
+						<h5 class="card-title">Plantillas de Mensajes SMS</h5>
+						<div class="table-responsive">
+							<table class="table table-hover" id="tblPlantillas">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Mensaje</th>
+										<th>Usuario Registra</th>
+										<th>Fecha Registro</th>
+										<th>Usuario Modifica</th>
+										<th>Fecha Modificación</th>
+										<th>Estatus</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
 						</div>
-					</fieldset>
-				</div>
-				<!-- Fin de Gestión SMS -->
-				<!-- Frecuencia de envío -->
-				<div id="frecuencia-tab1" class="" style="display:none;" for="4">
-					<fieldset class="border p-2">
-						<legend class="float-none w-auto p-2">Frecuencia de Envío de Mensaje</legend>
-						<div class="row" style="margin-top : 15px ">
-							<form id="frecuenciaForm">
-								<!-- Primer horario -->
-								<div class="mb-3">
-									<h5>Lunes a Viernes</h5>
-								</div>
-								<div class="row mb-4 align-items-center">
+					</div>
+
+					<!-- Gestión SMS -->
+					<div class="tab-pane fade" id="gestion" role="tabpanel" aria-labelledby="gestion-tab">
+						<h5 class="card-title">Gestión del mensaje</h5>
+						<div class="table-responsive">
+							<table class="table table-hover" id="tblGestionSMS">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Mes</th>
+										<th>Plantilla</th>
+										<th>Limite SMS</th>
+										<th>Máximo SMS</th>
+										<th>SMS Disponibles</th>
+										<th>SMS Enviados</th>
+										<th>SMS No Enviados</th>
+										<th>Estatus Proceso</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Frecuencia -->
+					<div class="tab-pane fade" id="frecuencia" role="tabpanel" aria-labelledby="frecuencia-tab">
+						<h5 class="card-title">Frecuencia de Envío de Mensaje</h5>
+						<form id="frecuenciaForm">
+							<div class="mb-4 p-3 border rounded bg-light">
+								<h6 class="fw-bold mb-3">Lunes a Viernes</h6>
+								<div class="row g-3">
 									<div class="col-md-4">
-										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
-										<input type="text" class="form-control" id="hora-inicio"
-											style="width: 70px; background-color: #e9e9e9"
+										<label class="form-label">Hora Inicio</label>
+										<input type="text" class="form-control bg-white"
 											th:value="${hora_inicio_semanal}" readonly>
 									</div>
 									<div class="col-md-4">
-										<label for="hora-fin" class="form-label">Hora Fin:</label>
-										<input type="text" class="form-control" id="hora-fin"
-											style="width: 70px; background-color: #e9e9e9"
-											th:value="${hora_fin_semanal}" readonly>
+										<label class="form-label">Hora Fin</label>
+										<input type="text" class="form-control bg-white" th:value="${hora_fin_semanal}"
+											readonly>
 									</div>
 									<div class="col-md-4">
-										<label for="hora-fin" class="form-label">Recurrencia:</label>
-										<input type="text" class="form-control" id="recurrencia"
-											style="width: 70px; background-color: #e9e9e9"
+										<label class="form-label">Recurrencia</label>
+										<input type="text" class="form-control bg-white"
 											th:value="${recurrencia_envio_sms}" readonly>
 									</div>
 								</div>
-								<!-- Segundo horario -->
-								<div class="mb-3">
-									<h5>Sábado</h5>
-								</div>
-								<div class="row mb-4 align-items-center">
+							</div>
+
+							<div class="mb-4 p-3 border rounded bg-light">
+								<h6 class="fw-bold mb-3">Sábado</h6>
+								<div class="row g-3">
 									<div class="col-md-4">
-										<label for="hora-inicio" class="form-label">Hora Inicio:</label>
-										<input type="text" class="form-control" id="hora-inicio"
-											style="width: 70px; background-color: #e9e9e9"
+										<label class="form-label">Hora Inicio</label>
+										<input type="text" class="form-control bg-white"
 											th:value="${hora_inicio_fin_semana}" readonly>
 									</div>
 									<div class="col-md-4">
-										<label for="hora-fin" class="form-label">Hora Fin:</label>
-										<input type="text" class="form-control" id="hora-fin"
-											style="width: 70px; background-color: #e9e9e9"
+										<label class="form-label">Hora Fin</label>
+										<input type="text" class="form-control bg-white"
 											th:value="${hora_fin_fin_semana}" readonly>
 									</div>
 									<div class="col-md-4">
-										<label for="hora-fin" class="form-label">Recurrencia:</label>
-										<input type="text" class="form-control" id="recurrencia"
-											style="width: 70px; background-color: #e9e9e9"
+										<label class="form-label">Recurrencia</label>
+										<input type="text" class="form-control bg-white"
 											th:value="${recurrencia_envio_sms}" readonly>
 									</div>
 								</div>
-							</form>
-						</div>
-					</fieldset>
-				</div>
-				<!-- Fin de frecuencia de envío -->
-			</div>
+							</div>
+						</form>
+					</div>
 
-			<!-- Modal Plantillas -->
-			<div class="modal fade" id="editPlantillaModal" tabindex="-1" role="dialog"
-				aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title fw-bold" id="exampleModalLabel">Editar Plantilla SMS</h5>
-						</div>
-						<div class="modal-body">
-							<form id="plantillasForm">
-								<div class="mb-3">
-									<label for="id-plantilla" class="form-label">ID:</label>
-									<input type="number" class="form-control w-50" id="id-plantilla-sms" rows="4"
-										style="background-color: #e9e9e9" readonly>
-								</div>
-								<div class="row mb-3">
-									<div class="col-md-8">
-										<label for="texto-enviar" class="form-label">Texto a enviar:</label>
-										<textarea class="form-control" id="plantilla-texto-enviar" rows="4"
-											placeholder="Escribe el texto aquí..."></textarea>
-									</div>
-									<div class="col-md-4">
-										<label for="select-comodines-plantilla" class="form-label">Comodines:</label>
-										<select class="form-select" id="select-comodines-plantilla">
-											<option value="" selected>Selecciona una opción</option>
-											<option value="#TIT">Titular</option>
-											<option value="#SOL">No. Solicitud</option>
-										</select>
-									</div>
-								</div>
-								<div class="mb-3">
-									<label for="estatus-plantilla" class="form-label">Estatus:</label>
-									<select class="form-select w-50" id="select-estatus-plantilla">
-										<option value="" selected>Selecciona una opción</option>
-										<option value="1">ACTIVO</option>
-										<option value="0">INACTIVO</option>
-									</select>
-								</div>
-								<div class="text-end">
-									<button type="button" class="btn btn-secondary"
-										data-bs-dismiss="modal">Cancelar</button>
-									<button type="submit" class="btn btn-primary">Guardar cambios</button>
-								</div>
-							</form>
-						</div>
-					</div>
 				</div>
 			</div>
-			<!-- Fin Modal Plantillas -->
-			<!-- Modal editar Gestión SMS -->
-			<div class="modal fade" id="editProcessModal" tabindex="-1" role="dialog"
-				aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title fw-bold" id="exampleModalLabel">Editar Gestión SMS</h5>
-						</div>
-						<div class="modal-body">
-							<form id="gestionSMSForm">
-								<div class="mb-3">
-									<label for="id-gestion-sms" class="form-label">ID Gestión SMS:</label>
-									<input type="number" class="form-control" id="id-gestion-sms" rows="4"
-										style="background-color: #e9e9e9" readonly>
-								</div>
-								<div class="mb-3">
-									<label for="mes-gestion" class="form-label">Mes:</label>
-									<input type="text" class="form-control" id="mes-gestion" rows="4"
-										style="background-color: #e9e9e9" readonly>
-								</div>
-								<div class="mb-3" style="display: none;">
-									<label for="id-config-mensual" class="form-label">ID Configuración SMS
-										Mensual:</label>
-									<input type="text" class="form-control" id="id-config-mensual" rows="4" readonly>
-								</div>
-								<div class="mb-3" style="display: none;">
-									<label for="max-sms-anterior" class="form-label">Max SMS Anterior</label>
-									<input type="number" class="form-control" id="max-sms-anterior" rows="4"
-									style="background-color: #e9e9e9" readonly>
-								</div>
-								<div class="mb-3">
-									<label for="sms-gestion" class="form-label">Mensaje SMS:</label>
-									<textarea type="text" class="form-control" id="sms-gestion" rows="4"
-										style="background-color: #e9e9e9" readonly></textarea>
-								</div>
-								<div class="mb-3">
-									<label for="limite-sms" class="form-label">Limite SMS:</label>
-									<select class="form-select w-50" id="select-limite-sms">
-										<option value="" selected>Selecciona una opción</option>
-										<option value="1">SI</option>
-										<option value="0">NO</option>
-									</select>
-								</div>
-								<div class="mb-3" id="divMaximoSMS">
-									<label for="maximo-sms" class="form-label">Máximo SMS:</label>
-									<input type="number" class="form-control" id="maximo-sms" min="0" rows="4">
-								</div>
-								<div class="text-end">
-									<button type="button" class="btn btn-secondary"
-										data-bs-dismiss="modal">Cancelar</button>
-									<button type="submit" class="btn btn-primary">Guardar cambios</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Fin Modal editar Gestión SMS -->
-			<!-- Modal Cambio de estatus proceso -->
-			<div class="modal fade" id="statusProcessModal" tabindex="-1" role="dialog"
-				aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title fw-bold" id="process-modal-tittle"></h5>
-						</div>
-						<div class="modal-body">
-							<form id="changeStatusProcessForm">
-								<div class="mb-3">
-									<p id="process-modal-text"></p>
-								</div>
-								<div class="text-end">
-									<button type="button" class="btn btn-secondary"
-										data-bs-dismiss="modal">Cancelar</button>
-									<button type="submit" class="btn btn-primary">Aceptar</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Fin Modal estatus proceso -->
 		</div>
+
+		<!-- Modal Plantillas -->
+		<div class="modal fade" id="editPlantillaModal" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar Plantilla SMS</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="plantillasForm">
+							<div class="mb-3">
+								<label for="id-plantilla-sms" class="form-label">ID</label>
+								<input type="number" class="form-control w-25 bg-light" id="id-plantilla-sms" readonly>
+							</div>
+							<div class="row mb-3">
+								<div class="col-md-8">
+									<label for="plantilla-texto-enviar" class="form-label">Texto a enviar</label>
+									<textarea class="form-control" id="plantilla-texto-enviar" rows="4"
+										placeholder="Escribe el texto aquí..."></textarea>
+								</div>
+								<div class="col-md-4">
+									<label for="select-comodines-plantilla" class="form-label">Comodines</label>
+									<select class="form-select" id="select-comodines-plantilla">
+										<option value="" selected>Selecciona una opción</option>
+										<option value="#TIT">Titular</option>
+										<option value="#SOL">No. Solicitud</option>
+									</select>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label for="select-estatus-plantilla" class="form-label">Estatus</label>
+								<select class="form-select w-50" id="select-estatus-plantilla">
+									<option value="1">ACTIVO</option>
+									<option value="0">INACTIVO</option>
+								</select>
+							</div>
+							<div class="text-end">
+								<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal">Cancelar</button>
+								<button type="submit" class="btn btn-primary">Guardar cambios</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Gestión SMS -->
+		<div class="modal fade" id="editProcessModal" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar Gestión SMS</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="gestionSMSForm">
+							<div class="mb-3">
+								<label for="id-gestion-sms" class="form-label">ID Gestión SMS</label>
+								<input type="number" class="form-control bg-light" id="id-gestion-sms" readonly>
+							</div>
+							<div class="mb-3">
+								<label for="mes-gestion" class="form-label">Mes</label>
+								<input type="text" class="form-control bg-light" id="mes-gestion" readonly>
+							</div>
+							<!-- Campos ocultos -->
+							<input type="hidden" id="id-config-mensual">
+							<input type="hidden" id="max-sms-anterior">
+
+							<div class="mb-3">
+								<label for="sms-gestion" class="form-label">Mensaje SMS</label>
+								<textarea class="form-control bg-light" id="sms-gestion" rows="4" readonly></textarea>
+							</div>
+							<div class="mb-3">
+								<label for="select-limite-sms" class="form-label">Limite SMS</label>
+								<select class="form-select" id="select-limite-sms">
+									<option value="1">SI</option>
+									<option value="0">NO</option>
+								</select>
+							</div>
+							<div class="mb-3" id="divMaximoSMS">
+								<label for="maximo-sms" class="form-label">Máximo SMS</label>
+								<input type="number" class="form-control" id="maximo-sms" min="0">
+							</div>
+							<div class="text-end">
+								<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal">Cancelar</button>
+								<button type="submit" class="btn btn-primary">Guardar cambios</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Status Process -->
+		<div class="modal fade" id="statusProcessModal" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="process-modal-tittle"></h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="changeStatusProcessForm">
+							<p id="process-modal-text"></p>
+							<div class="text-end mt-3">
+								<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal">Cancelar</button>
+								<button type="submit" class="btn btn-primary">Aceptar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<script th:src="@{/js/jquery.min.js}"></script>
-		<script th:src="@{/js/bootstrap.min.js}"></script>	
-		<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
-		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-		<script th:src="@{/js/datatables.min.js}"></script>
+		<!-- Scripts -->
 		<script th:src="@{/js/sweetalert2@7.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
 		<script th:src="@{/js/credito/fillDataTableConfig.js}"></script>
 		<script th:src="@{/js/credito/solicitudesAutorizadas.js}"></script>
+		<!-- Eliminados scripts duplicados -->
 	</th:block>
 </body>
-
 
 </html>

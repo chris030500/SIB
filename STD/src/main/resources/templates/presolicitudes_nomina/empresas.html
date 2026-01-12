@@ -3,33 +3,43 @@
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Cobro Domiciliado</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
+	<section class="section" layout:fragment="page-content">
 
-		<!-- NUEVA SECCIÓN: EMPRESAS -->
-		<div class="container mt-4">
-			<div class="card card-primary">
-				<div class="card-header text-center bg-primary text-white">
-					<h2>Empresas</h2>
-				</div>
-				<div class="card-body">
-					<div class="d-flex justify-content-between my-3">
-						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
-							<i class="fas fa-envelope"></i> MENSAJE
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Empresas</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Nómina</li>
+					<li class="breadcrumb-item active">Empresas</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h5 class="card-title mb-0">Gestión de Empresas</h5>
+					<div>
+						<button class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+							data-bs-target="#mensajeModal">
+							<i class="bi bi-envelope me-1"></i> Configurar Correo
 						</button>
-						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">Registrar
-							Empresa</button>
+						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">
+							<i class="bi bi-plus-circle me-1"></i> Registrar Empresa
+						</button>
 					</div>
+				</div>
 
-					<table id="tblRegistroEmpresas" class="table table-bordered text-center">
-						<thead class="bg-primary text-white">
+				<div class="table-responsive">
+					<table id="tblRegistroEmpresas" class="table table-hover text-center">
+						<thead class="table-light">
 							<tr>
 								<th>Nombre</th>
 								<th>Correo</th>
@@ -41,53 +51,51 @@
 						</thead>
 						<tbody></tbody>
 					</table>
+				</div>
 
-					<div class="d-flex justify-content-center">
-						<nav>
-							<ul class="pagination">
-								<li class="page-item"><a class="page-link" href="#">Anterior</a></li>
-								<li class="page-item active"><a class="page-link" href="#">1</a></li>
-								<li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
-							</ul>
-						</nav>
-					</div>
+				<div class="d-flex justify-content-center mt-3">
+					<nav>
+						<ul class="pagination">
+							<li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+							<li class="page-item active"><a class="page-link" href="#">1</a></li>
+							<li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+						</ul>
+					</nav>
 				</div>
 			</div>
 		</div>
 
-		<!-- Modal para registrar empresa -->
-		<div class="modal fade" id="empresaModal" tabindex="-1" aria-labelledby="empresaModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
+		<!-- Modal Registrar Empresa -->
+		<div class="modal fade" id="empresaModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="empresaModalLabel">Datos de la Empresa</h5>
+						<h5 class="modal-title">Datos de la Empresa</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<form>
-							<div class="mb-3">
-								<label for="buscarEmpresa" class="form-label">Nombre de la Empresa</label>
+							<div class="mb-3 position-relative">
+								<label class="form-label">Nombre de la Empresa</label>
 								<input type="search" class="form-control" id="buscarEmpresa" list="opcionEmpresa"
 									autocomplete="off" placeholder="Buscar empresa">
 								<datalist id="opcionEmpresa"></datalist>
-
-								<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;">
-								</div>
+								<div id="spinnerEmpresas"
+									class="spinner-border spinner-border-sm text-primary position-absolute end-0 top-50 me-2"
+									style="display: none;"></div>
 							</div>
 							<div class="mb-3">
-								<label for="correoEmpresa" class="form-label">Correos de Contacto (separados por ;)
-								</label>
+								<label class="form-label">Correos de Contacto (separados por ;)</label>
 								<textarea class="form-control" id="correoEmpresa" rows="3"
-									placeholder="Ingrese correos separados por ;">
-							  </textarea>
+									placeholder="ejemplo@empresa.com; otro@empresa.com"></textarea>
 							</div>
 							<div class="mb-3">
-								<label for="buscarEmpresa" class="form-label">Persona de Contacto</label>
+								<label class="form-label">Persona de Contacto</label>
 								<input type="text" class="form-control" id="personaContacto"
-									placeholder="Nombre de persona de contacto">
+									placeholder="Nombre completo">
 							</div>
 							<div class="mb-3">
-								<label for="frecuencia" class="form-label">Frecuencia</label>
+								<label class="form-label">Frecuencia</label>
 								<select class="form-select" id="frecuencia">
 									<option value="1">Semanal</option>
 									<option value="2">Quincenal</option>
@@ -96,9 +104,8 @@
 									<option value="5">Inmediata</option>
 								</select>
 							</div>
-
 							<div class="mb-3">
-								<label for="estatus" class="form-label">Estatus</label>
+								<label class="form-label">Estatus</label>
 								<select class="form-select" id="estatus">
 									<option value="1">ACTIVA</option>
 									<option value="0">INACTIVA</option>
@@ -113,36 +120,33 @@
 				</div>
 			</div>
 		</div>
-		<!-- Modal para editar empresa -->
-		<div class="modal fade" id="modalEmpresa" tabindex="-1" aria-labelledby="modalEmpresaLabel" aria-hidden="true">
-			<div class="modal-dialog">
+
+		<!-- Modal Editar Empresa -->
+		<div class="modal fade" id="modalEmpresa" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="modalEmpresaLabel">Editar Empresa</h5>
+						<h5 class="modal-title">Editar Empresa</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<form id="formEmpresa">
 							<input type="hidden" id="empresaId">
 							<div class="mb-3">
-								<label for="empresaNombre" class="form-label">Nombre</label>
+								<label class="form-label">Nombre</label>
 								<input type="text" class="form-control" id="empresaNombre" disabled>
 							</div>
 							<div class="mb-3">
-								<label for="correoEmpresa" class="form-label">Correos de Contacto (separados por ;)
-								</label>
-								<textarea class="form-control" id="empresaCorreo" rows="3"
-									placeholder="Ingrese correos separados por ;">
-														  </textarea>
+								<label class="form-label">Correos de Contacto</label>
+								<textarea class="form-control" id="empresaCorreo" rows="3"></textarea>
 							</div>
 							<div class="mb-3">
-								<label for="buscarEmpresa" class="form-label">Persona de Contacto</label>
-								<input type="text" class="form-control" id="empresaContacto"
-									placeholder="Nombre de persona de contacto">
+								<label class="form-label">Persona de Contacto</label>
+								<input type="text" class="form-control" id="empresaContacto">
 							</div>
 							<div class="mb-3">
-								<label for="empresaFrecuencia" class="form-label">Frecuencia</label>
-								<select class="form-control" id="empresaFrecuencia">
+								<label class="form-label">Frecuencia</label>
+								<select class="form-select" id="empresaFrecuencia">
 									<option value="1">Semanal</option>
 									<option value="2">Quincenal</option>
 									<option value="3">Mensual</option>
@@ -150,30 +154,32 @@
 									<option value="5">Inmediata</option>
 								</select>
 							</div>
-							<button type="submit" class="btn btn-primary">Guardar Cambios</button>
 						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary">Guardar Cambios</button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Modal de configuración de correo -->
-		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
+		<!-- Modal Configuración Correo -->
+		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="mensajeModalLabel">Configuración de Correo</h5>
+						<h5 class="modal-title">Configuración de Correo</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 						<form id="formCorreo">
 							<div class="mb-3">
-								<label for="correoRemitente" class="form-label">Correo Electrónico</label>
+								<label class="form-label">Correo Electrónico</label>
 								<input type="email" class="form-control" id="correoRemitente" required>
 							</div>
-
 							<div class="mb-3">
-								<label for="correoPassword" class="form-label">Contraseña</label>
+								<label class="form-label">Contraseña</label>
 								<div class="input-group">
 									<input type="password" class="form-control" id="correoPassword" required>
 									<button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
@@ -181,16 +187,15 @@
 									</button>
 								</div>
 							</div>
-
 							<div class="mb-3">
-								<label for="mensajeTexto" class="form-label">Mensaje</label>
+								<label class="form-label">Mensaje</label>
 								<div class="input-group">
 									<textarea class="form-control" id="mensajeTexto" rows="4"></textarea>
-									<button class="btn btn-outline-primary dropdown-toggle" type="button"
+									<button class="btn btn-outline-secondary dropdown-toggle" type="button"
 										data-bs-toggle="dropdown">
 										Comodines
 									</button>
-									<ul class="dropdown-menu">
+									<ul class="dropdown-menu dropdown-menu-end">
 										<li><a class="dropdown-item" href="#"
 												onclick="insertarComodin('{nombre}')">Nombre</a></li>
 										<li><a class="dropdown-item" href="#"
@@ -199,14 +204,12 @@
 												onclick="insertarComodin('{fecha}')">Fecha</a></li>
 									</ul>
 								</div>
-								<small class="text-muted">Puedes usar comodines como <strong>{nombre}, {empresa},
-										{fecha}</strong>.</small>
+								<div class="form-text">Puedes usar comodines como <strong>{nombre}, {empresa},
+										{fecha}</strong>.</div>
 							</div>
 							<div class="mb-3">
-								<label for="horaCron" class="form-label">Hora de Ejecución (24h)</label>
+								<label class="form-label">Hora de Ejecución (24h)</label>
 								<input type="time" class="form-control" id="horaCron" required>
-								<small class="text-muted">Selecciona la hora en formato de 24 horas (por ejemplo, 14:00
-									para 2 PM).</small>
 							</div>
 						</form>
 					</div>
@@ -218,25 +221,15 @@
 				</div>
 			</div>
 		</div>
+
 	</section>
-
 	<th:block layout:fragment="page-scripts">
-		<!-- jQuery primero -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-		<!-- DataTables CSS y JS -->
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-
-		<!-- Otros scripts (SweetAlert, Bootstrap, etc.) -->
+		<!-- Scripts -->
 		<script th:src="@{/js/sweetalert2@11.js}"></script>
 		<script th:src="@{/js/presolicitudes/empresas.js}"></script>
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
-
-
 </body>
 
 </html>

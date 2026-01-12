@@ -15,7 +15,7 @@ var fechaVencimientoObs;
 var fechaHabil = true;
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
 	iniciarfechas();
 	eventosModal();
@@ -31,9 +31,9 @@ var servicioFolios = "obtenerFolios"
 function cargarTablaFolios() {
 	$("#modalFolio").modal("hide");
 	var url = getAbsolutePath() + servicioFolios;
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		tblOficio.clear().draw();
-		$.each(data, function(idx, opt) {
+		$.each(data, function (idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0' data-bs-toggle='modal'"
 				+ " title='Editar Registro' data-bs-target='#modalFolio' aria-controls='table-datatable' type='button'"
 				+ " onclick='editarFolio("
@@ -68,7 +68,7 @@ function cargarTablaFolios() {
 function tamFile() {
 	const tamMaxFile = 31457280;
 	var fileTam = document.getElementById("file");
-	fileTam.onchange = function() {
+	fileTam.onchange = function () {
 		if (this.files[0].size > tamMaxFile) {
 			swal({
 				title: "",
@@ -85,7 +85,7 @@ function tamFile() {
 function eventosContadorObservacion() {
 	const mensaje = document.getElementById('idObservacion');
 	const contador = document.getElementById('contador');
-	mensaje.addEventListener('input', function(e) {
+	mensaje.addEventListener('input', function (e) {
 		const target = e.target;
 		const longitudMax = target.getAttribute('maxlength');
 		const longitudAct = target.value.length;
@@ -96,7 +96,7 @@ function eventosContadorObservacion() {
 function evContadorObsOficio() {
 	const mensaje = document.getElementById('obsOficio');
 	const contador = document.getElementById('contadorObsOficio');
-	mensaje.addEventListener('input', function(e) {
+	mensaje.addEventListener('input', function (e) {
 		const target = e.target;
 		const longitudMax = target.getAttribute('maxlength');
 		const longitudAct = target.value.length;
@@ -107,7 +107,7 @@ function evContadorObsOficio() {
 function eventosContadorOficio() {
 	const mensaje = document.getElementById('noficio');
 	const contador = document.getElementById('conNoficio');
-	mensaje.addEventListener('input', function(e) {
+	mensaje.addEventListener('input', function (e) {
 		const target = e.target;
 		const longitudMax = target.getAttribute('maxlength');
 		const longitudAct = target.value.length;
@@ -117,7 +117,7 @@ function eventosContadorOficio() {
 function eventosContadorAsunto() {
 	const mensaje = document.getElementById('idAsunto');
 	const contador = document.getElementById('contIdAsunto');
-	mensaje.addEventListener('input', function(e) {
+	mensaje.addEventListener('input', function (e) {
 		const target = e.target;
 		const longitudMax = target.getAttribute('maxlength');
 		const longitudAct = target.value.length;
@@ -303,7 +303,7 @@ function validarFechas(fecha1, fecha2) {
 
 
 function eventosModal() {
-	$("#btnRegistrar").click(function() {
+	$("#btnRegistrar").click(function () {
 		if (fechaHabil == true) {
 
 			if (validarFechas(document.getElementById("idFechaRegistro").value, document.getElementById("idVencimiento").value) == false) {
@@ -341,13 +341,13 @@ function eventosModal() {
 
 
 	});
-	$("#btnCancelar").click(function() {
+	$("#btnCancelar").click(function () {
 		//iniciarCampos();
 		limpiarDatosFolio();
 		$("#modalFolio").modal("hide");
 	});
 
-	$("#btnAgregar").click(function() {
+	$("#btnAgregar").click(function () {
 
 		if (validacionesAgregarObs(document.getElementById("idFechaVencimiento").value) == false) {
 			if (document.getElementById("idObservacionSelect").value > 0) {
@@ -364,29 +364,25 @@ function eventosModal() {
 		}
 	});
 
-	$("#btnCerrar").click(function() {
+	$("#btnCerrar").click(function () {
 		$("#modalAdjuntos").modal("hide");
 		document.getElementById("idFolioArchivo").value = 0;
 		tblAdjuntos.clear().draw();
 	});
 
-	$("#btnGuardarFile").click(function() {
+	$("#btnGuardarFile").click(function () {
 
 
 		if (document.getElementById("file").value.length > 0) {
-			Swal.fire({
+			swal({
 				title: 'Procesando.....',
 				text: 'Espere un momento..',
 				timer: 4000, // tiempo en milisegundos
-				timerProgressBar: true,
 				showConfirmButton: false
-			}).then((result) => {
-				// Este código se ejecutará después de que el temporizador haya terminado
-				if (result.dismiss === Swal.DismissReason.timer) {
-					var form = $('#adjuntoArchivoOficio')[0];
-					var data = new FormData(form);
-					addArchivos(data)
-				}
+			}).then(() => {
+				var form = $('#adjuntoArchivoOficio')[0];
+				var data = new FormData(form);
+				addArchivos(data)
 			});
 
 		} else {
@@ -414,9 +410,9 @@ function adjuntarFiles(id) {
 
 function obtDtostblAdjuntos(url) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		tblAdjuntos.clear().draw();
-		$.each(data, function(idx, opt) {
+		$.each(data, function (idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Descargar Adjunto' type='button'"
 				+ " onclick='verPDF("
@@ -471,10 +467,10 @@ function addArchivos(data) {
 		data: data, //pass the form data
 		processData: false,
 		contentType: false,
-		beforeSend: function() {
+		beforeSend: function () {
 			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
-		success: function(data) {
+		success: function (data) {
 			swal({
 				title: "",
 				text: data[0],
@@ -484,14 +480,14 @@ function addArchivos(data) {
 				adjuntarFiles(document.getElementById("idFolioArchivo").value);
 			});
 		},
-		error: function(data) {
+		error: function (data) {
 			swal({
 				title: "Alerta",
 				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
 				icon: "warning",
 			});
 		},
-		complete: function() {
+		complete: function () {
 			setTimeout($.unblockUI, 600);
 		}
 	});
@@ -676,13 +672,13 @@ function peticionPost(urlServicio, num, numFolio) {
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
-		beforeSend: function() {
+		beforeSend: function () {
 			$.blockUI({ message: 'Espere un momento...' });
 		},
-		complete: function() {
+		complete: function () {
 			setTimeout($.unblockUI, 100);
 		},
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal({
 				title: "",
 				text: respuesta[0],
@@ -711,7 +707,7 @@ function peticionPost(urlServicio, num, numFolio) {
 			});
 
 
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+		}, error: function (XMLHttpRequest, textStatus, errorThrown) {
 			swal({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
@@ -815,7 +811,7 @@ function guardarVacio() {
 
 function obtenerPuesto(idEmpleado) {
 	var urlServicio = getAbsolutePath() + puesto + idEmpleado.value;
-	$.getJSON(urlServicio, {}, function(data) {
+	$.getJSON(urlServicio, {}, function (data) {
 		$('#iPuesto').val(data[0].descripcionPuesto);
 	});
 }
@@ -835,9 +831,9 @@ function obtEmpleadoArea(idArea) {
 }
 function listaResponsable(url, valor) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		$("#idResponsableAtencion").empty();
-		$.each(data, function(idx, opt) {
+		$.each(data, function (idx, opt) {
 			if (valor == opt.empleadoID) {
 				$("#idResponsableAtencion").prepend("<option value=" + opt.empleadoID + " text=" + opt.nombreCompleto + " selected='selected'>" + opt.nombreCompleto + "</opcion>")
 			} else {
@@ -892,9 +888,9 @@ function asignarFechaVencimiento(fechaV) {
 
 function obtenerDatostblObservaciones(url) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		tblObservacion.clear().draw();
-		$.each(data, function(idx, opt) {
+		$.each(data, function (idx, opt) {
 			var botones = " <button class='btn btn-info' tabindex='0'"
 				+ " title='Editar Observacion' type='button'"
 				+ " onclick='editarObservacion("
@@ -980,7 +976,7 @@ function editarFolio(id) {
 }
 function obtenerFolio(url) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		setTimeout($.unblockUI, 100);
 		cargarDatos(data);
 	});
@@ -1026,7 +1022,7 @@ function editarObservacion(idObservacion) {
 }
 function obtenerObservacion(url) {
 	$.blockUI({ message: 'Espere un momento...' });
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		document.getElementById("idAreaAtencion").value = data.i_area;
 		document.getElementById("idFechaVencimiento").value = data.dt_fecha_vencimiento;
 		document.getElementById("idObservacion").value = data.vc_descripcion;

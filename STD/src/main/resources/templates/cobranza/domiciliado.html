@@ -3,133 +3,90 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
+	<section class="section" layout:fragment="page-content">
 
-		<div class="container" id="principalId">
-			<div class="row">
-				<!-- Columna principal -->
-				<div class="col-md-12">
-					<!-- Card principal -->
-					<div class="card card-primary">
-						<div class="card-header">
-							<h2 style="color: black; text-align: center;">Cobro Domiciliado</h2>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Cobro Domiciliado</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Cobranza</li>
+					<li class="breadcrumb-item active">Domiciliación</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card" id="principalId">
+			<div class="card-body">
+				<h5 class="card-title">Gestión de Cobro Domiciliado</h5>
+
+				<div class="row g-3 mb-4">
+					<div class="col-md-4">
+						<label for="catalogoId" class="form-label fw-bold">Catálogo de bancos</label>
+						<select id="catalogoId" class="form-select">
+							<option value="" disabled selected>Seleccione un banco...</option>
+						</select>
+					</div>
+				</div>
+
+				<div id="cargaId" style="display: none;" class="mb-4 p-3 border rounded bg-light">
+					<h6 class="fw-bold mb-3">Cargar Archivo</h6>
+					<div class="row g-3 align-items-end">
+						<div class="col-md-6">
+							<label for="idArchivo" class="form-label">Seleccionar archivo (.txt)</label>
+							<input type="file" class="form-control" id="idArchivo" accept=".txt">
 						</div>
-						<div class="card-body" style="padding-top: 20px">
-
-							<div class="row" style="padding-top: 20px;">
-								<div class="col-sm-12">
-									<li><label>Catalogo de bancos</label></li>
-								</div>
-							</div>
-
-							<div class="row" style="padding-top: 10px;">
-								<div class="col-sm-2">
-									<select id="catalogoId">
-										<option value="" disabled selected>Bancos</option>
-									</select>
-								</div>
-							</div>
-
-							<div id="cargaId" style="display: none;">
-								<div class="row" style="padding-top: 40px;">
-									<div class="col-sm-12">
-										<li><label>Cargar archivo</label></li>
-									</div>
-								</div>
-
-								<div class="row" style="padding-top: 10px;">
-									<div class="col-sm-4">
-										<input type="file" id="idArchivo" accept=".txt">
-									</div>
-									<div class="col-sm-6" id="idBotonGenerar" style="display: none;">
-										<button class="btn btn-primary" id="nuevoLayout">Generar
-											archivo</button>
-									</div>
-								</div>
-							</div>
-
-							<div class="row" style="padding-top: 50px;">
-								<div class="col-sm-12">
-									<li><label>Proceso de carga</label></li>
-								</div>
-							</div>
-
-							<div class="row" style="padding-top: 10px;">
-								<div class="col-sm-12">
-									<table class="table table-striped" id="bitacoraId">
-										<thead>
-											<tr>
-												<th style="text-align: center;">N°</th>
-												<th style="text-align: center;">Banco</th>
-												<th style="text-align: center;">Cantidad registro</th>
-												<th style="text-align: center;">Total monto</th>
-												<th style="text-align: center;">Fecha</th>
-												<th style="text-align: center;">Usuario</th>
-											</tr>
-										</thead>
-										<tbody></tbody>
-									</table>
-									<div style="text-align: right;" id="paginadoId"></div>
-								</div>
-							</div>
-
+						<div class="col-md-6" id="idBotonGenerar" style="display: none;">
+							<button class="btn btn-primary" id="nuevoLayout">
+								<i class="bi bi-file-earmark-arrow-up me-1"></i> Generar archivo
+							</button>
 						</div>
 					</div>
 				</div>
+
+				<h5 class="card-title mt-4">Historial de Procesos</h5>
+				<div class="table-responsive">
+					<table class="table table-hover" id="bitacoraId">
+						<thead>
+							<tr>
+								<th class="text-center">N°</th>
+								<th class="text-center">Banco</th>
+								<th class="text-center">Registros</th>
+								<th class="text-center">Monto Total</th>
+								<th class="text-center">Fecha</th>
+								<th class="text-center">Usuario</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div class="d-flex justify-content-end mt-3" id="paginadoId"></div>
+
 			</div>
 		</div>
 
-
-		<div class="container" id="spinnerId" style="display: none;">
-			<div class="row">
-				<!-- Columna principal -->
-				<div class="col-md-12">
-					<!-- Card principal -->
-					<div class="card card-primary">
-						<div class="card-header">
-							<h2 style="color: black; text-align: center;">Cobro Domiciliado</h2>
-						</div>
-						<div class="card-body" style="padding-top: 20px; text-align: center;">
-
-							<div class="row" style="margin: 20%;">
-								<div class="col-sm-12">
-									<div class="spinner-border"
-										style="color: cornflowerblue; width: 200px; height: 200px;"></div>
-								</div>
-							</div>
-
-						</div>
-					</div>
-				</div>
+		<!-- Spinner Overlay (Reemplaza al contenedor separado) -->
+		<div id="spinnerId"
+			class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+			style="background: rgba(255,255,255,0.8); z-index: 9999;">
+			<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+				<span class="visually-hidden">Cargando...</span>
 			</div>
 		</div>
 
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<!-- Scripts -->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/cobranza/domiciliado.js}"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
-		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-		<!-- jQuery library -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-		<!-- Latest compiled JavaScript -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/cobranza/domiciliado.js}"></script>
+		<!-- Eliminados scripts duplicados de jQuery y Bootstrap -->
 	</th:block>
 </body>
 

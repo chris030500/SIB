@@ -27,7 +27,7 @@ function mostrarOcultarDiv(divA) {
 		opcion.style.display = "block";
 	}
 
-	document.querySelectorAll('#pant-tabs div[style*="display: block;"]').forEach(function(checkElement) {
+	document.querySelectorAll('#pant-tabs div[style*="display: block;"]').forEach(function (checkElement) {
 		console.log("mostrar Datos");
 		if (divA !== checkElement.id) {
 			checkElement.style.display = "none";
@@ -39,53 +39,56 @@ function mostrarOcultarDiv(divA) {
 
 }
 
-document.getElementById("credencialesForm").addEventListener("submit", function(event) {
-	event.preventDefault(); // Evita que el formulario recargue la página automáticamente
+const credencialesForm = document.getElementById("credencialesForm");
+if (credencialesForm) {
+	credencialesForm.addEventListener("submit", function (event) {
+		event.preventDefault(); // Evita que el formulario recargue la página automáticamente
 
-	const form = event.target; // Obtén el formulario que disparó el evento
-	const editableInputs = form.querySelectorAll("input:not([readonly])"); // Inputs editables dentro del formulario
+		const form = event.target; // Obtén el formulario que disparó el evento
+		const editableInputs = form.querySelectorAll("input:not([readonly])"); // Inputs editables dentro del formulario
 
-	const formData = {};
-	editableInputs.forEach(input => {
-		formData[input.name] = input.value; // Almacena el valor usando el atributo "name" como clave
-	});
-
-	console.log(formData); // Solo para depuración, verifica que tengas los datos correctos
-
-	fetch(form.action, { // Usa el atributo action del formulario
-		method: form.method, // Usa el atributo method del formulario
-		headers: {
-			"Content-Type": "application/json" // Especifica que enviarás datos en formato JSON
-		},
-		body: JSON.stringify(formData) // Convierte el objeto `formData` a JSON
-	})
-		.then(response => response.json()) // Procesa la respuesta como JSON
-		.then(data => {
-			//console.log("Respuesta del servidor:", data);
-			swal(
-				"¡Guardado exitoso!",
-				"Los datos se han guardado correctamente.",
-				"success"
-			)
-
-			setTimeout(function() {
-				swal.close(); // Cierra el SweetAlert
-			}, 2000);
-			location.reload();
-		})
-		.catch(error => {
-			console.error("Hubo un problema con el fetch:", error);
-			swal(
-				"¡Error!",
-				"Ocurrió un error al guardar las credenciales. Intenta nuevamente.",
-				"error"
-			)
-
-			setTimeout(function() {
-				swal.close(); // Cierra el SweetAlert
-			}, 2000);
+		const formData = {};
+		editableInputs.forEach(input => {
+			formData[input.name] = input.value; // Almacena el valor usando el atributo "name" como clave
 		});
-});
+
+		console.log(formData); // Solo para depuración, verifica que tengas los datos correctos
+
+		fetch(form.action, { // Usa el atributo action del formulario
+			method: form.method, // Usa el atributo method del formulario
+			headers: {
+				"Content-Type": "application/json" // Especifica que enviarás datos en formato JSON
+			},
+			body: JSON.stringify(formData) // Convierte el objeto `formData` a JSON
+		})
+			.then(response => response.json()) // Procesa la respuesta como JSON
+			.then(data => {
+				//console.log("Respuesta del servidor:", data);
+				swal(
+					"¡Guardado exitoso!",
+					"Los datos se han guardado correctamente.",
+					"success"
+				)
+
+				setTimeout(function () {
+					swal.close(); // Cierra el SweetAlert
+				}, 2000);
+				location.reload();
+			})
+			.catch(error => {
+				console.error("Hubo un problema con el fetch:", error);
+				swal(
+					"¡Error!",
+					"Ocurrió un error al guardar las credenciales. Intenta nuevamente.",
+					"error"
+				)
+
+				setTimeout(function () {
+					swal.close(); // Cierra el SweetAlert
+				}, 2000);
+			});
+	});
+}
 
 function getAbsolutePath() {
 
@@ -156,7 +159,7 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
 		.then((data) => {
 			//console.log("Plantilla actualizada: ", data);
 			swal("¡Guardado exitoso!", "La plantilla se guardó correctamente.", "success");
-			setTimeout(function() {
+			setTimeout(function () {
 				swal.close(); // Cierra el SweetAlert
 			}, 2000);
 
@@ -169,67 +172,76 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
 		});
 }
 
-document.getElementById("select-tipo-credito").addEventListener("change", function() {
-	const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
-	const divTblGestionSMS = document.getElementById("div-tblGestionSMS");
-	//console.log("Opción seleccionada:", selectedValue);
+const selectTipoCredito = document.getElementById("select-tipo-credito");
+if (selectTipoCredito) {
+	selectTipoCredito.addEventListener("change", function () {
+		const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
+		const divTblGestionSMS = document.getElementById("div-tblGestionSMS");
+		//console.log("Opción seleccionada:", selectedValue);
 
-	switch (selectedValue) {
-		case "N":
-		case "O":
-			divTblGestionSMS.hidden = false;
-			listaGestiones(0, selectedValue);
-			break;
-		case "":
-			divTblGestionSMS.hidden = false;
-			listaGestiones(1, selectedValue);
-			break;
-		case "0":
-			console.log("No es una opción válida.");
-			divTblGestionSMS.hidden = true;
-	}
+		switch (selectedValue) {
+			case "N":
+			case "O":
+				if (divTblGestionSMS) divTblGestionSMS.hidden = false;
+				listaGestiones(0, selectedValue);
+				break;
+			case "":
+				if (divTblGestionSMS) divTblGestionSMS.hidden = false;
+				listaGestiones(1, selectedValue);
+				break;
+			case "0":
+				console.log("No es una opción válida.");
+				if (divTblGestionSMS) divTblGestionSMS.hidden = true;
+		}
 
-});
+	});
+}
 
-document.getElementById("plantillasForm").addEventListener("submit", function(event) {
-	event.preventDefault(); // Evita la recarga de la página
+const plantillasForm = document.getElementById("plantillasForm");
+if (plantillasForm) {
+	plantillasForm.addEventListener("submit", function (event) {
+		event.preventDefault(); // Evita la recarga de la página
 
-	const idSMSConfig = document.getElementById("id-plantilla-sms").value;
-	const texto = document.getElementById("plantilla-texto-enviar").value;
-	const estatus = document.getElementById("select-estatus-plantilla").value;
+		const idSMSConfig = document.getElementById("id-plantilla-sms").value;
+		const texto = document.getElementById("plantilla-texto-enviar").value;
+		const estatus = document.getElementById("select-estatus-plantilla").value;
 
-	// Validaciones
-	if (!texto.trim()) {
-		swal("Error", "El texto del mensaje no puede estar vacío.", "error");
-		return;
-	}
+		// Validaciones
+		if (!texto.trim()) {
+			swal("Error", "El texto del mensaje no puede estar vacío.", "error");
+			return;
+		}
 
-	if (estatus === "") {
-		swal("Error", "Por favor seleccionar un estatus válido.", "error");
-		return;
-	}
+		if (estatus === "") {
+			swal("Error", "Por favor seleccionar un estatus válido.", "error");
+			return;
+		}
 
-	// Llama a la función para actualizar la plantilla
-	actualizarPlantilla(idSMSConfig, texto, estatus);
-});
+		// Llama a la función para actualizar la plantilla
+		actualizarPlantilla(idSMSConfig, texto, estatus);
+	});
+}
 
-document.getElementById("select-limite-sms").addEventListener("change", function() {
-	const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
-	const divMaximoSMS = document.getElementById("divMaximoSMS");
-	//console.log("Opción seleccionada:", selectedValue);
+const selectLimiteSms = document.getElementById("select-limite-sms");
+if (selectLimiteSms) {
+	selectLimiteSms.addEventListener("change", function () {
+		const selectedValue = this.value; // Obtiene el valor de la opción seleccionada
+		const divMaximoSMS = document.getElementById("divMaximoSMS");
+		//console.log("Opción seleccionada:", selectedValue);
 
-	switch (selectedValue) {
-		case "":
-			console.log("No es una opción válida.");
-			break;
-		case "1":
-			divMaximoSMS.hidden = false;
-			break;
-		case "0":
-			divMaximoSMS.hidden = true;
-	}
+		switch (selectedValue) {
+			case "":
+				console.log("No es una opción válida.");
+				break;
+			case "1":
+				if (divMaximoSMS) divMaximoSMS.hidden = false;
+				break;
+			case "0":
+				if (divMaximoSMS) divMaximoSMS.hidden = true;
+		}
 
-});
+	});
+}
 
 function editProcess(idSMSProcess) {
 
@@ -262,10 +274,10 @@ function editProcess(idSMSProcess) {
 			document.getElementById("id-config-mensual").value = idConfigMensual;
 			document.getElementById("mes-gestion").value = mes;
 			document.getElementById("tipo-credito-gestion").value = tipoCredito;
-			document.getElementById("sms-gestion").value = mensajeSMS;			
+			document.getElementById("sms-gestion").value = mensajeSMS;
 
 			switch (limiteSMS) {
-				case 0: 
+				case 0:
 					document.getElementById("select-limite-sms").value = 0;
 					document.getElementById("divMaximoSMS").hidden = true;
 					document.getElementById("maximo-sms").value = smsEnviados;
@@ -280,7 +292,7 @@ function editProcess(idSMSProcess) {
 				case null:
 					document.getElementById("select-limite-sms").value = "";
 					document.getElementById("divMaximoSMS").hidden = true;
-					
+
 			}
 		})
 		.catch((error) => {
@@ -316,7 +328,7 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
 		.then((data) => {
 			//console.log("Plantilla actualizada: ", data);
 			swal("¡Guardado exitoso!", "La gestión del mensaje se guardó correctamente.", "success");
-			setTimeout(function() {
+			setTimeout(function () {
 				swal.close(); // Cierra el SweetAlert
 			}, 2000);
 
@@ -338,41 +350,47 @@ function actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS) {
 		});
 }
 
-document.getElementById("gestionSMSForm").addEventListener("submit", function(event) {
-	event.preventDefault(); // Evita la recarga de la página
+const gestionSMSForm = document.getElementById("gestionSMSForm");
+if (gestionSMSForm) {
+	gestionSMSForm.addEventListener("submit", function (event) {
+		event.preventDefault(); // Evita la recarga de la página
 
-	const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
-	const limiteSMS = document.getElementById("select-limite-sms").value;
-	const maxSMS = document.getElementById("maximo-sms").value;
-	const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
+		const idSMSConfigMensual = document.getElementById("id-config-mensual").value;
+		const limiteSMS = document.getElementById("select-limite-sms").value;
+		const maxSMS = document.getElementById("maximo-sms").value;
+		const maxSMSAnterior = document.getElementById("max-sms-anterior").value;
 
-	// Validaciones
-	if (limiteSMS === "") {
-		swal("Error", "Por favor seleccionar una opción válida.", "error");
-		return;
-	}
-	
-	if (limiteSMS === "1") {
-		
-		if (maxSMS < maxSMSAnterior) {
-			swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
+		// Validaciones
+		if (limiteSMS === "") {
+			swal("Error", "Por favor seleccionar una opción válida.", "error");
 			return;
 		}
-	
-		if (maxSMS === maxSMSAnterior) {
-			swal("¡Error!", "El máximo SMS ingresado es igual al prevíamente registrado.", "error");
-			return;
+
+		if (limiteSMS === "1") {
+
+			if (maxSMS < maxSMSAnterior) {
+				swal("Error", "El máximo SMS ingresado es menor al prevíamente registrado.", "error");
+				return;
+			}
+
+			if (maxSMS === maxSMSAnterior) {
+				swal("¡Error!", "El máximo SMS ingresado es igual al prevíamente registrado.", "error");
+				return;
+			}
 		}
-	}
 
-	actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
-});
+		actualizarConfigSMSMensual(idSMSConfigMensual, limiteSMS, maxSMS);
+	});
+}
 
-document.getElementById("maximo-sms").addEventListener("keydown", function (e) {
-    if (e.key === "-" || e.key === "e") {
-        e.preventDefault();
-    }
-});
+const maximoSms = document.getElementById("maximo-sms");
+if (maximoSms) {
+	maximoSms.addEventListener("keydown", function (e) {
+		if (e.key === "-" || e.key === "e") {
+			e.preventDefault();
+		}
+	});
+}
 
 function modalProcess(idProcess, estatus, month) {
 
@@ -436,16 +454,22 @@ function actualizarProceso(idSMSProceso, estatus) {
 }
 
 function getModalForm(idSMSProceso, estatus) {
-	document.getElementById("changeStatusProcessForm").addEventListener("submit", function(event) {
-		event.preventDefault(); // Evita la recarga de la página
+	const changeStatusProcessForm = document.getElementById("changeStatusProcessForm");
+	if (changeStatusProcessForm) {
+		changeStatusProcessForm.addEventListener("submit", function (event) {
+			event.preventDefault(); // Evita la recarga de la página
 
-		// Llama a la función para actualizar la plantilla
-		actualizarProceso(idSMSProceso, estatus);
-	});
+			// Llama a la función para actualizar la plantilla
+			actualizarProceso(idSMSProceso, estatus);
+		});
+	}
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-	document.getElementById("div-tblGestionSMS").hidden = true;
+document.addEventListener("DOMContentLoaded", function () {
+	const divTblGestionSMS = document.getElementById("div-tblGestionSMS");
+	if (divTblGestionSMS) {
+		divTblGestionSMS.hidden = true;
+	}
 })
 
 

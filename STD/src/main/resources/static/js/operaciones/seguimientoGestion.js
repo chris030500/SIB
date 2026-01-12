@@ -15,7 +15,7 @@ var newUrlBase = urlPrincipal.replace("/operaciones", "");
 
 var sucursalSeleccionadaS = document.getElementById("idSucursalInicial");
 var permisoUsuario = document.getElementById("idPermisoUsuario");
-window.onload = function() {
+window.onload = function () {
 	mostrarAlerta();
 }
 /**
@@ -39,30 +39,34 @@ fechaCitaInput.min = formattedDate;
 /**
  * Validación de las fechas
  */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 	const fechaInicioInput = document.getElementById("fecha-gestion");
 	const fechaFinInput = document.getElementById("fecha-cita");
 	const errorFecha = document.getElementById("validar-segFecha");
 
-	fechaInicioInput.addEventListener("change", function() {
-		// Limpiar el mensaje de error cuando cambia la fecha de inicio
-		errorFecha.textContent = "";
-
-		// Actualizar el atributo min del input fechaFin para no permitir fechas anteriores a la de inicio
-		fechaFinInput.min = fechaInicioInput.value;
-	});
-
-	fechaFinInput.addEventListener("change", function() {
-		const fechaInicio = new Date(fechaInicioInput.value);
-		const fechaFin = new Date(fechaFinInput.value);
-
-		if (fechaFin < fechaInicio) {
-			errorFecha.textContent = "La fecha fin no puede ser anterior a la fecha de inicio";
-			fechaFinInput.value = ""; // Limpiar el valor si es inválido
-		} else {
+	if (fechaInicioInput) {
+		fechaInicioInput.addEventListener("change", function () {
+			// Limpiar el mensaje de error cuando cambia la fecha de inicio
 			errorFecha.textContent = "";
-		}
-	});
+
+			// Actualizar el atributo min del input fechaFin para no permitir fechas anteriores a la de inicio
+			fechaFinInput.min = fechaInicioInput.value;
+		});
+	}
+
+	if (fechaFinInput) {
+		fechaFinInput.addEventListener("change", function () {
+			const fechaInicio = new Date(fechaInicioInput.value);
+			const fechaFin = new Date(fechaFinInput.value);
+
+			if (fechaFin < fechaInicio) {
+				errorFecha.textContent = "La fecha fin no puede ser anterior a la fecha de inicio";
+				fechaFinInput.value = ""; // Limpiar el valor si es inválido
+			} else {
+				errorFecha.textContent = "";
+			}
+		});
+	}
 });
 /**
  * Fin
@@ -84,10 +88,10 @@ function listaClientes() {
 		url: newUrlBase + "buscar_cliente_activo_sucursal?idSucursal=" + buscar,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opciones = document.getElementById('opcionCliente');
 			opciones.innerHTML = '';
-			respuesta.lista.forEach(function(cliente) {
+			respuesta.lista.forEach(function (cliente) {
 				var option = document.createElement('option');
 				option.setAttribute('data-value', cliente.i_clienteid);
 				option.value = cliente.vc_nombrecompleto;
@@ -107,7 +111,7 @@ function actualizarValorSeleccionado() {
 	clienteValue = opcionSeleccionada ? opcionSeleccionada.getAttribute('data-value') : null;
 }
 
-buscarCliente.addEventListener('input', function() {
+buscarCliente.addEventListener('input', function () {
 	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	actualizarValorSeleccionado();
 });
@@ -133,14 +137,11 @@ function llenarTablaSeguimiento(condicion) {
 			servicioURL = "lista_seguimiento?sucursal=" + sucursalSeleccionadaS.value + "&permiso=" + permisoUsuario.value;
 		}
 
-		Swal.fire({
+		swal({
 			title: 'Consultando informacion..',
-			html: 'Espere Por Favor...',
-			allowOutsideClick: false,
-			showConfirmButton: false,
-			onBeforeOpen: () => {
-				Swal.showLoading();
-			}
+			text: 'Espere Por Favor...',
+			closeOnClickOutside: false,
+			buttons: false,
 		});
 
 		$.ajax({
@@ -148,7 +149,7 @@ function llenarTablaSeguimiento(condicion) {
 			type: "GET",
 			dataType: "JSON",
 			async: true, // Configurar la llamada AJAX como asíncrona
-			success: function(respuesta) {
+			success: function (respuesta) {
 
 				if (respuesta.lista == null) {
 					swal({
@@ -168,11 +169,11 @@ function llenarTablaSeguimiento(condicion) {
 					document.getElementById("ver-cargaSeguimiento").style.display = "none";
 					document.getElementById("ver-listaSeguimiento").style.display = "block";
 					tablaFiltro.clear().draw();
-					$.each(respuesta.lista, function(idx, opt) {
+					$.each(respuesta.lista, function (idx, opt) {
 
 						var btnEditar = "<div class='row'><div class='col-sm-6'>"
-							+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-							+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
+							+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0'"
+							+ " title='Editar' aria-controls='table-datatable' type='button'"
 							+ " onclick='mostrarGestion("
 							+ opt.i_clienteid + ", " + opt.pk_id_asignacion_oa + ", " + opt.i_bloqueo
 							+ ")' id="
@@ -198,10 +199,10 @@ function llenarTablaSeguimiento(condicion) {
 						]);
 					});
 					// Add all rows at once
-                    tablaFiltro.rows.add(registrosTotales).draw();
+					tablaFiltro.rows.add(registrosTotales).draw();
 				}
 			},
-			error: function(error) {
+			error: function (error) {
 				//console.log(error.error);
 			}
 		});
@@ -274,18 +275,26 @@ let validarTelefono = document.getElementById("validar-telefono");
 
 
 
-inputRelacion.addEventListener("input", function() {
-	validarRelacion.style.display = "none";
-});
-inputDescripcion.addEventListener("input", function() {
-	validarDescripcion.style.display = "none";
-});
-inputFechaCita.addEventListener("input", function() {
-	validarFechaCita.style.display = "none";
-});
-inputFechaGestion.addEventListener("input", function() {
-	validarFechaGestion.style.display = "none";
-});
+if (inputRelacion) {
+	inputRelacion.addEventListener("input", function () {
+		validarRelacion.style.display = "none";
+	});
+}
+if (inputDescripcion) {
+	inputDescripcion.addEventListener("input", function () {
+		validarDescripcion.style.display = "none";
+	});
+}
+if (inputFechaCita) {
+	inputFechaCita.addEventListener("input", function () {
+		validarFechaCita.style.display = "none";
+	});
+}
+if (inputFechaGestion) {
+	inputFechaGestion.addEventListener("input", function () {
+		validarFechaGestion.style.display = "none";
+	});
+}
 
 function validarGestion() {
 	if (datosRelacion && datosRelacion.v_valor == "MOSTRAR CALENDARIO") {
@@ -374,9 +383,9 @@ function listaDeGestiones() {
 		url: newUrlBase + "lista_gestiones_por_oferta?asignacion=" + idOferta,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			llenarTablaDeGestiones(respuesta.lista);
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 		}
 	});
@@ -387,10 +396,10 @@ function datosDeCliente(id) {
 		url: newUrlBase + "ver_cliente?cliente=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			//console.log(respuesta);
 			inputReferencia.textContent = respuesta.cliente[0].vc_cod_referencia;
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 		}
 	});
@@ -412,7 +421,7 @@ function registrarGestion(dto) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal("Se registró la gestión", {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -424,7 +433,7 @@ function registrarGestion(dto) {
 					limpiarVariablesModal();
 					llenarTablaSeguimiento(false);
 				});
-		}, error: function(error) {
+		}, error: function (error) {
 			//console.log(error);
 			swal("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
@@ -464,14 +473,21 @@ function limpiarVariablesModal() {
 	const campos = ['buscar-relacion', 'descripcion-gestion', 'fecha-cita', 'fecha-gestion', 'accionRealizar', 'telefono'];
 	const alertas = ['validar-relacion', 'validar-descripcion', 'validar-fechaCita', 'validar-fechaGestion', 'validar-telefono'];
 	campos.forEach(campo => {
-		document.getElementById(`${campo}`).value = '';
+		const el = document.getElementById(`${campo}`);
+		if (el) el.value = '';
 	});
 	alertas.forEach(alerta => {
-		document.getElementById(`${alerta}`).style.display = 'none';
+		const el = document.getElementById(`${alerta}`);
+		if (el) el.style.display = 'none';
 	});
-	document.getElementById("vistaAccionRealizar").style.display = "none";
-	document.getElementById("vistaTelfonoLlamada").style.display = "none";
-	document.getElementById("accionRealizar").textContent = '';
+	const vistaAccionRealizar = document.getElementById("vistaAccionRealizar");
+	if (vistaAccionRealizar) vistaAccionRealizar.style.display = "none";
+
+	const vistaTelfonoLlamada = document.getElementById("vistaTelfonoLlamada");
+	if (vistaTelfonoLlamada) vistaTelfonoLlamada.style.display = "none";
+
+	const accionRealizar = document.getElementById("accionRealizar");
+	if (accionRealizar) accionRealizar.textContent = '';
 	//searchSucursal.value = '';
 	if (document.getElementById('buscarSucursal')) {
 		document.getElementById('buscarSucursal').value = '';
@@ -489,7 +505,7 @@ function limpiarVariablesModal() {
 /**
  * Evento click para vaciar
  */
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
 	var modal = document.getElementById('modal-seguimiento');
 	// Verificar si el clic no está dentro de la modal
 	if (modal && !modal.contains(event.target)) {
@@ -515,12 +531,12 @@ function buscarRelacion() {
 		url: newUrlBase + "listaRelaciones_activas?valor=" + searchTerm,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			console.log(respuesta)
 			almacen = respuesta;
 			const opcionesDatalist = document.getElementById('opciones-relacion');
 			opcionesDatalist.innerHTML = '';
-			respuesta.listaRelaciones.forEach(function(valor) {
+			respuesta.listaRelaciones.forEach(function (valor) {
 				const option = document.createElement('option');
 				option.value = valor.relacion_codigos;
 				opcionesDatalist.appendChild(option);
@@ -532,7 +548,7 @@ function buscarRelacion() {
 var searchInput = document.getElementById('buscar-relacion');
 searchInput.addEventListener('input', buscarRelacion);
 
-searchInput.addEventListener('change', function() {
+searchInput.addEventListener('change', function () {
 	let selectedValue = searchInput.value;
 	selectPart = selectedValue.split(" ");
 
@@ -579,7 +595,7 @@ searchInput.addEventListener('change', function() {
 function llenarTablaDeGestiones(datos) {
 	const registrosGestionesT = [];
 	tablaGestion.clear().draw();
-	$.each(datos, function(idx, opt) {
+	$.each(datos, function (idx, opt) {
 		var btnEditar = "<button style='margin-right: 10px; background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary btn-icon btn-editar'"
 			+ " onclick='editarSegGestion("
 			+ opt.pk_id_seguimiento_gestion
@@ -605,7 +621,7 @@ function llenarTablaDeGestiones(datos) {
 			btns = "";
 		}*/
 
-	    registrosGestionesT.push([
+		registrosGestionesT.push([
 			opt.relacionCodigosModel.accionRealizar.v_valor,
 			opt.relacionCodigosModel.codigoAccionModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoAccionModel.vc_codigo + ")",
 			opt.relacionCodigosModel.codigoResultadoModel.vc_descripcion + "(" + opt.relacionCodigosModel.codigoResultadoModel.vc_codigo + ")",
@@ -626,8 +642,8 @@ function llenarTablaDeGestiones(datos) {
 		]).draw(false);*/
 
 	});
-	
-    tablaGestion.rows.add(registrosGestionesT).draw();
+
+	tablaGestion.rows.add(registrosGestionesT).draw();
 }
 /**
  * Fin
@@ -652,7 +668,7 @@ function editarSegGestion(id) {
 		url: newUrlBase + "datos_gestion?idGestion=" + id,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			$('#modal-editar').modal('show');
 			// Ahora asignamos los valores a los elementos del modal
 			datosRelacionModal = almacen.listaRelaciones.find(item => item.pk_id_relacion_codigo == respuesta.model.relacionCodigosModel.pk_id_relacion_codigo);
@@ -729,20 +745,24 @@ function todosLosEstatus() {
 		url: newUrlBase + "todos_los_estatus?idSucursal=" + sucursalSeleccionadaS.value,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
-			document.getElementById("NombreSucursalS").value = respuesta.lista[0].vc_nombresucursal;
-			sucursalActual.textContent = document.getElementById("NombreSucursalS").value;
-			sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
-			nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
-			sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
-			document.getElementById("usuarioLogueado").value = respuesta.usuarioLogueado;
-			//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
-			respuesta.lista.forEach(function(elemento) {
-				listaDeEstatus.push(elemento.v_valor);
-				listaDeTotales.push(elemento.total_registros);
-			});
-			// Llamar a la función para crear la gráfica después de obtener los datos
-			createChart(listaDeEstatus, listaDeTotales);
+		success: function (respuesta) {
+			if (respuesta.lista && respuesta.lista.length > 0) {
+				document.getElementById("NombreSucursalS").value = respuesta.lista[0].vc_nombresucursal;
+				sucursalActual.textContent = document.getElementById("NombreSucursalS").value;
+				sucursalCitaVencidas.textContent = document.getElementById("NombreSucursalS").value;
+				nombreSucursalSeguimiento.textContent = document.getElementById("NombreSucursalS").value;
+				sucursalSeleccionadaS.value = respuesta.lista[0].i_id_sucursal;
+				document.getElementById("usuarioLogueado").value = respuesta.usuarioLogueado;
+				//idBusquedaInicial = respuesta.lista[0].i_id_sucursal;
+				respuesta.lista.forEach(function (elemento) {
+					listaDeEstatus.push(elemento.v_valor);
+					listaDeTotales.push(elemento.total_registros);
+				});
+				// Llamar a la función para crear la gráfica después de obtener los datos
+				createChart(listaDeEstatus, listaDeTotales);
+			} else {
+				console.warn("No se encontraron datos en la respuesta de 'todos_los_estatus'");
+			}
 		}
 	});
 
@@ -854,7 +874,7 @@ function mostrarAlerta() {
 	$('#modal-alerta').modal('show');
 }
 
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
 	var modal = document.getElementById('modal-alerta');
 	// Verificar si el clic no está dentro de la modal
 	if (modal && !modal.contains(event.target)) {
@@ -881,9 +901,9 @@ function obtenerSucursal() {
 		url: newUrlBase + "obtener_sucursal_empleado",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			console.log(respuesta.lista);
-			respuesta.lista.forEach(function(elemento) {
+			respuesta.lista.forEach(function (elemento) {
 				listaDeEstatus.push(elemento.v_valor);
 				listaDeTotales.push(elemento.total_registros);
 			});
@@ -907,7 +927,7 @@ var idSucursal; // Variable para almacenar el valor del campo de búsqueda
 
 
 var searchSucursal = document.getElementById('buscarSucursal');
-searchSucursal.addEventListener('change', function() {
+searchSucursal.addEventListener('change', function () {
 	// Obtener el valor seleccionado del input
 	var valorSeleccionado = $(this).val();
 
@@ -943,7 +963,7 @@ searchSucursal.addEventListener('input', function() {
 var searchInputModal = document.getElementById('buscar-relacion-modal');
 searchInputModal.addEventListener('input', buscarRelacion);
 
-searchInputModal.addEventListener('change', function() {
+searchInputModal.addEventListener('change', function () {
 	let selectedValue = searchInputModal.value;
 	if (almacen.listaRelaciones && almacen.listaRelaciones.length > 0) {
 		//
@@ -993,7 +1013,7 @@ function editarSegGestionG() {
 		url: newUrlBase + "guardar_gestion?idGestion=" + idGestion + "&fechaCita=" + inputFechaCitaModal.value + "&fechaGestion=" + inputFechaGestionModal.value + "&codigoRelacion=" + datosRelacionModal.pk_id_relacion_codigo + "&descripcion=" + inputDescripcionModal.value + "&telefono=" + inputTelefonoModal.value,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			swal("Se edito la gestión", {
 				closeOnClickOutside: false,
 				icon: "success",
@@ -1034,7 +1054,7 @@ function cancelarSegGestion(gestionID) {
 			$.ajax({
 				url: newUrlBase + "inactivar_gestion?idGestion=" + gestionID,
 				type: "GET",
-				success: function(response) {
+				success: function (response) {
 					swal(
 						"¡Procesado!",
 						"El seguimiento ha sido eliminado.",
@@ -1042,7 +1062,7 @@ function cancelarSegGestion(gestionID) {
 					)
 					listaDeGestiones();
 				},
-				error: function(xhr, status, error) {
+				error: function (xhr, status, error) {
 					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
 					console.error("Error al enviar los datos: " + error);
 				}
@@ -1072,7 +1092,7 @@ function mostrarDiv(divId) {
 }
 
 var searchSucursalVencidas = document.getElementById('buscarSucursalVencidas');
-searchSucursalVencidas.addEventListener('change', function() {
+searchSucursalVencidas.addEventListener('change', function () {
 	// Obtener el valor seleccionado del input
 	var valorSeleccionado = $(this).val();
 
@@ -1087,7 +1107,7 @@ searchSucursalVencidas.addEventListener('change', function() {
 });
 
 var buscarClientesSucursal = document.getElementById('buscarSucursalSeguimiento');
-buscarClientesSucursal.addEventListener('change', function() {
+buscarClientesSucursal.addEventListener('change', function () {
 	// Obtener el valor seleccionado del input
 	var valorSeleccionado = $(this).val();
 
@@ -1114,12 +1134,12 @@ function listaconsultarCitaVencidos(idSucursalCitaVencidos) {
 			url: newUrlBase + "buscar_citas_vencidos?idSucursalCitaVencidos=" + idSucursalCitaVencidos,
 			type: "GET",
 			dataType: "JSON",
-			success: function(respuesta) {
+			success: function (respuesta) {
 				console.log(respuesta);
 				cargarTablaAlertas(respuesta.listaCitasVencidas);
 				document.getElementById("ver-tbl-buscarCita").style.display = "block";
 				document.getElementById("ver-buscarCita").style.display = "none";
-			}, error: function(error) {
+			}, error: function (error) {
 				//console.log(error);
 			}
 		});
@@ -1133,7 +1153,7 @@ function cargarTablaAlertas(datos) {
 	var btnConfirmar = "";
 
 	tblAlertas.clear().draw();
-	$.each(datos, function(idx, opt) {
+	$.each(datos, function (idx, opt) {
 
 		if (opt.i_estatus != 2 && opt.vc_tipo_alerta == 'GESTION CON CITA') {
 			btnConfirmar = "<div class='row'><div class='col-sm-6'>"
@@ -1168,7 +1188,7 @@ function segGestionRealizado(gestionID) {
 	$.ajax({
 		url: newUrlBase + "gestion_realizada?idGestion=" + gestionID,
 		type: "GET",
-		success: function(response) {
+		success: function (response) {
 			swal(
 				"¡Procesado!",
 				"El seguimiento ha sido realizado.",
@@ -1176,7 +1196,7 @@ function segGestionRealizado(gestionID) {
 			)
 			mostrarDiv('vencidasCita');
 		},
-		error: function(xhr, status, error) {
+		error: function (xhr, status, error) {
 			// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
 			console.error("Error al enviar los datos: " + error);
 		}

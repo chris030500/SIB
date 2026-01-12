@@ -127,10 +127,10 @@ public class PresolicitudesController {
 
 	@Autowired
 	private ParametrosimuladorRepository parametrosimuladorRepository;
-	
+
 	@Autowired
-	private  JdbcTemplate jdbcTemplate;
-	
+	private JdbcTemplate jdbcTemplate;
+
 	private static final String nombrePantalla = "Presolicitudes";
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion = "";
@@ -150,7 +150,7 @@ public class PresolicitudesController {
 			if (principal instanceof UserDetails) {
 				userDetails = (UserDetails) principal;
 			}
-			
+
 			if (validarAcceso(userDetails.getUsername()) == 1) {
 				model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
 
@@ -307,8 +307,8 @@ public class PresolicitudesController {
 		idEmpleado = usuario.get(0).getI_id_empleado();
 		sucur = catalogosCEService.obtenerSucursalEmpleado(idEmpleado);
 		idRol = usuario.get(0).getRol_idRol().getPk_id_rol();
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-
+		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
+				opcionesMenuService.buscarRelacion(nombrePantalla));
 
 	}
 
@@ -410,21 +410,21 @@ public class PresolicitudesController {
 
 					if (cell != null) {
 						switch (cell.getCellType()) {
-						case STRING:
-							cellValue = cell.getStringCellValue().trim();
-							break;
-						case NUMERIC:
-							if (DateUtil.isCellDateFormatted(cell)) {
-								cellValue = cell.getDateCellValue().toString();
-							} else {
-								cellValue = String.valueOf((int) cell.getNumericCellValue());
-							}
-							break;
-						case BOOLEAN:
-							cellValue = String.valueOf(cell.getBooleanCellValue());
-							break;
-						default:
-							cellValue = "";
+							case STRING:
+								cellValue = cell.getStringCellValue().trim();
+								break;
+							case NUMERIC:
+								if (DateUtil.isCellDateFormatted(cell)) {
+									cellValue = cell.getDateCellValue().toString();
+								} else {
+									cellValue = String.valueOf((int) cell.getNumericCellValue());
+								}
+								break;
+							case BOOLEAN:
+								cellValue = String.valueOf(cell.getBooleanCellValue());
+								break;
+							default:
+								cellValue = "";
 						}
 					}
 					solicitud.put(headers.get(i), cellValue);
@@ -548,17 +548,15 @@ public class PresolicitudesController {
 	}
 
 	@RequestMapping(value = "/reporte_gestion/{id}", method = RequestMethod.POST)
-	public ResponseEntity<?> reporteGestiones(@PathVariable Integer id) {
+	public ResponseEntity<?> reporteGestiones(@PathVariable Integer id, javax.servlet.http.HttpServletRequest request) {
 		List<String> respuesta = new ArrayList<>();
 
 		try {
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitud_aprobada");
 
-			// Construcción de la URL del reporte
-			// jasperReportController.generarArchivoRuta(datosReporte.getPk_id_reporte(),
-			// parametros, datosReporte.getVc_extension(), nombreArchivo, urlDirectorio);
-
-			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
+			// Construcción de la URL del reporte - Dinámica y compatible con WAR/Tomcat
+			String contextPath = request.getContextPath(); // Retorna "" o "/STD"
+			String reporteURL = contextPath + "/exportarReporte/generarReporte?idReporte="
 					+ datosReporte.getPk_id_reporte() + "&parametros=?solicitudID=" + id + "&tipoDocumento="
 					+ datosReporte.getVc_extension() + "&identificadorDoc=SC";
 
@@ -619,56 +617,61 @@ public class PresolicitudesController {
 	}
 
 	@PostMapping(value = "/simulador_credito_convenios", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> procesoSimuladorConvenios(@RequestBody SimuladorRequest req) {
-        Connection connection = null;
-        CallableStatement cs = null;
+	public ResponseEntity<Map<String, Object>> procesoSimuladorConvenios(@RequestBody SimuladorRequest req) {
+		Connection connection = null;
+		CallableStatement cs = null;
 
-        String errorMessage = null;
-        BigDecimal cuotaDescontar = null;
+		String errorMessage = null;
+		BigDecimal cuotaDescontar = null;
 
-        try {
-            DataSource ds = jdbcTemplate.getDataSource();
-            if (ds == null) throw new SQLException("DataSource no disponible");
-            connection = ds.getConnection();
+		try {
+			DataSource ds = jdbcTemplate.getDataSource();
+			if (ds == null)
+				throw new SQLException("DataSource no disponible");
+			connection = ds.getConnection();
 
-            cs = connection.prepareCall("{ call PROCESO_SIMULADOR_CREDITO_CONVENIOS(?, ?, ?, ?, ?, ?) }");
+			cs = connection.prepareCall("{ call PROCESO_SIMULADOR_CREDITO_CONVENIOS(?, ?, ?, ?, ?, ?) }");
 
-            // OUT
-            cs.registerOutParameter(1, Types.VARCHAR); // error_message
-            cs.registerOutParameter(2, Types.DECIMAL); // cuotaDescontar
+			// OUT
+			cs.registerOutParameter(1, Types.VARCHAR); // error_message
+			cs.registerOutParameter(2, Types.DECIMAL); // cuotaDescontar
 
-            // IN
-            cs.setBigDecimal(3, req.getMonto());       // D_MONTO
-            cs.setBigDecimal(4, req.getTasaAnual());   // D_TASA_ANUAL
-            cs.setInt(5, req.getPlazo());              // PLAZO
-            cs.setString(6, req.getFrecuencia());      // FRECUENCIA
+			// IN
+			cs.setBigDecimal(3, req.getMonto()); // D_MONTO
+			cs.setBigDecimal(4, req.getTasaAnual()); // D_TASA_ANUAL
+			cs.setInt(5, req.getPlazo()); // PLAZO
+			cs.setString(6, req.getFrecuencia()); // FRECUENCIA
 
-            cs.execute();
+			cs.execute();
 
-            errorMessage = cs.getString(1);
-            Object cuotaObj = cs.getObject(2);
-            if (cuotaObj != null) {
-                cuotaDescontar = (cuotaObj instanceof BigDecimal)
-                        ? (BigDecimal) cuotaObj
-                        : new BigDecimal(cuotaObj.toString());
-            }
-        } catch (SQLException e) {
-            errorMessage = "Error al ejecutar el procedimiento: " + e.getMessage();
-        } finally {
-            if (cs != null) {
-                try { cs.close(); } catch (SQLException e) {
-                }
-            }
-            if (connection != null) {
-                try { connection.close(); } catch (SQLException e) {
-                }
-            }
-        }
+			errorMessage = cs.getString(1);
+			Object cuotaObj = cs.getObject(2);
+			if (cuotaObj != null) {
+				cuotaDescontar = (cuotaObj instanceof BigDecimal)
+						? (BigDecimal) cuotaObj
+						: new BigDecimal(cuotaObj.toString());
+			}
+		} catch (SQLException e) {
+			errorMessage = "Error al ejecutar el procedimiento: " + e.getMessage();
+		} finally {
+			if (cs != null) {
+				try {
+					cs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
 
-        Map<String, Object> body = new HashMap<String, Object>();
-        body.put("errorMessage", errorMessage);
-        body.put("cuotaDescontar", cuotaDescontar);
+		Map<String, Object> body = new HashMap<String, Object>();
+		body.put("errorMessage", errorMessage);
+		body.put("cuotaDescontar", cuotaDescontar);
 
-        return ResponseEntity.ok(body);
-    }
+		return ResponseEntity.ok(body);
+	}
 }

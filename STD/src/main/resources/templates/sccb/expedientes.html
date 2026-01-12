@@ -3,210 +3,179 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-	<link th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-		integrity="sha512-PYHPnHvwFivB3c5i8l8ArQOmCHwhgISWQz4l7f5fzlk29Vx+JY9qZcZg5jZPxtv/kaQKc3W4W1gvLdU56hhflw=="
-		crossorigin="anonymous" referrerpolicy="no-referrer" rel="stylesheet" />
-
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content" style="background-color: white;">
-		<div class="container">
-			<div class="border p-2 card">
+	<section class="section" layout:fragment="page-content">
 
-				<div class="bg-info text-white">
-					<div class="row no-gutters">
-						<div class="col-md-2"></div>
-						<div class="col-md-8">
-							<div>
-								<h2 style="text-align:center">Consulta de Expedientes</h2>
-							</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Consulta de Expedientes</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">SCCB</li>
+					<li class="breadcrumb-item active">Expedientes</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Búsqueda de Expedientes</h5>
+
+				<form class="row g-3 mb-4">
+					<div class="col-md-4">
+						<label class="form-label">Tipo de expediente</label>
+						<select class="form-select" id="opcionesTipoExpediente">
+							<option value="0" selected>Seleccione...</option>
+							<option value="1">Afiliación</option>
+							<option value="2">Crédito</option>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<!-- Búsqueda Crédito -->
+						<div id="divCredito" style="display: none;">
+							<label class="form-label">Nombre</label>
+							<input type="search" class="form-control mb-2" id="creditoBusqueda"
+								placeholder="Buscar nombre..." onkeyup="buscarNombreCredito(this.value);">
+							<select id="selectCredito" class="form-select" name="selectCredito" size="3"></select>
+						</div>
+
+						<!-- Búsqueda Nombre -->
+						<div id="divName" style="display: none;">
+							<label class="form-label">Nombre</label>
+							<input type="search" class="form-control mb-2" id="nameBusqueda"
+								placeholder="Buscar nombre..." onkeyup="buscarNombre(this.value);">
+							<select id="selectName" class="form-select" name="selectName" size="3"></select>
 						</div>
 					</div>
-				</div>
-        	</div>
-        	<form>
-				<div class="row p-4">
-					<div class="col-5">
-						<div class="row justify-content-center">
-							<div class="col-4">
-								<label class="form-label">Tipo de expediente: </label>
-							</div>
-							<div class="col-8">
-								<select class="form-control" id="opcionesTipoExpediente">
-									<option value="0">Seleccione</option>
-									<option value="1">Afiliación</option>
-									<option value="2">Crédito</option>
-								</select>
-							</div>
-						</div>
+
+					<div class="col-md-2 d-flex align-items-end gap-2">
+						<button class="btn btn-primary w-100" type="button" onclick="buscarDatos()" id="btnBuscar"
+							style="display: none;">
+							<i class="bi bi-search me-1"></i> Buscar
+						</button>
+						<button class="btn btn-secondary w-100" type="button" onclick="cleanView()" id="btnClean"
+							style="display: none;">
+							<i class="bi bi-eraser-fill me-1"></i> Limpiar
+						</button>
 					</div>
-					<div class="col-6">
-						<div class="row justify-content-center" style="display: none;" id="divCredito">
-							<div class="col-3">
-								<label for="creditoBusqueda" class="col-form-label">Nombre:</label>
-							</div>
-							<div class="col-8">
-								<div class="row">
-									<input type="search" class="form-control" id="creditoBusqueda"
-									placeholder="Nombre" onkeyup="buscarNombreCredito(this.value);">
-								</div>
-							</div>
-							<div class="row p-2">
-								<select id="selectCredito" class="form-select" name="selectCredito" style="font-size: small;">
-									
-								</select>
-							</div>
-						</div>
-						
-						<div class="row justify-content-center" style="display: none;" id="divName">
-							<div class="col-3">
-								<label for="nameBusqueda" class="col-form-label">Nombre:</label>
-							</div>
-							<div class="col-8">
-								<div class="row">
-									<input id="nameBusqueda" type="search" class="form-control"
-									placeholder="Nombre" onkeyup="buscarNombre(this.value);">
-								</div>
-							</div>
-							<div class="row p-2">
-								<select id="selectName" class="form-select" name="selectName" style="font-size: small;">
-										
-								</select>
-							</div>
-						</div>
+				</form>
+
+				<!-- Tablas Principales -->
+				<div id="divMainTable" style="display: none;">
+					<h6 class="fw-bold mb-3 text-center">Expediente</h6>
+
+					<div id="divTblCredito" class="table-responsive mb-4" style="display: none;">
+						<table id="credito" class="table table-hover text-center">
+							<thead class="table-light">
+								<tr>
+									<th>ID Expediente</th>
+									<th>Tipo</th>
+									<th>Fecha Creación</th>
+									<th>Contrato</th>
+									<th>Acuerdo</th>
+									<th>Estatus</th>
+									<th>Situación</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
 					</div>
-					<div class="col-1">
-						<div class="row">
-							<div class="col-12">
-								<button class="btn btn-primary" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
-								title="Buscar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
-								th:onclick="buscarDatos()" id="btnBuscar" style="display: none;">
-							
-									<i class="bi bi-search"></i>
-							
-								</button>
-								<button class="btn btn-secondary mt-1" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
-								title="Limpiar" aria-controls="table-datatable" type="button" data-tooltip="Show filters"
-								th:onclick="cleanView()" id="btnClean" style="display: none;">
-							
-								<i class="bi bi-eraser-fill"></i>
-							
-							</button>
-							</div>
-						</div>
+
+					<div id="divTblAfiliacion" class="table-responsive mb-4" style="display: none;">
+						<table id="afiliacion" class="table table-hover text-center">
+							<thead class="table-light">
+								<tr>
+									<th>ID Expediente</th>
+									<th>Tipo</th>
+									<th>Fecha Creación</th>
+									<th>Estatus</th>
+									<th>Situación</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
 					</div>
 				</div>
-			</form>
-			<div id="divMainTable" class="row justify-content-center mb-3" style="display: none;">
-				<div class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
-					Expediente
+
+				<!-- Detalles -->
+				<div id="divDetalleExpediente" style="display: none;">
+					<div id="titleDetalleExpediente" class="alert alert-info text-center fw-bold mb-3"></div>
+
+					<div id="divDetalleExpCredito" class="table-responsive mb-4" style="display: none;">
+						<table id="detalleCredito" class="table table-hover text-center">
+							<thead class="table-light">
+								<tr>
+									<th>Requisito</th>
+									<th>Comprobante</th>
+									<th>Entregado</th>
+									<th>Valido Desde</th>
+									<th>Valido Hasta</th>
+									<th>Digitalización</th>
+									<th>Fecha Dig.</th>
+									<th>Nombre</th>
+									<th>Relación</th>
+									<th>Imagen</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+
+					<div id="divDetalleExpAfiliacion" class="table-responsive mb-4" style="display: none;">
+						<table id="detalleAfiliacion" class="table table-hover text-center">
+							<thead class="table-light">
+								<tr>
+									<th>Requisito</th>
+									<th>Comprobante</th>
+									<th>Entregado</th>
+									<th>Valido Desde</th>
+									<th>Valido Hasta</th>
+									<th>Digitalización</th>
+									<th>Fecha Dig.</th>
+									<th>Imagen</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
 				</div>
-				<div id="divTblCredito" class="table-responsive" style="display: none;">
-					<table id="credito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
-						<thead style="background-color: #0D6EFD;">
-							<tr class="text-white" style="font-weight: bold;">
-								<th>ID Expediente</th>
-								<th>Tipo</th>
-								<th>Fecha Creación</th>
-								<th>Contrato</th>
-								<th>Acuerdo</th>
-								<th>Estatus</th>
-								<th>Situación</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-				<div id="divTblAfiliacion" class="table-responsive" style="display: none;">
-					<table id="afiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
-						<thead style="background-color: #0D6EFD;">
-							<tr class="text-white" style="font-weight: bold;">
-								<th>ID Expediente</th>
-								<th>Tipo</th>
-								<th>Fecha Creación</th>
-								<th>Estatus</th>
-								<th>Situación</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-			</div>
-			
-			<div id="divDetalleExpediente" class="row justify-content-center mb-3" style="display: none;">
-				<div id="titleDetalleExpediente" class="mb-3" style="background-color: #BDECFB; font-weight: bold; text-align: center;">
-					
-				</div>
-				<div id="divDetalleExpCredito" class="table-responsive" style="display: none;">
-					<table id="detalleCredito" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
-						<thead style="background-color: #0D6EFD;">
-							<tr class="text-white" style="font-weight: bold;">
-								<th>Requisito</th>
-								<th>Comprobante</th>
-								<th>Entregado</th>
-								<th>Valido Desde</th>
-								<th>Valido Hasta</th>
-								<th>Digitalización</th>
-								<th>Fecha de Digitalización</th>
-								<th>Nombre</th>
-								<th>Relación</th>
-								<th>Imagen Digitalizada</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-				<div id="divDetalleExpAfiliacion" class="table-responsive" style="display: none;">
-					<table id="detalleAfiliacion" class="table table-bordered" style="font-size: small; text-align: center; width: 100%;">
-						<thead style="background-color: #0D6EFD;">
-							<tr class="text-white" style="font-weight: bold;">
-								<th>Requisito</th>
-								<th>Comprobante</th>
-								<th>Entregado</th>
-								<th>Valido Desde</th>
-								<th>Valido Hasta</th>
-								<th>Digitalización</th>
-								<th>Fecha de Digitalización</th>
-								<th>Imagen Digitalizada</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-			</div>
-			<!-- Modal -->
-			<div class="modal fade" id="visorImagenes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  				<div class="modal-dialog modal-lg modal-dialog-scrollable">
-    				<div class="modal-content">
-      					<div class="modal-header">
-        					<h1 class="modal-title fs-5" id="exampleModalLabel">Visor de Imágenes</h1>
-        					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      					</div>
-      					<div class="modal-body">
-							  <img id="imagen"/>
-      					</div>
-      					<div class="modal-footer">
-        					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      					</div>
-    				</div>
-  				</div>
+
 			</div>
 		</div>
-    </section>
-    <th:block layout:fragment="page-scripts">
-        <script th:src="@{/js/jquery.min.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/jquery-3.5.1.js}"></script>
-        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
-        <script th:src="@{/js/sweetalert2@7.js}"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-       	<script th:src="@{/js/jquery.elevatezoom.min.js}"></script>
-        <script th:src="@{/js/sccb/expedientes.js}"></script>
-    </th:block>
-</body>
 
+		<!-- Modal Visor Imágenes -->
+		<div class="modal fade" id="visorImagenes" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Visor de Imágenes</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body text-center">
+						<img id="imagen" class="img-fluid" alt="Documento digitalizado" />
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!-- Scripts -->
+		<script th:src="@{/js/sweetalert2@7.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/jquery.elevatezoom.min.js}"></script>
+		<script th:src="@{/js/sccb/expedientes.js}"></script>
+		<!-- Eliminados scripts legacy -->
+	</th:block>
+</body>
 
 </html>

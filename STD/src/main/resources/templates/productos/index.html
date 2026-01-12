@@ -3,275 +3,246 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<!--<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">-->
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div class="card-body">
-							<h2 style="text-align:center">Productos</h2>
-						</div>
-					</div>
-				</div>
-			</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Productos</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Productos</li>
+					<li class="breadcrumb-item active">Gestión de Productos</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
 
-			<form>
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Filtros y Búsqueda</h5>
 
-				<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="form-group row"
-					style="margin-top: 10px">
-					<label for="busqueda" class="col-sm-4 col-form-label">Tipo Producto:</label>
-					<div class="col-sm-6">
-						<select class="form-control" id="opciones">
+				<form class="row g-3 mb-4">
+					<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="col-md-6">
+						<label for="opciones" class="form-label">Tipo Producto</label>
+						<select class="form-select" id="opciones">
 							<option value="0">Seleccione</option>
 							<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
 								th:text="${opcion.v_valor}"></option>
 						</select>
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
 
-				<div class="form-group row" style="margin-top: 10px;display:none;" id="productoCaptacion">
-					<label for="busqueda" class="col-sm-4 col-form-label">Productos Captacion:</label>
-					<div class="col-sm-6">
-						<select class="form-control" id="opcionesCaptacion">
+					<div class="col-md-6" style="display:none;" id="productoCaptacion">
+						<label for="opcionesCaptacion" class="form-label">Productos Captación</label>
+						<select class="form-select" id="opcionesCaptacion">
 							<option value="0">Seleccione</option>
 							<option th:each="opcion : ${cat_prodcuto_captacion}" th:value="${opcion.idproducto}"
-								th:text="${opcion.nombreProducto}" id="opcion"></option>
+								th:text="${opcion.nombreProducto}"></option>
 						</select>
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
-				<div class="form-group row" style="margin-top: 10px;display:none;" id="productoColocacion">
-					<label for="busqueda" class="col-sm-4 col-form-label">Productos Colocacion:</label>
-					<div class="col-sm-6">
-						<select class="form-control" id="opcionesColocacion">
+
+					<div class="col-md-6" style="display:none;" id="productoColocacion">
+						<label for="opcionesColocacion" class="form-label">Productos Colocación</label>
+						<select class="form-select" id="opcionesColocacion">
 							<option value="0">Seleccione</option>
 							<option th:each="opcion : ${cat_prodcuto}" th:value="${opcion.idproducto}"
-								th:text="${opcion.nombreProducto}" id="opcion"></option>
+								th:text="${opcion.nombreProducto}"></option>
 						</select>
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
 
-				<div class="form-group row" style="margin-top: 10px;display:none;" id="diviKYC">
-					<label for="busqueda" class="col-sm-4 col-form-label">Identificador KYC <code>(*)</code></label>
-					<div class="col-sm-6">
-
+					<div class="col-md-6" style="display:none;" id="diviKYC">
+						<label for="iKYC" class="form-label">Identificador KYC <span
+								class="text-danger">*</span></label>
 						<input id="iKYC" class="form-control" type="text" placeholder="Agregar identificador KYC" />
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
 
-				<div class="form-group row" style="margin-top: 10px;display:none;" id="divdescripcionProducto">
-					<label for="busqueda" class="col-sm-4 col-form-label">Descripción Producto
-						<code>(*)</code></label>
-					<div class="col-sm-6">
-
+					<div class="col-md-6" style="display:none;" id="divdescripcionProducto">
+						<label for="descripcionProducto" class="form-label">Descripción Producto <span
+								class="text-danger">*</span></label>
 						<input id="descripcionProducto" class="form-control" type="text"
 							placeholder="Agregar descripción del producto" />
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
 
-				<div class="form-group row" style="margin-top: 10px;display:none;" id="contrato">
-					<label for="busqueda" class="col-sm-4 col-form-label">Contrato:</label>
-					<div class="col-sm-6">
-						<select class="form-control" id="opcionesContrato">
+					<div class="col-md-6" style="display:none;" id="contrato">
+						<label for="opcionesContrato" class="form-label">Contrato</label>
+						<select class="form-select" id="opcionesContrato">
 							<option value="0">Seleccione</option>
 							<option th:each="opcion : ${listadoContratos}" th:value="${opcion.pk_id_contrato}"
-								th:text="${opcion.vc_contrato}" id="opcion"></option>
+								th:text="${opcion.vc_contrato}"></option>
 						</select>
 					</div>
-					<div class="col-sm-2"></div>
-				</div>
 
+					<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="col-12 text-end"
+						id="btnAgregar">
+						<button type="button" th:onclick="validarVacio()" class="btn btn-primary" id="altaProducto">
+							<i class="bi bi-plus-lg me-1"></i> Alta Producto
+						</button>
+					</div>
+				</form>
 
-			</form>
-			<div sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')" class="form-group row"
-				style="margin-top: 10px;" id="btnAgregar">
-				<div class="col-sm-9"></div>
-				<div class="col-sm-3">
-
-					<button th:onclick="validarVacio()" class="btn btn-primary" id="altaProducto">Alta Producto</button>
-
-				</div>
-			</div>
-			<!--<div class="table-responsive">-->
-			<div class="row">
-				<!--<table class="table table-bordered table-striped" style="margin-top: 10px;">-->
-				<table class="table table-bordered" style="width: 100%;" id="productoTable">
-					<thead>
-						<tr>
-							<th style="visibility:collapse; display:none;"></th>
-							<th>#</th>
-							<th>Producto</th>
-							<th>Estatus</th>
-							<th>Tipo</th>
-							<th>Fecha Registro </th>
-							<th>Fecha Cancelacion</th>
-							<th>Identificador KYC</th>
-							<th>Descripción Producto</th>
-							<th>Contrato</th>
-							<th>Acciones</th>
-							<!--<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
-								<th sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"></th>
-								<th sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"></th>-->
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="listaProductos:${listaProductos}">
-							<td style="visibility:collapse; display:none;" th:text="${listaProductos.pk_id_producto}">
-								Oculto </td>
-							<td th:text="${listaProductos.i_no_producto}"></td>
-							<td th:text="${listaProductos.vc_nombre_producto}"></td>
-							<td th:text="${listaProductos.i_estatus}== 1?'ACTIVO':'INACTIVO'"></td>
-							<td th:text="${listaProductos.i_tipo_producto}==1?'COLOCACIÓN':'CAPTACIÓN'"></td>
-							<td th:text="${listaProductos.dt_fecha_operacion}"></td>
-							<td
-								th:text="${listaProductos.dt_fecha_cancelacion}  == null ? 'Sin registro' : ${listaProductos.dt_fecha_cancelacion}">
-							</td>
-							<td th:text="${listaProductos.vc_identificador_kyc}"></td>
-							<td th:text="${listaProductos.vc_descripcion_producto}"></td>
-							<td
-								th:text="${listaProductos.vc_contrato} == null ? 'Sin registro' : ${listaProductos.vc_contrato}">
-							</td>
-							<td>
-								<div class="dt-buttons">
-									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
-										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
-										title="Reactivar" data-bs-target="#basicModal" aria-controls="table-datatable"
-										type="button" data-tooltip="Add">
-										<a th:href="@{reactivar/}+${listaProductos.i_no_producto}">
+				<div class="table-responsive">
+					<table class="table table-hover" id="productoTable">
+						<thead>
+							<tr>
+								<th style="display:none;">ID</th>
+								<th>#</th>
+								<th>Producto</th>
+								<th>Estatus</th>
+								<th>Tipo</th>
+								<th>Fecha Registro</th>
+								<th>Fecha Cancelación</th>
+								<th>Identificador KYC</th>
+								<th>Descripción</th>
+								<th>Contrato</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="listaProductos:${listaProductos}">
+								<td style="display:none;" th:text="${listaProductos.pk_id_producto}"></td>
+								<td th:text="${listaProductos.i_no_producto}"></td>
+								<td th:text="${listaProductos.vc_nombre_producto}" class="fw-bold"></td>
+								<td>
+									<span
+										th:class="${listaProductos.i_estatus == 1 ? 'badge bg-success' : 'badge bg-secondary'}"
+										th:text="${listaProductos.i_estatus == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
+								</td>
+								<td th:text="${listaProductos.i_tipo_producto == 1 ? 'COLOCACIÓN' : 'CAPTACIÓN'}"></td>
+								<td th:text="${listaProductos.dt_fecha_operacion}"></td>
+								<td
+									th:text="${listaProductos.dt_fecha_cancelacion == null ? 'Sin registro' : listaProductos.dt_fecha_cancelacion}">
+								</td>
+								<td th:text="${listaProductos.vc_identificador_kyc}"></td>
+								<td th:text="${listaProductos.vc_descripcion_producto}"></td>
+								<td
+									th:text="${listaProductos.vc_contrato == null ? 'Sin registro' : listaProductos.vc_contrato}">
+								</td>
+								<td>
+									<div class="d-flex gap-1">
+										<a sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+											th:href="@{reactivar/}+${listaProductos.i_no_producto}"
+											class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Reactivar">
 											<i class="bi bi-check-circle-fill"></i>
 										</a>
-									</button>
-									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
-										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
-										data-bs-placement="top" title="Baja Producto" aria-controls="table-datatable"
-										type="button" data-tooltip="Refresh">
-										<a th:href="@{eliminar/}+${listaProductos.i_no_producto}">
+
+										<a sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+											th:href="@{eliminar/}+${listaProductos.i_no_producto}"
+											class="btn btn-sm btn-danger" data-bs-toggle="tooltip"
+											title="Baja Producto">
 											<i class="bi bi-x-circle-fill"></i>
 										</a>
-									</button>
-									<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
-										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="modal"
-										title="Editar Producto" data-bs-target="#basicModalProducto"
-										aria-controls="table-datatable" type="button"
-										th:onclick="'modalEditarProducto(' + ${listaProductos.pk_id_producto} + ')'"
-										data-tooltip="Add">
-										<i class="bi bi-pencil-square"></i>
 
-									</button>
-									<button sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"
-										class="btn btn-light btn-sm" tabindex="0" data-bs-toggle="tooltip"
-										data-bs-placement="top" title="Relacionar Documentos"
-										aria-controls="table-datatable" type="button" data-tooltip="Refresh"
-										onclick="documentos(this)" id="btnRelacion">
-										<i class="bi bi-ui-checks"></i>
+										<button sec:authorize="hasRole('ROLE_PRODUCTOS') or hasRole('ROLE_ADMIN')"
+											class="btn btn-sm btn-info text-white" data-bs-toggle="modal"
+											title="Editar Producto" data-bs-target="#basicModalProducto"
+											th:onclick="'modalEditarProducto(' + ${listaProductos.pk_id_producto} + ')'">
+											<i class="bi bi-pencil-square"></i>
+										</button>
 
-									</button>
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+										<button sec:authorize="hasRole('ROLE_ARCHIVO') or hasRole('ROLE_ADMIN')"
+											class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+											title="Relacionar Documentos" onclick="documentos(this)" id="btnRelacion">
+											<i class="bi bi-ui-checks"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-			<div class="modal" id="modalDocumentos">
-				<div class="modal-dialog">
-					<div class="modal-content">
+		</div>
 
-
-						<div class="modal-header">
-							<h2 class="modal-title" id="lblTitulo"></h2>
-						</div>
-						<div class="modal-body">
-							<table class="table table-bordered table-striped" style="margin-top: 10px;" id="documentos">
+		<!-- Modal Documentos -->
+		<div class="modal fade" id="modalDocumentos" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblTitulo">Relacionar Documentos</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="table-responsive">
+							<table class="table table-hover" id="documentos">
 								<thead>
 									<tr>
-										<th>
-											<input type="checkbox" class="custom-control-input" name="" th:value="Todos"
-												th:id="idTodos" />
+										<th width="50">
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input" id="idTodos"
+													th:value="Todos">
+											</div>
 										</th>
 										<th>Nombre Documento</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="documento: ${listDocumentos}">
-
 										<td>
-											<div class="custom-control custom-checkbox">
-												<input type="checkbox" class="custom-control-input" name=""
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input"
 													th:value="${documento.pk_id_documento}"
-													th:id="${documento.pk_id_documento}" />
+													th:id="${documento.pk_id_documento}">
 											</div>
 										</td>
-
 										<td th:text="${documento.vc_nombre_doc}"></td>
-
 									</tr>
 								</tbody>
 							</table>
-							<input type="hidden" id="datosRelDoc">
 						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal" id="btnRelDoc">Relacionar
-								Documentos</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCancelar">Cancelar</button>
-						</div>
+						<input type="hidden" id="datosRelDoc">
 					</div>
-				</div>
-			</div>
-
-			<div class="modal fade" id="basicModalProducto" tabindex="-1">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title">Editar Producto</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<div class="modal-body">
-							<form id="edit-form" th:method="post" th:object="${listaProductos}">
-								<div class="col-12">
-									<label for="idUsuario" class="form-label">Id
-										Producto</label>
-									<input type="text" class="form-control" id="idProductoEditar"
-										 readonly>
-									<label for="nombre" class="form-label">Identificardor KYC</label>
-									<input type="text" class="form-control" id="kyc" >
-									<label for="password" class="form-label">Descripción del producto</label>
-									<input type="text" class="form-control" id="descripcion"
-										>
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary"
-										data-bs-dismiss="modal">Close</button>
-									<button type="button" onclick="editaProducto()"
-										class="btn btn-primary">Guardar</button>
-								</div>
-							</form>
-						</div>
-
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCancelar">Cancelar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnRelDoc">Relacionar
+							Documentos</button>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- Modal Editar Producto -->
+		<div class="modal fade" id="basicModalProducto" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Editar Producto</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="edit-form" th:method="post" th:object="${listaProductos}">
+							<div class="mb-3">
+								<label for="idProductoEditar" class="form-label">Id Producto</label>
+								<input type="text" class="form-control" id="idProductoEditar" readonly>
+							</div>
+							<div class="mb-3">
+								<label for="kyc" class="form-label">Identificador KYC</label>
+								<input type="text" class="form-control" id="kyc">
+							</div>
+							<div class="mb-3">
+								<label for="descripcion" class="form-label">Descripción del producto</label>
+								<input type="text" class="form-control" id="descripcion">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+						<button type="button" onclick="editaProducto()" class="btn btn-primary">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-	   <script th:src="@{/js/jquery.min.js}"></script>
+		<!-- Scripts -->
+		<script th:src="@{/js/jquery.min.js}"></script>
 		<script th:src="@{/js/producto/producto.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
+		<script th:src="@{/js/datatables.min.js}"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/producto/dataTableProducto.js}"></script>
 	</th:block>

@@ -3,157 +3,112 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="row">
-			<div class="col-sm-12">
+	<section class="section" layout:fragment="page-content">
 
-				<!-- Titulo y Tabs -->
-				<div class="border p-2 card">
-					<div class="bg-info text-white">
-						<div class="row no-gutters">
-							<div class="col-md-2"></div>
-							<div class="col-md-8">
-								<div>
-									<h2 style="text-align:center; padding-top: 10px; padding-bottom: 10px;">Reportes
-									</h2>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Reportes Operativos</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Operaciones</li>
+					<li class="breadcrumb-item active">Reportes</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Generar Reporte</h5>
+
+				<form name="formReporte" id="formReporte" class="row g-3">
+					<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}" />
+
+					<div class="col-md-4">
+						<label class="form-label">Tipo de búsqueda</label>
+						<select id="selectBusqueda" class="form-select">
+							<option value="" disabled selected>Seleccione...</option>
+							<option th:each="busqueda : ${listaBusqueda}" th:value="${busqueda.i_opcion}"
+								th:text="${busqueda.v_valor}">
+							</option>
+						</select>
+					</div>
+
+					<div class="col-md-12">
+						<div class="row g-3" id="filtrosDinamicos" style="display:none;">
+
+							<div class="col-md-4" id="verSucursal">
+								<label class="form-label">Sucursal</label>
+								<input type="search" class="form-control" id="buscarSucursal" list="opcionSucursal"
+									autocomplete="off" placeholder="Buscar sucursal...">
+								<datalist id="opcionSucursal">
+									<option th:each="sucursal : ${sucursales}" th:value="${sucursal.vc_nombre_sucursal}"
+										th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}"
+										th:data-value="${sucursal.i_sucursal}"></option>
+								</datalist>
+								<div id="group-sucursal" class="list-group mt-1"></div>
+							</div>
+
+							<div class="col-md-4" id="verCliente" style="display: none;">
+								<label class="form-label">Cliente</label>
+								<div class="input-group">
+									<input type="search" class="form-control" id="buscarCliente" list="opcionCliente"
+										autocomplete="off" placeholder="Buscar cliente..." disabled>
+									<span class="input-group-text" id="spinnerClientes" style="display:none;">
+										<div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+									</span>
 								</div>
+								<datalist id="opcionCliente"></datalist>
+								<div id="group-general" class="list-group mt-1"></div>
 							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">Estatus de gestión</label>
+								<select id="selectGestion" class="form-select">
+									<option value="0" disabled selected>Seleccione...</option>
+									<option th:each="estatus : ${listaEstatus}" th:value="${estatus.i_opcion}"
+										th:text="${estatus.v_valor}">
+									</option>
+								</select>
+								<div id="group-estatus" class="list-group mt-1"></div>
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">Fecha inicio</label>
+								<input class="form-control" type="date" id="fechaInicio">
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">Fecha fin</label>
+								<input class="form-control" type="date" id="fechaFin">
+								<div class="invalid-feedback d-block" id="errorFecha"></div>
+							</div>
+
+							<div class="col-md-4 d-flex align-items-end">
+								<button class="btn btn-success w-100" title="Generar Reporte" onclick="obtenerDatos()"
+									type="button">
+									<i class="bi bi-file-earmark-spreadsheet me-1"></i> Generar Excel
+								</button>
+							</div>
+
 						</div>
 					</div>
-				</div>
-
-				<!-- Filtro busqueda -->
-				<div>
-					<div class="border p-2 card">
-						<div class="">
-							<div class="col-sm-12">
-								<fieldset class="border p-2">
-									<input type="hidden" id="idSucursalInicial" th:value="${sucursalInicial}"/>
-									<legend class="float-none w-auto p-2">Generar reporte</legend>
-									<!-- Campos para generar reporte -->
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="row">
-												<div class="col-sm-4">
-													<label>Tipo de búsqueda</label>
-													<select id="selectBusqueda"
-														style="width: 284.25px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
-														<option value="" disabled selected>Tipo de búsqueda</option>
-														<option th:each="busqueda : ${listaBusqueda}"
-																th:value="${busqueda.i_opcion}" th:text="${busqueda.v_valor}">
-														</option>
-													</select>
-												</div>
-											</div>
-											<form name="formReporte" id="formReporte" style="display: none;">
-												<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-4" id="verSucursal">
-														<label>Sucursal</label>
-														<input type="search" class="form-control" id="buscarSucursal"
-															list="opcionSucursal" autocomplete="off"
-															placeholder="Buscar sucursal">
-														<datalist id="opcionSucursal">
-															<option th:each="sucursal : ${sucursales}"
-                                                        	th:value="${sucursal.vc_nombre_sucursal}"
-                                                        	th:text="${sucursal.vc_nombre_sucursal}" th:id="${sucursal.i_sucursal}" th:data-value="${sucursal.i_sucursal}"></option>
-														</datalist>
-														<div id="group-sucursal" class="list-group"></div>
-													</div>
-													<div class="col-sm-4" id="verCliente"
-														style="display: none; visibility: hidden;">
-														<label>Cliente</label>
-														<input type="search" class="form-control" id="buscarCliente"
-															list="opcionCliente" autocomplete="off"
-															placeholder="Buscar cliente" disabled>
-														<datalist id="opcionCliente"></datalist>
-														
-														<div id="group-general" class="list-group"></div>
-													</div>
-													<div id="spinnerClientes" class="col-sm-1"
-														style="margin: 0px; padding: 0px; padding-top: 25px; display: none;">
-														<div class="spinner-border" style="color: #0dcaf0;">
-														</div>
-													</div>
-													<div class="col-sm-3">
-														<label>Estatus de gestión</label>
-														<select id="selectGestion"
-															style="width: 284.25px; height: 40px; border-radius: 5px; border-color: #d5d5d5;">
-															<option value="0" disabled selected>Estatus de gestión</option>
-															<option th:each="estatus : ${listaEstatus}"
-																th:value="${estatus.i_opcion}" th:text="${estatus.v_valor}">
-															</option>
-														</select>
-														<div id="group-estatus" class="list-group"></div>
-													</div>
-												</div>
-
-												<!--<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-4">
-														<div id="group-sucursal" class="list-group"></div>
-													</div>
-													<div class="col-sm-4">
-														<div id="group-general" class="list-group"></div>
-													</div>
-													<div class="col-sm-4">
-														<div id="group-estatus" class="list-group"></div>
-													</div>
-												</div>-->
-
-												<div class="row" style="padding-top: 20px;">
-													<div class="col-sm-5">
-														<label>Fecha inicio</label>
-														<input class="form-control" type="date" id="fechaInicio">
-													</div>
-
-													<div class="col-sm-5">
-														<label>Fecha fin</label>
-														<input class="form-control" type="date" id="fechaFin">
-														<p class="error-message" id="errorFecha"></p>
-													</div>
-													<div class="col-sm-2" style="text-align: right; padding-top: 25px;">
-														<button class="btn btn-success" title="Generar Reporte"
-															data-bs-target="#" onclick="obtenerDatos()"
-															aria-controls="table-datatable" type="button"
-															data-tooltip="Add">
-															<i class="bi bi-filetype-exe"></i>
-														</button>
-													</div>
-												</div>
-											</form>
-										</div>
-									</div>
-								</fieldset>
-							</div>
-						</div>
-					</div>
-				</div>
-
+				</form>
 			</div>
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>-->
-		<script th:src="@{/js/jquery.min.js}"></script>
-		<script th:src="@{/js/bootstrap.min.js}"></script>
-		<script th:src="@{/js/jquery-3.5.1.js}"></script>
-		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-		<!--<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>-->
-		<script th:src="@{/js/datatables.min.js}"></script>
+		<!-- Scripts -->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/operaciones/reportes.js}"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
-		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
 </body>
-
 
 </html>

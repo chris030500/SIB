@@ -1,5 +1,5 @@
 // Variables | validacion de la liga absoluta
-window.onload = function() {
+window.onload = function () {
 	tablaEmpresas();
 	listaEmpresas();
 }
@@ -22,13 +22,13 @@ function tablaEmpresas() {
 		url: urlPrincipal + "tablaEmpresas",  // Asegúrate de que esta URL sea correcta
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			// Limpiar la tabla antes de agregar los nuevos registros
 			tblRegistroEmpresas.clear().draw();
 
 			// Verificar si se recibieron datos de las empresas
 			if (respuesta && Array.isArray(respuesta) && respuesta.length > 0) {
-				$.each(respuesta, function(idx, empresa) {
+				$.each(respuesta, function (idx, empresa) {
 					// Crear botones para Editar y Ver Estatus
 					var btnEditar = "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' title='Editar' type='button' "
 						+ " data-bs-toggle='modal' data-bs-target='#modalEmpresa' "
@@ -63,14 +63,14 @@ function tablaEmpresas() {
 				console.log("No se encontraron empresas.");
 			}
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener las empresas:", error);
 		}
 	});
 }
 
 function enviarCorreoEmpresa(idEmpresa) {
-	Swal.fire({
+	swal({
 		title: "¿Estás seguro?",
 		text: "Se enviará el correo a la empresa seleccionada.",
 		icon: "warning",
@@ -88,7 +88,7 @@ function enviarCorreoEmpresa(idEmpresa) {
 					return res.json();
 				})
 				.then(data => {
-					Swal.fire({
+					swal({
 						icon: "info",
 						title: "Resultado del envío",
 						text: data.mensaje,
@@ -97,7 +97,7 @@ function enviarCorreoEmpresa(idEmpresa) {
 				})
 				.catch(err => {
 					console.error("❌ Error al enviar correo:", err);
-					Swal.fire("Error", "No se pudo procesar el envío de correo.", "error");
+					swal("Error", "No se pudo procesar el envío de correo.", "error");
 				});
 		}
 	});
@@ -113,11 +113,11 @@ function listaEmpresas() {
 		url: urlPrincipal + "lista_empresas", // Ajusta la URL si es necesario
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			var opciones = document.getElementById('opcionEmpresa');
 			opciones.innerHTML = '';
 
-			respuesta.lista.forEach(function(empresa) {
+			respuesta.lista.forEach(function (empresa) {
 				var option = document.createElement('option');
 				option.setAttribute('id', empresa.id);
 				option.setAttribute('correo', empresa.correoContacto);
@@ -129,14 +129,14 @@ function listaEmpresas() {
 			buscarEmpresa.disabled = false;
 			spinner.style.display = "none";
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error en la petición:", error);
 			spinner.style.display = "none";
 		}
 	});
 }
 
-buscarEmpresa.addEventListener('input', function() {
+buscarEmpresa.addEventListener('input', function () {
 	// Obtiene todas las opciones del datalist
 	var opciones = document.getElementById('opcionEmpresa').getElementsByTagName('option');
 
@@ -152,12 +152,12 @@ buscarEmpresa.addEventListener('input', function() {
 });
 
 // Evento para guardar la empresa en la BD
-document.querySelector(".modal-footer .btn-primary").addEventListener("click", function() {
+document.querySelector(".modal-footer .btn-primary").addEventListener("click", function () {
 	var empresaSeleccionada = Array.from(document.querySelectorAll('#opcionEmpresa option'))
 		.find(option => option.value === buscarEmpresa.value);
 
 	if (!empresaSeleccionada) {
-		Swal.fire({
+		swal({
 			icon: 'error',
 			title: '¡Error!',
 			text: 'Selecciona una empresa válida.',
@@ -170,7 +170,7 @@ document.querySelector(".modal-footer .btn-primary").addEventListener("click", f
 
 	// Validar si el correo está vacío
 	if (correo === "") {
-		Swal.fire({
+		swal({
 			icon: 'error',
 			title: '¡Correo vacío!',
 			text: 'Por favor, ingresa un correo electrónico.',
@@ -194,8 +194,8 @@ document.querySelector(".modal-footer .btn-primary").addEventListener("click", f
 		type: "POST",
 		contentType: "application/json",
 		data: JSON.stringify(datosEmpresa),
-		success: function(response) {
-			Swal.fire({
+		success: function (response) {
+			swal({
 				icon: 'success',
 				title: '¡Éxito!',
 				text: 'La empresa se guardó correctamente.',
@@ -204,19 +204,19 @@ document.querySelector(".modal-footer .btn-primary").addEventListener("click", f
 			limpiarFormulario(); // Limpia los campos después de guardar
 			tablaEmpresas();
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al guardar:", error);
 
 			// Si el backend responde con un mensaje de error
 			if (error.responseJSON && error.responseJSON.error) {
 				// Mostrar el mensaje de error de la empresa ya registrada con SweetAlert
-				Swal.fire({
+				swal({
 					icon: 'error',
 					title: '¡Error!',
 					text: error.responseJSON.error,
 				});
 			} else {
-				Swal.fire({
+				swal({
 					icon: 'error',
 					title: '¡Error!',
 					text: 'Hubo un error al guardar la empresa.',
@@ -258,12 +258,12 @@ function llenarFormulario(empresa) {
 	$("#modalEmpresa").modal("show");
 }
 
-document.getElementById("formEmpresa").addEventListener("submit", function(event) {
+document.getElementById("formEmpresa").addEventListener("submit", function (event) {
 	event.preventDefault(); // Evitar recarga de página
 
 	var idEmpresa = document.getElementById("empresaId").value;
 	if (!idEmpresa) {
-		Swal.fire({
+		swal({
 			icon: 'error',
 			title: '¡Error!',
 			text: 'No se encontró el ID de la empresa.',
@@ -282,13 +282,11 @@ document.getElementById("formEmpresa").addEventListener("submit", function(event
 
 
 	// Mostrar Sweet Alert de Cargando con un spinner
-	Swal.fire({
+	swal({
 		title: 'Actualizando...',
-		html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-		allowOutsideClick: false, // Evita que se cierre al hacer clic fuera
-		onBeforeOpen: () => {
-			Swal.showLoading(); // Muestra el icono de carga
-		}
+		text: 'Por favor, espera mientras se guardan los cambios.',
+		closeOnClickOutside: false,
+		buttons: false,
 	});
 
 	$.ajax({
@@ -296,8 +294,8 @@ document.getElementById("formEmpresa").addEventListener("submit", function(event
 		type: "PUT",
 		contentType: "application/json",
 		data: JSON.stringify(datosEmpresa),
-		success: function(response) {
-			Swal.fire({
+		success: function (response) {
+			swal({
 				icon: 'success',
 				title: '¡Éxito!',
 				text: 'La empresa se actualizó correctamente.',
@@ -306,16 +304,16 @@ document.getElementById("formEmpresa").addEventListener("submit", function(event
 			$('#modalEmpresa').modal('hide'); // Cerrar modal
 			tablaEmpresas(); // Refrescar tabla
 		},
-		error: function(error) {
-			Swal.fire({
+		error: function (error) {
+			swal({
 				icon: 'error',
 				title: '¡Error!',
 				text: 'Hubo un problema al actualizar la empresa.',
 			});
 		},
-		complete: function() {
+		complete: function () {
 			// Cierra el Sweet Alert de "Cargando..."
-			Swal.close();
+			swal.close();
 		}
 	});
 });
@@ -323,7 +321,7 @@ document.getElementById("formEmpresa").addEventListener("submit", function(event
 
 function confirmarCambioEstatus(id, estatusActual) {
 	// Mostrar un SweetAlert de confirmación
-	Swal.fire({
+	swal({
 		title: '¿Estás seguro?',
 		text: '¿Quieres cambiar el estatus de esta empresa?',
 		icon: 'question',
@@ -353,17 +351,17 @@ function actualizarEstatus(id, nuevoEstatus) {
 		type: "POST",
 		contentType: "application/json",
 		data: JSON.stringify(datos),
-		success: function(response) {
-			Swal.fire({
+		success: function (response) {
+			swal({
 				icon: 'success',
 				title: '¡Éxito!',
 				text: 'El estatus de la empresa se actualizó correctamente.',
 			});
 			tablaEmpresas(); // Actualizar la tabla con el nuevo estatus
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al actualizar el estatus:", error);
-			Swal.fire({
+			swal({
 				icon: 'error',
 				title: '¡Error!',
 				text: 'Hubo un error al actualizar el estatus de la empresa.',
@@ -398,9 +396,9 @@ function insertarComodin(comodin) {
 	mensajeTexto.selectionStart = mensajeTexto.selectionEnd = cursorPos + comodin.length;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 	// Event listener para abrir el modal
-	$('#mensajeModal').on('show.bs.modal', function(e) {
+	$('#mensajeModal').on('show.bs.modal', function (e) {
 		cargarConfiguracionCorreo();
 	});
 });
@@ -409,7 +407,7 @@ function cargarConfiguracionCorreo() {
 	$.ajax({
 		url: urlPrincipal + "carga_configuracion-correo", // URL del backend
 		type: "GET", // Tipo de solicitud (GET para obtener datos)
-		success: function(data) {
+		success: function (data) {
 			if (data) {
 				// Si hay datos, llenar los campos del formulario con los datos obtenidos
 				document.getElementById("correoRemitente").value = data.correoRemitente || "";
@@ -444,9 +442,9 @@ function cargarConfiguracionCorreo() {
 				document.getElementById("horaCron").value = ""; // Limpiar la hora
 			}
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener la configuración de correo:", error);
-			Swal.fire({
+			swal({
 				icon: 'error',
 				title: 'Error',
 				text: 'Hubo un problema al cargar la configuración de correo.',
@@ -467,7 +465,7 @@ function actualizarConfiguracionCorreo() {
 
 	// Verificar si la horaCron tiene un valor válido
 	if (!horaCron) {
-		Swal.fire({
+		swal({
 			title: 'Error',
 			text: 'Debe ingresar un horario válido para la ejecución del cron.',
 			icon: 'error',
@@ -500,15 +498,11 @@ function actualizarConfiguracionCorreo() {
 		console.log('Datos enviados:', datos);
 
 		// Mostrar el SweetAlert de "Actualizando..." con spinner
-		Swal.fire({
+		swal({
 			title: 'Actualizando...',
 			text: 'Por favor, espera mientras se guardan los cambios.',
-			allowOutsideClick: false,
-			allowEscapeKey: false,
-			showConfirmButton: false,
-			didOpen: () => {
-				Swal.showLoading();
-			}
+			closeOnClickOutside: false,
+			buttons: false,
 		});
 
 		// Enviar los datos al servidor usando fetch (PUT request)
@@ -526,7 +520,7 @@ function actualizarConfiguracionCorreo() {
 			.then(({ status, body }) => {
 				console.log('JSON recibido:', body);
 				if (status === 200) {
-					Swal.fire({
+					swal({
 						title: '¡Éxito!',
 						text: 'Configuración de correo actualizada con éxito',
 						icon: 'success',
@@ -535,7 +529,7 @@ function actualizarConfiguracionCorreo() {
 						cargarConfiguracionCorreo(); // Llamar a esta función para cargar la configuración actualizada
 					});
 				} else {
-					Swal.fire({
+					swal({
 						title: 'Error',
 						text: body.message || 'No se pudo actualizar la configuración',
 						icon: 'error',
@@ -545,7 +539,7 @@ function actualizarConfiguracionCorreo() {
 			})
 			.catch(error => {
 				console.error('Error al actualizar la configuración:', error);
-				Swal.fire({
+				swal({
 					title: 'Error de comunicación',
 					text: 'Hubo un error en la comunicación con el servidor',
 					icon: 'error',
@@ -553,7 +547,7 @@ function actualizarConfiguracionCorreo() {
 				});
 			});
 	} else {
-		Swal.fire({
+		swal({
 			title: 'Error',
 			text: 'El formato de la hora es incorrecto. Asegúrese de ingresar un valor en formato HH:mm.',
 			icon: 'error',

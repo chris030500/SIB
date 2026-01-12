@@ -36,7 +36,7 @@ function buscarEmpleado(empleado) {
 			url: newUrlEmpleado + "empleado/listado?nombre=" + empleado,
 			type: "GET",
 			dataType: "JSON",
-			success: function(respuesta) {
+			success: function (respuesta) {
 				/*//console.log(respuesta);
 				//console.log(respuesta.length);*/
 				for (var i = 0; i < respuesta.length; i++) {
@@ -56,46 +56,49 @@ function buscarEmpleado(empleado) {
 
 }
 
-document.getElementById('selectEmpleado').onchange = function() {
-	//console.log("Entro en jquery");
-	var selectEmpleado = document.getElementById('selectEmpleado').value;
-	var divEmpleado = document.getElementById("datosUsuario");
-	//console.log("SelectEmpleado: " + selectEmpleado);
-	if (selectEmpleado > 0) {
-		//console.log("Entro en mayor a 0");
-		divEmpleado.style.display = "block";
-	} else {
-		//console.log("No tiene valor");
-	}
-	/* Referencia al option seleccionado */
-	var mOption = this.options[this.selectedIndex];
-	/* Referencia a los atributos data de la opción seleccionada */
-	var mData = mOption.dataset;
+var selectEmpleado = document.getElementById('selectEmpleado');
+if (selectEmpleado) {
+	selectEmpleado.onchange = function () {
+		//console.log("Entro en jquery");
+		var selectEmpleado = document.getElementById('selectEmpleado').value;
+		var divEmpleado = document.getElementById("datosUsuario");
+		//console.log("SelectEmpleado: " + selectEmpleado);
+		if (selectEmpleado > 0) {
+			//console.log("Entro en mayor a 0");
+			divEmpleado.style.display = "block";
+		} else {
+			//console.log("No tiene valor");
+		}
+		/* Referencia al option seleccionado */
+		var mOption = this.options[this.selectedIndex];
+		/* Referencia a los atributos data de la opción seleccionada */
+		var mData = mOption.dataset;
 
-	/* Referencia a los input */
-	var EmpleadoId = document.getElementById('EmpleadoId');
-	var Nombre = document.getElementById('Nombre');
-	var Puesto = document.getElementById('Puesto');
+		/* Referencia a los input */
+		var EmpleadoId = document.getElementById('EmpleadoId');
+		var Nombre = document.getElementById('Nombre');
+		var Puesto = document.getElementById('Puesto');
 
 
-	//Asignamos el valor del ID Empleado
-	EmpleadoId.value = this.value;
-	//Asignamos el valor del nombre del empleado
-	Nombre.value = mOption.text;
-	//Asignamos el valor del puesto del empleado
-	Puesto.value = mData.descripcion;  /*Se usará el valor que se muestra*/
+		//Asignamos el valor del ID Empleado
+		EmpleadoId.value = this.value;
+		//Asignamos el valor del nombre del empleado
+		Nombre.value = mOption.text;
+		//Asignamos el valor del puesto del empleado
+		Puesto.value = mData.descripcion;  /*Se usará el valor que se muestra*/
 
-};
+	};
+}
 
-$(document).ready(function($) {
-	$("#edit-form").submit(function(event) {
+$(document).ready(function ($) {
+	$("#edit-form").submit(function (event) {
 		event.preventDefault();
 		postEdit();
 	});
 });
 
-$(document).ready(function($) {
-	$("#editPass-form").submit(function(event) {
+$(document).ready(function ($) {
+	$("#editPass-form").submit(function (event) {
 		event.preventDefault();
 		postEditPass();
 	});
@@ -105,7 +108,7 @@ function postEdit() {
 	//console.log("Entro en postEdit");
 	var something = $('#edit-form').serialize();
 	var editUrl = url + 'update';
-	$.post(editUrl, something, function(data) {
+	$.post(editUrl, something, function (data) {
 		updateTable(data);
 	});
 	clearAndCloseModal('#basicModal');
@@ -115,7 +118,7 @@ function postEditPass() {
 	//console.log("Entro en postEdit");
 	var something = $('#editPass-form').serialize();
 	var editUrl = url + 'update';
-	$.post(editUrl, something, function(data) {
+	$.post(editUrl, something, function (data) {
 		updateTable(data);
 	});
 	clearAndCloseModal('#basicModalContrasenia');
@@ -150,7 +153,7 @@ function modalCambioContra(index) {
 function loadCambioContra(url) {
 	//console.log("entro en loadCambioContra")
 	//console.log("url: " + url);
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		populateModalContra(data);
 	});
 }
@@ -158,7 +161,7 @@ function loadCambioContra(url) {
 function loadEntity(url) {
 	//console.log("entro en loadEntity")
 	//console.log("url: " + url);
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(url, {}, function (data) {
 		populateModal(data);
 	});
 }
@@ -213,7 +216,7 @@ function altaUsuario() {
 			$.ajax({
 				url: newAltaUsu + "usuario/nombre/" + nombreUsuario,
 				type: "GET",
-				success: function(respuesta) {
+				success: function (respuesta) {
 					/*//console.log("Entro en success de get");
 					//console.log("Respuesta: " +respuesta);*/
 					/*//console.log("Validar NombreUsuario: ");
@@ -226,7 +229,7 @@ function altaUsuario() {
 						$.ajax({
 							url: newAltaUsu + "usuario/idEmpleado/" + idEmpleado,
 							type: "GET",
-							success: function(respuesta) {
+							success: function (respuesta) {
 								if (respuesta == true) {
 									swal("Precaución", "Id Empleado ya registrado, intente con otro usuario.",
 										"info");
@@ -235,7 +238,7 @@ function altaUsuario() {
 									$.ajax({
 										url: newAltaUsu + "usuario/guardar_usuario?EmpleadoId=" + idEmpleado + "&nombreUsuario=" + nombreUsuario + "&roles=" + rol,
 										type: "POST",
-										success: function() {
+										success: function () {
 											//console.log("Entro en success de get");
 											/*//console.log("Entro en success de get");
 											//console.log("Respuesta: " +respuesta);*/
@@ -247,7 +250,7 @@ function altaUsuario() {
 												url: newAltaUsu + "usuario/nombreUsuario/" + nombreUsuario,
 												type: "GET",
 												dataType: "JSON",
-												success: function(respuesta) {
+												success: function (respuesta) {
 													////console.log("respuesta lenght" + respuesta.lenght);
 
 													if (nombreUsuario == '') {
@@ -275,7 +278,7 @@ function altaUsuario() {
 																type: "POST",
 																data: JSON.stringify(data),
 																dataType: "json",
-																success: function(respuesta) {
+																success: function (respuesta) {
 																	/*//console.log("Entro en success de get");
 																	//console.log("Respuesta: " +respuesta);*/
 																	//console.log("Se guardo la contraseña en historial contraseña: ");
@@ -289,7 +292,7 @@ function altaUsuario() {
 																	});
 
 																},
-																error: function(respuesta) {
+																error: function (respuesta) {
 																	//console.log("Entro en error");
 																	//console.log("Respuesta usuario: " + JSON.stringify(respuesta));
 																	if (respuesta.status == 500) {
@@ -321,7 +324,7 @@ function altaUsuario() {
 											});
 
 										},
-										error: function(respuesta) {
+										error: function (respuesta) {
 											//console.log("Entro en error");
 											swal({
 												icon: "warning",
@@ -335,7 +338,7 @@ function altaUsuario() {
 								}
 
 							},
-							error: function(respuesta) {
+							error: function (respuesta) {
 								//console.log("Entro en error");
 								swal({
 									icon: 'warning',
@@ -349,7 +352,7 @@ function altaUsuario() {
 					}
 
 				},
-				error: function(respuesta) {
+				error: function (respuesta) {
 					//console.log("Entro en error");
 					//console.log("Usu: " + JSON.stringify(respuesta));
 					swal({
@@ -372,7 +375,7 @@ function validarNombreUsuario(nombreUsuario) {
 	$.ajax({
 		url: newUrlBase + "usuario/nombre/" + nombreUsuario,
 		type: "GET",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			/*//console.log("Entro en success de get");
 			//console.log("Respuesta: " +respuesta);*/
 			//console.log("Validar NombreUsuario: ");
@@ -380,7 +383,7 @@ function validarNombreUsuario(nombreUsuario) {
 			return respuesta
 
 		},
-		error: function(respuesta) {
+		error: function (respuesta) {
 			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
@@ -401,7 +404,7 @@ function bajaUsuario(usuario) {
 	$.ajax({
 		url: newUrlBase + "baja_usuario?usuario=" + usuario,
 		type: "POST",
-		success: function() {
+		success: function () {
 			/*//console.log("Entro en success de get");
 			//console.log("Respuesta: " +respuesta);*/
 			//console.log("Validar NombreUsuario: ");
@@ -415,7 +418,7 @@ function bajaUsuario(usuario) {
 			});
 
 		},
-		error: function() {
+		error: function () {
 			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
@@ -438,7 +441,7 @@ function reactivarUsuario(usuario) {
 	$.ajax({
 		url: newUrlBase + "reactivar_usuario?usuario=" + usuario,
 		type: "POST",
-		success: function() {
+		success: function () {
 			/*//console.log("Entro en success de get");
 			//console.log("Respuesta: " +respuesta);*/
 			//console.log("Validar NombreUsuario: ");
@@ -453,7 +456,7 @@ function reactivarUsuario(usuario) {
 			});
 
 		},
-		error: function() {
+		error: function () {
 			//console.log("Entro en error");
 			swal({
 				icon: 'warning',
@@ -490,7 +493,7 @@ function editarUsuario() {
 			url: newUrlBase + "editar_usuario?usuario=" + nombreUsuario +
 				"&idUsuario=" + idUsuario + "&rol=" + rol,
 			type: "POST",
-			success: function() {
+			success: function () {
 				/*//console.log("Entro en success de get");
 				//console.log("Respuesta: " +respuesta);*/
 
@@ -505,7 +508,7 @@ function editarUsuario() {
 				});
 
 			},
-			error: function() {
+			error: function () {
 				////console.log("Entro en error");
 				swal({
 					icon: 'warning',
@@ -539,7 +542,7 @@ function cambiarContrasenia() {
 		$.ajax({
 			url: newUrlBase + "mensajeContrasena?contrasena=" + contrasenia,
 			type: "GET",
-			success: function(respuesta) {
+			success: function (respuesta) {
 				////console.log("Entro en success1: " + respuesta);
 				if (respuesta != "Si cumple con los parametros requeridos") {
 					swal({
@@ -553,7 +556,7 @@ function cambiarContrasenia() {
 						url: urlBase + "editar_usuario/contrasenia?usuario=" + nombreUsuario +
 							"&idUsuario=" + idUsuario + "&password=" + contrasenia,
 						type: "POST",
-						success: function() {
+						success: function () {
 							console.log("Entro en guardar contraseña");
 							console.log("Respuesta: " + respuesta);
 							swal({
@@ -565,7 +568,7 @@ function cambiarContrasenia() {
 							});
 
 						},
-						error: function(xhr, status, error) {
+						error: function (xhr, status, error) {
 							if (xhr.status === 400) {
 								var errorMessage = xhr.responseText;
 								// Mostrar el mensaje de error al usuario
@@ -593,7 +596,7 @@ function cambiarContrasenia() {
 
 
 			},
-			error: function(respuesta) {
+			error: function (respuesta) {
 				////console.log("Entro en error");
 				swal({
 					type: 'warning',
@@ -613,7 +616,7 @@ function reactivarEstatusUsuario(usuario) {
 	$.ajax({
 		url: urlBase + "reactivar_usuario_sesion/" + usuario,
 		type: "POST",
-		success: function() {
+		success: function () {
 			swal({
 				type: 'success',
 				title: 'Desbloqueo correctamente',
@@ -624,7 +627,7 @@ function reactivarEstatusUsuario(usuario) {
 			});
 
 		},
-		error: function() {
+		error: function () {
 			swal({
 				type: 'warning',
 				title: 'No se realizo correctamente el desbloqueo',
@@ -633,5 +636,5 @@ function reactivarEstatusUsuario(usuario) {
 			});
 		}
 	});
-	
+
 }

@@ -1,5 +1,5 @@
 // Variables | validacion de la liga absoluta
-window.onload = function() {
+window.onload = function () {
 	//tablaEmpresas();
 	//listaEmpresas();
 }
@@ -36,12 +36,12 @@ function listaEmpresas() {
 		url: urlPrincipal + "lista_empresas",
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			opcionEmpresa.innerHTML = ''; // Limpia las opciones previas
 
 			// Filtramos las opciones a medida que el usuario escribe
 			let filtroTexto = buscarEmpresa.value.toLowerCase();
-			respuesta.lista.filter(empresa => empresa.nombre.toLowerCase().includes(filtroTexto)).forEach(function(empresa) {
+			respuesta.lista.filter(empresa => empresa.nombre.toLowerCase().includes(filtroTexto)).forEach(function (empresa) {
 				let option = document.createElement('option');
 				option.value = empresa.nombre;
 				option.setAttribute('data-id', empresa.id);
@@ -51,7 +51,7 @@ function listaEmpresas() {
 			buscarEmpresa.disabled = false;
 			spinner.style.display = "none";
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener empresas:", error);
 			spinner.style.display = "none";
 		}
@@ -76,7 +76,7 @@ function listaEmpleados(idEmpresa) {
 		url: urlPrincipal + "lista_empleados?empresaEmpleado=" + idEmpresa,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 
 			let filtroTexto = buscarEmpleado.value.toLowerCase(); // Filtro según el input
 			opcionEmpleado.innerHTML = ""; // Limpiar datalist previo
@@ -91,10 +91,10 @@ function listaEmpleados(idEmpresa) {
 					opcionEmpleado.appendChild(option);
 				});
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener la lista de empleados:", error);
 		},
-		complete: function() {
+		complete: function () {
 			buscarEmpleado.disabled = false;
 			spinnerEmpleado.style.display = "none";
 		}
@@ -119,7 +119,7 @@ function listaProductos(idEmpresa, puesto) {
 		url: urlPrincipal + "lista_productos?empresa=" + idEmpresa + "&puesto=" + puesto,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 
 			let filtroTexto = buscarProducto.value.toLowerCase(); // Filtro según el input
 			opcionProducto.innerHTML = ""; // Limpiar datalist previo
@@ -131,33 +131,36 @@ function listaProductos(idEmpresa, puesto) {
 					opcionProducto.appendChild(option);
 				});
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener la lista de productos:", error);
 		},
-		complete: function() {
+		complete: function () {
 			buscarProducto.disabled = false;
 			spinnerProducto.style.display = "none";
 		}
 	});
 }
 
-document.getElementById("buscarProducto").addEventListener("input", function() {
-	var buscarProductoValor = this.value;
-	var productoSeleccionado = Array.from(document.querySelectorAll("#opcionProducto option"))
-		.find(option => option.value === buscarProductoValor);
+const buscarProductoInput = document.getElementById("buscarProducto");
+if (buscarProductoInput) {
+	buscarProductoInput.addEventListener("input", function () {
+		var buscarProductoValor = this.value;
+		var productoSeleccionado = Array.from(document.querySelectorAll("#opcionProducto option"))
+			.find(option => option.value === buscarProductoValor);
 
-	if (productoSeleccionado && idEmpresaSeleccionada) { // Asegurar que la empresa ya esté seleccionada
-		var producto = productoSeleccionado.value;
-		idProductoSeleccionado = productoSeleccionado.value;
-		listaPlazos(producto, idEmpresaSeleccionada);
-		if (document.getElementById('puesto').value) {
-			listaMontos(producto, idEmpresaSeleccionada, document.getElementById('puesto').value);
+		if (productoSeleccionado && idEmpresaSeleccionada) { // Asegurar que la empresa ya esté seleccionada
+			var producto = productoSeleccionado.value;
+			idProductoSeleccionado = productoSeleccionado.value;
+			listaPlazos(producto, idEmpresaSeleccionada);
+			if (document.getElementById('puesto').value) {
+				listaMontos(producto, idEmpresaSeleccionada, document.getElementById('puesto').value);
+			}
+
+		} else {
+			console.warn("No se ha seleccionado una empresa válida antes de elegir el producto.");
 		}
-
-	} else {
-		console.warn("No se ha seleccionado una empresa válida antes de elegir el producto.");
-	}
-});
+	});
+}
 
 
 function listaPlazos(producto, idEmpresa) {
@@ -199,7 +202,7 @@ function listaPlazos(producto, idEmpresa) {
 		url: urlPrincipal + "lista_plazos?producto=" + encodeURIComponent(producto) + "&empresa=" + idEmpresa,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			selectPlazo.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
 
 			respuesta.forEach(plazo => {
@@ -211,10 +214,10 @@ function listaPlazos(producto, idEmpresa) {
 
 			selectPlazo.disabled = false;
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener la lista de plazos:", error);
 		},
-		complete: function() {
+		complete: function () {
 			spinnerPlazo.style.display = "none";
 			attachMontoDescontarListeners(); // <-- NUEVO
 			recalcMontoDescontar();          // <-- NUEVO
@@ -223,8 +226,8 @@ function listaPlazos(producto, idEmpresa) {
 }
 
 
-$(document).ready(function() {
-	$('#solicitudModal').on('shown.bs.modal', function() {
+$(document).ready(function () {
+	$('#solicitudModal').on('shown.bs.modal', function () {
 		$('#frecuenciaCredito').val('0');
 		listaEmpresas();
 	});
@@ -232,7 +235,7 @@ $(document).ready(function() {
 
 
 // Detectar cuando el usuario selecciona una opción del datalist
-document.getElementById("buscarEmpresa").addEventListener("input", function() {
+document.getElementById("buscarEmpresa").addEventListener("input", function () {
 	var buscarEmpresaValor = this.value;
 	var empresaSeleccionada = Array.from(document.querySelectorAll("#opcionEmpresa option"))
 		.find(option => option.value === buscarEmpresaValor);
@@ -264,7 +267,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada,
 		type: "GET",
 		dataType: "JSON",
-		success: function(respuesta) {
+		success: function (respuesta) {
 			// Limpiar el select
 			selectPuesto.innerHTML = '';
 
@@ -294,7 +297,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 				selectPuesto.value = '0';
 			}
 		},
-		error: function(error) {
+		error: function (error) {
 			console.error("Error al obtener la lista de puestos:", error);
 			selectPuesto.innerHTML = '<option value="" disabled selected>Error al cargar</option>';
 		}
@@ -302,7 +305,7 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 }
 
 
-document.getElementById('buscarEmpleado').addEventListener('input', function() {
+document.getElementById('buscarEmpleado').addEventListener('input', function () {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
 	// Convertir a mayúsculas
 	buscarEmpleado.value = buscarEmpleado.value.toUpperCase();
@@ -358,7 +361,7 @@ function listaMontos(producto, idEmpresa, puesto) {
 				montoInput.max = montoMax;   // Establece el máximo permitido
 
 				// Validación cuando el usuario salga del input
-				montoInput.addEventListener('blur', function() {
+				montoInput.addEventListener('blur', function () {
 					let valor = parseFloat(montoInput.value);
 
 					if (valor < montoMin || valor > montoMax) {
@@ -388,7 +391,7 @@ function listaMontos(producto, idEmpresa, puesto) {
 }
 
 // Cuando cambia el puesto, recargamos condiciones y se recalcula
-document.getElementById('puesto').addEventListener('change', function() {
+document.getElementById('puesto').addEventListener('change', function () {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
 });
@@ -444,20 +447,20 @@ function attachMontoDescontarListeners() {
 
 /* Mantengo tu API original: actualizarPP usa generarPlanPagos */
 async function actualizarPP(montoSol) {
-  const monto = document.getElementById('montoSolicitado')?.value;
-  const plazo = document.getElementById('plazoCredito')?.value;
-  const frecuencia = document.getElementById('frecuenciaCredito')?.value;
+	const monto = document.getElementById('montoSolicitado')?.value;
+	const plazo = document.getElementById('plazoCredito')?.value;
+	const frecuencia = document.getElementById('frecuenciaCredito')?.value;
 
-  // Validar que los 4 datos existan, sean numéricos y distintos de 0
-  if (!monto || isNaN(parseFloat(monto)) || parseFloat(monto) === 0 ||
-      !tasaAnual || isNaN(parseFloat(tasaAnual)) || parseFloat(tasaAnual) === 0 ||
-      !plazo || isNaN(parseInt(plazo)) || parseInt(plazo) === 0 ||
-      !frecuencia || frecuencia === "0") {
-    return; // 🚫 No ejecuta nada
-  }
+	// Validar que los 4 datos existan, sean numéricos y distintos de 0
+	if (!monto || isNaN(parseFloat(monto)) || parseFloat(monto) === 0 ||
+		!tasaAnual || isNaN(parseFloat(tasaAnual)) || parseFloat(tasaAnual) === 0 ||
+		!plazo || isNaN(parseInt(plazo)) || parseInt(plazo) === 0 ||
+		!frecuencia || frecuencia === "0") {
+		return; // 🚫 No ejecuta nada
+	}
 
-  // ✅ Si todo está correcto, llama al SP
-  await generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
+	// ✅ Si todo está correcto, llama al SP
+	await generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
 }
 
 
@@ -524,9 +527,9 @@ async function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
 
 
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 	limpiarModal();
-	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
+	document.getElementById("btnGuardarSolicitud").addEventListener("click", function () {
 		guardarSolicitud();
 	});
 
@@ -536,14 +539,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // Evento para pasar a mayúsculas el textarea de comentarios
-document.getElementById('comentariosSolicitud').addEventListener('input', function() {
+document.getElementById('comentariosSolicitud').addEventListener('input', function () {
 	this.value = this.value.toUpperCase();
 });
 
 function limpiarModal() {
 	const modal = document.getElementById('solicitudModal');
 
-	modal.addEventListener('show.bs.modal', function() {
+	modal.addEventListener('show.bs.modal', function () {
 		// Limpia todos los inputs, selects y textareas dentro del modal
 		const inputs = modal.querySelectorAll('input, select, textarea');
 
@@ -734,7 +737,7 @@ function resetearModal() {
 let paginaActual = 0;
 const tamañoPagina = 10; // Registros por página
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 	cargarSolicitudes(paginaActual);
 });
 
@@ -773,7 +776,7 @@ function cargarSolicitudes(pagina) {
 			}
 			const registrosTotalesSol = [];
 			tablaSolicitudes.clear().draw();
-			$.each(solicitudes, function(idx, opt) {
+			$.each(solicitudes, function (idx, opt) {
 				// Botón editar
 				let btnEditar = `<button class='btn btn-warning btn-sm btn-editar' title='Editar Solicitud' data-id='${opt.id}' data-tooltip='Editar'>
         <i class='fas fa-edit'></i></button>`;
@@ -907,27 +910,27 @@ function aprobarOCancelarSolicitud(id, empresa) {
 }
 
 // Manejo de eventos de botones (Event Delegation)
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function (event) {
 	if (event.target.closest(".btn-pdf")) {
 		let id = event.target.closest(".btn-pdf").getAttribute("data-id");
 		generarReporte(id);
 	}
 });
 
-$(document).on("click", ".btn-editar", function() {
+$(document).on("click", ".btn-editar", function () {
 	var solicitudId = $(this).data("id"); // Obtener el ID de la solicitud
 
 	// Obtener la solicitud por ID
 	$.ajax({
 		url: urlPrincipal + `solicitud/${solicitudId}`,
 		type: "GET",
-		success: function(dataSolicitud) {
+		success: function (dataSolicitud) {
 
 			// Obtener la empresa asociada a la solicitud
 			$.ajax({
 				url: urlPrincipal + `empresa/${dataSolicitud.empresa}`,
 				type: "GET",
-				success: function(dataEmpresa) {
+				success: function (dataEmpresa) {
 					idEmpresaSeleccionada = dataEmpresa.id
 					$("#solicitudModal").modal("show");
 					// Ejecutar todas las funciones necesarias antes de abrir el modal
@@ -986,12 +989,12 @@ $(document).on("click", ".btn-editar", function() {
 					});
 
 				},
-				error: function() {
+				error: function () {
 					console.error("Error al obtener la empresa");
 				}
 			});
 		},
-		error: function() {
+		error: function () {
 			console.error("Error al obtener la solicitud");
 		}
 	});
@@ -1045,7 +1048,7 @@ function cargarEmpresasFiltro() {
 		});
 }
 
-document.getElementById("uploadExcelButton").addEventListener("click", function() {
+document.getElementById("uploadExcelButton").addEventListener("click", function () {
 	let fileInput = document.getElementById("excelFile");
 	let file = fileInput.files[0];
 
@@ -1124,15 +1127,16 @@ function generarReporte(id) {
 		type: "POST",
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
-		beforeSend: function() {
+		beforeSend: function () {
 			$.blockUI({ message: 'Espere un momento...' });
 		},
-		complete: function() {
+		complete: function () {
 			setTimeout($.unblockUI, 500);
 		},
-		success: function(respuesta) {
+		success: function (respuesta) {
 			if (respuesta.length > 0) {
-				let urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+				// El backend retorna la ruta relativa correcta, solo usarla directamente
+				let urlReporte = respuesta[0];
 				window.open(urlReporte, "_blank");
 			} else {
 				swal({
@@ -1142,7 +1146,7 @@ function generarReporte(id) {
 				});
 			}
 		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
+		error: function (XMLHttpRequest, textStatus, errorThrown) {
 			swal({
 				title: "Error",
 				text: "Se presentó un error, intente más tarde.",
@@ -1152,7 +1156,7 @@ function generarReporte(id) {
 	});
 }
 
-document.getElementById("buscarProducto").addEventListener("change", function() {
+document.getElementById("buscarProducto").addEventListener("change", function () {
 	const valor = this.value.trim().toUpperCase();
 	const checkboxRow = document.getElementById("checkboxNomiPrestamoRow");
 

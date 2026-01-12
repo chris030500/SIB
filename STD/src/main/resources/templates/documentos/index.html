@@ -3,39 +3,40 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
+<head>
+	<!-- Scripts específicos si son necesarios -->
 	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section" layout:fragment="page-content">
 
-			<div class="card mb-3">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div class="card-body">
-							<h2 style="text-align:center">Documentos</h2>
-						</div>
-					</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Documentos</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Documentos</li>
+					<li class="breadcrumb-item active">Alta Documento</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="card">
+			<div class="card-body">
+
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h5 class="card-title m-0">Gestión de Documentos</h5>
+					<!-- Usamos el ID btnAltaProductos para mantener compatibilidad con el JS existente si lo usa -->
+					<button id="btnAltaProductos" class="btn btn-primary" data-bs-toggle="modal"
+						data-bs-target="#modalDocumentos" type="button">
+						<i class="bi bi-file-earmark-plus me-1"></i> Alta Documento
+					</button>
 				</div>
-			</div>
 
-			<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-				<li class="nav-item" role="presentation">
-					<button id="btnAltaProductos" class="nav-link active" data-bs-toggle="pill"
-						data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
-						aria-selected="true">Alta Documento</button>
-				</li>
-			</ul>
-
-			<div class="tab-content" id="pills-tabContent">
-				<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-					<table class="table table-bordered table-striped">
+				<div class="table-responsive">
+					<table class="table table-hover" id="documentosTable">
 						<thead>
 							<tr>
 								<th>Nombre Documento</th>
@@ -45,128 +46,123 @@
 						</thead>
 						<tbody>
 							<tr th:each="documento: ${documento}">
-								<td th:text="${documento.vc_nombre_doc}"></td>
-								<td th:text="${documento.i_estatus}==1?'ACTIVO':'INACTIVO'"></td>
+								<td th:text="${documento.vc_nombre_doc}" class="fw-bold"></td>
+								<td>
+									<span
+										th:class="${documento.i_estatus == 1 ? 'badge bg-success' : 'badge bg-secondary'}"
+										th:text="${documento.i_estatus == 1 ? 'ACTIVO' : 'INACTIVO'}"></span>
+								</td>
 								<td class="text-center">
-									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnEliminar"
-										onclick="eliminarDocumento(this.value)" title="Eliminar documento"
-										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
-										<i class="fas fa-trash"></i>
-									</button>
+									<div class="d-flex justify-content-center gap-1">
+										<!-- Botón para editar -->
+										<button class="btn btn-sm btn-info text-white" id="btnEditar"
+											onclick="editarDocumento(this)" title="Editar documento"
+											th:value="${documento.pk_id_documento}">
+											<i class="bi bi-pencil-square"></i>
+										</button>
 
-									<!-- Botón para eliminar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnReactivar"
-										onclick="reactivarDocumento(this.value)" title="Reactivar documento"
-										data-toggle="" data-target="#" th:value="${documento.pk_id_documento}">
-										<i class="fas fa-check-circle"></i>
-									</button>
+										<!-- Botón para reactivar -->
+										<button class="btn btn-sm btn-success" id="btnReactivar"
+											onclick="reactivarDocumento(this.value)" title="Reactivar documento"
+											th:value="${documento.pk_id_documento}">
+											<i class="bi bi-check-circle"></i>
+										</button>
 
-									<!-- Botón para editar registro del perfil -->
-									<button class="btn btn-primary btn-sm" id="btnEditar"
-										onclick="editarDocumento(this)" title="Editar documento" data-toggle=""
-										data-target="#" th:value="${documento.pk_id_documento}">
-										<i class="fas fa-edit"></i>
-									</button>
-
+										<!-- Botón para eliminar -->
+										<button class="btn btn-sm btn-danger" id="btnEliminar"
+											onclick="eliminarDocumento(this.value)" title="Eliminar documento"
+											th:value="${documento.pk_id_documento}">
+											<i class="bi bi-trash"></i>
+										</button>
+									</div>
 								</td>
 							</tr>
 							<tr th:if="${#lists.isEmpty(documento)}">
-								<td colspan="6">
+								<td colspan="3" class="text-center py-4 text-muted">
+									<i class="bi bi-folder2-open fs-1 d-block mb-2"></i>
 									A&uacute;n no se registran documentos en el sistema
 								</td>
 							</tr>
-
 						</tbody>
 					</table>
 				</div>
 			</div>
+		</div>
 
-
-			<div class="modal" id="modalDocumentos">
-				<div class="modal-dialog">
-					<div class="modal-content">
-
-
-						<div class="modal-header">
-							<h2 class="modal-title" id="lblTitulo"></h2>
-						</div>
-						<div class="modal-body">
-							<form>
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda" class="col-form-label">Nombre Documento:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<input type="text" class="form-control col-sm-8" id="inputDocumento"
-										placeholder="Nombre Documento" maxlength="300">
-								</div>
-
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda2" class="col-form-label">Requiere proceso de firma:</label>
-								</div>
+		<!-- Modal Alta Documentos -->
+		<div class="modal fade" id="modalDocumentos" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblTitulo">Nuevo Documento</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="inputDocumento" class="form-label">Nombre Documento</label>
+								<input type="text" class="form-control" id="inputDocumento"
+									placeholder="Ej: INE, Comprobante..." maxlength="300">
+							</div>
+							<div class="mb-3">
+								<label for="firma" class="form-label">Requiere proceso de firma</label>
 								<select class="form-select" id="firma" name="firmaDoc">
 									<option value="1">Si</option>
 									<option value="0">No</option>
 								</select>
-							</form>
-						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnRegistrar">Registrar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCancelar">Cancelar</button>
-						</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCancelar">Cancelar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+							id="btnRegistrar">Registrar</button>
 					</div>
 				</div>
 			</div>
-			<div class="modal" id="editDocumentos">
-				<div class="modal-dialog">
-					<div class="modal-content">
+		</div>
 
-
-						<div class="modal-header">
-							<h2 class="modal-title" id="lblTitulo"></h2>
-						</div>
-						<div class="modal-body">
-							<form>
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda" class="col-form-label">Nombre Documento:</label>
-								</div>
-								<div class="col-sm-10" style="margin-top: 10px">
-									<input type="text" class="form-control col-sm-8" id="editDocumento"
-										placeholder="Nombre Documento" maxlength="300">
-								</div>
-								
-								<div class="col-sm-8" style="margin-top: 10px">
-									<label for="busqueda3" class="col-form-label">Requiere proceso de firma:</label>
-								</div>
+		<!-- Modal Editar Documentos -->
+		<div class="modal fade" id="editDocumentos" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="lblTituloEdit">Editar Documento</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="editDocumento" class="form-label">Nombre Documento</label>
+								<input type="text" class="form-control" id="editDocumento"
+									placeholder="Nombre Documento" maxlength="300">
+							</div>
+							<div class="mb-3">
+								<label for="firma2" class="form-label">Requiere proceso de firma</label>
 								<select class="form-select" id="firma2" name="firmaDoc2">
 									<option value="1">Si</option>
 									<option value="0">No</option>
 								</select>
-								
-							</form>
-						</div>
-						<!-- Modal footer -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnEnviar">Actualizar</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal"
-								id="btnCancelarEnvio">Cancelar</button>
-						</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCancelarEnvio">Cancelar</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+							id="btnEnviar">Actualizar</button>
 					</div>
 				</div>
 			</div>
+		</div>
 
 	</section>
 	<th:block layout:fragment="page-scripts">
+		<!-- Scripts específicos -->
 		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<!-- Eliminados scripts legacy peligrosos (jquery 1.11, bootstrap 3) -->
 		<script th:src="@{/js/altaDocumentos/registro_documentos.js}"></script>
-
-		<!--JavaScript-->
 	</th:block>
 </body>
 

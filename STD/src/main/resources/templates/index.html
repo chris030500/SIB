@@ -3,34 +3,102 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
-		<div class="container">
+	<section class="section dashboard" layout:fragment="page-content">
 
-			<div class="row">
-				<div class="col-md-12">
-					<div class="card">
-						<div class="card-body">
-							<h5 class="card-title">Bienvenido</h5>
-							<p>Sistema Integral de Bienestar.
-							</p>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Dashboard</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item active">Panel Principal</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<div class="row">
+			<!-- Welcome Card -->
+			<div class="col-12">
+				<div class="card info-card sales-card">
+					<div class="card-body">
+						<h5 class="card-title">Bienvenido al Sistema Integral de Bienestar</h5>
+						<div class="d-flex align-items-center">
+							<div
+								class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary text-white">
+								<i class="bi bi-house-door"></i>
+							</div>
+							<div class="ps-3">
+								<h6>Hola, <span sec:authentication="name">Usuario</span></h6>
+								<span class="text-muted small pt-2 ps-1">Seleccione una opción del menú lateral para
+									comenzar.</span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
+			<!-- Quick Actions / Summary Cards (Placeholders for future functionality) -->
+			<div class="col-xxl-4 col-md-6">
+				<div class="card info-card revenue-card">
+					<div class="card-body">
+						<h5 class="card-title">Solicitudes <span>| Hoy</span></h5>
+						<div class="d-flex align-items-center">
+							<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+								<i class="bi bi-file-earmark-text"></i>
+							</div>
+							<div class="ps-3">
+								<h6>Gestión</h6>
+								<span class="text-muted small pt-2 ps-1">Administre sus solicitudes</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xxl-4 col-md-6">
+				<div class="card info-card customers-card">
+					<div class="card-body">
+						<h5 class="card-title">Clientes <span>| Activos</span></h5>
+						<div class="d-flex align-items-center">
+							<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+								<i class="bi bi-people"></i>
+							</div>
+							<div class="ps-3">
+								<h6>Directorio</h6>
+								<span class="text-muted small pt-2 ps-1">Consulte información de clientes</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xxl-4 col-xl-12">
+				<div class="card info-card sales-card">
+					<div class="card-body">
+						<h5 class="card-title">Reportes <span>| General</span></h5>
+						<div class="d-flex align-items-center">
+							<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+								<i class="bi bi-bar-chart"></i>
+							</div>
+							<div class="ps-3">
+								<h6>Estadísticas</h6>
+								<span class="text-muted small pt-2 ps-1">Visualice el rendimiento</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script th:src="@{/js/prueba/prueba.js}"></script>
+		<!-- Scripts -->
+		<!-- Eliminado script de prueba innecesario -->
 	</th:block>
 </body>
 

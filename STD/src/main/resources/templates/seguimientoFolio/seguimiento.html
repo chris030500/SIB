@@ -3,203 +3,182 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
-	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+<head>
+	<!-- Scripts específicos si son necesarios -->
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
+	<section class="section" layout:fragment="page-content">
 
-		<div class="border p-2 card">
-			<div class="bg-info text-white">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div>
-							<h2 style="text-align:center">Seguimiento Plan de Accion</h2>
-						</div>
-					</div>
-				</div>
-			</div>
+		<!-- Page Title -->
+		<div class="pagetitle">
+			<h1>Seguimiento Plan de Acción</h1>
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a th:href="@{/inicio}">Inicio</a></li>
+					<li class="breadcrumb-item">Seguimiento</li>
+					<li class="breadcrumb-item active">Plan de Acción</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
 
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Filtros de Seguimiento</h5>
 
-			<div id="divBusqueda" >
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Seguimiento</legend>
-					<div class="row" style="margin-top : 15px ">
+				<div id="divBusqueda">
+					<div class="row g-3 mb-4">
 						<div class="col-md-4">
-							<label class="col-form-label"> Estatus Actividad</label>
-							<select class="form-control" id="idEstatusFiltro" onchange="consultaDatos(this)">
-								<option value="0">Seleccione</option>
+							<label class="form-label">Estatus Actividad</label>
+							<select class="form-select" id="idEstatusFiltro" onchange="consultaDatos(this)">
+								<option value="0">Seleccione...</option>
 								<option th:each="opcion : ${cat_lista_estatus}" th:value="${opcion.i_opcion}"
 									th:text="${opcion.v_valor}"></option>
 							</select>
 						</div>
 						<div class="col-md-4">
-							<label class="col-form-label">No. de Oficio</label>
-							<!--<input class="form-control" type="text" id="idPlanAccion" placeholder="Identificador del plan de acción">-->
-							<select class="form-control" id="idOficios" onchange="verActividades(this)" readonly>
-								<option value="0">Seleccione</option>
-								<!--<option th:each="listaFolios : ${lista_folios}" th:value="${listaFolios.pkFolio}"
-									th:text="${listaFolios.folio}"></option>-->
+							<label class="form-label">No. de Oficio</label>
+							<select class="form-select" id="idOficios" onchange="verActividades(this)">
+								<option value="0">Seleccione...</option>
 							</select>
-
 						</div>
-						<div class="col-md-4">
-							<label class="col-form-label">Ver documentos:</label>
-							<br>
-							<button class="btn btn-info" tabindex="0" data-bs-toggle="modal" title="Adjuntar Archivos"
-								data-bs-target="#modalAdjuntos" aria-controls="table-datatable" type="button" data-tooltip="Add" th:onclick="adjuntarFiles()">
-								<i class="bi bi-files"></i>
+						<div class="col-md-4 d-flex align-items-end">
+							<button class="btn btn-info text-white" type="button" data-bs-toggle="modal"
+								data-bs-target="#modalAdjuntos" onclick="adjuntarFiles()">
+								<i class="bi bi-paperclip me-1"></i> Ver Documentos
 							</button>
 						</div>
 					</div>
-					<div class="row" style="margin-top : 15px ">
-						<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblPlanAccion">
 
-							<thead>
+					<div class="table-responsive mb-4">
+						<table class="table table-hover" id="tblPlanAccion">
+							<thead class="table-light">
 								<tr>
 									<th>Nombre de la actividad</th>
-									<th>Encargado de la actividad</th>
-									<th style="text-align:center">Fecha Inicio</th>
+									<th>Encargado</th>
+									<th class="text-center">Fecha Inicio</th>
 									<th>Fecha Vencimiento</th>
 									<th>Estatus</th>
 									<th>Acciones</th>
 								</tr>
 							</thead>
-
-							<tbody>
-							</tbody>
-
+							<tbody></tbody>
 						</table>
-						</div>
 					</div>
-				</fieldset>
-			</div>
+				</div>
 
+				<hr class="my-4">
 
-			<div id="divRegistroSeguimiento" style="margin-top : 15px ">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Registro del seguimiento del plan de accion</legend>
-					<div class="row" style="margin-top : 15px ">
+				<h5 class="card-title">Registro de Seguimiento</h5>
+				<div id="divRegistroSeguimiento">
+					<div class="row g-3 mb-4">
 						<div class="col-md-6">
 							<input id="idActividad" name="idActividad" type="hidden" value="0">
-							<label class="col-form-label"> Nombre de la actividad</label>
-							<textarea type="text-Area" class="form-control" id="idNombreActividad"
-								placeholder="Nombre de la actividad" maxlength="600" readonly></textarea>	
+							<label class="form-label">Nombre de la actividad</label>
+							<textarea class="form-control bg-light" id="idNombreActividad" rows="2" readonly></textarea>
 						</div>
 						<div class="col-md-6">
-							<label class="col-form-label"> Seguimiento Realizado</label>
-							<textarea type="text-Area" class="form-control" id="idtxtSeguimiento"
-								placeholder="Descripcion Seguimiento Realizado" maxlength="1500"></textarea>
-							<div id="contSeguimiento">0/1500</div>
+							<label class="form-label">Seguimiento Realizado</label>
+							<textarea class="form-control" id="idtxtSeguimiento" rows="2" maxlength="1500"></textarea>
+							<div class="form-text text-end" id="contSeguimiento">0/1500</div>
 						</div>
-					</div>
-					<div class="row" style="margin-top : 15px ">
 						<div class="col-md-6">
-							<label class="col-form-label"> ¿Finaliza la Actividad?</label>
-							<select class="form-control" id="idFinActividad">
-								<option value="0">Seleccione</option>
+							<label class="form-label">¿Finaliza la Actividad?</label>
+							<select class="form-select" id="idFinActividad">
+								<option value="0">Seleccione...</option>
 								<option value="1">SI</option>
 								<option value="2">NO</option>
-								<!--<option th:each="opcion : ${cat_tipo_producto}" th:value="${opcion.i_opcion}"
-									th:text="${opcion.v_valor}"></option>-->
 							</select>
 						</div>
-						<div class="col-md-2">
-							<label class="col-form-label"></label>
-							<button type="button" class="btn btn-primary form-control" id="btnGuardar" th:disabled="${rolMonitoreo == true}">Guardar</button>
+						<div class="col-md-2 d-flex align-items-end">
+							<button type="button" class="btn btn-primary w-100" id="btnGuardar"
+								th:disabled="${rolMonitoreo == true}">
+								<i class="bi bi-save me-1"></i> Guardar
+							</button>
 						</div>
-						<div class="col-md-4"></div>
 					</div>
-					<div class="row" style="margin-top : 15px ">
+
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped" style="width: 100%;" id="tblSeguimiento">
-							<thead>
+						<table class="table table-hover" id="tblSeguimiento">
+							<thead class="table-light">
 								<tr>
-									<th>Nombre de la Actividad</th>
-									<th>Seguimiento Realizado</th>
-									<th>Fecha de Registro</th>
-									<th>Finaliza la actividad</th>
+									<th>Actividad</th>
+									<th>Seguimiento</th>
+									<th>Fecha Registro</th>
+									<th>Finaliza</th>
 									<th>Acciones</th>
 								</tr>
 							</thead>
-							<tbody>
-							</tbody>
+							<tbody></tbody>
 						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Modal Adjuntos -->
+		<div class="modal fade" id="modalAdjuntos" data-bs-backdrop="static" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Adjuntar Archivos del Oficio</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
+
+						<div class="row g-3 mb-4">
+							<div class="col-md-4">
+								<label class="form-label">Tipo de Archivo</label>
+								<select class="form-select" id="idTipoArchivo" onchange="asignarArchivo(this)">
+									<option value="0">Seleccione...</option>
+									<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
+										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+										th:id="${opcionTipo.v_pantalla}">
+									</option>
+								</select>
+							</div>
+							<div class="col-md-8">
+								<form id="adjuntoArchivoOficio">
+									<label class="form-label">Seleccionar Archivo</label>
+									<input class="form-control" type="file" id="file" name="file" accept=".pdf"
+										onchange="tamFile()" disabled>
+								</form>
+							</div>
+						</div>
+
+						<div class="table-responsive">
+							<table class="table table-hover" id="tblAdjuntos">
+								<thead class="table-light">
+									<tr>
+										<th style="display:none;"></th>
+										<th>Nombre</th>
+										<th>Usuario Adjunto</th>
+										<th>Ver Documento</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
 						</div>
 					</div>
-				</fieldset>
-			</div>
-			<div class="modal" id="modalAdjuntos" data-backdrop="static">
-				<div class="modal-dialog modal-lg modal-dialog-centered">
-					<div class="modal-content">
-						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Adjuntar Archivos del Oficio</legend>
-							<div class="modal-body">
-								<input id="idFolioArchivo" name="idFolioArchivo" type="hidden" value="0">
-								<div class="row">
-									<div class="col-md-4">
-											<label class="col-form-label"> Tipo de Archivo:</label>
-											<select class="form-control" id="idTipoArchivo" onchange="asignarArchivo(this)">
-												<option value="0">Seleccione</option>
-												<option th:each="opcionTipo : ${cat_lista_tipoArchivo}"
-													th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
-													th:id="${opcionTipo.v_pantalla}">
-												</option>
-											</select>
-									</div>
-									<div class="col-md-8">
-										<form id="adjuntoArchivoOficio">
-											<label class="col-form-label" for="archivo"> Seleccionar Archivo: </label>
-											<input class="form-control" type="file" id="file" name="file" accept=".pdf" onchange="tamFile()" onclick="tamFile()" required th:disabled="true">
-										</form>
-									</div>
-									
-								</div>
-								<div class="row" style="margin-top : 15px ">
-									<div class="table-responsive">
-										<table class="table table-bordered table-striped" style="width: 100%;"	id="tblAdjuntos">
-											<thead>
-												<tr>
-													<th style="visibility:collapse; display:none;"></th>
-													<th>Nombre</th>
-													<th>Nombre Usuario Adjunto</th>
-													<th>Ver Documento</th>
-												</tr>
-											</thead>
-											<tbody>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnGuardarFile" th:disabled="${rolMonitoreo == true}">Guardar</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
-									id="btnCerrar">Cerrar</button>
-							</div>
-						</fieldset>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="btnGuardarFile"
+							th:disabled="${rolMonitoreo == true}">Guardar</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+							id="btnCerrar">Cerrar</button>
 					</div>
 				</div>
 			</div>
 		</div>
+
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script th:src="@{/js/bootstrap-table.min.js}"></script>
-        <script th:src="@{/js/jquery.min.js}"></script> 
-        <script th:src="@{/js/jquery-3.2.1.js}"></script>
-		<script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/sweetalert2.all.min.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<!-- Scripts -->
+		<script th:src="@{/js/sweetalert2.all.min.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 		<script th:src="@{/js/seguimiento/seguimientoPA.js}"></script>
+		<!-- Eliminados scripts legacy -->
 	</th:block>
 </body>
 
