@@ -363,18 +363,28 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     }
 	
 	@GetMapping("/api/consultaCodigoCam")
-	/*@ResponseBody
-    public String consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
-		
-        return procesosCampaniasService.consultaCodigoCam(procesoCampania);
-    }*/
 	@ResponseBody
-	public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+	/*public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
 		
 		logger.info("ConsultaCodigoCam: " + procesoCampania);
 	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
 	    logger.info("codigo: " + codigo);
 	    return Map.of("codigo", codigo);
+	    
+	    
+	}*/
+	public ResponseEntity<Map<String, String>> consultaCodigoCam(
+	        @RequestParam("procesoCampania") int procesoCampania) {
+
+	    logger.info("ConsultaCodigoCam: " + procesoCampania);
+
+	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
+	    logger.info("codigo: " + codigo);
+
+	    Map<String, String> response = new HashMap<>();
+	    response.put("codigo", codigo);
+
+	    return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/api/consultaFechas")
