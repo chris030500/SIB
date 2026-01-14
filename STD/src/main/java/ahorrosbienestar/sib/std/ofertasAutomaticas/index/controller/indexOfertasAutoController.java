@@ -746,6 +746,17 @@ public class indexOfertasAutoController {
 				}
 				
 				break;
+			case 7:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFide();
+					mensaje =Constantes.MENSAJE_BASE_FIDE;
+				} catch (Exception e) {
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+				}
+				
+				break;
 			}
 			respuesta.put(Constantes.TEXTO_MNS,mensaje);
 			respuesta.put(Constantes.TIPO_MNS,tipo);

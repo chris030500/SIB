@@ -273,5 +273,17 @@ public class CampaniasVIPTareaConfiguracion {
 			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
 	}
+	
+	public synchronized void procesarCampaniasFide() {
+		try {
+			logger.info(EJECUTA_SP_MENSAJE);
+			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_FIDE+")");
+			indexOfertasAutomaticasService.generarArchivoOA();
+			logger.info("REGISTROS DE CAMPANIAS FIDELIDAD");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_FIDE, "");
+		} catch (Exception e) {
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
+		}
+	}
 
 }

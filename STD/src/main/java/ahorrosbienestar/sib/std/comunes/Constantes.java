@@ -100,6 +100,7 @@ public class Constantes {
     public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
+    public static final String MENSAJE_BASE_FIDE = "Se proceso Base Campañas Fidelidad.";
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
@@ -146,6 +147,7 @@ public class Constantes {
 	public static final int CORREO_ASIGNACION = 9;
 	public static final int CORREO_REASIGNACION = 10;
 	public static final int CORREO_BASE_PROSPECTOR = 11;
+	public static final int CORREO_BASE_FIDE = 12;
 	
 	//Bases de procesamiento
 	public static final int BASE_NOMINA = 1;
@@ -153,6 +155,7 @@ public class Constantes {
 	public static final int BASE_PROSPECTOR = 4;
 	public static final int BASE_FID_NOM = 5;
 	public static final int BASE_FID_REN = 6;
+	public static final int BASE_FIDE = 7;
 	
 	// nombre de propiedades de configuracion
 	public static final String CRON_INICIAL = "cronInicialBase";
