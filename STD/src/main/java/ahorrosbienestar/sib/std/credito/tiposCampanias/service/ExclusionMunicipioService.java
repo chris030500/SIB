@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesActivosModel;
 import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.repository.ClientesActivosRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.controller.exclusionesCampaniasController;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclusionMunicipioModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.ExclusionMunicipioRepository;
 
@@ -17,6 +19,8 @@ import java.util.List;
 
 @Service
 public class ExclusionMunicipioService {
+	
+	private static final Logger logger = Logger.getLogger(ExclusionMunicipioService.class);
 
 	@Autowired
 	private ExclusionMunicipioRepository exclusionMunicipioRepository;
@@ -30,6 +34,9 @@ public class ExclusionMunicipioService {
 		try (InputStream input = archivo.getInputStream(); Workbook workbook = new XSSFWorkbook(input)) {
 
 			Sheet hoja = workbook.getSheetAt(0);
+			
+			logger.info("Hojas: " + workbook.getNumberOfSheets());
+	        logger.info("Última fila: " + hoja.getLastRowNum());
 
 			for (int i = 1; i <= hoja.getLastRowNum(); i++) {
 				Row fila = hoja.getRow(i);
