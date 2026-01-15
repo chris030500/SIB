@@ -114,6 +114,10 @@ public class exclusionesCampaniasController {
     @PostMapping("/cargarMunicipios")
     public ResponseEntity<String> cargarExcel(@RequestParam("archivo") MultipartFile archivo) {
     	logger.info("Entra a cargarMunicipios ");
+    	logger.info("Archivo recibido: " + archivo.getOriginalFilename());
+    	logger.info("Tamaño archivo (bytes): " + archivo.getSize());
+    	logger.info("ContentType: " + archivo.getContentType());
+    	
         try {
         	logger.info("Entra a cargarMunicipios2 ");
             exclusionMunicipioService.procesarExcel(archivo);
