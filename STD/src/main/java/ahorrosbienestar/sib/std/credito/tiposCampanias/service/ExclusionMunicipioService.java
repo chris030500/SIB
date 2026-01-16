@@ -16,6 +16,7 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.ExclusionMunic
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.ByteArrayInputStream;
 
 @Service
 public class ExclusionMunicipioService {
@@ -29,10 +30,18 @@ public class ExclusionMunicipioService {
 	private ClientesActivosRepository clientesActivosRepository;
 
 	public void procesarExcel(MultipartFile archivo) throws Exception {
+		
+		logger.info("Entra a procesarExcel");
+		
 		List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
 
-		try (InputStream input = archivo.getInputStream(); Workbook workbook = new XSSFWorkbook(input)) {
+		//try (InputStream input = archivo.getInputStream(); Workbook workbook = new XSSFWorkbook(input)) {
+		byte[] bytes = archivo.getBytes();
+		try (InputStream input = new ByteArrayInputStream(bytes);
+		     Workbook workbook = new XSSFWorkbook(input)) {
 
+			logger.info("Workbook creado correctamente");
+			
 			Sheet hoja = workbook.getSheetAt(0);
 			
 			logger.info("Hojas: " + workbook.getNumberOfSheets());
