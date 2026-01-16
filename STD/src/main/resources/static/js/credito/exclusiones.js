@@ -301,6 +301,7 @@ function cargarArchivoExcel() {
 			// @ts-ignore
 			Swal.close(); // Cierra el loading
 			console.error("Error:", error);
+			console.error("Error real backend:", error.message);
 			alert("Ocurrió un error al cargar el archivo.");
 		});
 	};
