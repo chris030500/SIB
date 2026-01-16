@@ -31,12 +31,16 @@ public class ExclusionMunicipioService {
 
 	public void procesarExcel(MultipartFile archivo) throws Exception {
 		
+		logger.info("Java version: " + System.getProperty("java.version"));
+	    logger.info("POI version: " + org.apache.poi.Version.getVersion());
+		
 		logger.info("Entra a procesarExcel");
 		
 		List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
-
+		logger.info("Entra a procesarExcel2");
 		//try (InputStream input = archivo.getInputStream(); Workbook workbook = new XSSFWorkbook(input)) {
 		byte[] bytes = archivo.getBytes();
+		logger.info("Entra a procesarExcel3");
 		try (InputStream input = new ByteArrayInputStream(bytes);
 		     Workbook workbook = new XSSFWorkbook(input)) {
 
