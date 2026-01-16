@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.ByteArrayInputStream;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 @Service
 public class ExclusionMunicipioService {
@@ -29,7 +30,7 @@ public class ExclusionMunicipioService {
 	@Autowired
 	private ClientesActivosRepository clientesActivosRepository;
 
-	public void procesarExcel(MultipartFile archivo) throws Exception {
+	/*public void procesarExcel(MultipartFile archivo) throws Exception {
 		
 		logger.info("Java version: " + System.getProperty("java.version"));
 	    logger.info("POI version: " + org.apache.poi.Version.getVersion());
@@ -42,6 +43,7 @@ public class ExclusionMunicipioService {
 		byte[] bytes = archivo.getBytes();
 		logger.info("Entra a procesarExcel3");
 		try (InputStream input = new ByteArrayInputStream(bytes);
+			
 		     Workbook workbook = new XSSFWorkbook(input)) {
 
 			logger.info("Workbook creado correctamente");
@@ -72,7 +74,77 @@ public class ExclusionMunicipioService {
 
 			exclusionMunicipioRepository.saveAll(listaExclusiones);
 		}
-	}
+	}*/
+	
+	 public void procesarExcel(MultipartFile archivo) throws Exception {
+
+	        logger.info("==== Inicio procesarExcel ====");
+	        logger.info("Java version: " + System.getProperty("java.version"));
+	        
+	        logger.info("Archivo: "+ archivo.getOriginalFilename());
+	        logger.info("Tamaño (bytes): "+ archivo.getSize());
+
+	        // Validación básica
+	        if (archivo.isEmpty()) {
+	            throw new IllegalArgumentException("El archivo viene vacío");
+	        }
+
+	        if (archivo.getSize() > 5_000_000) { // 5 MB
+	            throw new IllegalArgumentException("El archivo excede el tamaño permitido");
+	        }
+
+	        List<ExclusionMunicipioModel> listaExclusiones = new ArrayList<>();
+
+	        byte[] bytes = archivo.getBytes();
+
+	        try (InputStream input = new ByteArrayInputStream(bytes)) {
+
+	            
+	            ZipSecureFile.setMinInflateRatio(0.001);
+
+	            logger.info("Antes de crear XSSFWorkbook");
+
+	            Workbook workbook = new XSSFWorkbook(input);
+
+	            logger.info("Workbook creado correctamente");
+	            logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
+
+	            Sheet hoja = workbook.getSheetAt(0);
+	            logger.info("Última fila: "+ hoja.getLastRowNum());
+
+	            for (int i = 1; i <= hoja.getLastRowNum(); i++) {
+
+	                Row fila = hoja.getRow(i);
+	                if (fila == null) {
+	                   
+	                    logger.info("Fila es null, se omite: "+ i);
+	                    continue;
+	                }
+
+	                ExclusionMunicipioModel excl = new ExclusionMunicipioModel();
+
+	                excl.setCodigo((int) getNumericValue(fila, 0));
+	                excl.setAsentamiento(getStringValue(fila, 1));
+	                excl.setTipoAsentamiento(getStringValue(fila, 2));
+	                excl.setMunicipio(getStringValue(fila, 3));
+	                excl.setEstado(getStringValue(fila, 4));
+	                excl.setCiudad(getStringValue(fila, 5));
+	                excl.setCodigoPostal((int) getNumericValue(fila, 6));
+	                excl.setCodigoEstado((int) getNumericValue(fila, 7));
+	                excl.setCobertura(getStringValue(fila, 8));
+
+	                listaExclusiones.add(excl);
+	            }
+
+	            logger.info("Total registros a guardar: "+ listaExclusiones.size());
+
+	            exclusionMunicipioRepository.saveAll(listaExclusiones);
+
+	            logger.info("Registros guardados correctamente");
+	        }
+
+	        logger.info("==== Fin procesarExcel ====");
+	    }
 
 	private double getNumericValue(Row row, int cellIndex) {
 		Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
