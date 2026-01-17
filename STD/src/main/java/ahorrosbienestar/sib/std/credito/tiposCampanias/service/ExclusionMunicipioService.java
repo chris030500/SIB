@@ -101,46 +101,56 @@ public class ExclusionMunicipioService {
 
 	            
 	            ZipSecureFile.setMinInflateRatio(0.001);
+	            ZipSecureFile.setMaxTextSize(10_000_000);
 
 	            logger.info("Antes de crear XSSFWorkbook");
 
-	            Workbook workbook = new XSSFWorkbook(input);
+	            //Workbook workbook = new XSSFWorkbook(input);
+	            try {
+	                logger.info("Antes de crear XSSFWorkbook");
+	                try (Workbook workbook = new XSSFWorkbook(input)) {
+						logger.info("Workbook creado correctamente");
+						logger.info("Workbook creado correctamente");
+						logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
 
-	            logger.info("Workbook creado correctamente");
-	            logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
+						Sheet hoja = workbook.getSheetAt(0);
+						logger.info("Última fila: "+ hoja.getLastRowNum());
 
-	            Sheet hoja = workbook.getSheetAt(0);
-	            logger.info("Última fila: "+ hoja.getLastRowNum());
+						for (int i = 1; i <= hoja.getLastRowNum(); i++) {
 
-	            for (int i = 1; i <= hoja.getLastRowNum(); i++) {
+						    Row fila = hoja.getRow(i);
+						    if (fila == null) {
+						       
+						        logger.info("Fila es null, se omite: "+ i);
+						        continue;
+						    }
 
-	                Row fila = hoja.getRow(i);
-	                if (fila == null) {
-	                   
-	                    logger.info("Fila es null, se omite: "+ i);
-	                    continue;
-	                }
+						    ExclusionMunicipioModel excl = new ExclusionMunicipioModel();
 
-	                ExclusionMunicipioModel excl = new ExclusionMunicipioModel();
+						    excl.setCodigo((int) getNumericValue(fila, 0));
+						    excl.setAsentamiento(getStringValue(fila, 1));
+						    excl.setTipoAsentamiento(getStringValue(fila, 2));
+						    excl.setMunicipio(getStringValue(fila, 3));
+						    excl.setEstado(getStringValue(fila, 4));
+						    excl.setCiudad(getStringValue(fila, 5));
+						    excl.setCodigoPostal((int) getNumericValue(fila, 6));
+						    excl.setCodigoEstado((int) getNumericValue(fila, 7));
+						    excl.setCobertura(getStringValue(fila, 8));
 
-	                excl.setCodigo((int) getNumericValue(fila, 0));
-	                excl.setAsentamiento(getStringValue(fila, 1));
-	                excl.setTipoAsentamiento(getStringValue(fila, 2));
-	                excl.setMunicipio(getStringValue(fila, 3));
-	                excl.setEstado(getStringValue(fila, 4));
-	                excl.setCiudad(getStringValue(fila, 5));
-	                excl.setCodigoPostal((int) getNumericValue(fila, 6));
-	                excl.setCodigoEstado((int) getNumericValue(fila, 7));
-	                excl.setCobertura(getStringValue(fila, 8));
+						    listaExclusiones.add(excl);
+						}
+					}
+	                logger.info("Total registros a guardar: "+ listaExclusiones.size());
 
-	                listaExclusiones.add(excl);
+		            exclusionMunicipioRepository.saveAll(listaExclusiones);
+
+		            logger.info("Registros guardados correctamente");
+	            } catch (Exception e) {
+	                logger.error("Error al crear XSSFWorkbook", e);
+	                throw e;
 	            }
 
-	            logger.info("Total registros a guardar: "+ listaExclusiones.size());
-
-	            exclusionMunicipioRepository.saveAll(listaExclusiones);
-
-	            logger.info("Registros guardados correctamente");
+	            
 	        }
 
 	        logger.info("==== Fin procesarExcel ====");
