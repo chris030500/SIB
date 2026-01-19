@@ -4,10 +4,15 @@
 // @ts-nocheck
 
 var url = "";
+const opcionCampania = document.getElementById("opcionCampania");
+
 $(document).ready(function() {
 	subirArchivo();
 });
 
+opcionCampania.addEventListener("input", function () {
+  this.value = this.value.toUpperCase();
+});
 
 function getAbsolutePath() {
 	var loc = window.location;

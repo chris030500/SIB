@@ -33,7 +33,7 @@
 						<div class="col-md-6">
 							<label class="col-form-label">Campañas Temporales</label>
 							<input type="search" class="form-control" id="buscarCampaniaTemporales" list="opcionCampania"
-							autocomplete="off" placeholder="Buscar campaña" oninput="buscarCampaniasTemporales()"/>
+							autocomplete="off" placeholder="Buscar campaña" oninput="this.value = this.value.toUpperCase();buscarCampaniasTemporales()"/>
 						<datalist id="opcionCampania"></datalist>
 					</div>
 
