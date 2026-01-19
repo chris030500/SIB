@@ -71,7 +71,7 @@ function guardarConfSesion() {
 	} else {
 		console.log(urlBase);
 		$.ajax({
-			url: urlBase+"guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
+			url: urlBase + "guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
 			type: "POST",
 			success: function() {
 				swal({
@@ -214,7 +214,7 @@ function generarContrasenaold() {
 				});
 			}
 		});
-		
+
 	} else {
 		console.log("La contraseña es vacía");
 		swal({
@@ -249,7 +249,7 @@ function generarContrasena() {
 				});
 			} else if (respuesta == "Si cumple con los parametros requeridos") {
 				$.ajax({
-					url: urlBase+"guardarContrasena?contrasena=" + contrasenia,
+					url: urlBase + "guardarContrasena?contrasena=" + contrasenia,
 					type: "POST",
 					data: contrasenia,
 					success: function() {
@@ -262,6 +262,29 @@ function generarContrasena() {
 							window.location.reload();
 						});
 
+					},
+					error: function(xhr, status, error) {
+						if (xhr.status === 400) {
+							var errorMessage = xhr.responseText;
+							// Mostrar el mensaje de error al usuario
+							console.log(errorMessage);
+							swal({
+								type: 'warning',
+								title: errorMessage,
+								showConfirmButton: false
+							}).then((result) => {
+								window.location.reload();
+							});
+						} else {
+							// Manejar otros errores de la solicitud AJAX
+							swal({
+								type: 'warning',
+								title: "Error al cambiar la contraseña",
+								showConfirmButton: false
+							}).then((result) => {
+								window.location.reload();
+							});
+						}
 					}
 				});
 			}
