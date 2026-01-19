@@ -92,7 +92,11 @@ public class Constantes {
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
-    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_procesos_campanias";
+    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS = "rpt_exclusiones_internas";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_ESTATUS = "rpt_exclusiones_internas_estatus";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_SIN_FECHA = "rpt_exclusiones_internas_sin_fecha";
+    public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     
     //NOMBRE DE PANTALLAS
@@ -220,13 +224,14 @@ public class Constantes {
 	public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
 	//Pantalla parametros buro de credito
 	public static final int CAT_TIPO_RIESGO = 34;
-	public static final int CAMPANIA_TIPO_TEMPORAL = 2;
+	public static final int CAMPANIA_TIPO_TEMPORAL = 1;
 	
 	//contantes parametros buro de credito
 	public static final String PARAM_BURO_ADVISER = "ADVISER";
 	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
 	
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
+	public static final int CAT_REPORTES_CAMPANIAS = 39;
 	
     private Constantes() {
         

@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,11 +33,14 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.ValBuroCreditoCampaniaModel;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ValBuroCreditoCampaniaService;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.EstatusCampaniasDTO;
+import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.service.EstatusCampaniasService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.service.ProcesosCampaniasService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampaniasService;
@@ -178,11 +182,38 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
     }
-	
+	/*@GetMapping("/api/catTipoCam")
+	@ResponseBody
+    public ResponseEntity<List<TiposCampaniasDTO>> getTiposCampanias() {
+     try {
+    	 List<TiposCampaniasDTO> credenciales = tiposCampaniasService.listaCampaniasRecurrentes();
+    	 
+		 if (credenciales == null) {
+		        return ResponseEntity.noContent().build(); // Devuelve 204
+		    }else {
+			    return ResponseEntity.ok(credenciales); // Devuelve JSON 200
+		    }
+    			 
+     }catch(Exception e) {
+    	 
+    	 logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+			return null;
+     }
+		
+        //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
+    }*/
+
 	//llenar el combo de estatus campañas
 	@GetMapping("/api/catEstatusCam")
 	@ResponseBody
-    public ResponseEntity<List<EstatusCampaniasModel>> getEstatusCampanias() {
+	public List<Map<String, Object>> listar(@RequestParam Integer tipoCampania) {
+        // Ahora el controller solo llama al service
+        return estatusCampaniasService.listaEstatus(tipoCampania);
+    }
+	/*public List<EstatusCampaniasDTO> obtEstatus(@RequestParam Integer tipoCampania) {
+	    return estatusCampaniasService.buscarEstatus(tipoCampania);
+	}*/
+    /*public ResponseEntity<List<EstatusCampaniasModel>> getEstatusCampanias() {
      try {
     	 List<EstatusCampaniasModel> credenciales = estatusCampaniasService.getEstatusCampaniasModel();
     	 
@@ -199,7 +230,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
      }
 		
         //return ResponseEntity.ok(tiposCampaniasService.obtenerCampaniasActivos());
-    }
+    }*/
 	
 	//alta de proceso para extracción
 	/*@PostMapping("/api/crearExtraccion")
@@ -302,9 +333,13 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@GetMapping("/api/countExtraccion")
     @ResponseBody
-    public int contarProcesosExtraccion() {
+    /*public int contarProcesosExtraccion() {
         return procesosCampaniasRepository.contarProcesosExtraccion();
-    }
+    }*/
+	public int contarProcesosExtraccion(@RequestParam("tipoCampania") int tipoCampania) {
+
+		return procesosCampaniasRepository.contarProcesosExtraccion(tipoCampania);
+	}
 	
 	@GetMapping("/api/countDepuracionBc")
     @ResponseBody
@@ -328,16 +363,48 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     }
 	
 	@GetMapping("/api/consultaCodigoCam")
-	/*@ResponseBody
-    public String consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
-		
-        return procesosCampaniasService.consultaCodigoCam(procesoCampania);
-    }*/
 	@ResponseBody
-	public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+	/*public Map<String, String> consultaCodigoCam(@RequestParam("procesoCampania") int procesoCampania) {
+		
+		logger.info("ConsultaCodigoCam: " + procesoCampania);
 	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
+	    logger.info("codigo: " + codigo);
 	    return Map.of("codigo", codigo);
+	    
+	    
+	}*/
+	public ResponseEntity<Map<String, String>> consultaCodigoCam(
+	        @RequestParam("procesoCampania") int procesoCampania) {
+
+	    logger.info("ConsultaCodigoCam: " + procesoCampania);
+
+	    String codigo = procesosCampaniasService.consultaCodigoCam(procesoCampania);
+	    logger.info("codigo: " + codigo);
+
+	    Map<String, String> response = new HashMap<>();
+	    response.put("codigo", codigo);
+
+	    return ResponseEntity.ok(response);
 	}
+	
+	@GetMapping("/api/consultaFechas")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> consultaFechas(
+		    @RequestParam("tipoCampania") Integer tipoCampania) {
+
+		    Map<String, Object> respuesta = new HashMap<>();
+
+		    try {
+		        List<ProcesosCampaniasDTO> lista = procesosCampaniasService.buscarFechaCampania(tipoCampania);
+		        respuesta.put("lista", lista);
+		        return ResponseEntity.ok(respuesta);
+		    } catch (Exception e) {
+		        respuesta.put("error", e.getMessage());
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		    }
+		}
+	
+	
 	
 	@GetMapping("/api/procesoCamEstatus")
 	@ResponseBody
@@ -488,6 +555,21 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al ejecutar el procedimiento archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED: " + e.getMessage());
+        }
+    }
+    
+  //SP_CAM_CANCELAR_PROCESO
+    @GetMapping("/api/ejecutarCancelar")
+    public ResponseEntity<String> ejecutarCancelar(
+            @RequestParam("tipoCampania") int tipoCampania,
+            @RequestParam("estatusCampania") int estatusCampania,
+            @RequestParam("userReg") int userReg) {
+        try {
+        	procesosCampaniasService.ejecutarCancelar(tipoCampania,estatusCampania,userReg);
+            return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC SP_CAM_CANCELAR_PROCESO");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: " + e.getMessage());
         }
     }
 	

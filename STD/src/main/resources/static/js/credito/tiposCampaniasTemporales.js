@@ -294,7 +294,7 @@ function llenarFormulario(param) {
 		}
 	});
 	document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
-	document.getElementById("checkRecurrente").checked = param.i_tipo_campania === 1;
+	document.getElementById("checkRecurrente").checked = param.i_tipo_campania === 2;
 
 }
 

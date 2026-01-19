@@ -63,13 +63,13 @@ function buscarProcesosCampanias() {
 
 			swal({
 				title: "",
-				text: "Debe seleccionar al menos un producto.",
+				text: "Debe seleccionar al menos una campaña.",
 				icon: "warning",
 			});
 			
 		}else{
-			console.log("entra a todo ok");
-			let fechaInicio = document.getElementById("FechaInicio").value;
+			//console.log("entra a todo ok");
+			/*let fechaInicio = document.getElementById("FechaInicio").value;
 			let fechaFin = document.getElementById("FechaFin").value;
 			//let tipoCampania = seleccionProd[0].value; // Si solo se permite una
 			
@@ -110,6 +110,99 @@ function buscarProcesosCampanias() {
 				},
 			    error: function(err) {
 			        console.error("Error al obtener procesos campañas:", err);
+			    }
+			});*/
+			// Obtiene los valores desde los inputs del formulario
+			let fechaInicio = document.getElementById("FechaInicio").value; 
+			let fechaFin = document.getElementById("FechaFin").value;
+			
+			// Obtiene los valores seleccionados de un <select multiple>
+			const selectedCam = Array.from(select.selectedOptions).map(option => option.value);
+			let campaniasSelect = selectedCam.join(",");
+			
+			// Ejecuta la llamada AJAX
+			$.ajax({
+			    url: newUrlBase + 'credito/api/procesosCampanias',  // <- tu endpoint en Spring Boot
+			    type: 'GET',
+			    dataType: 'json',
+			    data: {
+			        fechaInicio: fechaInicio,
+			        fechaFin: fechaFin,
+			        campania: campaniasSelect   // 👈 debe coincidir con @RequestParam("campania")
+			    },
+			    success: function(data) {
+			        //console.log("Respuesta del backend:", data);
+			
+			        let tbody = $("#tablaProcesosBody");
+			        tbody.empty(); // Limpia el cuerpo de la tabla antes de agregar nuevos datos
+			
+			        // Si no hay resultados
+			        if (!data.lista || data.lista.length === 0) {
+			            tbody.append('<tr><td colspan="7" class="text-center">No se encontraron resultados.</td></tr>');
+			            return;
+			        }
+			
+			        // Si hay resultados, se construyen las filas
+			        data.lista.forEach(function(item) {
+						
+						// Función para formatear la fecha
+			            /*const formatearFecha = fechaStr => {
+			                if (!fechaStr) return '';
+			                const fecha = new Date(fechaStr);
+			                return fecha.toLocaleDateString('es-ES'); // Solo fecha
+			            };*/
+			            
+			            const formatearFecha = fechaStr => {
+						    if (!fechaStr) return '';
+						    // Si es el texto de IFNULL
+						    if (fechaStr === 'Sin fecha') return 'Sin fecha';
+						    // Reemplaza el espacio por 'T' para que el formato sea ISO 8601
+						    const fecha = new Date(fechaStr.replace(' ', 'T'));
+						    if (isNaN(fecha)) return fechaStr; // si aún no se puede parsear, muestra el texto tal cual
+						    return fecha.toLocaleDateString('es-ES');
+						};
+						
+						const formatearFechas = fechaStr => {
+						    if (!fechaStr) return '';
+						    const fecha = new Date(fechaStr);
+						    return fecha.toLocaleDateString('es-ES', {
+						        year: 'numeric',
+						        month: '2-digit',
+						        day: '2-digit'
+						    });
+						};
+						
+			            let fila = `
+			                <tr>
+			                    <td><input type="checkbox" name="seleccion" value="${item.pk_id_proceso_campania}"></td>
+			                    <td>${formatearFechas(item.dt_fecha_extraccion)}</td>
+			                    <td>${item.vc_nombre_usuario || ''}</td>
+			                    <td>${item.vc_tipo_campania || ''}</td>
+			                    <td>${formatearFechas(item.dt_fecha_inicio_vigencia)}</td>
+			                    <td>${formatearFechas(item.dt_fecha_fin_vigencia)}</td>
+			                    <td>${item.vc_estatus || ''}</td>
+			                </tr>`;
+			            tbody.append(fila);
+			        });
+			        
+			        // Permitir solo un checkbox seleccionado
+					$("#tablaProcesosBody").on("change", "input[type='checkbox'][name='seleccion']", function() {
+					    if (this.checked) {
+					        $("input[type='checkbox'][name='seleccion']").not(this).prop("checked", false);
+					    }
+					});
+			    },
+			    error: function(err) {
+			        console.error("Error al obtener procesos campañas:", err);
+			
+			        // Si el backend envía un mensaje de error, lo mostramos
+			        if (err.responseJSON && err.responseJSON.error) {
+			            console.error("Detalle del error del backend:", err.responseJSON.error);
+			            alert("Error del servidor: " + err.responseJSON.error);
+			        } else {
+			            console.error("Respuesta completa:", err.responseText);
+			            alert("Ocurrió un error al consultar los procesos de campaña.");
+			        }
 			    }
 			});
 		}
@@ -157,12 +250,13 @@ function generarReportProcesosCampanias() {
     	document.querySelectorAll('input[name="seleccion"]:checked').forEach(cb => {
       		ids.push(cb.value);
     	});
-    	//console.log("IDs seleccionados:", ids);
+    	console.log("IDs seleccionados:", ids);
     	
     	///////////////////////////////
     	var urlServicio;
     	//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
-    	urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+    	//urlServicio = newUrlBase + "credito/reporteProcesosCampania?dtFechaInicio=" + document.getElementById("FechaInicio").value + "&dtFechaFin=" + document.getElementById("FechaFin").value + "&campania="+ids;
+    	urlServicio = newUrlBase + "credito/reporteProcesosCampania?proceso="+ids;
     	//console.log("urlServicio:", urlServicio);
     	//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
     	

@@ -109,11 +109,21 @@
 									<div class="col-md-2 text-end"><label for="cliente"
 											class="form-label">Cliente:</label></div>
 									<div class="col-md-10">
-										<input type="search" class="form-control" id="buscarEmpleado"
+										<!--input type="search" class="form-control" id="buscarEmpleado"
 											list="opcionEmpleado" autocomplete="off" placeholder="Buscar empleado">
 										<datalist id="opcionEmpleado"></datalist>
 										<div id="spinnerEmpleado" class="spinner-border text-primary"
-											style="display: none;"></div>
+											style="display: none;"></div-->
+											
+										
+										<input type="search" class="form-control" id="buscarCliente" list="opcionCliente"
+											autocomplete="off" placeholder="Buscar cliente">
+										<datalist id="opcionCliente"></datalist>
+										
+										<div id="spinnerClientes" style="display:none; margin-top:5px;">
+										    Cargando clientes...
+										</div>
+									
 									</div>
 								</div>
 
@@ -166,7 +176,8 @@
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+		<!--script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script-->
+		<script th:src="@{/vendor/js/xlsx.full.min.js}"></script>
 		<script th:src="@{/js/credito/dataTableConfigCredito.js}"></script>
 		<script th:src="@{/js/credito/exclusiones.js}"></script>
 	</th:block>

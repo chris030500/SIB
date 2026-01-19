@@ -61,7 +61,7 @@ public class JasperReportController {
 	
     private String extPDF = ".pdf";
     private String extXLS = ".xls";
-    
+    private String extXLSX = ".xlsx";
     
     
     
@@ -110,6 +110,9 @@ public class JasperReportController {
     					StringBuilder stringBuilder = null;
     					ContentDisposition contentDisposition = null;
     					HttpHeaders h2 = new HttpHeaders();
+    					
+                        MediaType mediaType = MediaType.APPLICATION_PDF;
+
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
     						//fecha de creacion
         					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
@@ -121,6 +124,7 @@ public class JasperReportController {
         				    .toString())
         				    .build();
         				    h2.setContentDisposition(contentDisposition);
+        				    mediaType = MediaType.APPLICATION_PDF;
     					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
     						//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
         				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
@@ -131,7 +135,19 @@ public class JasperReportController {
         				    .toString())
         				    .build();
         				    h2.setContentDisposition(contentDisposition);
-    					}
+        				    mediaType = MediaType.parseMediaType("application/vnd.ms-excel");
+
+    					} else if (extXLSX.equalsIgnoreCase(tipoDocumento)) {
+    						stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
+    			            contentDisposition = ContentDisposition.builder("attachment")
+    			                    .filename(stringBuilder.append("_")
+    			                            .append(identificadorDoc)
+    			                            .append(tipoDocumento)
+    			                            .toString())
+    			                    .build();
+    			            h2.setContentDisposition(contentDisposition);
+    			            mediaType = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    			        }
     					
     				    return ResponseEntity.ok().contentLength((long) responseBody.length)
     				    .contentType(MediaType.APPLICATION_PDF)

@@ -1,8 +1,137 @@
 document.addEventListener("DOMContentLoaded", function() {
 	listaMunicipiosExclusion();
-	listaClientes();
+	//listaClientes();
 
 });
+
+// @ts-ignore
+//var buscarCliente = document.getElementById('buscarCliente');
+//var spinner = document.getElementById("spinnerClientes");
+//var clienteValue = 0;
+//var timerId;
+
+// Función para realizar la llamada al servicio después de un retraso
+//function debouncedListaClientes() {
+	//clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
+	//timerId = setTimeout(listaClientes, 500); // Establecer un nuevo temporizador
+//}
+
+// @ts-ignore
+//buscarCliente.addEventListener('input', debouncedListaClientes);
+
+// @ts-ignore
+//buscarCliente.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	//listaClientes();
+//});
+//let timerId = null;
+
+// @ts-ignore
+/*buscarCliente.addEventListener('input', function () {
+
+    clearTimeout(timerId);
+
+    // @ts-ignore
+    if (buscarCliente.value.length < 3) return;
+
+    timerId = setTimeout(listaClientes, 500);
+});*/
+
+// @ts-ignore
+//var buscarCliente = document.getElementById('buscarCliente');
+
+// @ts-ignore
+/*buscarCliente.addEventListener('input', function () {
+
+    console.log('evento input');
+
+    // @ts-ignore
+    var buscar = buscarCliente.value;
+    console.log('buscar:', buscar);
+
+    $.ajax({
+        url: newUrlBase + "credito/lista_clientes?valor=" + encodeURIComponent(buscar),
+        type: "GET",
+        dataType: "JSON",
+        success: function (respuesta) {
+
+            console.log('respuesta:', respuesta);
+
+            var opciones = document.getElementById('opcionCliente');
+            opciones.innerHTML = '';
+
+            respuesta.lista.forEach(function (cliente) {
+                console.log(cliente);
+
+                var option = document.createElement('option');
+                option.value = cliente.clienteinfo;
+                opciones.appendChild(option);
+            });
+        },
+        error: function (e) {
+            console.error('error ajax', e);
+        }
+    });
+
+});*/
+
+// @ts-ignore
+var buscarCliente = document.getElementById('buscarCliente');
+var spinner = document.getElementById('spinnerClientes');
+var opciones = document.getElementById('opcionCliente');
+
+var timerId = null;
+
+// @ts-ignore
+buscarCliente.addEventListener('input', function () {
+
+    clearTimeout(timerId);
+
+    // @ts-ignore
+    if (buscarCliente.value.length < 3) {
+        opciones.innerHTML = '';
+        return;
+    }
+
+    timerId = setTimeout(listaClientes, 500);
+});
+
+function listaClientes() {
+
+    // @ts-ignore
+    var buscar = buscarCliente.value.toUpperCase();
+
+    spinner.style.display = 'block';
+
+    $.ajax({
+        url: newUrlBase + "credito/lista_clientes?valor=" + encodeURIComponent(buscar),
+        type: "GET",
+        dataType: "JSON",
+        success: function (respuesta) {
+		//console.log('respuesta:', respuesta);
+            opciones.innerHTML = '';
+
+            respuesta.lista.forEach(function (cliente) {
+                var option = document.createElement('option');
+                option.value = cliente.clienteinfo;
+                option.setAttribute('data-id', cliente.i_clienteid);
+                opciones.appendChild(option);
+            });
+
+            // CLAVE para que no desaparezca
+            // @ts-ignore
+            buscarCliente.blur();
+            // @ts-ignore
+            buscarCliente.focus();
+        },
+        error: function () {
+            console.error('Error cargando clientes');
+        },
+        complete: function () {
+            spinner.style.display = 'none';
+        }
+    });
+}
 
 function getAbsolutePath() {
 	var loc = window.location;
@@ -88,6 +217,7 @@ function cargarArchivoExcel() {
 	});
 	const reader = new FileReader();
 	reader.onload = function (e) {
+		console.log("Entra a función reader.onload");
 		// @ts-ignore
 		const data = new Uint8Array(e.target.result);
 		// @ts-ignore
@@ -122,6 +252,7 @@ function cargarArchivoExcel() {
 		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
 
 		if (!esValidoEncabezado) {
+			console.log("Entra a función esValidoEncabezado");
 			// @ts-ignore
 			 Swal.close(); // Cierra el loading
 			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
@@ -136,6 +267,7 @@ function cargarArchivoExcel() {
 		const tieneInformacion = filasDatos.some(fila => fila.some(celda => celda !== null && celda !== "" && celda !== undefined));
 
 		if (!tieneInformacion) {
+			console.log("Entra a función tieneInformacion");
 			// @ts-ignore
 			 Swal.close(); // Cierra el loading
 			alert("El archivo no contiene información en las filas después del encabezado.");
@@ -166,7 +298,10 @@ function cargarArchivoExcel() {
 			listaMunicipiosExclusion();
 		})
 		.catch(error => {
+			// @ts-ignore
+			Swal.close(); // Cierra el loading
 			console.error("Error:", error);
+			console.error("Error real backend:", error.message);
 			alert("Ocurrió un error al cargar el archivo.");
 		});
 	};
@@ -262,57 +397,17 @@ function listaMunicipiosExclusion() {
 	
 }
 
-function listaClientes() {
-	let buscarEmpleado = document.getElementById('buscarEmpleado');
-	let opcionEmpleado = document.getElementById('opcionEmpleado');
-	let spinnerEmpleado = document.getElementById('spinnerEmpleado');
 
-	if (!buscarEmpleado || !opcionEmpleado || !spinnerEmpleado) {
-		console.error("No se encontraron los elementos necesarios en el DOM.");
-		return;
-	}
 
-	// @ts-ignore
-	buscarEmpleado.disabled = true;
-	spinnerEmpleado.style.display = "inline-block";
-
-	$.ajax({
-		url: newUrlBase + "credito/lista_clientes",
-		type: "GET",
-		dataType: "JSON",
-		success: function(respuesta) {
-
-			// @ts-ignore
-			let filtroTexto = buscarEmpleado.value.toLowerCase(); // Filtro según el input
-			opcionEmpleado.innerHTML = ""; // Limpiar datalist previo
-
-			respuesta.filter(empleado => empleado.vc_nombrecompleto.toLowerCase().includes(filtroTexto))
-				.forEach(empleado => {
-					let option = document.createElement('option');
-					option.value = empleado.vc_nombrecompleto;
-					option.setAttribute('data-id', empleado.i_clienteid);
-					opcionEmpleado.appendChild(option);
-				});
-		},
-		error: function(error) {
-			console.error("Error al obtener la lista de empleados:", error);
-		},
-		complete: function() {
-			// @ts-ignore
-			buscarEmpleado.disabled = false;
-			spinnerEmpleado.style.display = "none";
-		}
-	});
-
-}
-
-$('#buscarEmpleado').on('change', function() {
+$('#buscarCliente').on('change', function() {
 	const valor = $(this).val();
-	//let idCliente = null;
+	idCliente = null;
 
-	$('#opcionEmpleado option').each(function() {
+	$('#opcionCliente option').each(function() {
 		if ($(this).val() === valor) {
 			idCliente = $(this).data('id');
+			
+			//console.log('idCliente::::', idCliente);
 		}
 	});
 	
@@ -356,10 +451,15 @@ $('#formExclusionCliente').on('submit', function (e) {
 
     // Aquí capturas los datos
     const clienteId = $('#clienteIdSeleccionado').val();
-    const clienteNombre = $('#buscarEmpleado').val();
+    const clienteNombre = $('#buscarCliente').val();
     const motivo = $('#motivo').val();
     const observaciones = $('#observaciones').val();
+    
+    // @ts-ignore
+    let partes = clienteNombre.split(" - ");
 
+	let nombreCliente = partes[1].trim(); 
+	//console.log(nombreCliente);
 	
 	//console.error(clienteId);
 	//console.error(idCliente);
@@ -371,11 +471,15 @@ $('#formExclusionCliente').on('submit', function (e) {
     }
     const data = {
 	    clienteId:idCliente,
-            buscarEmpleado: clienteNombre,
+            buscarEmpleado: nombreCliente,
             motivo,
             observaciones,
 	};
-    const jsonBitacora = JSON.stringify(data);
+    //const jsonBitacora = JSON.stringify(data);
+    const jsonBitacora = JSON.stringify({
+	    ...data,
+	    estatusCliente: 1
+	});
 	let tabla = 'TBL_EXCLUSION_CLIENTES';
 	//console.log(jsonBitacora);
 	const dataHis = {
@@ -394,7 +498,7 @@ $('#formExclusionCliente').on('submit', function (e) {
         type: "POST",
         data: {
             clienteId:idCliente,
-            buscarEmpleado: clienteNombre,
+            buscarEmpleado: nombreCliente,
             motivo,
             observaciones
         },
@@ -441,7 +545,7 @@ function eliminarCliente() {
 	
 	const data = {
 	    idCliente: idCliente,
-	    estatusCliente: 0,
+	    estatusCliente: 2,
 	};
 	//console.log(data);
 	const jsonBitacora = JSON.stringify(data);
