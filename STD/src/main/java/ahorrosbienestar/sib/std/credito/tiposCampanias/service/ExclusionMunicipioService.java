@@ -107,9 +107,10 @@ public class ExclusionMunicipioService {
 
 	            //Workbook workbook = new XSSFWorkbook(input);
 	            try {
-	                logger.info("Antes de crear XSSFWorkbook");
-	                try (Workbook workbook = new XSSFWorkbook(input)) {
-						logger.info("Workbook creado correctamente");
+	                logger.info("Antes de crear XSSFWorkbook2");
+	                //try (Workbook workbook = new XSSFWorkbook(input)) {
+	                try (Workbook workbook = WorkbookFactory.create(input)) {
+						
 						logger.info("Workbook creado correctamente");
 						logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
 
