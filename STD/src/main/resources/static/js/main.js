@@ -41,6 +41,34 @@
 	}
 
 	/**
+	 * Theme toggle (light/dark)
+	 */
+	const themeToggleBtn = select('.theme-toggle-btn')
+	const setTheme = (theme) => {
+		const isDark = theme === 'dark'
+		document.body.classList.toggle('theme-dark', isDark)
+		if (themeToggleBtn) {
+			const icon = themeToggleBtn.querySelector('i')
+			if (icon) {
+				icon.className = isDark ? 'bi bi-sun' : 'bi bi-moon-stars'
+			}
+			const label = isDark ? 'Tema claro' : 'Tema oscuro'
+			themeToggleBtn.setAttribute('aria-label', label)
+			themeToggleBtn.setAttribute('title', label)
+		}
+	}
+	const storedTheme = localStorage.getItem('theme')
+	const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+	setTheme(storedTheme || (prefersDark ? 'dark' : 'light'))
+	if (themeToggleBtn) {
+		themeToggleBtn.addEventListener('click', () => {
+			const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark'
+			localStorage.setItem('theme', nextTheme)
+			setTheme(nextTheme)
+		})
+	}
+
+	/**
 	 * Search bar toggle
 	 */
 	if (select('.search-bar-toggle')) {

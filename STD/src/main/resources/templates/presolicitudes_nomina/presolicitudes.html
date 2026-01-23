@@ -13,84 +13,34 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-
-		<body>
-			<div class="">
-				<div class="p-3 mb-4 text-white text-center" style="background-color: #33A9FF;">
-					<h2>Solicitudes de Crédito</h2>
-				</div>
-				<div class="row" style="margin-top : 5px ">
-				<div class="col-lg-6">
-				<div id="contenedorBotonExcel" class="d-none flex-wrap align-items-end gap-2 mb-3">
-					<!-- Botón para cargar archivo Excel -->
-					<div class="w-auto">
-						<label class="form-label d-block">&nbsp;</label>
-						<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
-							Cargar Excel
-						</button>
+		<div class="container-fluid p-4 presolicitudes-page">
+			<div class="card shadow-sm border-0">
+				<div class="card-header bg-white">
+					<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+						<div>
+							<h2 class="page-title mb-1">Solicitudes de Credito</h2>
+							<p class="page-subtitle mb-0">Registra y gestiona solicitudes de credito.</p>
+						</div>
+						<div class="card-toolbar d-flex flex-wrap gap-2">
+							<div id="contenedorBotonExcel" class="d-none">
+								<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+									<i class="bi bi-upload me-1"></i> Cargar Excel
+								</button>
+							</div>
+							<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+								<i class="bi bi-plus-lg me-1"></i> Nueva Solicitud
+							</button>
+						</div>
 					</div>
 				</div>
-				</div>
-				<div class="col-lg-6">
-					<!-- Botón Nueva Solicitud -->
-					<div class="w-auto">
-						<label class="form-label d-block">&nbsp;</label>
-						<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#solicitudModal">
-							Nueva Solicitud
-						</button>
+				<div class="card-body">
+					<!-- Spinner de carga -->
+					<div id="spinner" class="spinner-border text-primary" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+						<span class="sr-only">Cargando...</span>
 					</div>
-				</div>
-				</div>
-
-				<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
-					<!-- Empresa -->
-					<!--<div class="flex-grow-1">
-						<label for="filtroEmpresa" class="form-label">Buscar Empresa</label>
-						<input type="search" class="form-control" id="filtroEmpresa" list="listaEmpresas"
-							autocomplete="off" placeholder="Buscar empresa">
-						<datalist id="listaEmpresas"></datalist>
-						<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
-					</div>-->
-
-					<!-- Cliente -->
-					<!--<div class="flex-grow-1">
-						<label for="filtroClientes" class="form-label">Buscar Cliente</label>
-						<input type="search" class="form-control" id="filtroClientes" list="listaClientes"
-							autocomplete="off" placeholder="Buscar empresa">
-						<datalist id="listaClientes"></datalist>
-						<div id="spinnerClientes" class="spinner-border text-primary" style="display: none;"></div>
-					</div>-->
-
-					<!-- Fecha inicio -->
-					<!--<div class="w-auto">
-						<label for="fechaInicio" class="form-label">Fecha Inicio</label>
-						<input type="date" id="fechaInicio" class="form-control">
-					</div>-->
-
-					<!-- Fecha fin -->
-					<!--<div class="w-auto">
-						<label for="fechaFin" class="form-label">Fecha Fin</label>
-						<input type="date" id="fechaFin" class="form-control">
-					</div>-->
-
-					<!-- Botón Buscar -->
-					<!--<div class="w-auto">
-						<label class="form-label d-block">&nbsp;</label>
-						<button class="btn btn-primary"><i class="fas fa-search"></i></button>
-					</div>-->
-
-					
-				</div>
-
-				<!-- Spinner de carga -->
-				<div id="spinner" class="spinner-border text-primary"
-					style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
-					<span class="sr-only">Cargando...</span>
-				</div>
-				<div class="row" style="margin-top : 15px ">
 					<div class="table-responsive">
-						<table class="table table-sm" style="width: 100%;" id="tablaSolicitudes">
-							<thead class="table-primary">
+						<table class="table empresas-table" style="width: 100%;" id="tablaSolicitudes">
+							<thead class="table-light">
 								<tr>
 									<th>No. Solicitud</th>
 									<th>Nombre de Cliente</th>
@@ -105,26 +55,19 @@
 									<th>Acciones</th>
 								</tr>
 							</thead>
-							<tbody>
-							</tbody>
+							<tbody></tbody>
 						</table>
 					</div>
 				</div>
-
-				<!--<div class="d-flex justify-content-between">
-					<button id="btnAnterior" class="btn btn-primary">Anterior</button>
-					<span id="paginaActual">Página 1</span>
-					<button id="btnSiguiente" class="btn btn-primary">Siguiente</button>
-				</div>-->
 			</div>
-		</body>
+		</div>
 
-		<!-- Modal para Nueva Solicitud de Crédito -->
+		<!-- Modal para Nueva Solicitud de Credito --> de Crédito -->
 		<div class="modal fade" id="solicitudModal" tabindex="-1" aria-labelledby="solicitudModalLabel">
 			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
+				<div class="modal-content border-0 shadow">
 					<!-- Encabezado del modal -->
-					<div class="modal-header bg-primary text-white">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="solicitudModalLabel">Registro de Solicitud de Crédito</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -247,7 +190,7 @@
 
 					<!-- Footer del modal -->
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary" id="btnGuardarSolicitud">Guardar</button>
 					</div>
 				</div>
@@ -258,8 +201,8 @@
 		<!-- Modal para enviar mensaje -->
 		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel">
 			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="mensajeModalLabel">Texto del Correo</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -273,7 +216,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary">Guardar</button>
 					</div>
 				</div>
@@ -282,8 +225,8 @@
 
 		<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel">
 			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header bg-info text-white">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="uploadExcelModalLabel">Subir Archivo Excel</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -296,8 +239,37 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary" id="uploadExcelButton">Subir</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="modalCambioEstatus" tabindex="-1" aria-labelledby="modalCambioEstatusLabel">
+			<div class="modal-dialog">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
+						<h5 class="modal-title" id="modalCambioEstatusLabel">Cambiar estatus</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" id="cambioEstatusId">
+						<div class="mb-3">
+							<label for="cambioEstatusSelect" class="form-label">Estatus</label>
+							<select class="form-select" id="cambioEstatusSelect">
+								<option value="1">En Revision</option>
+								<option value="2">Enviada</option>
+								<option value="3">Aprobada</option>
+								<option value="4">Rechazada</option>
+								<option value="5">Aceptada</option>
+								<option value="0">Cancelada</option>
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" onclick="guardarCambioEstatus()">Guardar</button>
 					</div>
 				</div>
 			</div>

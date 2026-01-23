@@ -179,10 +179,10 @@ function inicioTabla(){
 		"language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
         },
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
+		"paging": false,
+		"info": false,
+		"ordering": false,
+		"autoWidth": false
 	});
 }
 
@@ -278,17 +278,18 @@ function consultarOpciones(idRol){
 		dataType: "JSON",
 		success: function(respuesta) {
 			idsAnteriores = "";
-			for (var i in respuesta) {
-				document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
-
-					if (checkElement.id != 'idTodos') {
-						if (checkElement.id == respuesta[i].fk_opcion) {
-							idsAnteriores += checkElement.id + " ";
-							checkElement.checked = true;
-						}
-					}
-				});
+			var permitidas = {};
+			for (var i = 0; i < respuesta.length; i++) {
+				var idOpcion = String(respuesta[i].fk_opcion);
+				permitidas[idOpcion] = true;
+				idsAnteriores += idOpcion + " ";
 			}
+			document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+				if (checkElement.id === 'idTodos') {
+					return;
+				}
+				checkElement.checked = !!permitidas[checkElement.id];
+			});
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			swal({
 				title: "Error, ",

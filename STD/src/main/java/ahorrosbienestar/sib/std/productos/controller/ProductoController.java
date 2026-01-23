@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +148,7 @@ public class ProductoController {
 				productoAlta.setDt_fecha_operacion(fecha);
 				productoAlta.setI_estatus(estatus);
 				productoAlta.setI_tipo_producto(tipoProducto);
-				productoAlta.setI_clasificacion(tipoProducto);
+				productoAlta.setI_clasificacion(tipoProducto == 1);
 				productoAlta.setVc_identificador_kyc(identificador);
 				productoAlta.setVc_descripcion_producto(descripcion);
 				productoAlta.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());

@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -548,6 +548,33 @@ public class PresolicitudesController {
             return ResponseEntity.ok("Solicitud cancelada");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
+        }
+    }
+
+    @PostMapping("/cambiarEstatus/{id}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Integer id, @RequestBody Map<String, Object> body) {
+        try {
+            int rol = currentIdRol();
+            String rolesVobo = iConfiguracionRepository.ObtenerRolesVobo();
+            List<Integer> rolesPermitidos = Arrays.stream(rolesVobo.split(","))
+                    .map(String::trim)
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+
+            if (!rolesPermitidos.contains(rol)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Sin permisos para cambiar estatus");
+            }
+
+            Object estatusRaw = body.get("estatus");
+            if (estatusRaw == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Estatus requerido");
+            }
+            Integer estatus = Integer.valueOf(estatusRaw.toString());
+            solicitudCreditoService.actualizarEstatusManual(id, estatus, currentUsuario());
+            return ResponseEntity.ok("Estatus actualizado");
+        } catch (Exception e) {
+            logger.error("Error al cambiar estatus: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar estatus");
         }
     }
 

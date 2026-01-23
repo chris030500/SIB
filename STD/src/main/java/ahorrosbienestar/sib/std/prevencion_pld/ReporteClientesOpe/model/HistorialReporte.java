@@ -1,14 +1,15 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
@@ -32,20 +33,20 @@ public class HistorialReporte {
     @JoinColumn(name = "I_USUARIO_VOBO", updatable = true)
 	private Usuario i_usuario_vobo;
 
-    @Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Integer estatus;
+    @Column(name = "I_ESTATUS")
+    private Boolean estatus;
     
     @Column(name = "DT_FECHA_VOBO", nullable = false)
     private LocalDateTime fechaGeneracionvobo;
     
     @Column(name = "DT_FechaInicio")
-    private LocalDateTime fechaInicio;
+    private LocalDate fechaInicio;
 
     @Column(name = "DT_FechaFinal")
-    private LocalDateTime fechaFin;
+    private LocalDate fechaFin;
  
     @Column(name = "I_ANIO_GENERACION")
-    private Integer añoGeneracion;
+    private String anioGeneracion;
     
     @Column(name = "VC_TIPO_REPORTE")
     private String tipoReporte;
@@ -62,25 +63,21 @@ public class HistorialReporte {
     public Usuario getI_usuario_vobo() { return i_usuario_vobo; }
     public void setI_usuario_vobo(Usuario i_usuario_vobo) { this.i_usuario_vobo = i_usuario_vobo; }
 
-    public Integer getEstatus() { return estatus; }
-    public void setEstatus(Integer estatus) { this.estatus = estatus; }
+    public Boolean getEstatus() { return estatus; }
+    public void setEstatus(Boolean estatus) { this.estatus = estatus; }
 
     public LocalDateTime getFechaGeneracionvobo() { return fechaGeneracionvobo; }
     public void setFechaGeneracionvobo(LocalDateTime fechaGeneracionvobo) { this.fechaGeneracionvobo = fechaGeneracionvobo; }
 
-    public LocalDateTime getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
 
-    public LocalDateTime getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
     
-    public Integer getAñoGeneracion() { return añoGeneracion; }
-    public void setañoGeneracion(Integer añoGeneracion) { this.añoGeneracion = añoGeneracion; }
+    public String getAnioGeneracion() { return anioGeneracion; }
+    public void setAnioGeneracion(String anioGeneracion) { this.anioGeneracion = anioGeneracion; }
     
     public String getTipoReporte() { return tipoReporte; }
     public void setTipoReporte(String tipoReporte) { this.tipoReporte = tipoReporte; }
 }
-    // Getters y Setters
-
-    
-

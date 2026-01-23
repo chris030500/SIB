@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.configuracion.login.configuration;
 
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpSessionListener;
 
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;

@@ -37,6 +37,11 @@
 
 	<nav class="header-nav ms-auto">
 		<ul class="d-flex align-items-center">
+			<li class="nav-item d-flex align-items-center me-3">
+				<button type="button" class="theme-toggle-btn" aria-label="Tema oscuro" title="Tema oscuro">
+					<i class="bi bi-moon-stars"></i>
+				</button>
+			</li>
 
 			<li sec:authorize="isAuthenticated()" class="nav-item dropdown pe-3">
 
@@ -488,6 +493,11 @@
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-gesVoBo" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O52" class="nav-item" style="display:none;">
+							<a th:href="@{/gestion_vobo_nomina/dashboard}">
+								<i class="bi bi-graph-up"></i><span>Dashboard</span>
+							</a>
+						</li>
 						<li th:id="M_O41" class="nav-item" style="display:none;">
 							<a th:href="@{/configuracionEmpresas/empresas}">
 								<i class="bi bi-cash"></i><span>Configuracion Empresas</span>

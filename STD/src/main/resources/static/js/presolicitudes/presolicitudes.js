@@ -788,20 +788,29 @@ function cargarSolicitudes(pagina) {
 
 				// Botón PDF si estatus === 3
 				let btnPdf = '';
-				if (opt.estatus === 3) {
-					btnPdf = `<button class='btn btn-success btn-sm btn-pdf' title='Ver PDF' data-id='${opt.id}' data-tooltip='Ver PDF'>
+                if (opt.estatus === 3) {
+                    btnPdf = `<button class='btn btn-success btn-sm btn-pdf' title='Ver PDF' data-id='${opt.id}' data-tooltip='Ver PDF'>
             <i class='fas fa-file-pdf'></i>
         </button>`;
-				}
+                }
 
-				// Concatenar botones
-				let acciones = '';
-				if (permiso) {
-					acciones = btnEditar + btnAprobarCancelar;
-				}
-				acciones += btnPdf;
+                let btnCambiarEstatus = '';
+                if (permiso) {
+                    btnCambiarEstatus = `<button class='btn btn-secondary btn-sm btn-cambiar-estatus' title='Cambiar estatus'
+            onclick="abrirCambioEstatus(${opt.id}, ${opt.estatus})">
+            <i class='fas fa-exchange-alt'></i></button>`;
+                }
 
-				// Agregar fila a DataTable
+                // Concatenar botones
+                let acciones = '';
+                if (permiso) {
+                    acciones = btnEditar + btnAprobarCancelar + btnCambiarEstatus;
+                } else {
+                    acciones = btnEditar;
+                }
+                acciones += btnPdf;
+
+                // Agregar fila a DataTable
 				registrosTotalesSol.push([
 					opt.id,
 					opt.empleado,
@@ -1162,3 +1171,44 @@ document.getElementById("buscarProducto").addEventListener("change", function() 
 		document.getElementById("checkNomiprestamo").checked = false;
 	}
 });
+
+function abrirCambioEstatus(id, estatusActual) {
+	const idInput = document.getElementById("cambioEstatusId");
+	const select = document.getElementById("cambioEstatusSelect");
+	if (idInput) idInput.value = id;
+	if (select) select.value = String(estatusActual);
+	if (window.jQuery && jQuery.fn.modal) {
+		$("#modalCambioEstatus").modal("show");
+	} else if (window.bootstrap) {
+		const modal = new bootstrap.Modal(document.getElementById("modalCambioEstatus"));
+		modal.show();
+	}
+}
+
+function guardarCambioEstatus() {
+	const idInput = document.getElementById("cambioEstatusId");
+	const select = document.getElementById("cambioEstatusSelect");
+	if (!idInput || !select) return;
+	const id = idInput.value;
+	const estatus = select.value;
+
+	fetch(urlPrincipal + `cambiarEstatus/${id}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({ estatus: estatus })
+	})
+		.then(res => {
+			if (!res.ok) throw new Error("Error al cambiar estatus");
+			return res.text();
+		})
+		.then(() => {
+			Swal.fire("Actualizado", "El estatus se actualizo.", "success");
+			cargarSolicitudes(0);
+		})
+		.catch(err => {
+			console.error(err);
+			Swal.fire("Error", "No se pudo actualizar el estatus.", "error");
+		});
+}

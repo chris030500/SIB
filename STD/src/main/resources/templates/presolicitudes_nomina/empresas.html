@@ -13,36 +13,43 @@
 <body>
 	<section class="content" layout:fragment="page-content">
 
-		<!-- NUEVA SECCIÓN: EMPRESAS -->
-		<div class="container mt-4">
-			<div class="card card-primary">
-				<div class="card-header text-center bg-primary text-white">
-					<h2>Empresas</h2>
+				<!-- NUEVA SECCION: EMPRESAS -->
+		<div class="container-fluid p-4 empresas-page">
+			<div class="card shadow-sm border-0">
+				<div class="card-header bg-white">
+					<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+						<div>
+							<h2 class="page-title mb-1">Empresas</h2>
+							<p class="page-subtitle mb-0">Gestiona altas, contacto y frecuencia de envio.</p>
+						</div>
+						<div class="card-toolbar d-flex flex-wrap gap-2">
+							<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
+								<i class="bi bi-envelope me-1"></i> Mensaje
+							</button>
+							<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">
+								<i class="bi bi-plus-lg me-1"></i> Registrar Empresa
+							</button>
+						</div>
+					</div>
 				</div>
 				<div class="card-body">
-					<div class="d-flex justify-content-between my-3">
-						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
-							<i class="fas fa-envelope"></i> MENSAJE
-						</button>
-						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">Registrar
-							Empresa</button>
+					<div class="table-responsive">
+						<table id="tblRegistroEmpresas" class="table empresas-table">
+							<thead class="table-light">
+								<tr>
+									<th>Nombre</th>
+									<th>Correo</th>
+									<th>Contacto</th>
+									<th>Frecuencia</th>
+									<th>Estatus</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
 					</div>
 
-					<table id="tblRegistroEmpresas" class="table table-bordered text-center">
-						<thead class="bg-primary text-white">
-							<tr>
-								<th>Nombre</th>
-								<th>Correo</th>
-								<th>Contacto</th>
-								<th>Frecuencia</th>
-								<th>Estatus</th>
-								<th>Acciones</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-
-					<div class="d-flex justify-content-center">
+					<div class="d-flex justify-content-center mt-3">
 						<nav>
 							<ul class="pagination">
 								<li class="page-item"><a class="page-link" href="#">Anterior</a></li>
@@ -58,8 +65,8 @@
 		<!-- Modal para registrar empresa -->
 		<div class="modal fade" id="empresaModal" tabindex="-1" aria-labelledby="empresaModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="empresaModalLabel">Datos de la Empresa</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -107,7 +114,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary">Guardar</button>
 					</div>
 				</div>
@@ -116,8 +123,8 @@
 		<!-- Modal para editar empresa -->
 		<div class="modal fade" id="modalEmpresa" tabindex="-1" aria-labelledby="modalEmpresaLabel" aria-hidden="true">
 			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="modalEmpresaLabel">Editar Empresa</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -160,8 +167,8 @@
 		<!-- Modal de configuración de correo -->
 		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
+				<div class="modal-content border-0 shadow">
+					<div class="modal-header bg-light">
 						<h5 class="modal-title" id="mensajeModalLabel">Configuración de Correo</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -211,7 +218,7 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
 						<button type="button" class="btn btn-primary"
 							onclick="actualizarConfiguracionCorreo()">Guardar</button>
 					</div>

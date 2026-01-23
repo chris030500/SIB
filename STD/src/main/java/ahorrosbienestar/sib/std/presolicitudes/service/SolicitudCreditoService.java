@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +120,22 @@ public class SolicitudCreditoService {
 
         solicitud.setEstatus(0); // 0 = Cancelada
         solicitudCreditoRepository.save(solicitud);
+    }
+
+    @Transactional
+    public void actualizarEstatusManual(Integer id, Integer estatus, Usuario usuario) {
+        SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        solicitud.setEstatus(estatus);
+        solicitud.setUsuarioRegRespuesta(usuario);
+        if (estatus != null && (estatus == 3 || estatus == 4 || estatus == 5 || estatus == 0)) {
+            solicitud.setFechaRegistroRespuestaEmp(LocalDate.now());
+        } else {
+            solicitud.setFechaRegistroRespuestaEmp(null);
+        }
+        solicitudCreditoRepository.save(solicitud);
+        logger.info("Estatus manual actualizado id=" + id + " estatus=" + estatus);
     }
     
 }

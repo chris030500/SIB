@@ -12,53 +12,36 @@
 
 <body>
 	<section class="content" layout:fragment="page-content">
-		<div class="border p-2 card">
+		<div class="container-fluid p-4 ofertas-page">
 
-			<div class="bg-info text-white">
-				<div class="row no-gutters">
-					<div class="col-md-2"></div>
-					<div class="col-md-8">
-						<div>
-							<h2 style="text-align:center">Ofertas Automaticas</h2>
-						</div>
-					</div>
-				</div>
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h2 class="text-dark font-weight-bold mb-0">Ofertas Automáticas</h2>
 			</div>
 			
-			<div id="divConfiguracion" class="" style="margin-top : 15px " th:if="${permiso_admin == 1 || permiso_ejecucion_base == 1}">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Configuracion de Ejecución de proceso.</legend>
-					<div class="row" style="margin-top : 5px ">
-						<div class="col-lg-10">
-						</div>
-						<div class="col-lg-2">
-							<label>Ver Documentos</label>					
-							<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'
-								title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'
-								onclick='adjuntarFiles(2)' 
-					 			data-tooltip='Add'>
-								<i class='bi bi-files'></i>
-							</button>
-							
-						</div>
-						
-						
+			<div id="divConfiguracion" class="mb-4" th:if="${permiso_admin == 1 || permiso_ejecucion_base == 1}">
+				<div class="card shadow-sm border-0">
+					<div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+						<h5 class="card-title mb-0 text-primary"><i class="bi bi-gear-fill me-2"></i>Configuración de Ejecución de Proceso</h5>
+						<button class='btn btn-outline-info btn-sm' tabindex='0' data-bs-toggle='modal'
+							title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'
+							onclick='adjuntarFiles(2)' 
+							data-tooltip='Add'>
+							<i class='bi bi-files me-1'></i> Ver Documentos
+						</button>
 					</div>
-					<div class="row" style="margin-top : 15px ">
+					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-sm" style="width: 100%;" id="tblConfiguracion">
-								<thead>
+							<table class="table ofertas-table align-middle" style="width: 100%;" id="tblConfiguracion">
+								<thead class="table-light">
 									<tr>
 										<th>Base Ofertas</th>
-										<th>Dia Inicio</th>
-										<th>Dia Fin</th>
+										<th>Día Inicio</th>
+										<th>Día Fin</th>
 										<th>Hora Inicia</th>
 										<th>Hora Fin</th>
 										<th>Periodo Ejecución (Minutos)</th>
 										<!--<th>Ruta Archivo</th>-->
 										<th>Acciones</th>
-										<!--<th>Actualizar</th>
-										<th>Ejecutar</th>-->
 									</tr>
 								</thead>
 								<tbody>
@@ -66,25 +49,26 @@
 							</table>
 						</div>
 					</div>
-
-				</fieldset>
+				</div>
 			</div>
-			<div id="divConfiguracion" class="" style="margin-top : 15px " th:if="${permiso_admin == 1 || permiso_ejecucion_gestion == 1}">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Configuracion de Ejecución de proceso de Gestion.</legend>
-					<div class="row" style="margin-top : 15px ">
+
+			<div id="divConfiguracion" class="mb-4" th:if="${permiso_admin == 1 || permiso_ejecucion_gestion == 1}">
+				<div class="card shadow-sm border-0">
+					<div class="card-header bg-white py-3">
+						<h5 class="card-title mb-0 text-primary"><i class="bi bi-list-check me-2"></i>Configuración de Ejecución de Proceso de Gestión</h5>
+					</div>
+					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-sm" style="width: 100%;" id="tblProcesoGestion">
-								<thead>
+							<table class="table ofertas-table align-middle" style="width: 100%;" id="tblProcesoGestion">
+								<thead class="table-light">
 									<tr>
-										<th>Proceso Gestion</th>
-										<th>Dia Inicio</th>
-										<th>Dia Fin</th>
+										<th>Proceso Gestión</th>
+										<th>Día Inicio</th>
+										<th>Día Fin</th>
 										<th>Hora Inicia</th>
 										<th>Hora Fin</th>
 										<th>Periodo Ejecución (Minutos)</th>
 										<th>Acciones</th>
-										<!--<th>Ejecutar</th>-->
 									</tr>
 								</thead>
 								<tbody>
@@ -92,34 +76,31 @@
 							</table>
 						</div>
 					</div>
-				</fieldset>
+				</div>
 			</div>
-			<div id="divClasificacion" class="" style="margin-top : 15px " th:if="${permiso_admin == 1 || permiso_ejecucion_base == 1}">
-				<fieldset class="border p-2">
-					<legend class="float-none w-auto p-2">Configuracion Clasificacion Bases Ofertas</legend>
-					<div class="row" style="margin-top : 5px ">
-						<div class="col-lg-4">
-							<button class="btn btn-primary" tabindex="0" data-bs-toggle="modal" title="Agregar"
+
+			<div id="divClasificacion" class="mb-4" th:if="${permiso_admin == 1 || permiso_ejecucion_base == 1}">
+				<div class="card shadow-sm border-0">
+					<div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+						<h5 class="card-title mb-0 text-primary"><i class="bi bi-tags-fill me-2"></i>Configuración Clasificación Bases Ofertas</h5>
+						<button class="btn btn-primary btn-sm" tabindex="0" data-bs-toggle="modal" title="Agregar"
 								data-bs-target="#modalClasificacion" aria-controls="table-datatable" type="button"
 								data-tooltip="Add" th:onclick="'limpiarDatosClasificacion()'">
-								<i class="fas fa-plus"></i>Agregar Clasificación.
-							</button>
-						</div>
-						<div class="col-lg-4"></div>
-						<div class="col-lg-4"></div>
+							<i class="fas fa-plus me-1"></i> Agregar Clasificación
+						</button>
 					</div>
-					<div class="row" style="margin-top : 15px ">
+					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-sm" style="width: 100%;" id="tblclasificacionBaseTable">
-								<thead>
+							<table class="table ofertas-table align-middle" style="width: 100%;" id="tblclasificacionBaseTable">
+								<thead class="table-light">
 									<tr>
 										<th>Base</th>
-										<th>Nombre Clasificacion</th>
-										<th>Clasificacion</th>
-										<th>Codigo Clasificacion</th>
+										<th>Nombre Clasificación</th>
+										<th>Clasificación</th>
+										<th>Código Clasificación</th>
 										<th>Vigencia</th>
 										<th>Estatus</th>
-										<th style="text-align: center;">Acciones    </th>
+										<th style="text-align: center;">Acciones</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -127,16 +108,18 @@
 							</table>
 						</div>
 					</div>
-				</fieldset>
+				</div>
 			</div>
 
 
 			<!--Modal Parametros-->
 			<div class="modal fade" id="modalParametros" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-					<div class="modal-content">
-						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Actualizar Parametros Proceso</legend>
+					<div class="modal-content border-0 shadow">
+						<div class="modal-header bg-light">
+							<h5 class="modal-title">Actualizar Parámetros Proceso</h5>
+							<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+						</div>
 							<div class="modal-body">
 								<div class="form-group">
 									<label for="dCominzoProceso">Agregar día que comienza el proceso</label>
@@ -166,12 +149,11 @@
 
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal"
+								<button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
 									id="btnCancelar">Cerrar</button>
 								<button type="button" id="btnActualizarParams" class="btn btn-primary">Guardar
 									Cambios</button> <!--onclick="guardarParametrosFidelidad()"-->
 							</div>
-						</fieldset>
 					</div>
 				</div>
 			</div>
@@ -179,9 +161,11 @@
 			<!--Modal Clasifacion-->
 			<div class="modal fade" id="modalClasificacion" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-					<div class="modal-content">
-						<fieldset class="border p-2">
-							<legend class="float-none w-auto p-2">Configurar Clasificación</legend>
+					<div class="modal-content border-0 shadow">
+						<div class="modal-header bg-light">
+							<h5 class="modal-title">Configurar Clasificación</h5>
+							<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+						</div>
 							<div class="modal-body">
 								<div class="form-group row">
 									<label for="base">Agregar base a la que pertenece: </label>
@@ -249,12 +233,11 @@
 
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal"
+								<button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
 									id="btnCerrar">Cerrar</button>
 								<button type="button" id="btnRegistrarClasif" class="btn btn-primary">Guardar
 									Cambios</button>
 							</div>
-						</fieldset>
 					</div>
 				</div>
 			</div>
@@ -379,9 +362,10 @@
 			<div class="modal fade" id="modalEditarClasificacion" tabindex="-1" role="dialog"
 				aria-labelledby="modalEditarClasificacionLabel" aria-hidden="true">
 				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
+					<div class="modal-content border-0 shadow">
+						<div class="modal-header bg-light">
 							<h5 class="modal-title" id="modalEditarClasificacionLabel">Editar Clasificación </h5>
+							<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
 							<div class="form-group row">
@@ -433,7 +417,7 @@
 
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
 							<button type="button" onclick="validarClasificacionEditar()" class="btn btn-primary">Guardar
 								Cambios</button>
 						</div>
@@ -445,16 +429,15 @@
 			<!--Modal Detalle Campaña-->
 			<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-					<div class="modal-content">
-						<fieldset class="border p-2">
+					<div class="modal-content border-0 shadow">
+						<div class="modal-header bg-light">
+							<h5 class="modal-title">Detalles Campañas</h5>
+							<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+						</div>
 							<div class="modal-body">
 								<div id="divConfiguracion" class="container" style="margin-top : 15px ">
-									<fieldset class="border p-2">
-										<legend class="float-none w-auto p-2">Detalles Campañas
-										</legend>
-										<div class="row" style="margin-top : 15px ">
 											<div class="table-responsive">
-												<table class="table table-sm" style="width: 100%;"
+												<table class="table ofertas-table align-middle" style="width: 100%;"
 													id="tblDetalle">
 													<thead>
 														<tr>
@@ -469,12 +452,8 @@
 													</tbody>
 												</table>
 											</div>
-										</div>
-
-									</fieldset>
 								</div>
 							</div>
-						</fieldset>
 					</div>
 				</div>
 			</div>
@@ -483,13 +462,11 @@
 			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false"
 				role="dialog">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
-					<div class="modal-content">
-						<fieldset class="border p-2">
-							<!--<legend class="float-none w-auto p-2">Proceso de Ofertas Automaticas.</legend>-->
+					<div class="modal-content border-0 shadow">
 							 <!-- Cabecera del Modal -->
-      						<div class="modal-header">
+      						<div class="modal-header bg-light">
        							<h5 class="modal-title">Documentos de Ofertas Automaticas</h5>
-        						<!--<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>-->
+        						<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       						</div>
 							<div class="modal-body">
 								<div class="row" style="margin-top : 15px ">
@@ -513,9 +490,9 @@
 								</div>
 								<div class="row" style="margin-top : 15px ">
 									<div class="table-responsive">
-										<table class="table table-sm" style="width: 100%;"
+										<table class="table ofertas-table align-middle" style="width: 100%;"
 											id="tblAdjuntos">
-											<thead>
+											<thead class="table-light">
 												<tr>
 													<th>Nombre</th>
 													<th>Peso de archivo  </th>
@@ -536,10 +513,9 @@
 									id="lblCargaAdjunto"></h1>
 								<button type="button" class="btn btn-primary" data-dismiss="modal"
 									id="btnGuardarFile">Guardar</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal"
+								<button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
 									id="btnCerrarAdjunto">Cerrar</button>
 							</div>
-						</fieldset>
 					</div>
 				</div>
 			</div>
@@ -547,20 +523,20 @@
 			<!--Modal Detalle de Gestiones-->
 			<div class="modal fade" id="modalRegistroGestiones" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
 				<div class="modal-dialog modal-dialog-centered modal-xl">
-					<div class="modal-content">
+					<div class="modal-content border-0 shadow">
 							<div class="modal-body">
 								<div id="divRegistroGestiones" style="margin-top : 15px ">
 									
-										<div class="modal-header">
-											<legend class="float-none w-auto p-2 modal-title">Generales Asignacion de Gestiones</legend>
+										<div class="modal-header bg-light">
+											<h5 class="modal-title">Generales Asignación de Gestiones</h5>
 											<button type="button" class="btn-close" onclick="cerrarModalAlertas('modalRegistroGestiones')"
 											data-dismiss="modal" aria-label="Close"></button>
 										</div>
 										<div class="modal-body">
 										<div class="row" style="margin-top : 15px ">
 											<div class="table-responsive">
-												<table class="table table-sm" id="tblRegistroGestiones">
-													<thead>
+												<table class="table ofertas-table align-middle" id="tblRegistroGestiones">
+													<thead class="table-light">
 														<tr>
 															<th>Sucursal</th>
 															<th>Registros Asignados</th>
@@ -576,9 +552,9 @@
 										</div>
 										</div>
 										<div class="modal-footer">
-											<button style='background: #0dcaf0; border-color: #0dcaf0;' type="button"
+											<button type="button"
 											onclick="cerrarModalAlertas('modalRegistroGestiones')" data-dismiss="modal"
-											class="btn btn-secondary">Salir</button>
+											class="btn btn-outline-secondary">Salir</button>
 										</div>
 								</div>
 							</div>
