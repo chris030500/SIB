@@ -1,8 +1,8 @@
-package ahorrosbienestar.sib.std.configuracion.login.component;
+﻿package ahorrosbienestar.sib.std.configuracion.login.component;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpSessionEvent;
-import jakarta.servlet.http.HttpSessionListener;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class CustomHttpSessionListener implements HttpSessionListener{
 			logger.info("DestruirSesionUsuario");
 			HttpSession session = se.getSession();
 	        String username = (String) session.getAttribute("username");
-	        // Aquí puedes realizar la lógica para cambiar el estado del usuario en base de datos
+	        // AquÃ­ puedes realizar la lÃ³gica para cambiar el estado del usuario en base de datos
 	        // utilizando el nombre de usuario obtenido
 	        logger.info("Session destroyed. User: " + username);
 	        Usuario usuario = usuarioService.findByNombre(username);
@@ -44,3 +44,4 @@ public class CustomHttpSessionListener implements HttpSessionListener{
 	 }
 
 }
+

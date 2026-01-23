@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.presolicitudes.service;
+﻿package ahorrosbienestar.sib.std.presolicitudes.service;
 
 import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.presolicitudes.model.EmpresaSIB;
 import ahorrosbienestar.sib.std.presolicitudes.repository.EmpresaSIBRepository;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -35,7 +35,7 @@ public class NotificacionService {
 
     @PostConstruct
     public void iniciarScheduler() {
-        programarTarea(); // Llamar la programación de la tarea al inicio
+        programarTarea(); // Llamar la programaciÃ³n de la tarea al inicio
     }
 
     public void programarTarea() {
@@ -43,14 +43,14 @@ public class NotificacionService {
             scheduledFuture.cancel(false); // Detener tarea previa si existe
         }
 
-        // Obtener la expresión CRON desde la base de datos
+        // Obtener la expresiÃ³n CRON desde la base de datos
         String cronExpresion = obtenerCronDesdeBD();
 
-        System.out.println("Expresión CRON configurada: " + cronExpresion);
+        System.out.println("ExpresiÃ³n CRON configurada: " + cronExpresion);
 
         Runnable tarea = this::enviarNotificaciones;
 
-        // Programar la tarea con la nueva expresión CRON
+        // Programar la tarea con la nueva expresiÃ³n CRON
         scheduledFuture = taskScheduler.schedule(tarea, new CronTrigger(cronExpresion));
     }
 
@@ -67,7 +67,7 @@ public class NotificacionService {
             if (debeEnviarNotificacion(empresa, ahora)) {
                 emailService.enviarCorreo(empresa.getCorreoContacto(), 
                                           "Recordatorio", 
-                                          "Este es tu recordatorio según tu frecuencia seleccionada.");
+                                          "Este es tu recordatorio segÃºn tu frecuencia seleccionada.");
                 empresa.setFecha(ahora);
                 empresaSIBRepository.save(empresa);
             }
@@ -93,3 +93,4 @@ public class NotificacionService {
         }
     }
 }
+

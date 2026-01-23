@@ -8,14 +8,13 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 
 import ahorrosbienestar.sib.std.configuracion.login.component.CustomAuthenticationFailureHandler;
 import ahorrosbienestar.sib.std.index.model.Acceso;
@@ -25,7 +24,7 @@ import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 
 @Configuration
 @EnableWebSecurity
-public class SeguridadAppInicializador {
+public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UsuarioService usuarioService;
@@ -39,13 +38,13 @@ public class SeguridadAppInicializador {
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         try {
             http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
+                .csrf().disable()
+                .authorizeRequests()
+                    .antMatchers(
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -58,10 +57,9 @@ public class SeguridadAppInicializador {
                         "/usuario/**",
                         "/api/**"
                     ).permitAll()
-                    .anyRequest().authenticated()
-                );
+                    .anyRequest().authenticated();
 
-            http.formLogin(form -> form
+            http.formLogin()
                 .successHandler((request, response, authentication) -> {
                     String username = authentication.getName();
                     Usuario usuario = usuarioService.findByNombre(username);
@@ -85,25 +83,22 @@ public class SeguridadAppInicializador {
                 })
                 .loginPage("/login")
                 .failureHandler(customAuthenticationFailureHandler)
-                .permitAll()
-            );
+                .permitAll();
 
-            http.logout(logout -> logout.permitAll());
-            http.exceptionHandling(ex -> ex.accessDeniedPage("/error_403"));
+            http.logout().permitAll();
+            http.exceptionHandling().accessDeniedPage("/error_403");
 
-            http.sessionManagement(session -> session
+            http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)
                 .expiredUrl("/STD/inicio")
-                .maxSessionsPreventsLogin(false)
-            );
+                .maxSessionsPreventsLogin(false);
 
-            http.sessionManagement(session -> session.invalidSessionUrl("/STD/inicio"));
+            http.sessionManagement().invalidSessionUrl("/STD/inicio");
 
         } catch (Exception e) {
             System.out.println("datos" + e.getMessage());
         }
-        return http.build();
     }
 
     @Bean
@@ -111,29 +106,23 @@ public class SeguridadAppInicializador {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    @Override
+    protected void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.jdbcAuthentication().dataSource(datasource).passwordEncoder(passwordEncoder()).usersByUsernameQuery(
-                """
-                SELECT u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO
-                FROM TBL_CAT_USUARIOS as u
-                inner join TBL_HIST_CONTRASENIA as hc
-                on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)
-                WHERE u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_SESION = 0 and u.I_ESTATUS_CUENTA
-                and hc.VC_INDICADOR_ACTIVO = 1
-                and u.VC_NOMBRE_USUARIO = ?
-                """)
+                "SELECT u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO " +
+                "FROM TBL_CAT_USUARIOS as u " +
+                "inner join TBL_HIST_CONTRASENIA as hc " +
+                "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO) " +
+                "WHERE u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_SESION = 0 and u.I_ESTATUS_CUENTA " +
+                "and hc.VC_INDICADOR_ACTIVO = 1 " +
+                "and u.VC_NOMBRE_USUARIO = ?")
                 .authoritiesByUsernameQuery(
-                        """
-                        SELECT u.VC_NOMBRE_USUARIO, r.VC_NOMBRE_ROL, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO
-                        FROM TBL_CAT_USUARIOS as u
-                        inner join TBL_CAT_ROL as r
-                        on (u.Rol_idRol = r.PK_ID_ROL)
-                        inner join TBL_HIST_CONTRASENIA as hc
-                        on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)
-                        where hc.VC_INDICADOR_ACTIVO = 1 and  u.VC_NOMBRE_USUARIO = ?
-                        """);
-        return builder.build();
+                        "SELECT u.VC_NOMBRE_USUARIO, r.VC_NOMBRE_ROL, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO " +
+                        "FROM TBL_CAT_USUARIOS as u " +
+                        "inner join TBL_CAT_ROL as r " +
+                        "on (u.Rol_idRol = r.PK_ID_ROL) " +
+                        "inner join TBL_HIST_CONTRASENIA as hc " +
+                        "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO) " +
+                        "where hc.VC_INDICADOR_ACTIVO = 1 and  u.VC_NOMBRE_USUARIO = ?");
     }
 }

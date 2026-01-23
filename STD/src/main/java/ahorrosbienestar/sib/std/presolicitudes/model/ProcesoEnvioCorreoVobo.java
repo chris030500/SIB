@@ -1,13 +1,13 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_PROCESO_ENVIO_CORREO_VOBO")
@@ -22,7 +22,7 @@ public class ProcesoEnvioCorreoVobo {
     private String vcEmpresa;  // Relacionado con la empresa
 
     @Column(name = "DT_FECHA_ENVIO")
-    private LocalDateTime dtFechaEnvio;  // Fecha y hora de envío
+    private LocalDateTime dtFechaEnvio;  // Fecha y hora de envÃ­o
 
     @Column(name = "I_CANTIDAD_SOLICITUDES")
     private Integer iCantidadSolicitudes;  // Cantidad de solicitudes enviadas
@@ -72,3 +72,4 @@ public class ProcesoEnvioCorreoVobo {
         this.iEstatus = iEstatus;
     }
 }
+

@@ -1,11 +1,11 @@
-package ahorrosbienestar.sib.std.productos.controller;
+﻿package ahorrosbienestar.sib.std.productos.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -395,3 +395,4 @@ public class ProductoController {
 		return ResponseEntity.ok(productoService.findById(id));
 	}
 }
+

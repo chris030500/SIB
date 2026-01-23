@@ -1,6 +1,6 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +19,13 @@ public class ProcesoReporte {
     private String usuarioCarga;
  
     @Column(name = "fechaCarga", nullable = false)
-    private LocalDateTime fechaCarga = LocalDateTime.now();   // se asigna automáticamente
+    private LocalDateTime fechaCarga = LocalDateTime.now();   // se asigna automÃ¡ticamente
  
     /** 1 = activo, 0 = inactivo */
     @Column(name = "estatus", nullable = false)
     private Boolean estatus = true;
  
-    /* ---- Relación con TBL_PLD_DESCARGAS ---- */
+    /* ---- RelaciÃ³n con TBL_PLD_DESCARGAS ---- */
     @OneToMany(mappedBy = "proceso", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DescargaReporte> descargas = new ArrayList<>();
  
@@ -45,3 +45,4 @@ public class ProcesoReporte {
     public List<DescargaReporte> getDescargas() { return descargas; }
     public void setDescargas(List<DescargaReporte> descargas) { this.descargas = descargas; }
 }
+

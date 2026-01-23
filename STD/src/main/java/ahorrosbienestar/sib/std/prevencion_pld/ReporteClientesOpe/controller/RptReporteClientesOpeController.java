@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
 //import java.io.IOException;
 //import java.nio.file.Path;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-//import jakarta.servlet.http.HttpServletResponse;
-//import jakarta.servlet.ServletOutputStream;
+//import javax.servlet.http.HttpServletResponse;
+//import javax.servlet.ServletOutputStream;
 //import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
@@ -108,7 +108,7 @@ public class RptReporteClientesOpeController {
         logger.info("1");
 
         try {
-            // Verificación de usuario autenticado
+            // VerificaciÃ³n de usuario autenticado
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (!(principal instanceof UserDetails)) {
                 mensaje = "Error: Usuario no autenticado.";
@@ -130,7 +130,7 @@ public class RptReporteClientesOpeController {
 
             // 3) Validar archivo
             if (files == null || files.length == 0 || files[0].isEmpty()) {
-                mensaje = "No se subió ningún archivo.";
+                mensaje = "No se subiÃ³ ningÃºn archivo.";
                 respuesta.add(mensaje);
                 logger.warn(mensaje);
                 return ResponseEntity.badRequest().body(respuesta);
@@ -151,8 +151,8 @@ public class RptReporteClientesOpeController {
 
             // 5) Procesar archivo(s) recibido(s)
             for (MultipartFile file : files) {
-                logger.info("Paso 7: Archivo recibido -> nombre={} | tamaño={} bytes");
-                // Aquí podrías meter tu lógica de parseo si aplica
+                logger.info("Paso 7: Archivo recibido -> nombre={} | tamaÃ±o={} bytes");
+                // AquÃ­ podrÃ­as meter tu lÃ³gica de parseo si aplica
             }
 
             mensaje = "Archivo(s) procesado(s) exitosamente. ID del proceso: " + proceso.getPk_id_peps();
@@ -165,7 +165,7 @@ public class RptReporteClientesOpeController {
         } catch (Exception e) {
             mensaje = "Error procesando archivo(s): " + e.getMessage();
             respuesta.add(mensaje);
-            logger.error("❌ Paso X: excepción en uploadPEP", e);
+            logger.error("âŒ Paso X: excepciÃ³n en uploadPEP", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
@@ -208,7 +208,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            logger.error("Error al generar reporte operaciones auditoría: " + e.getMessage(), e);
+            logger.error("Error al generar reporte operaciones auditorÃ­a: " + e.getMessage(), e);
             respuesta.add(e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
@@ -227,7 +227,7 @@ public class RptReporteClientesOpeController {
             respuesta.add(reporteURL);
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            logger.error("Error al generar histórico clientes: " + e.getMessage(), e);
+            logger.error("Error al generar histÃ³rico clientes: " + e.getMessage(), e);
             respuesta.add(e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
@@ -246,7 +246,7 @@ public class RptReporteClientesOpeController {
             respuesta.add(reporteURL);
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            logger.error("Error al generar histórico operaciones: " + e.getMessage(), e);
+            logger.error("Error al generar histÃ³rico operaciones: " + e.getMessage(), e);
             respuesta.add(e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
@@ -281,7 +281,7 @@ public class RptReporteClientesOpeController {
         try {
             connection = jdbcTemplate.getDataSource().getConnection();
 
-            // el SP recibirá la fecha
+            // el SP recibirÃ¡ la fecha
             callableStatement = connection.prepareCall("{CALL SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?, ?)}");
 
             // PARAMETRO 1 (IN)
@@ -305,7 +305,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
-            logger.error("❌ Error al ejecutar SP: " + e.getMessage(), e);
+            logger.error("âŒ Error al ejecutar SP: " + e.getMessage(), e);
             respuesta.put("mensaje", "Error SQL: " + e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
@@ -315,7 +315,7 @@ public class RptReporteClientesOpeController {
                 if (callableStatement != null) callableStatement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                logger.error("Error al cerrar conexión: " + e.getMessage());
+                logger.error("Error al cerrar conexiÃ³n: " + e.getMessage());
             }
         }
     }
@@ -329,7 +329,7 @@ public class RptReporteClientesOpeController {
             @RequestParam("fechaFinOper") String fechaFinOper,
             @RequestParam("fechaCorteClientes") String fechaCorteClientes) {
 
-        logger.info("/ejecutarVistoBueno - Año: " + anio 
+        logger.info("/ejecutarVistoBueno - AÃ±o: " + anio 
                     + ", Operaciones: " + fechaInicioOper + " a " + fechaFinOper
                     + ", CorteClientes: " + fechaCorteClientes);
 
@@ -405,7 +405,7 @@ public class RptReporteClientesOpeController {
                 if (callableStatement != null) callableStatement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                logger.error("Error al cerrar conexión: " + e.getMessage());
+                logger.error("Error al cerrar conexiÃ³n: " + e.getMessage());
             }
         }
     }
@@ -502,7 +502,7 @@ public class RptReporteClientesOpeController {
     }
     
     /**
-     * Generar reporte de CLIENTES filtrado por año (2024 / 2025)
+     * Generar reporte de CLIENTES filtrado por aÃ±o (2024 / 2025)
      */
     @RequestMapping(value = { "/generarRptClientesPorAnio" }, method = RequestMethod.POST)
     public ResponseEntity<List<String>> generarRptClientesPorAnio(@RequestParam("anio") String anio) {
@@ -511,7 +511,7 @@ public class RptReporteClientesOpeController {
             // Buscar reporte Jasper configurado para Clientes Anual
             ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.RPT_CLIENTES_OPERACIONES_AUDITOR);
 
-            // Construir la URL dinámica hacia Jasper con el parámetro "Anio"
+            // Construir la URL dinÃ¡mica hacia Jasper con el parÃ¡metro "Anio"
             String reporteURL = iConfiguracionRepository.buscarPropiedad(Constantes.CONTROLLER_JASPER_CONF)
                     + datosReporte.getPk_id_reporte()
                     + "&parametros=?Anio=" + anio
@@ -519,11 +519,11 @@ public class RptReporteClientesOpeController {
                     + "&identificadorDoc=CLI";
 
             respuesta.add(reporteURL);
-            logger.info(" Generando reporte de clientes filtrado por año: " + anio);
+            logger.info(" Generando reporte de clientes filtrado por aÃ±o: " + anio);
             return ResponseEntity.ok(respuesta);
 
         } catch (Exception e) {
-            logger.error(" Error al generar reporte de clientes por año: " + e.getMessage(), e);
+            logger.error(" Error al generar reporte de clientes por aÃ±o: " + e.getMessage(), e);
             respuesta.add("Error al generar reporte de clientes: " + e.getMessage());
             return ResponseEntity.ok(respuesta);
         }
@@ -538,7 +538,7 @@ public class RptReporteClientesOpeController {
         try {
             // Validar formato
             if (fechaCorte == null || fechaCorte.trim().isEmpty()) {
-                respuesta.add("La fecha de corte no puede estar vacía.");
+                respuesta.add("La fecha de corte no puede estar vacÃ­a.");
                 return ResponseEntity.badRequest().body(respuesta);
             }
 
@@ -555,12 +555,12 @@ public class RptReporteClientesOpeController {
 
             respuesta.add(reporteURL);
 
-            logger.info("✔ Reporte CLIENTES por FECHA CORTE generado: " + fechaCorte);
+            logger.info("âœ” Reporte CLIENTES por FECHA CORTE generado: " + fechaCorte);
 
             return ResponseEntity.ok(respuesta);
 
         } catch (Exception e) {
-            logger.error("❌ Error al generar reporte clientes FECHA CORTE: " + e.getMessage(), e);
+            logger.error("âŒ Error al generar reporte clientes FECHA CORTE: " + e.getMessage(), e);
             respuesta.add("Error al generar reporte: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
@@ -570,7 +570,7 @@ public class RptReporteClientesOpeController {
     public ResponseEntity<Map<String, Object>> procesarAuditoriaClientes(
             @RequestParam("fechaCorte") String fechaCorte) {
 
-        logger.info("/procesarAuditoriaClientes - Año recibido: " + fechaCorte);
+        logger.info("/procesarAuditoriaClientes - AÃ±o recibido: " + fechaCorte);
         Map<String, Object> respuesta = new HashMap<>();
 
         Connection connection = null;
@@ -584,13 +584,13 @@ public class RptReporteClientesOpeController {
 
         	callableStatement.execute();
 
-            respuesta.put("mensaje", "Auditoría de clientes para el año " + fechaCorte + " procesada correctamente.");
+            respuesta.put("mensaje", "AuditorÃ­a de clientes para el aÃ±o " + fechaCorte + " procesada correctamente.");
             respuesta.put("tipo", "success");
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
             logger.error("Error al ejecutar SP procesarAuditoriaClientes: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error al procesar auditoría: " + e.getMessage());
+            respuesta.put("mensaje", "Error al procesar auditorÃ­a: " + e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
 
@@ -599,7 +599,7 @@ public class RptReporteClientesOpeController {
                 if (callableStatement != null) callableStatement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                logger.error("Error al cerrar conexión: " + e.getMessage());
+                logger.error("Error al cerrar conexiÃ³n: " + e.getMessage());
             }
         }
     }

@@ -1,8 +1,8 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
+﻿package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class adminSMS {
@@ -109,3 +109,4 @@ public class adminSMS {
 	}
     
 }
+

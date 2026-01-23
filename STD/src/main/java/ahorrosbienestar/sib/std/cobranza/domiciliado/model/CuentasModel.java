@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.cobranza.domiciliado.model;
+﻿package ahorrosbienestar.sib.std.cobranza.domiciliado.model;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -86,3 +86,4 @@ public class CuentasModel {
 	}
 
 }
+

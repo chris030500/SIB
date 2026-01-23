@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "TBL_EMPRESAS_VOBO")
@@ -88,4 +88,5 @@ public class EmpresaSIB {
 	}
     
 }
+
 

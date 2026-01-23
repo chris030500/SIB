@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model;
+﻿package ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_CLIENTES_ACTIVOS", indexes = {@Index(name = "idx_nombrecompleto", columnList = "VC_NombreCompleto")})
@@ -67,3 +67,4 @@ public class ClientesActivosModel {
 	}
 
 }
+

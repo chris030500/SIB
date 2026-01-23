@@ -1,5 +1,5 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
-import jakarta.persistence.*;
+﻿package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -97,4 +97,5 @@ public class MensajeSMS {
 	}
     
 }
+
 

@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.model;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -75,3 +75,4 @@ public class RegistrosAsignacion {
 	}
 
 }
+

@@ -1,6 +1,6 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-import jakarta.persistence.*;
+import javax.persistence.*;
  
 /**  Tabla: SIB.TBL_PLD_DESCARGAS  */
 @Entity
@@ -36,3 +36,4 @@ public class DescargaReporte {
     public String getNombreCliente()                { return nombreCliente; }
     public void setNombreCliente(String nombre)     { this.nombreCliente = nombre; }
 }
+

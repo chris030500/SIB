@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.prospector.configuracion;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.prospector.configuracion;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class ProspectorTareaConfiguracion {
 				for(ValidarEjecutarCronBase valBase : validacionCron) {
 					if(!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 						expresionCron = valBase.getExpresionCron();
-						// Crea un nuevo trigger con la nueva expresión cron
+						// Crea un nuevo trigger con la nueva expresiÃ³n cron
 			            CronTrigger trigger = new CronTrigger(expresionCron);
 			            // Reemplaza el trigger existente con el nuevo trigger
 			            taskSchedulerProspector.schedule(() -> procesarCron(), trigger);
@@ -109,9 +109,9 @@ public class ProspectorTareaConfiguracion {
 				for(ValidarEjecutarCronBase valBase : validacionCron) {
 					if(valBase.getI_ejecutar() == 1) {
 						procesarProspector();
-						logger.info("Se ejecuto proceso Campañas VIP:"+horaYMinutos);
+						logger.info("Se ejecuto proceso CampaÃ±as VIP:"+horaYMinutos);
 					}else {
-						logger.info("No es tiempo de ejecutar proceso Campañas VIP:"+horaYMinutos);
+						logger.info("No es tiempo de ejecutar proceso CampaÃ±as VIP:"+horaYMinutos);
 					}
 				}			
 				
@@ -133,3 +133,4 @@ public class ProspectorTareaConfiguracion {
 	    } 
 	 
 }
+

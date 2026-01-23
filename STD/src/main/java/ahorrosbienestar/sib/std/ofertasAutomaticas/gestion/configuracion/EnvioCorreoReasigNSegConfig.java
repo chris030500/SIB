@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -7,7 +7,7 @@ import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class EnvioCorreoReasigNSegConfig {
 	    	
 	        try {
 	        	expresionBD = configService.valorPropiedad(Constantes.CRON_ENVIO_CORREO_REASIGNACION);
-	        	// Crea un nuevo trigger con la nueva expresión cron
+	        	// Crea un nuevo trigger con la nueva expresiÃ³n cron
 	            CronTrigger trigger = new CronTrigger(expresionBD.getVc_valor_propiedad());
 	            // Reemplaza el trigger existente con el nuevo trigger
 	            tareCorreoReasignacion.schedule(() -> procesarCron(idProceso), trigger);
@@ -146,7 +146,7 @@ public class EnvioCorreoReasigNSegConfig {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+                    logger.error("Error al cerrar la conexiÃ³n: " + e.getMessage());
                 }
             }
         }
@@ -157,3 +157,4 @@ public class EnvioCorreoReasigNSegConfig {
     }
 	
 }
+

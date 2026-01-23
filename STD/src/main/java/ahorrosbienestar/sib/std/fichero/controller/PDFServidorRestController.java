@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.fichero.controller;
+﻿package ahorrosbienestar.sib.std.fichero.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
@@ -77,7 +77,7 @@ public class PDFServidorRestController {
 		
 		try {
 			file.transferTo(new File(UrlPDFServidor() + fileName));
-			logger.info("Ubicación del archivo" + UrlPDFServidor() + fileName);
+			logger.info("UbicaciÃ³n del archivo" + UrlPDFServidor() + fileName);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("Error: "+e);
 		}
@@ -121,8 +121,8 @@ public class PDFServidorRestController {
                 	logger.info("Entro en if de no existe el directorio ");
                     if ((directorio2).mkdirs()) {
                     	String usuarioCarpeta = System.getProperty("user.name");
-                    	logger.info("Usuario creación de carpeta: " + usuarioCarpeta);
-                        //System.out.println("Usuario creación de carpeta: " + usuarioCarpeta);
+                    	logger.info("Usuario creaciÃ³n de carpeta: " + usuarioCarpeta);
+                        //System.out.println("Usuario creaciÃ³n de carpeta: " + usuarioCarpeta);
                         
 //                        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
 //                        Files.setPosixFilePermissions(directorio2, permissions);
@@ -189,3 +189,4 @@ public class PDFServidorRestController {
 
 
 }
+

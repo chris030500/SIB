@@ -1,13 +1,13 @@
-package ahorrosbienestar.sib.std.configuracion.login.controller;
+﻿package ahorrosbienestar.sib.std.configuracion.login.controller;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -57,11 +57,11 @@ public class LoginController extends HttpServlet {
         //System.out.println("missesion: " + misession.getAttribute(principal.toString()));
         //System.out.println("Principal: " + principal);
         if ("activo".equals(sessionStatus)) {
-            // La sesión está activa
-        	System.out.println("La sesión está activa");
+            // La sesiÃ³n estÃ¡ activa
+        	System.out.println("La sesiÃ³n estÃ¡ activa");
         } else {
-            // La sesión está inactiva
-        	System.out.println("La sesión está inactiva");
+            // La sesiÃ³n estÃ¡ inactiva
+        	System.out.println("La sesiÃ³n estÃ¡ inactiva");
         }
         
         if(principal != null) {
@@ -118,3 +118,4 @@ public class LoginController extends HttpServlet {
 	
 
 }
+

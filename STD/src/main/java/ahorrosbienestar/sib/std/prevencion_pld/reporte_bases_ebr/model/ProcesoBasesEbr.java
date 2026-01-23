@@ -1,13 +1,13 @@
-package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -139,3 +139,4 @@ public class ProcesoBasesEbr {
 	}
 	
 }
+

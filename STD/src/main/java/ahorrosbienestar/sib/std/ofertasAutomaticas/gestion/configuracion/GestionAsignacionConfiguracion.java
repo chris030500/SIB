@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.configuracion;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class GestionAsignacionConfiguracion {
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(!valBase.getExpresionCron().equals(expresionCron)) {
 					expresionCron = valBase.getExpresionCron();
-					// Crea un nuevo trigger con la nueva expresión cron
+					// Crea un nuevo trigger con la nueva expresiÃ³n cron
 		            CronTrigger trigger = new CronTrigger(expresionCron);
 		            // Reemplaza el trigger existente con el nuevo trigger
 		            tareProcesoAsignacion.schedule(() -> procesarCron(idProceso), trigger);
@@ -180,7 +180,7 @@ public class GestionAsignacionConfiguracion {
 	                try {
 	                    connection.close();
 	                } catch (SQLException e) {
-	                    logger.error("Error al cerrar la conexión: " + e.getMessage());
+	                    logger.error("Error al cerrar la conexiÃ³n: " + e.getMessage());
 	                }
 	            }
 	        }
@@ -189,3 +189,4 @@ public class GestionAsignacionConfiguracion {
 	 }
 
 }
+

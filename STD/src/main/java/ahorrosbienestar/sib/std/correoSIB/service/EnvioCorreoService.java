@@ -1,13 +1,13 @@
-package ahorrosbienestar.sib.std.correoSIB.service;
+﻿package ahorrosbienestar.sib.std.correoSIB.service;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,8 @@ import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 
-import jakarta.mail.util.ByteArrayDataSource;
-import jakarta.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
+import javax.activation.DataSource;
 
 
 @Service
@@ -190,3 +190,4 @@ public class EnvioCorreoService {
 	
 	
 }
+

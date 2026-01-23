@@ -1,6 +1,6 @@
-package ahorrosbienestar.sib.std.configuracion.login.configuration;
+﻿package ahorrosbienestar.sib.std.configuracion.login.configuration;
 
-import jakarta.servlet.http.HttpSessionListener;
+import javax.servlet.http.HttpSessionListener;
 
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -18,3 +18,4 @@ public class LoginConfiguracion {
         return listenerBean;
     }
 }
+

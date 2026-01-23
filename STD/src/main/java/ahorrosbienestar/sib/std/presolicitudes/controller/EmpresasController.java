@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.presolicitudes.controller;
+﻿package ahorrosbienestar.sib.std.presolicitudes.controller;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class EmpresasController {
 		String mensajeError = null;
 		try {
 			listaCatalogos = empresaService.obtenerTodasLasEmpresas();
-			logger.info("Se llenó la lista");
+			logger.info("Se llenÃ³ la lista");
 			respuesta.put("lista", listaCatalogos);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
@@ -97,7 +97,7 @@ public class EmpresasController {
 
 			// Validar si la empresa ya existe
 			if (empresaService.empresaExiste(empresa.getNombre())) {
-				respuesta.put("error", "La empresa ya está registrada.");
+				respuesta.put("error", "La empresa ya estÃ¡ registrada.");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
 			}
 
@@ -110,7 +110,7 @@ public class EmpresasController {
 			return ResponseEntity.ok(respuesta);
 
 		} catch (Exception e) {
-			// Imprimir el error en el log del servidor para depuración
+			// Imprimir el error en el log del servidor para depuraciÃ³n
 			e.printStackTrace();
 
 			respuesta.put("error", "No se pudo guardar la empresa: " + e.getMessage());
@@ -184,7 +184,7 @@ public class EmpresasController {
 
 	@GetMapping("/carga_configuracion-correo")
 	public ResponseEntity<ConfiguracionCorreo> cargarConfiguracionCorreo() {
-		// Obtener el primer registro de configuración de correo
+		// Obtener el primer registro de configuraciÃ³n de correo
 		ConfiguracionCorreo configuracionCorreo = configuracionCorreoRepository.findFirstByOrderByPkIdConfAsc();
 
 		if (configuracionCorreo != null) {
@@ -194,7 +194,7 @@ public class EmpresasController {
 		}
 	}
 
-	// Endpoint para actualizar la configuración de correo
+	// Endpoint para actualizar la configuraciÃ³n de correo
 	@PutMapping("/actualizar")
 	public ResponseEntity<Map<String, String>> actualizarCorreo(@RequestBody ConfiguracionCorreo configuracionCorreo) {
 		Map<String, String> response = new HashMap<>();
@@ -202,10 +202,10 @@ public class EmpresasController {
 		try {
 			configuracionCorreoService.actualizarCorreo(configuracionCorreo);
 			actualizarExpresionCron(configuracionCorreo.getCronExpresion());
-			response.put("message", "Configuración de correo actualizada con éxito.");
-			return ResponseEntity.ok(response); // ✅ Retorna un JSON válido
+			response.put("message", "ConfiguraciÃ³n de correo actualizada con Ã©xito.");
+			return ResponseEntity.ok(response); // âœ… Retorna un JSON vÃ¡lido
 		} catch (Exception e) {
-			response.put("message", "Hubo un error al actualizar la configuración.");
+			response.put("message", "Hubo un error al actualizar la configuraciÃ³n.");
 			return ResponseEntity.status(500).body(response);
 		}
 	}
@@ -215,7 +215,7 @@ public class EmpresasController {
 	    	// Define la zona horaria deseada
 	        ZoneId zona = ZoneId.of("America/Chihuahua");
 
-	        // Obtén la fecha y hora con zona
+	        // ObtÃ©n la fecha y hora con zona
 	        ZonedDateTime ahora = ZonedDateTime.now(zona);
 
 	        // Da formato a la fecha y hora
@@ -233,14 +233,14 @@ public class EmpresasController {
 	            System.out.print("Tarea cron anterior cancelada.");
 	        }
 
-	        // Crea un nuevo trigger con la nueva expresión cron
+	        // Crea un nuevo trigger con la nueva expresiÃ³n cron
 	        CronTrigger trigger = new CronTrigger(expresionCron, ZoneId.of("America/Chihuahua"));
 	        
 	        // Programa la nueva tarea y guarda la referencia de la tarea programada
 	        currentScheduledTask = taskScheduler.schedule(() -> procesarCron(), trigger);
 	        
-	        logger.info("Se actualizó cron de Envio de correos");
-	        System.out.print("Se actualizó cron de Envio de correos");
+	        logger.info("Se actualizÃ³ cron de Envio de correos");
+	        System.out.print("Se actualizÃ³ cron de Envio de correos");
 
 	    } catch (Exception e) {
 	        logger.error("Error: " + e.getMessage());
@@ -275,3 +275,4 @@ public class EmpresasController {
 
 
 }
+

@@ -1,6 +1,6 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -279,3 +279,4 @@ public class ReporteClientesOpeModel {
     public String getVC_ActividadINEGI() { return VC_ActividadINEGI; }
     public void setVC_ActividadINEGI(String VC_ActividadINEGI) { this.VC_ActividadINEGI = VC_ActividadINEGI; }
 }
+

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.usuarios.controller;
+﻿package ahorrosbienestar.sib.std.usuarios.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +87,7 @@ public class UsuarioRestController {
 	@GetMapping("/activarUsuario/{id}")
 	public ResponseEntity<?> activarUsuarioSesion(@PathVariable("id") Integer id) throws IOException {
 		logger.info("Ingreso en activarUsuarioSesion");
-		logger.info("activar sesión usuario: " + id);
+		logger.info("activar sesiÃ³n usuario: " + id);
 		return ResponseEntity.ok(usuarioService.activarUsuarioSesion(id));
 	}
 
@@ -105,7 +105,7 @@ public class UsuarioRestController {
 		return ResponseEntity.ok(usuarioService.findByNombreUsuario(nombreUsuario));
 	}
 
-	// Buscar usuario por nombre y trae toda su información
+	// Buscar usuario por nombre y trae toda su informaciÃ³n
 	@GetMapping("/nombreUsuario/{nombre}")
 	public ResponseEntity<?> findByUsuarioNombre(@PathVariable(name = "nombre") String nombre) {
 		logger.info("Ingreso en findByUsuarioNombre");
@@ -162,7 +162,7 @@ public class UsuarioRestController {
 		usuario.setI_id_empleado(EmpleadoId);
 		logger.info("Datos usuario: ");
 		logger.info("Estatus cuenta: " + usuario.getI_estatus_cuenta());
-		logger.info("Estatus sesión: " + usuario.getI_estatus_sesion());
+		logger.info("Estatus sesiÃ³n: " + usuario.getI_estatus_sesion());
 		logger.info("Estatus usuario: " + usuario.getI_estatus_usuario());
 		logger.info("Estatus intentos fallidos: " + usuario.getI_intentos_fallidos());
 		logger.info("Usuario PK: " + usuario.getPk_id_usuario());
@@ -226,21 +226,21 @@ public class UsuarioRestController {
 	            	
 	            	ResponseEntity.notFound().build();
 	            	
-					//return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas 3 contraseñas");
-					break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
+					//return ResponseEntity.ok("La nueva contraseÃ±a coincide con una de las Ãºltimas 3 contraseÃ±as");
+					break;// La nueva contraseÃ±a coincide con una de las Ãºltimas 3 contraseÃ±as
 	            }
 	        }
 			
 			if (coincideContrasena) {
-				logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
-				return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+				logger.error("La nueva contraseÃ±a coincide con una de las Ãºltimas " + "contraseÃ±as");
+				return ResponseEntity.badRequest().body("La nueva contraseÃ±a coincide con una de las Ãºltimas 3 contraseÃ±as");
 			}
-			logger.info("Puede realizar el cambio de contraseña");
+			logger.info("Puede realizar el cambio de contraseÃ±a");
 
 			Usuario usu = usuarioService.findById(idUsuario).get();
 			histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
 			String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-			//logger.info("Días que va a estar activa la contraseña: " + pDias);
+			//logger.info("DÃ­as que va a estar activa la contraseÃ±a: " + pDias);
 			// Establecemos el formato de la fecha
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			// Obtenemos la fecha en String
@@ -248,7 +248,7 @@ public class UsuarioRestController {
 			// Casteamos la fechaActual a localDate
 			LocalDate localDate = LocalDate.parse(fechaActual);
 			LocalDate localDateHoy = LocalDate.parse(fechaActual);
-			// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
+			// Vamos a agregarle los dÃ­as de vigencÃ­a conforme al parametro ya establecido.
 
 			//localDate = localDate.plusDays(Long.parseLong(pDias));
 
@@ -285,8 +285,9 @@ public class UsuarioRestController {
 	@RequestMapping(value = { "/reactivar_usuario_sesion/{id}" }, method = RequestMethod.POST)
 	public ResponseEntity<?> reactivarUsuarioSesion(@PathVariable("id") Integer id) throws IOException {
 		logger.info("Ingreso en activarUsuarioSesion");
-		logger.info("activar sesión usuario: " + id);
+		logger.info("activar sesiÃ³n usuario: " + id);
 		return ResponseEntity.ok(usuarioService.activarUsuarioSesion(id));
 	}
 
 }
+

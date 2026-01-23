@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 @Entity
@@ -101,3 +101,4 @@ public class Empleado {
         this.empresaEmpleado = empresaEmpleado;
     }
 }
+

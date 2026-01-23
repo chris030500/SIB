@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.marketing.creditosdesembolsados.model;
+﻿package ahorrosbienestar.sib.std.marketing.creditosdesembolsados.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_CONFIG_CREDITOS_DESEMBOLSADOS")
@@ -83,3 +83,4 @@ public class ConfigCreditosDesembolsados {
 				+ nombreConfig + "]";
 	}
 }
+

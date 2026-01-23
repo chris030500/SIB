@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.configuracion.controller;
+﻿package ahorrosbienestar.sib.std.configuracion.controller;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
@@ -81,12 +81,12 @@ public class ConfiguracionController {
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";
 	
-	// Cargamos la vista de la configuracion de los parametros de la contraseña
+	// Cargamos la vista de la configuracion de los parametros de la contraseÃ±a
 
 	@GetMapping("/contrasena")
 	public String inicio(Model model) throws IOException {
 		logger.info("Ejecutando contrasena");
-		String nombrePantalla = "Contraseña";
+		String nombrePantalla = "ContraseÃ±a";
 		if(validarAcceso(nombrePantalla) == 1) {
 			model.addAttribute("titulo", "configuracion");
 			model.addAttribute("longitud", configService.findAll().get(0).getVc_valor_propiedad());
@@ -102,7 +102,7 @@ public class ConfiguracionController {
 		return rutaDireccion;
 	}
 
-	// Guardamos la configuracion de los parametros de la contraseña
+	// Guardamos la configuracion de los parametros de la contraseÃ±a
 	@PostMapping("/guardarConfContrasena")
 	public String guardarConfContrasena(Model model, @RequestParam(name = "longitud", required = false) String longitud,
 			@RequestParam(name = "mayusculas", required = false) String mayusculas,
@@ -126,7 +126,7 @@ public class ConfiguracionController {
 		logger.info("Ejecutando Sesiones");
 		String nombrePantalla = "Sesiones";
 		if(validarAcceso(nombrePantalla) == 1) {
-			model.addAttribute("titulo", "Configuración de sesiones");
+			model.addAttribute("titulo", "ConfiguraciÃ³n de sesiones");
 			model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
 			model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
 			model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
@@ -171,7 +171,7 @@ public class ConfiguracionController {
 		return rutaDireccion;
 	}
 
-	// Desbloqueo de sesión o cuenta del usuario
+	// Desbloqueo de sesiÃ³n o cuenta del usuario
 	@PostMapping("/cambioSesiones")
 	public String cambioSesiones(@RequestParam(name = "desbloqueo", required = true) String desbloqueo,
 			@RequestParam(name = "selectUsuario", required = true) String[] selectUsuario, HttpServletRequest request) {
@@ -208,7 +208,7 @@ public class ConfiguracionController {
 		return "redirect:/configuracion/sesionesInactiva";
 	}
 
-	// Se agregan los parametros de la contraseña
+	// Se agregan los parametros de la contraseÃ±a
 	@GetMapping("/generarContrasena")
 	public String generarContrasena(Model model) throws IOException {
 
@@ -226,7 +226,7 @@ public class ConfiguracionController {
 		return "configuracion/generacionContrasena";
 	}
 
-	// Se guarda la contraseña que se haya establecido
+	// Se guarda la contraseÃ±a que se haya establecido
 	@PostMapping("/guardarContrasena")
 	public String guardarContrasena(@RequestParam("contrasena") String contrasena, HistContrasena histContrasena)
 			throws IOException {
@@ -236,40 +236,40 @@ public class ConfiguracionController {
 		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
 		LocalDate localDate = LocalDate.parse(fechaActual);
 		// Properties properties = new Properties();
-		// Primero consultamos la contraseña que se ha almacenado con anterioridad
+		// Primero consultamos la contraseÃ±a que se ha almacenado con anterioridad
 		// InputStream inputStream = new
 		// FileInputStream("src/main/resources/contrasena.properties");
 		// properties.load(inputStream);
 		// String contrasenaAnterior = properties.getProperty("contrasena");
 		String contrasenaAnterior = configService.findAll().get(5).getVc_valor_propiedad();
 		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
-		System.out.println("contraseña con Bcryp: " + passwordEncoder.encode(contrasenaAnterior));
+		System.out.println("contraseÃ±a con Bcryp: " + passwordEncoder.encode(contrasenaAnterior));
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		// Obtenemos el nombre del usuario autentificado
 		Usuario usu = usuarioService.findByNombre(auth.getName());
 		
-		// Se agregan los campos para la tabla historico de contraseña
+		// Se agregan los campos para la tabla historico de contraseÃ±a
 		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
 		histContrasena.setVc_indicador_activo(1);
 		histContrasena.setDt_vig_cont_fin(localDate);
 		histContrasena.setUsr_historico_contrasena_id(usu);
-		// System.out.println("Historico de contraseña: " + histContrasena);
+		// System.out.println("Historico de contraseÃ±a: " + histContrasena);
 		histContrasenaService.save(histContrasena);
 		// histContrasena.setUsr_historico_contrasena_id(1L).get();
 
 		String contrasenia = contrasena;
-		// System.out.println("Contraseña nueva: " + contrasena);
-		logger.info("Usuario que cambia la contraseña: " + auth);
-		logger.info("Contraseña nueva " + contrasena);
+		// System.out.println("ContraseÃ±a nueva: " + contrasena);
+		logger.info("Usuario que cambia la contraseÃ±a: " + auth);
+		logger.info("ContraseÃ±a nueva " + contrasena);
 		configService.cambiarContrasenaDefault(contrasenia);
 
 		return "redirect:/configuracion/generarContrasena";
 
 	}
 
-	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña
+	// Mostrar los mensajes que le corresponden al momento de agregar la contraseÃ±a
 	@GetMapping("/mensajeContrasena")
 	public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
 		logger.info("mensajeContrasena");
@@ -298,3 +298,4 @@ public class ConfiguracionController {
 	
 	
 }
+

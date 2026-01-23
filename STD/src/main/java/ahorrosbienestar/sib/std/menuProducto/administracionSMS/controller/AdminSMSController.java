@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
+﻿package ahorrosbienestar.sib.std.menuProducto.administracionSMS.controller;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,12 +80,12 @@ public class AdminSMSController {
 		try {
 			List<adminSMS> mensajes = mensajesService.busquedaPorSeguimiento(cliente, sucur, proce);
 
-			// Verificar si la lista de mensajes es nula o vacía
+			// Verificar si la lista de mensajes es nula o vacÃ­a
 			if (mensajes != null && !mensajes.isEmpty()) {
 				respuesta.put("lista", mensajes);
 				return ResponseEntity.ok(respuesta);
 			} else {
-				// Devolver una lista vacía si no hay mensajes encontrados
+				// Devolver una lista vacÃ­a si no hay mensajes encontrados
 				respuesta.put("lista", Collections.emptyList());
 				return ResponseEntity.ok(respuesta);
 			}
@@ -167,7 +167,7 @@ public class AdminSMSController {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
-			// Configurar la entidad de la solicitud con los parámetros como JSON
+			// Configurar la entidad de la solicitud con los parÃ¡metros como JSON
 			HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
 
 			// Realizar la solicitud HTTP POST
@@ -228,7 +228,7 @@ public class AdminSMSController {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
-			// Configurar la entidad de la solicitud con los parámetros como JSON
+			// Configurar la entidad de la solicitud con los parÃ¡metros como JSON
 			HttpEntity<Parametros> requestEntity = new HttpEntity<>(parametros, headers);
 
 			// Realizar la solicitud HTTP POST
@@ -239,7 +239,7 @@ public class AdminSMSController {
 			//System.out.println("Respuesta del servidor: " + responseBody);
 			
 			if (response.getStatusCode().is2xxSuccessful()) {
-	            // Realizar otra acción aquí
+	            // Realizar otra acciÃ³n aquÃ­
 				 // Actualizar el estado de los mensajes
 				List<Integer> idsMensajes = envioMensajes.parallelStream()
                         .map(EnvioMensajes::getIdMensaje)
@@ -288,10 +288,10 @@ public class AdminSMSController {
 	@PostMapping("/respuestaSMS")
     public ResponseEntity<String> receiveSoapResponse(@RequestBody String response) {
         try {
-            // Aquí puedes procesar la respuesta recibida
+            // AquÃ­ puedes procesar la respuesta recibida
             System.out.println("Respuesta SOAP recibida: " + response);
             
-            // Realizar cualquier acción adicional según la respuesta recibida
+            // Realizar cualquier acciÃ³n adicional segÃºn la respuesta recibida
             // Por ejemplo, actualizar el estado de la base de datos, enviar notificaciones, etc.
 
             return ResponseEntity.ok("Respuesta recibida y procesada.");
@@ -302,3 +302,4 @@ public class AdminSMSController {
     }
 	
 }
+

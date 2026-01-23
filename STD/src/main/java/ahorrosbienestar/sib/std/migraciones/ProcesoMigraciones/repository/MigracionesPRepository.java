@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository;
+﻿package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository;
  
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import java.time.LocalDateTime;
  
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
  
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MigracionesPRepository extends JpaRepository<MigracionesP, Integer> {
  
-    // Botón Switch: Cambia solo el estatus y usuario que lo modificó
+    // BotÃ³n Switch: Cambia solo el estatus y usuario que lo modificÃ³
     @Modifying
     @Transactional
     @Query("UPDATE MigracionesP m SET m.estatus = :estatus, m.usuarioActualiza = :usuario WHERE m.idMigracion = :id")
@@ -24,7 +24,7 @@ public interface MigracionesPRepository extends JpaRepository<MigracionesP, Inte
         @Param("usuario") String usuario
     );
  
-    // Botón Ejecutar: Programa ejecución (I_EJECUTA, CRON, FECHA_EJECUCION, VC_USUARIO_EJECUTA)
+    // BotÃ³n Ejecutar: Programa ejecuciÃ³n (I_EJECUTA, CRON, FECHA_EJECUCION, VC_USUARIO_EJECUTA)
     @Modifying
     @Transactional
     @Query("UPDATE MigracionesP m SET m.ejecuta = :ejecuta, m.cron = :cron, m.usuarioEjecuta = :usuario, m.fechaEjecucion = :fecha WHERE m.idMigracion = :id")
@@ -36,7 +36,7 @@ public interface MigracionesPRepository extends JpaRepository<MigracionesP, Inte
         @Param("fecha") LocalDateTime fecha
     );
  
-    // Al finalizar la migración: se actualiza estatus, mensaje, usuario y fecha
+    // Al finalizar la migraciÃ³n: se actualiza estatus, mensaje, usuario y fecha
     @Modifying
     @Transactional
     @Query("UPDATE MigracionesP m SET m.ejecuta = 0, m.estatus = 0, m.fechaEjecucion = CURRENT_TIMESTAMP, m.mensajeResultado = :mensaje, m.usuarioActualiza = :usuario WHERE m.idMigracion = :id")
@@ -48,3 +48,4 @@ public interface MigracionesPRepository extends JpaRepository<MigracionesP, Inte
     
  
 }
+

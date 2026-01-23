@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 
  */
 package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.configuracion;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -147,7 +147,7 @@ public class FidelidadTareaConfiguracion {
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(!valBase.getExpresionCron().equals(expresionCron)) {
 					expresionCron = valBase.getExpresionCron();
-					// Crea un nuevo trigger con la nueva expresión cron
+					// Crea un nuevo trigger con la nueva expresiÃ³n cron
 		            CronTrigger trigger = new CronTrigger(expresionCron);
 		            // Reemplaza el trigger existente con el nuevo trigger
 		            taskSchedulerFidelidad.schedule(() -> procesarCron(), trigger);
@@ -174,7 +174,7 @@ public class FidelidadTareaConfiguracion {
 		logger.info("archivo: " + archivo);
 		
 		try {
-			isRunning = true; // Bloquear la ejecución
+			isRunning = true; // Bloquear la ejecuciÃ³n
 			if (archivoValidador.existeArchivo(urlDirectorio, archivo)) {
 				List<String> incorrectHeaders = null;
 				logger.info("Inicia proceso de lectura de archivo.");
@@ -182,7 +182,7 @@ public class FidelidadTareaConfiguracion {
 					incorrectHeaders = comparadorEncabezados.compararHeader(urlDirectorio + archivo);
 					logger.info("ruta:"+urlDirectorio+archivo);
 					if (incorrectHeaders.isEmpty()) {
-						logger.info("El archivo y los encabezados son válidos.");
+						logger.info("El archivo y los encabezados son vÃ¡lidos.");
 						try {
 							
 							logger.info("Entro en try para procesarArchivoExcel");
@@ -230,7 +230,7 @@ public class FidelidadTareaConfiguracion {
 			
 			
 		} finally {
-			isRunning = false; // Desbloquear la ejecución
+			isRunning = false; // Desbloquear la ejecuciÃ³n
 		}
 	}
 
@@ -246,7 +246,7 @@ public class FidelidadTareaConfiguracion {
 			Workbook workbook = new XSSFWorkbook(inputStream);
 			Sheet sheet = workbook.getSheet(nombreHoja); // Cambiar al nombre correcto de la hoja
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Cambia el formato según lo que se encuentre
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Cambia el formato segÃºn lo que se encuentre
 																			// en la celda
 			List<String> errores = new ArrayList<>();
 			int filaInicial = 1;
@@ -254,7 +254,7 @@ public class FidelidadTareaConfiguracion {
 			for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
 				Row row = sheet.getRow(i);
 				if (row == null || row.getCell(0) == null) {
-					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
+					break; // Detener la iteraciÃ³n si la fila es nula o la celda en la columna 0 es nula
 				}
 				
 				logger.info("for de row: " + (i + 1));
@@ -267,8 +267,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("clienteId: " + clienteId);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en clienteId: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
+					logger.info("Error en clienteId: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numÃ©rico");
 					continue; // Ir a la siguiente fila
 				}
 				try {
@@ -319,8 +319,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("edad: " + edad);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en edad: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Edad no es numérico");
+					logger.info("Error en edad: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Edad no es numÃ©rico");
 					continue;
 				}
 
@@ -330,8 +330,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("creditoId: " + creditoId);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en creditoId: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Credito Id no es numérico");
+					logger.info("Error en creditoId: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Credito Id no es numÃ©rico");
 					continue;
 				}
 
@@ -350,8 +350,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("montoOriginal: " + montoOriginal);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en montoOriginal: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Monto Original no es numérico");
+					logger.info("Error en montoOriginal: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Monto Original no es numÃ©rico");
 					continue;
 				}
 
@@ -361,8 +361,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("maxDiasMora: " + maxDiasMora);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en maxDiasMora: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numérico");
+					logger.info("Error en maxDiasMora: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numÃ©rico");
 					continue;
 				}
 
@@ -372,8 +372,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("telCelular: " + telCelular);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telCelular: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numérico");
+					logger.info("Error en telCelular: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numÃ©rico");
 					continue;
 				}
 
@@ -383,8 +383,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("telRecados: " + telRecados);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telRecados: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numérico");
+					logger.info("Error en telRecados: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numÃ©rico");
 					continue;
 				}
 
@@ -394,8 +394,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("telEmpleado: " + telEmpleado);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telEmpleado: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numérico");
+					logger.info("Error en telEmpleado: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numÃ©rico");
 					continue;
 				}
 
@@ -405,8 +405,8 @@ public class FidelidadTareaConfiguracion {
 					logger.info("telReferencia1: " + telReferencia1);
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telReferencia1: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numérico");
+					logger.info("Error en telReferencia1: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numÃ©rico");
 					continue;
 				}
 
@@ -417,8 +417,8 @@ public class FidelidadTareaConfiguracion {
 
 				} catch (IllegalStateException e) {
 					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telReferencia2: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
+					logger.info("Error en telReferencia2: El valor no es numÃ©rico.");
+					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numÃ©rico");
 					continue;
 				}
 				
@@ -449,7 +449,7 @@ public class FidelidadTareaConfiguracion {
 				logger.info("Error archivo:"+erroresMns);
 
 			} else {
-				// Llamar al método para insertar en BD solo si no hay errores
+				// Llamar al mÃ©todo para insertar en BD solo si no hay errores
 				logger.info("No hay errores");
 				try {
 				
@@ -460,7 +460,7 @@ public class FidelidadTareaConfiguracion {
 						Row row = sheet.getRow(i);
 						if (row == null || row.getCell(0) == null) {
 							contRegistro = i;
-							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
+							break; // Detener la iteraciÃ³n si la fila es nula o la celda en la columna 0 es nula
 						}
 						
 						DecimalFormat decimalFormat = new DecimalFormat("#");
@@ -483,7 +483,7 @@ public class FidelidadTareaConfiguracion {
 						registroExcel.setVc_nombre_sucurs(nombreSucursal);
 
 						Date fechaNacimiento = row.getCell(4).getDateCellValue();
-						String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada// como cadena
+						String fechaFormateada = dateFormat.format(fechaNacimiento); // AquÃ­ obtienes la fecha formateada// como cadena
 						// Convertir la cadena formateada nuevamente a un objeto Date
 						Date fechaFormateadaComoDate = dateFormat.parse(fechaFormateada);
 						registroExcel.setDt_fecha_nacimiento(fechaFormateadaComoDate);
@@ -598,3 +598,4 @@ public class FidelidadTareaConfiguracion {
 
 
 }
+

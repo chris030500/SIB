@@ -1,6 +1,6 @@
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
+﻿package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDateTime;
  
 @Entity

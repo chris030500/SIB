@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_EMPRESAS_CONVENIOS_MIGRACION")
@@ -22,11 +22,11 @@ public class Empresa {
     @Column(name = "VC_CORREO_CONTACTO", length = 150)
     private String correoContacto;
 
-    // Constructor vacío obligatorio para JPA
+    // Constructor vacÃ­o obligatorio para JPA
     public Empresa() {
     }
 
-    // Constructor con parámetros
+    // Constructor con parÃ¡metros
     public Empresa(Integer id, String nombre, String personaContacto, String correoContacto) {
         this.id = id;
         this.nombre = nombre;
@@ -67,4 +67,5 @@ public class Empresa {
         this.correoContacto = correoContacto;
     }
 }
+
 

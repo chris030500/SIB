@@ -1,11 +1,11 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Column;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
@@ -126,4 +126,5 @@ public class Condiciones {
         this.vcPlazo = vcPlazo;
     }
 }
+
 

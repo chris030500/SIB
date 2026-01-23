@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.presolicitudes.controller;
+﻿package ahorrosbienestar.sib.std.presolicitudes.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.mail.internet.InternetAddress;
+import javax.mail.internet.InternetAddress;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -103,7 +103,7 @@ public class PresolicitudesController {
     private static final String rutaError = "errores/error_403";
     private static final String controllerReporte = "generarReporte";
 
-    // ---------- Helpers por petición (stateless) ----------
+    // ---------- Helpers por peticiÃ³n (stateless) ----------
     private Usuario currentUsuario() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof UserDetails)) {
@@ -161,7 +161,7 @@ public class PresolicitudesController {
         Map<String, Object> respuesta = new HashMap<>();
         try {
             List<EmpresaSIB> listaCatalogos = empresaService.obtenerTodas();
-            logger.info("Se llenó la lista");
+            logger.info("Se llenÃ³ la lista");
             respuesta.put("lista", listaCatalogos);
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -244,9 +244,9 @@ public class PresolicitudesController {
             SolicitudCredito nuevaSolicitud = solicitudCreditoService.guardarSolicitud(solicitud);
             return ResponseEntity.ok(nuevaSolicitud);
         } catch (Exception e) {
-            logger.error("Error al crear la solicitud de crédito: " + e.getMessage(), e);
+            logger.error("Error al crear la solicitud de crÃ©dito: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al crear la solicitud de crédito: " + e.getMessage());
+                    .body("Error al crear la solicitud de crÃ©dito: " + e.getMessage());
         }
     }
 
@@ -337,8 +337,8 @@ public class PresolicitudesController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadExcel2(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            logger.info("[ERROR] El archivo está vacío.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo está vacío.");
+            logger.info("[ERROR] El archivo estÃ¡ vacÃ­o.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo estÃ¡ vacÃ­o.");
         }
 
         try (InputStream inputStream = file.getInputStream()) {
@@ -350,8 +350,8 @@ public class PresolicitudesController {
             } else if (file.getOriginalFilename().endsWith(".xls")) {
                 workbook = new HSSFWorkbook(inputStream);
             } else {
-                logger.error("[ERROR] Formato de archivo no válido.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel válido.");
+                logger.error("[ERROR] Formato de archivo no vÃ¡lido.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El archivo no es un formato Excel vÃ¡lido.");
             }
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -398,7 +398,7 @@ public class PresolicitudesController {
                 }
                 solicitudes.add(solicitud);
             }
-            logger.info("[INFO] Datos extraídos: " + solicitudes);
+            logger.info("[INFO] Datos extraÃ­dos: " + solicitudes);
             workbook.close();
 
             // Actualiza estatus con el usuario actual (por request)
@@ -413,7 +413,7 @@ public class PresolicitudesController {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-            logger.info("[INFO] IDs de solicitudes extraídos: " + solicitudIds);
+            logger.info("[INFO] IDs de solicitudes extraÃ­dos: " + solicitudIds);
 
             List<SolicitudCredito> solicitudesActualizadas = solicitudCreditoRepository.findAllById(solicitudIds);
             logger.info("[INFO] Solicitudes obtenidas de la BD: " + solicitudesActualizadas);
@@ -424,7 +424,7 @@ public class PresolicitudesController {
 
             logger.info("[INFO] Solicitudes agrupadas por sucursal: " + solicitudesPorSucursal);
 
-            // Obtener valor único de proceso por sucursal
+            // Obtener valor Ãºnico de proceso por sucursal
             Map<Integer, Integer> procesoPorSucursal = new HashMap<>();
             for (Map.Entry<Integer, List<SolicitudCredito>> entry : solicitudesPorSucursal.entrySet()) {
                 Integer sucursal = entry.getKey();
@@ -443,7 +443,7 @@ public class PresolicitudesController {
             }
             logger.info("[INFO] Procesos por sucursal: " + procesoPorSucursal);
 
-            // Envío de correos por sucursal
+            // EnvÃ­o de correos por sucursal
             for (Map.Entry<Integer, Integer> entry : procesoPorSucursal.entrySet()) {
                 Integer sucursal = entry.getKey();
                 Integer proceso = entry.getValue();
@@ -464,11 +464,11 @@ public class PresolicitudesController {
                 logger.info("[INFO] Enviando correo a: " + direccion.getAddress());
                 logger.info("[INFO] Sucursal: " + sucursal + " | Proceso: " + proceso);
                 logger.info("[INFO] Archivo adjunto: " + fileName);
-                logger.info("[INFO] Parámetros del reporte: " + parametros);
+                logger.info("[INFO] ParÃ¡metros del reporte: " + parametros);
 
                 emailService.sendEmailWithAttachment(
                         direccion.getAddress(),
-                        "Actualización de Estatus de Solicitudes",
+                        "ActualizaciÃ³n de Estatus de Solicitudes",
                         cuerpoCorreo,
                         fileName,
                         fileBytes
@@ -477,7 +477,7 @@ public class PresolicitudesController {
 
             return ResponseEntity.ok("Archivo procesado y notificaciones enviadas correctamente.");
         } catch (Exception e) {
-            logger.error("[ERROR] Excepción capturada: " + e.getMessage(), e);
+            logger.error("[ERROR] ExcepciÃ³n capturada: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar el archivo: " + e.getMessage());
         }
@@ -489,7 +489,7 @@ public class PresolicitudesController {
         sb.append("<head><meta charset='UTF-8'></head>");
         sb.append("<body style='font-family: Arial, sans-serif; color: #2c3e50; background-color: #f4f6f7; padding: 20px;'>");
         sb.append("<div style='max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);'>");
-        sb.append("<h2 style='color:#2980b9; border-bottom: 2px solid #2980b9; padding-bottom: 10px;'>Notificación: Actualización de Estatus</h2>");
+        sb.append("<h2 style='color:#2980b9; border-bottom: 2px solid #2980b9; padding-bottom: 10px;'>NotificaciÃ³n: ActualizaciÃ³n de Estatus</h2>");
         sb.append("<p>Estimado equipo de la sucursal <strong>").append(sucursal).append("</strong>,</p>");
         sb.append("<p>Les informamos que se ha actualizado el estatus de las solicitudes de credito de nomina registradas en su sucursal.</p>");
         sb.append("<p>Adjunto a este correo encontraran un archivo de Excel con los nuevos estatus correspondientes.</p>");
@@ -578,7 +578,7 @@ public class PresolicitudesController {
         }
     }
 
-    // Mantengo este método por compatibilidad si lo usas en otros servicios.
+    // Mantengo este mÃ©todo por compatibilidad si lo usas en otros servicios.
     public Usuario obtUsuario() {
         return currentUsuario();
     }
@@ -635,3 +635,4 @@ public class PresolicitudesController {
         return ResponseEntity.ok(body);
     }
 }
+

@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.index.controller;
+﻿package ahorrosbienestar.sib.std.index.controller;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,15 +76,15 @@ public class IndexController {
 			logger.info("Estatus Fecha: " + estatusFecha);
 			logger.info("Estatus Fecha: " + estatusFecha);
 			if (estatusFecha == 1) {
-				logger.info("Debe de cambiar la contraseña");
-				// logger.info("Debe de cambiar la contraseña");
+				logger.info("Debe de cambiar la contraseÃ±a");
+				// logger.info("Debe de cambiar la contraseÃ±a");
 
 				return "redirect:/cambio_contrasena";
 			}
 			logger.info("Ingreso al sistema");
 		}
 
-//		logger.info("Cambia el estatus de sesión a activo (1)");
+//		logger.info("Cambia el estatus de sesiÃ³n a activo (1)");
 		// logger.info("Puede acceder al sistema");
 		// loginService.spActivarSesion(nombreUsuario);
 		return "index";
@@ -92,16 +92,16 @@ public class IndexController {
 
 	@RequestMapping(value = { "/cambio_contrasena" }, method = RequestMethod.GET)
 	public String cambioContrasena(HttpServletRequest request, HttpServletResponse response) {
-		logger.info("Cambio de contraseña");
+		logger.info("Cambio de contraseÃ±a");
 		return "cambioContrasena";
 	}
 
-	// Metodo que guarda la contraseña nueva al momento de almacenarla
+	// Metodo que guarda la contraseÃ±a nueva al momento de almacenarla
 	@RequestMapping(value = { "/guardar_contrasena" }, method = RequestMethod.POST)
 	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
 		logger.info("Ejecutando guardarCambioContrasena");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// Buscamos la información del usuario
+		// Buscamos la informaciÃ³n del usuario
 		Usuario usu = usuarioService.findByNombre(auth.getName());
 		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
 
@@ -114,25 +114,25 @@ public class IndexController {
 
 				ResponseEntity.notFound().build();
 
-				// return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas
-				// 3 contraseñas");
-				break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
+				// return ResponseEntity.ok("La nueva contraseÃ±a coincide con una de las Ãºltimas
+				// 3 contraseÃ±as");
+				break;// La nueva contraseÃ±a coincide con una de las Ãºltimas 3 contraseÃ±as
 			}
 		}
 		
 		if (coincideContrasena) {
-			logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
-			return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+			logger.error("La nueva contraseÃ±a coincide con una de las Ãºltimas " + "contraseÃ±as");
+			return ResponseEntity.badRequest().body("La nueva contraseÃ±a coincide con una de las Ãºltimas 3 contraseÃ±as");
 		}
-		logger.info("Puede realizar el cambio de contraseña");
+		logger.info("Puede realizar el cambio de contraseÃ±a");
 
 		// logger.info("Password: " + password);
 
 		logger.info("Pk_Usu: " + usu.getPk_id_usuario());
-		// Con el id del usuario vamos a dar de baja la contraseña que se tiene
+		// Con el id del usuario vamos a dar de baja la contraseÃ±a que se tiene
 		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
 
-		// Vamos a obtener el parametro de los días de vigencia de la contraseña
+		// Vamos a obtener el parametro de los dÃ­as de vigencia de la contraseÃ±a
 //		Properties properties = new Properties();
 //		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
 //		properties.load(inputStream);
@@ -140,7 +140,7 @@ public class IndexController {
 //		properties.getProperty("pDias");
 
 		String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-		logger.info("Días que va a estar activa la contraseña: " + pDias);
+		logger.info("DÃ­as que va a estar activa la contraseÃ±a: " + pDias);
 		// Establecemos el formato de la fecha
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		// Obtenemos la fecha en String
@@ -148,7 +148,7 @@ public class IndexController {
 		// Casteamos la fechaActual a localDate
 		LocalDate localDate = LocalDate.parse(fechaActual);
 		LocalDate localDateHoy = LocalDate.parse(fechaActual);
-		// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
+		// Vamos a agregarle los dÃ­as de vigencÃ­a conforme al parametro ya establecido.
 
 		localDate = localDate.plusDays(Long.parseLong(pDias));
 
@@ -164,7 +164,7 @@ public class IndexController {
 		return ResponseEntity.ok(histContrasenaService.save(hc));
 	}
 
-	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña
+	// Mostrar los mensajes que le corresponden al momento de agregar la contraseÃ±a
 	@GetMapping("/mensajeContrasena")
 	public ResponseEntity<?> mensajeContrasena(@RequestParam("contrasena") String contrasena) throws IOException {
 //		InputStream inputStream = new FileInputStream("src/main/resources/confContrasena.properties");
@@ -187,3 +187,4 @@ public class IndexController {
 	
 
 }
+

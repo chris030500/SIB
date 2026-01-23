@@ -1,11 +1,11 @@
-package ahorrosbienestar.sib.std.presolicitudes.service;
+﻿package ahorrosbienestar.sib.std.presolicitudes.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 @Service
 public class SolicitudCreditoService {
 
-	private final Logger logger = Logger.getLogger(SolicitudCreditoService.class); // Corregido para no ser estático
+	private final Logger logger = Logger.getLogger(SolicitudCreditoService.class); // Corregido para no ser estÃ¡tico
 
 	@Autowired
     private SolicitudCreditoRepository solicitudCreditoRepository;
@@ -43,7 +43,7 @@ public class SolicitudCreditoService {
 	    return solicitudCreditoRepository.findAll();
 	}
 	
-	// Método para obtener una solicitud por su ID
+	// MÃ©todo para obtener una solicitud por su ID
     public SolicitudCredito obtenerSolicitudPorId(Integer id) throws Exception {
         Optional<SolicitudCredito> solicitud = solicitudCreditoRepository.findById(id);
         
@@ -88,10 +88,10 @@ public class SolicitudCreditoService {
 
                     solicitudCreditoRepository.save(solicitudCredito);
                 } else {
-                	logger.info("No se encontró la solicitud con ID " + noSolicitud);
+                	logger.info("No se encontrÃ³ la solicitud con ID " + noSolicitud);
                 }
             } catch (NumberFormatException e) {
-            	logger.error("Número de solicitud inválido: " + noSolicitudStr);
+            	logger.error("NÃºmero de solicitud invÃ¡lido: " + noSolicitudStr);
             }
         }
     }
@@ -100,7 +100,7 @@ public class SolicitudCreditoService {
     	SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        // Verificas que esté en estado válido para aprobar
+        // Verificas que estÃ© en estado vÃ¡lido para aprobar
         if (solicitud.getEstatus() != 1) {
             throw new IllegalStateException("Solo se pueden aprobar solicitudes en estado pendiente");
         }
@@ -113,9 +113,9 @@ public class SolicitudCreditoService {
     	SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        // Verificas que esté en estado válido para cancelar
+        // Verificas que estÃ© en estado vÃ¡lido para cancelar
         if (solicitud.getEstatus() == 0) {
-            throw new IllegalStateException("La solicitud ya está cancelada");
+            throw new IllegalStateException("La solicitud ya estÃ¡ cancelada");
         }
 
         solicitud.setEstatus(0); // 0 = Cancelada
@@ -139,3 +139,4 @@ public class SolicitudCreditoService {
     }
     
 }
+

@@ -1,14 +1,14 @@
-package ahorrosbienestar.sib.std.presolicitudes.model;
+﻿package ahorrosbienestar.sib.std.presolicitudes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+import javax.persistence.Id;
 
 import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
+import javax.persistence.Column;
 
 @Entity
 @Table(name = "TBL_PARAMS_SIMULADOR_CREDITO")
@@ -73,3 +73,4 @@ public class Parametrosimulador {
     
 
 }
+

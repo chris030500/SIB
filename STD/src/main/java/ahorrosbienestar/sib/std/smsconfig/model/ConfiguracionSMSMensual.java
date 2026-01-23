@@ -1,9 +1,9 @@
-package ahorrosbienestar.sib.std.smsconfig.model;
+﻿package ahorrosbienestar.sib.std.smsconfig.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_CONFIG_SMS_MENSUAL")
@@ -116,3 +116,4 @@ public class ConfiguracionSMSMensual {
 				+ ", anio=" + anio + ", activo=" + activo + ", userModifica=" + userModifica + "]";
 	}
 }
+

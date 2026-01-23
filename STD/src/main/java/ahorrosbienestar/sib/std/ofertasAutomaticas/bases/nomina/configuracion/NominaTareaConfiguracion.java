@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.nomina.configuracion;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,7 @@ public class NominaTareaConfiguracion {
 			for(ValidarEjecutarCronBase valBase : validacionCron) {
 				if(!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
 					expresionCron = valBase.getExpresionCron();
-					// Crea un nuevo trigger con la nueva expresión cron
+					// Crea un nuevo trigger con la nueva expresiÃ³n cron
 		            CronTrigger trigger = new CronTrigger(expresionCron);
 		            // Reemplaza el trigger existente con el nuevo trigger
 		            taskSchedulerNomina.schedule(() -> procesarCron(), trigger);
@@ -139,3 +139,4 @@ public class NominaTareaConfiguracion {
 		}
     }
 }
+

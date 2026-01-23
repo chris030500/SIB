@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.documentos.controller;
+﻿package ahorrosbienestar.sib.std.documentos.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -182,3 +182,4 @@ public class DocumentoController {
 			return ResponseEntity.ok(documentoService.findById(id));
 		}
 }
+

@@ -1,10 +1,10 @@
-package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service;
+﻿package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.fidelidad.service;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,3 +89,4 @@ public class FidelidadService {
 		
 	}
 }
+

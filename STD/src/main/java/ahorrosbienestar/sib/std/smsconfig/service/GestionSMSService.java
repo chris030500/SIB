@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.smsconfig.service;
+﻿package ahorrosbienestar.sib.std.smsconfig.service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.persistence.EntityNotFoundException;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class GestionSMSService {
 	
 	public void updateProcesoByConfigMensual(Long idConfigSMSMensual) {
 		try {
-			logger.info("Obteniendo Gestión SMS mediante el id de configuración mensual.");
+			logger.info("Obteniendo GestiÃ³n SMS mediante el id de configuraciÃ³n mensual.");
 			gestionRepository.updateProcesoSMSByidConfigMensual(idConfigSMSMensual);
 			
 		} catch (Exception e) {
@@ -75,7 +75,7 @@ public class GestionSMSService {
 	
 	public void updateSMSDisponibles(Long idConfigSMSMensual) {
 		try {
-			logger.info("Obteniendo Gestión SMS mediante el id de configuración mensual.");
+			logger.info("Obteniendo GestiÃ³n SMS mediante el id de configuraciÃ³n mensual.");
 			gestionRepository.updateEnviosDisponibles(idConfigSMSMensual);
 			
 		} catch (Exception e) {
@@ -87,24 +87,24 @@ public class GestionSMSService {
 		try {
 			
 			GestionSMS procesoSMS = gestionRepository.findById(idProcess)
-					.orElseThrow(() -> new EntityNotFoundException("GestiónSMS no encontrado con id " + idProcess));
+					.orElseThrow(() -> new EntityNotFoundException("GestiÃ³nSMS no encontrado con id " + idProcess));
 			
 			if (procesoSMS != null) {
-				logger.info("Obteniendo gestión SMS a modificar: " + procesoSMS.toString());
+				logger.info("Obteniendo gestiÃ³n SMS a modificar: " + procesoSMS.toString());
 				if (status == 4) {
 					logger.info("Cambio de estatus a: " + status + "(Cancelado)");
 					LocalDateTime currentDateTime = LocalDateTime.now();
 					procesoSMS.setEstatusProceso(status);
 					procesoSMS.setFechaCancelacion(currentDateTime);
 					procesoSMS.setUserCancela(idUser);
-					logger.info("Gestión SMS actualizada: " + procesoSMS.toString());
+					logger.info("GestiÃ³n SMS actualizada: " + procesoSMS.toString());
 					
 					return gestionRepository.save(procesoSMS);
 					
 				} else {
 					logger.info("Cambio de estatus a: " + status + "(Reiniciado)");
 					procesoSMS.setEstatusProceso(status);
-					logger.info("Gestión SMS actualizada: " + procesoSMS.toString());
+					logger.info("GestiÃ³n SMS actualizada: " + procesoSMS.toString());
 					
 					return gestionRepository.save(procesoSMS);
 				}
@@ -138,7 +138,7 @@ public class GestionSMSService {
 			Integer idUsuario = usuario.get(0).getPk_id_usuario();
             GestionSMS updatedGestionSMS = updatedProcessStatus(idSMSProceso, estatus, idUsuario);
             
-            logger.info("La gestión del SMS modificado: " + updatedGestionSMS.toString());
+            logger.info("La gestiÃ³n del SMS modificado: " + updatedGestionSMS.toString());
             
             return ResponseEntity.ok(updatedGestionSMS);
             
@@ -148,3 +148,4 @@ public class GestionSMSService {
         }
     }
 }
+

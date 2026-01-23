@@ -1,12 +1,12 @@
-package ahorrosbienestar.sib.std.configuracion.login.component;
+﻿package ahorrosbienestar.sib.std.configuracion.login.component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +40,13 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 			
 
 			if (usuario.getI_estatus_cuenta() == 0) {
-				request.getSession().setAttribute("error", "Error en el inicio de sesión: " + "Usuario bloqueado");
-				logger.info("Error en el inicio de sesión, Usuario bloqueado");
+				request.getSession().setAttribute("error", "Error en el inicio de sesiÃ³n: " + "Usuario bloqueado");
+				logger.info("Error en el inicio de sesiÃ³n, Usuario bloqueado");
 			}
 			if (usuario.getI_estatus_usuario() == 0) {
 				request.getSession().setAttribute("error",
 						"Usuario inactivo, favor de comunicarse con el administrador del sistema");
-				logger.info("Error en el inicio de sesión, Usuario inactivo");
+				logger.info("Error en el inicio de sesiÃ³n, Usuario inactivo");
 			} else {
 				
 				
@@ -79,9 +79,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 					}
 					
 					usuarioService.save(usuario);
-					request.getSession().setAttribute("error", "Error en el inicio de sesión: "
-							+ "Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
-					logger.info("Error en el inicio de sesión, Nombre de usuario o contraseña incorrecta, por favor vuelva a intentarlo");
+					request.getSession().setAttribute("error", "Error en el inicio de sesiÃ³n: "
+							+ "Nombre de usuario o contraseÃ±a incorrecta, por favor vuelva a intentarlo");
+					logger.info("Error en el inicio de sesiÃ³n, Nombre de usuario o contraseÃ±a incorrecta, por favor vuelva a intentarlo");
 				
 					// Obteniendo  id_usuario
 					int estatus = usuario.getPk_id_usuario();
@@ -108,7 +108,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 			logger.info(usuario);
 		}
 
-		// Redirigir internamente a la página de inicio de sesión
+		// Redirigir internamente a la pÃ¡gina de inicio de sesiÃ³n
 		response.sendRedirect(request.getContextPath() + "/login");
 	}
 	

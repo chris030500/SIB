@@ -1,8 +1,8 @@
-package ahorrosbienestar.sib.std.presolicitudes.repository;
+﻿package ahorrosbienestar.sib.std.presolicitudes.repository;
 
 import java.util.List;
 
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

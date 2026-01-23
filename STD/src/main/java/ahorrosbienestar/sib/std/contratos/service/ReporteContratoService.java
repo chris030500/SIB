@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.contratos.service;
+﻿package ahorrosbienestar.sib.std.contratos.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.sql.DataSource;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -82,3 +82,4 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	
 
 }
+

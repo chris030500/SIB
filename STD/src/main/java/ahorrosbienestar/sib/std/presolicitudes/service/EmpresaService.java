@@ -1,4 +1,4 @@
-package ahorrosbienestar.sib.std.presolicitudes.service;
+﻿package ahorrosbienestar.sib.std.presolicitudes.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.activation.DataSource;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.util.ByteArrayDataSource;
+import javax.activation.DataSource;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class EmpresaService {
     private ConfiguracionCorreoRepository configuracionCorreoRepository;
 	
 	@Autowired
-	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaración estática del
+	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaraciÃ³n estÃ¡tica del
 
 	@Autowired
 	private final JasperReportController jasperReportController;
@@ -75,7 +75,7 @@ public class EmpresaService {
 
 	public List<Empresa> obtenerTodasLasEmpresas() {
 		try {
-			return empresaRepository.findAll(); // Asegúrate de que `findAll()` está funcionando
+			return empresaRepository.findAll(); // AsegÃºrate de que `findAll()` estÃ¡ funcionando
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<>(); // Evita que explote si hay un error
@@ -437,7 +437,7 @@ public String prepararCorreoPorEmpresaV(Integer idEmpresa) {
 	        
 	        if (contenido == null) {
 	            logger.warn("Contenido correo es nulo para la empresa: " + emp);
-	            return ""; // Devuelve un String vacío si el contenido es nulo
+	            return ""; // Devuelve un String vacÃ­o si el contenido es nulo
 	        }
 	        return contenido;
 	    } catch (Exception e) {
@@ -518,3 +518,4 @@ public String prepararCorreoPorEmpresaV(Integer idEmpresa) {
     }
 }
 }
+
