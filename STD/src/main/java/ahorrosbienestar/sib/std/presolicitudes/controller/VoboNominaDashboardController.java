@@ -63,7 +63,10 @@ public class VoboNominaDashboardController {
             fin = tmp;
         }
         LocalDate finExclusive = fin.plusDays(1);
-        payload.put("range", Map.of("inicio", inicio.toString(), "fin", fin.toString()));
+        Map<String, Object> range = new HashMap<>();
+        range.put("inicio", inicio.toString());
+        range.put("fin", fin.toString());
+        payload.put("range", range);
         UserDetails userDetails = currentUserDetails();
         if (userDetails == null || validarAcceso(userDetails.getUsername()) != 1) {
             payload.put("error", "Sin permisos.");
