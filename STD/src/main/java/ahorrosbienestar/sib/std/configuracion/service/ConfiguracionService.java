@@ -4,15 +4,25 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.transaction.Transactional;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
+
 
 
 @Service
 public class ConfiguracionService {
+	
+	@Autowired
+	private IConfiguracionRepository configuracionRepository;
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -139,4 +149,13 @@ public class ConfiguracionService {
 			throw new RuntimeException(e);
 		}
 	}
+	@Transactional
+    public boolean actualizarConfiguracion(Configuracion configiracion) {
+        int filasAfectadas = configuracionRepository.actualizarConfiguracion(
+        		configiracion.getPk_id_configuracion(),
+        		configiracion.getVc_valor_propiedad()
+            
+        );
+        return filasAfectadas > 0;
+    }
 }
