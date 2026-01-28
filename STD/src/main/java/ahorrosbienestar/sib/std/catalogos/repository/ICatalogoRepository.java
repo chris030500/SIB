@@ -7,17 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
-import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 
 public interface ICatalogoRepository extends JpaRepository<Catalogo, Integer>{
 
-	@Query(value = "SELECT * FROM TBL_OPC_BUSQUEDA WHERE I_ID_GRUPO =:id_group AND i_estatus = 1", nativeQuery = true)
+	@Query(value = "SELECT * FROM TBL_OPC_BUSQUEDA WHERE I_ID_GRUPO =:id_group", nativeQuery = true)
 	public List<Catalogo> generarOpciones(@Param ( "id_group" ) Integer id);
-	
-	@Query(value = "select t2.i_opcion i_opcion, t2.v_valor v_valor "
-	        + "from SIB.TBL_TIPOS_CAMPANIA t1 inner join SIB.TBL_OPC_BUSQUEDA t2 on t1.i_tipo_buro = t2.i_opcion "
-	        + "where t2.i_id_grupo = :id_group "
-	        + "and t1.pk_id_tipo_campania = :tipo_campania", nativeQuery = true)
-	List<Object[]> listaTipoBuro(@Param("id_group") Integer id_group, @Param("tipo_campania") Integer pk_id_tipo_campania);
 
 }
