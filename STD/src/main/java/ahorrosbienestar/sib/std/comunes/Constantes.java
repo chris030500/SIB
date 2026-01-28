@@ -147,7 +147,7 @@ public class Constantes {
 	public static final int CORREO_ASIGNACION = 9;
 	public static final int CORREO_REASIGNACION = 10;
 	public static final int CORREO_BASE_PROSPECTOR = 11;
-	public static final int CORREO_BASE_FIDE = 12;
+	public static final int CORREO_BASE_FIDE = 14;
 	
 	//Bases de procesamiento
 	public static final int BASE_NOMINA = 1;

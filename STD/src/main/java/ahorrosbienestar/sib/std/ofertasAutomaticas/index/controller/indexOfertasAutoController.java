@@ -165,6 +165,10 @@ public class indexOfertasAutoController {
 		if (principal instanceof UserDetails) {
 			userDetails = (UserDetails) principal;
 		}
+
+		if (userDetails == null) {
+			return Constantes.RUTA_ERROR;
+		}
 		
 		if(validarAcceso(userDetails.getUsername())== 1){
 			Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
@@ -184,10 +188,9 @@ public class indexOfertasAutoController {
 		}
 		return rutaDireccion;
 	 }catch(Exception e) {
-		
-		 logger.error(""+e.getMessage());
+		 logger.error("Error al cargar ofertas automaticas", e);
+		 return Constantes.RUTA_ERROR;
 	 }	
-	 return null;
 	}
 
 	@PostMapping("/guardarParamFidelidad")
