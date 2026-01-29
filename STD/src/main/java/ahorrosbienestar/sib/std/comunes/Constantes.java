@@ -100,6 +100,7 @@ public class Constantes {
     public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
+    public static final String MENSAJE_BASE_CAMPANIA_FIDELIDAD = "Se proceso Base Campaña Fidelidad.";
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
@@ -141,18 +142,20 @@ public class Constantes {
 	// TIPOS DE CORREOS
 	public static final int CORREO_BASE_NOMINA = 5;
 	public static final int CORREO_BASE_CAMPANIAS_VIP = 6;
-	public static final int CORREO_BASE_FID_NOM = 7;
-	public static final int CORREO_BASE_FID_RENO = 8;
-	public static final int CORREO_ASIGNACION = 9;
-	public static final int CORREO_REASIGNACION = 10;
-	public static final int CORREO_BASE_PROSPECTOR = 11;
+    public static final int CORREO_BASE_FID_NOM = 7;
+    public static final int CORREO_BASE_FID_RENO = 8;
+    public static final int CORREO_ASIGNACION = 9;
+    public static final int CORREO_REASIGNACION = 10;
+    public static final int CORREO_BASE_PROSPECTOR = 11;
+    public static final int CORREO_BASE_CAMPANIA_FIDELIDAD = 14;
 	
 	//Bases de procesamiento
 	public static final int BASE_NOMINA = 1;
-	public static final int BASE_CAMPANIAS_VIP = 3;
-	public static final int BASE_PROSPECTOR = 4;
-	public static final int BASE_FID_NOM = 5;
-	public static final int BASE_FID_REN = 6;
+    public static final int BASE_CAMPANIAS_VIP = 3;
+    public static final int BASE_PROSPECTOR = 4;
+    public static final int BASE_FID_NOM = 5;
+    public static final int BASE_FID_REN = 6;
+    public static final int BASE_CAMPANIA_FIDELIDAD = 7;
 	
 	// nombre de propiedades de configuracion
 	public static final String CRON_INICIAL = "cronInicialBase";

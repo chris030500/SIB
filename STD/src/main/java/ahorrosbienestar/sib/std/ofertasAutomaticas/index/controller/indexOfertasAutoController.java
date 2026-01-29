@@ -430,6 +430,9 @@ public class indexOfertasAutoController {
 					case 6:
 						campaniasVIPTareaConfiguracion.actualizarExpresionCronFidRen();
 						break;
+					case 7:
+						campaniasVIPTareaConfiguracion.actualizarExpresionCronCampaniaFidelidad();
+						break;
 					default:
 		            	logger.info("En el metodo actualizarParametro al entrar al switch no se encontro ninguna coinsidencia");
 		                break;
@@ -746,6 +749,17 @@ public class indexOfertasAutoController {
 				}
 				
 				break;
+			case 7:
+				try {
+					campaniasVIPTareaConfiguracion.procesarCampaniasFidelidad();
+					mensaje =Constantes.MENSAJE_BASE_CAMPANIA_FIDELIDAD;
+				} catch (Exception e) {
+					mensaje = Constantes.MENSAJE_DE_ERROR+e.getMessage();
+					tipo = Constantes.MENSAJE_ERROR;
+					logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
+				}
+				
+				break;
 			}
 			respuesta.put(Constantes.TEXTO_MNS,mensaje);
 			respuesta.put(Constantes.TIPO_MNS,tipo);
@@ -1044,7 +1058,7 @@ public class indexOfertasAutoController {
 	}
 	
 	@PostMapping("/correoAsignacion")
-	public void correoAsignacion(){
+	public ResponseEntity<Void> correoAsignacion(){
 		try {
 			// Metodo envio de correo y adjunto
         	envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
@@ -1052,6 +1066,7 @@ public class indexOfertasAutoController {
 		} catch (Exception e) {
 			logger.info(Constantes.MENSAJE_ERROR + e.getMessage());
 		}
+		return ResponseEntity.ok().build();
 	}
 	
 	@PostMapping("/enviaCorreoSucursal")
