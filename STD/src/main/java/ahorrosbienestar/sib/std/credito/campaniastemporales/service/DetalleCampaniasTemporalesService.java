@@ -7,22 +7,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.comunes.paramConstantes.utilerias.ExcelCargar;
+import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
+import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.model.DetalleCampaniasTemporalesModel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.repository.DetalleCampaniasTemporalesRepository;
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class DetalleCampaniasTemporalesService {
+public class DetalleCampaniasTemporalesService<ObjectMapper> {
 
 	@Autowired
 	DetalleCampaniasTemporalesRepository detalleCampaniasTemporalesRepository;
+	
+	@Autowired
+	ConfigService configService;
 	
 	public DetalleCampaniasTemporalesModel save(DetalleCampaniasTemporalesModel model) {
 		return detalleCampaniasTemporalesRepository.save(model);
 	}
 	
 	public void detCampaniasTmp(MultipartFile file) {
+		
+		 Configuracion configuracion = configService.valorPropiedad("campaniasTemporales");
+
+		 ObjectMapper mapper = new ObjectMapper();
+
+		Map<String, HeaderRule> headerRules =
+		        mapper.readValue(
+		            config.getHeaderConfig(),
+		            new TypeReference<>() {}
+		        );
+		
+		
 	//  Parsear archivo Excel
 		try {
 			   List<DetalleCampaniasTemporalesModel> filas = ExcelCargar.parseDetalleTemporales(file);
