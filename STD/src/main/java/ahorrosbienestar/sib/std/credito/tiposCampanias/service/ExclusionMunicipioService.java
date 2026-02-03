@@ -79,10 +79,10 @@ public class ExclusionMunicipioService {
 	 public void procesarExcel(MultipartFile archivo) throws Exception {
 
 	        logger.info("==== Inicio procesarExcel ====");
-	        logger.info("Java version: " + System.getProperty("java.version"));
+	        //logger.info("Java version: " + System.getProperty("java.version"));
 	        
-	        logger.info("Archivo: "+ archivo.getOriginalFilename());
-	        logger.info("Tamaño (bytes): "+ archivo.getSize());
+	        //logger.info("Archivo: "+ archivo.getOriginalFilename());
+	        //logger.info("Tamaño (bytes): "+ archivo.getSize());
 
 	        // Validación básica
 	        if (archivo.isEmpty()) {
@@ -103,25 +103,26 @@ public class ExclusionMunicipioService {
 	            ZipSecureFile.setMinInflateRatio(0.001);
 	            ZipSecureFile.setMaxTextSize(10_000_000);
 
-	            logger.info("Antes de crear XSSFWorkbook");
+	            //logger.info("Antes de crear XSSFWorkbook");
 
 	            //Workbook workbook = new XSSFWorkbook(input);
 	            try {
-	                logger.info("Antes de crear XSSFWorkbook");
-	                try (Workbook workbook = new XSSFWorkbook(input)) {
-						logger.info("Workbook creado correctamente");
-						logger.info("Workbook creado correctamente");
-						logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
+	                //logger.info("Antes de crear XSSFWorkbook2");
+	                //try (Workbook workbook = new XSSFWorkbook(input)) {
+	                try (Workbook workbook = WorkbookFactory.create(archivo.getInputStream())) {
+						
+						//logger.info("Workbook creado correctamente");
+						//logger.info("Número de hojas:"+ workbook.getNumberOfSheets());
 
 						Sheet hoja = workbook.getSheetAt(0);
-						logger.info("Última fila: "+ hoja.getLastRowNum());
+						//logger.info("Última fila: "+ hoja.getLastRowNum());
 
 						for (int i = 1; i <= hoja.getLastRowNum(); i++) {
 
 						    Row fila = hoja.getRow(i);
 						    if (fila == null) {
 						       
-						        logger.info("Fila es null, se omite: "+ i);
+						        //logger.info("Fila es null, se omite: "+ i);
 						        continue;
 						    }
 
