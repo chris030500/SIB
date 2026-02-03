@@ -27,7 +27,7 @@ public class ExcelCargar {
 		                	detalleCmpTmp.setSolicitudCreditoIdOrigen((int) row.getCell(1).getNumericCellValue());
 		                	detalleCmpTmp.setCreditoId((long) row.getCell(2).getNumericCellValue());
 		                	detalleCmpTmp.setMontoCreditoOrigen((double) row.getCell(3).getNumericCellValue());
-		                	detalleCmpTmp.setPlazoOfertaId((int) row.getCell(4).getNumericCellValue());
+		                	//detalleCmpTmp.setPlazoOfertaId((int) row.getCell(4).getNumericCellValue());
 		                	detalleCmpTmp.setNumeroCuotas((int) row.getCell(5).getNumericCellValue());
 		                	detalleCmpTmp.setFrecuenciaOferta(row.getCell(6).getStringCellValue());
 		                	detalleCmpTmp.setTipoCredito(row.getCell(7).getStringCellValue());
