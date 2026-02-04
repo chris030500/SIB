@@ -62,6 +62,7 @@ public class CampaniasVIPTareaConfiguracion {
 
 	private String expresionCronFidRen = "0 */5 8-20 1,30 * ?";
 	private String expresionCronFidNom = "0 */5 8-20 1,30 * ?";
+	private String expresionCronCampFidelidad = "0 */5 8-20 1,30 * ?";
 	private static final String ERROR_MESSAGE_PREFIX = "Error:";
 	private static final String HORA_MINUTOS_FORMATO = "HH:mm";
 	private static final String EJECUTA_SP_MENSAJE = "Ejecuta los SP";
@@ -75,6 +76,7 @@ public class CampaniasVIPTareaConfiguracion {
 			actualizarExpresionCronCampanias();
 			actualizarExpresionCronFidNom();
 			actualizarExpresionCronFidRen();
+			actualizarExpresionCronCampaniaFidelidad();
 		} catch (Exception e) {
 			logger.error("" + e.getMessage());
 		}
@@ -238,6 +240,48 @@ public class CampaniasVIPTareaConfiguracion {
 		}
 	}
 
+	public void actualizarExpresionCronCampaniaFidelidad() {
+		try {
+			expresionBD = configService.valorPropiedad(Constantes.CRON_INICIAL);
+			logger.info("Procesar Campaña Fidelidad");
+			List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_CAMPANIA_FIDELIDAD);
+
+			for (ValidarEjecutarCronBase valBase : validacionCron) {
+				if (!valBase.getExpresionCron().equals(expresionBD.getVc_valor_propiedad())) {
+					expresionCronCampFidelidad = valBase.getExpresionCron();
+					CronTrigger trigger = new CronTrigger(expresionCronCampFidelidad);
+					taskSchedulerCampanias.schedule(() -> procesarCronCampaniaFidelidad(), trigger);
+					logger.info("Se actualizo cron Campaña Fidelidad");
+				} else {
+					logger.info("No se actualizo Campaña Fidelidad");
+				}
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
+		}
+	}
+
+	public void procesarCronCampaniaFidelidad() {
+		logger.info("Proceso de Campaña Fidelidad");
+		List<ValidarEjecutarCronBase> validacionCron = informacionService.obtInfoCron(Constantes.BASE_CAMPANIA_FIDELIDAD);
+
+		try {
+			LocalTime horaActual = LocalTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(HORA_MINUTOS_FORMATO);
+			String horaYMinutos = horaActual.format(formatter);
+			for (ValidarEjecutarCronBase valBase : validacionCron) {
+				if (valBase.getI_ejecutar() == 1) {
+					procesarCampaniasFidelidad();
+					logger.info("Se ejecuto proceso Campaña Fidelidad:" + horaYMinutos);
+				} else {
+					logger.info("No es tiempo de ejecutar proceso Campaña Fidelidad:" + horaYMinutos);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("el proceso de Campaña Fidelidad no se ejecuto" + e.getMessage());
+		}
+	}
+
 	public synchronized void procesarCampaniasVIP() {
 		try {
 			logger.info(EJECUTA_SP_MENSAJE);
@@ -269,6 +313,18 @@ public class CampaniasVIPTareaConfiguracion {
 			indexOfertasAutomaticasService.generarArchivoOA();
 			logger.info("REGISTROS DE CAMPANIAS FIDELIZACION RENOVADO");
 			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_FID_RENO, "");
+		} catch (Exception e) {
+			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
+		}
+	}
+
+	public synchronized void procesarCampaniasFidelidad() {
+		try {
+			logger.info(EJECUTA_SP_MENSAJE);
+			jdbcTemplate.update("CALL SP_PROCESAR_INFORMACION_CAMPANIAS("+Constantes.BASE_CAMPANIA_FIDELIDAD+")");
+			indexOfertasAutomaticasService.generarArchivoOA();
+			logger.info("REGISTROS DE CAMPANIAS FIDELIDAD");
+			envioCorreoService.prepararCorreo(Constantes.CORREO_BASE_CAMPANIA_FIDELIDAD, "");
 		} catch (Exception e) {
 			logger.error(ERROR_MESSAGE_PREFIX + e.getMessage());
 		}
