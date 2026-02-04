@@ -111,9 +111,15 @@ public class JasperReportController {
     					StringBuilder stringBuilder = null;
     					ContentDisposition contentDisposition = null;
     					HttpHeaders h2 = new HttpHeaders();
+<<<<<<< HEAD
     					
+=======
+>>>>>>> refs/remotes/origin/DES_26_0001_CspDesarrollo
                         MediaType mediaType = MediaType.APPLICATION_PDF;
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/DES_26_0001_CspDesarrollo
     					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
     						//fecha de creacion
         					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
@@ -137,7 +143,10 @@ public class JasperReportController {
         				    .build();
         				    h2.setContentDisposition(contentDisposition);
         				    mediaType = MediaType.parseMediaType("application/vnd.ms-excel");
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/DES_26_0001_CspDesarrollo
     					} else if (extXLSX.equalsIgnoreCase(tipoDocumento)) {
     						stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
     			            contentDisposition = ContentDisposition.builder("attachment")
