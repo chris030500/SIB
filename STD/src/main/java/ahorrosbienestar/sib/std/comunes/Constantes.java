@@ -8,6 +8,7 @@ public class Constantes {
 	public static final String RUTA_ERROR = "errores/error_403";
 	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
 	
+	
 	//Rutas de Seguimiento
 	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
 	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
@@ -16,6 +17,7 @@ public class Constantes {
 	//Constantes de usuarios
 	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
 	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
+	
 	
 	//Constantes de estatus
 	public static final int ACTIVO = 1;
@@ -40,6 +42,7 @@ public class Constantes {
     public static final String TIPO_MNS = "tipo";
     public static final String ENVIA_CORREOS = "envio";
     public static final String URL_REPORTE = "reporte";
+    
     
     // Ejemplo de constantes para descripcion de Mensajes
     public static final String REGISTRO_OK = "Se Registro Correctamente.";
@@ -90,6 +93,13 @@ public class Constantes {
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
     
+    public static final String REPORTE_PROCESOS_CAMPANIA = "rpt_motivo_exclusiones_campanias";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS = "rpt_exclusiones_internas";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_ESTATUS = "rpt_exclusiones_internas_estatus";
+    public static final String REPORTE_EXCLUSIONES_INTERNAS_SIN_FECHA = "rpt_exclusiones_internas_sin_fecha";
+    public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
+    public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
+    
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
     
@@ -101,17 +111,19 @@ public class Constantes {
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
     
+    
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
-    public static final int BUSQUEDA_POR_USUARIO = 1;
-
-    //MENSAJES SEGUIMIENTOS 
-    public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
-    public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
-    public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
+	public static final int BUSQUEDA_POR_USUARIO = 1;
+	
+	//MENSAJES SEGUIMIENTOS 
+	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
+	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
+	public static final String ERROR_PERMISOS = "No cuenta con los permisos para consultar las Gestiones.";
     
 	//CATALOGOS DE PANTALLAS
 	public static final int CATALOGO_GESTION = 14;
 	public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
+	
 	
 	//PROCESO A EJECUTAR
 	public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
@@ -216,7 +228,15 @@ public class Constantes {
     //constantes credito
     public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
     public static final String CREDITO_REPORTES = "credito/reportes";
-    
+	public static final String CREDITO_CAMPANIAS = "credito/tiposCampanias";
+	public static final String PARAMS_BURO_CREDITO = "credito/paramBuroCredito";
+	public static final String CAMPANIAS_TEMPORALES = "credito/campaniasTemporales";
+	public static final String REPORTE_CAMPANIAS = "credito/reportesCampanias";
+	public static final String CAMPANIAS_PROCESOS = "credito/procesosCampanias";
+	public static final String CAMPANIAS_EXTRACCION = "credito/extraccionCampanias";
+	public static final String CAMPANIAS_EXCLUSIONES = "credito/exclusiones";
+	
+
     //nombres reportes Crédito
     public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
     
@@ -224,6 +244,17 @@ public class Constantes {
     public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
     public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
 
+	//Pantalla parametros buro de credito
+	public static final int CAT_TIPO_RIESGO = 34;
+	public static final int CAMPANIA_TIPO_TEMPORAL = 1;
+	
+	//contantes parametros buro de credito
+	public static final String PARAM_BURO_ADVISER = "ADVISER";
+	public static final String PARAM_BURO_PROSPECTOR = "PROSPECTOR";
+	
+	public static final int CAT_ESTATUS_CAMPANIAS = 16;
+	public static final int CAT_REPORTES_CAMPANIAS = 39;
+	
     private Constantes() {
         
     }

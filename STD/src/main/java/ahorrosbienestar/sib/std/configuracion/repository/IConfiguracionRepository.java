@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.configuracion.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -99,4 +100,14 @@ public interface IConfiguracionRepository extends JpaRepository<Configuracion, I
 	
 	@Query(value = "SELECT VC_VALOR_PROPIEDAD FROM SIB.TBL_CONFIGURACION WHERE VC_NOM_PROPIEDAD = 'ROLES_VOBO';", nativeQuery = true)
 	public String ObtenerRolesVobo();
+	
+	@Modifying
+	@Transactional // Necesario para ejecutar updates
+	@Query(value = "UPDATE SIB.TBL_CONFIGURACION SET "
+		+ "VC_VALOR_PROPIEDAD = :vc_valor_propiedad "
+        + "WHERE PK_ID_CONFIGURACION = :pk_id_configuracion", nativeQuery = true)
+	int actualizarConfiguracion(
+	    @Param("pk_id_configuracion") Integer pk_id_configuracion,
+	    @Param("vc_valor_propiedad") String vc_valor_propiedad
+	);
 }
