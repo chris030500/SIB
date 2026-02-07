@@ -45,12 +45,17 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.HistorialAuditoriasService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.EstadoProcesoReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.EstadoProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 //import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.MigracionesPRepository;
 @Controller
 @RequestMapping("/prevencion")
@@ -91,6 +96,155 @@ public class RptReporteClientesOpeController {
     @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
     
+    @Autowired
+    private EstadoProcesoReporteService estadoProcesoReporteService;
+    
+    @Autowired
+    private HistorialAuditoriasService historialAuditoriasService;
+
+    
+    @GetMapping("/estado-proceso")
+    @ResponseBody
+    public Map<String, Object> estadoProceso() {
+        Map<String, Object> r = new HashMap<>();
+
+        r.put("estatus", 1);
+        r.put("auditoriaOk", true);
+        r.put("clientesDescargado", false);
+        r.put("operacionesDescargado", false);
+        r.put("clientesVobo", false);
+        r.put("operacionesVobo", false);
+
+        return r;
+    }
+
+
+
+    @PostMapping("/confirmar-reporte")
+    @ResponseBody
+    public ResponseEntity<?> confirmarReporte(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = userDetails.getUsername();
+
+        List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
+        if (usuarios == null || usuarios.isEmpty()) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        Integer idUsuario = usuarios.get(0).getPk_id_usuario();
+
+        historialAuditoriasService.marcarVoboClientes(idUsuario);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/vobo-auditoria")
+    public ResponseEntity<?> registrarVoboAuditoria(
+            @RequestParam boolean clientes,
+            @RequestParam boolean operaciones,
+            @RequestParam String fechaInicioOper,
+            @RequestParam String fechaFinOper,
+            @RequestParam String fechaCorteClientes,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Usuario usuario = iUsuarioRepository
+                .findByNombreUsuario(userDetails.getUsername())
+                .get(0);
+
+        try (Connection con = jdbcTemplate.getDataSource().getConnection();
+             CallableStatement cs = con.prepareCall(
+               "{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?, ?)}")) {
+
+            cs.registerOutParameter(1, Types.VARCHAR);
+            cs.setInt(2, usuario.getPk_id_usuario());
+            cs.setString(3, LocalDate.now().getYear() + "");
+
+            cs.setDate(4, operaciones ? Date.valueOf(fechaInicioOper) : null);
+            cs.setDate(5, operaciones ? Date.valueOf(fechaFinOper) : null);
+            cs.setDate(6, clientes ? Date.valueOf(fechaCorteClientes) : null);
+
+            cs.execute();
+
+            String error = cs.getString(1);
+            if (error != null && !error.isEmpty()) {
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/iniciar-proceso")
+    @ResponseBody
+    public ResponseEntity<?> iniciarProceso(
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String usuario = userDetails.getUsername();
+
+        LocalDate ini = LocalDate.parse(fechaInicio);
+        LocalDate fin = LocalDate.parse(fechaFin);
+
+        // 1) Spoon + guarda fechas en TBL_CONFIG_MIGRACIONES_AOP (lo haces aquí)
+        migracionesPService.activarEjecucion(1, ini, fin, usuario);
+
+        // 2) Crea proceso en TBL_PLD_ESTADO_PROCESO (ejecutado=1, auditoriaOk=0)
+        estadoProcesoReporteService.iniciarProceso(usuario, fin);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/estado-proceso/iniciar")
+    @ResponseBody
+    public ResponseEntity<?> iniciarProceso(@RequestParam("fechaCorte") String fechaCorte) {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof UserDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+        }
+
+        String usuario = ((UserDetails) principal).getUsername();
+
+        // opcional: si ya hay uno activo, no crear otro
+        EstadoProcesoReporte actual = estadoProcesoReporteService.obtenerProcesoActivo(usuario);
+        if (actual != null) {
+            return ResponseEntity.ok(actual);
+        }
+
+        EstadoProcesoReporte p = estadoProcesoReporteService.iniciarProceso(usuario, LocalDate.parse(fechaCorte));
+        return ResponseEntity.ok(p);
+    }
+
+
+    @PostMapping("/estado-proceso/accion")
+    @ResponseBody
+    public ResponseEntity<?> actualizarEstado(@RequestParam String accion) {
+
+    	logger.info(">>> ACCION RECIBIDA: " + accion);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof UserDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+        }
+
+        String usuario = ((UserDetails) principal).getUsername();
+
+        try {
+            logger.info("POST /estado-proceso/accion -> usuario=" + usuario + " accion=" + accion);
+            estadoProcesoReporteService.actualizarEstado(usuario, accion);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error /estado-proceso/accion: " + e.getMessage(), e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
     
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
@@ -296,8 +450,11 @@ public class RptReporteClientesOpeController {
     
     
     @PostMapping("/procesarAuditoria")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> procesarAuditoria(
-            @RequestParam("fechaCorte") String fechaCorte) {
+            @RequestParam("fechaCorte") String fechaCorte,
+            @RequestParam("fechaInicio") String fechaInicio,
+            @RequestParam("fechaFin") String fechaFin) {
 
         logger.info("Ejecutando SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES con fechaCorte = " + fechaCorte);
 
@@ -306,15 +463,30 @@ public class RptReporteClientesOpeController {
         CallableStatement callableStatement = null;
 
         try {
-            connection = jdbcTemplate.getDataSource().getConnection();
+            // ===== usuario =====
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (!(principal instanceof UserDetails)) {
+                respuesta.put("mensaje", "Usuario no autenticado");
+                respuesta.put("tipo", "error");
+                return ResponseEntity.ok(respuesta);
+            }
+            String username = ((UserDetails) principal).getUsername();
+            List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
+            if (usuarios == null || usuarios.isEmpty()) {
+                respuesta.put("mensaje", "Usuario no encontrado");
+                respuesta.put("tipo", "error");
+                return ResponseEntity.ok(respuesta);
+            }
+            Integer idUsuario = usuarios.get(0).getPk_id_usuario();
 
-            // el SP recibirá la fecha
+            LocalDate ini = LocalDate.parse(fechaInicio);
+            LocalDate fin = LocalDate.parse(fechaFin);
+
+            // ===== ejecutar SP =====
+            connection = jdbcTemplate.getDataSource().getConnection();
             callableStatement = connection.prepareCall("{CALL SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES(?, ?)}");
 
-            // PARAMETRO 1 (IN)
             callableStatement.setDate(1, Date.valueOf(fechaCorte));
-
-            // PARAMETRO 2 (OUT)
             callableStatement.registerOutParameter(2, Types.VARCHAR);
 
             callableStatement.execute();
@@ -324,16 +496,28 @@ public class RptReporteClientesOpeController {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
-            } else {
-                respuesta.put("mensaje", "Proceso ejecutado correctamente con fecha " + fechaCorte);
-                respuesta.put("tipo", "success");
+                return ResponseEntity.ok(respuesta);
             }
 
+            // ===== marcar auditoria OK =====
+            estadoProcesoReporteService.actualizarEstado(username, "AUDITORIA_OK");
+
+            // ===== insertar 2 filas pendientes en histórico (I_ESTATUS=0) =====
+            historialAuditoriasService.insertarPendientes(idUsuario, ini, fin);
+
+            respuesta.put("mensaje", "Proceso ejecutado correctamente con fecha " + fechaCorte);
+            respuesta.put("tipo", "success");
             return ResponseEntity.ok(respuesta);
 
         } catch (SQLException e) {
             logger.error("❌ Error al ejecutar SP: " + e.getMessage(), e);
             respuesta.put("mensaje", "Error SQL: " + e.getMessage());
+            respuesta.put("tipo", "error");
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            logger.error("❌ Error general: " + e.getMessage(), e);
+            respuesta.put("mensaje", e.getMessage());
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
 
@@ -346,6 +530,7 @@ public class RptReporteClientesOpeController {
             }
         }
     }
+
 
 
     

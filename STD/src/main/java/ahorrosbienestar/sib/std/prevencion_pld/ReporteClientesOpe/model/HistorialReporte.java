@@ -45,7 +45,7 @@ public class HistorialReporte {
     private LocalDateTime fechaFin;
  
     @Column(name = "I_ANIO_GENERACION")
-    private Integer añoGeneracion;
+    private Integer anioGeneracion;
     
     @Column(name = "VC_TIPO_REPORTE")
     private String tipoReporte;
@@ -74,8 +74,13 @@ public class HistorialReporte {
     public LocalDateTime getFechaFin() { return fechaFin; }
     public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
     
-    public Integer getAñoGeneracion() { return añoGeneracion; }
-    public void setañoGeneracion(Integer añoGeneracion) { this.añoGeneracion = añoGeneracion; }
+    public Integer getAnioGeneracion() {
+        return anioGeneracion;
+    }
+
+    public void setAnioGeneracion(Integer anioGeneracion) {
+        this.anioGeneracion = anioGeneracion;
+    }
     
     public String getTipoReporte() { return tipoReporte; }
     public void setTipoReporte(String tipoReporte) { this.tipoReporte = tipoReporte; }
