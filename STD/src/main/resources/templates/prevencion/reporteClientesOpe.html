@@ -4,10 +4,10 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/base-layout}">
-
+ 
 <!-- DES-25-0013 Historico de Operaciones -->
 <!-- andrea.orduno -->
-
+ 
 <head th:replace="layouts/base-layout :: head">
     <meta charset="UTF-8">
     <title>Reporte Clientes y Operaciones</title>
@@ -22,14 +22,14 @@
         .uploaded-file .check-icon { position: absolute; right: 15px; top: 15px; color: green; font-size: 24px; }
     </style>
 </head>
-
+ 
 <body>
 <section class="content" layout:fragment="page-content">
     <div class="border p-2 card">
         <div class="bg-info text-white text-center py-2 rounded mb-3">
             <h2>Reporte Clientes y Operaciones</h2>
         </div>
-
+ 
         <ul class="nav nav-pills mb-3" id="pntConf" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="archivos-tab" data-bs-toggle="tab" data-bs-target="#archivos" type="button" role="tab" aria-controls="archivos" aria-selected="true">Cargar archivos</button>
@@ -41,9 +41,9 @@
                 <button class="nav-link" id="descargas-tab" data-bs-toggle="tab" data-bs-target="#descargas" type="button" role="tab" aria-controls="descargas" aria-selected="false">Historial</button>
             </li>
         </ul>
-
+ 
         <div class="tab-content" id="tabContent">
-
+ 
             <!-- ======================= -->
             <!--        ARCHIVOS          -->
             <!-- ======================= -->
@@ -52,23 +52,18 @@
                     <legend class="float-none w-auto p-2">Cargar Archivo de Clientes PEPs</legend>
                     <form id="uploadFormPEP" action="/STD/prevencion/reporteClientesOpe/uploadPEP" method="post" enctype="multipart/form-data">
                         <input type="file" id="fileUploadPEP" name="file" accept=".xls,.xlsx" class="form-control" />
-                        <button
-  type="button"
-  class="btn btn-primary"
-  onclick="subirArchivoPEP()">
-  Subir archivo
-</button>
+                        <button type="submit" class="btn btn-primary mt-2">Subir archivo</button>
                     </form>
                 </fieldset>
             </div>
-
+ 
             <!-- ======================= -->
             <!--        PROCESO           -->
             <!-- ======================= -->
            <div class="tab-pane fade" id="proceso">
-
+ 
 <div class="p-3 border rounded bg-light">
-
+ 
     <!-- ===== ESTATUS + EJECUTAR ===== -->
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -78,122 +73,116 @@
        type="checkbox"
        id="estatusSwitch"
        onchange="cambiarEstatus(this)">
-
+ 
                 <label class="form-check-label" id="labelEstado">Inactivo</label>
             </div>
         </div>
-
+ 
         <button id="btnEjecutarMigracion"
                 class="btn btn-outline-primary btn-sm"
                 onclick="activarMigracion()">
             <i class="fas fa-play"></i> EJECUTAR
         </button>
     </div>
-
+ 
     <div id="mensajeResultado"
          class="mt-2 fw-bold text-success"
          style="display:none;"></div>
-
+ 
     <hr>
-
+ 
     <!-- ===== FECHAS DE MIGRACIÓN (NUEVO) ===== -->
     <div class="row mt-3">
-
+ 
         <div class="col-md-4">
-            <label class="fw-bold">Fecha inicio</label>
+            <label class="fw-bold">Fecha inicio (Operaciones)</label>
             <input type="date"
                    id="fechaInicioMigracion"
                    class="form-control"
                    min="2024-01-01">
             <small class="text-muted">
+                Opcional. Si se deja vacío, solo se procesan Clientes.
             </small>
         </div>
-
+ 
         <div class="col-md-4">
-            <label class="fw-bold">Fecha Corte</label>
+            <label class="fw-bold">Fecha fin (Clientes / Operaciones)</label>
             <input type="date"
                    id="fechaFinMigracion"
                    class="form-control"
                    min="2024-01-01"
                    required>
             <small class="text-muted">
+                Obligatoria. Fecha única de corte.
             </small>
         </div>
-
+ 
     </div>
-
+ 
     <hr>
-
+ 
 <!-- ================= AUDITORÍA CLIENTES (OBLIGATORIO) ================= -->
 <div class="mt-4">
     <label class="fw-bold text-danger">
         Paso obligatorio – Procesar Auditoría de Clientes
     </label>
-
+ 
     <button
   id="btnProcesarAuditoriaClientes"
-  class="btn btn-warning w-100 d-none"
+  class="btn btn-warning w-100"
   onclick="procesarAuditoriaClientes()">
   <i class="bi bi-gear"></i> Procesar Auditoría de Clientes
 </button>
-
-
-
+ 
     <small class="text-muted d-block mt-1">
         Este proceso ejecuta el SP
         <b>SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES</b>
         y es obligatorio antes de generar reportes o registrar el visto bueno.
     </small>
 </div>
-
-<!-- ================= PROCESO EN CURSO ================= -->
-<div id="bloqueTablaProceso" class="mt-4 d-none">
-
-  <h5 class="fw-bold">Proceso en curso</h5>
-
-  <div class="table-responsive mb-4">
-    <table class="table table-sm table-bordered" id="tblProceso">
-      <thead class="table-light">
-        <tr>
-          <th>Tipo de reporte</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Se llena por JS -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ================= VISTO BUENO ================= -->
-  <h5 class="fw-bold">Visto Bueno del Reporte</h5>
-
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="chkClientes">
-    <label class="form-check-label" for="chkClientes">
-      Reporte de Clientes
-    </label>
-  </div>
-
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="chkOperaciones">
-    <label class="form-check-label" for="chkOperaciones">
-      Reporte de Operaciones
-    </label>
-  </div>
-
-  <button id="btnVobo"
-          class="btn btn-success mt-3"
-          onclick="registrarVobo()">
-    Registrar visto bueno
-  </button>
-
-</div>
-
-
+ 
+    <!-- ================= CLIENTES ================= -->
+    <div class="mt-4">
+        <button class="btn btn-primary w-100"
+                onclick="generarReporteClientes()">
+            Generar Reporte de Clientes
+        </button>
+    </div>
+ 
+    <!-- ================= OPERACIONES ================= -->
+    <div class="mt-3">
+        <button class="btn btn-danger w-100"
+                onclick="generarReporteOperaciones()">
+            Generar Reporte de Operaciones
+        </button>
+    </div>
+ 
+    <!-- ================= VISTO BUENO ================= -->
+    <div class="mt-4">
+ 
+        <label class="fw-bold">¿La información del reporte es correcta?</label>
+ 
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="info_correcta" id="infoSi">
+            <label class="form-check-label" for="infoSi">Sí</label>
+        </div>
+ 
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="info_correcta" id="infoNo">
+            <label class="form-check-label" for="infoNo">No</label>
+        </div>
+ 
+        <div class="mt-3">
+            <button class="btn btn-success" id="btnVistoBueno">
+                Registrar Visto bueno
+            </button>
+        </div>
+ 
+    </div>
+ 
 </div>
 </div>
-
+ 
             <!-- ======================= -->
             <!--        DESCARGAS         -->
             <!-- ======================= -->
@@ -221,11 +210,11 @@
                     </div>
                 </div>
             </div>
-
+ 
         </div>
     </div>
 </section>
-
+ 
 <th:block layout:fragment="page-scripts">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>

@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
-import java.time.LocalDate;
+/*import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -12,8 +12,8 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.His
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
-@Service
-public class HistorialAuditoriasService {
+@Service*/
+/*public class HistorialAuditoriasService {
 
     private final HistorialReporteRepository historialRepo;
     private final IUsuarioRepository usuarioRepo;
@@ -22,13 +22,13 @@ public class HistorialAuditoriasService {
                                       IUsuarioRepository usuarioRepo) {
         this.historialRepo = historialRepo;
         this.usuarioRepo = usuarioRepo;
-    }
+    }*/
 
     /**
      * Inserta 2 filas (CLIENTES y OPERACIONES) con I_ESTATUS = 0
      * y DT_FECHA_VOBO NO NULA (se llena con now()) como pediste.
      */
-    @Transactional
+ /*   @Transactional
     public void insertarPendientes(Integer idUsuario, LocalDate ini, LocalDate fin) {
 
         Usuario u = usuarioRepo.findById(idUsuario)
@@ -56,9 +56,9 @@ public class HistorialAuditoriasService {
             cli.setTipoReporte("CLIENTES");
             cli.setAnioGeneracion(anio);         // ⚠️ usa setAnioGeneracion (sin ñ)
             historialRepo.save(cli);
-        }
+        }*/
 
-        if (!existeOper) {
+       /* if (!existeOper) {
             HistorialReporte ope = new HistorialReporte();
             ope.setFechaGeneracion(now);
             ope.setI_usuario(u);
@@ -71,14 +71,14 @@ public class HistorialAuditoriasService {
             ope.setAnioGeneracion(anio);
             historialRepo.save(ope);
         }
-    }
+    }*/
 
     /**
      * Marca VoBo SOLO del registro solicitado:
      * I_ESTATUS: 0 -> 1
      * I_USUARIO_VOBO y DT_FECHA_VOBO se actualizan.
      */
-    @Transactional
+   /* @Transactional
     public void marcarVoboClientes(Integer idUsuarioVobo) {
 
         Usuario uVobo = usuarioRepo.findById(idUsuarioVobo)
@@ -95,4 +95,23 @@ public class HistorialAuditoriasService {
 
         historialRepo.save(h);
     }
-}
+    
+    @Transactional
+    public void marcarVobo(Integer idHistorial, Integer idUsuario) {
+
+        HistorialReporte h = historialRepo.findById(idHistorial)
+            .orElseThrow(() -> new RuntimeException("Registro no encontrado"));
+
+        Usuario uVobo = usuarioRepo.findById(idUsuario)
+            .orElseThrow(() -> new RuntimeException("Usuario VoBo no encontrado"));
+
+        h.setEstatus(1);
+        h.setI_usuario_vobo(uVobo);
+        h.setFechaGeneracionvobo(LocalDateTime.now());
+
+        historialRepo.save(h);
+    }
+
+
+
+}*/
