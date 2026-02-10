@@ -15,33 +15,49 @@ public class EstadoProcesoReporteService {
     private EstadoProcesoReporteRepository repository;
 
     /* ============================
-       OBTENER / CREAR PROCESO
+       OBTENER PROCESO ACTIVO
     ============================ */
-    public EstadoProcesoReporte obtenerProcesoActivo(String usuario, LocalDate fechaCorte) {
+    public EstadoProcesoReporte obtenerProcesoActivo(String usuario) {
 
         return repository
-            .findByVcUsuarioAndFechaCorteAndEstatus(usuario, fechaCorte, 1)
-            .orElseGet(() -> {
-                EstadoProcesoReporte p = new EstadoProcesoReporte();
-                p.setVcUsuario(usuario);
-                p.setFechaCorte(fechaCorte);
-                p.setEstatus(1);
-                p.setEjecutado(false);
-                p.setAuditoriaOk(false);
-                p.setOperacionesDescargado(false);
-                p.setOperacionesVobo(false);
-                return repository.save(p);
-            });
+            .findFirstByVcUsuarioAndEstatusOrderByFechaCreacionDesc(usuario, 1)
+            .orElse(null);
     }
 
+    private EstadoProcesoReporte obtenerProcesoActivoSeguro(String usuario) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario);
+        if (p == null) {
+            throw new IllegalStateException(
+                "No existe un proceso activo para el usuario " + usuario
+            );
+        }
+        return p;
+    }
 
+    /* ============================
+       INICIAR PROCESO
+    ============================ */
+    public void iniciarProceso(String usuario, LocalDate fechaCorte) {
 
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario);
+
+        if (p == null) {
+            p = new EstadoProcesoReporte();
+            p.setVcUsuario(usuario);
+            p.setFechaCorte(fechaCorte);
+            p.setEstatus(1);
+        }
+
+        p.setEjecutado(true);
+        repository.save(p);
+    }
 
     /* ============================
        MARCAR AUDITORÍA OK
     ============================ */
-    public void marcarAuditoriaOk(String usuario, LocalDate fechaCorte) {
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+    public void marcarAuditoriaOk(String usuario) {
+
+        EstadoProcesoReporte p = obtenerProcesoActivoSeguro(usuario);
         p.setAuditoriaOk(true);
         repository.save(p);
     }
@@ -49,8 +65,9 @@ public class EstadoProcesoReporteService {
     /* ============================
        CLIENTES DESCARGADO
     ============================ */
-    public void marcarClientesDescargado(String usuario, LocalDate fechaCorte) {
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+    public void marcarClientesDescargado(String usuario) {
+
+        EstadoProcesoReporte p = obtenerProcesoActivoSeguro(usuario);
         p.setClientesDescargado(true);
         repository.save(p);
     }
@@ -58,59 +75,40 @@ public class EstadoProcesoReporteService {
     /* ============================
        OPERACIONES DESCARGADO
     ============================ */
-    public void marcarOperacionesDescargado(String usuario, LocalDate fechaCorte) {
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+    public void marcarOperacionesDescargado(String usuario) {
+
+        EstadoProcesoReporte p = obtenerProcesoActivoSeguro(usuario);
         p.setOperacionesDescargado(true);
         repository.save(p);
     }
 
-
-
     /* ============================
-       VISTO BUENO OPERACIONES
+       VISTO BUENO CLIENTES
     ============================ */
-    public void marcarOperacionesVobo(String usuario, LocalDate fechaCorte) {
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+    public void marcarClientesVobo(String usuario) {
 
-        p.setOperacionesVobo(true);
-        p.setEstatus(0); // 🔒 CIERRA EL PROCESO
-
-        repository.save(p);
-    }
-
-    /* ============================
-       VISTO BUENO CLIENTES (si aplica)
-    ============================ */
-    public void marcarClientesVobo(String usuario, LocalDate fechaCorte) {
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
-
+        EstadoProcesoReporte p = obtenerProcesoActivoSeguro(usuario);
         p.setClientesVobo(true);
         repository.save(p);
     }
-    
-    public void iniciarProceso(String usuario, LocalDate fechaCorte) {
 
-        EstadoProcesoReporte p =
-            repository.findByVcUsuarioAndFechaCorteAndEstatus(usuario, fechaCorte, 1)
-            .orElseGet(() -> {
-                EstadoProcesoReporte nuevo = new EstadoProcesoReporte();
-                nuevo.setVcUsuario(usuario);
-                nuevo.setFechaCorte(fechaCorte);
-                nuevo.setEstatus(1);
-                return nuevo;
-            });
+    /* ============================
+       VISTO BUENO OPERACIONES (CIERRA PROCESO)
+    ============================ */
+    public void marcarOperacionesVobo(String usuario) {
 
-        p.setEjecutado(true);
+        EstadoProcesoReporte p = obtenerProcesoActivoSeguro(usuario);
+
+        p.setOperacionesVobo(true);
+        p.setEstatus(0); // 🔒 CIERRE DEFINITIVO
+
         repository.save(p);
     }
 
-    
+    /* ============================
+       GUARDAR GENÉRICO
+    ============================ */
     public void guardar(EstadoProcesoReporte p) {
         repository.save(p);
     }
-    
-    
-
 }
-
-

@@ -1045,27 +1045,27 @@ function renderEstadoMigracion(data) {
 //}, 20000); // cada 20 segundos
  
  
- function renderProcesoUI(estado) {
+function renderProcesoUI(estado) {
 
-  ocultarTodoProceso();
   if (!estado) return;
 
-  // 1️⃣ Después de EJECUTAR → mostrar botón amarillo
+  // 1️⃣ Ejecutado → botón amarillo
   if (estado.ejecutado) {
     $("#btnProcesarAuditoriaClientes").show();
   }
 
-  // 2️⃣ Después de AUDITORÍA → mostrar botones de reportes
+  // 2️⃣ Auditoría OK → botones reporte
   if (estado.auditoriaOk) {
     $("#btnGenerarClientes").show();
     $("#btnGenerarOperaciones").show();
   }
 
-  // 3️⃣ SOLO después de OPERACIONES → mostrar visto bueno
+  // 3️⃣ Operaciones descargadas → visto bueno
   if (estado.operacionesDescargado && !estado.operacionesVobo) {
     $("#bloqueVistoBueno").show();
   }
 }
+
 
 
 document.getElementById("btnEjecutarMigracion")
@@ -1140,21 +1140,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarEstadoProceso() {
 
-  const fechaCorte = $("#fechaFinMigracion").val();
-  if (!fechaCorte) return;
-
-  const res = await fetch(
-    `/STD/prevencion/estado-proceso?fechaCorte=${fechaCorte}`
-  );
+  const res = await fetch("/STD/prevencion/estado-proceso");
+  if (!res.ok) return;
 
   const estado = await res.json();
+
+  ocultarTodoProceso();     // ⬅️ solo después de tener estado
   renderProcesoUI(estado);
 }
 
+
+
 $(document).ready(async () => {
-  ocultarTodoProceso();
-  await cargarEstadoProceso(); // 🔥 RECONSTRUIR UI DESDE BD
+
+  // 1️⃣ Cargar estado de migración (switch + botón)
+  await cargarEstadoInicial();
+
+  // 2️⃣ Reconstruir proceso PLD desde BD
+  await cargarEstadoProceso();
+
+  // 3️⃣ Cargar histórico
+  iniciaTblHistorico();
 });
+
 
  
 function existeElemento(id) {

@@ -16,11 +16,11 @@ public interface EstadoProcesoReporteRepository
     findByVcUsuarioAndEstatus(String vcUsuario, Integer estatus);
 
     Optional<EstadoProcesoReporte>
-    findByVcUsuarioAndFechaCorteAndEstatus(
-            String vcUsuario,
-            LocalDate fechaCorte,
-            Integer estatus
+    findFirstByVcUsuarioAndEstatusOrderByFechaCreacionDesc(
+        String vcUsuario,
+        Integer estatus
     );
+
 }
 
 

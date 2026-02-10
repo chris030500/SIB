@@ -109,42 +109,39 @@ public class RptReporteClientesOpeController {
     @GetMapping("/estado-proceso")
     @ResponseBody
     public ResponseEntity<EstadoProcesoReporte> obtenerEstadoProceso(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("fechaCorte") String fechaCorte) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         EstadoProcesoReporte estado =
                 estadoProcesoReporteService.obtenerProcesoActivo(
-                        userDetails.getUsername(),
-                        LocalDate.parse(fechaCorte)
+                        userDetails.getUsername()
                 );
 
         return ResponseEntity.ok(estado);
     }
+
+
     
     @PostMapping("/estado-proceso/clientes-descargado")
     @ResponseBody
     public void marcarClientesDescargado(
-            @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         estadoProcesoReporteService.marcarClientesDescargado(
-                userDetails.getUsername(),
-                LocalDate.parse(fechaCorte)
+                userDetails.getUsername()
         );
     }
+
     
     @PostMapping("/estado-proceso/auditoria-ok")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarAuditoriaOk(
-            @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Map<String, Object> resp = new HashMap<>();
 
         try {
             estadoProcesoReporteService.marcarAuditoriaOk(
-                    userDetails.getUsername(),
-                    LocalDate.parse(fechaCorte)
+                    userDetails.getUsername()
             );
 
             resp.put("tipo", "success");
@@ -154,7 +151,7 @@ public class RptReporteClientesOpeController {
 
         } catch (Exception e) {
             resp.put("tipo", "error");
-            resp.put("mensaje", "Error al marcar auditoría");
+            resp.put("mensaje", e.getMessage());
 
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -162,35 +159,29 @@ public class RptReporteClientesOpeController {
         }
     }
 
+
     @PostMapping("/estado-proceso/operaciones-descargado")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarOperacionesDescargado(
-            @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Map<String, Object> resp = new HashMap<>();
-
         estadoProcesoReporteService.marcarOperacionesDescargado(
-            userDetails.getUsername(),
-            LocalDate.parse(fechaCorte)
+            userDetails.getUsername()
         );
 
+        Map<String, Object> resp = new HashMap<>();
         resp.put("ok", true);
         return ResponseEntity.ok(resp);
     }
-
-
 
     
     @PostMapping("/estado-proceso/vobo")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarVobo(
-            @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         estadoProcesoReporteService.marcarOperacionesVobo(
-            userDetails.getUsername(),
-            LocalDate.parse(fechaCorte)
+            userDetails.getUsername()
         );
 
         Map<String, Object> resp = new HashMap<>();
@@ -199,6 +190,7 @@ public class RptReporteClientesOpeController {
 
         return ResponseEntity.ok(resp);
     }
+
 
     @PostMapping("/estado-proceso/ejecutar")
     @ResponseBody
