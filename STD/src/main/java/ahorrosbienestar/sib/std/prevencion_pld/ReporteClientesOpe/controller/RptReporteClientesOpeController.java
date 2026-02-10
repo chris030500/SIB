@@ -46,8 +46,10 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesoR
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GuardarHistorialReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.DetallePEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.EstadoProcesoReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.GeneracionReporteService;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service.ProcesosPEPsService;
+import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.EstadoProcesoReporte;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.MigracionesPService;
@@ -91,6 +93,10 @@ public class RptReporteClientesOpeController {
     @Autowired
     private GuardarHistorialReporte guardarhistorialreporte;
     
+    @Autowired
+    private EstadoProcesoReporteService estadoProcesoReporteService;
+
+    
     
     List<Usuario> usuarios =null;
     @GetMapping("/reporteClientesOpe")
@@ -100,6 +106,113 @@ public class RptReporteClientesOpeController {
                 : Constantes.RUTA_ERROR;
     }
     
+    @GetMapping("/estado-proceso")
+    @ResponseBody
+    public ResponseEntity<EstadoProcesoReporte> obtenerEstadoProceso(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("fechaCorte") String fechaCorte) {
+
+        EstadoProcesoReporte estado =
+                estadoProcesoReporteService.obtenerProcesoActivo(
+                        userDetails.getUsername(),
+                        LocalDate.parse(fechaCorte)
+                );
+
+        return ResponseEntity.ok(estado);
+    }
+    
+    @PostMapping("/estado-proceso/clientes-descargado")
+    @ResponseBody
+    public void marcarClientesDescargado(
+            @RequestParam("fechaCorte") String fechaCorte,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        estadoProcesoReporteService.marcarClientesDescargado(
+                userDetails.getUsername(),
+                LocalDate.parse(fechaCorte)
+        );
+    }
+    
+    @PostMapping("/estado-proceso/auditoria-ok")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> marcarAuditoriaOk(
+            @RequestParam("fechaCorte") String fechaCorte,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> resp = new HashMap<>();
+
+        try {
+            estadoProcesoReporteService.marcarAuditoriaOk(
+                    userDetails.getUsername(),
+                    LocalDate.parse(fechaCorte)
+            );
+
+            resp.put("tipo", "success");
+            resp.put("mensaje", "Auditoría marcada correctamente");
+
+            return ResponseEntity.ok(resp);
+
+        } catch (Exception e) {
+            resp.put("tipo", "error");
+            resp.put("mensaje", "Error al marcar auditoría");
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(resp);
+        }
+    }
+
+    @PostMapping("/estado-proceso/operaciones-descargado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> marcarOperacionesDescargado(
+            @RequestParam("fechaCorte") String fechaCorte,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> resp = new HashMap<>();
+
+        estadoProcesoReporteService.marcarOperacionesDescargado(
+            userDetails.getUsername(),
+            LocalDate.parse(fechaCorte)
+        );
+
+        resp.put("ok", true);
+        return ResponseEntity.ok(resp);
+    }
+
+
+
+    
+    @PostMapping("/estado-proceso/vobo")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> marcarVobo(
+            @RequestParam("fechaCorte") String fechaCorte,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        estadoProcesoReporteService.marcarOperacionesVobo(
+            userDetails.getUsername(),
+            LocalDate.parse(fechaCorte)
+        );
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("ok", true);
+        resp.put("mensaje", "Visto bueno registrado correctamente");
+
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/estado-proceso/ejecutar")
+    @ResponseBody
+    public void ejecutarProceso(
+            @RequestParam("fechaCorte") String fechaCorte,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        estadoProcesoReporteService.iniciarProceso(
+            userDetails.getUsername(),
+            LocalDate.parse(fechaCorte)
+        );
+    }
+
+
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
     @ResponseBody
@@ -379,7 +492,10 @@ public class RptReporteClientesOpeController {
             if (idUsuario == null) {
                 respuesta.put("mensaje", "No se pudo obtener el ID del usuario.");
                 respuesta.put("tipo", "error");
-                return ResponseEntity.ok(respuesta);
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(respuesta);
             }
  
             // ===========================

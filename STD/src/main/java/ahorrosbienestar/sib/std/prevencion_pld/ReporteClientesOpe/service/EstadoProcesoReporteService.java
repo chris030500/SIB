@@ -14,69 +14,103 @@ public class EstadoProcesoReporteService {
     @Autowired
     private EstadoProcesoReporteRepository repository;
 
-    /**
-     * Obtiene el proceso activo del usuario.
-     * NO crea proceso si no se ha ejecutado.
-     */
-    public EstadoProcesoReporte obtenerProcesoActivo(String usuario) {
-        return repository.findByVcUsuarioAndEstatus(usuario, 1)
-                .orElse(null);
+    /* ============================
+       OBTENER / CREAR PROCESO
+    ============================ */
+    public EstadoProcesoReporte obtenerProcesoActivo(String usuario, LocalDate fechaCorte) {
+
+        return repository
+            .findByVcUsuarioAndFechaCorteAndEstatus(usuario, fechaCorte, 1)
+            .orElseGet(() -> {
+                EstadoProcesoReporte p = new EstadoProcesoReporte();
+                p.setVcUsuario(usuario);
+                p.setFechaCorte(fechaCorte);
+                p.setEstatus(1);
+                p.setEjecutado(false);
+                p.setAuditoriaOk(false);
+                p.setOperacionesDescargado(false);
+                p.setOperacionesVobo(false);
+                return repository.save(p);
+            });
     }
 
-    /**
-     * Se llama SOLO cuando se presiona el botón EJECUTAR
-     */
-    public EstadoProcesoReporte iniciarProceso(
-            String usuario,
-            LocalDate fechaCorte) {
 
-        EstadoProcesoReporte p = new EstadoProcesoReporte();
-        p.setVcUsuario(usuario);
-        p.setFechaCorte(fechaCorte);
+
+
+    /* ============================
+       MARCAR AUDITORÍA OK
+    ============================ */
+    public void marcarAuditoriaOk(String usuario, LocalDate fechaCorte) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+        p.setAuditoriaOk(true);
+        repository.save(p);
+    }
+
+    /* ============================
+       CLIENTES DESCARGADO
+    ============================ */
+    public void marcarClientesDescargado(String usuario, LocalDate fechaCorte) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+        p.setClientesDescargado(true);
+        repository.save(p);
+    }
+
+    /* ============================
+       OPERACIONES DESCARGADO
+    ============================ */
+    public void marcarOperacionesDescargado(String usuario, LocalDate fechaCorte) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+        p.setOperacionesDescargado(true);
+        repository.save(p);
+    }
+
+
+
+    /* ============================
+       VISTO BUENO OPERACIONES
+    ============================ */
+    public void marcarOperacionesVobo(String usuario, LocalDate fechaCorte) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+
+        p.setOperacionesVobo(true);
+        p.setEstatus(0); // 🔒 CIERRA EL PROCESO
+
+        repository.save(p);
+    }
+
+    /* ============================
+       VISTO BUENO CLIENTES (si aplica)
+    ============================ */
+    public void marcarClientesVobo(String usuario, LocalDate fechaCorte) {
+        EstadoProcesoReporte p = obtenerProcesoActivo(usuario, fechaCorte);
+
+        p.setClientesVobo(true);
+        repository.save(p);
+    }
+    
+    public void iniciarProceso(String usuario, LocalDate fechaCorte) {
+
+        EstadoProcesoReporte p =
+            repository.findByVcUsuarioAndFechaCorteAndEstatus(usuario, fechaCorte, 1)
+            .orElseGet(() -> {
+                EstadoProcesoReporte nuevo = new EstadoProcesoReporte();
+                nuevo.setVcUsuario(usuario);
+                nuevo.setFechaCorte(fechaCorte);
+                nuevo.setEstatus(1);
+                return nuevo;
+            });
+
         p.setEjecutado(true);
-        p.setAuditoriaOk(false);
-        p.setClientesDescargado(false);
-        p.setClientesVobo(false);
-        p.setOperacionesDescargado(false);
-        p.setOperacionesVobo(false);
-        p.setEstatus(1);
-
-        return repository.save(p);
+        repository.save(p);
     }
 
-    /**
-     * Actualiza pasos del flujo
-     */
-    public EstadoProcesoReporte actualizarEstado(
-            String usuario,
-            String accion) {
-
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario);
-
-        if (p == null) {
-            throw new IllegalStateException("No existe proceso activo");
-        }
-
-        switch (accion) {
-        case "AUDITORIA_OK":
-          p.setAuditoriaOk(true);
-          break;
-
-        case "CLIENTES_DESCARGADO":
-          p.setClientesDescargado(true);
-          break;
-        case "CLIENTES_VOBO":
-          p.setClientesVobo(true);
-          break;
-
-        case "OPERACIONES_DESCARGADO":
-          p.setOperacionesDescargado(true);
-          break;
-        case "OPERACIONES_VOBO":
-          p.setOperacionesVobo(true);
-          break;
-      }
-      return repository.save(p);
-
+    
+    public void guardar(EstadoProcesoReporte p) {
+        repository.save(p);
     }
+    
+    
+
 }
+
+
