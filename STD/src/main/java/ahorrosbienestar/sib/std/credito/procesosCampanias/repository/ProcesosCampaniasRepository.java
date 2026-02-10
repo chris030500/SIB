@@ -91,8 +91,8 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 			+ "      INNER JOIN SIB.TBL_CAT_USUARIOS t4 \r\n"
 			+ "      ON t4.PK_ID_USUARIO = t1.I_USER_REG \r\n"
 			+ "      WHERE t1.I_ID_TIPO_CAMPANIA IN (:tipos)\r\n"
-			+ "      AND (t1.DT_FECHA_EXTRACCION BETWEEN :inicio AND :fin\r\n"
-			+ "          OR t1.DT_FECHA_FIN_VIGENCIA BETWEEN :inicio AND :fin\r\n"
+			+ "      AND (date(t1.DT_FECHA_EXTRACCION) BETWEEN :inicio AND :fin\r\n"
+			+ "          OR date(t1.DT_FECHA_FIN_VIGENCIA) BETWEEN :inicio AND :fin\r\n"
 			+ "          )\r\n"
 			+ "      GROUP BY \r\n"
 			+ "          t2.vc_tipo_campania\r\n"
@@ -198,7 +198,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
        nativeQuery = true)
 	String consultaCodigoCam(@Param("procesoCampania") int procesoCampania);
 	
-	@Query(value = "select t1.PK_ID_PROCESO_CAMPANIA as pk_id_proceso_campania, "
+	/*@Query(value = "select t1.PK_ID_PROCESO_CAMPANIA as pk_id_proceso_campania, "
 			+ "        t1.DT_FECHA_REGISTRO as dt_fecha_extraccion, "
 			+ "        t3.VC_NOMBRE_USUARIO as vc_nombre_usuario, "
 			+ "        t4.VC_TIPO_CAMPANIA as vc_tipo_campania, "
@@ -222,6 +222,36 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 			+ "                                  from SIB.TBL_PROCESO_CAMPANIA "
 			+ "                                  where I_ID_TIPO_CAMPANIA = :tipoCampania "
 			+ "                                  and I_ID_ESTATUS_CAMPANIA = 1)",
+			nativeQuery = true)
+	List<Object[]> listaFechasCampania(@Param("tipoCampania") Integer tipoCampania);*/
+	
+	@Query(value = "select t1.PK_ID_PROCESO_CAMPANIA as pk_id_proceso_campania, "
+			+ "			      t1.DT_FECHA_REGISTRO as dt_fecha_extraccion, "
+			+ "			       t3.VC_NOMBRE_USUARIO as vc_nombre_usuario, "
+			+ "			        t4.VC_TIPO_CAMPANIA as vc_tipo_campania, "
+			+ "         ("
+			+ "          SELECT IFNULL(t2.DT_FECHA_REGISTRO, DATE('1900-01-01'))"
+			+ "          FROM SIB.TBL_PROCESO_CAMPANIA t2"
+			+ "          WHERE t2.I_ID_TIPO_CAMPANIA = t1.I_ID_TIPO_CAMPANIA"
+			+ "            AND t2.VC_CODIGO_CAM = t1.VC_CODIGO_CAM"
+			+ "            AND t2.I_ID_ESTATUS_CAMPANIA = 2"
+			+ "          LIMIT 1"
+			+ "        ) AS dt_fecha_inicio_vigencia,"
+			+ "			        t1.DT_FECHA_FIN_VIGENCIA as dt_fecha_fin_vigencia, "
+			+ "			        t5.VC_ESTATUS as vc_estatus "
+			+ "			from SIB.TBL_PROCESO_CAMPANIA t1 "
+			+ "			inner join SIB.TBL_CAT_USUARIOS t3 "
+			+ "			on t3.PK_ID_USUARIO = t1.I_USER_REG "
+			+ "			inner join SIB.TBL_TIPOS_CAMPANIA t4 "
+			+ "			on t4.PK_ID_TIPO_CAMPANIA = t1.I_ID_TIPO_CAMPANIA "
+			+ "			inner join SIB.TBL_ESTATUS_CAMPANIA t5 "
+			+ "			on t5.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA "
+			+ "			where t1.I_ID_TIPO_CAMPANIA = :tipoCampania"
+			+ "			and t1.I_ID_ESTATUS_CAMPANIA = 1"
+			+ "			and t1.PK_ID_PROCESO_CAMPANIA = (select IFNULL(max(PK_ID_PROCESO_CAMPANIA),0) "
+			+ "			                                  from SIB.TBL_PROCESO_CAMPANIA "
+			+ "			                                  where I_ID_TIPO_CAMPANIA = :tipoCampania"
+			+ "			                                  and I_ID_ESTATUS_CAMPANIA = 1)",
 			nativeQuery = true)
 	List<Object[]> listaFechasCampania(@Param("tipoCampania") Integer tipoCampania);
 	
