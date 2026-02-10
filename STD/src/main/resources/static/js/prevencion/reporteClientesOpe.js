@@ -299,28 +299,71 @@ $('#infoNo').on('change', function() {
 });
  
 // Evento para el botón "Visto Bueno"
-document.getElementById("btnVistoBueno").addEventListener("click", function() {
-  var ValorSi = $('#infoSi').is(':checked');
- 
-  if (ValorSi) {
-    swal({
-      title: "¡Éxito!",
-      text: "Visto bueno registrado correctamente.",
-      icon: "success",
-      button: "Aceptar",
-    }).then(() => {
-      ejecutarVistoBueno();
-    });
-  } else {
-    swal("Debes seleccionar la opción 'Sí' para continuar.", {
-      icon: "warning",
-    });
-  }
+$(document).on("click", "#btnVistoBueno", function () {
+
+  swal({
+    title: "Visto bueno",
+    text: "Seleccione el tipo de reporte",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: `
+          <label>
+            <input type="checkbox" id="chkClientes"> Clientes
+          </label><br>
+          <label>
+            <input type="checkbox" id="chkOperaciones"> Operaciones
+          </label>
+        `
+      }
+    },
+    buttons: {
+      cancel: "Cancelar",
+      confirm: {
+        text: "Registrar",
+        closeModal: false
+      }
+    }
+  }).then(async (ok) => {
+
+    if (!ok) return;
+
+    const clientes    = document.getElementById("chkClientes").checked;
+    const operaciones = document.getElementById("chkOperaciones").checked;
+
+    if (!clientes && !operaciones) {
+      swal("Atención", "Debe seleccionar al menos un reporte", "warning");
+      return;
+    }
+
+    try {
+
+      const res = await fetch("/STD/prevencion/estado-proceso/vobo-seleccion", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ clientes, operaciones })
+      });
+
+      const data = await res.json();
+
+      swal(
+        data.tipo === "success" ? "¡Éxito!" : "Error",
+        data.mensaje,
+        data.tipo
+      );
+
+      if (data.tipo === "success") {
+        await cargarEstadoProceso();
+        iniciaTblHistorico();
+      }
+
+    } catch (e) {
+      swal("Error", "No se pudo registrar el visto bueno", "error");
+    }
+  });
 });
- 
- 
- 
- 
+
+
 // ==========================================================
 //  Validar archivo Excel antes de subirlo
 // ==========================================================
@@ -429,18 +472,18 @@ function esFinDeMes(fechaStr) {
 }
  
 async function ejecutarVistoBueno() {
-
+ 
   const fechaInicioOper = $("#fechaInicio").val() || $("#fechaInicioMigracion").val();
   const fechaFinOper    = $("#fechaFin").val()    || $("#fechaFinMigracion").val();
   const fechaCorteClientes = $("#fechaFinMigracion").val();
-
+ 
   if (!fechaInicioOper || !fechaFinOper || !fechaCorteClientes) {
     swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
     return;
   }
-
+ 
   const anio = fechaInicioOper.substring(0, 4);
-
+ 
   const confirmar = await swal({
     title: "¿Desea registrar el visto bueno global?",
     text: "Esto consolidará los reportes de CLIENTES y OPERACIONES en el histórico.",
@@ -448,9 +491,9 @@ async function ejecutarVistoBueno() {
     buttons: ["Cancelar", "Sí, continuar"],
     dangerMode: true
   });
-
+ 
   if (!confirmar) return;
-
+ 
   swal({
     title: "Registrando visto bueno...",
     content: {
@@ -464,9 +507,9 @@ async function ejecutarVistoBueno() {
     closeOnClickOutside: false,
     closeOnEsc: false
   });
-
+ 
   try {
-
+ 
     const res = await fetch("ejecutarVistoBueno", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -477,45 +520,45 @@ async function ejecutarVistoBueno() {
         fechaCorteClientes
       })
     });
-
+ 
     if (!res.ok) {
       throw new Error("Respuesta HTTP inválida");
     }
-
+ 
     let data;
     try {
       data = await res.json();
     } catch {
       data = { tipo: "error", mensaje: "Respuesta inválida del servidor" };
     }
-
+ 
     swal.close();
-
+ 
     swal({
       title: data.tipo === "success" ? "¡Éxito!" : "Error",
       text: data.mensaje,
       icon: data.tipo,
       button: "Aceptar"
     });
-
+ 
     if (data.tipo === "success") {
-
+ 
       // Persistir estado del proceso
       await fetch("/STD/prevencion/estado-proceso/vobo", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ fechaCorte: fechaCorteClientes })
       });
-
+ 
       iniciaTblHistorico();
       await cargarEstadoProceso();
     }
-
+ 
   } catch (err) {
-
+ 
     swal.close();
     console.error("Error en fetch:", err);
-
+ 
     swal({
       title: "Atención",
       text: "El visto bueno se registró, pero ocurrió un problema al actualizar la interfaz.",
@@ -523,8 +566,8 @@ async function ejecutarVistoBueno() {
     });
   }
 }
-
-
+ 
+ 
  
 var btnsROpera = "";
 var btnsRCientes = "";
@@ -819,138 +862,9 @@ function mostrarOpcionesPorTipo() {
 // ========================================================
 // Función completa para generar reporte de clientes
 async function generarReporteClientes() {
- 
-    swal({
-        title: "Generando reporte de clientes...",
-        content: {
-            element: "div",
-            attributes: {
-                innerHTML: '<div class="spinner-border text-primary"></div>',
-                style: "display:flex;justify-content:center;padding:20px;"
-            }
-        },
-        buttons: false,
-        closeOnClickOutside: false,
-        closeOnEsc: false
-    });
- 
-    try {
-        const res = await fetch("generarRptClientesPorFechaCorte", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-        fechaCorte: document.getElementById("fechaFinMigracion").value
-    })
-});
- 
- 
-        if (!res.ok) throw new Error();
- 
-        const respuesta = await res.json();
-        const url = respuesta[0];
- 
-        const base = window.location.href.substring(
-            0,
-            window.location.href.indexOf("STD/") + 4
-        );
- 
-        window.open(base + url);
-        window.focus();
- 
-        swal.close();
-        swal("¡Éxito!", "Reporte de clientes generado.", "success");
- 
-    } catch (e) {
-        swal.close();
-        swal("Error", "No se pudo generar el reporte.", "error");
-    }
-}
- 
- 
- 
-// ========================================================
-//  Procesar Auditoría de CLIENTES (llama SP en backend)
-// ========================================================
-async function procesarAuditoriaClientes() {
-  const fechaCorte = document.getElementById("fechaFinMigracion").value;
-
-  if (!fechaCorte) {
-    swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
-    return;
-  }
-
-  if (fechaCorte < "2024-01-01") {
-    swal("La fecha debe ser del año 2024 en adelante.", { icon: "error" });
-    return;
-  }
-
-  if (!esFinDeMes(fechaCorte)) {
-    swal("La fecha seleccionada NO es el último día del mes.", { icon: "error" });
-    return;
-  }
 
   swal({
-    title: "Procesando auditoría...",
-    content: {
-      element: "div",
-      attributes: { innerHTML: '<div class="spinner-border text-primary"></div>' }
-    },
-    buttons: false
-  });
-
-  try {
-    const res = await fetch("procesarAuditoria", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaCorte })
-    });
-
-    const data = await res.json();
-
-    swal.close();
-
-    swal({
-      title: data.tipo === "success" ? "¡Éxito!" : "Error",
-      text: data.mensaje,
-      icon: data.tipo,
-      button: "Aceptar"
-    });
-
-    // ✅ PERSISTIR ESTADO: AUDITORIA_OK
-    if (data.tipo === "success") {
-      await fetch("/STD/prevencion/estado-proceso/auditoria-ok", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaCorte })
-      });
-
-      // 🔄 Reconstruir UI desde BD
-      await cargarEstadoProceso();
-    }
-
-  } catch (error) {
-    swal.close();
-    swal("Ocurrió un error al procesar la auditoría", { icon: "error" });
-  }
-}
-
- 
- 
-// ========================================================
-//  Generar reporte de OPERACIONES filtrado por rango de fechas
-// ========================================================
-async function generarReporteOperaciones() {
-
-  const fechaInicio = document.getElementById("fechaInicioMigracion").value;
-  const fechaFin    = document.getElementById("fechaFinMigracion").value;
-
-  if (!fechaInicio || !fechaFin) {
-    swal("Error", "Debe seleccionar fecha inicio y fecha fin.", "warning");
-    return;
-  }
-
-  swal({
-    title: "Generando reporte de operaciones...",
+    title: "Generando reporte de clientes...",
     content: {
       element: "div",
       attributes: {
@@ -964,10 +878,14 @@ async function generarReporteOperaciones() {
   });
 
   try {
-    const res = await fetch("generarRptOperacionesAuditoria", {
+
+    // 1️⃣ Generar reporte CLIENTES
+    const res = await fetch("generarRptClientesPorFechaCorte", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ fechaInicio, fechaFin })
+      body: new URLSearchParams({
+        fechaCorte: document.getElementById("fechaFinMigracion").value
+      })
     });
 
     if (!res.ok) throw new Error();
@@ -980,12 +898,149 @@ async function generarReporteOperaciones() {
       window.location.href.indexOf("STD/") + 4
     );
 
+    // 2️⃣ Abrir Excel
     window.open(base + url);
     window.focus();
 
+    // 3️⃣ 🔥 MARCAR CLIENTES_DESCARGADO 🔥
+    await fetch("/STD/prevencion/estado-proceso/clientes-descargado", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    });
+
+    // 4️⃣ Reconstruir UI desde BD
+    await cargarEstadoProceso();
+
+    swal.close();
+    swal("¡Éxito!", "Reporte de clientes generado.", "success");
+
+  } catch (e) {
+    swal.close();
+    swal("Error", "No se pudo generar el reporte.", "error");
+  }
+}
+
+ 
+ 
+ 
+// ========================================================
+//  Procesar Auditoría de CLIENTES (llama SP en backend)
+// ========================================================
+async function procesarAuditoriaClientes() {
+  const fechaCorte = document.getElementById("fechaFinMigracion").value;
+ 
+  if (!fechaCorte) {
+    swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
+    return;
+  }
+ 
+  if (fechaCorte < "2024-01-01") {
+    swal("La fecha debe ser del año 2024 en adelante.", { icon: "error" });
+    return;
+  }
+ 
+  if (!esFinDeMes(fechaCorte)) {
+    swal("La fecha seleccionada NO es el último día del mes.", { icon: "error" });
+    return;
+  }
+ 
+  swal({
+    title: "Procesando auditoría...",
+    content: {
+      element: "div",
+      attributes: { innerHTML: '<div class="spinner-border text-primary"></div>' }
+    },
+    buttons: false
+  });
+ 
+  try {
+    const res = await fetch("procesarAuditoria", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaCorte })
+    });
+ 
+    const data = await res.json();
+ 
+    swal.close();
+ 
+    swal({
+      title: data.tipo === "success" ? "¡Éxito!" : "Error",
+      text: data.mensaje,
+      icon: data.tipo,
+      button: "Aceptar"
+    });
+ 
+    // ✅ PERSISTIR ESTADO: AUDITORIA_OK
+    if (data.tipo === "success") {
+      await fetch("/STD/prevencion/estado-proceso/auditoria-ok", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaCorte })
+      });
+ 
+      // 🔄 Reconstruir UI desde BD
+      await cargarEstadoProceso();
+    }
+ 
+  } catch (error) {
+    swal.close();
+    swal("Ocurrió un error al procesar la auditoría", { icon: "error" });
+  }
+}
+ 
+ 
+ 
+// ========================================================
+//  Generar reporte de OPERACIONES filtrado por rango de fechas
+// ========================================================
+async function generarReporteOperaciones() {
+ 
+  const fechaInicio = document.getElementById("fechaInicioMigracion").value;
+  const fechaFin    = document.getElementById("fechaFinMigracion").value;
+ 
+  if (!fechaInicio || !fechaFin) {
+    swal("Error", "Debe seleccionar fecha inicio y fecha fin.", "warning");
+    return;
+  }
+ 
+  swal({
+    title: "Generando reporte de operaciones...",
+    content: {
+      element: "div",
+      attributes: {
+        innerHTML: '<div class="spinner-border text-primary"></div>',
+        style: "display:flex;justify-content:center;padding:20px;"
+      }
+    },
+    buttons: false,
+    closeOnClickOutside: false,
+    closeOnEsc: false
+  });
+ 
+  try {
+    const res = await fetch("generarRptOperacionesAuditoria", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaInicio, fechaFin })
+    });
+ 
+    if (!res.ok) throw new Error();
+ 
+    const respuesta = await res.json();
+    const url = respuesta[0];
+ 
+    const base = window.location.href.substring(
+      0,
+      window.location.href.indexOf("STD/") + 4
+    );
+ 
+    window.open(base + url);
+    window.focus();
+ 
     swal.close();
     swal("¡Éxito!", "Reporte de operaciones generado.", "success");
-
+ 
     // ✅ PERSISTIR ESTADO: OPERACIONES_DESCARGADO
     await fetch("/STD/prevencion/estado-proceso/operaciones-descargado", {
       method: "POST",
@@ -994,16 +1049,16 @@ async function generarReporteOperaciones() {
         fechaCorte: fechaFin
       })
     });
-
+ 
     // 🔄 Reconstruir UI desde BD
     await cargarEstadoProceso();
-
+ 
   } catch (e) {
     swal.close();
     swal("Error", "No se pudo generar el reporte.", "error");
   }
 }
-
+ 
  
  
 function renderEstadoMigracion(data) {
@@ -1046,38 +1101,38 @@ function renderEstadoMigracion(data) {
  
  
 function renderProcesoUI(estado) {
-
+ 
   if (!estado) return;
-
+ 
   // 1️⃣ Ejecutado → botón amarillo
   if (estado.ejecutado) {
     $("#btnProcesarAuditoriaClientes").show();
   }
-
+ 
   // 2️⃣ Auditoría OK → botones reporte
   if (estado.auditoriaOk) {
     $("#btnGenerarClientes").show();
     $("#btnGenerarOperaciones").show();
   }
-
+ 
   // 3️⃣ Operaciones descargadas → visto bueno
   if (estado.operacionesDescargado && !estado.operacionesVobo) {
     $("#bloqueVistoBueno").show();
   }
 }
-
-
-
+ 
+ 
+ 
 document.getElementById("btnEjecutarMigracion")
   .addEventListener("click", async function () {
-
+ 
     const fechaCorte = $("#fechaFinMigracion").val();
-
+ 
     if (!fechaCorte) {
       swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
       return;
     }
-
+ 
     swal({
       title: "Iniciando proceso...",
       content: {
@@ -1090,9 +1145,9 @@ document.getElementById("btnEjecutarMigracion")
       closeOnClickOutside: false,
       closeOnEsc: false
     });
-
+ 
     try {
-
+ 
       // ACTIVAR MIGRACIÓN 
       await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
         method: "POST",
@@ -1102,7 +1157,7 @@ document.getElementById("btnEjecutarMigracion")
           fechaFin: fechaCorte
         })
       });
-
+ 
       // INICIAR PROCESO PLD 
       await fetch("/STD/prevencion/estado-proceso/ejecutar", {
   method: "POST",
@@ -1112,79 +1167,79 @@ document.getElementById("btnEjecutarMigracion")
     fechaCorte:  $("#fechaFinMigracion").val()
   })
 });
-
+ 
       swal.close();
-
+ 
       // RECONSTRUIR UI DESDE BD
       await cargarEstadoProceso();
-
+ 
     } catch (e) {
       swal.close();
       swal("Error", "No se pudo iniciar el proceso.", "error");
       console.error(e);
     }
 });
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
-
+ 
   const btnAuditoria = document.getElementById("btnProcesarAuditoriaClientes");
-
+ 
   if (!btnAuditoria) {
     console.warn("⚠️ No existe btnProcesarAuditoriaClientes en el DOM");
     return;
   }
-
+ 
   btnAuditoria.addEventListener("click", async function () {
     await procesarAuditoriaClientes();
   });
-
+ 
 });
-
-
+ 
+ 
 async function cargarEstadoProceso() {
-
+ 
   const res = await fetch("/STD/prevencion/estado-proceso");
-
+ 
   // 🔴 NO HAY PROCESO ACTIVO → estado final válido
   if (res.status === 204 || res.status === 404) {
     ocultarTodoProceso();
     return;
   }
-
+ 
   if (!res.ok) return;
-
+ 
   const estado = await res.json();
-
+ 
   // 🔹 RECONSTRUIR FECHAS (si existen)
   if (estado?.fechaInicio) {
     $("#fechaInicioMigracion").val(estado.fechaInicio);
   }
-
+ 
   if (estado?.fechaCorte) {
     $("#fechaFinMigracion").val(estado.fechaCorte);
   }
-
+ 
   ocultarTodoProceso();
   renderProcesoUI(estado);
 }
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
 $(document).ready(async () => {
-
+ 
   // 1️⃣ Cargar estado de migración (switch + botón)
   await cargarEstadoInicial();
-
+ 
   // 2️⃣ Reconstruir proceso PLD desde BD
   await cargarEstadoProceso();
-
+ 
   // 3️⃣ Cargar histórico
   iniciaTblHistorico();
 });
-
-
+ 
+ 
  
 function existeElemento(id) {
     return document.getElementById(id) !== null;
@@ -1201,4 +1256,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
  
 });
- 

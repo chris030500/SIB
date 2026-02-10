@@ -95,7 +95,7 @@ public class RptReporteClientesOpeController {
     
     @Autowired
     private EstadoProcesoReporteService estadoProcesoReporteService;
-
+ 
     
     
     List<Usuario> usuarios =null;
@@ -110,100 +110,100 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<EstadoProcesoReporte> obtenerEstadoProceso(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         EstadoProcesoReporte estado =
                 estadoProcesoReporteService.obtenerProcesoActivo(
                         userDetails.getUsername()
                 );
-
+ 
         if (estado == null) {
             return ResponseEntity.noContent().build(); // 
         }
-
+ 
         return ResponseEntity.ok(estado);
     }
-
-
-
+ 
+ 
+ 
     
     @PostMapping("/estado-proceso/clientes-descargado")
     @ResponseBody
     public void marcarClientesDescargado(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         estadoProcesoReporteService.marcarClientesDescargado(
                 userDetails.getUsername()
         );
     }
-
+ 
     
     @PostMapping("/estado-proceso/auditoria-ok")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarAuditoriaOk(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         Map<String, Object> resp = new HashMap<>();
-
+ 
         try {
             estadoProcesoReporteService.marcarAuditoriaOk(
                     userDetails.getUsername()
             );
-
+ 
             resp.put("tipo", "success");
             resp.put("mensaje", "Auditoría marcada correctamente");
-
+ 
             return ResponseEntity.ok(resp);
-
+ 
         } catch (Exception e) {
             resp.put("tipo", "error");
             resp.put("mensaje", e.getMessage());
-
+ 
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(resp);
         }
     }
-
-
+ 
+ 
     @PostMapping("/estado-proceso/operaciones-descargado")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarOperacionesDescargado(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         estadoProcesoReporteService.marcarOperacionesDescargado(
             userDetails.getUsername()
         );
-
+ 
         Map<String, Object> resp = new HashMap<>();
         resp.put("ok", true);
         return ResponseEntity.ok(resp);
     }
-
+ 
     
     @PostMapping("/estado-proceso/vobo")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> marcarVobo(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         estadoProcesoReporteService.marcarOperacionesVobo(
             userDetails.getUsername()
         );
-
+ 
         Map<String, Object> resp = new HashMap<>();
         resp.put("ok", true);
         resp.put("mensaje", "Visto bueno registrado correctamente");
-
+ 
         return ResponseEntity.ok(resp);
     }
-
-
+ 
+ 
     @PostMapping("/estado-proceso/ejecutar")
     @ResponseBody
     public void ejecutarProceso(
             @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         estadoProcesoReporteService.iniciarProceso(
             userDetails.getUsername(),
             fechaInicio != null && !fechaInicio.isEmpty()
@@ -212,10 +212,10 @@ public class RptReporteClientesOpeController {
             LocalDate.parse(fechaCorte)
         );
     }
-
-
-
-
+ 
+ 
+ 
+ 
  
     @PostMapping("/reporteClientesOpe/uploadPEP")
     @ResponseBody
@@ -733,6 +733,104 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
+    
+    @PostMapping("/estado-proceso/vobo-por-proceso")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> ejecutarVistoBuenoPorProceso(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> respuesta = new HashMap<>();
+        Connection connection = null;
+        CallableStatement cs = null;
+
+        try {
+            // ============================
+            // 1️⃣ OBTENER PROCESO ACTIVO
+            // ============================
+            EstadoProcesoReporte proceso =
+                    estadoProcesoReporteService.obtenerProcesoActivo(
+                            userDetails.getUsername()
+                    );
+
+            if (proceso == null) {
+                throw new IllegalStateException("No existe un proceso activo para registrar visto bueno.");
+            }
+
+            // ============================
+            // 2️⃣ OBTENER USUARIO
+            // ============================
+            Integer idUsuario = iUsuarioRepository
+                    .findByNombreUsuario(userDetails.getUsername())
+                    .get(0)
+                    .getPk_id_usuario();
+
+            // ============================
+            // 3️⃣ EJECUTAR SP
+            // ============================
+            connection = jdbcTemplate.getDataSource().getConnection();
+            cs = connection.prepareCall(Constantes.VISTO_BUENO_PROCESO);
+
+            cs.registerOutParameter(1, Types.VARCHAR);        // OUT error_message
+            cs.setLong(2, proceso.getIdProceso());            // ID_PROCESO
+            cs.setInt(3, idUsuario);                          // USUARIO VOBO
+
+            cs.execute();
+
+            String error = cs.getString(1);
+
+            // ============================
+            // 4️⃣ RESPUESTA
+            // ============================
+            if (error != null && !error.isEmpty()) {
+                respuesta.put("tipo", "error");
+                respuesta.put("mensaje", error);
+            } else {
+                respuesta.put("tipo", "success");
+                respuesta.put("mensaje", "Visto bueno registrado correctamente por proceso.");
+            }
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            logger.error("❌ Error al ejecutar visto bueno por proceso", e);
+            respuesta.put("tipo", "error");
+            respuesta.put("mensaje", e.getMessage());
+            return ResponseEntity.ok(respuesta);
+
+        } finally {
+            try { if (cs != null) cs.close(); } catch (Exception ignored) {}
+            try { if (connection != null) connection.close(); } catch (Exception ignored) {}
+        }
+    }
+
+    @PostMapping("/estado-proceso/vobo-seleccion")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> registrarVoboSeleccion(
+            @RequestParam boolean clientes,
+            @RequestParam boolean operaciones,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> resp = new HashMap<>();
+
+        try {
+            estadoProcesoReporteService.registrarVoboProceso(
+                    userDetails.getUsername(),
+                    clientes,
+                    operaciones
+            );
+
+            resp.put("tipo", "success");
+            resp.put("mensaje", "Visto bueno registrado correctamente");
+            return ResponseEntity.ok(resp);
+
+        } catch (Exception e) {
+            resp.put("tipo", "error");
+            resp.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(resp);
+        }
+    }
+
+
     
     @PostMapping("/procesarAuditoriaClientes")
     public ResponseEntity<Map<String, Object>> procesarAuditoriaClientes(
