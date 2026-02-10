@@ -1105,10 +1105,13 @@ document.getElementById("btnEjecutarMigracion")
 
       // INICIAR PROCESO PLD 
       await fetch("/STD/prevencion/estado-proceso/ejecutar", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ fechaCorte })
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({
+    fechaInicio: $("#fechaInicioMigracion").val(),
+    fechaCorte:  $("#fechaFinMigracion").val()
+  })
+});
 
       swal.close();
 
@@ -1141,13 +1144,31 @@ document.addEventListener("DOMContentLoaded", () => {
 async function cargarEstadoProceso() {
 
   const res = await fetch("/STD/prevencion/estado-proceso");
+
+  // 🔴 NO HAY PROCESO ACTIVO → estado final válido
+  if (res.status === 204 || res.status === 404) {
+    ocultarTodoProceso();
+    return;
+  }
+
   if (!res.ok) return;
 
   const estado = await res.json();
 
-  ocultarTodoProceso();     // ⬅️ solo después de tener estado
+  // 🔹 RECONSTRUIR FECHAS (si existen)
+  if (estado?.fechaInicio) {
+    $("#fechaInicioMigracion").val(estado.fechaInicio);
+  }
+
+  if (estado?.fechaCorte) {
+    $("#fechaFinMigracion").val(estado.fechaCorte);
+  }
+
+  ocultarTodoProceso();
   renderProcesoUI(estado);
 }
+
+
 
 
 

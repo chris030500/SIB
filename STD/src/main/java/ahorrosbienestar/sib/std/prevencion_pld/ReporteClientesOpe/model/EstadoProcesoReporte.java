@@ -29,6 +29,9 @@ public class EstadoProcesoReporte {
     // =========================
     @Column(name = "VC_USUARIO", nullable = false, length = 50)
     private String vcUsuario;
+    
+    @Column(name = "FECHA_INICIO")
+    private LocalDate fechaInicio;
 
     @Column(name = "FECHA_CORTE", nullable = false)
     private LocalDate fechaCorte;
@@ -105,6 +108,14 @@ public class EstadoProcesoReporte {
 
     public void setVcUsuario(String vcUsuario) {
         this.vcUsuario = vcUsuario;
+    }
+    
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 
     public LocalDate getFechaCorte() {

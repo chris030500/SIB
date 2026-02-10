@@ -37,20 +37,23 @@ public class EstadoProcesoReporteService {
     /* ============================
        INICIAR PROCESO
     ============================ */
-    public void iniciarProceso(String usuario, LocalDate fechaCorte) {
+    public void iniciarProceso(String usuario, LocalDate fechaInicio, LocalDate fechaCorte) {
 
         EstadoProcesoReporte p = obtenerProcesoActivo(usuario);
 
         if (p == null) {
             p = new EstadoProcesoReporte();
             p.setVcUsuario(usuario);
-            p.setFechaCorte(fechaCorte);
             p.setEstatus(1);
         }
 
+        p.setFechaInicio(fechaInicio);
+        p.setFechaCorte(fechaCorte);
         p.setEjecutado(true);
+
         repository.save(p);
     }
+
 
     /* ============================
        MARCAR AUDITORÍA OK

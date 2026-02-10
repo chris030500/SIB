@@ -116,8 +116,13 @@ public class RptReporteClientesOpeController {
                         userDetails.getUsername()
                 );
 
+        if (estado == null) {
+            return ResponseEntity.noContent().build(); // 
+        }
+
         return ResponseEntity.ok(estado);
     }
+
 
 
     
@@ -195,14 +200,20 @@ public class RptReporteClientesOpeController {
     @PostMapping("/estado-proceso/ejecutar")
     @ResponseBody
     public void ejecutarProceso(
+            @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam("fechaCorte") String fechaCorte,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         estadoProcesoReporteService.iniciarProceso(
             userDetails.getUsername(),
+            fechaInicio != null && !fechaInicio.isEmpty()
+                ? LocalDate.parse(fechaInicio)
+                : null,
             LocalDate.parse(fechaCorte)
         );
     }
+
+
 
 
  
