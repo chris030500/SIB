@@ -12,10 +12,23 @@ import org.springframework.stereotype.Repository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.HistorialReporte;
 
 
-    @Repository
-    public interface HistorialReporteRepository extends JpaRepository<HistorialReporte, Integer> {
-     
-     
-        @Query(value = "SELECT * FROM SIB.TBL_HISTORIAL_REPORTES_AUDITORIAS WHERE I_ESTATUS =1", nativeQuery = true)
-        public List<HistorialReporte> procesoVobo();
-    } 
+@Repository
+public interface HistorialReporteRepository 
+        extends JpaRepository<HistorialReporte, Integer> {
+
+    // Obtener registros por estatus
+    List<HistorialReporte> findByEstatus(Integer estatus);
+
+    // 🔴 ESTE MÉTODO VA AQUÍ
+    HistorialReporte findTopByTipoReporteAndFechaInicioAndFechaFinOrderByIdDesc(
+            String tipoReporte,
+            LocalDateTime fechaInicio,
+            LocalDateTime fechaFin
+    );
+    
+    HistorialReporte findTopByTipoReporteAndEstatusOrderByIdDesc(
+            String tipoReporte,
+            Integer estatus
+    );
+}
+

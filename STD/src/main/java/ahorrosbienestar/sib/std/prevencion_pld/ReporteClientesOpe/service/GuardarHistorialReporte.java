@@ -35,7 +35,8 @@ public class GuardarHistorialReporte {
     }
     
     public List<HistorialReporte> procesoVobo() {
-        return historialRepo.procesoVobo();
+    	return historialRepo.findByEstatus(1);
+
     }
     
  

@@ -813,6 +813,13 @@ public class RptReporteClientesOpeController {
         Map<String, Object> resp = new HashMap<>();
 
         try {
+
+            // 🔴 PRIMERO insertar los dos registros base
+            estadoProcesoReporteService.preInsertarHistorial(
+                    userDetails.getUsername()
+            );
+
+            // 🔵 LUEGO ejecutar el flujo normal de visto bueno
             estadoProcesoReporteService.registrarVoboProceso(
                     userDetails.getUsername(),
                     clientes,
@@ -824,6 +831,33 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
+            e.printStackTrace();
+            resp.put("tipo", "error");
+            resp.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(resp);
+        }
+    }
+
+
+    @PostMapping("/estado-proceso/pre-insert-historial")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> preInsertHistorial(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> resp = new HashMap<>();
+
+        try {
+
+            estadoProcesoReporteService.preInsertarHistorial(
+                    userDetails.getUsername()
+            );
+
+            resp.put("tipo", "success");
+            resp.put("mensaje", "Historial pre-registrado");
+            return ResponseEntity.ok(resp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
             resp.put("tipo", "error");
             resp.put("mensaje", e.getMessage());
             return ResponseEntity.badRequest().body(resp);

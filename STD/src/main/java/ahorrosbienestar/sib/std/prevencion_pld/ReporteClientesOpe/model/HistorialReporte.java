@@ -35,7 +35,7 @@ public class HistorialReporte {
     @Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Integer estatus;
     
-    @Column(name = "DT_FECHA_VOBO", nullable = false)
+    @Column(name = "DT_FECHA_VOBO")
     private LocalDateTime fechaGeneracionvobo;
     
     @Column(name = "DT_FechaInicio")

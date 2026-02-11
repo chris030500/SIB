@@ -338,28 +338,39 @@ $(document).on("click", "#btnVistoBueno", function () {
 
     try {
 
-      const res = await fetch("/STD/prevencion/estado-proceso/vobo-seleccion", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ clientes, operaciones })
-      });
+  // 1️⃣ Insertar historial base
+  await fetch("/STD/prevencion/estado-proceso/pre-insert-historial", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+  });
 
-      const data = await res.json();
+  // 2️⃣ Registrar visto bueno seleccionado
+  const res = await fetch("/STD/prevencion/estado-proceso/vobo-seleccion", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      clientes,
+      operaciones
+    })
+  });
 
-      swal(
-        data.tipo === "success" ? "¡Éxito!" : "Error",
-        data.mensaje,
-        data.tipo
-      );
+  const data = await res.json();
 
-      if (data.tipo === "success") {
-        await cargarEstadoProceso();
-        iniciaTblHistorico();
-      }
+  swal(
+    data.tipo === "success" ? "¡Éxito!" : "Error",
+    data.mensaje,
+    data.tipo
+  );
 
-    } catch (e) {
-      swal("Error", "No se pudo registrar el visto bueno", "error");
-    }
+  if (data.tipo === "success") {
+    await cargarEstadoProceso();
+    iniciaTblHistorico();
+  }
+
+} catch (e) {
+  swal("Error", "No se pudo registrar el visto bueno", "error");
+}
+
   });
 });
 
