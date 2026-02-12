@@ -187,19 +187,24 @@ public class EstadoProcesoReporteService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
 
-        LocalDateTime fechaInicio = 
-                p.getFechaInicio() != null ? p.getFechaInicio().atStartOfDay() : null;
+        Integer anio = p.getFechaCorte().getYear();
 
-        LocalDateTime fechaFin = p.getFechaCorte().atStartOfDay();
-
+        /* ============================
+           CLIENTES
+        ============================ */
         if (clientes) {
 
             p.setClientesVobo(true);
 
-            HistorialReporte h = historialRepository
-                    .findTopByTipoReporteAndEstatusOrderByIdDesc(
-                            "CLIENTES", 0);
+            // 🔥 1. Desactivar todos los anteriores del mismo año
+            historialRepository.desactivarVobosPorTipoYAnio("CLIENTES", anio);
 
+            // 🔥 2. Buscar el más reciente del año
+            HistorialReporte h = historialRepository
+                    .findTopByTipoReporteAndAnioGeneracionOrderByIdDesc(
+                            "CLIENTES",
+                            anio
+                    );
 
             if (h != null) {
                 h.setEstatus(1);
@@ -209,15 +214,23 @@ public class EstadoProcesoReporteService {
             }
         }
 
+        /* ============================
+           OPERACIONES
+        ============================ */
         if (operaciones) {
 
             p.setOperacionesVobo(true);
-            p.setEstatus(0); // cierre definitivo si aplica
+            p.setEstatus(0); // 🔒 cierre definitivo
 
+            // 🔥 1. Desactivar anteriores
+            historialRepository.desactivarVobosPorTipoYAnio("OPERACIONES", anio);
+
+            // 🔥 2. Buscar el más reciente
             HistorialReporte h = historialRepository
-                    .findTopByTipoReporteAndEstatusOrderByIdDesc(
-                            "OPERACIONES", 0);
-
+                    .findTopByTipoReporteAndAnioGeneracionOrderByIdDesc(
+                            "OPERACIONES",
+                            anio
+                    );
 
             if (h != null) {
                 h.setEstatus(1);
@@ -229,4 +242,5 @@ public class EstadoProcesoReporteService {
 
         repository.save(p);
     }
+
 }
