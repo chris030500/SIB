@@ -1565,6 +1565,9 @@ function btnCancelar() {
     //
     //
     //console.log("va a mandar llamar el SP SP_CAM_CANCELAR_PROCESO");
+    console.log("tipoCampania: " + tipoCampania);
+    console.log("estatusCampania: " + estatusCampania);
+    console.log("userReg: " + userReg);
 	//mandar llamar SP 
 	fetch(newUrlBase + "credito/api/ejecutarCancelar?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&userReg=" + userReg)
     .then(resp => {
