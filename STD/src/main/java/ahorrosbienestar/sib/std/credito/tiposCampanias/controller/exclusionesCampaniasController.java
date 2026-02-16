@@ -127,17 +127,17 @@ public class exclusionesCampaniasController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar el archivo: " + e.getMessage());
         }*/
-        //} catch (Exception e) {
-          //  logger.error("Error al procesar el archivo", e);
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-              //      .body("Error al procesar el archivo: " + e.getMessage());
-        //}
-        }catch (Exception e) {
-            e.printStackTrace(); // <-- IMPORTANTE
-            logger.error("Error al procesar el archivo", e);
+        } catch (Exception e) {
+           logger.error("Error al procesar el archivo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al procesar el archivo: " + e.toString());
+                    .body("Error al procesar el archivo: " + e.getMessage());
         }
+        //}catch (Exception e) {
+          //  e.printStackTrace(); // <-- IMPORTANTE
+            //logger.error("Error al procesar el archivo", e);
+           // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+             //       .body("Error al procesar el archivo: " + e.toString());
+        //}
     }
 
     @GetMapping("/listarMunicipios")

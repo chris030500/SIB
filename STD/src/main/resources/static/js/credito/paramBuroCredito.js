@@ -138,6 +138,7 @@ function llenarFormulario(param) {
 	const radios = document.getElementsByName("tipoEvaluacion");
 	Array.from(radios).forEach(radio => {
 		radio.checked = Number(radio.value) === tipoEval;
+		radio.disabled = true;
 	});
 
 	// inputs numéricos
