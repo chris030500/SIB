@@ -788,8 +788,113 @@ document.addEventListener("DOMContentLoaded", function() {
     // @ts-ignore
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     let registros = [];
+    
+    const primeraFila = rows[2];
+    
     if (tipo==2) {
 		//Adviser
+		
+		const encabezadosEsperados = [
+			"FOLIO",
+			"CTA",
+			"RFC",
+			"1er. NOMBRE",
+			"2do. NOMBRE",
+			"PATERNO",
+			"MATERNO",
+			"DOMICILIO",
+			"COLONIA",
+			"MUNICIPIO",
+			"CIUDAD",
+			"EDO",
+			"CP",
+			//Bienestar
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Tiendas Comerciales - Departamentales
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Personales Bancarios
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Financieras
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Microfinancieras
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Cooperativas
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Créditos Hipotecarios
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Créditos Automotrices
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Tarjetas de Crédito
+			"# Cuentas",
+			"Limite de Crédito",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Total de Créditos Abiertos
+			"# Cuentas",
+			"Crédito Máximo",
+			"Saldo Actual",
+			"Saldo Vencido",
+			"% de Uso",
+			//Estrategia Bienestar
+			"Alto Uso de Créditos",
+			"Cuentas SIC - Cobranza",
+			"Total Monto a Pagar",
+			"Peor MOP Actual",
+			"BC Score",
+			"ICC",
+			"Clasificación de Riesgo Bienestar",
+			"Resultado",
+			"Corte 660-6",
+			"Oferta de Crédito "
+		];
+		
+		// Validación encabezados
+		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
+		
+		if (!esValidoEncabezado) {
+			console.log("Entra a función esValidoEncabezado");
+			// @ts-ignore
+			 Swal.close(); // Cierra el loading
+			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
+				+ encabezadosEsperados.join(", ") 
+				+ "\n\nEncontrados:\n" 
+				+ primeraFila.join(", "));
+			return; // Detenemos aquí
+		}
+		
 		let rfcCliente = rows.slice(3).map(fila => fila[2]);
 	    // Extraer columna KB desde fila 4-Procentaje de uso maximo de Total de Créditos Abiertos
 	    let valoresBK = rows.slice(3).map(fila => fila[62]); 
@@ -827,6 +932,44 @@ document.addEventListener("DOMContentLoaded", function() {
 	    
 	}else if(tipo==1){
 		//Prospector
+		
+		const encabezadosEsperados = [
+			"FOLIO",
+			"CTA",
+			"RFC",
+			"1er. NOMBRE",
+			"2do. NOMBRE",
+			"PATERNO",
+			"MATERNO",
+			"DOMICILIO",
+			"COLONIA",
+			"MUNICIPIO",
+			"CIUDAD",
+			"EDO",
+			"CP",
+			//Scores
+			"BC Score",
+			"ICC",
+			//Estrategia
+			"Clasificación de Riesgo",
+			"Resultado",
+			"Corte 660-6"
+		];
+		
+		// Validación encabezados
+		const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
+		
+		if (!esValidoEncabezado) {
+			console.log("Entra a función esValidoEncabezado");
+			// @ts-ignore
+			 Swal.close(); // Cierra el loading
+			alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
+				+ encabezadosEsperados.join(", ") 
+				+ "\n\nEncontrados:\n" 
+				+ primeraFila.join(", "));
+			return; // Detenemos aquí
+		}
+		
 		let rfcClienteP = rows.slice(3).map(fila => fila[2]);
 		// Extraer columna-BCS mínimo
 	    let valoresBCS = rows.slice(3).map(fila => fila[13]);
