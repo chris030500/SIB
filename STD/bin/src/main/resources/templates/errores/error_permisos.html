@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<div class="container">
+
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<h4 class="alert-heading">Error: No cuenta con permisos para consultar Informacion</h4>
+				<div class="card-body">
+					<h5 class="card-title">
+						Lo sentimos <span th:text="${#authentication.name}"></span>, No cuenta con permisos para consultar Informacion.
+					</h5>
+					<a th:href="@{/inicio}" class="btn btn btn-outline-dark" role="button">Ir a inicio </a>
+				</div>
+			</div>
+
+		</div>
+
+
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/configuracion.js}"></script>
+	</th:block>
+</body>
+
+</html>
