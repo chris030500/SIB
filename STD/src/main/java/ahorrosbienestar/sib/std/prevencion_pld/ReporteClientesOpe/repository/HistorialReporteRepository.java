@@ -23,14 +23,12 @@ public interface HistorialReporteRepository
 
     @Modifying
     @Transactional
-    @Query("""
-       UPDATE HistorialReporte h
-       SET h.estatus = 0,
-           h.i_usuario_vobo = null
-       WHERE h.tipoReporte = :tipo
-         AND h.anioGeneracion = :anio
-    """)
-    void desactivarVobosPorTipoYAnio(
+    @Query(value ="UPDATE HistorialReporte h " +
+           "SET h.estatus  = 0, " +
+           "h.i_usuario_vobo  = null " +
+           "WHERE h.tipoReporte  = :tipo " +
+           "AND h.anioGeneracion  = :anio")
+    int desactivarVobosPorTipoYAnio(
             @Param("tipo") String tipo,
             @Param("anio") Integer anio
     );
