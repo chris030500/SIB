@@ -104,7 +104,6 @@ function buscarCampanias() {
 
 function limpiarFormulario() {
     document.getElementById("Ventana").value = "";
-    document.getElementById("VentanaMayor").value = "";
     document.getElementById("EdadMaxima").value = "";
     document.getElementById("EdadMinima").value = "";
     document.getElementById("MontoMinimo").value = "";
@@ -195,7 +194,7 @@ input.addEventListener('input', function () {
             .then(data => {
 				//console.log("Datos recibidos:", data);
                 document.getElementById("Ventana").value = data.i_ventana_anios;
-                //document.getElementById("VentanaMayor").value = data.i_ventana_anios;
+                document.getElementById("VentanaMayor").value = data.i_ventana_anios_mayor;
                 document.getElementById("MontoMinimo").value = data.d_monto_minimo;
                 document.getElementById("MinimoVida").value = data.i_minimo_vida_credito;
                 document.getElementById("MinimoVidaR").value = data.i_minimo_vida_credito_r;
@@ -876,6 +875,7 @@ function modificarTiposCampanias(){
 																																												        vc_tipo_campania: nomTipoCampania,
 																																												        i_tipo_campania: parseInt(document.getElementById("tipoCampanias").value),
 																																												        i_ventana_anios: parseInt(document.getElementById("Ventana").value),
+																																												        i_ventana_anios_mayor: parseInt(document.getElementById("VentanaMayor").value),
 																																												        i_edad_maxima: parseInt(document.getElementById("EdadMaxima").value),
 																																												        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
 																																												        d_monto_minimo: parseFloat(document.getElementById("MontoMinimo").value),

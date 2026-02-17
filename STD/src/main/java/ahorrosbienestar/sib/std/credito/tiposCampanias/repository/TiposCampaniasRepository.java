@@ -39,6 +39,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	@Query(value = "UPDATE SIB.TBL_TIPOS_CAMPANIA SET "
 		+ "I_TIPO_CAMPANIA = :i_tipo_campania, "
         + "I_VENTANA_ANIOS = :i_ventana_anios, "
+        + "I_VENTANA_ANIOS_MAYOR = :i_ventana_anios_mayor, "
         + "I_EDAD_MAXIMA = :i_edad_maxima, "
         + "I_EDAD_MINIMA = :i_edad_minima, "
         + "D_MONTO_MINIMO = :d_monto_minimo, "
@@ -69,6 +70,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	    @Param("pk_id_tipo_campania") Integer pk_id_tipo_campania,
 	    @Param("i_tipo_campania") Integer i_tipo_campania,
 	    @Param("i_ventana_anios") Integer i_ventana_anios,
+	    @Param("i_ventana_anios_mayor") Integer i_ventana_anios_mayor,
 	    @Param("i_edad_maxima") Integer i_edad_maxima,
 	    @Param("i_edad_minima") Integer i_edad_minima,
 	    @Param("d_monto_minimo") Double d_monto_minimo,
@@ -99,7 +101,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	@Modifying
 	@Transactional
 	@Query(value = "INSERT INTO SIB.TBL_TIPOS_CAMPANIA ("
-	        + "VC_TIPO_CAMPANIA, I_TIPO_CAMPANIA, I_VENTANA_ANIOS, I_EDAD_MAXIMA, I_EDAD_MINIMA, D_MONTO_MINIMO, D_MONTO_MAXIMO, "
+	        + "VC_TIPO_CAMPANIA, I_TIPO_CAMPANIA, I_VENTANA_ANIOS, I_VENTANA_ANIOS_MAYOR, I_EDAD_MAXIMA, I_EDAD_MINIMA, D_MONTO_MINIMO, D_MONTO_MAXIMO, "
 	        + "D_PORC_CUBIERTO_CAPITAL, I_DIAS_GRACIA, I_DIAS_MORA, "
 	        + "I_PLAZO_MAXIMO_ANIOS, I_MINIMO_VIDA_CREDITO, I_VIGENCIA_BC, I_VIGENCIA_CAMPANIA, "
 	        + "I_CREDITOS_LIQUIDADOS, VC_ES_RENOVACION, I_CONVIVENCIA, VC_PRODUCTOS, "
@@ -107,7 +109,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        + "D_TASA_ORDINARIA_OFERTA, I_ACTIVA_OFERTA, D_MONTO_MAXIMO_OFERTA, "
 	        +"I_MINIMO_VIDA_CREDITO_R , I_ESTATUS, DT_FECHA_REGISTRO, I_TIPO_BURO"
 	        + ") VALUES ("
-	        + ":vc_tipo_campania, :i_tipo_campania, :i_ventana_anios, :i_edad_maxima, :i_edad_minima, :d_monto_minimo, :d_monto_maximo, "
+	        + ":vc_tipo_campania, :i_tipo_campania, :i_ventana_anios, :i_ventana_anios_mayor, :i_edad_maxima, :i_edad_minima, :d_monto_minimo, :d_monto_maximo, "
 	        + ":i_mora_maxima, :d_porc_cubierto_capital, :i_dias_gracia, :i_dias_mora, "
 	        + ":i_plazo_maximo_anios, :i_minimo_vida_credito, :i_vigencia_bc, :i_vigencia_campania, "
 	        + ":i_creditos_liquidados, :vc_es_renovacion, :i_convivencia, :vc_productos, "
@@ -119,6 +121,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			@Param("vc_tipo_campania") String vc_tipo_campania,
 			@Param("i_tipo_campania") Integer i_tipo_campania,
 	        @Param("i_ventana_anios") Integer i_ventana_anios,
+	        @Param("i_ventana_anios_mayor") Integer i_ventana_anios_mayor,
 	        @Param("i_edad_maxima") Integer i_edad_maxima,
 	        @Param("i_edad_minima") Integer i_edad_minima,
 	        @Param("d_monto_minimo") Double d_monto_minimo,
