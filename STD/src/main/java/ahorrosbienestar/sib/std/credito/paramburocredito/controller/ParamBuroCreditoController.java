@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
@@ -119,16 +120,38 @@ public class ParamBuroCreditoController {
 	
 	@GetMapping("/obtParamCampaniasBC")
 	public ResponseEntity<ParamBuroCreditoModel> obtCampanias(@RequestParam int valorCampaniaID) {
-	    ParamBuroCreditoModel parametros = paramBuroCreditoService.obtParamBuro(valorCampaniaID);
+	    try {
 
-	    if (parametros == null) {
-	        return ResponseEntity.noContent().build(); // Devuelve 204
-	    }else {
-		    return ResponseEntity.ok(parametros); // Devuelve JSON 200
+	        ParamBuroCreditoModel parametros = paramBuroCreditoService.obtParamBuro(valorCampaniaID);
+
+	        // Si existen parámetros → regresar 200
+	        if (parametros != null) {
+	            return ResponseEntity.ok(parametros);
+	        }
+
+	        // Buscar campaña
+	        TiposCampaniasModel campania = tiposCampaniasService
+	                .obtenerCampaniaxID(valorCampaniaID)
+	                .orElse(null);
+
+	        // Crear objeto vacío por defecto
+	        ParamBuroCreditoModel response = new ParamBuroCreditoModel();
+
+	        if (campania != null) {
+	            response.setIdCampania(campania);
+	        }
+
+	        // Siempre regresa 200 con objeto (aunque esté vacío)
+	        return ResponseEntity.ok(response);
+
+	    } catch (Exception e) {
+	        logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage(), e);
+
+	        // Si quieres que SIEMPRE sea 200 incluso en error:
+	        return ResponseEntity.ok(new ParamBuroCreditoModel());
 	    }
-
-
 	}
+
 	
 	@PostMapping("/registroParamBC")
 	public ResponseEntity<?> guardarParamBC(@ModelAttribute ParametrosBCDTO paramBC) {
