@@ -4,7 +4,7 @@
 // @ts-nocheck
 
 function toggleMopMaximo() {
-	const tipo = document.querySelector('input[name="tipoEvaluacion"]:checked')==null?document.querySelector('input[name="tipoEvaluacion"]:checked').value:0;
+	const tipo = document.querySelector('input[name="tipoEvaluacion"]:checked').value;
 	const mopMaxRow = document.getElementById('mopMaximoRow');
 	const usoMaximo = document.getElementById('usoMaximo');
 	
@@ -183,6 +183,9 @@ function llenarFormulario(param) {
 	
 	if (tipoEval > 0){	
 		toggleMopMaximo();
+	}else{
+		$('#mopMaximoRow').show();
+		$('#usoMaximo').show();
 	}
 }
 
