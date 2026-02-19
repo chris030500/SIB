@@ -235,6 +235,7 @@ public class Constantes {
 	public static final String CAMPANIAS_EXTRACCION = "credito/extraccionCampanias";
 	public static final String CAMPANIAS_EXCLUSIONES = "credito/exclusiones";
 	
+	
 	//nombres reportes Crédito
 	public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
 	
@@ -251,7 +252,7 @@ public class Constantes {
 	
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
 	public static final int CAT_REPORTES_CAMPANIAS = 39;
-
+	
     private Constantes() {
         
     }

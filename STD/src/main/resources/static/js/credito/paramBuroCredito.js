@@ -35,7 +35,7 @@ var buscarCampaniasActivas = "buscarCampaniasActivas?valorBusqueda=";
 function buscarCampanias() {
 	valorBusqueda = document.getElementById("buscarCampania").value;
 
-
+	
 	// Si el valor coincide con una opción exacta, no hagas búsqueda
 	if (mapaCampanias.has(valorBusqueda)) {
 		obtDatosBuro();
@@ -99,23 +99,22 @@ function buscarCampaniasA(valorBusqueda) {
 let valorCampaniaID = "";
 var obtParamCampaniasBC = "obtParamCampaniasBC?valorCampaniaID=";
 function obtDatosBuro() {
+
 	console.log("------" + getAbsolutePath() + obtParamCampaniasBC + obtenerIdCampaniaSeleccionada());
 	fetch(getAbsolutePath() + obtParamCampaniasBC + obtenerIdCampaniaSeleccionada(), {
 		method: "GET",
-	}).then(response => {
-		if (!response.ok || response.status === 204) {
-			swal("No se encontraron parámetros para esta campaña", { icon: "warning" });
-			return null;
-		} else {
-			return response.json();
-		}
-	})
-		.then(data => {
-			if (!data) return;
+	}).then(response => response.json()) 
+	  .then(data => {
 
+		if (!data || Object.keys(data).length === 0) {
+			swal("No se cuenta con informacion registrada", { icon: "warning" });
+		}else{
 			llenarFormulario(data);
+		}
 
-		})
+
+
+	})
 		.catch(error => {
 			console.log("Error en la búsqueda:", error);
 			swal("Ocurrió un error al buscar campañas activas", {
@@ -129,17 +128,40 @@ function obtDatosBuro() {
 }
 
 function llenarFormulario(param) {
+	
 	// hidden
 	document.getElementById("idCampaniaSeleccionada").value = param.idCampania.pk_id_tipo_campania;
-	document.getElementById("idRegistroParam").value = param.idParametro;
-
+	document.getElementById("idRegistroParam").value = param.idParametro;	
 	// radio
-	const tipoEval = Number(param.tipoEvaluacion);
+	var tipoEval = 0;
 	const radios = document.getElementsByName("tipoEvaluacion");
-	Array.from(radios).forEach(radio => {
-		radio.checked = Number(radio.value) === tipoEval;
-		radio.disabled = true;
-	});
+	var deshabilitar=false;
+	//cuando no tiene registro de parametros de buro y es una campaña recurrente
+	if (param.idParametro == null){
+		if(param.idCampania.i_tipo_campania > 1){
+			deshabilitar = true;
+			tipoEval = Number(param.idCampania.i_tipo_buro);
+				Array.from(radios).forEach(radio => {
+   	 				radio.checked = Number(radio.value) === tipoEval;
+   	 				radio.disabled = deshabilitar;
+				});
+			swal("No cuenta con informacion registrada", { icon: "warning" });
+			
+		}else{
+			swal("No cuenta con informacion registrada", { icon: "warning" });
+		}
+		
+	}else{
+		// radio
+		tipoEval = Number(param.tipoEvaluacion);
+		
+		Array.from(radios).forEach(radio => {
+   	 		radio.checked = Number(radio.value) === tipoEval;
+   	 		radio.disabled = param.idCampania.i_tipo_campania > 1;
+		});
+	
+	}
+
 
 	// inputs numéricos
 	document.getElementById("usoMaximo").value = param.usoMaximo ?? 0;
@@ -158,6 +180,13 @@ function llenarFormulario(param) {
 		option.selected = true;
 	}
 	});
+	
+	if (tipoEval > 0){	
+		toggleMopMaximo();
+	}else{
+		$('#mopMaximoRow').show();
+		$('#usoMaximo').show();
+	}
 }
 
 function limpiarFormulario() {
@@ -165,6 +194,11 @@ function limpiarFormulario() {
 	document.getElementById("idCampaniaSeleccionada").value = "";
 	document.getElementById("idRegistroParam").value = "";
 	document.getElementById("formParametrosBC").reset();
+	// Reactivar radios
+    const radios = document.getElementsByName("tipoEvaluacion");
+    Array.from(radios).forEach(radio => {
+        radio.disabled = false;
+    });
 }
 
 function obtenerIdCampaniaSeleccionada() {
