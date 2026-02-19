@@ -63,9 +63,6 @@ public class JasperReportController {
     private String extXLS = ".xls";
     private String extXLSX = ".xlsx";
     
-    
-    
-    
 	@SuppressWarnings("deprecation")
 	@RequestMapping("generarReporte")
     public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "idReporte") Integer idReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
