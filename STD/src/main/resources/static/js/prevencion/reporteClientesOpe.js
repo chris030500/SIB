@@ -694,24 +694,24 @@ async function cargarEstadoInicial() {
     try {
         const res = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
+
         const data = await res.json();
- 
+
+        // Guardar estado global para usarlo en renderProcesoUI
+        estadoMigracionGlobal = data;
+
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
- 
-        // 🔴 AQUÍ CAMBIA INACTIVO / ACTIVO
-        checkbox.checked = data.estatus === 1;
-        label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
- 
-        const btnEjecutar = document.getElementById("btnEjecutarMigracion");
-        if (btnEjecutar) {
-            const enEjecucion = data.ejecuta === 1;
-            btnEjecutar.disabled = enEjecucion;
-            btnEjecutar.classList.toggle("disabled", enEjecucion);
+
+        if (checkbox && label) {
+            checkbox.checked = data.estatus === 1;
+            label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
         }
- 
-        mostrarMensajeMigracion(data);
- 
+
+        // Control de botones y mensaje
+        renderEstadoMigracion(data);
+        renderAvisoMigracion(data);
+
     } catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
@@ -809,32 +809,37 @@ async function cambiarEstatus(checkbox) {
 }
  
  
+// renderEstadoMigracion(data);
+// renderAvisoMigracion(data);
  
  
- 
- window.onload = cargarEstadoInicial;
+ // window.onload = cargarEstadoInicial;
 // Para cargar mensaje de resultado en pantalla
 function renderAvisoMigracion(data) {
- 
+
     const mensaje = document.getElementById("mensajeResultado");
     if (!mensaje) return;
- 
+
     let texto = "";
     let clase = "text-muted";
- 
+
     if (data.ejecuta === 1) {
         texto = "⏳ Migración en proceso…";
         clase = "text-warning";
     } 
-    else if (data.mensajeResultado) {
+    else if (data.ejecuta === 2) {
+        texto = data.mensajeResultado || "❌ Error en migración.";
+        clase = "text-danger";
+    }
+    else if (data.ejecuta === 0 && data.mensajeResultado) {
         texto = `✔ ${data.mensajeResultado}`;
         clase = "text-success";
     }
- 
+
     if (data.cron) {
-        texto += ` (Siguiente ejecución: ${data.cron})`;
+        texto += ` (Programada: ${data.cron})`;
     }
- 
+
     mensaje.className = `mt-2 fw-bold ${clase}`;
     mensaje.innerText = texto;
     mensaje.style.display = "block";
@@ -1073,60 +1078,76 @@ async function generarReporteOperaciones() {
  
  
 function renderEstadoMigracion(data) {
- 
-    // ===== SWITCH + TEXTO =====
-    const checkbox = document.getElementById("estatusSwitch");
-    const label = document.getElementById("labelEstado");
- 
-    if (checkbox && label) {
-        const activo = data.estatus === 1;
- 
-        checkbox.checked = activo;
-        label.innerText = activo ? "Activo" : "Inactivo";
-        label.classList.toggle("text-success", activo);
-        label.classList.toggle("text-muted", !activo);
-    }
- 
-    // ===== BOTÓN EJECUTAR =====
+
+    if (!data) return;
+
     const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+    const btnAuditoria = document.getElementById("btnProcesarAuditoriaClientes");
+
+    const estado = data.ejecuta; // 0,1,2
+
     if (btnEjecutar) {
-        const enEjecucion = data.ejecuta === 1;
- 
-        btnEjecutar.disabled = enEjecucion;
- 
-        btnEjecutar.classList.toggle("btn-outline-primary", !enEjecucion);
-        btnEjecutar.classList.toggle("btn-secondary", enEjecucion);
- 
-        btnEjecutar.innerHTML = enEjecucion
-            ? '<i class="fas fa-clock"></i> EN PROCESO'
-            : '<i class="fas fa-play"></i> EJECUTAR';
+
+        // 🔵 EN EJECUCIÓN → SOLO DESHABILITAR
+        if (estado === 1) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = true;
+            btnEjecutar.classList.remove("btn-danger");
+            btnEjecutar.classList.add("btn-secondary");
+            btnEjecutar.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
+        }
+
+        // 🟢 FINALIZADO OK
+        else if (estado === 0 || estado === null) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = false;
+            btnEjecutar.classList.remove("btn-danger", "btn-secondary");
+            btnEjecutar.classList.add("btn-outline-primary");
+            btnEjecutar.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
+        }
+
+        // 🟡 ERROR → REINTENTAR
+        else if (estado === 2) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = false;
+            btnEjecutar.classList.remove("btn-outline-primary", "btn-secondary");
+            btnEjecutar.classList.add("btn-danger");
+            btnEjecutar.innerHTML = '<i class="fas fa-exclamation-triangle"></i> REINTENTAR';
+        }
     }
- 
-    // ===== MENSAJE =====
-    renderAvisoMigracion(data);
+
+    // 🟡 BOTÓN AMARILLO (Procesar Auditoría)
+    if (btnAuditoria) {
+
+    const enProceso = data.ejecuta === 1;
+    const hayError  = data.ejecuta === 2;
+
+    if (!enProceso && !hayError && data.ejecuta === 0) {
+        btnAuditoria.style.display = "inline-block";
+    } else {
+        btnAuditoria.style.display = "none";
+    }
+}
 }
  
-//setInterval(() => {
-   // cargarEstadoInicial();
-//}, 20000); // cada 20 segundos
- 
- 
 function renderProcesoUI(estado) {
- 
+
   if (!estado) return;
- 
-  // 1️⃣ Ejecutado → botón amarillo
-  if (estado.ejecutado) {
-    $("#btnProcesarAuditoriaClientes").show();
+
+  // Botón amarillo SOLO si:
+  // - proceso ejecutado
+  // - migración NO esté en proceso
+  if (estado.ejecutado && estadoMigracionGlobal?.ejecuta !== 1) {
+      $("#btnProcesarAuditoriaClientes").show();
+  } else {
+      $("#btnProcesarAuditoriaClientes").hide();
   }
- 
-  // 2️⃣ Auditoría OK → botones reporte
+
   if (estado.auditoriaOk) {
     $("#btnGenerarClientes").show();
     $("#btnGenerarOperaciones").show();
   }
- 
-  // 3️⃣ Operaciones descargadas → visto bueno
+
   if (estado.operacionesDescargado && !estado.operacionesVobo) {
     $("#bloqueVistoBueno").show();
   }
@@ -1136,14 +1157,22 @@ function renderProcesoUI(estado) {
  
 document.getElementById("btnEjecutarMigracion")
   .addEventListener("click", async function () {
- 
+
+    const btn = this;
+
     const fechaCorte = $("#fechaFinMigracion").val();
- 
+
     if (!fechaCorte) {
       swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
       return;
     }
- 
+
+    // 🔒 BLOQUEO INMEDIATO
+    btn.disabled = true;
+    btn.classList.remove("btn-outline-primary");
+    btn.classList.add("btn-secondary");
+    btn.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
+
     swal({
       title: "Iniciando proceso...",
       content: {
@@ -1156,11 +1185,11 @@ document.getElementById("btnEjecutarMigracion")
       closeOnClickOutside: false,
       closeOnEsc: false
     });
- 
+
     try {
- 
-      // ACTIVAR MIGRACIÓN 
-      await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
+
+      // ACTIVAR MIGRACIÓN
+      const activar = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -1168,24 +1197,37 @@ document.getElementById("btnEjecutarMigracion")
           fechaFin: fechaCorte
         })
       });
- 
-      // INICIAR PROCESO PLD 
-      await fetch("/STD/prevencion/estado-proceso/ejecutar", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: new URLSearchParams({
-    fechaInicio: $("#fechaInicioMigracion").val(),
-    fechaCorte:  $("#fechaFinMigracion").val()
-  })
-});
- 
+
+      if (!activar.ok) throw new Error("Error activando migración");
+
+      // INICIAR PROCESO PLD
+      const ejecutar = await fetch("/STD/prevencion/estado-proceso/ejecutar", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          fechaInicio: $("#fechaInicioMigracion").val(),
+          fechaCorte:  $("#fechaFinMigracion").val()
+        })
+      });
+
+      if (!ejecutar.ok) throw new Error("Error ejecutando proceso");
+
       swal.close();
- 
-      // RECONSTRUIR UI DESDE BD
+
+      // 🔄 Reconstruir estado real desde BD
+      await cargarEstadoInicial();
       await cargarEstadoProceso();
- 
+
     } catch (e) {
+
       swal.close();
+
+      // 🔓 SOLO si hubo error
+      btn.disabled = false;
+      btn.classList.remove("btn-secondary");
+      btn.classList.add("btn-outline-primary");
+      btn.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
+
       swal("Error", "No se pudo iniciar el proceso.", "error");
       console.error(e);
     }

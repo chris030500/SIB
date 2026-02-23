@@ -128,7 +128,7 @@ public class MigracionesPService {
         MigracionesP entidad = migracionesPRepository.findById(idMigracion)
             .orElseThrow(() -> new IllegalArgumentException("Migración no encontrada"));
 
-        entidad.setEjecuta(0);
+        entidad.setEjecuta(2); // ← ESTADO ERROR
         entidad.setMensajeResultado("❌ Error: " + error);
         entidad.setFechaEjecucion(LocalDateTime.now());
 
@@ -136,7 +136,4 @@ public class MigracionesPService {
 
         logger.error("Migración fallida: " + error);
     }
-
-
-
 }
