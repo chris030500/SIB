@@ -336,45 +336,54 @@ $(document).on("click", "#btnVistoBueno", function () {
       return;
     }
 
+    let tipoReporte = "";
+
+    if (clientes && operaciones) {
+      tipoReporte = "AMBOS";
+    } else if (clientes) {
+      tipoReporte = "CLIENTES";
+    } else if (operaciones) {
+      tipoReporte = "OPERACIONES";
+    }
+
     try {
 
-  // 1️⃣ Insertar historial base
-  await fetch("/STD/prevencion/estado-proceso/pre-insert-historial", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" }
-  });
+      const fechaInicioOper = $("#fechaInicioMigracion").val();
+      const fechaFinOper    = $("#fechaFinMigracion").val();
+      const fechaCorteClientes = $("#fechaFinMigracion").val();
+      const anio = fechaInicioOper.substring(0, 4);
 
-  // 2️⃣ Registrar visto bueno seleccionado
-  const res = await fetch("/STD/prevencion/estado-proceso/vobo-seleccion", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      clientes,
-      operaciones
-    })
-  });
+      const res = await fetch("ejecutarVistoBueno", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          anio,
+          fechaInicioOper,
+          fechaFinOper,
+          fechaCorteClientes,
+          tipoReporte
+        })
+      });
 
-  const data = await res.json();
+      const data = await res.json();
 
-  swal(
-    data.tipo === "success" ? "¡Éxito!" : "Error",
-    data.mensaje,
-    data.tipo
-  );
+      swal(
+        data.tipo === "success" ? "¡Éxito!" : "Error",
+        data.mensaje,
+        data.tipo
+      );
 
-  if (data.tipo === "success") {
-    await cargarEstadoProceso();
-    iniciaTblHistorico();
-  }
+      if (data.tipo === "success") {
+        await cargarEstadoProceso();
+        iniciaTblHistorico();
+      }
 
-} catch (e) {
-  swal("Error", "No se pudo registrar el visto bueno", "error");
-}
+    } catch (e) {
+      swal("Error", "No se pudo registrar el visto bueno", "error");
+    }
 
   });
 });
-
-
 // ==========================================================
 //  Validar archivo Excel antes de subirlo
 // ==========================================================
