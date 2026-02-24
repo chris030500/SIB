@@ -470,66 +470,76 @@ public class RptReporteClientesOpeController {
             @RequestParam("anio") String anio,
             @RequestParam("fechaInicioOper") String fechaInicioOper,
             @RequestParam("fechaFinOper") String fechaFinOper,
-            @RequestParam("fechaCorteClientes") String fechaCorteClientes) {
- 
+            @RequestParam("fechaCorteClientes") String fechaCorteClientes,
+            @RequestParam("tipoReporte") String tipoReporte) {
+
         logger.info("/ejecutarVistoBueno - Año: " + anio 
                     + ", Operaciones: " + fechaInicioOper + " a " + fechaFinOper
                     + ", CorteClientes: " + fechaCorteClientes);
- 
+
         Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
- 
+
         try {
+
             // ===========================
-            //   OBTENER USUARIO LOGEADO
+            // OBTENER USUARIO LOGEADO
             // ===========================
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Object principal = SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
             Integer idUsuario = null;
+
             if (principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
-                List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(username);
-                if (!usuarios.isEmpty()) idUsuario = usuarios.get(0).getPk_id_usuario();
+                List<Usuario> usuarios =
+                        iUsuarioRepository.findByNombreUsuario(username);
+
+                if (!usuarios.isEmpty()) {
+                    idUsuario = usuarios.get(0).getPk_id_usuario();
+                }
             }
- 
+
             if (idUsuario == null) {
                 respuesta.put("mensaje", "No se pudo obtener el ID del usuario.");
                 respuesta.put("tipo", "error");
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(respuesta);
+                return ResponseEntity.ok(respuesta);
             }
- 
+
             // ===========================
-            //   PARSEAR FECHAS
+            // PARSEAR FECHAS
             // ===========================
             int year = Integer.parseInt(anio);
- 
-            Date fInicioOper = Date.valueOf(fechaInicioOper);
-            Date fFinOper    = Date.valueOf(fechaFinOper);
-            Date fCorteClientes = Date.valueOf(fechaCorteClientes);
- 
+
+            Date fInicioOper     = Date.valueOf(fechaInicioOper);
+            Date fFinOper        = Date.valueOf(fechaFinOper);
+            Date fCorteClientes  = Date.valueOf(fechaCorteClientes);
+
             // ===========================
-            //   LLAMADA AL SP
+            // LLAMADA AL SP
             // ===========================
             connection = jdbcTemplate.getDataSource().getConnection();
-            callableStatement = connection.prepareCall("{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?, ?)}");
- 
+
+            callableStatement = connection.prepareCall(
+                    "{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?, ?, ?)}");
+
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
             callableStatement.setInt(2, idUsuario);                   // p_iusuario
             callableStatement.setInt(3, year);                        // p_ianio
             callableStatement.setDate(4, fInicioOper);                // p_fechaInicio OPERACIONES
             callableStatement.setDate(5, fFinOper);                   // p_fechaFin OPERACIONES
             callableStatement.setDate(6, fCorteClientes);             // p_fechaFin CLIENTES
- 
+            callableStatement.setString(7, tipoReporte);
+
             callableStatement.execute();
- 
+
             // ===========================
-            //   RESULTADO
+            // RESULTADO
             // ===========================
             String errorMessage = callableStatement.getString(1);
- 
+
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
@@ -537,27 +547,28 @@ public class RptReporteClientesOpeController {
                 respuesta.put("mensaje", "Visto bueno registrado correctamente.");
                 respuesta.put("tipo", "success");
             }
- 
+
             return ResponseEntity.ok(respuesta);
- 
-        } catch (SQLException e) {
-            logger.error("Error al ejecutar SP visto bueno: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error SQL: " + e.getMessage());
+
+        } catch (Exception e) {
+
+            logger.error("Error al ejecutar SP visto bueno", e);
+
+            respuesta.put("mensaje", "Error: " + e.getMessage());
             respuesta.put("tipo", "error");
+
             return ResponseEntity.ok(respuesta);
- 
+
         } finally {
+
             try {
                 if (callableStatement != null) callableStatement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
-                logger.error("Error al cerrar conexión: " + e.getMessage());
+                logger.error("Error al cerrar conexión", e);
             }
         }
     }
- 
- 
- 
     
   /*  @PostMapping("/activar-ejecucion/{id}")
     public ResponseEntity<?> activarEjecucion(
@@ -770,13 +781,16 @@ public class RptReporteClientesOpeController {
             connection = jdbcTemplate.getDataSource().getConnection();
             cs = connection.prepareCall(Constantes.VISTO_BUENO_PROCESO);
 
-            cs.registerOutParameter(1, Types.VARCHAR);        // OUT error_message
-            cs.setLong(2, proceso.getIdProceso());            // ID_PROCESO
-            cs.setInt(3, idUsuario);                          // USUARIO VOBO
+            // 1️⃣ IN → ID_PROCESO
+            cs.setLong(1, proceso.getIdProceso());
+
+            // 2️⃣ OUT → error_message
+            cs.registerOutParameter(2, Types.VARCHAR);
 
             cs.execute();
 
-            String error = cs.getString(1);
+            // Obtener mensaje de error
+            String error = cs.getString(2);
 
             // ============================
             // 4️⃣ RESPUESTA
@@ -785,6 +799,12 @@ public class RptReporteClientesOpeController {
                 respuesta.put("tipo", "error");
                 respuesta.put("mensaje", error);
             } else {
+
+                // ACTUALIZAR ESTADO PROCESO
+                estadoProcesoReporteService.marcarOperacionesVobo(
+                    userDetails.getUsername()
+                );
+
                 respuesta.put("tipo", "success");
                 respuesta.put("mensaje", "Visto bueno registrado correctamente por proceso.");
             }
