@@ -199,20 +199,14 @@ public class Constantes {
     
   //constantes PLD ReporteClientesOpe
       public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
-      
       public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
-      
       public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
-      
       public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
-      
       public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-      
       public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-    
-      public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
-      
+      public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
       public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
+
     //constantes marketing
     public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
     public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
