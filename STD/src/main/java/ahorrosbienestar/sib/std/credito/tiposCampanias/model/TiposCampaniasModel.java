@@ -37,6 +37,9 @@ public class TiposCampaniasModel {
  
 	@Column(name = "I_VENTANA_ANIOS")
 	private Integer i_ventana_anios;
+	
+	@Column(name = "I_VENTANA_ANIOS_MAYOR")
+	private Integer i_ventana_anios_mayor;
  
 	@Column(name = "I_EDAD_MAXIMA")
 	private Integer i_edad_maxima;
@@ -165,6 +168,14 @@ public class TiposCampaniasModel {
 
 	public void setI_ventana_anios(Integer i_ventana_anios) {
 		this.i_ventana_anios = i_ventana_anios;
+	}
+
+	public Integer getI_ventana_anios_mayor() {
+		return i_ventana_anios_mayor;
+	}
+
+	public void setI_ventana_anios_mayor(Integer i_ventana_anios_mayor) {
+		this.i_ventana_anios_mayor = i_ventana_anios_mayor;
 	}
 
 	public Integer getI_edad_maxima() {

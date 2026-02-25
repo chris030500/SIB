@@ -1,5 +1,5 @@
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
     
     //Constantes Rutas de Acceso
@@ -191,8 +191,8 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
- 
-      //constantes PLD ReporteClientesOpe
+    
+	//constantes PLD ReporteClientesOpe
     public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
     public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
     public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
