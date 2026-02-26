@@ -25,7 +25,7 @@ var clienteValue = 0;
 var timerId;
 var idTipoCampania = 0;
 
-
+var tipoBuroRegistrado=0;
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
 	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
@@ -221,10 +221,12 @@ input.addEventListener('input', function () {
                 cargarCatalogoTipoCampanias(data.i_tipo_campania);
                 cargarCatalogoConvivenciaCamp(data.i_convivencia);
                 cargarTipoBuro(data.i_tipo_buro);
+              
                 cargarCatalogoProductosCamp(data.i_prod_credito_id_oferta);
                 cargarChecksEsRenovacion(data.vc_es_renovacion);
                 //cargarChecksEsRenovacionOferta(data.vc_es_renovacion_oferta);
                 
+                tipoBuroRegistrado= data.i_tipo_buro;
                 //console.log("vc_es_renovacion:", data.vc_es_renovacion);
                 if(data.vc_es_renovacion === 'S'){
 					
@@ -1175,4 +1177,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     
 });
+
+/**alerta al cambiar tipo buro */
+function mensajeAlertaTipoBuro(tipoBuroSelec){
+	
+	if(parseInt(tipoBuroSelec) !== tipoBuroRegistrado && parseInt(tipoBuroSelec) > 0 ){
+			
+	swal({
+ 	title: "Alerta",
+    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
+    icon: 'info',
+    allowOutsideClick: false,
+    closeOnClickOutside: false,
+    dangerMode: true,
+    timer: 10000 // 10 segundos
+	});
+		
+	}
+
+}
 
