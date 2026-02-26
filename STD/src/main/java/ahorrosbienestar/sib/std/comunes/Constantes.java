@@ -1,4 +1,3 @@
-
 package ahorrosbienestar.sib.std.comunes;
 
 public class Constantes {
@@ -115,7 +114,7 @@ public class Constantes {
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
 	public static final int BUSQUEDA_POR_USUARIO = 1;
-	
+
 	//MENSAJES SEGUIMIENTOS 
 	public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
 	public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
@@ -141,9 +140,9 @@ public class Constantes {
 	public static final String NOMBRE_REPORTE_REASIGNACION = "registros_reasignados_suc";
 	
 	//busqueda
-    public static final int TIPO_BUSQUEDA_1 = 1;
+	public static final int TIPO_BUSQUEDA_1 = 1;
     public static final int TIPO_BUSQUEDA_2 = 2;
-    
+
     //Mensajes Ofertas Automaticas
     public static final String CLASIF_REGISTRADO = "No fue posible actualizar. Existe codigo clasificación registrado.";
     public static final String CODIGO_CLASIF_REGISTRADO = "Existe codigo clasificación registrado.";
