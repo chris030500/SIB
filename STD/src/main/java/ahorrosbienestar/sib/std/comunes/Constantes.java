@@ -253,6 +253,11 @@ public class Constantes {
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
 	public static final int CAT_REPORTES_CAMPANIAS = 39;
 	
+	
+	// Mensajes campañas temporales
+	public static final String NOMBRE_CAMPANIA_EXISTE = "El NOMBRE DE LA CAMPAÑA YA EXISTE. ACTUALIZAR NOMBRE.";
+	public static final int CAMPANIA_TIPO_RECURRENTE = 2; 
+	
     private Constantes() {
         
     }

@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.credito.campaniastemporales.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.comunes.paramConstantes.utilerias.ExcelCargar;
-import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.ResultadoCargaExcel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.model.DetalleCampaniasTemporalesModel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.repository.DetalleCampaniasTemporalesRepository;
 import lombok.AllArgsConstructor;
@@ -30,27 +31,51 @@ public class DetalleCampaniasTemporalesService {
 		return detalleCampaniasTemporalesRepository.save(model);
 	}
 	
-	public void detCampaniasTmp(MultipartFile file) {
-		
-		 Configuracion configuracion = configService.valorPropiedad("campaniasTemporales");		
-		
-	//  Parsear archivo Excel
-		try {
-			   List<DetalleCampaniasTemporalesModel> filas = ExcelCargar.parseDetalleTemporales(file);
-			   if (filas.isEmpty()) return;
-			    
-	            for (DetalleCampaniasTemporalesModel fila : filas) {
-	            	
-	                	detalleCampaniasTemporalesRepository.save(fila);
-	               
+	public ResultadoCargaExcel detCampaniasTmp(MultipartFile file) {
+
+	    ResultadoCargaExcel resultado = new ResultadoCargaExcel();
+
+	    try {
+
+	        resultado = ExcelCargar.parseDetalleTemporales(file);
+
+	        // regresa errores de archivo
+	        if (resultado.isTieneIncidencias()) {
+	            return resultado;
+	        }
+
+	        List<DetalleCampaniasTemporalesModel> registros = resultado.getRegistros();
+	        
+	        //registros a insertar esta vacio
+	        if (registros == null || registros.isEmpty()) {
+	            return resultado;
+	        }
+
+	        
+	        final int BATCH_SIZE = 100;
+	        List<DetalleCampaniasTemporalesModel> batch = new ArrayList<>();
+
+	        for (DetalleCampaniasTemporalesModel fila : registros) {
+
+	            batch.add(fila);
+
+	            if (batch.size() == BATCH_SIZE) {
+	                detalleCampaniasTemporalesRepository.saveAll(batch);
+	                batch.clear();
 	            }
-	 
-	            //System.out.println("Insertados: " + insertados.get() + ", Actualizados: " + actualizados.get());
-	          
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-		}
-     
+	        }
+
+	        // guardar los archivos extra
+	        if (!batch.isEmpty()) {
+	            detalleCampaniasTemporalesRepository.saveAll(batch);
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error procesando archivo Excel", e);
+	        resultado.agregarIncidencia("Error general al procesar el archivo: " + e.getMessage());
+	    }
+
+	    return resultado;
 	}
 
 }

@@ -141,6 +141,10 @@ public class TiposCampaniasService {
 	public List<TiposCampaniasModel> getTiposCampaniasModel() {
         return repository.findAll();
     }
+
+	public int existeNombre(String nombreCampania) {
+		return repository.existeNombre(nombreCampania);
+	}
 	
 	/*public List<TiposCampaniasModel> obtenerCampaniasActivos() {
         return repository.listaTiposCampanias(1);

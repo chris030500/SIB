@@ -169,6 +169,10 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			+ " WHERE I_TIPO_CAMPANIA = 2"
 			+ " AND I_ESTATUS = 1 ", nativeQuery = true)
 	List<Object[]> listaCampaniasRecurrentes();
+
+
+	@Query(value = "SELECT IFNULL(COUNT(*), 0) as numero FROM SIB.TBL_TIPOS_CAMPANIA WHERE UPPER(VC_TIPO_CAMPANIA) LIKE UPPER(CONCAT('%', :nombreCampania, '%'))", nativeQuery = true)
+	int existeNombre(String nombreCampania);
 	
  
 }

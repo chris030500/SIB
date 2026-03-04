@@ -9,10 +9,11 @@ public class CampaniaTemporalDTO {
 	 private String fechaInicio;
 	 private String fechaFin;
 	 private String fechaRegistro;
+	 	
 	 private Integer idTipoArchivo;
 	 private Integer estatusCampania;
 	 private String fechaEnvioMC;
-	 private Boolean recurrente;
+	 private Boolean recurrente = false;
 	 
 	 
 	public Integer getIdCampaniaSeleccionada() {
@@ -82,5 +83,7 @@ public class CampaniaTemporalDTO {
 	public void setRecurrente(Boolean recurrente) {
 		this.recurrente = recurrente;
 	}
+
+
 	 
 }
