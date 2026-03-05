@@ -53,20 +53,19 @@ public class EstadoProcesoReporteService {
        INICIAR PROCESO
     ============================ */
     public void iniciarProceso(String usuario, LocalDate fechaInicio, LocalDate fechaCorte) {
- 
-        EstadoProcesoReporte p = obtenerProcesoActivo(usuario);
- 
-        if (p == null) {
-            p = new EstadoProcesoReporte();
-            p.setVcUsuario(usuario);
-            p.setEstatus(1);
-        }
- 
-        p.setFechaInicio(fechaInicio);
-        p.setFechaCorte(fechaCorte);
-        p.setEjecutado(true);
- 
-        repository.save(p);
+
+        // Apagar cualquier proceso activo del mismo usuario
+        repository.desactivarProcesosActivosPorUsuario(usuario);
+
+        // Crear nuevo proceso limpio
+        EstadoProcesoReporte nuevo = new EstadoProcesoReporte();
+        nuevo.setVcUsuario(usuario);
+        nuevo.setEstatus(1);
+        nuevo.setFechaInicio(fechaInicio);
+        nuevo.setFechaCorte(fechaCorte);
+        nuevo.setEjecutado(true);
+
+        repository.save(nuevo);
     }
  
  
