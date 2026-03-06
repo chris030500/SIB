@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
  
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
  
 import org.apache.log4j.Logger;
@@ -41,17 +42,19 @@ public class DetallePEPsService {
             AtomicInteger actualizados = new AtomicInteger(0);
 
             for (DetallePEPsModel fila : filas) {
-                detallePEPsRepository.findById(fila.getI_clienteid()).ifPresentOrElse(existing -> {
+                Optional<DetallePEPsModel> existingOpt = detallePEPsRepository.findById(fila.getI_clienteid());
+                if (existingOpt.isPresent()) {
+                    DetallePEPsModel existing = existingOpt.get();
                     if (!Objects.equals(existing.getVc_nombre_cliente(), fila.getVc_nombre_cliente())) {
                         existing.setVc_nombre_cliente(fila.getVc_nombre_cliente());
                         detallePEPsRepository.save(existing);
                         actualizados.incrementAndGet();
                     }
-                }, () -> {
+                } else {
                     fila.setFk_proceso(idProceso);
                     detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
-                });
+                }
             }
 
             logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);

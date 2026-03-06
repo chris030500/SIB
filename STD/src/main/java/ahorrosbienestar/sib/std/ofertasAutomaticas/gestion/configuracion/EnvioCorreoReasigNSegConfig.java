@@ -7,7 +7,7 @@ import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
