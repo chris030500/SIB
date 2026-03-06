@@ -594,57 +594,41 @@ var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
  
 function iniciaTblHistorico() {
-  url = getAbsolutePath() + "obtHistoricoProcesos";
-  $.getJSON(url, {}, function (data) {
+
+  url = "/STD/prevencion/obtHistoricoProcesos";
+
+  $.getJSON(url, function (data) {
+
     tblHistorico.clear().draw();
- 
+
     if (!data || data.length === 0) {
       console.warn("No se encontraron registros en el historial.");
       $("#sinResultados").removeClass("d-none");
       return;
-    } else {
-      $("#sinResultados").addClass("d-none");
     }
- 
+
+    $("#sinResultados").addClass("d-none");
+
     $.each(data, function (idx, opt) {
+
       const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
- 
-      // Mostrar rango adecuado según el tipo
+
       let rangoFechas = "";
+
       if (tipo === "CLIENTES") {
-    const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
-    rangoFechas =
-        `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
-     } else if (tipo === "OPERACIONES") {
+        const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+        rangoFechas = `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
+      } 
+      else if (tipo === "OPERACIONES") {
         const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
         const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
         rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
-      } else {
-        rangoFechas = `<span class="text-muted">Sin rango definido</span>`;
       }
- 
+
       const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
       const confirmado = opt.estatus === 1 ? "Sí" : "No";
       const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
- 
-      //  Mostrar solo el botón del tipo correspondiente
-      let btn = "";
-      if (tipo === "CLIENTES") {
-        btn = `<button class='btn btn-success btn-sm' title='Descargar histórico de clientes'
-                 onclick='generarHistoricoClientes(${opt.id})'>
-                 <i class='bi bi-file-earmark-person'></i>
-               </button>`;
-      } else if (tipo === "OPERACIONES") {
-        btn = `<button class='btn btn-primary btn-sm' title='Descargar histórico de operaciones'
-                 onclick='generarHistoricoOperaciones(${opt.id})'>
-                 <i class='bi bi-file-earmark-diff'></i>
-               </button>`;
-      } else {
-        btn = `<button class='btn btn-secondary btn-sm' disabled title='Tipo desconocido'>
-                 <i class='bi bi-question-circle'></i>
-               </button>`;
-      }
- 
+
       tblHistorico.row.add([
         opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
         tipo,
@@ -652,10 +636,13 @@ function iniciaTblHistorico() {
         usuario,
         confirmado,
         fechaVobo,
-        btn
+        ""
       ]).draw(false);
+
     });
+
   });
+
 }
  
  

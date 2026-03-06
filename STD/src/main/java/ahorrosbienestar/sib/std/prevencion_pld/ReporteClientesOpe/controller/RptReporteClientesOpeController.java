@@ -651,16 +651,17 @@ public class RptReporteClientesOpeController {
      * @param model
      * @return
      */
-    @GetMapping("/obtHistoricoProcesos")
-    public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso(Model model) {
-         logger.info("/obtHistoricoProcesos");
+    @GetMapping(value="/obtHistoricoProcesos", produces="application/json")
+    @ResponseBody
+    public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso() {
+
+        logger.info("/obtHistoricoProcesos");
+
         try {
-            
             return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
-            
         } catch (Exception e) {
             logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return null;
+            return ResponseEntity.internalServerError().build();
         }
     }
     
