@@ -17,8 +17,8 @@
         <link rel="stylesheet" th:href="@{/css/jqgrid-4.8.2/ui.jqgrid-bootstarp.css}">
       	-->
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
-
+	<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">-->
+	<link rel="stylesheet" th:href="@{/css/sweetalert2.min.css}">
 
 
 </head>
@@ -27,7 +27,8 @@
 
 	<div class="d-flex align-items-center justify-content-between">
 		<a th:href="@{/inicio}" class="logo d-flex align-items-center">
-			<!--<img src="assets/img/logo.png" alt="">-->
+			<img th:src="@{/vendor/img/LogoBienestar2012color.jpg}" alt="">
+			
 			<span class="d-none d-lg-block">Bienestar</span>
 		</a>
 		<i class="fa fa-bars toggle-sidebar-btn"></i>
@@ -544,20 +545,16 @@
 
 
 	<!-- jQuery -->
-	<!--<script src="http://code.jquery.com/jquery-1.10.2.js"></script>-->
-	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script src="https://kit.fontawesome.com/e98bc5a543.js" crossorigin="anonymous"></script>
+	<script th:src="@{/js/jquery-3.5.1.js}"></script>
+	<script th:src="@{/js/jquery-ui.js}"></script>
+	<script th:src="@{/js/sweetalert.min.js}"></script>
+	<script th:src="@{/js/e98bc5a543.js}"></script>
 	<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/js/main.js}"></script>
 	<script th:src="@{/js/popper.min.js}"></script>
 	<script th:src="@{/js/bootstrap.min.js}"></script>
 	<script th:src="@{/js/layout/layout.js}"></script>
 	<!-- Bootstrap core JavaScript -->
-
-	<!--<script th:src="@{/vendor/js/bootstrap.bundle.min.js}"></script>-->
-
 	<th:block layout:fragment="page-scripts">
 
 	</th:block>
