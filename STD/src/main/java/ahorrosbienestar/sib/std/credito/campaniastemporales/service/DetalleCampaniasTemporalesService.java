@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.credito.campaniastemporales.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.ResultadoCargaExcel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.model.DetalleCampaniasTemporalesModel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.repository.DetalleCampaniasTemporalesRepository;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -31,13 +34,13 @@ public class DetalleCampaniasTemporalesService {
 		return detalleCampaniasTemporalesRepository.save(model);
 	}
 	
-	public ResultadoCargaExcel detCampaniasTmp(MultipartFile file) {
+	public ResultadoCargaExcel detCampaniasTmp(MultipartFile file, Optional<TiposCampaniasModel>  campania, Usuario usuario) {
 
 	    ResultadoCargaExcel resultado = new ResultadoCargaExcel();
 
 	    try {
 
-	        resultado = ExcelCargar.parseDetalleTemporales(file);
+	        resultado = ExcelCargar.parseDetalleTemporales(file,campania,usuario);
 
 	        // regresa errores de archivo
 	        if (resultado.isTieneIncidencias()) {

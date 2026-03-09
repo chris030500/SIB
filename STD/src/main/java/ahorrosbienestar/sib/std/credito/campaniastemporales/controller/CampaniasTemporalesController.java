@@ -1,6 +1,9 @@
 package ahorrosbienestar.sib.std.credito.campaniastemporales.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -30,7 +34,6 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.CampaniaTemporalDTO;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.ResultadoCargaExcel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.service.DetalleCampaniasTemporalesService;
-import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
@@ -42,7 +45,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("credito")
 public class CampaniasTemporalesController {
-	private static final Logger logger = Logger.getLogger(ParamBuroCreditoController.class);
+	private static final Logger logger = Logger.getLogger(CampaniasTemporalesController.class);
 
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
@@ -61,6 +64,9 @@ public class CampaniasTemporalesController {
 
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
 	List<Usuario> usuario = null;
 
@@ -124,7 +130,7 @@ public class CampaniasTemporalesController {
 
 	@PostMapping("/procesarArchivo")
 	public ResponseEntity<?> adjuntar(@RequestParam("file") MultipartFile[] files,
-			@RequestParam("idCmpTmp") Integer idCmpTmp) {
+			@RequestParam("idCmpTmp") Integer idCmpTmp, @RequestParam("codCampania") String codCampania) {
 
 		String mensaje = Constantes.REGISTRO_OK;
 		String tipo = Constantes.MENSAJE_OK;
@@ -132,7 +138,9 @@ public class CampaniasTemporalesController {
 		ResultadoCargaExcel resultado = new ResultadoCargaExcel();
 
 		try {
-			resultado = detalleCampaniasTemporalesService.detCampaniasTmp(files[0]);
+			Optional<TiposCampaniasModel> campaniaConsulta = tiposCampaniasService
+					.obtenerCampaniaxID(idCmpTmp);
+			resultado = detalleCampaniasTemporalesService.detCampaniasTmp(files[0],campaniaConsulta, usuario.get(0));
 
 			if (resultado.isTieneIncidencias()) {
 				String contenido = String.join(System.lineSeparator(), resultado.getIncidencias());
@@ -144,6 +152,17 @@ public class CampaniasTemporalesController {
 						.contentType(MediaType.TEXT_PLAIN).contentLength(bytes.length).body(bytes);
 			} 
 
+			if(guardarDatosTemporales(idCmpTmp
+					,null
+					,null
+					,null
+					,null
+					,null
+					,obtUsuario().getPk_id_usuario()
+					,Constantes.TIPO_RELACIONAR_REGISTROS) == null) {
+				//obtener la lista de proceso.
+			}
+			
 			respuesta.put(Constantes.TEXTO_MNS, mensaje);
 			respuesta.put(Constantes.TIPO_MNS, tipo);
 
@@ -154,9 +173,11 @@ public class CampaniasTemporalesController {
 		}
 		return ResponseEntity.ok(respuesta);
 	}
-
+	
+	
 	@PostMapping("/registroCmpTmp")
-	public ResponseEntity<?> guardarCampania(@ModelAttribute CampaniaTemporalDTO cmptmpdto) {
+	public ResponseEntity<?> guardarCampania(@ModelAttribute CampaniaTemporalDTO cmptmpdto, 
+			@RequestParam("codCampania") String codCampania) {
 		try {
 
 			String mensaje = "";
@@ -184,6 +205,8 @@ public class CampaniasTemporalesController {
 					// existente.setI_tipo_campania(cmptmpdto.get);
 
 					if (tiposCampaniasService.save(existente) != null) {
+						
+					
 						mensaje = Constantes.ACTUALIZACION_OK;
 						tipo = Constantes.MENSAJE_OK;
 					} else {
@@ -209,6 +232,18 @@ public class CampaniasTemporalesController {
 					nuevo.setI_user_reg(obtUsuario());
 
 					if (tiposCampaniasService.save(nuevo) != null) {
+						
+						if(guardarDatosTemporales(nuevo.getPk_id_tipo_campania()
+								,nuevo.getPk_id_tipo_campania() + codCampania.substring(codCampania.indexOf("-"))
+								,cmptmpdto.getFechaRegistro()
+								,cmptmpdto.getFechaInicio()
+								,cmptmpdto.getFechaFin()
+								,cmptmpdto.getFechaEnvioMC()
+								,obtUsuario().getPk_id_usuario()
+								,Constantes.TIPO_CREAR_PROCESO) == null) {
+							//obtener la lista de proceso.
+						}
+						
 						mensaje = Constantes.REGISTRO_OK;
 						tipo = Constantes.MENSAJE_OK;
 					} else {
@@ -262,5 +297,41 @@ public class CampaniasTemporalesController {
 		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 		return usuario.get(0);
 
+	}
+	
+	public String guardarDatosTemporales(int campaniaID, String codCampania
+			,String fechaRegistro,String fechaIncio, String fechaFin
+			,String fechaEnvioMC, Integer idUsuario ,Integer tipoProceso) {
+				
+		
+		// la variable tipo de proceso, permite identificar si se gnera un proceso o se relaciona los registros al proceso ya creado valores 1 o 2
+		 Connection connection = null;
+		 CallableStatement callableStatement = null;
+		 String errorMessage="";
+	    try {
+	    
+            connection = jdbcTemplate.getDataSource().getConnection();
+            callableStatement = connection.prepareCall(Constantes.PROCESO_DATOS_CAM_TEMPORALES);
+
+            callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
+            callableStatement.setInt(2, campaniaID);                   // campaniaID
+            callableStatement.setString(3, codCampania);  			   // codCampania
+            callableStatement.setString(4, fechaRegistro);  			   // fechaRegistro
+            callableStatement.setString(5, fechaIncio);  			   // fechaIncio
+            callableStatement.setString(6, fechaFin);  			   // fechaFin
+            callableStatement.setString(7, fechaEnvioMC);  			   // fechaEnvioMC
+            callableStatement.setInt(8, idUsuario);  			   // idUsuario
+            callableStatement.setInt(9, tipoProceso); 			   // tipoProceso
+        
+
+            callableStatement.execute();
+
+  
+            errorMessage = callableStatement.getString(1);
+	    } catch (Exception e) {
+	        logger.error("Error al ejecutar SP_PROCESAR_INFORMACION_CAMPANIAS", e);
+	        return e.getMessage();
+	    }
+		return errorMessage;
 	}
 }

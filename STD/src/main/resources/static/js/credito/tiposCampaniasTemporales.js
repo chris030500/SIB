@@ -6,8 +6,10 @@
 var url = "";
 var tblInformacionProceso;
 const opcionCampania = document.getElementById("opcionCampania");
+let codigoCamp="";
 
 $(document).ready(function() {
+	$("#dtosCampania").hide();
 	subirArchivo();
 
 	tblInformacionProceso = $("#tblInformacionProceso").DataTable({
@@ -72,13 +74,12 @@ function subirArchivo() {
 	$("#btnGuardarCampania").click(function(event) {
 		event.preventDefault();  // <-- evita envío normal del form
 		// Este código se ejecutará después de que el temporizador haya terminado
-		if (validarDatos() == 0) {
-			guardarDtosTmp();
-		}
+		guardarDtosTmp();
+		
 	});
 
 	$("#btnGuardarFile").click(function() {
-
+		codigoCamp="";
 		console.log("Click detectado");
 		if (document.getElementById("file").value.length > 0) {
 
@@ -88,7 +89,10 @@ function subirArchivo() {
 			// Opcional: deshabilitar botón para evitar doble envío
 			document.getElementById('btnGuardarFile').disabled = true;
 			// Si necesitas agregar el parámetro idCmpTmp desde JS, hazlo aquí:
-			data.append("idCmpTmp", 1);
+			data.append("idCmpTmp", document.getElementById("idCampaniaSeleccionada").value);
+			
+			codigoCamp = parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+			data.append("codCampania",codigoCamp)
 			procesarCampaniaTmp(data)
 
 
@@ -124,7 +128,9 @@ function guardarDtosTmp() {
 
 	} else {
 		const formData = new FormData(form);
-
+		codigoCamp="";
+		codigoCamp = parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+		formData.append("codCampania", codigoCamp);
 		// Opcional: deshabilitar botón para evitar doble envío
 		document.getElementById('btnGuardarCampania').disabled = true;
 		swal({
@@ -397,6 +403,8 @@ function llenarFormulario(param) {
 	});
 	document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
 	document.getElementById("checkRecurrente").checked = param.i_tipo_campania === 2;
+	
+	$("#dtosCampania").show();
 
 }
 
@@ -404,6 +412,8 @@ function limpiarFormulario() {
 	// hidden
 	document.getElementById("idCampaniaSeleccionada").value = "";
 	document.getElementById("formDatosCampania").reset();
+	
+	$("#dtosCampania").hide();
 }
 
 function cerrarModalArchivo() {
@@ -414,4 +424,10 @@ function cerrarModalArchivo() {
 
     document.getElementById("formArchivoCampaniaTmp").reset();
     document.getElementById("file").value = "";
+}
+
+function generarUUIDCorto(longitud = 8) {
+  return 'xxxxxxxxxxxxxxxx'.substring(0, longitud).replace(/x/g, () => {
+    return (Math.random() * 16 | 0).toString(16);
+  });
 }

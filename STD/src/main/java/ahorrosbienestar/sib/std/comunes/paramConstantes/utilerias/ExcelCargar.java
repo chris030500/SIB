@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.comunes.paramConstantes.utilerias;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellType;
@@ -12,14 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.ResultadoCargaExcel;
 import ahorrosbienestar.sib.std.credito.campaniastemporales.model.DetalleCampaniasTemporalesModel;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 public class ExcelCargar {
 	
 			private static final Logger logger = Logger.getLogger(ExcelCargar.class);
 			
-		    public static ResultadoCargaExcel parseDetalleTemporales(MultipartFile file) throws Exception {
+		    public static ResultadoCargaExcel parseDetalleTemporales(MultipartFile file, Optional<TiposCampaniasModel>  campania, Usuario usuario) throws Exception {
 		        
 		    	 ResultadoCargaExcel resultado = new ResultadoCargaExcel();
+		    	 
 		        
 		        
 		        try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
@@ -100,6 +104,20 @@ public class ExcelCargar {
 		                    } else {
 		                    	detalleCmpTmp.setProductoIdOferta((int) row.getCell(9).getNumericCellValue());
 		                    }
+		                	
+		                	// registrar idcampaña
+		                	if(campania.get().getPk_id_tipo_campania() == 0) {
+		                		errorFila.append("No existe campaña relacionada ");
+		                	}else {
+		                		detalleCmpTmp.setFkCampanias(campania.get());
+		                	}
+		                	// registrar usuario
+		                	if(usuario.getPk_id_usuario() == 0) {
+		                		errorFila.append("Usuario null ");
+		                	}else {
+		                		detalleCmpTmp.setUserReg(usuario);
+		                	}
+		                	
 		                	
 		                	// reglas validacion
 		                	if(detalleCmpTmp.getTipoCredito().trim().equals("R") && (detalleCmpTmp.getCreditoId()== 0 || detalleCmpTmp.getCreditoId() == null)) {
