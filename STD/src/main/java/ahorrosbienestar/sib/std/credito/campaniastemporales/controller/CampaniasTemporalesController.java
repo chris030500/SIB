@@ -183,12 +183,14 @@ public class CampaniasTemporalesController {
 			String mensaje = "";
 			String tipo = "";
 			int existenombre = 0;
+			String nombreCampania = "";
 			Map<String, Object> respuesta = new HashMap<>();
 
 			if (cmptmpdto.getIdCampaniaSeleccionada() != null) {
 				Optional<TiposCampaniasModel> campaniaConsulta = tiposCampaniasService
 						.obtenerCampaniaxID(cmptmpdto.getIdCampaniaSeleccionada());
 
+				nombreCampania = cmptmpdto.getNombreCampania();
 				existenombre = tiposCampaniasService.existeNombre(cmptmpdto.getNombreCampania());
 				if (campaniaConsulta.isPresent()) {
 
@@ -206,7 +208,6 @@ public class CampaniasTemporalesController {
 
 					if (tiposCampaniasService.save(existente) != null) {
 						
-					
 						mensaje = Constantes.ACTUALIZACION_OK;
 						tipo = Constantes.MENSAJE_OK;
 					} else {
@@ -232,7 +233,7 @@ public class CampaniasTemporalesController {
 					nuevo.setI_user_reg(obtUsuario());
 
 					if (tiposCampaniasService.save(nuevo) != null) {
-						
+						nombreCampania = nuevo.getVc_tipo_campania();
 						if(guardarDatosTemporales(nuevo.getPk_id_tipo_campania()
 								,nuevo.getPk_id_tipo_campania() + codCampania.substring(codCampania.indexOf("-"))
 								,cmptmpdto.getFechaRegistro()
@@ -259,6 +260,7 @@ public class CampaniasTemporalesController {
 
 			respuesta.put(Constantes.TEXTO_MNS, mensaje);
 			respuesta.put(Constantes.TIPO_MNS, tipo);
+			respuesta.put("nombreCampania", nombreCampania);
 			return ResponseEntity.ok(respuesta);
 
 		} catch (Exception e) {
@@ -286,6 +288,56 @@ public class CampaniasTemporalesController {
 		return tiposCampaniasService.buscarCampaniasTemporales(valorBusqueda);
 	}
 
+
+	@GetMapping("/calcularFechaFin")
+	@ResponseBody
+	public ResponseEntity<?> calcularFechaFin(@RequestParam String fechaInicio, @RequestParam int vigencia) {
+		
+		 Connection connection = null;
+		 CallableStatement callableStatement = null;
+		 String mensaje = "";
+	  	 String tipo = "";
+	     Map<String, Object> respuesta = new HashMap<>();
+	    try {
+	    
+           connection = jdbcTemplate.getDataSource().getConnection();
+           callableStatement = connection.prepareCall(Constantes.PROCESO_CALCULO_CAM_TEMPORALES);
+
+           callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
+           callableStatement.setString(2, fechaInicio);                   // campaniaID
+           callableStatement.setInt(3, vigencia);  			   // codCampania
+           callableStatement.registerOutParameter(4, Types.VARCHAR); 
+          			   // tipoProceso
+       
+
+           callableStatement.execute();
+           
+           String msg1 = callableStatement.getString(1);
+           String msg2 = "";
+           
+           if(msg1 != null) {
+               
+        	   mensaje = "Se presento error durante el calculo de la fecha fin.";
+        	   tipo = Constantes.MENSAJE_ERROR;   
+           }else {
+        	   msg2 = callableStatement.getString(4);
+           }
+           
+           
+           respuesta.put(Constantes.TEXTO_MNS, mensaje);
+		   respuesta.put(Constantes.TIPO_MNS, tipo);
+		   respuesta.put("dfin", msg2);
+		   
+		   return ResponseEntity.ok(respuesta);
+           
+	    } catch (Exception e) {
+	    	logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+	    }
+		
+	}
+	
 	public Usuario obtUsuario() {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

@@ -7,6 +7,21 @@ var url = "";
 var tblInformacionProceso;
 const opcionCampania = document.getElementById("opcionCampania");
 let codigoCamp="";
+var nomCampania="";
+
+document.addEventListener("DOMContentLoaded", function() {
+  	const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById("fechaInicio").value = hoy;
+    document.getElementById("fechaFin").value = hoy;
+    document.getElementById("fechaRegistro").value = hoy;
+    document.getElementById("fechaEnvioMC").value = hoy;
+    
+    document.getElementById("fechaInicio").setAttribute("min", hoy);
+    document.getElementById("fechaFin").setAttribute("min", hoy);
+    document.getElementById("fechaRegistro").setAttribute("min", hoy);
+    document.getElementById("fechaEnvioMC").setAttribute("min", hoy);
+    
+});
 
 $(document).ready(function() {
 	$("#dtosCampania").hide();
@@ -43,6 +58,7 @@ $(document).ready(function() {
 
 	});
 });
+
 opcionCampania.addEventListener("input", function() {
 	this.value = this.value.toUpperCase();
 });
@@ -158,7 +174,13 @@ function guardarDtosTmp() {
 				// Leer mensaje y tipo desde el JSON recibido
 				const mensaje = data.mensaje;
 				const tipo = data.tipo;
+				nomCampania = data.nombreCampania;
+				
+				//buscarCampaniasT(nomCampania);
+				//document.getElementById("buscarCampaniaTemporales").value = nomCampania;
+				//obtDatosCampaTemporales();
 				swal("", mensaje, tipo);
+				
 			})
 			.catch(error => {
 				console.log("Error:", error);
@@ -167,6 +189,7 @@ function guardarDtosTmp() {
 			.finally(() => {
 				swal.close(); // cerrar el "Cargando..."
 				document.getElementById('btnGuardarCampania').disabled = false;
+				
 			});
 	}
 
@@ -413,6 +436,12 @@ function limpiarFormulario() {
 	document.getElementById("idCampaniaSeleccionada").value = "";
 	document.getElementById("formDatosCampania").reset();
 	
+	/*const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById("fechaInicio").value = hoy;
+    document.getElementById("fechaFin").value = hoy;
+    document.getElementById("fechaRegistro").value = hoy;
+    document.getElementById("fechaEnvioMC").value = hoy;*/
+	
 	$("#dtosCampania").hide();
 }
 
@@ -430,4 +459,45 @@ function generarUUIDCorto(longitud = 8) {
   return 'xxxxxxxxxxxxxxxx'.substring(0, longitud).replace(/x/g, () => {
     return (Math.random() * 16 | 0).toString(16);
   });
+}
+
+var calcularFechaFin = "calcularFechaFin?fechaInicio=";
+function obtFechaFin(){
+	
+	var vigencia = "&vigencia="+document.getElementById('vigenciaMeses').value;
+	
+
+	fetch(getAbsolutePath() + calcularFechaFin + document.getElementById('fechaInicio').value+ vigencia, {
+		method: "GET",
+	}).then(response => {
+		if (!response.ok || response.status === 204) {
+			swal("Ha ocurrido un error. Consulte al administrador del sistema.", { icon: "warning" });
+			return null;
+		} else {
+			return response.json();
+		}
+	})
+		.then(data => {
+			if (!data) return;
+			
+			if(data.dfin.length === 0){
+				const mensaje = data.mensaje;
+				const tipo = data.tipo;
+				swal("", mensaje, tipo);
+			}else{
+				document.getElementById('fechaFin').value = data.dfin.split('T')[0];
+			}
+
+		})
+		.catch(error => {
+			console.log("Error en calculo de la fecha fin:", error);
+			swal("Ocurrió un error al calcular la fecha fin", {
+				closeOnClickOutside: false,
+				icon: "error",
+			});
+		})
+		.finally(() => {
+			setTimeout($.unblockUI, 600);
+		});
+	
 }
