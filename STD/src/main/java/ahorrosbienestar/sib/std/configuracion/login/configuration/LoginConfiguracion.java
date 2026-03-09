@@ -1,7 +1,5 @@
 package ahorrosbienestar.sib.std.configuracion.login.configuration;
 
-import javax.servlet.http.HttpSessionListener;
-
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +9,10 @@ import ahorrosbienestar.sib.std.configuracion.login.component.CustomHttpSessionL
 @Configuration
 public class LoginConfiguracion {
 	@Bean
-    public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
-        ServletListenerRegistrationBean<HttpSessionListener> listenerBean =
+    public ServletListenerRegistrationBean<CustomHttpSessionListener> sessionListener(CustomHttpSessionListener customHttpSessionListener) {
+        ServletListenerRegistrationBean<CustomHttpSessionListener> listenerBean =
                 new ServletListenerRegistrationBean<>();
-        listenerBean.setListener(new CustomHttpSessionListener());
+        listenerBean.setListener(customHttpSessionListener);
         return listenerBean;
     }
 }

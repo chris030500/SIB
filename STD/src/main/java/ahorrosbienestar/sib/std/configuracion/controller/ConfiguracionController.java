@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;

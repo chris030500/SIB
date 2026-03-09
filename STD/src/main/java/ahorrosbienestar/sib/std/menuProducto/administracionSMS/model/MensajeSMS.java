@@ -1,5 +1,5 @@
 package ahorrosbienestar.sib.std.menuProducto.administracionSMS.model;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
