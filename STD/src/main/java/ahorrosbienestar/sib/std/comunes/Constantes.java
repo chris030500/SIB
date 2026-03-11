@@ -253,6 +253,16 @@ public class Constantes {
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
 	public static final int CAT_REPORTES_CAMPANIAS = 39;
 	
+	
+	// Mensajes campañas temporales
+	public static final String NOMBRE_CAMPANIA_EXISTE = "El NOMBRE DE LA CAMPAÑA YA EXISTE. ACTUALIZAR NOMBRE.";
+	public static final int CAMPANIA_TIPO_RECURRENTE = 2; 
+	public static final String PROCESO_DATOS_CAM_TEMPORALES = "{call SIB.SP_DATOS_CAM_TEMPORALES(?,?,?,?,?,?,?,?,?)}";
+	public static final String PROCESO_CALCULO_CAM_TEMPORALES = "{call SIB.SP_CALCULO_CAM_TEMPORALES(?,?,?,?)}";
+	public static final int TIPO_CREAR_PROCESO = 1; 	
+	public static final int TIPO_RELACIONAR_REGISTROS = 2;
+	public static final int TIPO_ACT_REGISTROS = 3;
+	
     private Constantes() {
         
     }
