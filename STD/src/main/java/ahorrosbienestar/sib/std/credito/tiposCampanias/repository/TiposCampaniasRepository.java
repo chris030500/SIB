@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -169,6 +169,58 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			+ " WHERE I_TIPO_CAMPANIA = 2"
 			+ " AND I_ESTATUS = 1 ", nativeQuery = true)
 	List<Object[]> listaCampaniasRecurrentes();
+
+
+	@Query(value = "SELECT IFNULL(COUNT(*), 0) as numero FROM SIB.TBL_TIPOS_CAMPANIA WHERE UPPER(VC_TIPO_CAMPANIA) LIKE UPPER(CONCAT('%', :nombreCampania, '%')) "
+			+ "and PK_ID_TIPO_CAMPANIA <> :idcampania", nativeQuery = true)
+	int existeNombre(String nombreCampania, int idcampania);
+
+	@Query(value = "SELECT t1.PK_ID_TIPO_CAMPANIA AS idCampaniaSeleccionada "
+	        + ",t1.VC_TIPO_CAMPANIA AS nombreCampania "
+	        + ",t1.I_VIGENCIA_CAMPANIA AS vigenciaMeses "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_REGISTRO,'1900-01-01'),'%Y-%m-%d') AS fechaRegistro "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_ENVIO_MC,'1900-01-01'),'%Y-%m-%d') AS fechaEnvioMC "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_FIN_VIGENCIA,'1900-01-01'),'%Y-%m-%d') AS fechaFin "
+	        + ",t1.I_ESTATUS AS estatusCampania "
+	        + ",CASE WHEN t1.I_TIPO_CAMPANIA = 2 THEN 1 ELSE 0 END AS recurrente "
+	        + "FROM SIB.TBL_TIPOS_CAMPANIA t1 "
+	        + "INNER JOIN SIB.TBL_PROCESO_CAMPANIA t2 ON t2.I_ID_TIPO_CAMPANIA = t1.PK_ID_TIPO_CAMPANIA "
+	        + "WHERE t1.PK_ID_TIPO_CAMPANIA = :valorCampaniaID",
+	        nativeQuery = true)
+	List<Object[]> obtenerCampañaRegistrada(@Param("valorCampaniaID") int valorCampaniaID);
+
+	@Query(value = "select VC_CODIGO_CAM AS CODIGOCAMPANIA "
+	        + ",t1.PK_ID_PROCESO_CAMPANIA as IDPROCESOCAMPANIA "
+	        + ",UPPER(t2.VC_ESTATUS) AS ESTATUS "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_EXTRACCION,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_EXTRACCION "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_INICIO_VIGENCIA,'1900-01-01'),'%Y-%m-%d')  AS DT_FECHA_INICIO "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_FIN_VIGENCIA,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_FIN "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_ENVIO_MC,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_ENVIO_MC "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_REGISTRO,'1900-01-01'),'%Y-%m-%d')  AS DT_FECHA_REGISTRO "
+	        + ",t3.VC_NOMBRE_USUARIO as nombreusuario "
+	        + "FROM SIB.TBL_PROCESO_CAMPANIA t1 "
+	        + "inner join SIB.TBL_ESTATUS_CAMPANIA t2 on t2.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA "
+	        + "INNER JOIN SIB.TBL_CAT_USUARIOS t3 on t3.PK_ID_USUARIO = t1.I_USER_REG "
+	        + "where t1.I_ID_TIPO_CAMPANIA = :idcampania "
+	        + "GROUP BY t1.VC_CODIGO_CAM, "
+	        + "t1.PK_ID_PROCESO_CAMPANIA, "
+	        + "t2.VC_ESTATUS, "
+	        + "t1.DT_FECHA_EXTRACCION, "
+	        + "t1.DT_FECHA_INICIO_VIGENCIA, "
+	        + "t1.DT_FECHA_FIN_VIGENCIA, "
+	        + "t1.DT_FECHA_ENVIO_MC, "
+	        + "t1.DT_FECHA_REGISTRO "
+	        + "ORDER BY t1.I_ID_ESTATUS_CAMPANIA ",
+	        nativeQuery = true)
+	List<Object[]> obtProcesos(Integer idcampania);
+
+	@Query(value = "SELECT VC_CODIGO_CAM FROM SIB.TBL_PROCESO_CAMPANIA "
+			+ " where I_ID_TIPO_CAMPANIA = :valorCampaniaID and I_ID_ESTATUS_CAMPANIA<>6 "
+			+ " order by I_ID_ESTATUS_CAMPANIA desc "
+			+ " limit 1", nativeQuery = true)
+	String obtProceso(int valorCampaniaID);
+	
+	
 	
  
 }

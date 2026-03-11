@@ -1451,6 +1451,8 @@ function btnDepuracionBuro() {
 					    // 
 					    //
 					    //
+					    console.log("tipoCampania: ",tipoCampania);
+					    console.log("procesoCampania: ",data);
 						//mandar llamar SP de proceso de buro de credito SP_CAM_DEPURACION_BC
 						fetch(newUrlBase + "credito/api/ejecutarDepuracionBc?tipoCampania=" + tipoCampania + "&procesoCampania=" + data)
 					    .then(resp => {
