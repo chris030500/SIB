@@ -261,6 +261,7 @@ public class Constantes {
 	public static final String PROCESO_CALCULO_CAM_TEMPORALES = "{call SIB.SP_CALCULO_CAM_TEMPORALES(?,?,?,?)}";
 	public static final int TIPO_CREAR_PROCESO = 1; 	
 	public static final int TIPO_RELACIONAR_REGISTROS = 2;
+	public static final int TIPO_ACT_REGISTROS = 3;
 	
     private Constantes() {
         

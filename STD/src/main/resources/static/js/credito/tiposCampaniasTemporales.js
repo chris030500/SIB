@@ -10,18 +10,21 @@ let codigoCamp="";
 var nomCampania="";
 
 document.addEventListener("DOMContentLoaded", function() {
-  	const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById("fechaInicio").value = hoy;
-    document.getElementById("fechaFin").value = hoy;
+	iniciarFechas();
+});
+
+function iniciarFechas(){
+	const hoy = new Date().toISOString().split('T')[0];
+    //document.getElementById("fechaInicio").value = hoy;
+    //document.getElementById("fechaFin").value = hoy;
     document.getElementById("fechaRegistro").value = hoy;
-    document.getElementById("fechaEnvioMC").value = hoy;
+    //document.getElementById("fechaEnvioMC").value = hoy;
     
-    document.getElementById("fechaInicio").setAttribute("min", hoy);
+    //document.getElementById("fechaInicio").setAttribute("min", hoy);
     document.getElementById("fechaFin").setAttribute("min", hoy);
     document.getElementById("fechaRegistro").setAttribute("min", hoy);
     document.getElementById("fechaEnvioMC").setAttribute("min", hoy);
-    
-});
+}
 
 $(document).ready(function() {
 	$("#dtosCampania").hide();
@@ -107,7 +110,10 @@ function subirArchivo() {
 			// Si necesitas agregar el parámetro idCmpTmp desde JS, hazlo aquí:
 			data.append("idCmpTmp", document.getElementById("idCampaniaSeleccionada").value);
 			
-			codigoCamp = parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+			
+			
+			codigoCamp =  (document.getElementById("codCampaniaR").value.length >0)?document.getElementById("codCampaniaR").value:parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+			
 			data.append("codCampania",codigoCamp)
 			procesarCampaniaTmp(data)
 
@@ -144,8 +150,12 @@ function guardarDtosTmp() {
 
 	} else {
 		const formData = new FormData(form);
-		codigoCamp="";
-		codigoCamp = parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+		
+		const recurrente = document.getElementById("checkRecurrente").checked;
+		formData.set("recurrente", recurrente);
+		
+		codigoCamp = (document.getElementById("codCampaniaR").value.length >0)?document.getElementById("codCampaniaR").value:parseInt(document.getElementById("idCampaniaSeleccionada").value || "0", 10) + '-' + generarUUIDCorto();
+		
 		formData.append("codCampania", codigoCamp);
 		// Opcional: deshabilitar botón para evitar doble envío
 		document.getElementById('btnGuardarCampania').disabled = true;
@@ -174,11 +184,10 @@ function guardarDtosTmp() {
 				// Leer mensaje y tipo desde el JSON recibido
 				const mensaje = data.mensaje;
 				const tipo = data.tipo;
-				nomCampania = data.nombreCampania;
-				
-				//buscarCampaniasT(nomCampania);
-				//document.getElementById("buscarCampaniaTemporales").value = nomCampania;
-				//obtDatosCampaTemporales();
+				document.getElementById("codCampaniaR").value = data.codigoCampania;
+				tablaProceso(data.listaProceso);
+				$("#dtosCampania").show();
+
 				swal("", mensaje, tipo);
 				
 			})
@@ -201,10 +210,8 @@ function validarFormulario(camposForm) {
 
 	const campos = [
 		"nombreCampania",
-		"descripcionCampania",
-		"vigenciaMeses",
-		"fechaInicio",
-		"fechaFin",
+		"fechaRegistro",
+		"estatusCampania",
 	];
 
 	campos.forEach(function(id) {
@@ -311,6 +318,7 @@ function buscarCampaniasTemporales() {
 		}
 	} else {
 		limpiarFormulario();
+		iniciarFechas();
 	}
 
 
@@ -380,7 +388,7 @@ function obtenerIdCampaniaSeleccionada() {
 
 var obtParamCampaniasTmp = "obtParamCampaniasTmp?valorCampaniaID=";
 function obtDatosCampaTemporales() {
-	console.log("------" + getAbsolutePath() + obtParamCampaniasTmp + obtenerIdCampaniaSeleccionada());
+
 	fetch(getAbsolutePath() + obtParamCampaniasTmp + obtenerIdCampaniaSeleccionada(), {
 		method: "GET",
 	}).then(response => {
@@ -394,7 +402,10 @@ function obtDatosCampaTemporales() {
 		.then(data => {
 			if (!data) return;
 
-			llenarFormulario(data);
+			llenarFormulario(data.parametros);
+			tablaProceso(data.listaProceso);
+			
+			document.getElementById("codCampaniaR").value = data.codCampania;
 
 		})
 		.catch(error => {
@@ -410,22 +421,22 @@ function obtDatosCampaTemporales() {
 }
 
 function llenarFormulario(param) {
-	document.getElementById("nombreCampania").value = param.vc_tipo_campania;
-	document.getElementById("descripcionCampania").value = param.vc_tipo_campania;
-	document.getElementById("vigenciaMeses").value = param.i_vigencia_campania;
-	document.getElementById("fechaInicio").value = param.dt_fecha_registro;
-	document.getElementById("fechaFin").value = param.dt_fecha_registro;
-	document.getElementById("fechaRegistro").value = param.dt_fecha_registro;
+	document.getElementById("nombreCampania").value = param[0].nombreCampania;
+	//document.getElementById("descripcionCampania").value = param.vc_tipo_campania;
+	document.getElementById("vigenciaMeses").value = param[0].vigenciaMeses;
+	//document.getElementById("fechaInicio").value = param.dt_fecha_registro;
+	document.getElementById("fechaFin").value = param[0].fechaFin;
+	document.getElementById("fechaRegistro").value = param[0].fechaRegistro;
 	const select = document.getElementById("estatusCampania");
-	const valueToSet = param.i_estatus;
+	const valueToSet = param[0].estatusCampania;
 
 	Array.from(select.options).forEach(option => {
 		if (option.value == valueToSet) {
 			option.selected = true;
 		}
 	});
-	document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
-	document.getElementById("checkRecurrente").checked = param.i_tipo_campania === 2;
+	//document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
+	document.getElementById("checkRecurrente").checked = param[0].recurrente;
 	
 	$("#dtosCampania").show();
 
@@ -467,7 +478,7 @@ function obtFechaFin(){
 	var vigencia = "&vigencia="+document.getElementById('vigenciaMeses').value;
 	
 
-	fetch(getAbsolutePath() + calcularFechaFin + document.getElementById('fechaInicio').value+ vigencia, {
+	fetch(getAbsolutePath() + calcularFechaFin + document.getElementById('fechaEnvioMC').value+ vigencia, {
 		method: "GET",
 	}).then(response => {
 		if (!response.ok || response.status === 204) {
@@ -500,4 +511,11 @@ function obtFechaFin(){
 			setTimeout($.unblockUI, 600);
 		});
 	
+}
+
+function tablaProceso(data){
+		tblInformacionProceso.clear().draw();
+		 $.each(data, function(idx, opt) {
+			tblInformacionProceso.row.add([opt.idProcesoCampania+"-"+opt.codigoCampania,opt.nombreusuario,opt.dtFechaRegistro,opt.estatus]).draw(false);
+		 });
 }
