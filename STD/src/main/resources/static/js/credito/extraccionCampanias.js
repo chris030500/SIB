@@ -1462,6 +1462,9 @@ function btnDepuracionBuro() {
 					        return resp.text(); // porque el backend regresa un int
 					    })
 					    .then(dataSP => {
+							//condicion que solo apique para recurrentes
+							//fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + parseInt(document.getElementById("Campania").value))
+							//ya mando llamar el select donde trae todo usarlo aqui otra vez
 							
 							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
 							const ahora = new Date();
