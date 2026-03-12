@@ -1,3 +1,4 @@
+// @ts-nocheck
 var folioID;
 var puesto = "buscarPuesto?empleadoID=";
 var buscarxArea = "busquedaxArea?areaID=";

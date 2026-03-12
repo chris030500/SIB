@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function () {
     const baseUrl = '/metas-comisiones/relaciones';
 

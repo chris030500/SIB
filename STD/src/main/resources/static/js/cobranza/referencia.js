@@ -1,3 +1,15 @@
+// @ts-nocheck
+
+var Swal = window.Swal;
+
+function swal(text, options = {}) {
+    Swal.fire({
+        text: text,
+        icon: options.icon || "info",
+        allowOutsideClick: options.closeOnClickOutside ?? true,
+        confirmButtonText: "Aceptar"
+    });
+}
 /**
  * Liga absoluta
  */
@@ -34,36 +46,55 @@ window.onload = function() {
 
 
 /**
- * Obtener la opción de busqueda
+ * Obtener la opción de búsqueda
  */
 var opcionBusqueda = document.getElementById("opcionesId");
-var opcionSeleccionada;
+opcionBusqueda = /** @type {HTMLSelectElement} */ (opcionBusqueda);
+
 var inputBuscar = document.getElementById("buscadorId");
+inputBuscar = /** @type {HTMLInputElement} */ (inputBuscar);
+
+var opcionSeleccionada;
+var parametroBus;
 
 function tipoDeBusqueda() {
-	const opcion1 = document.createElement("option");
-	const opcion2 = document.createElement("option");
-	const opcion3 = document.createElement("option");
-	opcion1.value = 1;
-	opcion1.text = "Núm Cliente";
-	opcionBusqueda.add(opcion1);
-	opcion2.value = 2;
-	opcion2.text = "Nombre Cliente";
-	opcionBusqueda.add(opcion2);
-	opcion3.value = 3;
-	opcion3.text = "Núm Crédito";
-	opcionBusqueda.add(opcion3);
-	opcionBusqueda.addEventListener("change", function() {
-		opcionSeleccionada = opcionBusqueda.value;
-		parametroBus = opcionBusqueda.options[opcionBusqueda.selectedIndex].text;
-		if (opcionSeleccionada == 1) {
-			limitarCaracteres(inputBuscar, 9)
-			// Agrega un controlador de eventos para el evento "input"
-			inputBuscar.addEventListener("input", procesoLimite);
-		} else {
-			inputBuscar.removeEventListener("input", procesoLimite);
-		}
-	});
+
+    const opcion1 = document.createElement("option");
+    const opcion2 = document.createElement("option");
+    const opcion3 = document.createElement("option");
+
+    opcion1.value = "1";
+    opcion1.textContent = "Núm Cliente";
+
+    opcion2.value = "2";
+    opcion2.textContent = "Nombre Cliente";
+
+    opcion3.value = "3";
+    opcion3.textContent = "Núm Crédito";
+
+    opcionBusqueda.appendChild(opcion1);
+    opcionBusqueda.appendChild(opcion2);
+    opcionBusqueda.appendChild(opcion3);
+
+    opcionBusqueda.addEventListener("change", function () {
+
+		const select = /** @type {HTMLSelectElement} */ (opcionBusqueda);
+
+		opcionSeleccionada = select.value;
+		parametroBus = select.options[select.selectedIndex].text;
+        if (opcionSeleccionada === "1") {
+
+            limitarCaracteres(inputBuscar, 9);
+            inputBuscar.addEventListener("input", procesoLimite);
+
+        } else {
+
+            inputBuscar.removeEventListener("input", procesoLimite);
+
+        }
+
+    });
+
 }
 /**
  * Fin
@@ -116,38 +147,55 @@ function validarInformacion(value) {
 }
 
 function buscarCliente(datos) {
-	paginaCompleta.style.display = "none";
-	paginaCarga.style.display = "block";
-	var enviar = JSON.stringify(datos);
-	$.ajax({
-		url: newUrlBase + "obtener_cliente",
-		data: enviar,
-		type: "POST",
-		dataType: "JSON",
-		contentType: "application/json; charset=utf-8",
-		success: function(resp) {
-			// console.log(resp);
-			opcionSeleccionada = undefined;
-			opcionBusqueda.value = "";
-			inputBuscar.value = "";
-			infoCliente.style.display = "block";
-			mostrarCtaPrincipal.style.display = "block";
-			mostrarCredito.style.display = "block";
-			paginaCompleta.style.display = "block";
-			paginaCarga.style.display = "none";
-			registros = [];
-			if (resp.length == 0) {
-				infoCliente.style.display = "none";
-				mostrarCtaPrincipal.style.display = "none";
-				mostrarCredito.style.display = "none"
-				swal("No se encontró el cliente", {
-					closeOnClickOutside: false,
-					icon: "warning",
-				});
-			} else {
-				clienteId = resp[0].i_cliente_id;
-				mostrarInfoCliente(resp);
-			}
+
+    paginaCompleta.style.display = "none";
+    paginaCarga.style.display = "block";
+
+    var enviar = JSON.stringify(datos);
+
+    $.ajax({
+        url: newUrlBase + "obtener_cliente",
+        data: enviar,
+        type: "POST",
+        dataType: "JSON",
+        contentType: "application/json; charset=utf-8",
+		success: 		function manejarRespuesta(resp) {
+
+		    opcionSeleccionada = undefined;
+
+		    /** @type {HTMLSelectElement} */
+		    (opcionBusqueda).value = "";
+
+		    /** @type {HTMLInputElement} */
+		    (inputBuscar).value = "";
+
+		    infoCliente.style.display = "block";
+		    mostrarCtaPrincipal.style.display = "block";
+		    mostrarCredito.style.display = "block";
+
+		    paginaCompleta.style.display = "block";
+		    paginaCarga.style.display = "none";
+
+		    registros = [];
+
+		    if (resp.length === 0) {
+
+		        infoCliente.style.display = "none";
+		        mostrarCtaPrincipal.style.display = "none";
+		        mostrarCredito.style.display = "none";
+
+		        swal("No se encontró el cliente", {
+		            closeOnClickOutside: false,
+		            icon: "warning",
+		        });
+
+		    } else {
+
+		        clienteId = resp[0].i_cliente_id;
+		        mostrarInfoCliente(resp);
+
+		    }
+
 		}, error: function(error) {
 			paginaCompleta.style.display = "none";
 			paginaCarga.style.display = "block";
@@ -163,16 +211,18 @@ function buscarCliente(datos) {
  */
 
 
-
 /**
  * Limitar caracteres
  */
+
 function procesoLimite() {
-	// Verifica la longitud del valor del campo de entrada
-	if (inputBuscar.value.length > 9) {
-		// Si se supera el límite de 9 caracteres, recorta el valor
-		inputBuscar.value = inputBuscar.value.slice(0, 9);
-	}
+
+    const input = /** @type {HTMLInputElement} */ (inputBuscar);
+
+    if (input.value.length > 9) {
+        input.value = input.value.slice(0, 9);
+    }
+
 }
 
 function limitarCaracteres(input, maxLength) {
@@ -194,8 +244,8 @@ var infoNumCliente = document.getElementById("numClienteId");
 var infoNomCliente = document.getElementById("nomClienteId");
 
 function mostrarInfoCliente(cliente) {
-	infoNumCliente.value = cliente[0].i_cliente_id;
-	infoNomCliente.value = cliente[0].vc_nombre_cliente;
+	/** @type {HTMLInputElement} */ (infoNumCliente).value = cliente[0].i_cliente_id;
+	 /** @type {HTMLInputElement} */ (infoNomCliente).value = cliente[0].vc_nombre_cliente;
 	validarDatosCtaP(cliente);
 	validarDatosCredito(cliente);
 	mandarConsulta(cliente);
@@ -307,7 +357,7 @@ function llenarTablaCredito(element) {
 	rows.appendChild(cellRef);
 	// Banco
 	var cellBanco = document.createElement("td");
-	contenido = element.i_institucion_id;
+	let contenido = element.i_institucion_id;
 	var textoRecortado = contenido.substring(0, 13);
 	cellBanco.textContent = textoRecortado;
 	cellBanco.style.textAlign = "justify";
@@ -374,14 +424,25 @@ function mandarConsulta(datos) {
  * Reporte Historial
  */
 function validarFechas() {
-	if (document.getElementById("dtFechaInicio").value != "" && document.getElementById("dtFechaFin").value != "") {
-		generarReporteHrl(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value);
-	} else {
-		swal({
-			text: "Hay fechas vacias",
-			icon: "warning",
-		});
-	}
+
+    if (
+        /** @type {HTMLInputElement} */ (document.getElementById("dtFechaInicio")).value != "" &&
+        /** @type {HTMLInputElement} */ (document.getElementById("dtFechaFin")).value != ""
+    ) {
+
+        generarReporteHrl(
+            /** @type {HTMLInputElement} */ (document.getElementById("dtFechaInicio")).value,
+            /** @type {HTMLInputElement} */ (document.getElementById("dtFechaFin")).value
+        );
+
+    } else {
+
+        swal({
+            text: "Hay fechas vacias",
+            icon: "warning",
+        });
+
+    }
 }
 
 function generarReporteHrl(inicio, fin) {

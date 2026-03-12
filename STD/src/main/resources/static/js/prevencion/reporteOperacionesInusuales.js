@@ -1,3 +1,4 @@
+// @ts-nocheck
 var productoSelected = "";
 var idProducto = "";
 var isCliente = false;

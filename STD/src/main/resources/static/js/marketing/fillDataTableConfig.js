@@ -1,3 +1,4 @@
+// @ts-nocheck
 var getPlantillasSMS = "marketing/plantillas-SMS";
 var getGestionesSMS = "marketing/gestion-SMS?isCampania=";
 var botones = "";

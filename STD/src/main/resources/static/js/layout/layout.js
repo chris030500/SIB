@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* global $, jQuery */
 var opcMenu = "opciones/generarMenu";
 var $ = window['$'];

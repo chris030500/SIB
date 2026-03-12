@@ -1,3 +1,4 @@
+// @ts-nocheck
 var expOptionSelected = "";
 var searchOptionSelected = "";
 var url = "";

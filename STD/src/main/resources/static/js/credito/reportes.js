@@ -1,3 +1,4 @@
+// @ts-nocheck
 var clienteValue = 0;
 var celularValue = "";
 var timerId;

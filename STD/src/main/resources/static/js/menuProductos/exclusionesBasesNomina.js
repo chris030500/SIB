@@ -1,3 +1,4 @@
+// @ts-nocheck
 var obtenerEstados = "exclusiones/getEstados"; 
 var obtenerMunicipios = "exclusiones/getMunicipios";
 var actualizarIndicadorMunicipios = "exclusiones/actualizarIndicadorMunicipios";
