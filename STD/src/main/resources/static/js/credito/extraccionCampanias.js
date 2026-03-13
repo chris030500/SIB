@@ -1462,85 +1462,138 @@ function btnDepuracionBuro() {
 					        return resp.text(); // porque el backend regresa un int
 					    })
 					    .then(dataSP => {
-							
-							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
-							const ahora = new Date();
-						    ahora.setMinutes(ahora.getMinutes() + 6);
-						    //por ser desarrollo el tomcat tiene una hora mas
-						    //esta quitarla en QA y en produccion
-						    //ahora.setHours(ahora.getHours() + 1);
-						    ahora.setHours(ahora.getHours());
-						    
-							const hora = ahora.getHours();      // Hora (0-23)
-							const minutos = ahora.getMinutes(); // Minutos (0-59)
-							
-							const newCron = '0 ' + minutos + ' '+ hora + ' * * 1-6';
-						    //datos del cron
-						    const dataParam = {
-						        
-						        // @ts-ignore
-						        pk_id_configuracion: parseInt(document.getElementById("configIdCronExc").value),
-						        
-						        // @ts-ignore
-						        vc_valor_propiedad: newCron,
-						        
-						    };
-						    const bandera=1;
-						    //datos de la bandera
-						    const dataParam2 = {
-						        
-						        // @ts-ignore
-						        pk_id_configuracion: parseInt(document.getElementById("configIdBanderaExc").value),
-						        
-						        // @ts-ignore
-						        vc_valor_propiedad: bandera,
-						        
-						    };
-						    fetch(newUrlBase + 'credito/api/actualizarParamExt', {
-						        method: 'POST',
-						        headers: { 'Content-Type': 'application/json' },
-						        body: JSON.stringify(dataParam)
+							//condicion que solo apique para recurrentes
+							//fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + parseInt(document.getElementById("Campania").value))
+							//ya mando llamar el select donde trae todo usarlo aqui otra vez
+							///inicia condicon para temporales
+							fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + tipoCampania)
+									    
+						    .then(resp => {
+						        if (!resp.ok) {
+						            throw new Error("Error al validar el tipo de campania recurrente/temporal");
+						        }
+						        return resp.json(); // porque el backend regresa un int
 						    })
-						    .then(async resp => {
-							    if (!resp.ok) {
-							        const errorText = await resp.text();
-							        throw new Error(errorText || "Error desconocido en actualizarParamExt");
-							    }
-							    return resp.text();
-							})
-							.then(() => {
-								//////
-								fetch(newUrlBase + 'credito/api/actualizarParamExt', {
-							        method: 'POST',
-							        headers: { 'Content-Type': 'application/json' },
-							        body: JSON.stringify(dataParam2)
-							    })
-							    .then(async resp => {
-								    if (!resp.ok) {
-								        const errorText = await resp.text();
-								        throw new Error(errorText || "Error desconocido en actualizarParamExt");
-								    }
-								    return resp.text();
-								})
-								/*.then(() => {
-									////////////
+						    .then(data3 => {
+								console.log("data3:", data3.i_tipo_campania);
+								//tipo_campania = 2 recurente
+								if(data3.i_tipo_campania === 2){
+									console.log("entra al if---");
+									//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
+									const ahora = new Date();
+								    ahora.setMinutes(ahora.getMinutes() + 6);
+								    //por ser desarrollo el tomcat tiene una hora mas
+								    //esta quitarla en QA y en produccion
+								    //ahora.setHours(ahora.getHours() + 1);
+								    ahora.setHours(ahora.getHours());
+								    
+									const hora = ahora.getHours();      // Hora (0-23)
+									const minutos = ahora.getMinutes(); // Minutos (0-59)
+									
+									const newCron = '0 ' + minutos + ' '+ hora + ' * * 1-6';
+								    //datos del cron
+								    const dataParam = {
+								        
+								        // @ts-ignore
+								        pk_id_configuracion: parseInt(document.getElementById("configIdCronExc").value),
+								        
+								        // @ts-ignore
+								        vc_valor_propiedad: newCron,
+								        
+								    };
+								    const bandera=1;
+								    //datos de la bandera
+								    const dataParam2 = {
+								        
+								        // @ts-ignore
+								        pk_id_configuracion: parseInt(document.getElementById("configIdBanderaExc").value),
+								        
+								        // @ts-ignore
+								        vc_valor_propiedad: bandera,
+								        
+								    };
+								    fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+								        method: 'POST',
+								        headers: { 'Content-Type': 'application/json' },
+								        body: JSON.stringify(dataParam)
+								    })
+								    .then(async resp => {
+									    if (!resp.ok) {
+									        const errorText = await resp.text();
+									        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+									    }
+									    return resp.text();
+									})
+									.then(() => {
+										//////
+										fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+									        method: 'POST',
+									        headers: { 'Content-Type': 'application/json' },
+									        body: JSON.stringify(dataParam2)
+									    })
+									    .then(async resp => {
+										    if (!resp.ok) {
+										        const errorText = await resp.text();
+										        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+										    }
+										    return resp.text();
+										})
+										/*.then(() => {
+											////////////
+											// @ts-ignore
+											swal({
+											title: "",
+											text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
+											icon: "success",
+										    // @ts-ignore
+										    }).then(() => {
+												window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+										        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+										    });
+											///////////
+									    })*/
+									    .then(msg => {
+										    // @ts-ignore
+										    Swal.fire({
+										        title: "",
+										        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+										        icon: "success",
+										        confirmButtonText: "Aceptar",
+										        allowOutsideClick: false,
+										        allowEscapeKey: false
+										    }).then((result) => {
+										        if (result.isConfirmed) {
+										            window.location.href = newUrlBase + "credito/extraccionCampanias";
+										        }
+										    });
+										})
+										.catch(err => {
+										    console.error("Error: actualizarParamExt", err);
+										    // @ts-ignore
+										    Swal.fire({
+										        title: "Error",
+										        text: err.message,
+										        icon: "error",
+										        confirmButtonText: "Cerrar"
+										    });
+										});
+										/////
+								    })
+									.catch(err => {
+									    console.error("Error: actualizarParamExt", err);
+									    // @ts-ignore
+									    Swal.fire({
+									        title: "Error",
+									        text: err.message,
+									        icon: "error",
+									        confirmButtonText: "Cerrar"
+									    });
+									});
+								}else{
 									// @ts-ignore
-									swal({
-									title: "",
-									text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
-									icon: "success",
-								    // @ts-ignore
-								    }).then(() => {
-										window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
-								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-								    });
-									///////////
-							    })*/
-							    .then(msg => {
-								    // @ts-ignore
 								    Swal.fire({
 								        title: "",
-								        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+								        text: "Proceso generado correctamente.",
 								        icon: "success",
 								        confirmButtonText: "Aceptar",
 								        allowOutsideClick: false,
@@ -1550,30 +1603,22 @@ function btnDepuracionBuro() {
 								            window.location.href = newUrlBase + "credito/extraccionCampanias";
 								        }
 								    });
-								})
-								.catch(err => {
-								    console.error("Error: actualizarParamExt", err);
-								    // @ts-ignore
-								    Swal.fire({
-								        title: "Error",
-								        text: err.message,
-								        icon: "error",
-								        confirmButtonText: "Cerrar"
-								    });
-								});
-								/////
-						    })
+								}
+								
+								
+							///inicia termina condicion temporales
+							})
 							.catch(err => {
-							    console.error("Error: actualizarParamExt", err);
-							    // @ts-ignore
-							    Swal.fire({
-							        title: "Error",
-							        text: err.message,
-							        icon: "error",
-							        confirmButtonText: "Cerrar"
+							 console.error("Error al validar tipo de campania recurrente/temporal:", err);
+							   // @ts-ignore
+							   swal({
+								title: "",
+								text: 'Error al actualizar',
+							        icon: 'error'
 							    });
+							    return;
 							});
-							
+							//termina condicion temporales
 							
 						})
 					    .catch(err => {
