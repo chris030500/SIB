@@ -164,7 +164,7 @@ function llenarFormulario(param) {
 
 
 	// inputs numéricos
-	document.getElementById("usoMaximo").value = param.usoMaximo ?? 0;
+	document.getElementById("usoMaximo1").value = param.usoMaximo ?? 0;
 	document.getElementById("mopMaximo").value = param.mobMaximo ?? 0;
 	document.getElementById("bcsMinimo").value = param.bcsMinimo ?? 0;
 	document.getElementById("iccMinimo").value = param.iccMinimo ?? 0;
@@ -294,11 +294,11 @@ function validarCampo() {
 			const valor = Number(seleccionado.value); // ← será 1 o 2
 
 			if (valor === 1) {
-				if (document.getElementById("usoMaximo").value <= 0 || document.getElementById("usoMaximo").value > 100) {
-					document.getElementById("usoMaximo").classList.add("is-invalid");
+				if (document.getElementById("usoMaximo1").value <= 0 || document.getElementById("usoMaximo1").value > 100) {
+					document.getElementById("usoMaximo1").classList.add("is-invalid");
 					pasaRegistro = 0;
 				} else {
-					document.getElementById("usoMaximo").classList.remove("is-invalid");
+					document.getElementById("usoMaximo1").classList.remove("is-invalid");
 					pasaRegistro = 1;
 				}
 
@@ -330,11 +330,11 @@ function validarCampo() {
 
 
 			} else if (valor === 2) {
-				if (document.getElementById("usoMaximo").value <= 0 || document.getElementById("usoMaximo").value > 100) {
-					document.getElementById("usoMaximo").classList.add("is-invalid");
+				if (document.getElementById("usoMaximo1").value <= 0 || document.getElementById("usoMaximo1").value > 100) {
+					document.getElementById("usoMaximo1").classList.add("is-invalid");
 					pasaRegistro = 0;
 				} else {
-					document.getElementById("usoMaximo").classList.remove("is-invalid");
+					document.getElementById("usoMaximo1").classList.remove("is-invalid");
 					pasaRegistro = 1;
 				}
 
