@@ -297,11 +297,11 @@ public class CampaniasTemporalesController {
 	public ResponseEntity<?> obtCampanias(@RequestParam int valorCampaniaID) {
 		
 		Map<String, Object> respuesta = new HashMap<>();
-		String codCampania ="";
+		//String codCampania ="";
 		
 		try {
 			List<CampaniaTemporalDTO> parametros = tiposCampaniasService.obtenerCampañaRegistrada(valorCampaniaID);
-			codCampania = tiposCampaniasService.obtProceso(valorCampaniaID);
+			//codCampania = tiposCampaniasService.obtProceso(valorCampaniaID);
 
 			if (parametros == null || parametros.isEmpty()) {
 				return ResponseEntity.noContent().build(); // Devuelve 204
@@ -309,7 +309,8 @@ public class CampaniasTemporalesController {
 				listaProcesos = tiposCampaniasService.obtProcesos(valorCampaniaID);
 				respuesta.put("parametros", parametros);
 				respuesta.put("listaProceso", listaProcesos);
-				respuesta.put("codCampania", codCampania);
+				respuesta.put("codCampania", (listaProcesos.isEmpty())?0:listaProcesos.get(0).getCodigoCampania());
+				respuesta.put("idEstatus", (listaProcesos.isEmpty())?0:listaProcesos.get(0).getIdEstatus());
 				return ResponseEntity.ok(respuesta);
 			}
 		} catch (Exception e) {
