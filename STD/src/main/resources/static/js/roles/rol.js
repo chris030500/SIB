@@ -1,3 +1,4 @@
+// @ts-nocheck
 var altaRoles = "altaRoles?nombreRol=";
 var updateRoles = "updateRoles?idRol=";
 var cargarRolEditar = "cargarRol/";

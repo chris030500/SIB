@@ -1,3 +1,4 @@
+// @ts-nocheck
 var getPlantillasSMS = "credito/plantillas-SMS";
 var getGestionesSMS = "credito/gestion-SMS";
 var botones = "";

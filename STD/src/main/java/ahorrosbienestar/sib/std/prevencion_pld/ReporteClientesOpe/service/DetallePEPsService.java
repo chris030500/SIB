@@ -41,14 +41,16 @@ public class DetallePEPsService {
             AtomicInteger actualizados = new AtomicInteger(0);
 
             for (DetallePEPsModel fila : filas) {
-                detallePEPsRepository.findById(fila.getI_clienteid()).ifPresentOrElse(existing -> {
-                    if (!Objects.equals(existing.getVc_nombre_cliente(), fila.getVc_nombre_cliente())) {
-                        existing.setVc_nombre_cliente(fila.getVc_nombre_cliente());
+            	detallePEPsRepository.findById(fila.getIClienteId()).ifPresentOrElse(existing -> {
+
+            	    if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
+
+            	        existing.setVcNombreCliente(fila.getVcNombreCliente());
                         detallePEPsRepository.save(existing);
                         actualizados.incrementAndGet();
                     }
                 }, () -> {
-                    fila.setFk_proceso(idProceso);
+                	fila.setFkProceso(idProceso);
                     detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
                 });

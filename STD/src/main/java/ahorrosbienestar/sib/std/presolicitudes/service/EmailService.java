@@ -2,10 +2,10 @@ package ahorrosbienestar.sib.std.presolicitudes.service;
 
 import java.util.Properties;
 
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;

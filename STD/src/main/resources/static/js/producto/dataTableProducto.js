@@ -1,3 +1,4 @@
+// @ts-nocheck
 $(document).ready(function() {
 	$("#productoTable").DataTable({
 		"language": {

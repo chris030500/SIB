@@ -14,18 +14,22 @@ import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.model.ConveniosN
 @Repository
 public interface IConveniosNominaRepository extends JpaRepository<ConveniosNomina, Integer> {
 	
-	@Query( value = "SELECT T1.PK_I_CONVENIO_NOMINA_ID AS id_convenio, T1.VC_DESCRIPCION AS desc_convenio "
-			+ "FROM SIB.TBL_CONVENIOS_NOMINA T1 "
-			+ "WHERE T1.VC_DESCRIPCION LIKE %:descConvenio% "
-			+ "AND T1.I_INDICADOR_DEPURAR = 0 "
-			+ "LIMIT 100 ", nativeQuery = true)
-	List<Map<String, Object>> getConveniosNominaActivos(@Param("descConvenio") String descConvenio);
+	@Query(value = "SELECT T1.PK_I_CONVENIO_NOMINA_ID AS id_convenio, T1.VC_DESCRIPCION AS desc_convenio "
+	        + "FROM SIB.TBL_CONVENIOS_NOMINA T1 "
+	        + "WHERE T1.VC_DESCRIPCION LIKE CONCAT('%', :descConvenio, '%') "
+	        + "AND T1.I_INDICADOR_DEPURAR = 0 "
+	        + "LIMIT 100",
+	        nativeQuery = true)
+	List<Map<String, Object>> getConveniosNominaActivos(
+	        @Param("descConvenio") String descConvenio);
 	
-	@Query( value = "SELECT T1.PK_I_CONVENIO_NOMINA_ID AS id_convenio, T1.VC_DESCRIPCION AS desc_convenio "
-			+ "FROM SIB.TBL_CONVENIOS_NOMINA T1 "
-			+ "WHERE T1.VC_DESCRIPCION LIKE %:descConvenio% "
-			+ "AND T1.I_INDICADOR_DEPURAR = 1 "
-			+ "LIMIT 100 ", nativeQuery = true)
-	List<Map<String, Object>> getConveniosNominaDepurar(@Param("descConvenio") String descConvenio);
+	@Query(value = "SELECT T1.PK_I_CONVENIO_NOMINA_ID AS id_convenio, T1.VC_DESCRIPCION AS desc_convenio "
+	        + "FROM SIB.TBL_CONVENIOS_NOMINA T1 "
+	        + "WHERE T1.VC_DESCRIPCION LIKE CONCAT('%', :descConvenio, '%') "
+	        + "AND T1.I_INDICADOR_DEPURAR = 1 "
+	        + "LIMIT 100",
+	        nativeQuery = true)
+	List<Map<String, Object>> getConveniosNominaDepurar(
+	        @Param("descConvenio") String descConvenio);
 
 }

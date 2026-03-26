@@ -1,8 +1,8 @@
 package ahorrosbienestar.sib.std.configuracion.login.component;
 
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

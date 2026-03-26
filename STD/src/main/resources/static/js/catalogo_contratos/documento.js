@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Función para validar el formulario
 function validarContrato() {
 	// Asignamos los valores a las variables
