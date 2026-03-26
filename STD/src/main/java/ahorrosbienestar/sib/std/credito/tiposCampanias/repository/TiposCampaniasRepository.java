@@ -215,8 +215,8 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	List<Object[]> obtProcesos(Integer idcampania);
 
 	@Query(value = "SELECT VC_CODIGO_CAM FROM SIB.TBL_PROCESO_CAMPANIA "
-			+ " where I_ID_TIPO_CAMPANIA = :valorCampaniaID and I_ID_ESTATUS_CAMPANIA<>6 "
-			+ " order by I_ID_ESTATUS_CAMPANIA desc "
+			+ " where I_ID_TIPO_CAMPANIA = :valorCampaniaID "
+			+ " order by PK_ID_PROCESO_CAMPANIA desc "
 			+ " limit 1", nativeQuery = true)
 	String obtProceso(int valorCampaniaID);
 	
