@@ -192,6 +192,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	@Query(value = "select VC_CODIGO_CAM AS CODIGOCAMPANIA "
 	        + ",t1.PK_ID_PROCESO_CAMPANIA as IDPROCESOCAMPANIA "
 	        + ",UPPER(t2.VC_ESTATUS) AS ESTATUS "
+	        + ",t1.I_ID_ESTATUS_CAMPANIA as IDESTATUS "
 	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_EXTRACCION,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_EXTRACCION "
 	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_INICIO_VIGENCIA,'1900-01-01'),'%Y-%m-%d')  AS DT_FECHA_INICIO "
 	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_FIN_VIGENCIA,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_FIN "
@@ -205,12 +206,13 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        + "GROUP BY t1.VC_CODIGO_CAM, "
 	        + "t1.PK_ID_PROCESO_CAMPANIA, "
 	        + "t2.VC_ESTATUS, "
+	        + "t1.I_ID_ESTATUS_CAMPANIA, "
 	        + "t1.DT_FECHA_EXTRACCION, "
 	        + "t1.DT_FECHA_INICIO_VIGENCIA, "
 	        + "t1.DT_FECHA_FIN_VIGENCIA, "
 	        + "t1.DT_FECHA_ENVIO_MC, "
 	        + "t1.DT_FECHA_REGISTRO "
-	        + "ORDER BY t1.I_ID_ESTATUS_CAMPANIA ",
+	        + "ORDER BY t1.PK_ID_PROCESO_CAMPANIA DESC ",
 	        nativeQuery = true)
 	List<Object[]> obtProcesos(Integer idcampania);
 

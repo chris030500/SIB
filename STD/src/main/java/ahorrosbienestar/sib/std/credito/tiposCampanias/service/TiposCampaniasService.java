@@ -172,12 +172,13 @@ public class TiposCampaniasService {
 		                (String) r[0],        // codigoCampania
 		                (Integer) r[1],       // idProcesoCampania
 		                (String) r[2],        // estatus
-		                (String) r[3],        // dtFechaExtraccion
-		                (String) r[4],        // dtFechaInicio
-		                (String) r[5],        // dtFechaFin
-		                (String) r[6],        // dtFechaEnvioMC
-		                (String) r[7],        // dtFechaRegistro
-		                (String) r[8]         // nombreUsuario
+		                (Integer) r[3],        // estatus
+		                (String) r[4],        // dtFechaExtraccion
+		                (String) r[5],        // dtFechaInicio
+		                (String) r[6],        // dtFechaFin
+		                (String) r[7],        // dtFechaEnvioMC
+		                (String) r[8],        // dtFechaRegistro
+		                (String) r[9]         // nombreUsuario
 		            ))
 		            .collect(Collectors.toList());
 	}
