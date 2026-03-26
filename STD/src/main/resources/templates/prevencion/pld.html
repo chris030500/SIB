@@ -161,23 +161,24 @@
         </div>
  
     </section>
-    <th:block layout:fragment="page-scripts">
-        <!--JavaScript-->
-        <script th:src="@{/js/bootstrap-table.min.js}"></script>
-        <script th:src="@{/js/jquery.min.js}"></script>
-        <script th:src="@{/js/jquery-3.2.1.js}"></script>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-        <script th:src="@{/js/datatables.min.js}"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/prevencion/pld.js}"></script>        
-        <script th:src="@{/js/axios.min.js}"></script>
-        <script th:src="@{/css/estilos/responsivo.css}"></script>
-        <!-- Latest compiled and minified CSS -->
-        <link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-        <!-- jQuery library -->
-		<script th:src="@{/js/jquery.min.js}"></script>
-        <!-- Latest compiled JavaScript -->
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-    </th:block>
+	<link th:href="@{/vendor/datatablesNew/dataTables.bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/css/estilos/responsivo.css}" rel="stylesheet">
+
+	<th:block layout:fragment="page-scripts">
+
+	    <script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+	    <script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+	    <script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+	    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+	    <script th:src="@{/vendor/xlsxNew/xlsx.full.min.js}"></script>
+
+	    <script th:src="@{/vendor/axiosNew/axios.min.js}"></script>
+
+	    <script th:src="@{/js/prevencion/pld.js}"></script>
+
+	</th:block>
 </body>
 </html>
