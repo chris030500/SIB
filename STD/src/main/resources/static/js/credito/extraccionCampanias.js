@@ -800,6 +800,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		const diaOriginal = fecha.getDate();
 		
 		let fechaFormateada = fecha.toLocaleDateString('sv-SE');
+		
+		
 	    // @ts-ignore
 	    console.log("id:", parseInt(document.getElementById("Campania").value));
 	    // @ts-ignore
@@ -813,9 +815,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	    })
 	    .then(data3 => {
 			console.log("data3:", data3.i_vigencia_bc);
-			
+			console.log("i_tipo_campania:", data3.i_tipo_campania);
 			fecha.setDate(1); // evitar desbordamiento
-			fecha.setMonth(fecha.getMonth() + data3.i_vigencia_bc);
+			//cambio vigencia buro temporales
+			//recurrente = 2, temporal = 1
+			
+			if(data3.i_tipo_campania === 1){
+				fecha.setMonth(fecha.getMonth() + data3.i_vigencia_campania);
+			}else if(data3.i_tipo_campania === 2){
+				fecha.setMonth(fecha.getMonth() + data3.i_vigencia_bc);
+			}
 			
 			const ultimoDiaDelMes = new Date(
 			  fecha.getFullYear(),

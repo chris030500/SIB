@@ -6,6 +6,7 @@ public class ProcesosxCampaniaTemDTO {
 	private String codigoCampania;
     private Integer idProcesoCampania;
     private String estatus;
+    private Integer idEstatus;
     private String dtFechaExtraccion;
     private String dtFechaInicio;
     private String dtFechaFin;
@@ -18,12 +19,13 @@ public class ProcesosxCampaniaTemDTO {
     }
 
     // Constructor con todos los campos
-    public ProcesosxCampaniaTemDTO(String codigoCampania, Integer idProcesoCampania, String estatus, String dtFechaExtraccion,
+    public ProcesosxCampaniaTemDTO(String codigoCampania, Integer idProcesoCampania, String estatus,Integer idEstatus, String dtFechaExtraccion,
                                    String dtFechaInicio, String dtFechaFin,
                                    String dtFechaEnvioMC, String dtFechaRegistro,String nombreusuario) {
         this.codigoCampania = codigoCampania;
     	this.idProcesoCampania = idProcesoCampania;
         this.estatus = estatus;
+        this.idEstatus = idEstatus;
         this.dtFechaExtraccion = dtFechaExtraccion;
         this.dtFechaInicio = dtFechaInicio;
         this.dtFechaFin = dtFechaFin;
@@ -105,12 +107,21 @@ public class ProcesosxCampaniaTemDTO {
 		this.nombreusuario = nombreusuario;
 	}
 
+	public Integer getIdEstatus() {
+		return idEstatus;
+	}
+
+	public void setIdEstatus(Integer idEstatus) {
+		this.idEstatus = idEstatus;
+	}
+
 	@Override
     public String toString() {
         return "ProcesosxCampaniaTemDTO{" +
         		" codigoCampania=" +codigoCampania + '\'' +
                 " idProcesoCampania=" + idProcesoCampania + '\'' +
                 ", estatus='" + estatus + '\'' +
+                ", idEstatus='" + idEstatus + '\'' +
                 ", dtFechaExtraccion='" + dtFechaExtraccion + '\'' +
                 ", dtFechaInicio='" + dtFechaInicio + '\'' +
                 ", dtFechaFin='" + dtFechaFin + '\'' +

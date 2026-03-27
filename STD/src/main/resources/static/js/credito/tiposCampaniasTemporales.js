@@ -300,7 +300,7 @@ function procesarCampaniaTmp(data) {
 			swal.close(); // cerrar el "Cargando..."
 			document.getElementById('btnGuardarFile').disabled = false;
 			// ajuste por incidencia
-			window.location.href = getAbsolutePath() + "campaniasTemporales";
+			//window.location.href = getAbsolutePath() + "campaniasTemporales";
 		});
 }
 
@@ -407,6 +407,11 @@ function obtDatosCampaTemporales() {
 			tablaProceso(data.listaProceso);
 			
 			document.getElementById("codCampaniaR").value = data.codCampania;
+			if (data.idEstatus !== 1 && data.idEstatus !== 5 && data.idEstatus !== 6) {
+    			document.getElementById("btnSubirAchivoMdl").disabled = true;
+			}else{
+				document.getElementById("btnSubirAchivoMdl").disabled = false;
+			}
 
 		})
 		.catch(error => {

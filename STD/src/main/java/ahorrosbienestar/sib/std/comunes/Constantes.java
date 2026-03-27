@@ -191,7 +191,7 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
-    
+
 	//constantes PLD ReporteClientesOpe
     public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
     public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
@@ -260,6 +260,7 @@ public class Constantes {
 	public static final int CAMPANIA_TIPO_RECURRENTE = 2; 
 	public static final String PROCESO_DATOS_CAM_TEMPORALES = "{call SIB.SP_DATOS_CAM_TEMPORALES(?,?,?,?,?,?,?,?,?)}";
 	public static final String PROCESO_CALCULO_CAM_TEMPORALES = "{call SIB.SP_CALCULO_CAM_TEMPORALES(?,?,?,?)}";
+	public static final String PROCESO_RELACION_CAM_OA = "{call SIB.SP_RELACION_CAM_OA(?,?,?,?)}";
 	public static final int TIPO_CREAR_PROCESO = 1; 	
 	public static final int TIPO_RELACIONAR_REGISTROS = 2;
 	public static final int TIPO_ACT_REGISTROS = 3;
