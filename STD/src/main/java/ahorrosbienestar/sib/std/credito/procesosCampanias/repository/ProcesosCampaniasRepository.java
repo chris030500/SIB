@@ -152,10 +152,14 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		    + "    AND t2.I_TIPO_CAMPANIA = 1 "
 		    + "  ) AS cant "
 		    + " union all "
-		    + "SELECT COUNT(*) cant "
+		    + "SELECT case when I_TIPO_CAMPANIA = 1 then 1 else 0 end cant "
 		    + "FROM SIB.TBL_TIPOS_CAMPANIA "
 		    + "WHERE PK_ID_TIPO_CAMPANIA = :tipoCampania "
-		    + "AND I_TIPO_CAMPANIA = 2 "
+		    +" union all "
+		    +"SELECT COUNT(*) cant "
+		    + "FROM SIB.TBL_TIPOS_CAMPANIA "
+		    + "WHERE PK_ID_TIPO_CAMPANIA = :tipoCampania "
+		    + " AND I_TIPO_CAMPANIA = 1 "
 		    + "and I_VENTANA_ANIOS is null "
 			+ ")t",
     nativeQuery = true)
