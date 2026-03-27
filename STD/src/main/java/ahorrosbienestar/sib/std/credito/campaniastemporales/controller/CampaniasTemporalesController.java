@@ -240,6 +240,13 @@ public class CampaniasTemporalesController {
 								cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaFin(),
 								cmptmpdto.getFechaEnvioMC(), obtUsuario().getPk_id_usuario(),
 								Constantes.TIPO_CREAR_PROCESO) == null) {
+							
+							if(relacionBasesOA(registro.getVc_tipo_campania(),registro.getPk_id_tipo_campania(),obtUsuario().getPk_id_usuario()) !=null) {
+								logger.info("Se proceso el registro en Bases y Clasificacion");
+							}else {
+								logger.error("Error al procesar el registro en Bases y Clasificacion");
+							}
+							
 						}
 
 						mensaje = Constantes.REGISTRO_OK;
@@ -419,4 +426,32 @@ public class CampaniasTemporalesController {
 		}
 		return errorMessage;
 	}
+	
+	public String relacionBasesOA(String nomCampania, int idCampania, int usuario) {	
+
+		//insertar la base y la clasificacion
+		Connection connection = null;
+		CallableStatement callableStatement = null;
+		String errorMessage = "";
+		try {
+
+			connection = jdbcTemplate.getDataSource().getConnection();
+			callableStatement = connection.prepareCall(Constantes.PROCESO_RELACION_CAM_OA);
+
+			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
+			callableStatement.setString(2, nomCampania); // nomCampania
+			callableStatement.setInt(3, idCampania); // idCampania
+			callableStatement.setInt(4, usuario); // usuario
+
+			callableStatement.execute();
+
+			errorMessage = callableStatement.getString(1);
+		} catch (Exception e) {
+			logger.error("Error al ejecutar"+Constantes.PROCESO_RELACION_CAM_OA, e);
+			return e.getMessage();
+		}
+		return errorMessage;
+	}
+	
+	
 }
