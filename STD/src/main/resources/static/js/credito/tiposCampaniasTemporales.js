@@ -300,7 +300,7 @@ function procesarCampaniaTmp(data) {
 			swal.close(); // cerrar el "Cargando..."
 			document.getElementById('btnGuardarFile').disabled = false;
 			// ajuste por incidencia
-			window.location.href = getAbsolutePath() + "campaniasTemporales";
+			//window.location.href = getAbsolutePath() + "campaniasTemporales";
 		});
 }
 

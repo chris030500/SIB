@@ -259,6 +259,7 @@ public class Constantes {
 	public static final int CAMPANIA_TIPO_RECURRENTE = 2; 
 	public static final String PROCESO_DATOS_CAM_TEMPORALES = "{call SIB.SP_DATOS_CAM_TEMPORALES(?,?,?,?,?,?,?,?,?)}";
 	public static final String PROCESO_CALCULO_CAM_TEMPORALES = "{call SIB.SP_CALCULO_CAM_TEMPORALES(?,?,?,?)}";
+	public static final String PROCESO_RELACION_CAM_OA = "{call SIB.SP_RELACION_CAM_OA(?,?,?,?)}";
 	public static final int TIPO_CREAR_PROCESO = 1; 	
 	public static final int TIPO_RELACIONAR_REGISTROS = 2;
 	public static final int TIPO_ACT_REGISTROS = 3;
