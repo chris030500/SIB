@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Controller;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,10 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import lombok.AllArgsConstructor;
 
-//@Controller
-//@RequestMapping("reportesPLD")
+@Controller
+@RequestMapping("reportesPLD")
 ////////////////----DES-24-0002 Historico de Operaciones----////////////////
 ////////////////----viviana.zamudio-------------------------////////////////
-@RestController
 @AllArgsConstructor
 public class reportesPLDController {
 
