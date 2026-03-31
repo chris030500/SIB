@@ -20,7 +20,7 @@ $(document).ready(function() {
 		if(vacioAlta() == false){
 			altaRol();
 		}else{
-			swal({
+			Swal.fire({
 					title:"Error",
 					text: "Registrar datos obligatorios",
 					icon: "warning",
@@ -41,7 +41,7 @@ $(document).ready(function() {
 		if(vacioModificar() == false){
 			modificarRol();
 		}else{
-			swal({
+			Swal.fire({
 					title:"Error",
 					text: "Registrar datos obligatorios",
 					icon: "warning",
@@ -86,7 +86,7 @@ $(document).ready(function() {
 			//baja
 			enviarPeticion(urlGuardar);
 		}else {
-			swal({
+			Swal.fire({
 				title: "",
 				text: "No ha seleccionado ninguna opcion",
 				icon: "warning",
@@ -223,7 +223,7 @@ function peticion(urlServicio){
 					setTimeout($.unblockUI, 500); 
 				},
 				success: function(respuesta) {
-					swal({
+					Swal.fire({
 						title: "",
 						text: respuesta[0],
 						icon: "success",
@@ -234,7 +234,7 @@ function peticion(urlServicio){
 					
 
 				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
+					Swal.fire({
 						title: "Error, ",
 						text: "Se presento un error, intente mas tarde.",
 						icon: "warning",
@@ -291,7 +291,7 @@ function consultarOpciones(idRol){
 				});
 			}
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
@@ -373,7 +373,7 @@ function enviarPeticion(urlGuardar) {
 		},
 		success: function(respuesta) {
 			$("#rolMenu").modal("hide");
-			swal({
+			Swal.fire({
 				title: "",
 				text: respuesta[0],
 				icon: "success",
@@ -383,7 +383,7 @@ function enviarPeticion(urlGuardar) {
 			});
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
