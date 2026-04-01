@@ -2,115 +2,1661 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
 
-<head th:replace="layouts/base-layout :: head">
+<head th:replace="~{layouts/base-layout :: head}">
     <meta charset="UTF-8">
     <title>Metas y Comisiones</title>
 </head>
 
 <body>
 <section class="content" layout:fragment="page-content">
-    <div class="container">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h4 class="card-title mb-0">Metas y Comisiones - Gestion de Relaciones</h4>
-                <small class="text-muted">Region -> Sucursal -> Colaborador -> Puesto -> Productos</small>
-            </div>
-        </div>
+    <style>
+        .mc-ui {
+            --mc-bg: #eef3f8;
+            --mc-surface: #ffffff;
+            --mc-surface-2: #f7fafd;
+            --mc-border: #d6e1ec;
+            --mc-text: #152a3d;
+            --mc-muted: #5a7288;
+            --mc-primary: #0a6ebd;
+            --mc-primary-2: #1f8fe7;
+            --mc-accent: #0e9f80;
+            --mc-shadow: 0 10px 30px rgba(15, 42, 68, 0.12);
+            font-family: "Manrope", "Segoe UI", "Trebuchet MS", sans-serif;
+            background:
+                radial-gradient(1200px 500px at 5% -10%, #dff0ff 0%, transparent 65%),
+                radial-gradient(900px 380px at 95% -20%, #def6ee 0%, transparent 70%),
+                var(--mc-bg);
+            border-radius: 18px;
+            padding: 18px;
+        }
 
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Carga masiva desde Excel</h5>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Catalogo sucursales</label>
-                        <input type="file" id="sucursalesFile" class="form-control" accept=".xlsx,.xls" />
+        .mc-shell {
+            display: grid;
+            gap: 14px;
+        }
+
+        .mc-card {
+            background: var(--mc-surface);
+            border: 1px solid var(--mc-border);
+            border-radius: 16px;
+            box-shadow: var(--mc-shadow);
+        }
+
+        .mc-hero {
+            padding: 18px 20px;
+            background: linear-gradient(130deg, #0c5f9f 0%, #157cca 45%, #26a0e8 100%);
+            color: #fff;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mc-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 999px;
+            right: -70px;
+            top: -120px;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .mc-title {
+            margin: 0;
+            font-weight: 800;
+            letter-spacing: .2px;
+            font-size: 1.25rem;
+        }
+
+        .mc-subtitle {
+            margin-top: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: .92rem;
+        }
+
+        .mc-steps {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mc-journey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .mc-journey-card {
+            border: 1px solid var(--mc-border);
+            border-radius: 14px;
+            background: linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
+            padding: 12px;
+        }
+
+        .mc-journey-card h6 {
+            margin: 0 0 5px;
+            color: var(--mc-text);
+            font-size: .9rem;
+            font-weight: 900;
+        }
+
+        .mc-journey-card p {
+            margin: 0;
+            color: var(--mc-muted);
+            font-size: .8rem;
+            line-height: 1.45;
+        }
+
+        .mc-step {
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: .76rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(2px);
+        }
+
+        .mc-upload {
+            padding: 16px;
+        }
+
+        .mc-section-title {
+            margin: 0;
+            color: var(--mc-text);
+            font-size: 1.02rem;
+            font-weight: 800;
+        }
+
+        .mc-section-help {
+            color: var(--mc-muted);
+            margin-top: 3px;
+            font-size: .84rem;
+        }
+
+        .upload-grid {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .upload-item {
+            border: 1px solid var(--mc-border);
+            border-radius: 12px;
+            background: var(--mc-surface-2);
+            padding: 10px;
+        }
+
+        .upload-item label {
+            font-size: .78rem;
+            font-weight: 800;
+            color: #2d4a63;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .25px;
+        }
+
+        .mc-ui .form-control,
+        .mc-ui .form-select {
+            border-color: #bfd0e2;
+            border-radius: 10px;
+            color: var(--mc-text);
+            background: #fff;
+        }
+
+        .mc-ui .form-control:focus,
+        .mc-ui .form-select:focus {
+            border-color: #75afe1;
+            box-shadow: 0 0 0 .18rem rgba(10, 110, 189, 0.14);
+        }
+
+        .mc-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .mc-ui .btn-success {
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            background: linear-gradient(130deg, var(--mc-accent), #28b493);
+            padding: 9px 14px;
+        }
+
+        .mc-tabs-wrap {
+            padding: 16px;
+        }
+
+        .mc-ui .nav-tabs {
+            border-bottom: none;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mc-ui .nav-tabs .nav-link {
+            border: 1px solid var(--mc-border);
+            border-radius: 999px;
+            background: #f8fbff;
+            color: #23445f;
+            font-weight: 700;
+            font-size: .84rem;
+            padding: 8px 12px;
+        }
+
+        .mc-ui .nav-tabs .nav-link.active {
+            border-color: transparent;
+            color: #fff;
+            background: linear-gradient(130deg, var(--mc-primary), var(--mc-primary-2));
+            box-shadow: 0 6px 18px rgba(8, 95, 165, 0.35);
+        }
+
+        .mc-tab-panel {
+            margin-top: 12px;
+            border: 1px solid var(--mc-border);
+            border-radius: 14px;
+            background: #fff;
+            padding: 12px;
+        }
+
+        .mc-panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mc-panel-title {
+            margin: 0;
+            font-size: .98rem;
+            color: var(--mc-text);
+            font-weight: 800;
+        }
+
+        .mc-chip {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            border: 1px solid #c8ddf2;
+            background: #edf6ff;
+            color: #255c86;
+            font-size: .75rem;
+            font-weight: 700;
+            padding: 4px 9px;
+        }
+
+        .mc-filter-block {
+            margin-bottom: 10px;
+        }
+
+        .mc-filter-block small {
+            color: var(--mc-muted);
+        }
+
+        .rs-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            border: 1px solid #d5e6f6;
+            border-radius: 12px;
+            background: linear-gradient(130deg, #f9fcff, #f2f8ff);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rs-toolbar-grid {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: minmax(220px, 2fr) minmax(180px, 1fr) auto;
+            align-items: center;
+        }
+
+        .rs-toolbar-actions {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .rs-status-buttons {
+            display: inline-flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .rs-status-btn {
+            border: 1px solid #c7daec;
+            border-radius: 999px;
+            background: #fff;
+            color: #2f5878;
+            font-size: .74rem;
+            font-weight: 800;
+            padding: 6px 10px;
+            line-height: 1;
+        }
+
+        .rs-status-btn:hover {
+            border-color: #8ebbe4;
+            color: #0e5d9f;
+            background: #f3f9ff;
+        }
+
+        .rs-status-btn.active {
+            color: #fff;
+            border-color: #0f6ab5;
+            background: linear-gradient(130deg, #0d66b2, #1d84d7);
+            box-shadow: 0 8px 16px rgba(15, 106, 181, 0.28);
+        }
+
+        .rs-toolbar-actions .btn {
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: .74rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rs-toolbar-actions .btn i {
+            font-size: .8rem;
+        }
+
+        .rs-stats {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .rs-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #c8ddf1;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #21547a;
+            font-size: .74rem;
+            font-weight: 800;
+            padding: 4px 10px;
+        }
+
+        .rs-stat b {
+            color: #0c5c9b;
+        }
+
+        .mc-upload-inline {
+            border: 1px solid #cfe1f2;
+            background: linear-gradient(135deg, #f7fbff, #f2f9ff);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mc-upload-inline-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .mc-upload-inline-title {
+            margin: 0;
+            font-size: .78rem;
+            font-weight: 800;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+            color: #2a5678;
+        }
+
+        .mc-upload-inline-help {
+            margin: 0;
+            font-size: .75rem;
+            color: #5a758f;
+        }
+
+        .mc-upload-inline-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+
+        .mc-fab-upload {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid #0d914f;
+            background: linear-gradient(145deg, #1aa05d, #0f874b);
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(14, 113, 62, 0.28);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex: 0 0 auto;
+        }
+
+        .mc-fab-upload:hover {
+            transform: translateY(-1px);
+            color: #fff;
+            box-shadow: 0 14px 24px rgba(14, 113, 62, 0.42);
+        }
+
+        .mc-head-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 767px) {
+            .mc-upload-inline-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rs-board {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(260px, 300px);
+            gap: 10px;
+            align-items: start;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .rel-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .rs-column,
+        .rel-column {
+            border: 1px solid #cde0f3;
+            border-radius: 12px;
+            background: #f8fbff;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow .2s ease;
+        }
+
+        .rs-column.rs-column-hot {
+            box-shadow: 0 0 0 2px rgba(58, 148, 230, 0.26), 0 10px 18px rgba(25, 92, 145, 0.15);
+        }
+
+        .rs-column-head,
+        .rel-column-head {
+            padding: 9px 10px;
+            border-bottom: 1px solid #d7e7f6;
+            border-radius: 12px 12px 0 0;
+            background: linear-gradient(120deg, #eaf4ff, #f2f8ff);
+            color: #1f4d72;
+            font-size: .8rem;
+            font-weight: 800;
+        }
+
+        .rs-dropzone,
+        .rel-dropzone {
+            padding: 8px;
+            min-height: 205px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .rs-dropzone.drag-over,
+        .rel-dropzone.drag-over {
+            background: #eaf4ff;
+            outline: 2px dashed #5aa1e3;
+            outline-offset: -2px;
+            border-radius: 10px;
+        }
+
+        .rs-card,
+        .rel-card {
+            border: 1px solid #c8ddf1;
+            border-radius: 10px;
+            background: #fff;
+            padding: 8px;
+            color: #25465f;
+            cursor: grab;
+            font-size: .78rem;
+            box-shadow: 0 4px 10px rgba(21, 71, 108, 0.08);
+        }
+
+        .rs-card {
+            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+
+        .rs-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(12, 75, 123, 0.13);
+            border-color: #9ec5e7;
+        }
+
+        .rs-card.rs-card-moved {
+            animation: rsMovedPulse 1.2s ease;
+            border-color: #79b5e8;
+            box-shadow: 0 0 0 2px rgba(72, 156, 233, 0.25), 0 8px 18px rgba(24, 92, 150, 0.18);
+        }
+
+        @keyframes rsMovedPulse {
+            0% { transform: translateY(-1px) scale(1.01); }
+            45% { transform: translateY(-2px) scale(1.015); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        .rs-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+
+        .rs-card-code {
+            font-size: .82rem;
+            font-weight: 800;
+            color: #12466b;
+        }
+
+        .rs-card-name {
+            color: #3a607d;
+            font-weight: 700;
+        }
+
+        .rs-card-status {
+            border-radius: 999px;
+            font-size: .67rem;
+            line-height: 1;
+            padding: 4px 7px;
+            font-weight: 800;
+            border: 1px solid transparent;
+        }
+
+        .rs-card-status.activa {
+            color: #0f7f53;
+            background: #e8f9f1;
+            border-color: #bde7d4;
+        }
+
+        .rs-card-status.inactiva {
+            color: #9a6a0d;
+            background: #fff5df;
+            border-color: #f1dfb3;
+        }
+
+        .rs-card-status.sin-estatus {
+            color: #49647a;
+            background: #eef4fa;
+            border-color: #d5e4f2;
+        }
+
+        .rs-empty {
+            border: 1px dashed #c7daec;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            color: #68839a;
+            background: #f8fbff;
+            font-size: .77rem;
+            font-weight: 700;
+        }
+
+        .rs-card:active,
+        .rel-card:active {
+            cursor: grabbing;
+        }
+
+        .mc-ui .btn {
+            border-radius: 10px;
+            font-weight: 800;
+            letter-spacing: .2px;
+            transition: transform .12s ease, box-shadow .15s ease;
+        }
+
+        .mc-ui .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .mc-ui .btn-outline-primary {
+            border-color: #8ebbe4;
+            color: #0d66b2;
+            background: #f8fcff;
+        }
+
+        .mc-ui .btn-outline-primary:hover {
+            color: #fff;
+            border-color: #0d66b2;
+            background: linear-gradient(130deg, #0c6ab7, #1f86d9);
+        }
+
+        .mc-ui .btn-outline-secondary {
+            border-color: #c3d3e4;
+            color: #35566f;
+            background: #fcfdff;
+        }
+
+        .mc-ui .btn-primary {
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(130deg, #0c6ab7, #1f86d9);
+            box-shadow: 0 8px 18px rgba(17, 108, 183, 0.25);
+        }
+
+        .mc-ui .btn-primary:disabled {
+            opacity: .72;
+        }
+
+        .mc-ui .table {
+            margin: 0;
+            border-color: var(--mc-border);
+        }
+
+        .mc-ui .table thead th {
+            background: #edf5fd;
+            color: #274863;
+            border-bottom: 1px solid var(--mc-border);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .mc-ui .table tbody td {
+            vertical-align: middle;
+        }
+
+        .mc-table-wrap {
+            border: 1px solid var(--mc-border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        #msgBox {
+            border-radius: 12px;
+            box-shadow: var(--mc-shadow);
+            font-weight: 700;
+            border: none;
+        }
+
+        .mc-upload-modal .modal-content {
+            border-radius: 14px;
+            border: 1px solid #c8ddf1;
+        }
+
+        .mc-upload-drop {
+            border: 2px dashed #b8d3ec;
+            border-radius: 12px;
+            background: #f6fbff;
+            padding: 12px;
+            transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+        }
+
+        .mc-upload-drop p {
+            margin: 0 0 8px 0;
+            color: #466682;
+            font-weight: 700;
+            font-size: .82rem;
+        }
+
+        .mc-upload-drop.drag-over {
+            border-color: #4f9de0;
+            background: #edf6ff;
+            box-shadow: 0 0 0 3px rgba(67, 147, 220, 0.2);
+        }
+
+        /* Design refresh layer */
+        .mc-ui {
+            border: 1px solid #dbe7f2;
+            box-shadow: 0 18px 42px rgba(12, 45, 75, 0.12);
+        }
+
+        .mc-card {
+            box-shadow: 0 14px 34px rgba(17, 59, 96, 0.1);
+        }
+
+        .mc-hero {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        .mc-title {
+            font-size: 1.35rem;
+            letter-spacing: .3px;
+        }
+
+        .mc-subtitle {
+            max-width: 880px;
+            font-size: .9rem;
+        }
+
+        .mc-step {
+            font-size: .72rem;
+            border-color: rgba(255, 255, 255, 0.42);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mc-tabs-wrap {
+            padding: 18px;
+        }
+
+        .mc-ui .nav-tabs .nav-link {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .mc-ui .nav-tabs .nav-link.active {
+            transform: translateY(-1px);
+        }
+
+        .mc-tab-panel {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .mc-panel-head {
+            border-bottom: 1px solid #e3edf7;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .mc-panel-title {
+            font-size: 1rem;
+            letter-spacing: .15px;
+        }
+
+        .mc-chip {
+            box-shadow: inset 0 1px 0 #fff;
+        }
+
+        .rs-toolbar {
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: inset 0 1px 0 #fff;
+        }
+
+        .rs-toolbar-grid {
+            gap: 10px;
+        }
+
+        .rs-status-buttons {
+            gap: 8px;
+        }
+
+        .rs-status-btn {
+            min-height: 33px;
+        }
+
+        .rs-stat {
+            min-height: 30px;
+            background: linear-gradient(180deg, #fff 0%, #f7fbff 100%);
+        }
+
+        .rs-board,
+        .rel-board {
+            scrollbar-width: thin;
+            scrollbar-color: #b9d2e8 #edf5fd;
+        }
+
+        .rs-board::-webkit-scrollbar,
+        .rel-board::-webkit-scrollbar {
+            height: 9px;
+            width: 9px;
+        }
+
+        .rs-board::-webkit-scrollbar-track,
+        .rel-board::-webkit-scrollbar-track {
+            background: #edf5fd;
+            border-radius: 99px;
+        }
+
+        .rs-board::-webkit-scrollbar-thumb,
+        .rel-board::-webkit-scrollbar-thumb {
+            background: #b9d2e8;
+            border-radius: 99px;
+        }
+
+        .rs-column,
+        .rel-column {
+            border-radius: 14px;
+            background: linear-gradient(180deg, #f8fbff 0%, #f4f9ff 100%);
+            box-shadow: 0 8px 16px rgba(14, 75, 122, 0.08);
+        }
+
+        .rs-column-head,
+        .rel-column-head {
+            font-size: .78rem;
+            letter-spacing: .2px;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .rs-dropzone,
+        .rel-dropzone {
+            min-height: 220px;
+            gap: 8px;
+        }
+
+        .rs-card,
+        .rel-card {
+            border-radius: 11px;
+        }
+
+        .rs-card-name {
+            font-size: .79rem;
+        }
+
+        .mc-ui .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .mc-ui .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: linear-gradient(180deg, #edf5fd 0%, #e7f1fb 100%);
+        }
+
+        .mc-ui .table tbody tr:hover td {
+            background: #f7fbff;
+        }
+
+        .mc-table-wrap {
+            border-radius: 14px;
+            box-shadow: inset 0 1px 0 #fff;
+        }
+
+        .mc-upload-modal .modal-content {
+            box-shadow: 0 24px 42px rgba(15, 57, 93, 0.25);
+        }
+
+        .mc-upload-modal .modal-header {
+            background: linear-gradient(135deg, #f6fbff, #eff7ff);
+            border-bottom: 1px solid #dbe8f5;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .mc-upload-modal .modal-footer {
+            border-top: 1px solid #e0ebf6;
+            background: #fbfdff;
+            border-radius: 0 0 14px 14px;
+        }
+
+        .se-toolbar,
+        .sp-toolbar {
+            border: 1px solid #d5e5f4;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #f8fbff 0%, #f2f8ff 100%);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: inset 0 1px 0 #fff;
+        }
+
+        .se-toolbar .form-label,
+        .sp-toolbar .form-label {
+            margin-bottom: 4px;
+            color: #375974;
+            font-size: .74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .25px;
+        }
+
+        .se-actionbar {
+            border: 1px solid #d9e8f5;
+            background: #fafdff;
+            border-radius: 12px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+        }
+
+        .se-compare-toolbar {
+            border: 1px solid #d8e7f6;
+            background: linear-gradient(180deg, #f8fbff 0%, #eff6ff 100%);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .se-compare-cards {
+            display: grid;
+            gap: 14px;
+        }
+
+        .se-compare-card {
+            border: 1px solid #dbe7f2;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 16px 34px rgba(16, 49, 86, 0.08);
+            overflow: hidden;
+        }
+
+        .se-compare-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+            border-bottom: 1px solid #e7eef6;
+        }
+
+        .se-compare-identity {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .se-compare-check {
+            margin-top: 4px;
+            transform: scale(1.12);
+        }
+
+        .se-compare-title {
+            font-size: .98rem;
+            font-weight: 800;
+            color: #21405f;
+        }
+
+        .se-compare-subtitle {
+            font-size: .78rem;
+            color: #70839a;
+            margin-top: 3px;
+        }
+
+        .se-compare-diffchips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 0 16px 12px;
+        }
+
+        .se-compare-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #eef5ff;
+            color: #295e95;
+            font-size: .76rem;
+            font-weight: 800;
+        }
+
+        .se-compare-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 16px 14px;
+        }
+
+        .se-compare-side {
+            border: 1px solid #e5edf5;
+            border-radius: 14px;
+            background: #fbfdff;
+            padding: 12px;
+        }
+
+        .se-compare-side-title {
+            font-size: .84rem;
+            font-weight: 800;
+            color: #26496b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .25px;
+        }
+
+        .se-compare-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 6px 10px;
+            font-size: .88rem;
+        }
+
+        .se-compare-grid strong {
+            color: #627991;
+        }
+
+        .se-compare-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 0 16px 16px;
+        }
+
+        .se-compare-empty {
+            border: 1px dashed #c9d9ea;
+            background: #f9fcff;
+            color: #647d96;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .mc-info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #c8ddf1;
+            border-radius: 999px;
+            background: #f3f9ff;
+            color: #2f5c7d;
+            font-size: .75rem;
+            font-weight: 800;
+            padding: 5px 10px;
+        }
+
+        .mc-table-wrap.table-tall {
+            max-height: 430px;
+            overflow: auto;
+        }
+
+        .sp-toolbar .form-control,
+        .sp-toolbar .form-select,
+        .se-toolbar .form-control,
+        .se-toolbar .form-select {
+            background: #fff;
+        }
+
+        .sp-empty {
+            border: 1px dashed #c8daea;
+            border-radius: 12px;
+            padding: 12px;
+            background: #f9fcff;
+            color: #5b7891;
+            font-weight: 700;
+            font-size: .8rem;
+        }
+
+        @media (max-width: 991px) {
+            .mc-ui {
+                padding: 12px;
+            }
+
+            .mc-hero {
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .rs-toolbar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mc-tab-panel {
+                padding: 12px;
+            }
+
+            .mc-panel-head {
+                align-items: flex-start;
+            }
+
+            .mc-head-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .rs-toolbar-actions {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .se-compare-body {
+                grid-template-columns: 1fr;
+            }
+
+            .se-compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="container mc-ui">
+        <div class="mc-shell">
+            <div class="mc-card mc-hero">
+                <h4 class="mc-title">Metas y Comisiones | Gestion de Relaciones</h4>
+                <div class="mc-subtitle">Panel central para cargar catalogos y administrar la estructura Region, Sucursal, Empleado, Puesto y Producto.</div>
+                <div class="mc-steps">
+                    <span class="mc-step">1. Carga Excel</span>
+                    <span class="mc-step">2. Valida relaciones</span>
+                    <span class="mc-step">3. Ajusta y guarda</span>
+                </div>
+            </div>
+
+            <div class="mc-journey-grid">
+                <div class="mc-journey-card">
+                    <h6>01 Región - Sucursal</h6>
+                    <p>Empieza por validar qué sucursales pertenecen a cada región y qué canal comercial maneja cada una.</p>
+                </div>
+                <div class="mc-journey-card">
+                    <h6>02 Sucursal - Empleado</h6>
+                    <p>Después confirma vigencias, asignaciones de personal y diferencias contra la información del core bancario.</p>
+                </div>
+                <div class="mc-journey-card">
+                    <h6>03 Puesto - Producto</h6>
+                    <p>Configura los porcentajes de distribución por puesto y producto antes de pasar a definición de metas.</p>
+                </div>
+                <div class="mc-journey-card">
+                    <h6>04 Historial</h6>
+                    <p>Usa el historial para auditar movimientos y validar que los cambios aplicados sean los correctos.</p>
+                </div>
+            </div>
+
+            <div class="mc-card mc-tabs-wrap">
+                <ul class="nav nav-tabs" id="relacionesTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-rs" data-bs-toggle="tab" data-bs-target="#pane-rs" type="button" role="tab">01 Region - Sucursal</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-se" data-bs-toggle="tab" data-bs-target="#pane-se" type="button" role="tab">02 Sucursal - Empleado</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-sp" data-bs-toggle="tab" data-bs-target="#pane-sp" type="button" role="tab">03 Sucursal - Puesto - Producto</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-au" data-bs-toggle="tab" data-bs-target="#pane-au" type="button" role="tab">04 Historial</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="relacionesTabsContent">
+                    <div class="tab-pane fade show active" id="pane-rs" role="tabpanel" aria-labelledby="tab-rs">
+                        <div class="mc-tab-panel">
+                            <div class="mc-panel-head">
+                                <div>
+                                    <h6 class="mc-panel-title">Arrastra y suelta sucursales entre regiones</h6>
+                                </div>
+                                <div class="mc-head-actions">
+                                    <span class="mc-chip">Se guarda automaticamente al soltar</span>
+                                    <button id="btnRsExportPdf" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-file-pdf" aria-hidden="true"></i> PDF
+                                    </button>
+                                    <button id="btnRsExportXlsx" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-file-excel" aria-hidden="true"></i> XLSX
+                                    </button>
+                                    <button id="btnRsAddRecord" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-plus" aria-hidden="true"></i> Agregar
+                                    </button>
+                                    <button id="btnOpenRsUpload" class="btn mc-fab-upload" title="Cargar catalogo Region-Sucursal">
+                                        <i class="fas fa-file-excel" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="rs-toolbar">
+                                <div class="rs-toolbar-grid">
+                                    <input id="rsSearch" class="form-control" placeholder="Buscar sucursal por numero, nombre o region">
+                                    <div>
+                                        <select id="rsChannelFilter" class="form-select mb-2">
+                                            <option value="">Todos los canales</option>
+                                            <option value="TRADICIONAL">Tradicional</option>
+                                            <option value="NOMINA">Nomina</option>
+                                            <option value="AMBOS">Ambos</option>
+                                        </select>
+                                        <select id="rsStatusFilter" class="form-select d-none">
+                                            <option value="ALL">Todas</option>
+                                            <option value="ACTIVA">Activas</option>
+                                            <option value="INACTIVA">Inactivas</option>
+                                            <option value="SIN_REGION">Sin region</option>
+                                        </select>
+                                        <div class="rs-status-buttons" id="rsStatusButtons">
+                                            <button type="button" class="btn rs-status-btn active" data-status="ALL">Todas</button>
+                                            <button type="button" class="btn rs-status-btn" data-status="ACTIVA">Activas</button>
+                                            <button type="button" class="btn rs-status-btn" data-status="INACTIVA">Inactivas</button>
+                                            <button type="button" class="btn rs-status-btn" data-status="SIN_REGION">Sin region</button>
+                                        </div>
+                                    </div>
+                                    <div class="rs-toolbar-actions">
+                                        <button id="rsClearFilters" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-filter" aria-hidden="true"></i> Limpiar
+                                        </button>
+                                        <button id="rsUndoMove" class="btn btn-sm btn-outline-primary" disabled>
+                                            <i class="fas fa-undo" aria-hidden="true"></i> Deshacer
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="rs-stats">
+                                    <span class="rs-stat">Regiones: <b id="rsTotalRegiones">0</b></span>
+                                    <span class="rs-stat">Sucursales visibles: <b id="rsTotalSucursales">0</b></span>
+                                </div>
+                            </div>
+
+                            <div id="rsBoard" class="rs-board"></div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Catalogo ubicacion empleados</label>
-                        <input type="file" id="empleadosFile" class="form-control" accept=".xlsx,.xls" />
+
+                    <div class="tab-pane fade" id="pane-se" role="tabpanel" aria-labelledby="tab-se">
+                        <div class="mc-tab-panel">
+                            <div class="mc-panel-head">
+                                <div>
+                                    <h6 class="mc-panel-title">Reasignacion de empleados por sucursal</h6>
+                                </div>
+                                <div class="mc-head-actions">
+                                    <span class="mc-chip">Selecciona origen, destino y mueve</span>
+                                    <button id="btnSeCompareCore" class="btn btn-sm btn-outline-dark">
+                                        <i class="fas fa-code-compare" aria-hidden="true"></i> Comparar core
+                                    </button>
+                                    <button id="btnSeExportPdf" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-file-pdf" aria-hidden="true"></i> PDF
+                                    </button>
+                                    <button id="btnSeExportXlsx" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-file-excel" aria-hidden="true"></i> XLSX
+                                    </button>
+                                    <button id="btnSeAddRecord" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-plus" aria-hidden="true"></i> Agregar
+                                    </button>
+                                    <button id="btnOpenSeUpload" class="btn mc-fab-upload" title="Cargar catalogo Sucursal-Empleado">
+                                        <i class="fas fa-file-excel" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="se-toolbar">
+                                <div class="row g-2">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Region</label>
+                                        <input id="seRegionFilter" class="form-control" placeholder="Ej. 1">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Sucursal origen</label>
+                                        <select id="seOrigenSelect" class="form-select"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Sucursal destino</label>
+                                        <select id="seDestinoSelect" class="form-select"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Puesto ID</label>
+                                        <input id="sePuestoFilter" class="form-control" placeholder="Ej. 14">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Vigencia</label>
+                                        <select id="seVigenciaFilter" class="form-select">
+                                            <option value="">Todas</option>
+                                            <option value="ACTUAL">Actual</option>
+                                            <option value="HISTORICA">Historica</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <label class="form-label">Buscar empleado</label>
+                                        <input id="seSearch" class="form-control" placeholder="Nombre, numero o puesto">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="se-actionbar d-flex justify-content-between align-items-center">
+                                <span id="seInfo" class="mc-info-pill"><i class="fas fa-users" aria-hidden="true"></i> Registros mostrados: 0</span>
+                                <button id="btnSeMoverSeleccionados" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-right-left" aria-hidden="true"></i> Mover seleccionados
+                                </button>
+                            </div>
+
+                            <div class="table-responsive mc-table-wrap table-tall">
+                                <table class="table table-sm table-bordered" id="tablaEmpleadoReasignacion">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="seCheckAll"></th>
+                                        <th>Empleado Num</th>
+                                        <th>Empleado</th>
+                                        <th>Puesto</th>
+                                        <th>Sucursal Actual</th>
+                                        <th>Vigencia</th>
+                                        <th>Estado vigencia</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Catalogo puestos-productos</label>
-                        <input type="file" id="puestosProductosFile" class="form-control" accept=".xlsx,.xls" />
+
+                    <div class="tab-pane fade" id="pane-sp" role="tabpanel" aria-labelledby="tab-sp">
+                        <div class="mc-tab-panel">
+                            <div class="mc-panel-head">
+                                <div>
+                                    <h6 class="mc-panel-title">Distribucion de productos por puesto y sucursal</h6>
+                                </div>
+                                <div class="mc-head-actions">
+                                    <span class="mc-chip">Edita porcentaje Nuevo y Renovado desde cada tarjeta</span>
+                                    <button id="btnSpAddRecord" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-plus" aria-hidden="true"></i> Agregar
+                                    </button>
+                                    <button id="btnOpenSpUpload" class="btn mc-fab-upload" title="Cargar catalogo Puesto-Producto">
+                                        <i class="fas fa-file-excel" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="sp-toolbar">
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Buscar producto o puesto</label>
+                                        <input id="spSearch" class="form-control" placeholder="Filtrar por producto o puesto">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Sucursal</label>
+                                        <select id="spSucursalSelect" class="form-select"></select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Canal</label>
+                                        <select id="spCanalFilter" class="form-select">
+                                            <option value="">Todos</option>
+                                            <option value="TRADICIONAL">Tradicional</option>
+                                            <option value="NOMINA">Nomina</option>
+                                            <option value="AMBOS">Ambos</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Fuerza</label>
+                                        <select id="spFuerzaFilter" class="form-select">
+                                            <option value="">Todas</option>
+                                            <option value="SUCURSAL">Sucursal</option>
+                                            <option value="CONTACT_CENTER">Contact Center</option>
+                                            <option value="AMBOS">Ambos</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Estatus</label>
+                                        <select id="spEstatusFilter" class="form-select">
+                                            <option value="">Todos</option>
+                                            <option value="1">Activos</option>
+                                            <option value="0">Inactivos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="spBoard" class="rel-board"></div>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <button id="btnCargarCatalogos" class="btn btn-success">Cargar y generar relacion</button>
+
+                    <div class="tab-pane fade" id="pane-au" role="tabpanel" aria-labelledby="tab-au">
+                        <div class="mc-tab-panel">
+                            <div class="mc-panel-head">
+                                <div>
+                                    <h6 class="mc-panel-title">Historial de cambios</h6>
+                                </div>
+                                <span class="mc-chip">Auditoria de movimientos y cargas</span>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-8">
+                                    <input id="auSearch" class="form-control" placeholder="Buscar por evento, entidad, usuario o detalle">
+                                </div>
+                                <div class="col-md-4 d-grid">
+                                    <button id="btnAuRefresh" class="btn btn-sm btn-outline-primary">Actualizar historial</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small id="auInfo" class="text-muted"></small>
+                            </div>
+
+                            <div class="table-responsive mc-table-wrap">
+                                <table class="table table-sm table-bordered" id="tablaAuditoria">
+                                    <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Evento</th>
+                                        <th>Entidad</th>
+                                        <th>Entidad ID</th>
+                                        <th>Usuario</th>
+                                        <th>Detalle</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">Region</label>
-                        <select id="regionSelect" class="form-select">
-                            <option value="">Selecciona una region</option>
-                        </select>
+            <div id="msgBox" class="alert" style="display:none"></div>
+        </div>
+    </div>
+
+    <div class="modal fade mc-upload-modal" id="catalogUploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="catalogUploadTitle">Carga de catalogo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2" id="catalogUploadHelp">Selecciona un archivo Excel (.xlsx / .xls).</p>
+                    <div class="mc-upload-drop" id="catalogUploadDropzone">
+                        <p>Arrastra el archivo aqui o selecciona desde tu equipo</p>
+                        <input type="file" id="catalogUploadFile" class="form-control" accept=".xlsx,.xls">
+                        <small class="text-muted d-block mt-2" id="catalogUploadFileName">Ningun archivo seleccionado</small>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Sucursal</label>
-                        <select id="sucursalSelect" class="form-select" disabled>
-                            <option value="">Selecciona una sucursal</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Colaborador</label>
-                        <select id="colaboradorSelect" class="form-select" disabled>
-                            <option value="">Selecciona un colaborador</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Puesto</label>
-                        <select id="puestoSelect" class="form-select" disabled>
-                            <option value="">Selecciona un puesto</option>
-                        </select>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnCatalogUploadConfirm">
+                        <i class="fas fa-file-excel" aria-hidden="true"></i> Cargar archivo
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Productos asignados al puesto</h5>
-                        <table class="table table-sm table-bordered" id="tablaAsignados">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>No. Producto</th>
-                                    <th>Nombre</th>
-                                    <th>Accion</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+    <div class="modal fade" id="rsRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rsRecordModalTitle">Agregar Region / Sucursal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="rsRecordMode" value="create">
+                    <input type="hidden" id="rsRecordId">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Region Num</label>
+                            <input type="number" id="rsRegionNum" class="form-control" placeholder="Ej. 1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre Region</label>
+                            <input type="text" id="rsRegionNom" class="form-control" placeholder="Ej. REGION 1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sucursal Num</label>
+                            <input type="number" id="rsSucursalNum" class="form-control" placeholder="Ej. 109">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre Sucursal</label>
+                            <input type="text" id="rsSucursalNom" class="form-control" placeholder="Ej. PIE DE LA CUESTA">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estatus</label>
+                            <select id="rsSucursalEstatus" class="form-select">
+                                <option value="ACTIVA">ACTIVA</option>
+                                <option value="INACTIVA">INACTIVA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Canales</label>
+                            <select id="rsCanales" class="form-select">
+                                <option value="TRADICIONAL">Tradicional</option>
+                                <option value="NOMINA">Nomina</option>
+                                <option value="AMBOS">Ambos</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Productos disponibles</h5>
-                        <table class="table table-sm table-bordered" id="tablaDisponibles">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>No. Producto</th>
-                                    <th>Nombre</th>
-                                    <th>Accion</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnRsRecordSave">
+                        <i class="fas fa-save" aria-hidden="true"></i> Guardar
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="msgBox" class="alert" style="display:none"></div>
+    <div class="modal fade" id="seRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="seRecordModalTitle">Agregar Sucursal - Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="seRecordMode" value="create">
+                    <input type="hidden" id="seRecordId">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Empleado Num</label>
+                            <input type="number" id="seEmpleadoNum" class="form-control" placeholder="Ej. 2519">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre Empleado</label>
+                            <input type="text" id="seEmpleadoNom" class="form-control" placeholder="Nombre completo">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sucursal</label>
+                            <select id="seRecordSucursalNum" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Puesto ID</label>
+                            <input type="number" id="sePuestoId" class="form-control" placeholder="Ej. 14">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Puesto</label>
+                            <input type="text" id="sePuestoDesc" class="form-control" placeholder="Ej. PROMOTOR JR.">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Aplica Meta</label>
+                            <select id="seAplicaMeta" class="form-select">
+                                <option value="SI">SI</option>
+                                <option value="NO">NO</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            <input type="text" id="seEstado" class="form-control" placeholder="ACTIVO">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Periodo</label>
+                            <input type="number" id="sePeriodoNum" class="form-control" placeholder="Ej. 202603">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vigencia inicio</label>
+                            <input type="date" id="seVigenciaInicio" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vigencia fin</label>
+                            <input type="date" id="seVigenciaFin" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSeRecordSave">
+                        <i class="fas fa-save" aria-hidden="true"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="seCoreCompareModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Comparativo Core vs Catalogo actual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="seCoreCompareSummary" class="alert alert-light border">Sin informacion para comparar.</div>
+                    <div class="se-compare-toolbar">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Filtro rapido</label>
+                                <select id="seCoreStatusFilter" class="form-select">
+                                    <option value="TODOS">Todos</option>
+                                    <option value="DIFERENTE">Solo diferentes</option>
+                                    <option value="SOLO_CORE">Solo core</option>
+                                    <option value="SOLO_EXCEL">Solo catalogo</option>
+                                    <option value="IGUAL">Sin cambios</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Buscar en diferencias</label>
+                                <input id="seCoreSearch" class="form-control" placeholder="Empleado, sucursal o puesto">
+                            </div>
+                            <div class="col-md-4 d-flex gap-2 justify-content-md-end">
+                                <button type="button" class="btn btn-outline-secondary" id="btnSeSelectVisible">
+                                    <i class="fas fa-check-double" aria-hidden="true"></i> Seleccionar visibles
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnSeClearVisible">
+                                    <i class="fas fa-eraser" aria-hidden="true"></i> Limpiar visibles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="seCoreCompareCards" class="se-compare-cards"></div>
+                    <div class="se-compare-empty" id="seCoreCompareEmpty" style="display:none;">
+                        No hay diferencias entre el catalogo actual y el core para los filtros seleccionados.
+                    </div>
+                    <div id="seCoreCompareInfo" class="small text-muted"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="btnSeKeepExcel" data-bs-dismiss="modal">Conservar catalogo actual</button>
+                    <button type="button" class="btn btn-primary" id="btnSeApplyCore">
+                        <i class="fas fa-arrows-rotate" aria-hidden="true"></i> Aplicar Core a seleccionados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="spRecordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="spRecordModalTitle">Agregar Sucursal - Puesto - Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="spRecordMode" value="create">
+                    <input type="hidden" id="spRecordId">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Sucursal</label>
+                            <select id="spRecordSucursalNum" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Puesto ID</label>
+                            <input type="number" id="spRecordPuestoId" class="form-control" placeholder="Ej. 14">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Producto Num</label>
+                            <input type="number" id="spRecordProductoNum" class="form-control" placeholder="Ej. 501">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Producto</label>
+                            <input type="text" id="spRecordProductoNom" class="form-control" placeholder="Nombre producto">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Canal de venta</label>
+                            <select id="spRecordCanal" class="form-select">
+                                <option value="TRADICIONAL">TRADICIONAL</option>
+                                <option value="NOMINA">NOMINA</option>
+                                <option value="AMBOS">AMBOS</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fuerza de venta</label>
+                            <select id="spRecordFuerzaVenta" class="form-select">
+                                <option value="SUCURSAL">SUCURSAL</option>
+                                <option value="CONTACT_CENTER">CONTACT CENTER</option>
+                                <option value="AMBOS">AMBOS</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">% Nuevo</label>
+                            <input type="number" step="0.00000001" id="spRecordPorcNuevo" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">% Renovado</label>
+                            <input type="number" step="0.00000001" id="spRecordPorcRenovado" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vigencia inicio</label>
+                            <input type="date" id="spRecordVigenciaInicio" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vigencia fin</label>
+                            <input type="date" id="spRecordVigenciaFin" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estatus</label>
+                            <select id="spRecordEstatus" class="form-select">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSpRecordSave">
+                        <i class="fas fa-save" aria-hidden="true"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

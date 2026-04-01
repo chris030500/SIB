@@ -502,16 +502,31 @@
 				<!-- Fin VOBO Nomina -->
 
 				<!-- Metas y Comisiones -->
-				<li class="nav-item">
+				<li style="display:none;" class="nav-item" th:id="16">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-metas-comisiones"
 						data-bs-toggle="collapse">
 						<i class="bi bi-diagram-3"></i><span>Metas y Comisiones</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-metas-comisiones" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-						<li class="nav-item">
+						<li th:id="M_O56" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/permisos/gestion}">
+								<i class="bi bi-shield-lock"></i><span>Permisos</span>
+							</a>
+						</li>
+						<li th:id="M_O53" class="nav-item" style="display:none;">
 							<a th:href="@{/metas-comisiones/relaciones/gestion}">
 								<i class="bi bi-link-45deg"></i><span>Relaciones</span>
+							</a>
+						</li>
+						<li th:id="M_O54" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/definicion/gestion}">
+								<i class="bi bi-calculator"></i><span>Definicion y Simulacion</span>
+							</a>
+						</li>
+						<li th:id="M_O55" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/resultados/gestion}">
+								<i class="bi bi-clipboard-data"></i><span>Resultados y Calculo</span>
 							</a>
 						</li>
 					</ul>
@@ -535,7 +550,7 @@
 			<!-- /.content -->
 		</main>
 		<!-- Control Sidebar -->
-		<footer th:replace="layouts/footer :: footer"> </footer>
+		<footer th:replace="~{layouts/footer :: footer}"> </footer>
 		<aside class="control-sidebar control-sidebar-dark">
 			<!-- Control sidebar content goes here -->
 		</aside>
