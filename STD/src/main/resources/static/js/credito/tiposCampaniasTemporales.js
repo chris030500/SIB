@@ -186,7 +186,11 @@ function guardarDtosTmp() {
 				const tipo = data.tipo;
 				document.getElementById("codCampaniaR").value = data.codigoCampania;
 				tablaProceso(data.listaProceso);
-				$("#dtosCampania").show();
+				
+				
+				if (data.registros && data.registros.i_estatus != null) {
+    				mostrarOcultarProceso(data.registros.i_estatus);
+				}
 
 				swal("", mensaje, tipo);
 				
@@ -203,6 +207,15 @@ function guardarDtosTmp() {
 	}
 
 
+}
+
+//mostrar listado de procesos
+function mostrarOcultarProceso(estatusCampaniaTemporal){
+		if(estatusCampaniaTemporal === 1){
+			$("#dtosCampania").show();
+		}else{
+			$("#dtosCampania").hide();
+		}
 }
 
 function validarFormulario(camposForm) {
@@ -444,7 +457,11 @@ function llenarFormulario(param) {
 	//document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
 	document.getElementById("checkRecurrente").checked = param[0].recurrente;
 	
-	$("#dtosCampania").show();
+	if (param && param[0].estatusCampania != null) {
+    	mostrarOcultarProceso(param[0].estatusCampania);
+	}
+	
+	
 
 }
 
