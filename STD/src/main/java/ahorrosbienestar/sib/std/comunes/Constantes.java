@@ -221,6 +221,12 @@ public class Constantes {
     public static final String CREDITO_SOLICITUDES_AUTORIZADAS = "credito/solicitudesAutorizadas";
     public static final String CREDITO_REPORTES = "credito/reportes";
     
+    //constantes metas y comisiones
+    public static final String METAS_COMISIONES_RELACIONES = "metas-comisiones/relaciones/gestion";
+    public static final String METAS_COMISIONES_DEFINICION = "metas-comisiones/definicion/gestion";
+    public static final String METAS_COMISIONES_RESULTADOS = "metas-comisiones/resultados/gestion";
+    public static final String METAS_COMISIONES_PERMISOS = "metas-comisiones/permisos/gestion";
+    
     //nombres reportes Crédito
     public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";
     

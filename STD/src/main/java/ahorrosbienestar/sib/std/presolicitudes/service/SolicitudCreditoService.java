@@ -57,11 +57,10 @@ public class SolicitudCreditoService {
     @Transactional
     public void actualizarEstatusSolicitudes(List<Map<String, String>> solicitudes, Usuario usuarioRespuesta) {
         for (Map<String, String> solicitud : solicitudes) {
-            String noSolicitudStr = solicitud.get("NoSolicitud");
-            String autoriza = solicitud.get("Autoriza SI/NO");
-            String comentariosEmpresa = solicitud.get("Comentarios Empresa") == null
-            	    ? ""
-            	    : solicitud.get("Comentarios Empresa").toUpperCase();
+            String noSolicitudStr = obtenerValor(solicitud, "NOSOLICITUD", "NoSolicitud");
+            String autoriza = obtenerValor(solicitud, "AUTORIZASINO", "Autoriza SI/NO");
+            String comentariosEmpresa = obtenerValor(solicitud, "COMENTARIOSEMPRESA", "Comentarios Empresa");
+            comentariosEmpresa = comentariosEmpresa == null ? "" : comentariosEmpresa.toUpperCase();
 
             if (noSolicitudStr == null || autoriza == null) {
                 System.out.println("Datos faltantes en la solicitud.");
@@ -94,6 +93,16 @@ public class SolicitudCreditoService {
             	logger.error("Número de solicitud inválido: " + noSolicitudStr);
             }
         }
+    }
+
+    private String obtenerValor(Map<String, String> solicitud, String... keys) {
+        for (String key : keys) {
+            String value = solicitud.get(key);
+            if (value != null) {
+                return value.trim();
+            }
+        }
+        return null;
     }
     
     public void aprobarSolicitud(Integer id) {
