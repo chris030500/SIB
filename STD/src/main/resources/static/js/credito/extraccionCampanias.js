@@ -183,6 +183,10 @@ document.getElementById("Estatus").addEventListener("change", function() {
 				document.getElementById("btnCargar").disabled = false;
 				// @ts-ignore
 				document.getElementById("btnCancelar").disabled = false;
+				//activa boton generar archivo buro
+				//cambio para que se active
+				// @ts-ignore
+        		document.getElementById("btnGenerar").disabled = false;
 			}
         })
         .catch(err => {
