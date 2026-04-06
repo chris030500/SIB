@@ -225,6 +225,7 @@ public class CampaniasTemporalesController {
 				}
 			} else {
 
+				existenombre = tiposCampaniasService.existeNombreCamp(cmptmpdto.getNombreCampania());
 				if (existenombre == 0) {
 					registro.setVc_tipo_campania(cmptmpdto.getNombreCampania());
 					registro.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
@@ -241,7 +242,7 @@ public class CampaniasTemporalesController {
 								cmptmpdto.getFechaEnvioMC(), obtUsuario().getPk_id_usuario(),
 								Constantes.TIPO_CREAR_PROCESO) == null) {
 							
-							if(relacionBasesOA(registro.getVc_tipo_campania(),registro.getPk_id_tipo_campania(),obtUsuario().getPk_id_usuario()) !=null) {
+							if(relacionBasesOA(registro.getVc_tipo_campania(),registro.getPk_id_tipo_campania(),obtUsuario().getPk_id_usuario()) == null) {
 								logger.info("Se proceso el registro en Bases y Clasificacion");
 							}else {
 								logger.error("Error al procesar el registro en Bases y Clasificacion");
@@ -338,15 +339,15 @@ public class CampaniasTemporalesController {
 	@ResponseBody
 	public ResponseEntity<?> calcularFechaFin(@RequestParam String fechaInicio, @RequestParam int vigencia) {
 
-		Connection connection = null;
-		CallableStatement callableStatement = null;
+		//Connection connection = null;
+		//CallableStatement callableStatement = null;
 		String mensaje = "";
 		String tipo = "";
 		Map<String, Object> respuesta = new HashMap<>();
 		try {
 
-			connection = jdbcTemplate.getDataSource().getConnection();
-			callableStatement = connection.prepareCall(Constantes.PROCESO_CALCULO_CAM_TEMPORALES);
+			Connection connection = jdbcTemplate.getDataSource().getConnection();
+			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_CALCULO_CAM_TEMPORALES);
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setString(2, fechaInicio); // campaniaID
@@ -399,13 +400,10 @@ public class CampaniasTemporalesController {
 
 		// la variable tipo de proceso, permite identificar si se gnera un proceso o se
 		// relaciona los registros al proceso ya creado valores 1 o 2
-		Connection connection = null;
-		CallableStatement callableStatement = null;
-		String errorMessage = "";
 		try {
 
-			connection = jdbcTemplate.getDataSource().getConnection();
-			callableStatement = connection.prepareCall(Constantes.PROCESO_DATOS_CAM_TEMPORALES);
+			Connection connection = jdbcTemplate.getDataSource().getConnection();
+			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_DATOS_CAM_TEMPORALES);
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setInt(2, campaniaID); // campaniaID
@@ -419,24 +417,22 @@ public class CampaniasTemporalesController {
 
 			callableStatement.execute();
 
-			errorMessage = callableStatement.getString(1);
+			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_DATOS_CAM_TEMPORALES, e);
 			return e.getMessage();
 		}
-		return errorMessage;
+
 	}
 	
 	public String relacionBasesOA(String nomCampania, int idCampania, int usuario) {	
 
 		//insertar la base y la clasificacion
-		Connection connection = null;
-		CallableStatement callableStatement = null;
-		String errorMessage = "";
+
 		try {
 
-			connection = jdbcTemplate.getDataSource().getConnection();
-			callableStatement = connection.prepareCall(Constantes.PROCESO_RELACION_CAM_OA);
+			Connection connection = jdbcTemplate.getDataSource().getConnection();
+			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_RELACION_CAM_OA);
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setString(2, nomCampania); // nomCampania
@@ -445,12 +441,12 @@ public class CampaniasTemporalesController {
 
 			callableStatement.execute();
 
-			errorMessage = callableStatement.getString(1);
+			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_RELACION_CAM_OA, e);
 			return e.getMessage();
 		}
-		return errorMessage;
+		
 	}
 	
 	

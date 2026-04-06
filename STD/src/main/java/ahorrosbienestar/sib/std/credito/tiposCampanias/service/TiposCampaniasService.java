@@ -187,6 +187,11 @@ public class TiposCampaniasService {
 		
 		return repository.obtProceso(valorCampaniaID);
 	}
+
+	public int existeNombreCamp(String nombreCampania) {
+		// TODO Auto-generated method stub
+		return repository.existeNombreCamp(nombreCampania);
+	}
 	
 	/*public List<TiposCampaniasModel> obtenerCampaniasActivos() {
         return repository.listaTiposCampanias(1);
