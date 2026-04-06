@@ -185,10 +185,13 @@ function guardarDtosTmp() {
 				const mensaje = data.mensaje;
 				const tipo = data.tipo;
 				document.getElementById("codCampaniaR").value = data.codigoCampania;
+				
+				
 				tablaProceso(data.listaProceso);
 				
 				
 				if (data.registros && data.registros.i_estatus != null) {
+					document.getElementById("idCampaniaSeleccionada").value = data.registros.pk_id_tipo_campania;
     				mostrarOcultarProceso(data.registros.i_estatus);
 				}
 

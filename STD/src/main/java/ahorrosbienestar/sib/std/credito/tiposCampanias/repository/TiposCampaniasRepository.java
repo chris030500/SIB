@@ -221,6 +221,9 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			+ " order by PK_ID_PROCESO_CAMPANIA desc "
 			+ " limit 1", nativeQuery = true)
 	String obtProceso(int valorCampaniaID);
+
+	@Query(value = "SELECT IFNULL(COUNT(*), 0) as numero FROM SIB.TBL_TIPOS_CAMPANIA WHERE UPPER(VC_TIPO_CAMPANIA) LIKE UPPER(CONCAT('%', :nombreCampania, '%')) ", nativeQuery = true)
+	int existeNombreCamp(String nombreCampania);
 	
 	
 	
