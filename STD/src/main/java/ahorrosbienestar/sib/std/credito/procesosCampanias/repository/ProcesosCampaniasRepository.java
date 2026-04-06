@@ -159,8 +159,7 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 		    +"SELECT COUNT(*) cant "
 		    + "FROM SIB.TBL_TIPOS_CAMPANIA "
 		    + "WHERE PK_ID_TIPO_CAMPANIA = :tipoCampania "
-		    + " AND I_TIPO_CAMPANIA = 1 "
-		    + "and I_VENTANA_ANIOS is null "
+		    + " and I_VENTANA_ANIOS is null "
 			+ ")t",
     nativeQuery = true)
 	int contarProcesosExtraccion(@Param("tipoCampania") int tipoCampania);
