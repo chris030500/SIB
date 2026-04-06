@@ -1,3 +1,4 @@
+// @ts-nocheck
 var aceptarObservacion = "aceptarObservacion?idObservacion=";
 var rechazarObservacion = "rechazarObservacion?idObservacion=";
 var inicioPantalla = "aceptarAsignacion";

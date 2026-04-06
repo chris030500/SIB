@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-//import javax.servlet.http.HttpServletResponse;
-//import javax.servlet.ServletOutputStream;
+//import jakarta.servlet.http.HttpServletResponse;
+//import jakarta.servlet.ServletOutputStream;
 //import java.io.OutputStream;
  
 import org.apache.log4j.Logger;
@@ -651,16 +651,17 @@ public class RptReporteClientesOpeController {
      * @param model
      * @return
      */
-    @GetMapping("/obtHistoricoProcesos")
-    public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso(Model model) {
-         logger.info("/obtHistoricoProcesos");
+    @GetMapping(value="/obtHistoricoProcesos", produces="application/json")
+    @ResponseBody
+    public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso() {
+
+        logger.info("/obtHistoricoProcesos");
+
         try {
-            
             return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
-            
         } catch (Exception e) {
             logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-            return null;
+            return ResponseEntity.internalServerError().build();
         }
     }
     

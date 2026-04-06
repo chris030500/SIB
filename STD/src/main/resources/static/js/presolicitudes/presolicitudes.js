@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Variables | validacion de la liga absoluta
 window.onload = function() {
 	//tablaEmpresas();
@@ -172,13 +173,15 @@ function listaPlazos(producto, idEmpresa) {
 
 	// Caso especial: producto "NOMINA PRESTACIONES"
 	if (producto.trim().toUpperCase() === "NOMINA PRESTACIONES") {
-		selectFrecuencia.value = "UNICO"; // O "DIARIA" si así está definido en tu <option>
+		selectFrecuencia.value = "5"; // O "DIARIA" si así está definido en tu <option>
 		selectFrecuencia.disabled = true; // Opcional: desactiva el select para evitar que lo cambien
 		// Reemplaza el select por un input number
 		container.innerHTML = `
 			<input type="number" class="form-control" id="plazoCredito" placeholder="Plazo en días" min="1">
 		`;
 		spinnerPlazo.style.display = "none";
+		attachMontoDescontarListeners(); // <-- NUEVO: al recrear #plazoCredito
+		recalcMontoDescontar();          // <-- NUEVO: recalcular de inmediato
 		return;
 	}
 
@@ -214,18 +217,16 @@ function listaPlazos(producto, idEmpresa) {
 		},
 		complete: function() {
 			spinnerPlazo.style.display = "none";
+			attachMontoDescontarListeners(); // <-- NUEVO
+			recalcMontoDescontar();          // <-- NUEVO
 		}
 	});
 }
 
 
-
-
 $(document).ready(function() {
 	$('#solicitudModal').on('shown.bs.modal', function() {
 		listaEmpresas();
-		//document.getElementById('idSolicitud').value = null;
-		//llenarSelectPuestos();
 	});
 });
 
@@ -258,7 +259,6 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 
 	// Mostrar mensaje de "Cargando..."
 	selectPuesto.innerHTML = '<option value="" disabled selected>Cargando...</option>';
-	selectPuesto.disabled = true;
 
 	$.ajax({
 		url: urlPrincipal + "obtener_puestos?empresa=" + idEmpresaSeleccionada,
@@ -289,12 +289,10 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 				let optionPuesto = document.createElement('option');
 				optionPuesto.value = '0';
 				optionPuesto.textContent = 'TODOS';
-				optionPuesto.disabled = true;
 				optionPuesto.selected = true;
 				selectPuesto.appendChild(optionPuesto);
+				selectPuesto.value = '0';
 			}
-
-			selectPuesto.disabled = false;
 		},
 		error: function(error) {
 			console.error("Error al obtener la lista de puestos:", error);
@@ -304,8 +302,10 @@ function llenarSelectPuestos(idEmpresaSeleccionada) {
 }
 
 
-document.getElementById('buscarEmpleado').addEventListener('change', function() {
+document.getElementById('buscarEmpleado').addEventListener('input', function() {
 	let buscarEmpleado = document.getElementById('buscarEmpleado');
+	// Convertir a mayúsculas
+	buscarEmpleado.value = buscarEmpleado.value.toUpperCase();
 	let opcionEmpleado = document.getElementById('opcionEmpleado');
 	let inputNumEmpleado = document.getElementById('numEmpleado'); // Campo de número de empleado
 	let inputPuesto = document.getElementById('puesto'); // Campo de puesto
@@ -331,12 +331,11 @@ document.getElementById('buscarEmpleado').addEventListener('change', function() 
 });
 
 function listaMontos(producto, idEmpresa, puesto) {
-
-	// Construir la URL del endpoint con los parámetros
-	const url = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto}`;
+	var urlMonto = "";
+	urlMonto = urlPrincipal + `condiciones?producto=${producto}&empresa=${idEmpresa}&tipoemp=${puesto ?? 0}`;
 
 	// Hacer la solicitud GET al endpoint
-	fetch(url)
+	fetch(urlMonto)
 		.then(response => {
 			if (!response.ok) {
 				throw new Error('No se encontraron condiciones para los parámetros especificados.');
@@ -370,126 +369,199 @@ function listaMontos(producto, idEmpresa, puesto) {
 							confirmButtonColor: '#3085d6',
 						}).then(() => {
 							montoInput.value = montoMin; // Restablece el valor mínimo
+							recalcMontoDescontar();      // <-- NUEVO: recalcular tras corregir
 						});
 					}
 
 				});
 			}
+
+			// <-- NUEVO: ya que tenemos tasaAnual/montos, adjuntar listeners (por si aún no) y calcular
+			attachMontoDescontarListeners();
+			recalcMontoDescontar();
+
 		})
 		.catch(error => {
 			console.error('Error al obtener las condiciones:', error);
-			alert(error.message);
+			console.error(error.message);
 		});
 }
 
+// Cuando cambia el puesto, recargamos condiciones y se recalcula
 document.getElementById('puesto').addEventListener('change', function() {
 	let puestoSeleccionado = this.value; // Obtén el valor de la opción seleccionada
-
 	listaMontos(idProductoSeleccionado, idEmpresaSeleccionada, puestoSeleccionado);
-
 });
 
-document.getElementById('montoSolicitado').addEventListener('blur', function() {
-	const monto = parseFloat(this.value) || 0; // Obtener el monto ingresado
-	const plazoInicial = document.getElementById('plazoCredito').value
-	const frecuencia = document.getElementById('frecuenciaCredito').value
-	const plazo = plazoInicial
 
-	// Llamar a la función de plan de pagos
-	const planDePagos = generarPlanPagos(monto, tasaAnual, plazo, frecuencia);
+// --------- CÁLCULO DE PLAN / MONTO DESCONTAR ---------
 
-	// Aquí puedes agregar una función para mostrar los resultados en HTML si es necesario
-});
+/*  Helper NUEVO: Recalcula y actualiza #montoDescontar cuando cambien plazo/frecuencia/monto */
+function recalcMontoDescontar() {
+	const montoInput = document.getElementById('montoSolicitado');
+	const plazoEl = document.getElementById('plazoCredito');      // select o input number
+	const freqEl = document.getElementById('frecuenciaCredito');
 
-function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
-	let diasPorPago;
-	let pagosPorAnio;
-	let totalPagos;
+	if (!montoInput || !plazoEl || !freqEl) return;
 
-	switch (frecuencia.toLowerCase()) {
-		case "mensual":
-			diasPorPago = 30;
-			pagosPorAnio = 12;
-			totalPagos = plazo;
-			break;
-		case "quincenal":
-			diasPorPago = 15;
-			pagosPorAnio = 24;
-			totalPagos = plazo * 2;
-			break;
-		case "semanal":
-			diasPorPago = 7;
-			pagosPorAnio = 52;
-			totalPagos = Math.round((plazo * 52) / 12);
-			break;
-		case "catorcenal":
-			diasPorPago = 14;
-			pagosPorAnio = Math.round(360 / 14); // ≈26
-			totalPagos = Math.round((plazo * pagosPorAnio) / 12);
-			break;
-		case "unico":
-			diasPorPago = plazo;
-			break;
-		default:
-			console.error("Frecuencia no válida");
-			return;
-	}
+	const monto = parseFloat(montoInput.value) || 0;
+	const plazo = plazoEl.value;
+	const frecuencia = freqEl.value;
 
-	// PAGO ÚNICO
-	if (frecuencia.toLowerCase() === "unico") {
-		const tasaAnualDecimal = tasaAnual / 100;
-		const interes = (monto * tasaAnualDecimal * plazo) / 360;
-		const iva = interes * 0.16;
-		const total = monto + interes + iva;
-		const cuotaFija = total.toFixed(2);
+	// Solo calcula si hay datos completos
+	if (!monto || !plazo || !frecuencia || tasaAnual == null) return;
 
-		const inputMontoDescontar = document.querySelector("#montoDescontar");
-		if (inputMontoDescontar) inputMontoDescontar.value = cuotaFija;
-
-		return cuotaFija;
-	}
-
-	// PAGO PERIÓDICO
-	const tasaPeriodica = (tasaAnual / 100) / pagosPorAnio;
-
-	// Cuota sin IVA
-	const cuotaSinIVA = monto * (tasaPeriodica / (1 - Math.pow(1 + tasaPeriodica, -totalPagos)));
-	const totalSinIVA = cuotaSinIVA * totalPagos;
-	const interesTotal = totalSinIVA - monto;
-	const ivaTotal = interesTotal * 0.16;
-	const totalConIVA = totalSinIVA + ivaTotal;
-
-	// Calcular cuota ideal con decimales completos
-	const cuotaExacta = totalConIVA / totalPagos;
-
-	// Redondear cuota a 2 decimales
-	const cuotaRedondeada = parseFloat(cuotaExacta.toFixed(2));
-
-	// Calcular el total redondeado que se pagará si todas las cuotas son iguales
-	const totalRedondeado = cuotaRedondeada * totalPagos;
-
-	// Diferencia por redondeo
-	const diferencia = totalConIVA - totalRedondeado;
-
-	// Ajustar la diferencia repartida entre todas las cuotas
-	const ajustePorCuota = diferencia / totalPagos;
-
-	// Cuota final ajustada para que sumen exactamente el total
-	const cuotaFinal = parseFloat((cuotaRedondeada + ajustePorCuota).toFixed(2));
-
-	const inputMontoDescontar = document.querySelector("#montoDescontar");
-	if (inputMontoDescontar) inputMontoDescontar.value = cuotaFinal;
-
-	return cuotaFinal;
+	actualizarPP(monto); // esta ya llama a generarPlanPagos y escribe #montoDescontar
 }
 
+/*  Helper NUEVO: Adjunta (o re-adjunta) listeners a monto/plazo/frecuencia  */
+function attachMontoDescontarListeners() {
+	const montoInput = document.getElementById('montoSolicitado');
+	const plazoEl = document.getElementById('plazoCredito');   // OJO: se recrea en listaPlazos()
+	const freqEl = document.getElementById('frecuenciaCredito');
+
+	if (montoInput) {
+		montoInput.removeEventListener('input', recalcMontoDescontar);
+		montoInput.addEventListener('input', recalcMontoDescontar);
+		montoInput.removeEventListener('change', recalcMontoDescontar);
+		montoInput.addEventListener('change', recalcMontoDescontar);
+		montoInput.removeEventListener('blur', recalcMontoDescontar);
+		montoInput.addEventListener('blur', recalcMontoDescontar);
+	}
+
+	if (plazoEl) {
+		plazoEl.removeEventListener('change', recalcMontoDescontar);
+		plazoEl.addEventListener('change', recalcMontoDescontar);
+		plazoEl.removeEventListener('input', recalcMontoDescontar);
+		plazoEl.addEventListener('input', recalcMontoDescontar);
+	}
+
+	if (freqEl) {
+		freqEl.removeEventListener('change', recalcMontoDescontar);
+		freqEl.addEventListener('change', recalcMontoDescontar);
+	}
+}
+
+/* Mantengo tu API original: actualizarPP usa generarPlanPagos */
+async function actualizarPP(montoSol) {
+  const monto = document.getElementById('montoSolicitado')?.value;
+  const plazo = document.getElementById('plazoCredito')?.value;
+  const frecuencia = document.getElementById('frecuenciaCredito')?.value;
+
+  // Validar que los 4 datos existan, sean numéricos y distintos de 0
+  if (!monto || isNaN(parseFloat(monto)) || parseFloat(monto) === 0 ||
+      !tasaAnual || isNaN(parseFloat(tasaAnual)) || parseFloat(tasaAnual) === 0 ||
+      !plazo || isNaN(parseInt(plazo)) || parseInt(plazo) === 0 ||
+      !frecuencia || frecuencia === "0") {
+    return; // 🚫 No ejecuta nada
+  }
+
+  // ✅ Si todo está correcto, llama al SP
+  await generarPlanPagos(montoSol, tasaAnual, plazo, frecuencia);
+}
+
+
+
+
+/* Eliminé los listeners duplicados de #montoSolicitado 
+   (input/change/blur) que llamaban a actualizarPP, porque ahora
+   los adjuntamos centralizados en attachMontoDescontarListeners(). */
+
+
+// Llama al endpoint que ejecuta el SP y escribe #montoDescontar
+async function generarPlanPagos(monto, tasaAnual, plazo, frecuencia) {
+	const inputMontoDescontar = document.querySelector("#montoDescontar");
+
+	try {
+		const resp = await fetch(urlPrincipal + "simulador_credito_convenios", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				monto: Number(monto),
+				tasaAnual: Number(tasaAnual),
+				plazo: Number(plazo),
+				frecuencia: String(frecuencia) // '1','2','3','4','5'
+			})
+		});
+
+		if (!resp.ok) throw new Error("HTTP " + resp.status);
+
+		const data = await resp.json();
+		// Esperamos: { cuotaDescontar: number|null, errorMessage: string|null }
+
+		if (data.errorMessage) {
+			console.error("SP error:", data.errorMessage);
+			if (inputMontoDescontar) inputMontoDescontar.value = "";
+			Swal.fire({
+				icon: "error",
+				title: "No se pudo calcular",
+				text: data.errorMessage
+			});
+			return null;
+		}
+
+		if (typeof data.cuotaDescontar === "number") {
+			if (inputMontoDescontar) inputMontoDescontar.value = data.cuotaDescontar;
+			return data.cuotaDescontar;
+		}
+
+		// Respuesta inesperada
+		if (inputMontoDescontar) inputMontoDescontar.value = "";
+		console.warn("Respuesta inesperada del backend:", data);
+		return null;
+
+	} catch (e) {
+		console.error("Fallo al invocar el simulador:", e);
+		if (inputMontoDescontar) inputMontoDescontar.value = "";
+		Swal.fire({
+			icon: "error",
+			title: "Error de conexión",
+			text: "No fue posible contactar al simulador. Intenta de nuevo."
+		});
+		return null;
+	}
+}
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
+	limpiarModal();
 	document.getElementById("btnGuardarSolicitud").addEventListener("click", function() {
 		guardarSolicitud();
 	});
+
+	// <-- NUEVO: al iniciar, por si los elementos ya existen
+	attachMontoDescontarListeners();
 });
 
+
+// Evento para pasar a mayúsculas el textarea de comentarios
+document.getElementById('comentariosSolicitud').addEventListener('input', function() {
+	this.value = this.value.toUpperCase();
+});
+
+function limpiarModal() {
+	const modal = document.getElementById('solicitudModal');
+
+	modal.addEventListener('show.bs.modal', function() {
+		// Limpia todos los inputs, selects y textareas dentro del modal
+		const inputs = modal.querySelectorAll('input, select, textarea');
+
+		inputs.forEach(input => {
+			if (input.type === 'checkbox' || input.type === 'radio') {
+				input.checked = false;
+			} else {
+				input.value = '';
+			}
+		});
+	});
+}
+
+
 function guardarSolicitud() {
+
+	document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+		.forEach(el => el.disabled = true);
 	const fechaActual = new Date().toISOString().split("T")[0];
 
 	// Función auxiliar para obtener valores de inputs de manera segura
@@ -504,31 +576,85 @@ function guardarSolicitud() {
 
 	const esRenovacion = document.getElementById("checkNomiprestamo")?.checked ? "SI" : "NO";
 
-
 	const solicitudData = {
 		id: parseInt(getInputValue("idSolicitud", 0)), // Tomar el ID si existe
 		empresa: getInputValue("buscarEmpresa"),
 		empleado: getInputValue("buscarEmpleado"),
 		producto: getInputValue("buscarProducto"),
 		numEmpleado: getInputValue("numEmpleado"),
-		puesto: parseInt(getInputValue("puesto")) || null,
+		puesto: parseInt(getInputValue("puesto")) || 0,
 		plazo: parseInt(getInputValue("plazoCredito")) || null,
 		frecuencia: getInputValue("frecuenciaCredito"),
 		montoSolicitado: parseFloat(getInputValue("montoSolicitado")) || null,
-		montoDescontar: parseFloat(getInputValue("montoDescontar")) || null,
+		montoDescontar: (() => {
+			const val = parseFloat(document.getElementById("montoDescontar")?.value.trim());
+			return isNaN(val) ? null : val;
+		})(),
 		fechaSolicitud: fechaActual,
 		renovacion: esRenovacion,
 		comentarios: getInputValue("comentariosSolicitud")
 	};
 
-	// Validar campos obligatorios
-	if (!solicitudData.empresa || !solicitudData.empleado || !solicitudData.producto || !solicitudData.numEmpleado) {
+	let validacion = 0;
+	if (!solicitudData.empresa) {
+		document.getElementById("buscarEmpresa").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarEmpresa").classList.remove("is-invalid");
+		validacion = 0;
+	}
+	if (!solicitudData.empleado) {
+		document.getElementById("buscarEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.producto) {
+		document.getElementById("buscarProducto").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("buscarProducto").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.numEmpleado) {
+		document.getElementById("numEmpleado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("numEmpleado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.montoSolicitado) {
+		document.getElementById("montoSolicitado").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("montoSolicitado").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (!solicitudData.montoDescontar) {
+		document.getElementById("montoDescontar").classList.add("is-invalid");
+		validacion = 1;
+	} else {
+		document.getElementById("montoDescontar").classList.remove("is-invalid");
+		validacion = 0;
+	}
+
+	if (validacion == 1) {
 		Swal.fire({
 			icon: "warning",
 			title: "Campos incompletos",
 			text: "Por favor, completa todos los campos obligatorios.",
 			confirmButtonColor: "#ffc107",
+		}).then(() => {
+			// Este bloque se ejecuta después de que el usuario da clic en "Aceptar"
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
 		});
+
 		return;
 	}
 
@@ -560,6 +686,9 @@ function guardarSolicitud() {
 				resetearModal();
 				cargarSolicitudes(paginaActual);
 			});
+
+			document.querySelectorAll('#solicitudModal input, #solicitudModal button, #solicitudModal select, #solicitudModal textarea')
+				.forEach(el => el.disabled = false);
 		})
 		.catch(error => {
 			console.error("❌ Error:", error);
@@ -571,6 +700,7 @@ function guardarSolicitud() {
 			});
 		});
 }
+
 
 
 // 🔥 Función para resetear el formulario y cerrar el modal
@@ -606,19 +736,6 @@ const tamañoPagina = 10; // Registros por página
 
 document.addEventListener("DOMContentLoaded", function() {
 	cargarSolicitudes(paginaActual);
-	cargarEmpresasFiltro();
-
-	document.getElementById("btnAnterior").addEventListener("click", function() {
-		if (paginaActual > 0) {
-			paginaActual--;
-			cargarSolicitudes(paginaActual);
-		}
-	});
-
-	document.getElementById("btnSiguiente").addEventListener("click", function() {
-		paginaActual++;
-		cargarSolicitudes(paginaActual);
-	});
 });
 
 function obtenerEstatus(estatus) {
@@ -636,16 +753,13 @@ function obtenerEstatus(estatus) {
 
 function cargarSolicitudes(pagina) {
 	// Mostrar spinner
-	document.getElementById("spinner").style.display = "block";
+	//document.getElementById("spinner").style.display = "block";
 
-	fetch(urlPrincipal + `listarSolicitudes?page=${pagina}&size=${tamañoPagina}`)
+	fetch(urlPrincipal + `listarSolicitudes`)
 		.then(response => response.json())
 		.then(data => {
-			let tabla = document.getElementById("tablaSolicitudes");
-			tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevas filas
-
-			const solicitudes = data.contenido.content; // Cambiado
-			const permiso = data.permiso; // Puedes usar esto si quieres condicionar algo
+			const solicitudes = data.contenido;
+			const permiso = data.permiso;
 			const botonExcel = document.getElementById("contenedorBotonExcel");
 
 			console.log("Permiso:", permiso); // Diagnóstico
@@ -657,68 +771,74 @@ function cargarSolicitudes(pagina) {
 				botonExcel.classList.remove("d-flex");
 				botonExcel.classList.add("d-none");
 			}
+			const registrosTotalesSol = [];
+			tablaSolicitudes.clear().draw();
+			$.each(solicitudes, function(idx, opt) {
+				// Botón editar
+				let btnEditar = `<button class='btn btn-warning btn-sm btn-editar' title='Editar Solicitud' data-id='${opt.id}' data-tooltip='Editar'>
+        <i class='fas fa-edit'></i></button>`;
 
+				// Botón aprobar/cancelar si estatus === 1
+				let btnAprobarCancelar = '';
+				if (opt.estatus === 1) {
+					btnAprobarCancelar = `<button class='btn btn-primary btn-sm btn-aprobar-cancelar' title='Aprobar o Cancelar' data-tooltip='Aprobar/Cancelar'
+            onclick="aprobarOCancelarSolicitud(${opt.id}, '${opt.empresa}')">
+            <i class='fas fa-check-circle'></i> / <i class='fas fa-times-circle'></i>
+        </button>`;
+				}
 
+				// Botón PDF si estatus === 3
+				let btnPdf = '';
+				if (opt.estatus === 3) {
+					btnPdf = `<button class='btn btn-success btn-sm btn-pdf' title='Ver PDF' data-id='${opt.id}' data-tooltip='Ver PDF'>
+            <i class='fas fa-file-pdf'></i>
+        </button>`;
+				}
 
-			let filas = solicitudes.map((solicitud) => {
-				return `<tr>
-			        <td>${solicitud.id}</td>
-			        <td>${solicitud.empleado}</td>
-			        <td>${solicitud.fechaSolicitud}</td>
-			        <td>${solicitud.empresa}</td>
-			        <td>$ ${solicitud.montoSolicitado}</td>
-			        <td>$ ${solicitud.montoDescontar}</td>
-			        <td>${obtenerEstatus(solicitud.estatus)}</td>
-			        <td>
-			            ${permiso ? `
-			                <button class="btn btn-warning btn-sm btn-editar" data-id="${solicitud.id}">
-			                    <i class="fas fa-edit"></i>
-			                </button>
-			                ${solicitud.estatus === 1 ? `
-			                    <button class="btn btn-primary btn-sm btn-aprobar-cancelar"
-			                        onclick="aprobarOCancelarSolicitud(${solicitud.id}, '${solicitud.empresa}')">
-			                        <i class="fas fa-check-circle"></i> / <i class="fas fa-times-circle"></i>
-			                    </button>` : ''}
-			            ` : ''}
-			            
-			            ${solicitud.estatus === 3 ? `
-			                <button class="btn btn-success btn-sm btn-pdf" data-id="${solicitud.id}">
-			                    <i class="fas fa-file-pdf"></i>
-			                </button>` : ''}
-			        </td>
-			    </tr>`;
-			}).join('');
+				// Concatenar botones
+				let acciones = '';
+				if (permiso) {
+					acciones = btnEditar + btnAprobarCancelar;
+				}
+				acciones += btnPdf;
 
+				// Agregar fila a DataTable
+				registrosTotalesSol.push([
+					opt.id,
+					opt.empleado,
+					opt.numEmpleado,
+					opt.fechaSolicitud,
+					opt.empresa,
+					opt.montoSolicitado,
+					opt.montoDescontar,
+					opt.usuarioReg.vc_nombre_usuario,
+					opt.sucursal,
+					obtenerEstatus(opt.estatus),
+					acciones
+				]);
+			});
 
-			tabla.innerHTML = filas;
+			// Add all rows at once
+			tablaSolicitudes.rows.add(registrosTotalesSol).draw();
 
-			// Actualizar paginación
-			document.getElementById("paginaActual").innerText = `Página ${pagina + 1}`;
-			document.getElementById("btnAnterior").disabled = pagina === 0;
-			document.getElementById("btnSiguiente").disabled = data.contenido.last; // Cambiado
+			//document.getElementById("spinner").style.display = "none";
 
-			// Ocultar spinner
-			document.getElementById("spinner").style.display = "none";
-
-			// (Opcional) Si quieres condicionar algún botón con permiso:
 			if (permiso) {
 				console.log("Tiene permiso de aprobación.");
-				// document.getElementById("btnAprobarMasivo").style.display = "inline-block";
 			} else {
 				console.log("No tiene permiso.");
-				// document.getElementById("btnAprobarMasivo").style.display = "none";
 			}
 		})
 		.catch(error => {
 			console.error("Error al cargar las solicitudes:", error);
-			document.getElementById("spinner").style.display = "none";
+			//document.getElementById("spinner").style.display = "none";
 		});
 }
 
 
 
 function aprobarOCancelarSolicitud(id, empresa) {
-	Swal.fire({
+	swal.fire({
 		title: '¿Qué deseas hacer con esta solicitud?',
 		text: `ID de solicitud: ${id}`,
 		showDenyButton: true,
@@ -809,7 +929,7 @@ $(document).on("click", ".btn-editar", function() {
 				type: "GET",
 				success: function(dataEmpresa) {
 					idEmpresaSeleccionada = dataEmpresa.id
-
+					$("#solicitudModal").modal("show");
 					// Ejecutar todas las funciones necesarias antes de abrir el modal
 					Promise.all([
 						listaEmpresas(),
@@ -832,6 +952,7 @@ $(document).on("click", ".btn-editar", function() {
 							$("#puesto").val(dataSolicitud.puesto).change();
 							$("#plazoCredito").val(dataSolicitud.plazo).change();
 							$("#montoSolicitado").val(dataSolicitud.montoSolicitado);
+							recalcMontoDescontar(); // <-- NUEVO: asegurar cálculo con los valores cargados
 						}, 500);
 
 						// 🛠 **Forzar actualización de los campos tipo search**
@@ -861,17 +982,17 @@ $(document).on("click", ".btn-editar", function() {
 						$("#solicitudModal").modal("show");
 					}).catch(error => {
 						console.error("Error al cargar datos:", error);
-						alert("Hubo un problema al cargar la información.");
+						console.error("Hubo un problema al cargar la información.");
 					});
 
 				},
 				error: function() {
-					alert("Error al obtener la empresa");
+					console.error("Error al obtener la empresa");
 				}
 			});
 		},
 		error: function() {
-			alert("Error al obtener la solicitud");
+			console.error("Error al obtener la solicitud");
 		}
 	});
 });
@@ -930,7 +1051,7 @@ document.getElementById("uploadExcelButton").addEventListener("click", function(
 
 	if (!file) {
 		Swal.fire({
-			icon: "warning",
+			icon: "error",
 			title: "Archivo no seleccionado",
 			text: "Por favor selecciona un archivo antes de subirlo.",
 		});
@@ -1042,26 +1163,3 @@ document.getElementById("buscarProducto").addEventListener("change", function() 
 		document.getElementById("checkNomiprestamo").checked = false;
 	}
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

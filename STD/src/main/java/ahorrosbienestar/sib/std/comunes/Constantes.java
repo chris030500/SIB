@@ -1,39 +1,37 @@
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
-    
-    //Constantes Rutas de Acceso
-    public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
-    public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
-    public static final String RUTA_ERROR = "errores/error_403";
-    public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
-    
-    
-    //Rutas de Seguimiento
-    public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
-    public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
-    public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
-    
-    //Constantes de usuarios
-    public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
-    public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
-    
-    
-    //Constantes de estatus
-    public static final int ACTIVO = 1;
-    
-    //Constantes tipo de Base
-    public static final int FIDELIDAD = 2;
-    public static final int CAMPANAS_VIP = 3;
-    
-    //Constante mensajes y propiedades 
-    public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
-    
-    // constantes logger
-    public static final String MENSAJE_DE_ERROR = "Error";
-    public static final String MENSAJE_LOGGER_ERROR = "Error: ";
-    
-    // Ejemplo de constantes para tipo de Mensaje
+	
+	//Constantes Rutas de Acceso
+	public static final String RUTA_OFERTAS_AUTOMATICAS = "ofertasAutomaticas/indexOfertasAutomaticas";
+	public static final String RUTA_OFERTAS_AUTOMATICAS_INDEX = "/ofertasAutomaticas/index";
+	public static final String RUTA_ERROR = "errores/error_403";
+	public static final String RUTA_ERROR_PERMISO = "errores/error_permisos";
+	
+	//Rutas de Seguimiento
+	public static final String RUTA_SEGUIMIENTO_GESTION = "operaciones/seguimientoGestion";
+	public static final String RUTA_VENTAS_REPORTE = "operaciones/reportes";
+	public static final String RUTA_CONFIGURACION_VENTAS = "operaciones/configuracion";
+	
+	//Constantes de usuarios
+	public static final String USUARIO_EJECUTA_GESTION = "usuarioEjecutaGestion";
+	public static final String USUARIO_EJECUTA_BASE = "usuarioGeneraBases";
+	
+	//Constantes de estatus
+	public static final int ACTIVO = 1;
+	
+	//Constantes tipo de Base
+	public static final int FIDELIDAD = 2;
+	public static final int CAMPANAS_VIP = 3;
+	
+	//Constante mensajes y propiedades 
+	public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
+	
+	// constantes logger
+	public static final String MENSAJE_DE_ERROR = "Error";
+	public static final String MENSAJE_LOGGER_ERROR = "Error: ";
+	
+	// Ejemplo de constantes para tipo de Mensaje
     public static final String MENSAJE_ERROR = "error";
     public static final String MENSAJE_OK = "success";
     
@@ -42,7 +40,6 @@ public class Constantes {
     public static final String TIPO_MNS = "tipo";
     public static final String ENVIA_CORREOS = "envio";
     public static final String URL_REPORTE = "reporte";
-    
     
     // Ejemplo de constantes para descripcion de Mensajes
     public static final String REGISTRO_OK = "Se Registro Correctamente.";
@@ -59,7 +56,7 @@ public class Constantes {
     public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
     public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
     
-  //Mensajes plantillas de SMS
+  	//Mensajes plantillas de SMS
     public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
     public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
     
@@ -88,6 +85,7 @@ public class Constantes {
     
     //PROPIEDAD DEL CONTROLLER DEL REPORTE
     public static final String CONTROLLER_JASPER_CONF = "generarReporte";
+    
     //NOMBRES DE REPORTES
     public static final String REPORTE_ASIGNACION_X_SUCURSAL = "rpt_asignacion_sucursal";
     public static final String REPORTE_EXTRACCION_ASIGNACIONES = "rpt_extraccion_asignaciones";
@@ -102,11 +100,11 @@ public class Constantes {
     public static final String MENSAJE_BASE_CAMPANIA_VIP = "Se proceso Base Campañas VIP.";
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
-    
+    public static final String MENSAJE_BASE_CAMPANIA_FIDELIDAD = "Se proceso Base Campaña Fidelidad.";
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
-    
+
     //MENSAJES SEGUIMIENTOS 
     public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
     public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
@@ -115,7 +113,6 @@ public class Constantes {
     //CATALOGOS DE PANTALLAS
     public static final int CATALOGO_GESTION = 14;
     public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
-    
     
     //PROCESO A EJECUTAR
     public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
@@ -150,6 +147,7 @@ public class Constantes {
     public static final int CORREO_ASIGNACION = 9;
     public static final int CORREO_REASIGNACION = 10;
     public static final int CORREO_BASE_PROSPECTOR = 11;
+    public static final int CORREO_BASE_CAMPANIA_FIDELIDAD = 14;
     
     //Bases de procesamiento
     public static final int BASE_NOMINA = 1;
@@ -157,6 +155,7 @@ public class Constantes {
     public static final int BASE_PROSPECTOR = 4;
     public static final int BASE_FID_NOM = 5;
     public static final int BASE_FID_REN = 6;
+    public static final int BASE_CAMPANIA_FIDELIDAD = 7;
     
     // nombre de propiedades de configuracion
     public static final String CRON_INICIAL = "cronInicialBase";
@@ -178,29 +177,34 @@ public class Constantes {
     
     //constantes Prevención PLD
     public static final String PLD_REPORTE_OPEACIONES_INUSUALES = "prevencion/reporteOperacionesInusuales";
+    public static final String PLD_REPORTE_BASES_EBR = "prevencion/reporteBasesEBR";
     public static final int PLD_CAT_TIPO_PRODUCTO = 29;
     public static final int PLD_CAT_BUSQUEDA_CLIENTE = 30;
     public static final int PLD_CONTROL_REPORTE_JASPER = 1;
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
+
+	//nombres reportes bases EBR
+    public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
+    public static final String RPT_EBR_BASE_OPERACIONES = "rpt_ebr_base_operaciones";
+    public static final String RPT_EBR_BASE_REMESAS = "rpt_ebr_base_remesas";
+    public static final String RPT_EBR_BASE_DESEMBOLSOS = "rpt_ebr_base_desembolsos";
+    public static final String RPT_HISTORICO_EBR_BASE_CLIENTES = "rpt_historico_ebr_base_clientes";
+    public static final String RPT_HISTORICO_EBR_BASE_OPERACIONES = "rpt_historico_ebr_base_operaciones";
+    public static final String RPT_HISTORICO_EBR_BASE_REMESAS = "rpt_historico_ebr_base_remesas";
+    public static final String RPT_HISTORICO_EBR_BASE_DESEMBOLSOS = "rpt_historico_ebr_base_desembolsos";
     
   //constantes PLD ReporteClientesOpe
       public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
-      
       public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
-      
       public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
-      
       public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
-      
       public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-      
       public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-    
       public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
-      
       public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
+
     //constantes marketing
     public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
     public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";

@@ -1,7 +1,6 @@
 package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model;
 
-import javax.persistence.*;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

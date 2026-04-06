@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Component;
 
 import ahorrosbienestar.sib.std.index.model.Acceso;
@@ -33,7 +34,15 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
+		logger.warn("Fallo de autenticacion para usuario [" + request.getParameter("username") + "]: " + exception.getClass().getSimpleName() + " - " + exception.getMessage());
 		String username = request.getParameter("username");
+		
+		if (exception instanceof SessionAuthenticationException) {
+			request.getSession().setAttribute("error", "Ya existe una sesión activa para este usuario. Cierre sesión o espere a que expire.");
+			response.sendRedirect(request.getContextPath() + "/login");
+			return;
+		}
+		
 		Usuario usuario = usuarioService.findByNombre(username);
 
 		if (usuario != null) {

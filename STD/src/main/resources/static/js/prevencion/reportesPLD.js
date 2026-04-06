@@ -223,12 +223,12 @@ function listaClientes() {
 	});
 }
 
-buscarCliente.addEventListener('input', debouncedListaClientes);
-
-buscarCliente.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
-	listaClientes();
-});
+if (buscarCliente) {
+    buscarCliente.addEventListener('input', debouncedListaClientes);
+    buscarCliente.addEventListener('input', function() {
+        listaClientes();
+    });
+}
 /**
  * Fin
  */

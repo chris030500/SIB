@@ -998,14 +998,12 @@
         </div>
     </section>
     <th:block layout:fragment="page-scripts">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7"></script>
-		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+    	<script th:src="@{/js/jquery.min.js}"></script>
+		<script th:src="@{/js/bootstrap.min.js}"></script>
+		<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		<script th:src="@{/js/datatables.min.js}"></script>
+		<script th:src="@{/js/sweetalert2@7.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
         <script th:src="@{/js/menuProductos/dataTableConfigProductos.js}"></script>
         <script th:src="@{/js/menuProductos/datosTablasConfig.js}"></script>
         <script th:src="@{/js/menuProductos/parametrosConf.js}"></script>
@@ -1014,7 +1012,6 @@
         <script th:src="@{/js/menuProductos/reglasAsignacion.js}"></script>
         <script th:src="@{/js/menuProductos/clientesBloqueados.js}"></script>
         <script th:src="@{/js/menuProductos/exclusionesBasesNomina.js}"></script>
-        <!--<script th:src="@{/js/menuProductos/modalMovible.js}"></script>-->
     </th:block>
 </body>
 
