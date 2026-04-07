@@ -192,7 +192,9 @@ function guardarDtosTmp() {
 				
 				if (data.registros && data.registros.i_estatus != null) {
 					document.getElementById("idCampaniaSeleccionada").value = data.registros.pk_id_tipo_campania;
-    				mostrarOcultarProceso(data.registros.i_estatus);
+    				mostrarOcultarProceso((data.registros.i_estatus ===2 || data.registros.i_tipo_campania ===2)?0:1);
+    				
+    				//mostrarOcultarProceso((data.registros.i_tipo_campania ===2)?0:1);
 				}
 
 				swal("", mensaje, tipo);
@@ -205,6 +207,7 @@ function guardarDtosTmp() {
 			.finally(() => {
 				swal.close(); // cerrar el "Cargando..."
 				document.getElementById('btnGuardarCampania').disabled = false;
+				
 				
 			});
 	}
@@ -301,6 +304,9 @@ function procesarCampaniaTmp(data) {
 			// Leer mensaje y tipo desde el JSON recibido
 			const mensaje = data.mensaje;
 			const tipo = data.tipo;
+			
+			tablaProceso(data.listaProcesos);
+			
 			swal("", mensaje, tipo);
 			
 			if (tipo === "success" || tipo === "OK") {
@@ -460,9 +466,15 @@ function llenarFormulario(param) {
 	//document.getElementById("fechaEnvioMC").value = param.dt_fecha_registro;
 	document.getElementById("checkRecurrente").checked = param[0].recurrente;
 	
-	if (param && param[0].estatusCampania != null) {
-    	mostrarOcultarProceso(param[0].estatusCampania);
+	if ((param && param[0].estatusCampania != null) || (param && param[0].recurrente != null)) {
+    	mostrarOcultarProceso((param[0].estatusCampania ===2 || param[0].recurrente ===1)?0:1);
 	}
+	/*
+	if ((param && param[0].recurrente != null)) {
+    	mostrarOcultarProceso((param[0].recurrente===1)?0:1);
+	}*/
+	
+	
 	
 	
 
