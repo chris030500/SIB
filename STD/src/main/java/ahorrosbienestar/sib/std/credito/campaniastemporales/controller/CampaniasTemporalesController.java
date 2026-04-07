@@ -157,12 +157,12 @@ public class CampaniasTemporalesController {
 
 			if (guardarDatosTemporales(idCmpTmp, codCampania, null, null, null, null, obtUsuario().getPk_id_usuario(),
 					Constantes.TIPO_RELACIONAR_REGISTROS) == null) {
-				//listaProcesos = tiposCampaniasService.obtProcesos(idCmpTmp);
+				listaProcesos = tiposCampaniasService.obtProcesos(idCmpTmp);
 			}
 
 			respuesta.put(Constantes.TEXTO_MNS, mensaje);
 			respuesta.put(Constantes.TIPO_MNS, tipo);
-			//respuesta.put("listaProcesos", listaProcesos);
+			respuesta.put("listaProcesos", listaProcesos);
 			
 
 		} catch (Exception e) {
@@ -210,7 +210,17 @@ public class CampaniasTemporalesController {
 										: Constantes.CAMPANIA_TIPO_TEMPORAL);
 
 						if (tiposCampaniasService.save(registro) != null) {
+							
 
+							if(registro.getI_tipo_campania() == Constantes.CAMPANIA_TIPO_RECURRENTE) {
+								if (guardarDatosTemporales(registro.getPk_id_tipo_campania(),
+										codigoCampania,
+										cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaFin(),
+										cmptmpdto.getFechaEnvioMC(), obtUsuario().getPk_id_usuario(),
+										Constantes.TIPO_ACT_PROC_RECURRENTE) == null) {
+									
+								}
+							}
 							mensaje = Constantes.ACTUALIZACION_OK;
 							tipo = Constantes.MENSAJE_OK;
 						} else {
@@ -229,29 +239,45 @@ public class CampaniasTemporalesController {
 				if (existenombre == 0) {
 					registro.setVc_tipo_campania(cmptmpdto.getNombreCampania());
 					registro.setI_vigencia_campania(cmptmpdto.getVigenciaMeses());
-					registro.setI_tipo_campania(Constantes.CAMPANIA_TIPO_TEMPORAL);
 					registro.setDt_fecha_registro(LocalDate.now());
 					registro.setI_estatus(cmptmpdto.getEstatusCampania());
 					registro.setI_user_reg(obtUsuario());
+					registro.setI_tipo_campania(
+							cmptmpdto.getRecurrente() == true ? Constantes.CAMPANIA_TIPO_RECURRENTE
+									: Constantes.CAMPANIA_TIPO_TEMPORAL);
 
 					if (tiposCampaniasService.save(registro) != null) {
-						codigoCampania = registro.getPk_id_tipo_campania() + codCampania.substring(codCampania.indexOf("-"));
-						if (guardarDatosTemporales(registro.getPk_id_tipo_campania(),
-								codigoCampania,
-								cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaFin(),
-								cmptmpdto.getFechaEnvioMC(), obtUsuario().getPk_id_usuario(),
-								Constantes.TIPO_CREAR_PROCESO) == null) {
-							
+						
+						if(registro.getI_tipo_campania() == Constantes.CAMPANIA_TIPO_TEMPORAL) {
+							codigoCampania = registro.getPk_id_tipo_campania() + codCampania.substring(codCampania.indexOf("-"));
+							if (guardarDatosTemporales(registro.getPk_id_tipo_campania(),
+									codigoCampania,
+									cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaRegistro(), cmptmpdto.getFechaFin(),
+									cmptmpdto.getFechaEnvioMC(), obtUsuario().getPk_id_usuario(),
+									Constantes.TIPO_CREAR_PROCESO) == null) {
+								
+								if(relacionBasesOA(registro.getVc_tipo_campania(),registro.getPk_id_tipo_campania(),obtUsuario().getPk_id_usuario()) == null) {
+									logger.info("Se proceso el registro en Bases y Clasificacion");
+								}else {
+									logger.error("Error al procesar el registro en Bases y Clasificacion");
+								}
+								
+							}
+
+							mensaje = Constantes.REGISTRO_OK;
+							tipo = Constantes.MENSAJE_OK;
+						}else {
 							if(relacionBasesOA(registro.getVc_tipo_campania(),registro.getPk_id_tipo_campania(),obtUsuario().getPk_id_usuario()) == null) {
 								logger.info("Se proceso el registro en Bases y Clasificacion");
 							}else {
 								logger.error("Error al procesar el registro en Bases y Clasificacion");
 							}
 							
+							mensaje = Constantes.REGISTRO_OK;
+							tipo = Constantes.MENSAJE_OK;
 						}
-
-						mensaje = Constantes.REGISTRO_OK;
-						tipo = Constantes.MENSAJE_OK;
+						
+					
 					} else {
 						mensaje = Constantes.ACTUALIZACION_ERROR;
 						tipo = Constantes.MENSAJE_ERROR;

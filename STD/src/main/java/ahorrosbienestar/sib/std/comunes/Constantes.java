@@ -264,6 +264,7 @@ public class Constantes {
 	public static final int TIPO_CREAR_PROCESO = 1; 	
 	public static final int TIPO_RELACIONAR_REGISTROS = 2;
 	public static final int TIPO_ACT_REGISTROS = 3;
+	public static final int TIPO_ACT_PROC_RECURRENTE = 4;
 	
     private Constantes() {
         
