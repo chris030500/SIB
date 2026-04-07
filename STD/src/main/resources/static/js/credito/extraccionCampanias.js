@@ -447,6 +447,9 @@ function btnGenerarArchivoBuro() {
 	//console.log("tipoCampania:",tipoCampania);
 	
 	// @ts-ignore
+	var valorEstatus = document.getElementById("Estatus").value;
+	
+	// @ts-ignore
 	//let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
 	
 	fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
@@ -467,7 +470,7 @@ function btnGenerarArchivoBuro() {
 		//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
 		// @ts-ignore
 		urlServicio = newUrlBase + "credito/rpt_archivo_buro?ProcesoCampania=" + data + "&TipoCampania=" + document.getElementById("Campania").value;
-		console.log("urlServicio:", urlServicio);
+		//console.log("urlServicio:", urlServicio);
 		//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
 		
 		$.ajax({
@@ -487,115 +490,132 @@ function btnGenerarArchivoBuro() {
 			//update TBL_PROCESO_CAMPANIA I_ESTATUS_REG = 2
 			//insert TBL_PROCESO_CAMPANIA
 			
-			fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
-		        method: 'POST',
-		        headers: {
-		            'Content-Type': 'application/json'
-		        },
-		        body: JSON.stringify(dataProceso)
-		    })
-		    .then(resp => {
-			    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
-			    return resp.text();
-			})
-			.then(() => {
-				
-				///--
-				//console.log("data:::::::::::::",data);
-				const procesoCampania = Number(data);
-				console.log("procesoCampania: ",procesoCampania);
-				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + procesoCampania)
-			    .then(resp => {
-			        if (!resp.ok) {
-			            throw new Error("Error al validar campania para obtener codigo campania");
-			        }
-			        return resp.json(); // porque el backend regresa un int
+			///inicia ajuste de activar boton generar archivo buro
+			//console.log("valorEstatus: ",valorEstatus);
+			if (Number(valorEstatus) === 1) {
+				//console.log("entra: ",valorEstatus);
+				fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
+			        method: 'POST',
+			        headers: {
+			            'Content-Type': 'application/json'
+			        },
+			        body: JSON.stringify(dataProceso)
 			    })
-			    .then(datas => {
-					
-					
-					const dataExtCargaBuro = {
-        
-				        // @ts-ignore
-				        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
-				        
-				        // @ts-ignore
-				        dt_fecha_extraccion: document.getElementById("idFecha").value,
-				        i_bandera_extraccion: 2,
-				        // @ts-ignore
-				        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_envio_mc: document.getElementById("idFecha").value,
-				        i_estatus_reg: 1,
-				        //2	Generar Archivo
-				        i_id_estatus_campania: 2,
-				        // @ts-ignore
-				        dt_fecha_registro: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        i_user_reg: parseInt(document.getElementById("idUser").value),
-				        vc_codigo_cam:datas.codigo,
-				        
-				    };
-					
-				
-					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
-					    method: 'POST',
-					    headers: { 'Content-Type': 'application/json' },
-					    body: JSON.stringify(dataExtCargaBuro)
-					})
-					.then(async resp => {
-					    if (!resp.ok) {
-					        const errorText = await resp.text();
-					        throw new Error(errorText || "Error desconocido");
-					    }
-					    return resp.text();
-					})
-					.then(() => {
-					    // 
-					    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-						//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-				
-						//console.log(urlReporte);
-						//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-						window.open(urlReporte);
-						window.focus();
-						
-						window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
-					    
-					})
-					.catch(err => {
-					    console.error("Error:", err);
-					    // @ts-ignore
-					    Swal.fire({
-					        title: "Error",
-					        text: err.message,
-					        icon: "error",
-					        confirmButtonText: "Cerrar"
-					    });
-					});
-				
+			    .then(resp => {
+				    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
+				    return resp.text();
 				})
-			    .catch(err => {
-			        console.error("Error al validar campania para obtener codigo campania:: ", err);
-			    });
-				///--
+				.then(() => {
+					
+					///--
+					//console.log("data:::::::::::::",data);
+					const procesoCampania = Number(data);
+					//console.log("procesoCampania: ",procesoCampania);
+					fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + procesoCampania)
+				    .then(resp => {
+				        if (!resp.ok) {
+				            throw new Error("Error al validar campania para obtener codigo campania");
+				        }
+				        return resp.json(); // porque el backend regresa un int
+				    })
+				    .then(datas => {
+						
+						
+						const dataExtCargaBuro = {
+	        
+					        // @ts-ignore
+					        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+					        
+					        // @ts-ignore
+					        dt_fecha_extraccion: document.getElementById("idFecha").value,
+					        i_bandera_extraccion: 2,
+					        // @ts-ignore
+					        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        dt_fecha_envio_mc: document.getElementById("idFecha").value,
+					        i_estatus_reg: 1,
+					        //2	Generar Archivo
+					        i_id_estatus_campania: 2,
+					        // @ts-ignore
+					        dt_fecha_registro: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        i_user_reg: parseInt(document.getElementById("idUser").value),
+					        vc_codigo_cam:datas.codigo,
+					        
+					    };
+						
+					
+						fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
+						    method: 'POST',
+						    headers: { 'Content-Type': 'application/json' },
+						    body: JSON.stringify(dataExtCargaBuro)
+						})
+						.then(async resp => {
+						    if (!resp.ok) {
+						        const errorText = await resp.text();
+						        throw new Error(errorText || "Error desconocido");
+						    }
+						    return resp.text();
+						})
+						.then(() => {
+						    // 
+						    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+							//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+					
+							//console.log(urlReporte);
+							//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+							window.open(urlReporte);
+							window.focus();
+							
+							window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+						    
+						})
+						.catch(err => {
+						    console.error("Error:", err);
+						    // @ts-ignore
+						    Swal.fire({
+						        title: "Error",
+						        text: err.message,
+						        icon: "error",
+						        confirmButtonText: "Cerrar"
+						    });
+						});
+					
+					})
+				    .catch(err => {
+				        console.error("Error al validar campania para obtener codigo campania:: ", err);
+				    });
+					///--
+					
+					
+					
+				})
+				.catch(err => {
+				    //console.error("Error al actualizar Proceso Campania:", err);
+				   // @ts-ignore
+				   swal({
+					title: "",
+					text: 'Error al actualizar Proceso Campania',
+				        icon: 'error'
+				    });
+				});
+			}else if(Number(valorEstatus) === 2){
+				// 
+			    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+				//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+		
+				//console.log(urlReporte);
+				//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+				window.open(urlReporte);
+				window.focus();
 				
-				
-				
-			})
-			.catch(err => {
-			    //console.error("Error al actualizar Proceso Campania:", err);
-			   // @ts-ignore
-			   swal({
-				title: "",
-				text: 'Error al actualizar Proceso Campania',
-			        icon: 'error'
-			    });
-			});
-				///////////////////////
+				window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+			}
 			
+				///////////////////////
+			///termina ajuste de activar boton generar archivo buro
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			// @ts-ignore
 			swal({

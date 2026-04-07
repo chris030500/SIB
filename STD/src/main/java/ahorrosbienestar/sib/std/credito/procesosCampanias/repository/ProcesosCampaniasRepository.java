@@ -182,12 +182,29 @@ public interface ProcesosCampaniasRepository extends JpaRepository<ProcesosCampa
 	int contarProcesosExtraccionFin(@Param("tipoCampania") int tipoCampania,
 									@Param("estatus") int estatus);
 	
-	@Query(value = "select min(t1.pk_id_proceso_campania) "
-			+ "from SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
-			+ "where t1.i_id_tipo_campania = :tipoCampania "
-			+ "and t1.i_estatus_reg = 1 "
-			+ "and t1.i_id_estatus_campania = 1 "
-			+ "and t1.i_bandera_extraccion = 2 ",
+	@Query(value = "SELECT COALESCE(\r\n"
+			+ "    (\r\n"
+			+ "        select min(t1.pk_id_proceso_campania) \r\n"
+			+ "        from SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
+			+ "        where t1.i_id_tipo_campania = :tipoCampania "
+			+ "        and t1.i_estatus_reg = 1 \r\n"
+			+ "        and t1.i_id_estatus_campania = 1\r\n"
+			+ "        and t1.i_bandera_extraccion = 2\r\n"
+			+ "    ),\r\n"
+			+ "    (\r\n"
+			+ "        select min(t1.pk_id_proceso_campania) \r\n"
+			+ "        from SIB.TBL_PROCESO_CAMPANIA t1 \r\n"
+			+ "        inner join SIB.TBL_PROCESO_CAMPANIA t2\r\n"
+			+ "            on t1.I_ID_TIPO_CAMPANIA = t2.I_ID_TIPO_CAMPANIA\r\n"
+			+ "            and t1.VC_CODIGO_CAM = t2.VC_CODIGO_CAM\r\n"
+			+ "        where t1.i_id_tipo_campania = :tipoCampania"
+			+ "        and t1.i_estatus_reg = 2 \r\n"
+			+ "        and t1.i_id_estatus_campania = 1\r\n"
+			+ "        and t1.i_bandera_extraccion = 2\r\n"
+			+ "        and t2.i_estatus_reg = 1\r\n"
+			+ "        and t2.i_id_estatus_campania = 2\r\n"
+			+ "    )\r\n"
+			+ ") AS pk_id_proceso_campania ",
        nativeQuery = true)
 	int reporteBuroCredito(@Param("tipoCampania") int tipoCampania);
 	
