@@ -144,7 +144,7 @@ public class PresolicitudesController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = (principal instanceof UserDetails) ? (UserDetails) principal : null;
 
-            if (userDetails != null && validarAcceso(userDetails.getUsername()) == 1) {
+            if (userDetails != null && validarAcceso(userDetails.getUsername()) > 0) {
                 model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
                 return "presolicitudes_nomina/presolicitudes";
             } else {
@@ -160,7 +160,7 @@ public class PresolicitudesController {
     public ResponseEntity<Map<String, Object>> listaGestiones() {
         Map<String, Object> respuesta = new HashMap<>();
         try {
-            List<EmpresaSIB> listaCatalogos = empresaService.obtenerTodas();
+            List<EmpresaSIB> listaCatalogos = empresaService.obtenerEmpresasActivas();
             logger.info("Se llenó la lista");
             respuesta.put("lista", listaCatalogos);
             return ResponseEntity.ok(respuesta);
