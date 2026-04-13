@@ -17,6 +17,52 @@ var urlPrincipal = getAbsolutePath();
 var newUrlBase = urlPrincipal.replace("/credito", "");
 var mensajeError = "Datos incorrectos, favor de validar.";
 
+function construirMensajeConfiguracionExtraccion(data) {
+	let mensaje = data.mensaje || "La campaña no tiene completa la configuración en Condiciones Generales de Tipos Campañas.";
+	if (data.camposFaltantes && data.camposFaltantes.length > 0) {
+		mensaje += "\n\nCampos pendientes: " + data.camposFaltantes.join(", ");
+	}
+	return mensaje;
+}
+
+function validarConfiguracionExtraccion(tipoCampania, mostrarMensaje) {
+	return fetch(newUrlBase + "credito/api/validarConfiguracionExtraccion?id=" + tipoCampania)
+		.then(resp => {
+			if (!resp.ok) {
+				return resp.json()
+					.then(data => {
+						throw new Error(construirMensajeConfiguracionExtraccion(data));
+					})
+					.catch(() => {
+						throw new Error("Error al validar configuración de la campaña.");
+					});
+			}
+			return resp.json();
+		})
+		.then(data => {
+			if (!data.valida && mostrarMensaje) {
+				Swal.fire({
+					title: "",
+					text: construirMensajeConfiguracionExtraccion(data),
+					icon: "warning",
+					confirmButtonText: "Aceptar"
+				});
+			}
+			return data.valida;
+		})
+		.catch(err => {
+			if (mostrarMensaje) {
+				Swal.fire({
+					title: "Error",
+					text: err.message,
+					icon: "error",
+					confirmButtonText: "Cerrar"
+				});
+			}
+			return false;
+		});
+}
+
 document.getElementById("Campania").addEventListener("change", function() {
 	// @ts-ignore
 	document.getElementById("FechaExtraccion").value = ""; // Limpiar
@@ -33,15 +79,14 @@ document.getElementById("Campania").addEventListener("change", function() {
 	        //desabilita todos los botones
 	        // @ts-ignore
 			document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
-			
-	        if(data === 0){
-				
-				//habilita el boton Extraer
-				// @ts-ignore
-        		document.getElementById("btnExtraer").disabled = false;
-        		// @ts-ignore
-        		//document.getElementById("btnCancelar").disabled = false;
-			}
+
+			validarConfiguracionExtraccion(tipoCampania, true).then(esValida => {
+				if (esValida) {
+					//habilita el boton Extraer
+					// @ts-ignore
+	        		document.getElementById("btnExtraer").disabled = false;
+				}
+			});
 	    },
 	    error: function(err) {
 	        console.error("Error al obtener el conteo para activar boton extraer :", err);
@@ -260,13 +305,20 @@ function generarUUIDCorto(longitud = 8) {
   });
 }
 
-function btnExtraerFn() {
+async function btnExtraerFn() {
+	// @ts-ignore
+	const tipoCampania = parseInt(document.getElementById("Campania").value);
+	const configuracionValida = await validarConfiguracionExtraccion(tipoCampania, true);
+	if (!configuracionValida) {
+		return;
+	}
+
 	//deshabilita el boton Extraer
 	// @ts-ignore
 	document.getElementById("btnExtraer").disabled = true;
 	
 	// @ts-ignore
-	let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
+	let codigoCamp = tipoCampania + '-' + generarUUIDCorto();
 	//console.log("UUID corto:", codigoCamp);  
 	
 	//insert en procesos
@@ -276,7 +328,7 @@ function btnExtraerFn() {
 	const data = {
         
         // @ts-ignore
-        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+        i_id_tipo_campania: tipoCampania,
         
         // @ts-ignore
         dt_fecha_extraccion: document.getElementById("idFecha").value,

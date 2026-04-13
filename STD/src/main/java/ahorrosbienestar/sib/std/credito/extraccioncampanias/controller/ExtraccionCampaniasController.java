@@ -259,6 +259,13 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     public ResponseEntity<String> crear(@RequestBody ProcesosCampaniasModel procesos) {
 		
         try {
+        	List<String> camposFaltantes = tiposCampaniasService
+        			.validarConfiguracionGeneralParaExtraccion(procesos.getI_id_tipo_campania());
+        	if (!camposFaltantes.isEmpty()) {
+        		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        				.body("La campaña no tiene completa la configuración en Condiciones Generales de Tipos Campañas. Campos pendientes: "
+        						+ String.join(", ", camposFaltantes));
+        	}
             if (procesosCampaniasService.save(procesos) != null) {
                 return ResponseEntity.ok("Proceso guardado correctamente");
             } else {
@@ -408,6 +415,29 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		    }
 		}
+
+	@GetMapping("/api/validarConfiguracionExtraccion")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> validarConfiguracionExtraccion(
+			@RequestParam("id") Integer idCampania) {
+
+		Map<String, Object> respuesta = new HashMap<>();
+		try {
+			List<String> camposFaltantes = tiposCampaniasService
+					.validarConfiguracionGeneralParaExtraccion(idCampania);
+			boolean valida = camposFaltantes.isEmpty();
+			respuesta.put("valida", valida);
+			respuesta.put("camposFaltantes", camposFaltantes);
+			respuesta.put("mensaje",
+					valida ? "Configuración completa"
+							: "La campaña no tiene completa la configuración en Condiciones Generales de Tipos Campañas.");
+			return ResponseEntity.ok(respuesta);
+		} catch (Exception e) {
+			respuesta.put("valida", false);
+			respuesta.put("mensaje", "Error al validar configuración: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
+		}
+	}
 	
 	
 	

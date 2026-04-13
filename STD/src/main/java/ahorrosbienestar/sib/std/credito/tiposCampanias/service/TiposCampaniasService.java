@@ -2,6 +2,7 @@ package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -33,6 +34,119 @@ public class TiposCampaniasService {
 	
 	public TiposCampaniasModel obtenerCampaniaPorId(Integer id) {
 	    return repository.mostrarCampania(id);
+	}
+
+	public List<String> validarConfiguracionGeneralParaExtraccion(Integer idCampania) {
+		List<String> camposFaltantes = new ArrayList<>();
+		TiposCampaniasModel campania = repository.mostrarCampania(idCampania);
+
+		if (campania == null) {
+			camposFaltantes.add("Campaña no encontrada");
+			return camposFaltantes;
+		}
+
+		if (esNuloOCero(campania.getI_tipo_campania())) {
+			camposFaltantes.add("Tipo Campaña");
+		}
+		if (esNulo(campania.getI_ventana_anios_mayor())) {
+			camposFaltantes.add("Ventana mayor que");
+		}
+		if (esNulo(campania.getI_ventana_anios())) {
+			camposFaltantes.add("Ventana");
+		}
+		if (esNuloOMenorIgualCero(campania.getI_edad_maxima())) {
+			camposFaltantes.add("Edad Máxima");
+		}
+		if (esNuloOMenorIgualCero(campania.getI_edad_minima())) {
+			camposFaltantes.add("Edad Mínima");
+		}
+		if (esNuloOMenorIgualCero(campania.getD_monto_minimo())) {
+			camposFaltantes.add("Monto Mínimo");
+		}
+		if (esNuloOMenorIgualCero(campania.getD_monto_maximo())) {
+			camposFaltantes.add("Monto Máximo");
+		}
+		if (esNuloOMenorIgualCero(campania.getD_porc_cubierto_capital())) {
+			camposFaltantes.add("Porcentaje Cubierto Capital");
+		}
+		if (esNulo(campania.getI_dias_gracia())) {
+			camposFaltantes.add("Días Gracia");
+		}
+		if (esNulo(campania.getI_dias_mora())) {
+			camposFaltantes.add("Días Mora");
+		}
+		if (esNuloOMenorIgualCero(campania.getI_plazo_maximo_anios())) {
+			camposFaltantes.add("Plazo Máximo Años");
+		}
+		if (esNuloOMenorIgualCero(campania.getI_minimo_vida_credito())) {
+			camposFaltantes.add("Mínimo Vida");
+		}
+		if (esNulo(campania.getI_vigencia_bc())) {
+			camposFaltantes.add("Vigencia BC");
+		}
+		if (esNulo(campania.getI_vigencia_campania())) {
+			camposFaltantes.add("Vigencia Campaña");
+		}
+		if (esNulo(campania.getI_creditos_liquidados())) {
+			camposFaltantes.add("Créditos Liquidados");
+		}
+		if (esTextoVacio(campania.getVc_es_renovacion())) {
+			camposFaltantes.add("Es Renovación");
+		}
+		if (esNuloOCero(campania.getI_convivencia())) {
+			camposFaltantes.add("Convivencia Campaña");
+		}
+		if (esTextoVacio(campania.getVc_productos())) {
+			camposFaltantes.add("Productos");
+		}
+		if (esNuloOCero(campania.getI_prod_credito_id_oferta())) {
+			camposFaltantes.add("ProdCredito");
+		}
+		if (esNulo(campania.getD_porc_inc_oferta())) {
+			camposFaltantes.add("PorceIncremento");
+		}
+		if (esNuloOMenorIgualCero(campania.getD_tasa_ordinaria_oferta())) {
+			camposFaltantes.add("TasaOrdinaria");
+		}
+		if (esNuloOCero(campania.getI_activa_oferta())) {
+			camposFaltantes.add("Activa Oferta");
+		}
+		if (esNuloOMenorIgualCero(campania.getD_monto_maximo_oferta())) {
+			camposFaltantes.add("Monto Máximo Oferta");
+		}
+		if (esNuloOCero(campania.getI_tipo_buro())) {
+			camposFaltantes.add("Tipo Archivo Buró");
+		}
+		if ("S".equalsIgnoreCase(campania.getVc_es_renovacion())
+				&& esNuloOMenorIgualCero(campania.getI_minimo_vida_credito_r())) {
+			camposFaltantes.add("Mínimo Vida del Crédito Renovación");
+		}
+
+		return camposFaltantes;
+	}
+
+	private boolean esNulo(Integer valor) {
+		return valor == null;
+	}
+
+	private boolean esNulo(Double valor) {
+		return valor == null;
+	}
+
+	private boolean esNuloOCero(Integer valor) {
+		return valor == null || valor <= 0;
+	}
+
+	private boolean esNuloOMenorIgualCero(Integer valor) {
+		return valor == null || valor <= 0;
+	}
+
+	private boolean esNuloOMenorIgualCero(Double valor) {
+		return valor == null || valor <= 0;
+	}
+
+	private boolean esTextoVacio(String valor) {
+		return valor == null || valor.trim().isEmpty();
 	}
 	
 	@Transactional
