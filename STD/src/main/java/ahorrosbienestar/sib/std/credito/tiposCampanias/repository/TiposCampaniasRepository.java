@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -39,6 +39,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	@Query(value = "UPDATE SIB.TBL_TIPOS_CAMPANIA SET "
 		+ "I_TIPO_CAMPANIA = :i_tipo_campania, "
         + "I_VENTANA_ANIOS = :i_ventana_anios, "
+        + "I_VENTANA_ANIOS_MAYOR = :i_ventana_anios_mayor, "
         + "I_EDAD_MAXIMA = :i_edad_maxima, "
         + "I_EDAD_MINIMA = :i_edad_minima, "
         + "D_MONTO_MINIMO = :d_monto_minimo, "
@@ -69,6 +70,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	    @Param("pk_id_tipo_campania") Integer pk_id_tipo_campania,
 	    @Param("i_tipo_campania") Integer i_tipo_campania,
 	    @Param("i_ventana_anios") Integer i_ventana_anios,
+	    @Param("i_ventana_anios_mayor") Integer i_ventana_anios_mayor,
 	    @Param("i_edad_maxima") Integer i_edad_maxima,
 	    @Param("i_edad_minima") Integer i_edad_minima,
 	    @Param("d_monto_minimo") Double d_monto_minimo,
@@ -99,7 +101,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	@Modifying
 	@Transactional
 	@Query(value = "INSERT INTO SIB.TBL_TIPOS_CAMPANIA ("
-	        + "VC_TIPO_CAMPANIA, I_TIPO_CAMPANIA, I_VENTANA_ANIOS, I_EDAD_MAXIMA, I_EDAD_MINIMA, D_MONTO_MINIMO, D_MONTO_MAXIMO, "
+	        + "VC_TIPO_CAMPANIA, I_TIPO_CAMPANIA, I_VENTANA_ANIOS, I_VENTANA_ANIOS_MAYOR, I_EDAD_MAXIMA, I_EDAD_MINIMA, D_MONTO_MINIMO, D_MONTO_MAXIMO, "
 	        + "D_PORC_CUBIERTO_CAPITAL, I_DIAS_GRACIA, I_DIAS_MORA, "
 	        + "I_PLAZO_MAXIMO_ANIOS, I_MINIMO_VIDA_CREDITO, I_VIGENCIA_BC, I_VIGENCIA_CAMPANIA, "
 	        + "I_CREDITOS_LIQUIDADOS, VC_ES_RENOVACION, I_CONVIVENCIA, VC_PRODUCTOS, "
@@ -107,7 +109,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	        + "D_TASA_ORDINARIA_OFERTA, I_ACTIVA_OFERTA, D_MONTO_MAXIMO_OFERTA, "
 	        +"I_MINIMO_VIDA_CREDITO_R , I_ESTATUS, DT_FECHA_REGISTRO, I_TIPO_BURO"
 	        + ") VALUES ("
-	        + ":vc_tipo_campania, :i_tipo_campania, :i_ventana_anios, :i_edad_maxima, :i_edad_minima, :d_monto_minimo, :d_monto_maximo, "
+	        + ":vc_tipo_campania, :i_tipo_campania, :i_ventana_anios, :i_ventana_anios_mayor, :i_edad_maxima, :i_edad_minima, :d_monto_minimo, :d_monto_maximo, "
 	        + ":i_mora_maxima, :d_porc_cubierto_capital, :i_dias_gracia, :i_dias_mora, "
 	        + ":i_plazo_maximo_anios, :i_minimo_vida_credito, :i_vigencia_bc, :i_vigencia_campania, "
 	        + ":i_creditos_liquidados, :vc_es_renovacion, :i_convivencia, :vc_productos, "
@@ -119,6 +121,7 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			@Param("vc_tipo_campania") String vc_tipo_campania,
 			@Param("i_tipo_campania") Integer i_tipo_campania,
 	        @Param("i_ventana_anios") Integer i_ventana_anios,
+	        @Param("i_ventana_anios_mayor") Integer i_ventana_anios_mayor,
 	        @Param("i_edad_maxima") Integer i_edad_maxima,
 	        @Param("i_edad_minima") Integer i_edad_minima,
 	        @Param("d_monto_minimo") Double d_monto_minimo,
@@ -166,6 +169,63 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 			+ " WHERE I_TIPO_CAMPANIA = 2"
 			+ " AND I_ESTATUS = 1 ", nativeQuery = true)
 	List<Object[]> listaCampaniasRecurrentes();
+
+
+	@Query(value = "SELECT IFNULL(COUNT(*), 0) as numero FROM SIB.TBL_TIPOS_CAMPANIA WHERE UPPER(VC_TIPO_CAMPANIA) LIKE UPPER(CONCAT('%', :nombreCampania, '%')) "
+			+ "and PK_ID_TIPO_CAMPANIA <> :idcampania", nativeQuery = true)
+	int existeNombre(String nombreCampania, int idcampania);
+
+	@Query(value = "SELECT t1.PK_ID_TIPO_CAMPANIA AS idCampaniaSeleccionada "
+	        + ",t1.VC_TIPO_CAMPANIA AS nombreCampania "
+	        + ",t1.I_VIGENCIA_CAMPANIA AS vigenciaMeses "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_REGISTRO,'1900-01-01'),'%Y-%m-%d') AS fechaRegistro "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_ENVIO_MC,'1900-01-01'),'%Y-%m-%d') AS fechaEnvioMC "
+	        + ",DATE_FORMAT(NULLIF(t2.DT_FECHA_FIN_VIGENCIA,'1900-01-01'),'%Y-%m-%d') AS fechaFin "
+	        + ",t1.I_ESTATUS AS estatusCampania "
+	        + ",CASE WHEN t1.I_TIPO_CAMPANIA = 2 THEN 1 ELSE 0 END AS recurrente "
+	        + "FROM SIB.TBL_TIPOS_CAMPANIA t1 "
+	        + "INNER JOIN SIB.TBL_PROCESO_CAMPANIA t2 ON t2.I_ID_TIPO_CAMPANIA = t1.PK_ID_TIPO_CAMPANIA "
+	        + "WHERE t1.PK_ID_TIPO_CAMPANIA = :valorCampaniaID",
+	        nativeQuery = true)
+	List<Object[]> obtenerCampañaRegistrada(@Param("valorCampaniaID") int valorCampaniaID);
+
+	@Query(value = "select VC_CODIGO_CAM AS CODIGOCAMPANIA "
+	        + ",t1.PK_ID_PROCESO_CAMPANIA as IDPROCESOCAMPANIA "
+	        + ",UPPER(t2.VC_ESTATUS) AS ESTATUS "
+	        + ",t1.I_ID_ESTATUS_CAMPANIA as IDESTATUS "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_EXTRACCION,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_EXTRACCION "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_INICIO_VIGENCIA,'1900-01-01'),'%Y-%m-%d')  AS DT_FECHA_INICIO "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_FIN_VIGENCIA,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_FIN "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_ENVIO_MC,'1900-01-01'),'%Y-%m-%d') AS DT_FECHA_ENVIO_MC "
+	        + ",DATE_FORMAT(NULLIF(t1.DT_FECHA_REGISTRO,'1900-01-01'),'%Y-%m-%d')  AS DT_FECHA_REGISTRO "
+	        + ",t3.VC_NOMBRE_USUARIO as nombreusuario "
+	        + "FROM SIB.TBL_PROCESO_CAMPANIA t1 "
+	        + "inner join SIB.TBL_ESTATUS_CAMPANIA t2 on t2.PK_ID_ESTATUS_CAMPANIA = t1.I_ID_ESTATUS_CAMPANIA "
+	        + "INNER JOIN SIB.TBL_CAT_USUARIOS t3 on t3.PK_ID_USUARIO = t1.I_USER_REG "
+	        + "where t1.I_ID_TIPO_CAMPANIA = :idcampania "
+	        + "GROUP BY t1.VC_CODIGO_CAM, "
+	        + "t1.PK_ID_PROCESO_CAMPANIA, "
+	        + "t2.VC_ESTATUS, "
+	        + "t1.I_ID_ESTATUS_CAMPANIA, "
+	        + "t1.DT_FECHA_EXTRACCION, "
+	        + "t1.DT_FECHA_INICIO_VIGENCIA, "
+	        + "t1.DT_FECHA_FIN_VIGENCIA, "
+	        + "t1.DT_FECHA_ENVIO_MC, "
+	        + "t1.DT_FECHA_REGISTRO "
+	        + "ORDER BY t1.PK_ID_PROCESO_CAMPANIA DESC ",
+	        nativeQuery = true)
+	List<Object[]> obtProcesos(Integer idcampania);
+
+	@Query(value = "SELECT VC_CODIGO_CAM FROM SIB.TBL_PROCESO_CAMPANIA "
+			+ " where I_ID_TIPO_CAMPANIA = :valorCampaniaID "
+			+ " order by PK_ID_PROCESO_CAMPANIA desc "
+			+ " limit 1", nativeQuery = true)
+	String obtProceso(int valorCampaniaID);
+
+	@Query(value = "SELECT IFNULL(COUNT(*), 0) as numero FROM SIB.TBL_TIPOS_CAMPANIA WHERE UPPER(VC_TIPO_CAMPANIA) LIKE UPPER(CONCAT('%', :nombreCampania, '%')) ", nativeQuery = true)
+	int existeNombreCamp(String nombreCampania);
+	
+	
 	
  
 }

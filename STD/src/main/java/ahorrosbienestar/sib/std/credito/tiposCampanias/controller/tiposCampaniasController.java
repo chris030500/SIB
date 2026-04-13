@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.controller;
 
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,9 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
+import ahorrosbienestar.sib.std.credito.paramburocredito.model.ParamBuroCreditoModel;
+import ahorrosbienestar.sib.std.credito.paramburocredito.service.ParamBuroCreditoService;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
@@ -42,6 +46,7 @@ import java.util.Map;
 @RequestMapping("credito")
 
 public class tiposCampaniasController {
+	private static final Logger logger = Logger.getLogger(ParamBuroCreditoController.class);
 	
 	@Autowired
 	private TiposCampaniasService service;
@@ -66,6 +71,8 @@ public class tiposCampaniasController {
 	
 	@Autowired
 	private OpcionesMenuService opcionesMenuService;
+	@Autowired
+	private ParamBuroCreditoService paramBuroCreditoService;
 	
 	List<Usuario> usuario = null;
 	
@@ -253,8 +260,10 @@ public class tiposCampaniasController {
 	
 	public ResponseEntity<String> actualizar(@RequestBody TiposCampaniasModel campania) {
 	    try {
+	    	
 	        boolean actualizado = service.actualizarCampania(campania);
 	        if (actualizado) {
+	        	actualizarBuro(campania.getPk_id_tipo_campania(), campania.getI_tipo_buro());
 	            return ResponseEntity.ok("Actualizado correctamente");
 	        } else {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaña no encontrada o sin cambios");
@@ -264,6 +273,23 @@ public class tiposCampaniasController {
 	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar la campaña: " + e.getMessage());
 	    }
+	}
+	
+	public void  actualizarBuro(Integer idCamapania, Integer tipoBuro) {
+		
+		try {
+			
+		    ParamBuroCreditoModel registroParamBC = 
+			        paramBuroCreditoService.obtParamBuro(idCamapania);
+		    
+		    if(registroParamBC.getTipoEvaluacion() != tipoBuro) {
+		    	paramBuroCreditoService.inactivarBC(idCamapania);		    
+		    }
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
+		}
+		
 	}
 	
 	//alta de campaña

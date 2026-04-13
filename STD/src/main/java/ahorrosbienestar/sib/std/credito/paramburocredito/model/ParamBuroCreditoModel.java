@@ -50,6 +50,9 @@ public class ParamBuroCreditoModel {
     @OneToOne
     @JoinColumn(name = "I_USER_MOD")
     private Usuario usuarioModifica;
+    
+    @Column(name = "I_ACTIVO")
+    private Integer activo = 1;
 
 	public Integer getIdParametro() {
 		return idParametro;
@@ -131,4 +134,13 @@ public class ParamBuroCreditoModel {
 		this.usuarioModifica = usuarioModifica;
 	}
 
+	public Integer getActivo() {
+		return activo;
+	}
+
+	public void setActivo(Integer activo) {
+		this.activo = activo;
+	}
+	
+	
 }

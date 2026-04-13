@@ -1,5 +1,5 @@
 package ahorrosbienestar.sib.std.comunes;
- 
+
 public class Constantes {
     
     //Constantes Rutas de Acceso
@@ -56,7 +56,7 @@ public class Constantes {
     public static final String REGLA_ESTATUS = "Actualizo Estatus Correctamente.";
     public static final String REGLA_ESTATUS_ACTIVO = "Solo se permite tener una Regla de Asignacion Activa.";
     
-      //Mensajes plantillas de SMS
+  	//Mensajes plantillas de SMS
     public static final String PLANTILLA_DUPLICADA = "Existe Registro para la Campaña y Clasificacion seleccionada.";
     public static final String NOMBRE_PLANTILLA_DUPLICADA = "Existe nombre de plantilla registrada.";
     
@@ -120,7 +120,7 @@ public class Constantes {
     //CATALOGOS DE PANTALLAS
     public static final int CATALOGO_GESTION = 14;
     public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
-	
+    
     //PROCESO A EJECUTAR
     public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
     public static final String PROCESO_REASIGNACION = "{call SIB.SP_REASIG_X_FAL_SEGUIMIENTO (?)}";
@@ -128,7 +128,7 @@ public class Constantes {
     //PARAMETROS REPORTE ADJUNTO
     public static final String PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES = "?IDSUCURSAL=";
     
- 	// nombre reportes
+    // nombre reportes
     public static final String REPORTE_ASIGNACION = "rpt_asignacion_sucursal";
     public static final String REPORTE_REASIGNACION = "rpt_reasignacion_oferta";
     
@@ -136,7 +136,7 @@ public class Constantes {
     public static final String NOMBRE_REPORTE_ASIGNACION = "registros_asignados_suc";
     public static final String NOMBRE_REPORTE_REASIGNACION = "registros_reasignados_suc";
     
-	//busqueda
+    //busqueda
     public static final int TIPO_BUSQUEDA_1 = 1;
     public static final int TIPO_BUSQUEDA_2 = 2;
     
@@ -191,17 +191,18 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
- 
-      //constantes PLD ReporteClientesOpe
+
+	//constantes PLD ReporteClientesOpe
     public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
     public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
     public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
     public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
     public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-    public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-       public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
- 
-    //nombres reportes bases EBR
+	public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
+    public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
+    public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
+
+	//nombres reportes bases EBR
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
     public static final String RPT_EBR_BASE_OPERACIONES = "rpt_ebr_base_operaciones";
     public static final String RPT_EBR_BASE_REMESAS = "rpt_ebr_base_remesas";
@@ -241,6 +242,7 @@ public class Constantes {
     //Mensajes de error de autenticación
     public static final String USUARIO_NO_AUNTENTICADO = "El usuario no está autenticado.";
     public static final String USUARIO_NO_ENCONTRADO = "No se encontró el usuario en la base de datos.";
+
 	//Pantalla parametros buro de credito
 	public static final int CAT_TIPO_RIESGO = 34;
 	public static final int CAMPANIA_TIPO_TEMPORAL = 1;
@@ -251,6 +253,19 @@ public class Constantes {
 	
 	public static final int CAT_ESTATUS_CAMPANIAS = 16;
 	public static final int CAT_REPORTES_CAMPANIAS = 39;
+	
+	
+	// Mensajes campañas temporales
+	public static final String NOMBRE_CAMPANIA_EXISTE = "El NOMBRE DE LA CAMPAÑA YA EXISTE. ACTUALIZAR NOMBRE.";
+	public static final int CAMPANIA_TIPO_RECURRENTE = 2; 
+	public static final String PROCESO_DATOS_CAM_TEMPORALES = "{call SIB.SP_DATOS_CAM_TEMPORALES(?,?,?,?,?,?,?,?,?)}";
+	public static final String PROCESO_CALCULO_CAM_TEMPORALES = "{call SIB.SP_CALCULO_CAM_TEMPORALES(?,?,?,?)}";
+	public static final String PROCESO_RELACION_CAM_OA = "{call SIB.SP_RELACION_CAM_OA(?,?,?,?)}";
+	public static final int TIPO_CREAR_PROCESO = 1; 	
+	public static final int TIPO_RELACIONAR_REGISTROS = 2;
+	public static final int TIPO_ACT_REGISTROS = 3;
+	public static final int TIPO_ACT_PROC_RECURRENTE = 4;
+	
     private Constantes() {
         
     }

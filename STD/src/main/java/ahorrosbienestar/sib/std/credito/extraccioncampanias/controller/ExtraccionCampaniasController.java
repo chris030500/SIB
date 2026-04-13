@@ -31,8 +31,10 @@ import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepositor
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.ValBuroCreditoCampaniaModel;
+import ahorrosbienestar.sib.std.credito.extraccioncampanias.model.VigenciaBuroCampaniasModel;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ExtraccionCampaniasService;
 import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.ValBuroCreditoCampaniaService;
+import ahorrosbienestar.sib.std.credito.extraccioncampanias.service.VigenciaBuroCampaniasService;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.EstatusCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.EstatusCampaniasModel;
@@ -100,6 +102,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@Autowired
 	private ValBuroCreditoCampaniaService serviceValBuroCredito;
+	
+	@Autowired
+	private VigenciaBuroCampaniasService serviceVigenciaBuro;
 	
 	@Autowired
 	ConfigService configService;
@@ -572,5 +577,23 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
                     .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/api/obtenerCampaniaVigenciaBuro")
+	@ResponseBody
+	public TiposCampaniasModel obtenerCampaniaVigenciaBuro(@RequestParam("id") Integer id) {
+	    return tiposCampaniasService.obtenerCampaniaPorId(id);
+	}
+    
+    //inserta todo el array
+	@PostMapping("/api/crearVigenciaBuro")
+	public ResponseEntity<String> crearVigecnia(@RequestBody List<VigenciaBuroCampaniasModel> vigecniaBuro) {
+	    try {
+	    	serviceVigenciaBuro.saveAll(vigecniaBuro);
+	        return ResponseEntity.ok("Se guardaron " + vigecniaBuro.size() + " registros de Vigencia Buro de Credito correctamente");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("Error al crear datos Vigencia Tipo Buro de Credito: " + e.getMessage());
+	    }
+	}
 	
 }

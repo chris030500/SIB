@@ -9,6 +9,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.CampaniaTemporalDTO;
+import ahorrosbienestar.sib.std.credito.campaniastemporales.dto.ProcesosxCampaniaTemDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
@@ -39,6 +41,7 @@ public class TiposCampaniasService {
             campania.getPk_id_tipo_campania(),
             campania.getI_tipo_campania(),
             campania.getI_ventana_anios(),
+            campania.getI_ventana_anios_mayor(),
             campania.getI_edad_maxima(),
             campania.getI_edad_minima(),
             campania.getD_monto_minimo(),
@@ -74,6 +77,7 @@ public class TiposCampaniasService {
 	    	c.getVc_tipo_campania(),
 	    	c.getI_tipo_campania(),
 	    	c.getI_ventana_anios(),
+	    	c.getI_ventana_anios_mayor(),
 	        c.getI_edad_maxima(),
 	        c.getI_edad_minima(),
 	        c.getD_monto_minimo(),
@@ -139,6 +143,55 @@ public class TiposCampaniasService {
 	public List<TiposCampaniasModel> getTiposCampaniasModel() {
         return repository.findAll();
     }
+
+	public int existeNombre(String nombreCampania, int idcampania) {
+		return repository.existeNombre(nombreCampania,idcampania);
+	}
+
+	public List<CampaniaTemporalDTO> obtenerCampañaRegistrada(int valorCampaniaID) {
+		
+		List<Object[]> resultados = repository.obtenerCampañaRegistrada(valorCampaniaID);
+		return resultados.stream()
+			    .map(r -> new CampaniaTemporalDTO(
+			        (Integer) r[0],       // idCampaniaSeleccionada
+			        (String) r[1],        // nombreCampania
+			        (Integer) r[2],       // vigenciaMeses
+			        (String) r[3],        // fechaRegistro
+			        (String) r[4],        // fechaEnvioMC
+			        (String) r[5],        // fechaFin
+			        (Integer) r[6],       // estatusCampania
+			        r[7] != null && ((Number) r[7]).intValue() != 0       // recurrente
+			    ))
+			    .collect(Collectors.toList());
+	}
+
+	public List<ProcesosxCampaniaTemDTO> obtProcesos(Integer idcampania) {
+		List<Object[]> resultados = repository.obtProcesos(idcampania);
+		 return resultados.stream()
+		            .map(r -> new ProcesosxCampaniaTemDTO(
+		                (String) r[0],        // codigoCampania
+		                (Integer) r[1],       // idProcesoCampania
+		                (String) r[2],        // estatus
+		                (Integer) r[3],        // estatus
+		                (String) r[4],        // dtFechaExtraccion
+		                (String) r[5],        // dtFechaInicio
+		                (String) r[6],        // dtFechaFin
+		                (String) r[7],        // dtFechaEnvioMC
+		                (String) r[8],        // dtFechaRegistro
+		                (String) r[9]         // nombreUsuario
+		            ))
+		            .collect(Collectors.toList());
+	}
+
+	public String obtProceso(int valorCampaniaID) {
+		
+		return repository.obtProceso(valorCampaniaID);
+	}
+
+	public int existeNombreCamp(String nombreCampania) {
+		// TODO Auto-generated method stub
+		return repository.existeNombreCamp(nombreCampania);
+	}
 	
 	/*public List<TiposCampaniasModel> obtenerCampaniasActivos() {
         return repository.listaTiposCampanias(1);

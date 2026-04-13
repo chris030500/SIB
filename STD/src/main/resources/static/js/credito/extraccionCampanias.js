@@ -141,6 +141,8 @@ document.getElementById("Estatus").addEventListener("change", function() {
         //hacer insert en procesos con los datos de la campaña, bandera = 1 y estatus = 1
     } 
     if (valor === "1") { // Extraccion
+    
+    
     	
     	fetch(newUrlBase + "credito/api/countExtraccionTerm?tipoCampania=" + tipoCampania + "&estatus=" + valor)
         .then(resp => {
@@ -181,6 +183,10 @@ document.getElementById("Estatus").addEventListener("change", function() {
 				document.getElementById("btnCargar").disabled = false;
 				// @ts-ignore
 				document.getElementById("btnCancelar").disabled = false;
+				//activa boton generar archivo buro
+				//cambio para que se active
+				// @ts-ignore
+        		document.getElementById("btnGenerar").disabled = false;
 			}
         })
         .catch(err => {
@@ -441,6 +447,9 @@ function btnGenerarArchivoBuro() {
 	//console.log("tipoCampania:",tipoCampania);
 	
 	// @ts-ignore
+	var valorEstatus = document.getElementById("Estatus").value;
+	
+	// @ts-ignore
 	//let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
 	
 	fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
@@ -461,7 +470,7 @@ function btnGenerarArchivoBuro() {
 		//var rptOA = newUrlBase + "reporteProcesosCampania?idReporte=" + document.getElementById("idReportePLD").value;
 		// @ts-ignore
 		urlServicio = newUrlBase + "credito/rpt_archivo_buro?ProcesoCampania=" + data + "&TipoCampania=" + document.getElementById("Campania").value;
-		console.log("urlServicio:", urlServicio);
+		//console.log("urlServicio:", urlServicio);
 		//urlServicio = rptOA + "&dtFechaInicio=" + document.getElementById("dtFechaInicio").value + "&dtFechaFin=" + document.getElementById("dtFechaFin").value + "&nombreReporteSelect=" + document.getElementById("idReportePLD").value + "&extension=" + document.getElementById("extReportePLD").value + "&noCliente="+clienteValue;
 		
 		$.ajax({
@@ -481,115 +490,132 @@ function btnGenerarArchivoBuro() {
 			//update TBL_PROCESO_CAMPANIA I_ESTATUS_REG = 2
 			//insert TBL_PROCESO_CAMPANIA
 			
-			fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
-		        method: 'POST',
-		        headers: {
-		            'Content-Type': 'application/json'
-		        },
-		        body: JSON.stringify(dataProceso)
-		    })
-		    .then(resp => {
-			    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
-			    return resp.text();
-			})
-			.then(() => {
-				
-				///--
-				//console.log("data:::::::::::::",data);
-				const procesoCampania = Number(data);
-				console.log("procesoCampania: ",procesoCampania);
-				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + procesoCampania)
-			    .then(resp => {
-			        if (!resp.ok) {
-			            throw new Error("Error al validar campania para obtener codigo campania");
-			        }
-			        return resp.json(); // porque el backend regresa un int
+			///inicia ajuste de activar boton generar archivo buro
+			//console.log("valorEstatus: ",valorEstatus);
+			if (Number(valorEstatus) === 1) {
+				//console.log("entra: ",valorEstatus);
+				fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
+			        method: 'POST',
+			        headers: {
+			            'Content-Type': 'application/json'
+			        },
+			        body: JSON.stringify(dataProceso)
 			    })
-			    .then(datas => {
-					
-					
-					const dataExtCargaBuro = {
-        
-				        // @ts-ignore
-				        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
-				        
-				        // @ts-ignore
-				        dt_fecha_extraccion: document.getElementById("idFecha").value,
-				        i_bandera_extraccion: 2,
-				        // @ts-ignore
-				        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_envio_mc: document.getElementById("idFecha").value,
-				        i_estatus_reg: 1,
-				        //2	Generar Archivo
-				        i_id_estatus_campania: 2,
-				        // @ts-ignore
-				        dt_fecha_registro: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        i_user_reg: parseInt(document.getElementById("idUser").value),
-				        vc_codigo_cam:datas.codigo,
-				        
-				    };
-					
-				
-					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
-					    method: 'POST',
-					    headers: { 'Content-Type': 'application/json' },
-					    body: JSON.stringify(dataExtCargaBuro)
-					})
-					.then(async resp => {
-					    if (!resp.ok) {
-					        const errorText = await resp.text();
-					        throw new Error(errorText || "Error desconocido");
-					    }
-					    return resp.text();
-					})
-					.then(() => {
-					    // 
-					    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
-						//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
-				
-						//console.log(urlReporte);
-						//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-						window.open(urlReporte);
-						window.focus();
-						
-						window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
-					    
-					})
-					.catch(err => {
-					    console.error("Error:", err);
-					    // @ts-ignore
-					    Swal.fire({
-					        title: "Error",
-					        text: err.message,
-					        icon: "error",
-					        confirmButtonText: "Cerrar"
-					    });
-					});
-				
+			    .then(resp => {
+				    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
+				    return resp.text();
 				})
-			    .catch(err => {
-			        console.error("Error al validar campania para obtener codigo campania:: ", err);
-			    });
-				///--
+				.then(() => {
+					
+					///--
+					//console.log("data:::::::::::::",data);
+					const procesoCampania = Number(data);
+					//console.log("procesoCampania: ",procesoCampania);
+					fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + procesoCampania)
+				    .then(resp => {
+				        if (!resp.ok) {
+				            throw new Error("Error al validar campania para obtener codigo campania");
+				        }
+				        return resp.json(); // porque el backend regresa un int
+				    })
+				    .then(datas => {
+						
+						
+						const dataExtCargaBuro = {
+	        
+					        // @ts-ignore
+					        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+					        
+					        // @ts-ignore
+					        dt_fecha_extraccion: document.getElementById("idFecha").value,
+					        i_bandera_extraccion: 2,
+					        // @ts-ignore
+					        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        dt_fecha_envio_mc: document.getElementById("idFecha").value,
+					        i_estatus_reg: 1,
+					        //2	Generar Archivo
+					        i_id_estatus_campania: 2,
+					        // @ts-ignore
+					        dt_fecha_registro: document.getElementById("idFecha").value,
+					        // @ts-ignore
+					        i_user_reg: parseInt(document.getElementById("idUser").value),
+					        vc_codigo_cam:datas.codigo,
+					        
+					    };
+						
+					
+						fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
+						    method: 'POST',
+						    headers: { 'Content-Type': 'application/json' },
+						    body: JSON.stringify(dataExtCargaBuro)
+						})
+						.then(async resp => {
+						    if (!resp.ok) {
+						        const errorText = await resp.text();
+						        throw new Error(errorText || "Error desconocido");
+						    }
+						    return resp.text();
+						})
+						.then(() => {
+						    // 
+						    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+							//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+					
+							//console.log(urlReporte);
+							//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+							window.open(urlReporte);
+							window.focus();
+							
+							window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+						    
+						})
+						.catch(err => {
+						    console.error("Error:", err);
+						    // @ts-ignore
+						    Swal.fire({
+						        title: "Error",
+						        text: err.message,
+						        icon: "error",
+						        confirmButtonText: "Cerrar"
+						    });
+						});
+					
+					})
+				    .catch(err => {
+				        console.error("Error al validar campania para obtener codigo campania:: ", err);
+				    });
+					///--
+					
+					
+					
+				})
+				.catch(err => {
+				    //console.error("Error al actualizar Proceso Campania:", err);
+				   // @ts-ignore
+				   swal({
+					title: "",
+					text: 'Error al actualizar Proceso Campania',
+				        icon: 'error'
+				    });
+				});
+			}else if(Number(valorEstatus) === 2){
+				// 
+			    var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+				//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
+		
+				//console.log(urlReporte);
+				//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
+				window.open(urlReporte);
+				window.focus();
 				
-				
-				
-			})
-			.catch(err => {
-			    //console.error("Error al actualizar Proceso Campania:", err);
-			   // @ts-ignore
-			   swal({
-				title: "",
-				text: 'Error al actualizar Proceso Campania',
-			        icon: 'error'
-			    });
-			});
-				///////////////////////
+				window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+			}
 			
+				///////////////////////
+			///termina ajuste de activar boton generar archivo buro
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			// @ts-ignore
 			swal({
@@ -778,322 +804,574 @@ document.addEventListener("DOMContentLoaded", function() {
     //console.log("Archivo:", archivo.name);
     
     const reader = new FileReader();
+    ///penultima llave
   	reader.onload = function(ev) {
-    // @ts-ignore
-    const data = new Uint8Array(ev.target.result);
-    // @ts-ignore
-    const workbook = XLSX.read(data, { type: "array" });
-
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    // @ts-ignore
-    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-    let registros = [];
-    if (tipo==2) {
-		//Adviser
-		let rfcCliente = rows.slice(3).map(fila => fila[2]);
-	    // Extraer columna KB desde fila 4-Procentaje de uso maximo de Total de Créditos Abiertos
-	    let valoresBK = rows.slice(3).map(fila => fila[62]); 
-	    //multiplicar por 100 y redondear los decimales
-	    // Extraer columna BO desde fila 4-MOP máximo de Estrategia Bienestar
-	    let valoresBO = rows.slice(3).map(fila => fila[66]); 
-	    // Extraer columna BP desde fila 4-BCS mínimo de Estrategia Bienestar
-	    let valoresBP = rows.slice(3).map(fila => fila[67]);
-	    // Extraer columna BQ desde fila 4-ICC mínimo de Estrategia Bienestar
-	    let valoresBQ = rows.slice(3).map(fila => fila[68]);
-	    // Extraer columna BR desde fila 4-Riesgo máximo de Estrategia Bienestar
-	    let valoresBR = rows.slice(3).map(fila => fila[69]);
-	    
-	    // Construir array de objetos
-		registros = rfcCliente.map((rfc, idx) => ({
-		    vc_rfc_cliente: rfc,
-		    i_tipo_buro_credito: tipo,
-		    d_porc_uso_maximo_adviser: cortarDecimales(valoresBK[idx],3),
-		    d_mop_maximo_adviser: valoresBO[idx],
-		    d_bcs_minimo_adviser: valoresBP[idx],
-		    d_icc_minimo_adviser: valoresBQ[idx],
-		    vc_riesgo_maximo_adviser: valoresBR[idx],
-		    d_bcs_minnimo_prospector: 0,
-		    d_icc_minnimo_prospector: 0,
-		    vc_riesgo_maximo_prospector: '0',
-		    i_estatus_reg: 1,
-		    // @ts-ignore
-		    dt_fecha_registro: document.getElementById("idFecha").value,
-		    // @ts-ignore
-		    i_user_reg: parseInt(document.getElementById("idUser").value),
-		    // @ts-ignore
-		    i_tipo_campania: parseInt(document.getElementById("Campania").value),
-		    
-		}));
-	    
-	}else if(tipo==1){
-		//Prospector
-		let rfcClienteP = rows.slice(3).map(fila => fila[2]);
-		// Extraer columna-BCS mínimo
-	    let valoresBCS = rows.slice(3).map(fila => fila[13]);
-	    // Extraer columna-ICC mínimo
-	    let valoresICC = rows.slice(3).map(fila => fila[14]);
-	    // Extraer columna-Riesgo máximo
-	    let valoresRM = rows.slice(3).map(fila => fila[15]);
-	    
-	    // Construir array de objetos
-		registros = rfcClienteP.map((rfc, idx) => ({
-		    vc_rfc_cliente: rfc,
-		    i_tipo_buro_credito: tipo,
-		    d_porc_uso_maximo_adviser: 0,
-		    d_mop_maximo_adviser: 0,
-		    d_bcs_minimo_adviser: 0,
-		    d_icc_minimo_adviser: 0,
-		    vc_riesgo_maximo_adviser: '0',
-		    d_bcs_minnimo_prospector: valoresBCS[idx],
-		    d_icc_minnimo_prospector: valoresICC[idx],
-		    vc_riesgo_maximo_prospector: valoresRM[idx],
-		    i_estatus_reg: 1,
-		    // @ts-ignore
-		    dt_fecha_registro: document.getElementById("idFecha").value,
-		    // @ts-ignore
-		    i_user_reg: parseInt(document.getElementById("idUser").value),
-		    // @ts-ignore
-		    i_tipo_campania: parseInt(document.getElementById("Campania").value),
-		}));
-	}else{
-		// @ts-ignore
-		swal({
-			title: "",
-			text: 'Seleccione un tipo de archivo.',
-			icon: "error",
-	    
-	    });
-	    return;
-	}
-    //console.log("Registros a enviar:", registros);
-    //console.log("Cantidad de registros construidos:", registros.length);
-	//console.table(registros);
-	//selecionar id proceso 
-    //update TBL_PROCESO_CAMPANIA
-    //insert TBL_PROCESO_CAMPANIA
-    // @ts-ignore
-	//let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
-    
-    // @ts-ignore
-	var tipoCampania = parseInt(document.getElementById("Campania").value);
+	    // @ts-ignore
+	    const data = new Uint8Array(ev.target.result);
+	    // @ts-ignore
+	    const workbook = XLSX.read(data, { type: "array" });
 	
-	let estatusCampania = 2;
-	let banderaCampania = 2;
-	
-	fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&banderaCampania=" + banderaCampania)
-    //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
-    .then(resp => {
-        if (!resp.ok) {
-            throw new Error("Error al validar campania para procesar validacion respuesta buro");
-        }
-        return resp.json(); // porque el backend regresa un int
-    })
-    .then(data => {
+	    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+	    // @ts-ignore
+	    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+	    let registros = [];
+	    let registrosBuro = [];
+	    
+	    const primeraFila = rows[2];
+	    //cambio vigencia de buro
+	    const fecha = new Date();
+			
+		const diaOriginal = fecha.getDate();
 		
-		const dataProceso = {
-	        pk_id_proceso_campania: data,
-	        i_estatus_reg: 2,
-	    };
-	    ///
-	    ///
-	    fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
-		        method: 'POST',
-		        headers: {
-		            'Content-Type': 'application/json'
-		        },
-		        body: JSON.stringify(dataProceso)
-		    })
-		    .then(resp => {
-			    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
-			    return resp.text();
-			})
-			.then(() => {
+		let fechaFormateada = fecha.toLocaleDateString('sv-SE');
+		
+		
+	    // @ts-ignore
+	    console.log("id:", parseInt(document.getElementById("Campania").value));
+	    // @ts-ignore
+	    fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + parseInt(document.getElementById("Campania").value))
+									    
+	    .then(resp => {
+	        if (!resp.ok) {
+	            throw new Error("Error al validar campania para procesar vigencia buro");
+	        }
+	        return resp.json(); // porque el backend regresa un int
+	    })
+	    .then(data3 => {
+			console.log("data3:", data3.i_vigencia_bc);
+			console.log("i_tipo_campania:", data3.i_tipo_campania);
+			fecha.setDate(1); // evitar desbordamiento
+			//cambio vigencia buro temporales
+			//recurrente = 2, temporal = 1
+			
+			if(data3.i_tipo_campania === 1){
+				fecha.setMonth(fecha.getMonth() + data3.i_vigencia_campania);
+			}else if(data3.i_tipo_campania === 2){
+				fecha.setMonth(fecha.getMonth() + data3.i_vigencia_bc);
+			}
+			
+			const ultimoDiaDelMes = new Date(
+			  fecha.getFullYear(),
+			  fecha.getMonth() + 1,
+			  0
+			).getDate();
+			
+			fecha.setDate(Math.min(diaOriginal, ultimoDiaDelMes));
+			
+			fechaFormateada = fecha.toLocaleDateString('sv-SE');
+	
+			console.log("fechaFormateada:",fechaFormateada);
+			//
+			if (tipo==2) {
+			//Adviser
+			
+				const encabezadosEsperados = [
+					"FOLIO",
+					"CTA",
+					"RFC",
+					"1er. NOMBRE",
+					"2do. NOMBRE",
+					"PATERNO",
+					"MATERNO",
+					"DOMICILIO",
+					"COLONIA",
+					"MUNICIPIO",
+					"CIUDAD",
+					"EDO",
+					"CP",
+					//Bienestar
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Tiendas Comerciales - Departamentales
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Personales Bancarios
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Financieras
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Microfinancieras
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Cooperativas
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Créditos Hipotecarios
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Créditos Automotrices
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Tarjetas de Crédito
+					"# Cuentas",
+					"Limite de Crédito",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Total de Créditos Abiertos
+					"# Cuentas",
+					"Crédito Máximo",
+					"Saldo Actual",
+					"Saldo Vencido",
+					"% de Uso",
+					//Estrategia Bienestar
+					"Alto Uso de Créditos",
+					"Cuentas SIC - Cobranza",
+					"Total Monto a Pagar",
+					"Peor MOP Actual",
+					"BC Score",
+					"ICC",
+					"Clasificación de Riesgo Bienestar",
+					"Resultado",
+					"Corte 660-6",
+					"Oferta de Crédito "
+				];
 				
-				///--
-				fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + data)
-			    .then(resp => {
-			        if (!resp.ok) {
-			            throw new Error("Error al validar campania para obtener codigo campania");
-			        }
-			        return resp.json(); // porque el backend regresa un int
-			    })
-			    .then(datas => {
-					const dataExtCargaBuro = {
-        
-				        // @ts-ignore
-				        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
-				        
-				        // @ts-ignore
-				        dt_fecha_extraccion: document.getElementById("idFecha").value,
-				        i_bandera_extraccion: 2,
-				        // @ts-ignore
-				        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        dt_fecha_envio_mc: document.getElementById("idFecha").value,
-				        i_estatus_reg: 1,
-				        //3	Carga respuesta Buro
-				        i_id_estatus_campania: 3,
-				        // @ts-ignore
-				        dt_fecha_registro: document.getElementById("idFecha").value,
-				        // @ts-ignore
-				        i_user_reg: parseInt(document.getElementById("idUser").value),
-				        vc_codigo_cam:datas.codigo,
-				        
-				    };
-					/////aqui inicia
-					
-					fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
-					    method: 'POST',
-					    headers: { 'Content-Type': 'application/json' },
-					    body: JSON.stringify(dataExtCargaBuro)
-					})
-					.then(async resp => {
-					    if (!resp.ok) {
-					        const errorText = await resp.text();
-					        throw new Error(errorText || "Error desconocido");
-					    }
+				// Validación encabezados
+				const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
+				
+				if (!esValidoEncabezado) {
+					console.log("Entra a función esValidoEncabezado");
+					// @ts-ignore
+					 Swal.close(); // Cierra el loading
+					alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
+						+ encabezadosEsperados.join(", ") 
+						+ "\n\nEncontrados:\n" 
+						+ primeraFila.join(", "));
+					return; // Detenemos aquí
+				}
+				
+				let rfcCliente = rows.slice(3).map(fila => fila[2]);
+			    // Extraer columna KB desde fila 4-Procentaje de uso maximo de Total de Créditos Abiertos
+			    let valoresBK = rows.slice(3).map(fila => fila[62]); 
+			    //multiplicar por 100 y redondear los decimales
+			    // Extraer columna BO desde fila 4-MOP máximo de Estrategia Bienestar
+			    let valoresBO = rows.slice(3).map(fila => fila[66]); 
+			    // Extraer columna BP desde fila 4-BCS mínimo de Estrategia Bienestar
+			    let valoresBP = rows.slice(3).map(fila => fila[67]);
+			    // Extraer columna BQ desde fila 4-ICC mínimo de Estrategia Bienestar
+			    let valoresBQ = rows.slice(3).map(fila => fila[68]);
+			    // Extraer columna BR desde fila 4-Riesgo máximo de Estrategia Bienestar
+			    let valoresBR = rows.slice(3).map(fila => fila[69]);
+			    
+			    // Construir array de objetos
+				registros = rfcCliente.map((rfc, idx) => ({
+				    vc_rfc_cliente: rfc,
+				    i_tipo_buro_credito: tipo,
+				    d_porc_uso_maximo_adviser: cortarDecimales(valoresBK[idx],3),
+				    d_mop_maximo_adviser: valoresBO[idx],
+				    d_bcs_minimo_adviser: valoresBP[idx],
+				    d_icc_minimo_adviser: valoresBQ[idx],
+				    vc_riesgo_maximo_adviser: valoresBR[idx],
+				    d_bcs_minnimo_prospector: 0,
+				    d_icc_minnimo_prospector: 0,
+				    vc_riesgo_maximo_prospector: '0',
+				    i_estatus_reg: 1,
+				    // @ts-ignore
+				    dt_fecha_registro: document.getElementById("idFecha").value,
+				    // @ts-ignore
+				    i_user_reg: parseInt(document.getElementById("idUser").value),
+				    // @ts-ignore
+				    i_tipo_campania: parseInt(document.getElementById("Campania").value),
+				    
+				}));
+				
+				// Construir array de objetos
+				registrosBuro = rfcCliente.map((rfc, idx) => ({
+				    vc_rfc_cliente: rfc,
+				    i_tipo_buro: tipo,
+				    dt_fecha_vigencia: fechaFormateada,
+				    // @ts-ignore
+				    dt_fecha_registro: document.getElementById("idFecha").value,
+				    
+				}));
+				
+				
+			    
+			}else if(tipo==1){
+				//Prospector
+				
+				const encabezadosEsperados = [
+					"FOLIO",
+					"CTA",
+					"RFC",
+					"1er. NOMBRE",
+					"2do. NOMBRE",
+					"PATERNO",
+					"MATERNO",
+					"DOMICILIO",
+					"COLONIA",
+					"MUNICIPIO",
+					"CIUDAD",
+					"EDO",
+					"CP",
+					//Scores
+					"BC Score",
+					"ICC",
+					//Estrategia
+					"Clasificación de Riesgo",
+					"Resultado",
+					"Corte 660-6"
+				];
+				
+				// Validación encabezados
+				const esValidoEncabezado = JSON.stringify(primeraFila) === JSON.stringify(encabezadosEsperados);
+				
+				if (!esValidoEncabezado) {
+					console.log("Entra a función esValidoEncabezado");
+					// @ts-ignore
+					 Swal.close(); // Cierra el loading
+					alert("El archivo no tiene los encabezados correctos.\n\nEsperados:\n" 
+						+ encabezadosEsperados.join(", ") 
+						+ "\n\nEncontrados:\n" 
+						+ primeraFila.join(", "));
+					return; // Detenemos aquí
+				}
+				
+				let rfcClienteP = rows.slice(3).map(fila => fila[2]);
+				// Extraer columna-BCS mínimo
+			    let valoresBCS = rows.slice(3).map(fila => fila[13]);
+			    // Extraer columna-ICC mínimo
+			    let valoresICC = rows.slice(3).map(fila => fila[14]);
+			    // Extraer columna-Riesgo máximo
+			    let valoresRM = rows.slice(3).map(fila => fila[15]);
+			    
+			    // Construir array de objetos
+				registros = rfcClienteP.map((rfc, idx) => ({
+				    vc_rfc_cliente: rfc,
+				    i_tipo_buro_credito: tipo,
+				    d_porc_uso_maximo_adviser: 0,
+				    d_mop_maximo_adviser: 0,
+				    d_bcs_minimo_adviser: 0,
+				    d_icc_minimo_adviser: 0,
+				    vc_riesgo_maximo_adviser: '0',
+				    d_bcs_minnimo_prospector: valoresBCS[idx],
+				    d_icc_minnimo_prospector: valoresICC[idx],
+				    vc_riesgo_maximo_prospector: valoresRM[idx],
+				    i_estatus_reg: 1,
+				    // @ts-ignore
+				    dt_fecha_registro: document.getElementById("idFecha").value,
+				    // @ts-ignore
+				    i_user_reg: parseInt(document.getElementById("idUser").value),
+				    // @ts-ignore
+				    i_tipo_campania: parseInt(document.getElementById("Campania").value),
+				}));
+				
+				// Construir array de objetos
+				registrosBuro = rfcClienteP.map((rfc, idx) => ({
+				    vc_rfc_cliente: rfc,
+				    i_tipo_buro: tipo,
+				    dt_fecha_vigencia: fechaFormateada,
+				    // @ts-ignore
+				    dt_fecha_registro: document.getElementById("idFecha").value,
+				    
+				}));
+			}else{
+				// @ts-ignore
+				swal({
+					title: "",
+					text: 'Seleccione un tipo de archivo.',
+					icon: "error",
+			    
+			    });
+			    return;
+			}
+		    //console.log("Registros a enviar:", registros);
+		    //console.log("Cantidad de registros construidos:", registros.length);
+			//console.table(registros);
+			//selecionar id proceso 
+		    //update TBL_PROCESO_CAMPANIA
+		    //insert TBL_PROCESO_CAMPANIA
+		    // @ts-ignore
+			//let codigoCamp = parseInt(document.getElementById("Campania").value) + '-' + generarUUIDCorto();
+		    
+		    // @ts-ignore
+			var tipoCampania = parseInt(document.getElementById("Campania").value);
+			
+			let estatusCampania = 2;
+			let banderaCampania = 2;
+			
+			fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&banderaCampania=" + banderaCampania)
+		    //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
+		    .then(resp => {
+		        if (!resp.ok) {
+		            throw new Error("Error al validar campania para procesar validacion respuesta buro");
+		        }
+		        return resp.json(); // porque el backend regresa un int
+		    })
+		    .then(data => {
+				
+				const dataProceso = {
+			        pk_id_proceso_campania: data,
+			        i_estatus_reg: 2,
+			    };
+			    ///
+			    ///
+			    fetch(newUrlBase + 'credito/api/actualizarProcesoCampania', {
+				        method: 'POST',
+				        headers: {
+				            'Content-Type': 'application/json'
+				        },
+				        body: JSON.stringify(dataProceso)
+				    })
+				    .then(resp => {
+					    if (!resp.ok) throw new Error("Error al actualizar Proceso Campania");
 					    return resp.text();
 					})
 					.then(() => {
-					    // 
-					    //
-					    //
-					    let estatusCampania2 = 3;
-						let banderaCampania2 = 2;
-					    fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania2 + "&banderaCampania=" + banderaCampania2)
-						    //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
-						    .then(resp => {
-						        if (!resp.ok) {
-						            throw new Error("Error al validar campania para procesar validacion respuesta buro");
-						        }
-						        return resp.json(); // porque el backend regresa un int
-						    })
-						    .then(data2 => {
-					    		//console.log("data2:", data2);
-					    		// @ts-ignore
-					    		//registros.i_proceso_campania = data2;
-					    		
-					    		registros.forEach(r => {
-							        r.i_proceso_campania = data2;
-							    });
-					    
-							    fetch(newUrlBase + 'credito/api/crearValBuroCredito', {
-							        method: 'POST',
-							        headers: {
-							            'Content-Type': 'application/json'
-							        },
-							        body: JSON.stringify(registros)
-							    })
-							    .then(resp => {
-								    if (!resp.ok) throw new Error("Error al procesar datos Tipo Buro de Credito");
-								    return resp.text();
-								})
-								.then(() => {
-									
-									// @ts-ignore
-									swal({
-									title: "",
-									text: 'Actualizado correctamente',
-									icon: "success",
-								    // @ts-ignore
-								    }).then(() => {
-										//deshabilita el boton Cargar Respuesta Buro
-										// @ts-ignore
-										document.getElementById("btnCargar").disabled = true;
-										window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
-								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-								    });
-									///
-									//mandar llamar SP de proceso de buro de credito SP_CAM_DEPURACION_BC
-									/*fetch(newUrlBase + "credito/api/ejecutarDepuracionBc?tipoCampania=" + tipoCampania + "&procesoCampania=" + data2 + "&tipoBuro=" + tipo)
+						
+						///--
+						fetch(newUrlBase + "credito/api/consultaCodigoCam?procesoCampania=" + data)
+					    .then(resp => {
+					        if (!resp.ok) {
+					            throw new Error("Error al validar campania para obtener codigo campania");
+					        }
+					        return resp.json(); // porque el backend regresa un int
+					    })
+					    .then(datas => {
+							const dataExtCargaBuro = {
+		        
+						        // @ts-ignore
+						        i_id_tipo_campania: parseInt(document.getElementById("Campania").value),
+						        
+						        // @ts-ignore
+						        dt_fecha_extraccion: document.getElementById("idFecha").value,
+						        i_bandera_extraccion: 2,
+						        // @ts-ignore
+						        dt_fecha_inicio_vigencia: document.getElementById("idFecha").value,
+						        // @ts-ignore
+						        dt_fecha_fin_vigencia: document.getElementById("idFecha").value,
+						        // @ts-ignore
+						        dt_fecha_envio_mc: document.getElementById("idFecha").value,
+						        i_estatus_reg: 1,
+						        //3	Carga respuesta Buro
+						        i_id_estatus_campania: 3,
+						        // @ts-ignore
+						        dt_fecha_registro: document.getElementById("idFecha").value,
+						        // @ts-ignore
+						        i_user_reg: parseInt(document.getElementById("idUser").value),
+						        vc_codigo_cam:datas.codigo,
+						        
+						    };
+							/////aqui inicia
+							
+							fetch(newUrlBase + 'credito/api/crearExtCargaBuro', {
+							    method: 'POST',
+							    headers: { 'Content-Type': 'application/json' },
+							    body: JSON.stringify(dataExtCargaBuro)
+							})
+							.then(async resp => {
+							    if (!resp.ok) {
+							        const errorText = await resp.text();
+							        throw new Error(errorText || "Error desconocido");
+							    }
+							    return resp.text();
+							})
+							.then(() => {
+							    // 
+							    //
+							    //
+							    let estatusCampania2 = 3;
+								let banderaCampania2 = 2;
+							    fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania2 + "&banderaCampania=" + banderaCampania2)
+								    //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
 								    .then(resp => {
 								        if (!resp.ok) {
-								            throw new Error("Error en el proceso de depuracion de respuesta buro.");
+								            throw new Error("Error al validar campania para procesar validacion respuesta buro");
 								        }
-								        return resp.text(); // porque el backend regresa un int
+								        return resp.json(); // porque el backend regresa un int
 								    })
-								    .then(dataSP => {
-										
-										// @ts-ignore
-										swal({
-										title: "",
-										text: 'Actualizado correctamente',
-										icon: "success",
-									    // @ts-ignore
-									    }).then(() => {
-									        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+								    .then(data2 => {
+							    		//console.log("data2:", data2);
+							    		// @ts-ignore
+							    		//registros.i_proceso_campania = data2;
+							    		
+							    		registros.forEach(r => {
+									        r.i_proceso_campania = data2;
 									    });
+							    
+									    fetch(newUrlBase + 'credito/api/crearValBuroCredito', {
+									        method: 'POST',
+									        headers: {
+									            'Content-Type': 'application/json'
+									        },
+									        body: JSON.stringify(registros)
+									    })
+									    .then(resp => {
+										    if (!resp.ok) throw new Error("Error al procesar datos Tipo Buro de Credito");
+										    return resp.text();
+										})
+										.then(() => {
+											
+											//cambio inserta la vigencia de buro por cliente y tipo de buro
+								    
+										    fetch(newUrlBase + 'credito/api/crearVigenciaBuro', {
+										        method: 'POST',
+										        headers: {
+										            'Content-Type': 'application/json'
+										        },
+										        body: JSON.stringify(registrosBuro)
+										    })
+										    .then(resp => {
+											    if (!resp.ok) throw new Error("Error al procesar datos vigencia buro");
+											    return resp.text();
+											})
+											.then(() => {
+											
+													// @ts-ignore
+													swal({
+													title: "",
+													text: 'Actualizado correctamente',
+													icon: "success",
+												    // @ts-ignore
+												    }).then(() => {
+														//deshabilita el boton Cargar Respuesta Buro
+														// @ts-ignore
+														document.getElementById("btnCargar").disabled = true;
+														window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+												        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+												    });
+												    
+											})
+											.catch(err => {
+											    console.error("Error al actualizar datos vigencia buro:", err);
+											   // @ts-ignore
+											   swal({
+												title: "",
+												text: 'Error al actualizar',
+											        icon: 'error'
+											    });
+											});
+											
+											///
+											//mandar llamar SP de proceso de buro de credito SP_CAM_DEPURACION_BC
+											/*fetch(newUrlBase + "credito/api/ejecutarDepuracionBc?tipoCampania=" + tipoCampania + "&procesoCampania=" + data2 + "&tipoBuro=" + tipo)
+										    .then(resp => {
+										        if (!resp.ok) {
+										            throw new Error("Error en el proceso de depuracion de respuesta buro.");
+										        }
+										        return resp.text(); // porque el backend regresa un int
+										    })
+										    .then(dataSP => {
+												
+												// @ts-ignore
+												swal({
+												title: "",
+												text: 'Actualizado correctamente',
+												icon: "success",
+											    // @ts-ignore
+											    }).then(() => {
+											        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+											    });
+												
+											})
+										    .catch(err => {
+										        console.error("Error en el proceso de depuracion de respuesta buro: ", err);
+										    });*/
+											///termina llamada del SP
+											
+											
+										})
+										.catch(err => {
+										    console.error("Error al actualizar datos Tipo Buro de Credito:", err);
+										   // @ts-ignore
+										   swal({
+											title: "",
+											text: 'Error al actualizar',
+										        icon: 'error'
+										    });
+										});
 										
 									})
 								    .catch(err => {
-								        console.error("Error en el proceso de depuracion de respuesta buro: ", err);
-								    });*/
-									///termina llamada del SP
-									
-									
-								})
-								.catch(err => {
-								    console.error("Error al actualizar datos Tipo Buro de Credito:", err);
-								   // @ts-ignore
-								   swal({
-									title: "",
-									text: 'Error al actualizar',
-								        icon: 'error'
+								        console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
 								    });
-								});
-								
+							    //
+							    //
+							    //
+							    
 							})
-						    .catch(err => {
-						        console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
-						    });
-					    //
-					    //
-					    //
-					    
+							.catch(err => {
+							    console.error("Error:", err);
+							    // @ts-ignore
+							    Swal.fire({
+							        title: "Error",
+							        text: err.message,
+							        icon: "error",
+							        confirmButtonText: "Cerrar"
+							    });
+							});
+							/////aqui termina
+						})
+						.catch(err => {
+					        console.error("Error al validar campania para obtener codigo campania:: ", err);
+					    });
+						///--
+						
+						
+						
 					})
 					.catch(err => {
-					    console.error("Error:", err);
-					    // @ts-ignore
-					    Swal.fire({
-					        title: "Error",
-					        text: err.message,
-					        icon: "error",
-					        confirmButtonText: "Cerrar"
+					    //console.error("Error al actualizar Proceso Campania:", err);
+					   // @ts-ignore
+					   swal({
+						title: "",
+						text: 'Error al actualizar Proceso Campania',
+					        icon: 'error'
 					    });
 					});
-					/////aqui termina
-				})
-				.catch(err => {
-			        console.error("Error al validar campania para obtener codigo campania:: ", err);
-			    });
-				///--
-				
-				
-				
-			})
-			.catch(err => {
-			    //console.error("Error al actualizar Proceso Campania:", err);
-			   // @ts-ignore
-			   swal({
-				title: "",
-				text: 'Error al actualizar Proceso Campania',
-			        icon: 'error'
-			    });
-			});
-	    ///
-	    ///
-    
-    })
-    .catch(err => {
-        console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
-    });
-    
-		///////////////////////
-		///////////////////////
-  };
-  reader.readAsArrayBuffer(archivo);
+			    ///
+			    ///
+		    
+		    })
+		    .catch(err => {
+		        console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
+		    });
+			//
+		
+		})
+		.catch(err => {
+		 console.error("Error al validar campania para procesar vigencia buro:", err);
+		   // @ts-ignore
+		   swal({
+			title: "",
+			text: 'Error al actualizar',
+		        icon: 'error'
+		    });
+		    return;
+		});
+	    
+	    
+	    
+			///////////////////////
+			///////////////////////
+	};
+  	reader.readAsArrayBuffer(archivo);
 
 
     // Cerrar modal
@@ -1206,6 +1484,8 @@ function btnDepuracionBuro() {
 					    // 
 					    //
 					    //
+					    console.log("tipoCampania: ",tipoCampania);
+					    console.log("procesoCampania: ",data);
 						//mandar llamar SP de proceso de buro de credito SP_CAM_DEPURACION_BC
 						fetch(newUrlBase + "credito/api/ejecutarDepuracionBc?tipoCampania=" + tipoCampania + "&procesoCampania=" + data)
 					    .then(resp => {
@@ -1215,85 +1495,138 @@ function btnDepuracionBuro() {
 					        return resp.text(); // porque el backend regresa un int
 					    })
 					    .then(dataSP => {
-							
-							//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
-							const ahora = new Date();
-						    ahora.setMinutes(ahora.getMinutes() + 6);
-						    //por ser desarrollo el tomcat tiene una hora mas
-						    //esta quitarla en QA y en produccion
-						    //ahora.setHours(ahora.getHours() + 1);
-						    ahora.setHours(ahora.getHours());
-						    
-							const hora = ahora.getHours();      // Hora (0-23)
-							const minutos = ahora.getMinutes(); // Minutos (0-59)
-							
-							const newCron = '0 ' + minutos + ' '+ hora + ' * * 1-6';
-						    //datos del cron
-						    const dataParam = {
-						        
-						        // @ts-ignore
-						        pk_id_configuracion: parseInt(document.getElementById("configIdCronExc").value),
-						        
-						        // @ts-ignore
-						        vc_valor_propiedad: newCron,
-						        
-						    };
-						    const bandera=1;
-						    //datos de la bandera
-						    const dataParam2 = {
-						        
-						        // @ts-ignore
-						        pk_id_configuracion: parseInt(document.getElementById("configIdBanderaExc").value),
-						        
-						        // @ts-ignore
-						        vc_valor_propiedad: bandera,
-						        
-						    };
-						    fetch(newUrlBase + 'credito/api/actualizarParamExt', {
-						        method: 'POST',
-						        headers: { 'Content-Type': 'application/json' },
-						        body: JSON.stringify(dataParam)
+							//condicion que solo apique para recurrentes
+							//fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + parseInt(document.getElementById("Campania").value))
+							//ya mando llamar el select donde trae todo usarlo aqui otra vez
+							///inicia condicon para temporales
+							fetch(newUrlBase + "credito/api/obtenerCampaniaVigenciaBuro?id=" + tipoCampania)
+									    
+						    .then(resp => {
+						        if (!resp.ok) {
+						            throw new Error("Error al validar el tipo de campania recurrente/temporal");
+						        }
+						        return resp.json(); // porque el backend regresa un int
 						    })
-						    .then(async resp => {
-							    if (!resp.ok) {
-							        const errorText = await resp.text();
-							        throw new Error(errorText || "Error desconocido en actualizarParamExt");
-							    }
-							    return resp.text();
-							})
-							.then(() => {
-								//////
-								fetch(newUrlBase + 'credito/api/actualizarParamExt', {
-							        method: 'POST',
-							        headers: { 'Content-Type': 'application/json' },
-							        body: JSON.stringify(dataParam2)
-							    })
-							    .then(async resp => {
-								    if (!resp.ok) {
-								        const errorText = await resp.text();
-								        throw new Error(errorText || "Error desconocido en actualizarParamExt");
-								    }
-								    return resp.text();
-								})
-								/*.then(() => {
-									////////////
+						    .then(data3 => {
+								console.log("data3:", data3.i_tipo_campania);
+								//tipo_campania = 2 recurente
+								if(data3.i_tipo_campania === 2){
+									console.log("entra al if---");
+									//ejecutar primera(ultima) migracion hacia microfin y SP con las exclusiones que van hacia SIB
+									const ahora = new Date();
+								    ahora.setMinutes(ahora.getMinutes() + 6);
+								    //por ser desarrollo el tomcat tiene una hora mas
+								    //esta quitarla en QA y en produccion
+								    //ahora.setHours(ahora.getHours() + 1);
+								    ahora.setHours(ahora.getHours());
+								    
+									const hora = ahora.getHours();      // Hora (0-23)
+									const minutos = ahora.getMinutes(); // Minutos (0-59)
+									
+									const newCron = '0 ' + minutos + ' '+ hora + ' * * 1-6';
+								    //datos del cron
+								    const dataParam = {
+								        
+								        // @ts-ignore
+								        pk_id_configuracion: parseInt(document.getElementById("configIdCronExc").value),
+								        
+								        // @ts-ignore
+								        vc_valor_propiedad: newCron,
+								        
+								    };
+								    const bandera=1;
+								    //datos de la bandera
+								    const dataParam2 = {
+								        
+								        // @ts-ignore
+								        pk_id_configuracion: parseInt(document.getElementById("configIdBanderaExc").value),
+								        
+								        // @ts-ignore
+								        vc_valor_propiedad: bandera,
+								        
+								    };
+								    fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+								        method: 'POST',
+								        headers: { 'Content-Type': 'application/json' },
+								        body: JSON.stringify(dataParam)
+								    })
+								    .then(async resp => {
+									    if (!resp.ok) {
+									        const errorText = await resp.text();
+									        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+									    }
+									    return resp.text();
+									})
+									.then(() => {
+										//////
+										fetch(newUrlBase + 'credito/api/actualizarParamExt', {
+									        method: 'POST',
+									        headers: { 'Content-Type': 'application/json' },
+									        body: JSON.stringify(dataParam2)
+									    })
+									    .then(async resp => {
+										    if (!resp.ok) {
+										        const errorText = await resp.text();
+										        throw new Error(errorText || "Error desconocido en actualizarParamExt");
+										    }
+										    return resp.text();
+										})
+										/*.then(() => {
+											////////////
+											// @ts-ignore
+											swal({
+											title: "",
+											text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
+											icon: "success",
+										    // @ts-ignore
+										    }).then(() => {
+												window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
+										        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+										    });
+											///////////
+									    })*/
+									    .then(msg => {
+										    // @ts-ignore
+										    Swal.fire({
+										        title: "",
+										        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+										        icon: "success",
+										        confirmButtonText: "Aceptar",
+										        allowOutsideClick: false,
+										        allowEscapeKey: false
+										    }).then((result) => {
+										        if (result.isConfirmed) {
+										            window.location.href = newUrlBase + "credito/extraccionCampanias";
+										        }
+										    });
+										})
+										.catch(err => {
+										    console.error("Error: actualizarParamExt", err);
+										    // @ts-ignore
+										    Swal.fire({
+										        title: "Error",
+										        text: err.message,
+										        icon: "error",
+										        confirmButtonText: "Cerrar"
+										    });
+										});
+										/////
+								    })
+									.catch(err => {
+									    console.error("Error: actualizarParamExt", err);
+									    // @ts-ignore
+									    Swal.fire({
+									        title: "Error",
+									        text: err.message,
+									        icon: "error",
+									        confirmButtonText: "Cerrar"
+									    });
+									});
+								}else{
 									// @ts-ignore
-									swal({
-									title: "",
-									text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
-									icon: "success",
-								    // @ts-ignore
-								    }).then(() => {
-										window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
-								        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-								    });
-									///////////
-							    })*/
-							    .then(msg => {
-								    // @ts-ignore
 								    Swal.fire({
 								        title: "",
-								        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
+								        text: "Proceso generado correctamente.",
 								        icon: "success",
 								        confirmButtonText: "Aceptar",
 								        allowOutsideClick: false,
@@ -1303,30 +1636,22 @@ function btnDepuracionBuro() {
 								            window.location.href = newUrlBase + "credito/extraccionCampanias";
 								        }
 								    });
-								})
-								.catch(err => {
-								    console.error("Error: actualizarParamExt", err);
-								    // @ts-ignore
-								    Swal.fire({
-								        title: "Error",
-								        text: err.message,
-								        icon: "error",
-								        confirmButtonText: "Cerrar"
-								    });
-								});
-								/////
-						    })
+								}
+								
+								
+							///inicia termina condicion temporales
+							})
 							.catch(err => {
-							    console.error("Error: actualizarParamExt", err);
-							    // @ts-ignore
-							    Swal.fire({
-							        title: "Error",
-							        text: err.message,
-							        icon: "error",
-							        confirmButtonText: "Cerrar"
+							 console.error("Error al validar tipo de campania recurrente/temporal:", err);
+							   // @ts-ignore
+							   swal({
+								title: "",
+								text: 'Error al actualizar',
+							        icon: 'error'
 							    });
+							    return;
 							});
-							
+							//termina condicion temporales
 							
 						})
 					    .catch(err => {
@@ -1565,6 +1890,9 @@ function btnCancelar() {
     //
     //
     //console.log("va a mandar llamar el SP SP_CAM_CANCELAR_PROCESO");
+    console.log("tipoCampania: " + tipoCampania);
+    console.log("estatusCampania: " + estatusCampania);
+    console.log("userReg: " + userReg);
 	//mandar llamar SP 
 	fetch(newUrlBase + "credito/api/ejecutarCancelar?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&userReg=" + userReg)
     .then(resp => {

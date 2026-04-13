@@ -25,7 +25,7 @@ var clienteValue = 0;
 var timerId;
 var idTipoCampania = 0;
 
-
+var tipoBuroRegistrado=0;
 // Función para realizar la llamada al servicio después de un retraso
 function debouncedListaClientes() {
 	clearTimeout(timerId); // Limpiar el temporizador anterior, si existe
@@ -104,6 +104,7 @@ function buscarCampanias() {
 
 function limpiarFormulario() {
     document.getElementById("Ventana").value = "";
+    document.getElementById("VentanaMayor").value = "";
     document.getElementById("EdadMaxima").value = "";
     document.getElementById("EdadMinima").value = "";
     document.getElementById("MontoMinimo").value = "";
@@ -194,6 +195,7 @@ input.addEventListener('input', function () {
             .then(data => {
 				//console.log("Datos recibidos:", data);
                 document.getElementById("Ventana").value = data.i_ventana_anios;
+                document.getElementById("VentanaMayor").value = data.i_ventana_anios_mayor;
                 document.getElementById("MontoMinimo").value = data.d_monto_minimo;
                 document.getElementById("MinimoVida").value = data.i_minimo_vida_credito;
                 document.getElementById("MinimoVidaR").value = data.i_minimo_vida_credito_r;
@@ -219,10 +221,12 @@ input.addEventListener('input', function () {
                 cargarCatalogoTipoCampanias(data.i_tipo_campania);
                 cargarCatalogoConvivenciaCamp(data.i_convivencia);
                 cargarTipoBuro(data.i_tipo_buro);
+              
                 cargarCatalogoProductosCamp(data.i_prod_credito_id_oferta);
                 cargarChecksEsRenovacion(data.vc_es_renovacion);
                 //cargarChecksEsRenovacionOferta(data.vc_es_renovacion_oferta);
                 
+                tipoBuroRegistrado= data.i_tipo_buro;
                 //console.log("vc_es_renovacion:", data.vc_es_renovacion);
                 if(data.vc_es_renovacion === 'S'){
 					
@@ -511,620 +515,636 @@ function modificarTiposCampanias(){
 			
 	} else if (document.getElementById('tipoCampanias').value != 0) {
 		
-		if (document.getElementById('Ventana').value == '') {
+		if (document.getElementById('VentanaMayor').value == '') {
 				
 			swal({
 				title: "",
-				text: "Debe ingresar el campo Ventana.",
+				text: "Debe ingresar el campo Ventana mayor que.",
 				icon: "warning",
 			});
 				
 		} else if (document.getElementById('Ventana').value != '') {
 			
-			if(esEntero(document.getElementById('Ventana').value)){
-				
-				if (document.getElementById('EdadMaxima').value == '') {
+			//if(esEntero(document.getElementById('VentanaMayor').value)){
 		
-					swal({
-						title: "",
-						text: "Debe ingresar el campo Edad Máxima.",
-						icon: "warning",
-					});
-				
-				} else if (document.getElementById('EdadMaxima').value != '' && document.getElementById('EdadMaxima').value > 0) {
+		
+			if (document.getElementById('Ventana').value == '') {
 					
-					if(esEntero(document.getElementById('EdadMaxima').value)){
-						
-						if (document.getElementById('EdadMinima').value == '') {
+				swal({
+					title: "",
+					text: "Debe ingresar el campo Ventana.",
+					icon: "warning",
+				});
+					
+			} else if (document.getElementById('Ventana').value != '') {
+				
+				if(esEntero(document.getElementById('Ventana').value)){
+					
+					if (document.getElementById('EdadMaxima').value == '') {
 			
-							swal({
-								title: "",
-								text: "Debe ingresar el campo Edad Minima.",
-								icon: "warning",
-							});
-							
-						} else if (document.getElementById('EdadMinima').value != '' && document.getElementById('EdadMinima').value > 0) {
-							if(esEntero(document.getElementById('EdadMinima').value)){
-								if (document.getElementById('MontoMinimo').value == '') {
-				
-									swal({
-										title: "",
-										text: "Debe ingresar el campo Monto Minimo.",
-										icon: "warning",
-									});
-									
-								} else if (document.getElementById('MontoMinimo').value != '' && document.getElementById('MontoMinimo').value > 0) {
-									
-									if(esDecimalPositivo(document.getElementById('MontoMinimo').value)){
-										
-										if (document.getElementById('MontoMaximo').value == '') {
+						swal({
+							title: "",
+							text: "Debe ingresar el campo Edad Máxima.",
+							icon: "warning",
+						});
 					
-											swal({
-												title: "",
-												text: "Debe ingresar el campo Monto Máximo.",
-												icon: "warning",
-											});
-											
-										} else if (document.getElementById('MontoMaximo').value != '' && document.getElementById('MontoMaximo').value > 0) {
-											if(esDecimalPositivo(document.getElementById('MontoMaximo').value)){
-												//if (document.getElementById('MoraMaxima').value == '') {
+					} else if (document.getElementById('EdadMaxima').value != '' && document.getElementById('EdadMaxima').value > 0) {
 						
-													/*swal({
-														title: "",
-														text: "Debe ingresar el campo Mora Máxima.",
-														icon: "warning",
-													});*/
-													
-												//} else if (document.getElementById('MoraMaxima').value != '') {
-													//if(esDecimalPositivo(document.getElementById('MoraMaxima').value)){
-														if (document.getElementById('PorceCubiertoCap').value == '') {
+						if(esEntero(document.getElementById('EdadMaxima').value)){
 							
-															swal({
-																title: "",
-																text: "Debe ingresar el campo Porcentaje Cubierto Capital.",
-																icon: "warning",
-															});
-															
-														} else if (document.getElementById('PorceCubiertoCap').value != '') {
-															if(esDecimalPositivo(document.getElementById('PorceCubiertoCap').value) && document.getElementById('PorceCubiertoCap').value <= 100 && document.getElementById('PorceCubiertoCap').value > 0){
-																if (document.getElementById('DiasGracia').value == '') {
+							if (document.getElementById('EdadMinima').value == '') {
+				
+								swal({
+									title: "",
+									text: "Debe ingresar el campo Edad Minima.",
+									icon: "warning",
+								});
 								
-																	swal({
-																		title: "",
-																		text: "Debe ingresar el campo Días Gracia.",
-																		icon: "warning",
-																	});
-																	
-																} else if (document.getElementById('DiasGracia').value != '') {
-																	if(esEntero(document.getElementById('DiasGracia').value)){
-																		if (document.getElementById('DiasMora').value == '') {
-									
-																			swal({
-																				title: "",
-																				text: "Debe ingresar el campo Días Mora.",
-																				icon: "warning",
-																			});
-																			
-																		} else if (document.getElementById('DiasMora').value != '') {
-																			if(esEntero(document.getElementById('DiasMora').value)){
-																				if (document.getElementById('PlazoMaximoAnios').value == '') {
+							} else if (document.getElementById('EdadMinima').value != '' && document.getElementById('EdadMinima').value > 0) {
+								if(esEntero(document.getElementById('EdadMinima').value)){
+									if (document.getElementById('MontoMinimo').value == '') {
+					
+										swal({
+											title: "",
+											text: "Debe ingresar el campo Monto Minimo.",
+											icon: "warning",
+										});
 										
-																					swal({
-																						title: "",
-																						text: "Debe ingresar el campo Plazo Máximo Años.",
-																						icon: "warning",
-																					});
-																					
-																				} else if (document.getElementById('PlazoMaximoAnios').value != '') {
-																					if(esEntero(document.getElementById('PlazoMaximoAnios').value) && document.getElementById('PlazoMaximoAnios').value>0){
-																						if (document.getElementById('MinimoVida').value == '') {
+									} else if (document.getElementById('MontoMinimo').value != '' && document.getElementById('MontoMinimo').value > 0) {
+										
+										if(esDecimalPositivo(document.getElementById('MontoMinimo').value)){
 											
-																							swal({
-																								title: "",
-																								text: "Debe ingresar el campo Minimo Vida.",
-																								icon: "warning",
-																							});
-																							
-																						} else if (document.getElementById('MinimoVida').value != '') {
-																							if(esEntero(document.getElementById('MinimoVida').value) && document.getElementById('MinimoVida').value>0){
-																								if (document.getElementById('VigenciaBC').value == '') {
+											if (document.getElementById('MontoMaximo').value == '') {
+						
+												swal({
+													title: "",
+													text: "Debe ingresar el campo Monto Máximo.",
+													icon: "warning",
+												});
 												
-																									swal({
-																										title: "",
-																										text: "Debe ingresar el campo Vigencia BC.",
-																										icon: "warning",
-																									});
-																									
-																								} else if (document.getElementById('VigenciaBC').value != '') {
-																									if(esEntero(document.getElementById('VigenciaBC').value)){
-																										if (document.getElementById('VigenciaCampania').value == '') {
-													
-																											swal({
-																												title: "",
-																												text: "Debe ingresar el campo Vigencia Campaña.",
-																												icon: "warning",
-																											});
-																											
-																										} else if (document.getElementById('VigenciaCampania').value != '') {
-																											if(esEntero(document.getElementById('VigenciaCampania').value)){
-																												if (document.getElementById('CreditosLiquidados').value == '') {
+											} else if (document.getElementById('MontoMaximo').value != '' && document.getElementById('MontoMaximo').value > 0) {
+												if(esDecimalPositivo(document.getElementById('MontoMaximo').value)){
+													//if (document.getElementById('MoraMaxima').value == '') {
+							
+														/*swal({
+															title: "",
+															text: "Debe ingresar el campo Mora Máxima.",
+															icon: "warning",
+														});*/
 														
-																													swal({
-																														title: "",
-																														text: "Debe ingresar el campo Créditos Liquidados.",
-																														icon: "warning",
-																													});
-																													
-																												} else if (document.getElementById('CreditosLiquidados').value != '') {
-																													if(esEntero(document.getElementById('CreditosLiquidados').value)){
-																														let seleccion = document.querySelector('input[name="checksEsRenovacion"]:checked');
-																														
-																														if (!seleccion) {
+													//} else if (document.getElementById('MoraMaxima').value != '') {
+														//if(esDecimalPositivo(document.getElementById('MoraMaxima').value)){
+															if (document.getElementById('PorceCubiertoCap').value == '') {
+								
+																swal({
+																	title: "",
+																	text: "Debe ingresar el campo Porcentaje Cubierto Capital.",
+																	icon: "warning",
+																});
+																
+															} else if (document.getElementById('PorceCubiertoCap').value != '') {
+																if(esDecimalPositivo(document.getElementById('PorceCubiertoCap').value) && document.getElementById('PorceCubiertoCap').value <= 100 && document.getElementById('PorceCubiertoCap').value > 0){
+																	if (document.getElementById('DiasGracia').value == '') {
+									
+																		swal({
+																			title: "",
+																			text: "Debe ingresar el campo Días Gracia.",
+																			icon: "warning",
+																		});
+																		
+																	} else if (document.getElementById('DiasGracia').value != '') {
+																		if(esEntero(document.getElementById('DiasGracia').value)){
+																			if (document.getElementById('DiasMora').value == '') {
+										
+																				swal({
+																					title: "",
+																					text: "Debe ingresar el campo Días Mora.",
+																					icon: "warning",
+																				});
+																				
+																			} else if (document.getElementById('DiasMora').value != '') {
+																				if(esEntero(document.getElementById('DiasMora').value)){
+																					if (document.getElementById('PlazoMaximoAnios').value == '') {
+											
+																						swal({
+																							title: "",
+																							text: "Debe ingresar el campo Plazo Máximo Años.",
+																							icon: "warning",
+																						});
+																						
+																					} else if (document.getElementById('PlazoMaximoAnios').value != '') {
+																						if(esEntero(document.getElementById('PlazoMaximoAnios').value) && document.getElementById('PlazoMaximoAnios').value>0){
+																							if (document.getElementById('MinimoVida').value == '') {
+												
+																								swal({
+																									title: "",
+																									text: "Debe ingresar el campo Minimo Vida.",
+																									icon: "warning",
+																								});
+																								
+																							} else if (document.getElementById('MinimoVida').value != '') {
+																								if(esEntero(document.getElementById('MinimoVida').value) && document.getElementById('MinimoVida').value>0){
+																									if (document.getElementById('VigenciaBC').value == '') {
+													
+																										swal({
+																											title: "",
+																											text: "Debe ingresar el campo Vigencia BC.",
+																											icon: "warning",
+																										});
+																										
+																									} else if (document.getElementById('VigenciaBC').value != '') {
+																										if(esEntero(document.getElementById('VigenciaBC').value)){
+																											if (document.getElementById('VigenciaCampania').value == '') {
+														
+																												swal({
+																													title: "",
+																													text: "Debe ingresar el campo Vigencia Campaña.",
+																													icon: "warning",
+																												});
+																												
+																											} else if (document.getElementById('VigenciaCampania').value != '') {
+																												if(esEntero(document.getElementById('VigenciaCampania').value)){
+																													if (document.getElementById('CreditosLiquidados').value == '') {
 															
-																															swal({
-																																title: "",
-																																text: "Debe seleccionar una opción en Es Renovación.",
-																																icon: "warning",
-																															});
+																														swal({
+																															title: "",
+																															text: "Debe ingresar el campo Créditos Liquidados.",
+																															icon: "warning",
+																														});
+																														
+																													} else if (document.getElementById('CreditosLiquidados').value != '') {
+																														if(esEntero(document.getElementById('CreditosLiquidados').value)){
+																															let seleccion = document.querySelector('input[name="checksEsRenovacion"]:checked');
 																															
-																														} else{
-																															
-																															if (document.getElementById('convivenciaCamp').value == 0) {
+																															if (!seleccion) {
 																
 																																swal({
 																																	title: "",
-																																	text: "Debe seleccionar el campo Convivencia Campaña.",
+																																	text: "Debe seleccionar una opción en Es Renovación.",
 																																	icon: "warning",
 																																});
 																																
-																															} else if (document.getElementById('convivenciaCamp').value > 0) {
-																																let select = document.getElementById("Productos");
-																																let seleccionProd = Array.from(select.selectedOptions);
-																																//let seleccionados = document.querySelectorAll('input[name="productos"]:checked');
-																																if (seleccionProd.length === 0) {
-																
+																															} else{
+																																
+																																if (document.getElementById('convivenciaCamp').value == 0) {
+																	
 																																	swal({
 																																		title: "",
-																																		text: "Debe seleccionar al menos un producto.",
+																																		text: "Debe seleccionar el campo Convivencia Campaña.",
 																																		icon: "warning",
 																																	});
 																																	
-																																} else{
-																																	//////////////como debe ir ProdCredito?//////////////7
-																																	if (document.getElementById('prodCredito').value == 0) {
-																
+																																} else if (document.getElementById('convivenciaCamp').value > 0) {
+																																	let select = document.getElementById("Productos");
+																																	let seleccionProd = Array.from(select.selectedOptions);
+																																	//let seleccionados = document.querySelectorAll('input[name="productos"]:checked');
+																																	if (seleccionProd.length === 0) {
+																	
 																																		swal({
 																																			title: "",
-																																			text: "Debe seleccionar el campo ProdCredito.",
+																																			text: "Debe seleccionar al menos un producto.",
 																																			icon: "warning",
 																																		});
 																																		
-																																	} else if (document.getElementById('prodCredito').value != '') {
-																																		
-																																		if (document.getElementById('PorceIncremento').value == '') {
-																
+																																	} else{
+																																		//////////////como debe ir ProdCredito?//////////////7
+																																		if (document.getElementById('prodCredito').value == 0) {
+																	
 																																			swal({
 																																				title: "",
-																																				text: "Debe ingresar el campo PorceIncremento.",
+																																				text: "Debe seleccionar el campo ProdCredito.",
 																																				icon: "warning",
 																																			});
 																																			
-																																		} else if (document.getElementById('PorceIncremento').value != '') {
-																																			if(esEntero(document.getElementById('PorceIncremento').value)){
+																																		} else if (document.getElementById('prodCredito').value != '') {
+																																			
+																																			if (document.getElementById('PorceIncremento').value == '') {
+																	
+																																				swal({
+																																					title: "",
+																																					text: "Debe ingresar el campo PorceIncremento.",
+																																					icon: "warning",
+																																				});
 																																				
-																																				//let seleccionOferta = document.querySelector('input[name="checksEsRenovacionOferta"]:checked');
-																														
-																																				/*if (!seleccionOferta) {
+																																			} else if (document.getElementById('PorceIncremento').value != '') {
+																																				if(esEntero(document.getElementById('PorceIncremento').value)){
 																																					
-																																					swal({
-																																						title: "",
-																																						text: "Debe seleccionar una opción en Es Renovación Oferta.",
-																																						icon: "warning",
-																																					});
-																																					
-																																				} else {*/
-																																					
-																																					/*if (document.getElementById('VigenciaCampaniaOferta').value == '') {
+																																					//let seleccionOferta = document.querySelector('input[name="checksEsRenovacionOferta"]:checked');
+																															
+																																					/*if (!seleccionOferta) {
+																																						
 																																						swal({
 																																							title: "",
-																																							text: "Debe ingresar el campo VigenciaCampaniaOferta.",
+																																							text: "Debe seleccionar una opción en Es Renovación Oferta.",
 																																							icon: "warning",
 																																						});
 																																						
-																																					} else if (document.getElementById('VigenciaCampaniaOferta').value != '') {*/
-																																						//if(esEntero(document.getElementById('VigenciaCampaniaOferta').value)){
+																																					} else {*/
+																																						
+																																						/*if (document.getElementById('VigenciaCampaniaOferta').value == '') {
+																																							swal({
+																																								title: "",
+																																								text: "Debe ingresar el campo VigenciaCampaniaOferta.",
+																																								icon: "warning",
+																																							});
 																																							
-																																							if (document.getElementById('TasaOrdinaria').value == '') {
-																	
-																																								swal({
-																																									title: "",
-																																									text: "Debe ingresar el campo TasaOrdinaria.",
-																																									icon: "warning",
-																																								});
+																																						} else if (document.getElementById('VigenciaCampaniaOferta').value != '') {*/
+																																							//if(esEntero(document.getElementById('VigenciaCampaniaOferta').value)){
 																																								
-																																							} else if (document.getElementById('TasaOrdinaria').value != '') {
-																																								
-																																								if(esDecimalPositivo(document.getElementById('TasaOrdinaria').value)){
-																																									
-																																									let seleccionActiva = document.querySelector('input[name="checksActiva"]:checked');
-																														
-																																									if (!seleccionActiva) {
+																																								if (document.getElementById('TasaOrdinaria').value == '') {
 																		
-																																										swal({
-																																											title: "",
-																																											text: "Debe ingresar el campo checksActiva.",
-																																											icon: "warning",
-																																										});
+																																									swal({
+																																										title: "",
+																																										text: "Debe ingresar el campo TasaOrdinaria.",
+																																										icon: "warning",
+																																									});
+																																									
+																																								} else if (document.getElementById('TasaOrdinaria').value != '') {
+																																									
+																																									if(esDecimalPositivo(document.getElementById('TasaOrdinaria').value)){
 																																										
-																																									} else {
-																																										
-																																										if (document.getElementById('MontoMaximoOferta').value == '') {
+																																										let seleccionActiva = document.querySelector('input[name="checksActiva"]:checked');
+																															
+																																										if (!seleccionActiva) {
 																			
 																																											swal({
 																																												title: "",
-																																												text: "Debe ingresar el campo Monto Máximo Oferta.",
+																																												text: "Debe ingresar el campo checksActiva.",
 																																												icon: "warning",
 																																											});
 																																											
-																																										} else if (document.getElementById('MontoMaximoOferta').value != '') {
+																																										} else {
 																																											
-																																											if(esDecimalPositivo(document.getElementById('MontoMaximoOferta').value)){
-																																												///////////////////////aqui inicia el
+																																											if (document.getElementById('MontoMaximoOferta').value == '') {
+																				
+																																												swal({
+																																													title: "",
+																																													text: "Debe ingresar el campo Monto Máximo Oferta.",
+																																													icon: "warning",
+																																												});
 																																												
-																																												const checksEsRenovacion = document.getElementsByName("checksEsRenovacion");
-																																											    let valorSiNo = "";
-																																											
-																																											    for (let radio of checksEsRenovacion) {
-																																											        if (radio.checked) {
-																																											            valorSiNo = radio.value == "1" ? "S" : "N";
-																																											            break;
-																																											        }
-																																											    }
-																																											    let minimovidaCredR = 0;
-																																											    let valorMinimoVidaCredR = 0;
-																																											    let banderaMinimoVidaCredito = 0;
-																																											    if(valorSiNo === 'S'){
-																																													console.log("entra a  es S");
-																																													if (document.getElementById('MinimoVidaR').value == '') {
-																																														
-																																														banderaMinimoVidaCredito = 1;
-																																														
-																																														console.log("entra a Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).");
-											
-																																														swal({
-																																															title: "",
-																																															text: "Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).",
-																																															icon: "warning",
-																																														});
-																																														
-																																													} else if (document.getElementById('MinimoVidaR').value != '') {
-																																														if(esEntero(document.getElementById('MinimoVidaR').value) && document.getElementById('MinimoVidaR').value>0){
-																																															minimovidaCredR = 1;
-																																															valorMinimoVidaCredR = parseInt(document.getElementById("MinimoVidaR").value);
-																																															console.log("entra a es correcto y lo va guardar");
-																																															}else{
-																																																banderaMinimoVidaCredito = 1;
-																																																console.log("entra a no es entero");
-																																																swal({
-																																																	title: "",
-																																																	text: mensajeError,
-																																																	icon: "warning",
-																																																});
-																																															}
-																																													}
-																																												}else{
-																																													console.log("entra a  es N");
-																																													minimovidaCredR = 1;
-																																													valorMinimoVidaCredR = 0;
-																																												}
+																																											} else if (document.getElementById('MontoMaximoOferta').value != '') {
 																																												
-																																												/*if(minimovidaCredR = 1){
+																																												if(esDecimalPositivo(document.getElementById('MontoMaximoOferta').value)){
+																																													///////////////////////aqui inicia el
 																																													
-																																												}else{
-																																													swal({
-																																														title: "",
-																																														text: mensajeError,
-																																														icon: "warning",
-																																													});
-																																												}*/
+																																													const checksEsRenovacion = document.getElementsByName("checksEsRenovacion");
+																																												    let valorSiNo = "";
 																																												
-																																												/////////////////////////////////////////////////////////////////////////////////////////
-																																												//va un if si renovacion es Si entonces validar que el otro campo este lleno
-																																												if(minimovidaCredR === 1){
-																																													//console.log("entra a solo deberia ser correcto o es N");
-																																													const selectElement = document.getElementById("Productos");
-																																													const selectedProductos = Array.from(selectElement.selectedOptions).map(option => option.value);
-																																												    const productosSelect = selectedProductos.join(",");
-																																												    //console.log(productosSelect);
-																																													
-																																													//const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
-																																												    /*let vc_es_renovacion_oferta_checkbox = "";
-																																												    for (let radio of checksEsRenovacionOferta) {
+																																												    for (let radio of checksEsRenovacion) {
 																																												        if (radio.checked) {
-																																												            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2"
-																																												            break;
-																																												        }
-																																												    }*/
-																																													
-																																													const checksActiva = document.getElementsByName("checksActiva");
-																																												    let activa_checkbox = "";
-																																												    for (let radio of checksActiva) {
-																																												        if (radio.checked) {
-																																												            activa_checkbox = radio.value; // será "1" o "2"
+																																												            valorSiNo = radio.value == "1" ? "S" : "N";
 																																												            break;
 																																												        }
 																																												    }
-																																												    let nomTipoCampania = '';
-																																												    if(idTipoCampania === 0){
-																																														if (document.getElementById('NomTipoCampania').value == '') {
-																				
+																																												    let minimovidaCredR = 0;
+																																												    let valorMinimoVidaCredR = 0;
+																																												    let banderaMinimoVidaCredito = 0;
+																																												    if(valorSiNo === 'S'){
+																																														console.log("entra a  es S");
+																																														if (document.getElementById('MinimoVidaR').value == '') {
+																																															
+																																															banderaMinimoVidaCredito = 1;
+																																															
+																																															console.log("entra a Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).");
+												
 																																															swal({
 																																																title: "",
-																																																text: "Debe ingresar descripción para tipo campaña.",
+																																																text: "Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).",
 																																																icon: "warning",
 																																															});
 																																															
-																																														} else if (document.getElementById('NomTipoCampania').value != '') {
-																																															nomTipoCampania = document.getElementById("NomTipoCampania").value;
+																																														} else if (document.getElementById('MinimoVidaR').value != '') {
+																																															if(esEntero(document.getElementById('MinimoVidaR').value) && document.getElementById('MinimoVidaR').value>0){
+																																																minimovidaCredR = 1;
+																																																valorMinimoVidaCredR = parseInt(document.getElementById("MinimoVidaR").value);
+																																																console.log("entra a es correcto y lo va guardar");
+																																																}else{
+																																																	banderaMinimoVidaCredito = 1;
+																																																	console.log("entra a no es entero");
+																																																	swal({
+																																																		title: "",
+																																																		text: mensajeError,
+																																																		icon: "warning",
+																																																	});
+																																																}
 																																														}
-																																													}
-	
-																																													const data = {
-																																												        pk_id_tipo_campania: idTipoCampania,
-																																												        vc_tipo_campania: nomTipoCampania,
-																																												        i_tipo_campania: parseInt(document.getElementById("tipoCampanias").value),
-																																												        i_ventana_anios: parseInt(document.getElementById("Ventana").value),
-																																												        i_edad_maxima: parseInt(document.getElementById("EdadMaxima").value),
-																																												        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
-																																												        d_monto_minimo: parseFloat(document.getElementById("MontoMinimo").value),
-																																												        d_monto_maximo: parseFloat(document.getElementById("MontoMaximo").value),
-																																												        //i_dias_mora: parseInt(document.getElementById("MoraMaxima").value),
-																																												        d_porc_cubierto_capital: parseFloat(document.getElementById("PorceCubiertoCap").value),
-																																												        i_dias_gracia: parseInt(document.getElementById("DiasGracia").value),
-																																												        i_dias_mora: parseInt(document.getElementById("DiasMora").value),
-																																												        i_plazo_maximo_anios: parseInt(document.getElementById("PlazoMaximoAnios").value),
-																																												        i_minimo_vida_credito: parseInt(document.getElementById("MinimoVida").value),
-																																												        i_vigencia_bc: parseInt(document.getElementById("VigenciaBC").value),
-																																												        i_vigencia_campania: parseInt(document.getElementById("VigenciaCampania").value),
-																																												        i_creditos_liquidados: parseInt(document.getElementById("CreditosLiquidados").value),
-																																												        vc_es_renovacion:valorSiNo,
-																																												        i_convivencia: parseInt(document.getElementById("convivenciaCamp").value),
-																																												        vc_productos: productosSelect,
-																																												        i_prod_credito_id_oferta: parseInt(document.getElementById("prodCredito").value),
-																																												        d_porc_inc_oferta: parseFloat(document.getElementById("PorceIncremento").value),
-																																												        
-																																												        //i_vigencia_oferta: parseInt(document.getElementById("VigenciaCampaniaOferta").value),
-																																												        d_tasa_ordinaria_oferta: parseInt(document.getElementById("TasaOrdinaria").value),
-																																												        i_activa_oferta: parseInt(activa_checkbox),
-																																												        d_monto_maximo_oferta: parseFloat(document.getElementById("MontoMaximoOferta").value),
-																																												        i_minimo_vida_credito_r: valorMinimoVidaCredR,
-																																												        //i_user_reg: parseInt(document.getElementById("idUser").value),
-																																												        i_estatus: 1,
-																																												        dt_fecha_registro:document.getElementById("idFecha").value,
-																																												        i_tipo_buro: parseInt(document.getElementById("tipoArchivoBuro").value),
-																																												    };
-																																												    //console.log(data);
-																																												    const jsonBitacora = JSON.stringify(data);
-																																												    let tabla = 'TBL_TIPOS_CAMPANIA';
-																																												    console.log(jsonBitacora);
-																																												    const dataHis = {
-																																												        vc_json_entrada: jsonBitacora,
-																																												        vc_tabla: tabla,
-																																												        i_user_reg: parseInt(document.getElementById("idUser").value),
-																																												        
-																																												    };
-																																												    let endpoint = '';
-																																												    //const endpoint = idTipoCampania === 0 ? 'credito/api/crear' : 'credito/api/actualizar';
-																																												    if(idTipoCampania === 0){
-																																														endpoint = 'credito/api/crear';
-																																														delete data.pk_id_tipo_campania;
 																																													}else{
-																																														endpoint = 'credito/api/actualizar';
-																																														delete data.vc_tipo_campania;
-																																														//delete data.i_user_reg;
+																																														console.log("entra a  es N");
+																																														minimovidaCredR = 1;
+																																														valorMinimoVidaCredR = 0;
 																																													}
-																																												    //fetch(newUrlBase + 'credito/api/actualizar', {
-																																													fetch(newUrlBase + endpoint, {
-																																												        method: 'POST',
-																																												        headers: {
-																																												            'Content-Type': 'application/json'
-																																												        },
-																																												        body: JSON.stringify(data)
-																																												    })
-																																												    .then(resp => {
-																																													    if (!resp.ok) throw new Error("Error al actualizar");
-																																													    return resp.text();
-																																													})
-																																													.then(() => {
+																																													
+																																													/*if(minimovidaCredR = 1){
 																																														
-																																														///
-																																														fetch(newUrlBase + 'credito/api/crearHis', {
+																																													}else{
+																																														swal({
+																																															title: "",
+																																															text: mensajeError,
+																																															icon: "warning",
+																																														});
+																																													}*/
+																																													
+																																													/////////////////////////////////////////////////////////////////////////////////////////
+																																													//va un if si renovacion es Si entonces validar que el otro campo este lleno
+																																													if(minimovidaCredR === 1){
+																																														//console.log("entra a solo deberia ser correcto o es N");
+																																														const selectElement = document.getElementById("Productos");
+																																														const selectedProductos = Array.from(selectElement.selectedOptions).map(option => option.value);
+																																													    const productosSelect = selectedProductos.join(",");
+																																													    //console.log(productosSelect);
+																																														
+																																														//const checksEsRenovacionOferta = document.getElementsByName("checksEsRenovacionOferta");
+																																													    /*let vc_es_renovacion_oferta_checkbox = "";
+																																													    for (let radio of checksEsRenovacionOferta) {
+																																													        if (radio.checked) {
+																																													            vc_es_renovacion_oferta_checkbox = radio.value; // será "1" o "2"
+																																													            break;
+																																													        }
+																																													    }*/
+																																														
+																																														const checksActiva = document.getElementsByName("checksActiva");
+																																													    let activa_checkbox = "";
+																																													    for (let radio of checksActiva) {
+																																													        if (radio.checked) {
+																																													            activa_checkbox = radio.value; // será "1" o "2"
+																																													            break;
+																																													        }
+																																													    }
+																																													    
+																																													    let nomTipoCampania = '';
+																																													    if(idTipoCampania === 0){
+																																															if (document.getElementById('NomTipoCampania').value == '') {
+																					
+																																																swal({
+																																																	title: "",
+																																																	text: "Debe ingresar descripción para tipo campaña.",
+																																																	icon: "warning",
+																																																});
+																																																
+																																															} else if (document.getElementById('NomTipoCampania').value != '') {
+																																																nomTipoCampania = document.getElementById("NomTipoCampania").value;
+																																															}
+																																														}
+		
+																																														const data = {
+																																													        pk_id_tipo_campania: idTipoCampania,
+																																													        vc_tipo_campania: nomTipoCampania,
+																																													        i_tipo_campania: parseInt(document.getElementById("tipoCampanias").value),
+																																													        i_ventana_anios: parseInt(document.getElementById("Ventana").value),
+																																													        i_ventana_anios_mayor: parseInt(document.getElementById("VentanaMayor").value),
+																																													        i_edad_maxima: parseInt(document.getElementById("EdadMaxima").value),
+																																													        i_edad_minima: parseInt(document.getElementById("EdadMinima").value),
+																																													        d_monto_minimo: parseFloat(document.getElementById("MontoMinimo").value),
+																																													        d_monto_maximo: parseFloat(document.getElementById("MontoMaximo").value),
+																																													        //i_dias_mora: parseInt(document.getElementById("MoraMaxima").value),
+																																													        d_porc_cubierto_capital: parseFloat(document.getElementById("PorceCubiertoCap").value),
+																																													        i_dias_gracia: parseInt(document.getElementById("DiasGracia").value),
+																																													        i_dias_mora: parseInt(document.getElementById("DiasMora").value),
+																																													        i_plazo_maximo_anios: parseInt(document.getElementById("PlazoMaximoAnios").value),
+																																													        i_minimo_vida_credito: parseInt(document.getElementById("MinimoVida").value),
+																																													        i_vigencia_bc: parseInt(document.getElementById("VigenciaBC").value),
+																																													        i_vigencia_campania: parseInt(document.getElementById("VigenciaCampania").value),
+																																													        i_creditos_liquidados: parseInt(document.getElementById("CreditosLiquidados").value),
+																																													        vc_es_renovacion:valorSiNo,
+																																													        i_convivencia: parseInt(document.getElementById("convivenciaCamp").value),
+																																													        vc_productos: productosSelect,
+																																													        i_prod_credito_id_oferta: parseInt(document.getElementById("prodCredito").value),
+																																													        d_porc_inc_oferta: parseFloat(document.getElementById("PorceIncremento").value),
+																																													        
+																																													        //i_vigencia_oferta: parseInt(document.getElementById("VigenciaCampaniaOferta").value),
+																																													        d_tasa_ordinaria_oferta: parseInt(document.getElementById("TasaOrdinaria").value),
+																																													        i_activa_oferta: parseInt(activa_checkbox),
+																																													        d_monto_maximo_oferta: parseFloat(document.getElementById("MontoMaximoOferta").value),
+																																													        i_minimo_vida_credito_r: valorMinimoVidaCredR,
+																																													        //i_user_reg: parseInt(document.getElementById("idUser").value),
+																																													        i_estatus: 1,
+																																													        dt_fecha_registro:document.getElementById("idFecha").value,
+																																													        i_tipo_buro: parseInt(document.getElementById("tipoArchivoBuro").value),
+																																													    };
+																																													    //console.log(data);
+																																													    const jsonBitacora = JSON.stringify(data);
+																																													    let tabla = 'TBL_TIPOS_CAMPANIA';
+																																													    console.log(jsonBitacora);
+																																													    const dataHis = {
+																																													        vc_json_entrada: jsonBitacora,
+																																													        vc_tabla: tabla,
+																																													        i_user_reg: parseInt(document.getElementById("idUser").value),
+																																													        
+																																													    };
+																																													    let endpoint = '';
+																																													    //const endpoint = idTipoCampania === 0 ? 'credito/api/crear' : 'credito/api/actualizar';
+																																													    if(idTipoCampania === 0){
+																																															endpoint = 'credito/api/crear';
+																																															delete data.pk_id_tipo_campania;
+																																														}else{
+																																															endpoint = 'credito/api/actualizar';
+																																															delete data.vc_tipo_campania;
+																																															//delete data.i_user_reg;
+																																														}
+																																													    //fetch(newUrlBase + 'credito/api/actualizar', {
+																																														fetch(newUrlBase + endpoint, {
 																																													        method: 'POST',
 																																													        headers: {
 																																													            'Content-Type': 'application/json'
 																																													        },
-																																													        body: JSON.stringify(dataHis)
+																																													        body: JSON.stringify(data)
 																																													    })
-																																														///
-																																														
+																																													    .then(resp => {
+																																														    if (!resp.ok) throw new Error("Error al actualizar");
+																																														    return resp.text();
+																																														})
+																																														.then(() => {
+																																															
+																																															///
+																																															fetch(newUrlBase + 'credito/api/crearHis', {
+																																														        method: 'POST',
+																																														        headers: {
+																																														            'Content-Type': 'application/json'
+																																														        },
+																																														        body: JSON.stringify(dataHis)
+																																														    })
+																																															///
+																																															
+																																															swal({
+																																															title: "",
+																																															text: 'Actualizado correctamente',
+																																															icon: "success",
+																																														    }).then(() => {
+																																														        window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
+																																														    });
+																																														})
+																																														.catch(err => {
+																																														    console.error("Error al actualizar:", err);
+																																														   swal({
+																																															title: "",
+																																															text: 'Error al actualizar',
+																																														        icon: 'error'
+																																														    });
+																																														});
+																																														///////////////////////
+																																													}else{
 																																														swal({
-																																														title: "",
-																																														text: 'Actualizado correctamente',
-																																														icon: "success",
-																																													    }).then(() => {
-																																													        window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-																																													    });
-																																													})
-																																													.catch(err => {
-																																													    console.error("Error al actualizar:", err);
-																																													   swal({
-																																														title: "",
-																																														text: 'Error al actualizar',
-																																													        icon: 'error'
-																																													    });
-																																													});
-																																													///////////////////////
-																																												}else{
-																																													swal({
-																																														title: "",
-																																														text: mensajeError,
-																																														icon: "warning",
-																																													});
-																																												}///aqui termina el ultimo else de la validaciones
-																																											}else{ 
-																																													swal({
-																																														title: "",
-																																														text: mensajeError,
-																																														icon: "warning",
-																																													});
-																																												}
+																																															title: "",
+																																															text: mensajeError,
+																																															icon: "warning",
+																																														});
+																																													}///aqui termina el ultimo else de la validaciones
+																																												}else{ 
+																																														swal({
+																																															title: "",
+																																															text: mensajeError,
+																																															icon: "warning",
+																																														});
+																																													}
+																																											}
 																																										}
+																																									}else{
+																																										swal({
+																																											title: "",
+																																											text: mensajeError,
+																																											icon: "warning",
+																																										});
 																																									}
-																																								}else{
-																																									swal({
-																																										title: "",
-																																										text: mensajeError,
-																																										icon: "warning",
-																																									});
+																																									
 																																								}
-																																								
+																																							}else{
+																																								swal({
+																																									title: "",
+																																									text: mensajeError,
+																																									icon: "warning",
+																																								});
 																																							}
-																																						}else{
-																																							swal({
-																																								title: "",
-																																								text: mensajeError,
-																																								icon: "warning",
-																																							});
-																																						}
-																																						
-																																						
+																																							
+																																							
+																																						//}
 																																					//}
-																																				//}
-																																				//aqui termina
-																																			/*}else{
-																																				swal({
-																																					title: "",
-																																					text: mensajeError,
-																																					icon: "warning",
-																																				});
-																																			}*/
-																																			
+																																					//aqui termina
+																																				/*}else{
+																																					swal({
+																																						title: "",
+																																						text: mensajeError,
+																																						icon: "warning",
+																																					});
+																																				}*/
+																																				
+																																			}
 																																		}
 																																	}
 																																}
 																															}
+																														}else{
+																															swal({
+																																title: "",
+																																text: mensajeError,
+																																icon: "warning",
+																															});
 																														}
-																													}else{
-																														swal({
-																															title: "",
-																															text: mensajeError,
-																															icon: "warning",
-																														});
 																													}
+																												}else{
+																													swal({
+																														title: "",
+																														text: mensajeError,
+																														icon: "warning",
+																													});
 																												}
-																											}else{
-																												swal({
-																													title: "",
-																													text: mensajeError,
-																													icon: "warning",
-																												});
 																											}
+																										}else{
+																											swal({
+																												title: "",
+																												text: mensajeError,
+																												icon: "warning",
+																											});
 																										}
-																									}else{
-																										swal({
-																											title: "",
-																											text: mensajeError,
-																											icon: "warning",
-																										});
 																									}
+																								}else{
+																									swal({
+																										title: "",
+																										text: mensajeError,
+																										icon: "warning",
+																									});
 																								}
-																							}else{
-																								swal({
-																									title: "",
-																									text: mensajeError,
-																									icon: "warning",
-																								});
 																							}
+																						}else{
+																							swal({
+																								title: "",
+																								text: mensajeError,
+																								icon: "warning",
+																							});
 																						}
-																					}else{
-																						swal({
-																							title: "",
-																							text: mensajeError,
-																							icon: "warning",
-																						});
 																					}
+																				}else{
+																					swal({
+																						title: "",
+																						text: mensajeError,
+																						icon: "warning",
+																					});
 																				}
-																			}else{
-																				swal({
-																					title: "",
-																					text: mensajeError,
-																					icon: "warning",
-																				});
 																			}
+																		}else{
+																			swal({
+																				title: "",
+																				text: mensajeError,
+																				icon: "warning",
+																			});
 																		}
-																	}else{
-																		swal({
-																			title: "",
-																			text: mensajeError,
-																			icon: "warning",
-																		});
 																	}
+																}else{
+																	swal({
+																		title: "",
+																		text: mensajeError,
+																		icon: "warning",
+																	});
 																}
-															}else{
-																swal({
-																	title: "",
-																	text: mensajeError,
-																	icon: "warning",
-																});
 															}
+														}else{
+															swal({
+																title: "",
+																text: mensajeError,
+																icon: "warning",
+															});
 														}
-													}else{
-														swal({
-															title: "",
-															text: mensajeError,
-															icon: "warning",
-														});
-													}
-												//}
-											/*}else {
-												swal({
-													title: "",
-													text: mensajeError,
-													icon: "warning",
-												});
-											}*/
+													//}
+												/*}else {
+													swal({
+														title: "",
+														text: mensajeError,
+														icon: "warning",
+													});
+												}*/
+											}
+										}else{
+											swal({
+												title: "",
+												text: mensajeError,
+												icon: "warning",
+											});
 										}
-									}else{
-										swal({
-											title: "",
-											text: mensajeError,
-											icon: "warning",
-										});
+										
 									}
-									
+								}else{
+									swal({
+										title: "",
+										text: mensajeError,
+										icon: "warning",
+									});
 								}
-							}else{
-								swal({
-									title: "",
-									text: mensajeError,
-									icon: "warning",
-								});
 							}
+						}else{
+							swal({
+								title: "",
+								text: mensajeError,
+								icon: "warning",
+							});
 						}
-					}else{
-						swal({
-							title: "",
-							text: mensajeError,
-							icon: "warning",
-						});
 					}
+				}else{
+					swal({
+						title: "",
+						text: mensajeError,
+						icon: "warning",
+					});
 				}
-			}else{
-				swal({
-					title: "",
-					text: mensajeError,
-					icon: "warning",
-				});
 			}
 		}
 	}
@@ -1157,4 +1177,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     
 });
+
+/**alerta al cambiar tipo buro */
+function mensajeAlertaTipoBuro(tipoBuroSelec){
+	
+	if(parseInt(tipoBuroSelec) !== tipoBuroRegistrado && parseInt(tipoBuroSelec) > 0 ){
+			
+	swal({
+ 	title: "Alerta",
+    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
+    icon: 'info',
+    allowOutsideClick: false,
+    closeOnClickOutside: false,
+    dangerMode: true,
+    timer: 10000 // 10 segundos
+	});
+		
+	}
+
+}
 
