@@ -551,6 +551,20 @@ public class PresolicitudesController {
         }
     }
 
+    @PutMapping("/cambiarEstatus/{id}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Integer id, @RequestBody Map<String, Integer> body) {
+        try {
+            Integer nuevoEstatus = body.get("estatus");
+            if (nuevoEstatus == null) {
+                return ResponseEntity.badRequest().body("El campo 'estatus' es requerido");
+            }
+            solicitudCreditoService.cambiarEstatus(id, nuevoEstatus);
+            return ResponseEntity.ok("Estatus actualizado");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar el estatus");
+        }
+    }
+
     // Mantengo este método por compatibilidad si lo usas en otros servicios.
     public Usuario obtUsuario() {
         return currentUsuario();
