@@ -17,6 +17,22 @@ var correoEmpresa = document.getElementById('correoEmpresa');
 var personaContacto = document.getElementById('personaContacto');
 var spinner = document.getElementById("spinnerEmpresas")
 
+function actualizarResumenEmpresas(empresas) {
+	var total = Array.isArray(empresas) ? empresas.length : 0;
+	var activas = Array.isArray(empresas) ? empresas.filter(function(empresa) {
+		return Number(empresa.estatus) === 1;
+	}).length : 0;
+	var inactivas = total - activas;
+
+	var totalEl = document.getElementById('empresasTotal');
+	var activasEl = document.getElementById('empresasActivas');
+	var inactivasEl = document.getElementById('empresasInactivas');
+
+	if (totalEl) totalEl.textContent = total;
+	if (activasEl) activasEl.textContent = activas;
+	if (inactivasEl) inactivasEl.textContent = inactivas;
+}
+
 function tablaEmpresas() {
 	$.ajax({
 		url: urlPrincipal + "tablaEmpresas",  // Asegúrate de que esta URL sea correcta
@@ -25,6 +41,7 @@ function tablaEmpresas() {
 		success: function(respuesta) {
 			// Limpiar la tabla antes de agregar los nuevos registros
 			tblRegistroEmpresas.clear().draw();
+			actualizarResumenEmpresas(respuesta);
 
 			// Verificar si se recibieron datos de las empresas
 			if (respuesta && Array.isArray(respuesta) && respuesta.length > 0) {
@@ -46,7 +63,9 @@ function tablaEmpresas() {
 					// Validar los campos de las empresas para asegurar que no se corten
 					var validarCorreo = empresa.correoContacto && empresa.correoContacto.length > 30 ? empresa.correoContacto.substring(0, 30) + '...' : empresa.correoContacto || 'N/A';
 					var validarFrecuencia = empresa.frecuencia === 1 ? "Semanal" : empresa.frecuencia === 2 ? "Quincenal" : empresa.frecuencia === 3 ? "Mensual" : empresa.frecuencia === 4 ? "Diaria" : "Inmediata";
-					var validarEstatus = empresa.estatus === 1 ? "Activa" : "Inactiva";
+					var validarEstatus = empresa.estatus === 1
+						? "<span class='badge rounded-pill px-3 py-2' style='background:#2e7d32;color:#fff;font-size:0.78rem;'>Activa</span>"
+						: "<span class='badge rounded-pill px-3 py-2' style='background:#c62828;color:#fff;font-size:0.78rem;'>Inactiva</span>";
 
 					// Agregar una nueva fila en la tabla
 					tblRegistroEmpresas.row.add([
@@ -152,7 +171,7 @@ buscarEmpresa.addEventListener('input', function() {
 });
 
 // Evento para guardar la empresa en la BD
-document.querySelector(".modal-footer .btn-primary").addEventListener("click", function() {
+document.getElementById("btnGuardarEmpresa").addEventListener("click", function() {
 	var empresaSeleccionada = Array.from(document.querySelectorAll('#opcionEmpresa option'))
 		.find(option => option.value === buscarEmpresa.value);
 
