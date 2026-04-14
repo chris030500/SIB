@@ -97,91 +97,73 @@ function mostrarOcultarDiv(divA) {
 }
 
 const val = document.getElementsByName('diasVencer')[0];
-
 if (val) {
 	val.addEventListener('input', function() {
 		let value = parseFloat(this.value);
-
-		// Verificar si el valor es menor que 1 o si está vacío
 		if (isNaN(value) || value < 1) {
 			this.value = 1;
 		}
 	});
-} else {
-	console.error('No se encontró ningún elemento con el nombre "diasVencer"');
 }
 
 const value = document.getElementsByName('vigenciaGestion')[0];
-
 if (value) {
 	value.addEventListener('input', function() {
-		let value = parseFloat(this.value);
-
-		// Verificar si el valor es menor que 1 o si está vacío
-		if (isNaN(value) || value < 1) {
+		let valueNum = parseFloat(this.value);
+		if (isNaN(valueNum) || valueNum < 1) {
 			this.value = 1;
 		}
 	});
-} else {
-	console.error('No se encontró ningún elemento con el nombre "vigenciaGestion"');
 }
 
 
 document.addEventListener('DOMContentLoaded', function() {
 	const form = document.getElementById('configuracionForm');
+	if (!form) return;
 
 	form.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-		event.preventDefault();
+        fetch(form.action, {
+            method: form.method,
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (response.ok) {
+                var divPantTabs = document.getElementById('params-tab1');
+                if (divPantTabs) {
+                    var inputSearch = divPantTabs.querySelectorAll('.table-bordered input[type="search"]');
+                    inputSearch.forEach(function(searchInput) {
+                        searchInput.value = '';
+                    });
+                }
 
-		fetch(form.action, {
-			method: form.method,
-			body: new FormData(form)
-		})
-			.then(response => {
-				if (response.ok) {
-					var divPantTabs = document.getElementById('params-tab1');
-					var inputSearch = divPantTabs.querySelectorAll('.table-bordered input[type="search"]');
-
-					// Iterar sobre los elementos input search y establecer el valor a una cadena vacía
-					inputSearch.forEach(function(searchInput) {
-   						 searchInput.value = '';
-					});
-					swal(
-						'¡Guardado exitoso!',
-						"Los datos se han guardado correctamente.",
-						"success"
-					)
-
-					setTimeout(function() {
-						swal.close(); // Cierra el SweetAlert
-					}, 2000);
-					location.reload();
-				} else {
-					swal(
-						'Error!',
-						"Hubo un problema al guardar los datos.",
-						"error"
-					)
-
-					setTimeout(function() {
-						swal.close(); // Cierra el SweetAlert
-					}, 2000);
-				}
-			})
-			.catch(error => {
-				console.error('Error:', error);
-				swal(
-					'Error!',
-					"Hubo un problema al guardar los datos.",
-					"error"
-				)
-
-				setTimeout(function() {
-					swal.close(); // Cierra el SweetAlert
-				}, 2000);
-			});
-	});
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Guardado exitoso!',
+                    text: 'Los datos se han guardado correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al guardar los datos.'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al guardar los datos.'
+            });
+        });
+    });
 });
 
 var contenedorId = "";

@@ -166,11 +166,31 @@ public class HistorialCobranzaController {
 	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
 		
-		Optional<DatosSolicitudCredito> datosSolicitud =  datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
-		
-		int idSolicitud = datosSolicitud.get().getI_solicitud_id();
-		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idSolicitud));
+		Map<String, Object> res = new HashMap<>();
+
+		try {
+			Optional<DatosSolicitudCredito> datosSolicitud = datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
+
+			if (!datosSolicitud.isPresent()) {
+				res.put("mensaje", "No se encontró solicitud para el crédito proporcionado.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			}
+
+			int idSolicitud = datosSolicitud.get().getI_solicitud_id();
+			Object detalleExpediente = historialCobranzaService.searchDetalleExpediente(idSolicitud);
+
+			if (detalleExpediente == null) {
+				res.put("mensaje", "No se encontró detalle del expediente.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			}
+
+			return ResponseEntity.ok(detalleExpediente);
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
+			res.put(Constantes.MENSAJE_ERROR, Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
 	}
 	
 	public int validarAcceso() {

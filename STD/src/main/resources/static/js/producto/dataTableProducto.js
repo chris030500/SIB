@@ -2,7 +2,7 @@
 $(document).ready(function() {
 	$("#productoTable").DataTable({
 		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+            url: "/vendor/datatablesNew/i18n/Spanish.json"
         },
 		'aoColumnDefs': [{
 			'bSortable': false,

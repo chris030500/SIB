@@ -38,10 +38,11 @@ $(document).ready(function() {
 					break;
 			}
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "Debe seleccionar una opción de búsqueda.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -82,7 +83,7 @@ function buscarNombre(name) {
 			var nombres = res.nombresSolicitudes;
 			console.log(nombres.length);
 			if (nombres.length === 0) {
-				swal({
+				Swal.fire({
 					title: "Error, ",
 					text: "El nombre que ingreso no es válido.",
 					icon: "warning",
@@ -125,10 +126,11 @@ function getUrlSolicitudes() {
 	switch(optionSelected) {
 		case "1": 
 			if ($("#creditoBusqueda").val() === "") {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Debe ingresar un no. de crédito.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 			}
 			if ($("#creditoBusqueda").val() != "") {
@@ -140,10 +142,11 @@ function getUrlSolicitudes() {
 			break;
 		case "2":
 			if ($("#clienteBusqueda").val() === "") {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Debe ingresar un no. de cliente.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 			}
 		
@@ -155,10 +158,11 @@ function getUrlSolicitudes() {
 			break;
 		case "3":
 			if ($("#nameBusqueda").val() === "") {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Debe ingresar un nombre.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 			}
 	
@@ -218,17 +222,19 @@ function buscarDatos() {
 				console.log("Error");
 				divTable.hide();
 				if (optionSelected === "1") {
-					swal({
+					Swal.fire({
 						title: "Error",
 						text: "Ingresar un no. de crédito válido.",
 						icon: "warning",
+						allowOutsideClick: false
 					});
 				}
 				if (optionSelected === "2") {
-					swal({
+					Swal.fire({
 						title: "Error",
 						text: "Ingresar un no. de cliente válido.",
 						icon: "warning",
+						allowOutsideClick: false
 					});
 				}
 			} else {
@@ -419,10 +425,11 @@ function showSolicitud(parametroSolicitud) {
 			}
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "Se presentó un error, intente más tarde.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});	

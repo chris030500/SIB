@@ -244,13 +244,23 @@
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
-		<script th:src="@{/js/bootstrap-table.min.js}"></script>
-		<script th:src="@{/js/jquery.min.js}"></script>
-		<script th:src="@{/js/jquery-3.2.1.js}"></script>
+		<!-- jQuery (UNA sola versión) -->
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+		<!-- Bootstrap (necesario si usas modales) -->
 		<script th:src="@{/js/bootstrap.min.js}"></script>
-		<script th:src="@{/js/sweetalert2.all.min.js}"></script>
-		<script th:src="@{/js/datatables.min.js}"></script>
+
+		<!-- DataTables -->
+		<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+		<!-- SweetAlert2 -->
+		<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+		<!-- BlockUI (sí lo usas) -->
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+		<!-- TU JS -->
 		<script th:src="@{/js/planAccion/planAccion.js}"></script>
 	</th:block>
 </body>

@@ -332,13 +332,18 @@
 	</section>
 	<th:block layout:fragment="page-scripts">
 		<!--JavaScript-->
-		<script th:src="@{/js/bootstrap-table.min.js}"></script>
-		<script th:src="@{/js/jquery.min.js}"></script>
-		<script th:src="@{/js/jquery-3.2.1.js}"></script>
-		<script th:src="@{/js/bootstrap.min.js}"></script>
-		<script th:src="@{/js/sweetalert2.all.min.js}"></script>
-		<script th:src="@{/js/datatables.min.js}"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+		<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+		<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+		<!-- ESTE ES EL QUE TE FALTABA -->
+		<script th:src="@{/js/bootstrap-table.min.js}"></script>
+
 		<script th:src="@{/js/folios/folio.js}"></script>
 	</th:block>
 </body>

@@ -166,25 +166,25 @@ public class ExpedientesController {
 	public ResponseEntity<?> getExpedienteAfiliacionByName(@RequestParam("nombre") String nombre) {	
 		
 		String mensajeError = null;
+		Map<String, Object> res = new HashMap<>();
 		
 		try {
-			
-			Optional<Map<String, Object>> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nombre);
+			Optional<Map<String, Object>> expedienteAfiliacion =
+					expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nombre);
 			
 			if (expedienteAfiliacion.isPresent()) {
-				return ResponseEntity.ok(expedienteAfiliacion);
-			}
-			else {
-				return ResponseEntity.notFound().build();
+				return ResponseEntity.ok(expedienteAfiliacion.get());
+			} else {
+				res.put("mensaje", "No se encontró expediente de afiliación para el nombre proporcionado.");
+				return ResponseEntity.ok(res);
 			}
 			
 		} catch (Exception e) {
-			
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensajeError);
+			res.put(Constantes.MENSAJE_ERROR, mensajeError);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
-		
 	}
 	
 	
@@ -219,13 +219,29 @@ public class ExpedientesController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		Optional<Map<String, Object>> expedienteAfiliacion = expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nombre);
-		
-		int idExpediente = (int) expedienteAfiliacion.get().get("expediente_id");
-				
-		List<ImagenesExpedienteAfiliacion> imagenesAfiliacion = imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
-		
 		try {
+			Optional<Map<String, Object>> expedienteAfiliacion =
+					expedienteAfiliacionService.searchExpedienteAfiliacionByNomCliente(nombre);
+			
+			if (!expedienteAfiliacion.isPresent()) {
+				res.put("imagenesAfiliacion", Collections.emptyList());
+				res.put("mensaje", "No se encontró expediente de afiliación para el nombre proporcionado.");
+				return ResponseEntity.ok(res);
+			}
+			
+			Object expedienteIdObj = expedienteAfiliacion.get().get("expediente_id");
+			
+			if (expedienteIdObj == null) {
+				res.put("imagenesAfiliacion", Collections.emptyList());
+				res.put("mensaje", "El expediente no contiene id de expediente.");
+				return ResponseEntity.ok(res);
+			}
+			
+			int idExpediente = Integer.parseInt(expedienteIdObj.toString());
+			
+			List<ImagenesExpedienteAfiliacion> imagenesAfiliacion =
+					imagenesExpAfiliacionService.searchDetalleExpdienteAfiliacion(idExpediente);
+			
 			if (imagenesAfiliacion != null && !imagenesAfiliacion.isEmpty()) {
 				res.put("imagenesAfiliacion", imagenesAfiliacion);
 				return ResponseEntity.ok(res);
@@ -233,8 +249,9 @@ public class ExpedientesController {
 				res.put("imagenesAfiliacion", Collections.emptyList());
 				return ResponseEntity.ok(res);
 			}
+			
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
 			mensajeError = Constantes.MENSAJE_DE_ERROR + e.getMessage();
 			res.put(Constantes.MENSAJE_ERROR, mensajeError);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);

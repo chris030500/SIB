@@ -68,10 +68,11 @@ function buscarNombreCredito(name) {
 			var nombresCredito = res.nombresCredito;
 			console.log(nombresCredito.length);
 			if (nombresCredito.length === 0) {
-				swal({
-					title: "Error, ",
-					text: "El nombre que ingreso no es válido.",
+				Swal.fire({
+					title: "Error",
+					text: "El nombre que ingresó no es válido.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 				cleanView();
 			}
@@ -103,10 +104,11 @@ function buscarNombre(name) {
 			var nombresAfiliacion = res.nombresAfiliacion;
 			console.log(nombresAfiliacion.length);
 			if (nombresAfiliacion.length === 0) {
-				swal({
-					title: "Error, ",
-					text: "El nombre que ingreso no es válido.",
+				Swal.fire({
+					title: "Error",
+					text: "El nombre que ingresó no es válido.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 				cleanView();
 			}
@@ -139,11 +141,12 @@ function buscarExpedienteCredito() {
 			if ($.isEmptyObject(res)) {
 				console.log("Error");
 				divMainTable.hide();
-				swal({
-					title: "Error, ",
+				Swal.fire({
+					title: "Error",
 					text: "No se encuentra el detalle de expediente.",
 					icon: "warning",
-				});	
+					allowOutsideClick: false
+				});
 			}
 			else {
 				divMainTable.show();
@@ -172,12 +175,13 @@ function buscarExpedienteCredito() {
 				$("#credito").append(tbody);
 			}
 		}, 
-		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
 			divMainTable.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra el no. de crédito.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra el no. de crédito.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}); 
@@ -201,10 +205,11 @@ function getDetalleExpedienteCredito() {
 			if (res.imagenesCredito.length === 0) {
 				console.log("Error");
 				divDetalleExpediente.hide();
-				swal({
-					title: "Error, ",
+				Swal.fire({
+					title: "Error",
 					text: "No se encuentra el detalle de expediente.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 			}
 			else {
@@ -252,12 +257,13 @@ function getDetalleExpedienteCredito() {
 				});
 			}
 		},
-		error:  function(XMLHttpRequest, textStatus, errorThrown) {
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
 			divDetalleExpediente.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra el no. de crédito.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra el no. de crédito.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -408,13 +414,14 @@ function showImage(imagen) {
 		},
 		error: function(xhr, status, error) {
 			$("#visorImagenes").modal("hide");
-            console.error('Error al cargar la imagen:', error);
-            swal({
-				title: "Error, ",
+			console.error('Error al cargar la imagen:', error);
+			Swal.fire({
+				title: "Error",
 				text: "No se encuentra disponible la imagen.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
-        }
+		}
 	});
     
 }
@@ -454,10 +461,11 @@ function buscarDatos() {
 		
 		if ($("#nameBusqueda").val() === "") {
 			
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe ingresar un nombre.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}
@@ -470,10 +478,11 @@ function buscarDatos() {
 		
 		if ($("#creditoBusqueda").val() === "") {
 			
-			swal({
-				title: "Error, ",
-				text: "Debe ingresar un nombre.",
+			Swal.fire({
+				title: "Error",
+				text: "Debe ingresar un no. de crédito.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}

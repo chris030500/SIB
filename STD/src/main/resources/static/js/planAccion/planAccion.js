@@ -24,7 +24,7 @@ $(document).ready(function() {
 					actualizarActividad();
 				}
 			} else {
-				swal({
+				Swal.fire({
 					title: "Alerta",
 					text: "Registrar datos obligatorios",
 					icon: "warning",
@@ -32,7 +32,7 @@ $(document).ready(function() {
 			}
 
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "No ha seleccionado una Observación.",
 				icon: "warning",
@@ -52,25 +52,24 @@ $(document).ready(function() {
 		if (document.getElementById("file").value.length > 0) {
 		   Swal.fire({
 				title: 'Procesando.....',
-  				text: 'Espere un momento..',
-  				timer: 4000, // tiempo en milisegundos
- 				timerProgressBar: true,
-  				showConfirmButton: false
+	  			text: 'Espere un momento..',
+	  			timer: 4000,
+	 			timerProgressBar: true,
+	  			showConfirmButton: false
 			}).then((result) => {
-  				// Este código se ejecutará después de que el temporizador haya terminado
- 				 if (result.dismiss === Swal.DismissReason.timer) {
-    					var form = $('#adjuntoArchivoOficio')[0];
+	 			 if (result.dismiss === Swal.DismissReason.timer) {
+	    				var form = $('#adjuntoArchivoOficio')[0];
 						var data = new FormData(form);
 						addArchivos(data)
- 				 }
+	 			 }
 			});
 		} else {
-			swal({
+			Swal.fire({
 				title: "Informacion.",
 				text: "Es necesario seleccionar un Archivo.",
-				icon: "Warning",
+				icon: "warning",
 				confirmButtonText: 'Aceptar'
-			})
+			});
 		}
 
 	});
@@ -94,7 +93,7 @@ function addArchivos(data) {
 			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
 		success: function(data) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: data[0],
 				icon: "success",
@@ -104,7 +103,7 @@ function addArchivos(data) {
 			});
 		},
 		error: function(data) {
-			swal({
+			Swal.fire({
 				title: "Alerta",
 				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
 				icon: "warning",
@@ -159,7 +158,7 @@ function peticionPost(urlServicio) {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: respuesta[0],
 				icon: "success",
@@ -172,7 +171,7 @@ function peticionPost(urlServicio) {
 
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
@@ -246,7 +245,7 @@ var tblAdjuntos;
 function inicioTabla() {
 	tblObservaciones = $("#tblObservaciones").DataTable({
 		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},
 		'aoColumnDefs': [{
 			'bSortable': false,
@@ -255,7 +254,7 @@ function inicioTabla() {
 	});
 	tblPlanAccion = $("#tblPlanAccion").DataTable({
 		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},
 		'aoColumnDefs': [{
 			'bSortable': false,
@@ -265,7 +264,7 @@ function inicioTabla() {
 	
 	tblAdjuntos = $("#tblAdjuntos").DataTable({
 		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
 		},
 		'aoColumnDefs': [{
 			'bSortable': false,
@@ -345,7 +344,7 @@ function peticion(url) {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: respuesta[0],
 				icon: "success",
@@ -357,7 +356,7 @@ function peticion(url) {
 
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
@@ -418,7 +417,7 @@ function verDetalle(idFolio) {
 	});	
 	}else {
 			tblObservaciones.clear().draw();
-			swal({
+			Swal.fire({
 				title: "",
 				text: "Seleccione un Oficio Valido.",
 				icon: "warning",
@@ -444,7 +443,7 @@ function consultaDatos(idEstatus){
 	}else{
 		
 		$("#idOficios").prepend("<option value='0' text='Seleccione' selected='selected'>Seleccione</opcion>");
-		swal({
+		Swal.fire({
 			title: "",
 			text: "Seleccione un estatus Valido.",
 			icon: "warning",
@@ -492,7 +491,7 @@ function verDetallePA(id) {
 	});	
 	}else {
 			tblObservaciones.clear().draw();
-			swal({
+			Swal.fire({
 				title: "",
 				text: "Seleccione un Oficio Valido.",
 				icon: "warning",
@@ -566,14 +565,14 @@ function obtenerActPlanAccion(url) {
 
 function mnsExisteRegistros(tam){
 	if(tam > 0){
-			swal({
+			Swal.fire({
 				title: "Informacion.",
 				text: "Se consultaron las Actividades del Plan de Accion",
 				icon: "success",
 				confirmButtonText: 'Aceptar'
 			});
 	}else{
-				swal({
+				Swal.fire({
 				title: "Informacion.",
 				text: "El Plan de Accion no cuenta con actividades registradas",
 				icon: "success",
@@ -613,7 +612,7 @@ function adjuntarFiles(){
 		document.getElementById("file").value = "";
 	}else{
 		$("#modalAdjuntos").modal("hide");
-		swal({
+		Swal.fire({
 			title: "Atencion.",
 			text: "Seleccionar un oficio valido.",
 			icon: "warning",
@@ -656,14 +655,14 @@ console.log(""+id);
 
 function mnstblAdjuntos(num) {
 	if (num > 0) {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "Lista de Archivos del Oficio.",
 			icon: "success",
 			confirmButtonText: 'Aceptar'
 		})
 	} else {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "El Oficio no cuenta con Archivos registrados",
 			icon: "success",
@@ -688,7 +687,7 @@ function tamFile() {
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
 		if (this.files[0].size > tamMaxFile) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
 				icon: "warning",
@@ -709,7 +708,7 @@ function asignarArchivo(archivo) {
 		$('#file').attr("accept", extension);
 		$('#file').attr("disabled", false);
 	} else {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "Se requiere seleccionar una opcion valida",
 			icon: "success",
