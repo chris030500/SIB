@@ -144,7 +144,7 @@ public class PresolicitudesController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserDetails userDetails = (principal instanceof UserDetails) ? (UserDetails) principal : null;
 
-            if (userDetails != null && validarAcceso(userDetails.getUsername()) == 1) {
+            if (userDetails != null && validarAcceso(userDetails.getUsername()) > 0) {
                 model.addAttribute("cat_tipo_frecuencia", parametrosimuladorRepository.findAll());
                 return "presolicitudes_nomina/presolicitudes";
             } else {
@@ -160,7 +160,7 @@ public class PresolicitudesController {
     public ResponseEntity<Map<String, Object>> listaGestiones() {
         Map<String, Object> respuesta = new HashMap<>();
         try {
-            List<EmpresaSIB> listaCatalogos = empresaService.obtenerTodas();
+            List<EmpresaSIB> listaCatalogos = empresaService.obtenerEmpresasActivas();
             logger.info("Se llenó la lista");
             respuesta.put("lista", listaCatalogos);
             return ResponseEntity.ok(respuesta);
@@ -548,6 +548,20 @@ public class PresolicitudesController {
             return ResponseEntity.ok("Solicitud cancelada");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cancelar la solicitud");
+        }
+    }
+
+    @PutMapping("/cambiarEstatus/{id}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Integer id, @RequestBody Map<String, Integer> body) {
+        try {
+            Integer nuevoEstatus = body.get("estatus");
+            if (nuevoEstatus == null) {
+                return ResponseEntity.badRequest().body("El campo 'estatus' es requerido");
+            }
+            solicitudCreditoService.cambiarEstatus(id, nuevoEstatus);
+            return ResponseEntity.ok("Estatus actualizado");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar el estatus");
         }
     }
 

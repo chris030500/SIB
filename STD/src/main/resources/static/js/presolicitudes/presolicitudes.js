@@ -749,6 +749,54 @@ function obtenerEstatus(estatus) {
 	}
 }
 
+function obtenerEstatusHtml(estatus) {
+	const config = {
+		0: { label: 'Cancelada',   cls: 'bg-danger' },
+		1: { label: 'En Revisión', cls: 'bg-warning text-dark' },
+		2: { label: 'Enviada',     cls: 'bg-info text-dark' },
+		3: { label: 'Aprobada',    cls: 'bg-success' },
+		4: { label: 'Rechazada',   cls: 'bg-danger' },
+		5: { label: 'Aceptada',    cls: 'bg-primary' },
+	};
+	const e = config[estatus] || { label: 'Desconocido', cls: 'bg-secondary' };
+	return `<span class="badge ${e.cls} rounded-pill px-3 py-2">${e.label}</span>`;
+}
+
+function actualizarResumenSolicitudes(solicitudes) {
+	const resumen = {
+		total: Array.isArray(solicitudes) ? solicitudes.length : 0,
+		revision: 0,
+		aprobadas: 0,
+		rechazadas: 0
+	};
+
+	if (Array.isArray(solicitudes)) {
+		solicitudes.forEach(function(solicitud) {
+			switch (Number(solicitud.estatus)) {
+				case 1:
+					resumen.revision++;
+					break;
+				case 3:
+					resumen.aprobadas++;
+					break;
+				case 4:
+					resumen.rechazadas++;
+					break;
+			}
+		});
+	}
+
+	const totalEl = document.getElementById('solicitudesTotal');
+	const revisionEl = document.getElementById('solicitudesRevision');
+	const aprobadasEl = document.getElementById('solicitudesAprobadas');
+	const rechazadasEl = document.getElementById('solicitudesRechazadas');
+
+	if (totalEl) totalEl.textContent = resumen.total;
+	if (revisionEl) revisionEl.textContent = resumen.revision;
+	if (aprobadasEl) aprobadasEl.textContent = resumen.aprobadas;
+	if (rechazadasEl) rechazadasEl.textContent = resumen.rechazadas;
+}
+
 
 function cargarSolicitudes(pagina) {
 	// Mostrar spinner
@@ -760,6 +808,7 @@ function cargarSolicitudes(pagina) {
 			const solicitudes = data.contenido;
 			const permiso = data.permiso;
 			const botonExcel = document.getElementById("contenedorBotonExcel");
+			actualizarResumenSolicitudes(solicitudes);
 
 			console.log("Permiso:", permiso); // Diagnóstico
 
@@ -794,10 +843,19 @@ function cargarSolicitudes(pagina) {
         </button>`;
 				}
 
+				// Botón cambiar estatus manualmente (solo con permiso)
+				let btnCambiarEstatus = '';
+				if (permiso) {
+					btnCambiarEstatus = `<button class='btn btn-secondary btn-sm' title='Cambiar Estatus'
+						onclick="cambiarEstatusManual(${opt.id}, ${opt.estatus})">
+						<i class='fas fa-exchange-alt'></i>
+					</button>`;
+				}
+
 				// Concatenar botones
 				let acciones = '';
 				if (permiso) {
-					acciones = btnEditar + btnAprobarCancelar;
+					acciones = btnEditar + btnAprobarCancelar + btnCambiarEstatus;
 				}
 				acciones += btnPdf;
 
@@ -812,7 +870,7 @@ function cargarSolicitudes(pagina) {
 					opt.montoDescontar,
 					opt.usuarioReg.vc_nombre_usuario,
 					opt.sucursal,
-					obtenerEstatus(opt.estatus),
+					obtenerEstatusHtml(opt.estatus),
 					acciones
 				]);
 			});
@@ -904,6 +962,55 @@ function aprobarOCancelarSolicitud(id, empresa) {
 		}
 	});
 }
+
+function cambiarEstatusManual(id, estatusActual) {
+	const inputId = document.getElementById('idSolicitudEstatus');
+	inputId.value = id;
+	inputId.dataset.estatusActual = estatusActual;
+
+	document.getElementById('lblIdSolicitudEstatus').textContent = id;
+	document.getElementById('lblEstatusActual').innerHTML = obtenerEstatusHtml(estatusActual);
+	document.getElementById('selectNuevoEstatus').value = estatusActual;
+
+	new bootstrap.Modal(document.getElementById('cambiarEstatusModal')).show();
+}
+
+document.getElementById('btnConfirmarEstatus').addEventListener('click', function () {
+	const inputId      = document.getElementById('idSolicitudEstatus');
+	const id           = parseInt(inputId.value);
+	const estatusActual = parseInt(inputId.dataset.estatusActual);
+	const nuevoEstatus  = parseInt(document.getElementById('selectNuevoEstatus').value);
+
+	if (nuevoEstatus === estatusActual) {
+		Swal.fire('Aviso', 'Selecciona un estatus diferente al actual.', 'warning');
+		return;
+	}
+
+	fetch(urlPrincipal + `cambiarEstatus/${id}`, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ estatus: nuevoEstatus })
+	})
+	.then(res => {
+		if (!res.ok) throw new Error('Error al cambiar el estatus');
+		return res.text();
+	})
+	.then(() => {
+		bootstrap.Modal.getInstance(document.getElementById('cambiarEstatusModal')).hide();
+		Swal.fire({
+			icon: 'success',
+			title: 'Actualizado',
+			text: `Estatus cambiado a: ${obtenerEstatus(nuevoEstatus)}`,
+			timer: 2000,
+			showConfirmButton: false
+		});
+		cargarSolicitudes(0);
+	})
+	.catch(error => {
+		console.error(error);
+		Swal.fire('Error', 'No se pudo cambiar el estatus.', 'error');
+	});
+});
 
 // Manejo de eventos de botones (Event Delegation)
 document.addEventListener("click", function(event) {

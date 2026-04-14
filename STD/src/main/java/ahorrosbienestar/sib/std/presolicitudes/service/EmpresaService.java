@@ -89,9 +89,14 @@ public class EmpresaService {
 		return empresaSIBRepository.findByNombre(nombreEmpresa) != null;
 	}
 
-	// Obtener todas las empresas
+	// Obtener todas las empresas (sin filtro, para administración)
 	public List<EmpresaSIB> obtenerTodas() {
-		return empresaSIBRepository.findAll(); // Devuelve todas las empresas registradas
+		return empresaSIBRepository.findAll();
+	}
+
+	// Obtener solo empresas activas (estatus = 1), para el listado de nuevas solicitudes
+	public List<EmpresaSIB> obtenerEmpresasActivas() {
+		return empresaSIBRepository.findByEstatus(1);
 	}
 	
 	public EmpresaSIB obtenerIdEmpresa(String nombre) {
@@ -135,7 +140,7 @@ public class EmpresaService {
 	    try {
 	        LocalDateTime ahora = LocalDateTime.now();
 	        ReporteJasper datosReporte = iReporteRepository.buscarReporte("rpt_solicitudes_vobo");
-	        List<EmpresaSIB> listaCorreos = obtenerTodas();
+	        List<EmpresaSIB> listaCorreos = obtenerEmpresasActivas();
 
 	        for (EmpresaSIB correoContenido : listaCorreos) {
 	            if (debeEnviarNotificacion(correoContenido, ahora)) {
