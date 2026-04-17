@@ -121,5 +121,12 @@ public class SolicitudCreditoService {
         solicitud.setEstatus(0); // 0 = Cancelada
         solicitudCreditoRepository.save(solicitud);
     }
-    
+
+    public void cambiarEstatus(Integer id, Integer nuevoEstatus) {
+        SolicitudCredito solicitud = solicitudCreditoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        solicitud.setEstatus(nuevoEstatus);
+        solicitudCreditoRepository.save(solicitud);
+    }
+
 }
