@@ -20,7 +20,6 @@ public class FidelidadService {
 	@Autowired
 	private final JdbcTemplate jdbcTemplate;
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(FidelidadService.class);
 	
 

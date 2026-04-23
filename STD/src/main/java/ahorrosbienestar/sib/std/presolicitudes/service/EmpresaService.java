@@ -50,7 +50,6 @@ public class EmpresaService {
 	@Autowired
     private ConfiguracionCorreoRepository configuracionCorreoRepository;
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaración estática del
 
 	@Autowired

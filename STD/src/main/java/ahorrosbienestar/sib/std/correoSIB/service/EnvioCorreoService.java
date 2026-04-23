@@ -46,7 +46,6 @@ public class EnvioCorreoService {
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
 	
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
 	
 	@Autowired

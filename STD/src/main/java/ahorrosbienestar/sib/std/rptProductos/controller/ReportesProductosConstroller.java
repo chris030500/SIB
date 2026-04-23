@@ -47,7 +47,6 @@ public class ReportesProductosConstroller {
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(ReportesProductosConstroller.class);
 	
 	
