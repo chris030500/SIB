@@ -526,12 +526,10 @@ public class DescargaRestController {
 	 * @param destinoPath
 	 * @throws IOException
 	 */
-	private static final long MAX_ZIP_ENTRY_SIZE = 10 * 1024 * 1024; // 10 MB
-	private static final long MAX_ZIP_TOTAL_SIZE = 50 * 1024 * 1024; // 50 MB
+	private static final long MAX_ZIP_ENTRY_SIZE = 10L * 1024L * 1024L;
+	private static final long MAX_ZIP_TOTAL_SIZE = 50L * 1024L * 1024L;
 
 	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
-
-	    logger.info("comienza la extracción del .zip");
 
 	    Path destinoDir = Paths.get(destinoPath).toAbsolutePath().normalize();
 
@@ -539,9 +537,10 @@ public class DescargaRestController {
 	        Files.createDirectories(destinoDir);
 	    }
 
-	    long totalExtraido = 0;
+	    long totalExtraido = 0L;
 
-	    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(archivoZipPath))) {
+	    try (ZipInputStream zipInputStream =
+	            new ZipInputStream(new FileInputStream(archivoZipPath))) {
 
 	        ZipEntry zipEntry = zipInputStream.getNextEntry();
 
@@ -549,7 +548,6 @@ public class DescargaRestController {
 
 	            Path archivoDestino = destinoDir.resolve(zipEntry.getName()).normalize();
 
-	            // 🔐 Protección contra Zip Slip
 	            if (!archivoDestino.startsWith(destinoDir)) {
 	                throw new IOException("Entrada ZIP inválida: " + zipEntry.getName());
 	            }
@@ -557,16 +555,14 @@ public class DescargaRestController {
 	            if (zipEntry.isDirectory()) {
 	                Files.createDirectories(archivoDestino);
 	            } else {
-
-	                // Crear carpetas padre
 	                Path parent = archivoDestino.getParent();
+
 	                if (parent != null && !Files.exists(parent)) {
 	                    Files.createDirectories(parent);
 	                }
 
 	                totalExtraido += extractFile(zipInputStream, archivoDestino);
 
-	                // 🔐 Protección contra Zip Bomb
 	                if (totalExtraido > MAX_ZIP_TOTAL_SIZE) {
 	                    throw new IOException("El ZIP excede el tamaño máximo permitido.");
 	                }
@@ -587,7 +583,7 @@ public class DescargaRestController {
 	 */
 	private long extractFile(ZipInputStream zipInputStream, Path archivoDestino) throws IOException {
 
-	    long totalArchivo = 0;
+	    long totalArchivo = 0L;
 
 	    try (BufferedOutputStream bos =
 	            new BufferedOutputStream(new FileOutputStream(archivoDestino.toFile()))) {
@@ -596,7 +592,6 @@ public class DescargaRestController {
 	        int read;
 
 	        while ((read = zipInputStream.read(buffer)) != -1) {
-
 	            totalArchivo += read;
 
 	            if (totalArchivo > MAX_ZIP_ENTRY_SIZE) {
