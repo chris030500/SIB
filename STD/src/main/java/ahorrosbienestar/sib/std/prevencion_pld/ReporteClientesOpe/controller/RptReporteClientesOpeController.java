@@ -852,7 +852,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al registrar visto bueno.", e);
             resp.put("tipo", "error");
             resp.put("mensaje", e.getMessage());
             return ResponseEntity.badRequest().body(resp);
@@ -878,7 +878,7 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al pre-registrar historial.", e);
             resp.put("tipo", "error");
             resp.put("mensaje", e.getMessage());
             return ResponseEntity.badRequest().body(resp);

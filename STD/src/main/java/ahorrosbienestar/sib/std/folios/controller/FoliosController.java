@@ -93,6 +93,24 @@ public class FoliosController {
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
+	private Usuario obtenerUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
+	}
+	
 	private int catTipoOficio = 4;
 	private int catReguladores = 5;
 	private int catEstatus = 6;
@@ -326,12 +344,12 @@ public class FoliosController {
 			public void altaObsFolio(Integer idAreaAtencion, Integer idResponsableAtencion, String idFechaVencimiento, String desObservacion, Integer folioID, String obsOficio) {
 				Integer estatus = 1;
 				try {
-					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-					UserDetails userDetails = null;
-					if (principal instanceof UserDetails) {
-						userDetails = (UserDetails) principal;
+					Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+					if (usuarioAutenticado == null) {
+					    logger.warn("Usuario no autenticado o no encontrado.");
+					    return;
 					}
-					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 					
 					LocalDate fecha = LocalDate.now();
 					Observaciones altaObs = new Observaciones();
@@ -344,7 +362,7 @@ public class FoliosController {
 					altaObs.setI_responsable(idResponsableAtencion);
 					altaObs.setI_estatus(estatus);
 					altaObs.setVc_descripcion(desObservacion);
-					altaObs.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+					altaObs.setI_usuario_registro(usuarioAutenticado.getPk_id_usuario());
 					altaObs.setI_usuario_elimino(0);
 					altaObs.setI_usuario_mod(0);
 					altaObs.setI_confirma(0);
@@ -372,15 +390,14 @@ public class FoliosController {
 				String mensaje ="Actualizo Correctamente.";
 				ArrayList<String> respuesta = new ArrayList<String>();
 				try {
-					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-					UserDetails userDetails = null;
-					if (principal instanceof UserDetails) {
-						userDetails = (UserDetails) principal;
-					}
-					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+					Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
 
+					if (usuarioAutenticado == null) {
+					    respuesta.add("Usuario no autenticado.");
+					    return ResponseEntity.status(401).body(respuesta);
+					}
 					if(reasignar == 1) {
-						if(observacionService.inactivarRegistro(idObservacion,usuario.get(0).getPk_id_usuario()) == 1) {
+						if(observacionService.inactivarRegistro(idObservacion,usuarioAutenticado.getPk_id_usuario()) == 1) {
 							Optional<Observaciones> altaObs = iObservacionRepository.findById(idObservacion);
 							altaObsFolio(idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion, altaObs.get().getI_folio(),obsOficio);
 							respuesta.add(mensaje);
@@ -389,7 +406,7 @@ public class FoliosController {
 							respuesta.add(mensaje);
 						}
 					}else if(reasignar == 0) {
-						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuario.get(0).getPk_id_usuario(),(reasignar == 1)?usuario.get(0).getPk_id_usuario():0) == 1) {
+						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioAutenticado.getPk_id_usuario(),(reasignar == 1)?usuarioAutenticado.getPk_id_usuario():0) == 1) {
 							correoCSOService.registrarCorreo(idObservacion,1);
 							respuesta.add(mensaje);
 						}else {
@@ -478,40 +495,40 @@ public class FoliosController {
 				return url.toString();
 			}
 			
-			public int datosArchivo(String urlArchivo,String idFolio, String nombreArchivo){
-				Integer estatus = 1;
-				Integer respuesta=0;
-				try {
-				
-					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-					UserDetails userDetails = null;
-					if (principal instanceof UserDetails) {
-						userDetails = (UserDetails) principal;
-					}
-					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-					
-					
-					LocalDate fecha = LocalDate.now();
-					ArchivosFolios alta = new ArchivosFolios();
-					alta.setI_folio(Integer.parseInt(idFolio));
-					alta.setDt_fecha_registro(fecha);
-					alta.setI_estatus(estatus);
-					alta.setVc_ruta_docto(urlArchivo);
-					alta.setVc_nombre_docto(nombreArchivo);
-					alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
-					
-					ArchivosFolios registro = archivosFoliosService.registrar(alta);
-					
-					if(registro.getPk_id_archivo() > 0) {
-						respuesta = 1;
-					}else {
-						respuesta = 0;
-					}
-					return respuesta;
-				} catch (Exception e) {
-					logger.error("Error:"+e.getMessage());
-					return 0;
-				}
+			public int datosArchivo(String urlArchivo, String idFolio, String nombreArchivo) {
+			    Integer estatus = 1;
+			    Integer respuesta = 0;
+
+			    try {
+			        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			        if (usuarioAutenticado == null) {
+			            logger.warn("Usuario no autenticado o no encontrado.");
+			            return 0;
+			        }
+
+			        LocalDate fecha = LocalDate.now();
+			        ArchivosFolios alta = new ArchivosFolios();
+
+			        alta.setI_folio(Integer.parseInt(idFolio));
+			        alta.setDt_fecha_registro(fecha);
+			        alta.setI_estatus(estatus);
+			        alta.setVc_ruta_docto(urlArchivo);
+			        alta.setVc_nombre_docto(nombreArchivo);
+			        alta.setI_empleado_registro(usuarioAutenticado.getI_id_empleado());
+
+			        ArchivosFolios registro = archivosFoliosService.registrar(alta);
+
+			        if (registro.getPk_id_archivo() > 0) {
+			            respuesta = 1;
+			        }
+
+			        return respuesta;
+
+			    } catch (Exception e) {
+			        logger.error("Error:" + e.getMessage(), e);
+			        return 0;
+			    }
 			}
 			
 
@@ -563,17 +580,19 @@ public class FoliosController {
 			}
 			
 			public int validarAcceso() {
-				
-				
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-				}
-				usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-				
-				return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-				
-				
+
+			    Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			    if (usuarioAutenticado == null) {
+			        return 0;
+			    }
+
+			    usuario = new ArrayList<>();
+			    usuario.add(usuarioAutenticado);
+
+			    return iRelRolOpcionesRepository.validarAcceso(
+			            usuarioAutenticado.getRol_idRol().getPk_id_rol(),
+			            opcionesMenuService.buscarRelacion(nombrePantalla)
+			    );
 			}
 }

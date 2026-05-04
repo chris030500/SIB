@@ -72,12 +72,12 @@ public class EmpresaService {
 	}
 
 	public List<Empresa> obtenerTodasLasEmpresas() {
-		try {
-			return empresaRepository.findAll(); // Asegúrate de que `findAll()` está funcionando
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ArrayList<>(); // Evita que explote si hay un error
-		}
+	    try {
+	        return empresaRepository.findAll();
+	    } catch (Exception e) {
+	        logger.error("Error al obtener empresas.", e);
+	        return new ArrayList<>();
+	    }
 	}
 
 	public EmpresaSIB guardarEmpresaVobo(EmpresaSIB empresa) {
@@ -129,7 +129,7 @@ public class EmpresaService {
 
 	public void preparCorreoAdjuntoVobo() {
 	    LocalDate fechaActual = LocalDate.now();
-	    System.out.println("Inicia generación de correo");
+	    logger.info("Inicia generación de correo");
 
 	    try {
 	        LocalDateTime ahora = LocalDateTime.now();
@@ -148,7 +148,7 @@ public class EmpresaService {
 	                if (cantidadSolicitudes == 0) {
 	                    correoContenido.setFecha(ahora);
 	                    empresaSIBRepository.save(correoContenido);
-	                    System.out.println("No hay solicitudes para la empresa: " + correoContenido.getNombre());
+	                    logger.info("No hay solicitudes para la empresa: " + correoContenido.getNombre());
 	                    continue;
 	                }
 
@@ -182,7 +182,7 @@ public class EmpresaService {
 	                    try {
 	                        new InternetAddress(dest.trim()).validate();
 	                    } catch (AddressException e) {
-	                        System.out.println("Correo inválido para empresa " + correoContenido.getNombre() + ": " + dest);
+	                    	logger.warn("Correo inválido para empresa " + correoContenido.getNombre() + ": " + dest);
 	                        todosValidos = false;
 	                        break;
 	                    }
@@ -218,14 +218,16 @@ public class EmpresaService {
 	            }
 	        }
 	    } catch (Exception e) {
-	        logger.error("Error: " + e.getMessage());
-	        System.out.println("Error: " + e.getMessage());
+	        if (e instanceof InterruptedException) {
+	            Thread.currentThread().interrupt();
+	        }
+	        logger.error("Error al preparar correo.", e);
 	    }
 	}
 
 	public void prepararCorreoPorEmpresa(String nomEmpresa) {
 	    LocalDate fechaActual = LocalDate.now();
-	    System.out.println("Inicia generación de correo para empresa: " + nomEmpresa);
+	    logger.info("Inicia generación de correo para empresa: " + nomEmpresa);
 
 	    try {
 	        LocalDateTime ahora = LocalDateTime.now();
@@ -234,7 +236,7 @@ public class EmpresaService {
 	        EmpresaSIB empresa = empresaSIBRepository.findByNombre(nomEmpresa);
 
 	        if (!debeEnviarNotificacion(empresa, ahora)) {
-	            System.out.println("No es momento de enviar notificación para la empresa: " + nomEmpresa);
+	        	logger.info("No es momento de enviar notificación para la empresa: " + nomEmpresa);
 	            return;
 	        }
 
@@ -243,7 +245,7 @@ public class EmpresaService {
 	        if (cantidadSolicitudes == 0) {
 	            empresa.setFecha(ahora);
 	            empresaSIBRepository.save(empresa);
-	            System.out.println("No hay solicitudes para la empresa: " + nomEmpresa);
+	            logger.info("No hay solicitudes para la empresa: " + nomEmpresa);
 	            return;
 	        }
 
@@ -274,7 +276,7 @@ public class EmpresaService {
 	            try {
 	                new InternetAddress(dest.trim()).validate();
 	            } catch (AddressException e) {
-	                System.out.println("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
+	            	logger.warn("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
 	                todosValidos = false;
 	                break;
 	            }
@@ -304,14 +306,16 @@ public class EmpresaService {
 	        empresaSIBRepository.save(empresa);
 
 	    } catch (Exception e) {
-	        logger.error("Error: " + e.getMessage());
-	        System.out.println("Error: " + e.getMessage());
+	        if (e instanceof InterruptedException) {
+	            Thread.currentThread().interrupt();
+	        }
+	        logger.error("Error al preparar correo.", e);
 	    }
 	}
 
 	public String prepararCorreoPorEmpresaV(Integer idEmpresa) {
 	    LocalDate fechaActual = LocalDate.now();
-	    System.out.println("Inicia generación de correo para empresa con ID: " + idEmpresa);
+	    logger.info("Inicia generación de correo para empresa con ID: " + idEmpresa);
 
 	    try {
 	        LocalDateTime ahora = LocalDateTime.now();
@@ -355,7 +359,7 @@ public class EmpresaService {
 	            try {
 	                new InternetAddress(dest.trim()).validate();
 	            } catch (AddressException e) {
-	                System.out.println("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
+	            	logger.warn("Correo inválido para empresa " + empresa.getNombre() + ": " + dest);
 	                return "Correo inválido: " + dest;
 	            }
 	        }
@@ -422,7 +426,7 @@ public class EmpresaService {
 	        String remitente = config.getCorreoRemitente();
 	        String password = config.getPassword();
 
-	        System.out.println("Enviando correo desde: " + remitente);
+	        logger.info("Enviando correo desde: " + remitente);
 
 	        // 🔹 Crear un JavaMailSender dinámico con los datos de la BD
 	        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -455,14 +459,15 @@ public class EmpresaService {
 
 	        // 🔹 Enviar correo
 	        mailSender.send(message);
-	        System.out.println("Correo enviado exitosamente a: " + Arrays.toString(destinatarios));
+	        logger.info("Correo enviado exitosamente a: " + Arrays.toString(destinatarios));
 
 	    } catch (MessagingException e) {
-	        System.out.print("Fallo en el envío de correo: " + e.getMessage());
-	        e.printStackTrace();
+	        logger.error("Fallo en el envío de correo.", e);
 	    } catch (Exception e) {
-	        System.out.print("Error desconocido al enviar el correo: " + e.getMessage());
-	        e.printStackTrace();
+	        if (e instanceof InterruptedException) {
+	            Thread.currentThread().interrupt();
+	        }
+	        logger.error("Error inesperado al enviar correo.", e);
 	    }
 	}
 }

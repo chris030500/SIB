@@ -57,11 +57,17 @@ public class DocumentoController {
 			ArrayList<String> respuesta = new ArrayList<String>();
 			try {
 				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-				  userDetails = (UserDetails) principal;
+
+				if (!(principal instanceof UserDetails)) {
+				    return ResponseEntity.status(401).body("Usuario no autenticado.");
 				}
+
+				UserDetails userDetails = (UserDetails) principal;
 				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+				if (usuario == null || usuario.isEmpty()) {
+				    return ResponseEntity.status(404).body("Usuario no encontrado.");
+				}
 			
 				if(documentoService.existeDocumento(nombreDocumento) == 0) {
 					LocalDate fecha = LocalDate.now();
@@ -83,10 +89,8 @@ public class DocumentoController {
 				
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.println(""+e.getMessage());
+			    return ResponseEntity.internalServerError().body("Ocurrió un error, intente más tarde.");
 			}
-	
-			return null;
 		}
 		
 		@PostMapping("/eliminar/{id_documento}")

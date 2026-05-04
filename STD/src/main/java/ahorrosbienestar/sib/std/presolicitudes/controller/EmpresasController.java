@@ -111,7 +111,7 @@ public class EmpresasController {
 
 		} catch (Exception e) {
 			// Imprimir el error en el log del servidor para depuración
-			e.printStackTrace();
+			logger.error("No se pudo guardar la empresa.", e);
 
 			respuesta.put("error", "No se pudo guardar la empresa: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);

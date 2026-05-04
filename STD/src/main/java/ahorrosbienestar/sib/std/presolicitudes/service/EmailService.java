@@ -7,6 +7,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,100 +18,97 @@ import ahorrosbienestar.sib.std.presolicitudes.repository.ConfiguracionCorreoRep
 
 @Service
 public class EmailService {
-    
-	 @Autowired
-	    private ConfiguracionCorreoRepository configuracionCorreoRepository;
 
-	    public void enviarCorreo(String destinatario, String asunto, String contenidoHtml) {
-	        // 🔹 Obtener remitente y contraseña de la BD
-	        ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
-	        if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
-	            throw new RuntimeException("No se encontró un remitente o contraseña configurada en la base de datos.");
-	        }
+    private static final Logger logger = Logger.getLogger(EmailService.class);
 
-	        String remitente = config.getCorreoRemitente();
-	        String password = config.getPassword();
+    @Autowired
+    private ConfiguracionCorreoRepository configuracionCorreoRepository;
 
-	        System.out.println("Enviando correo desde: " + remitente);
+    public void enviarCorreo(String destinatario, String asunto, String contenidoHtml) {
 
-	        // 🔹 Configurar JavaMailSender dinámico con los datos obtenidos
-	        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-	        mailSender.setHost("smtp.office365.com"); // Ajusta esto según el proveedor SMTP
-	        mailSender.setPort(587);
-	        mailSender.setUsername(remitente);
-	        mailSender.setPassword(password);
+        ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
 
-	        Properties props = mailSender.getJavaMailProperties();
-	        props.put("mail.smtp.auth", "true");
-	        props.put("mail.smtp.starttls.enable", "true");
+        if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
+            throw new RuntimeException("Configuración de correo incompleta.");
+        }
 
-	        try {
-	            // 🔹 Crear el mensaje con contenido HTML
-	            MimeMessage message = mailSender.createMimeMessage();
-	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-	            helper.setFrom(remitente);
-	            helper.setTo(destinatario);
-	            helper.setSubject(asunto);
-	            helper.setText(contenidoHtml, true); // ✅ Contenido en HTML
+        String remitente = config.getCorreoRemitente();
+        String password = config.getPassword();
 
-	            // 🔹 Enviar el correo
-	            mailSender.send(message);
-	            System.out.println("Correo enviado exitosamente a: " + destinatario);
-	        } catch (Exception e) {
-	            System.err.println("Error al enviar el correo: " + e.getMessage());
-	            throw new RuntimeException("Error al enviar el correo.", e);
-	        }
-	    }
-	    
-	    public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName, byte[] fileBytes) {
-	        System.out.print("Inicia envío de correo");
+        logger.info("Inicia envío de correo.");
 
-	        try {
-	            // 🔹 Obtener remitente y contraseña de la BD
-	            ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
-	            if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
-	                throw new RuntimeException("No se encontró un remitente o contraseña configurada en la base de datos.");
-	            }
+        JavaMailSenderImpl mailSender = crearMailSender(remitente, password);
 
-	            String remitente = config.getCorreoRemitente();
-	            String password = config.getPassword();
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-	            System.out.println("Enviando correo desde: " + remitente);
+            helper.setFrom(remitente);
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(contenidoHtml, true);
 
-	            // 🔹 Crear un JavaMailSender dinámico con los datos de la BD
-	            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-	            mailSender.setHost("smtp.office365.com"); // Cambia esto según tu proveedor SMTP
-	            mailSender.setPort(587);
-	            mailSender.setUsername(remitente);
-	            mailSender.setPassword(password);
+            mailSender.send(message);
 
-	            Properties props = mailSender.getJavaMailProperties();
-	            props.put("mail.smtp.auth", "true");
-	            props.put("mail.smtp.starttls.enable", "true");
+            logger.info("Correo enviado correctamente.");
 
-	            // 🔹 Crear el mensaje
-	            MimeMessage message = mailSender.createMimeMessage();
-	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-	            helper.setFrom(remitente);
-	            helper.setTo(destinatario);
-	            helper.setSubject(asunto);
-	            helper.setText(contenidoHtml, true);
+        } catch (Exception e) {
+            logger.error("Error al enviar correo.", e);
+            throw new RuntimeException("Error al enviar el correo.", e);
+        }
+    }
 
-	            // 🔹 Adjuntar archivo
-	            DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
-	            helper.addAttachment(fileName, dataSource);
+    public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml,
+            String fileName, byte[] fileBytes) {
 
-	            // 🔹 Enviar correo
-	            mailSender.send(message);
-	            System.out.println("Correo enviado exitosamente desde: " + remitente);
+        logger.info("Inicia envío de correo con adjunto.");
 
-	        } catch (MessagingException e) {
-	            System.out.print("Fallo en el envío de correo: " + e.getMessage());
-	            e.printStackTrace();
-	        } catch (Exception e) {
-	            System.out.print("Error desconocido al enviar el correo: " + e.getMessage());
-	            e.printStackTrace();
-	        }
-	    }
+        try {
+            ConfiguracionCorreo config = configuracionCorreoRepository.findTopByOrderByIdAsc();
+
+            if (config == null || config.getCorreoRemitente() == null || config.getPassword() == null) {
+                throw new RuntimeException("Configuración de correo incompleta.");
+            }
+
+            String remitente = config.getCorreoRemitente();
+            String password = config.getPassword();
+
+            JavaMailSenderImpl mailSender = crearMailSender(remitente, password);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(remitente);
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(contenidoHtml, true);
+
+            DataSource dataSource = new ByteArrayDataSource(fileBytes, "application/octet-stream");
+            helper.addAttachment(fileName, dataSource);
+
+            mailSender.send(message);
+
+            logger.info("Correo con adjunto enviado correctamente.");
+
+        } catch (MessagingException e) {
+            logger.error("Fallo en envío de correo con adjunto.", e);
+        } catch (Exception e) {
+            logger.error("Error inesperado al enviar correo con adjunto.", e);
+        }
+    }
+
+    private JavaMailSenderImpl crearMailSender(String remitente, String password) {
+
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.office365.com");
+        mailSender.setPort(587);
+        mailSender.setUsername(remitente);
+        mailSender.setPassword(password);
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        return mailSender;
+    }
 }
-

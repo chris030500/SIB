@@ -67,7 +67,7 @@ public class FidelidadService {
 		            }
 		        });
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error("Error al registrar fidelidad.", e);
 
 		}
 	}
@@ -82,8 +82,7 @@ public class FidelidadService {
 
 	      
 		} catch (Exception e) {
-			logger.error("Error al insertar en la base de datos"+e.getMessage());
-			e.printStackTrace();
+		    logger.error("Error al insertar en la base de datos.", e);
 		}
 		
 	}
