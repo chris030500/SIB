@@ -101,101 +101,63 @@ public class DescargaRestController {
 	 * @throws java.text.ParseException
 	 */
 	public DatosDTO guardarDocto(Integer solicitudEnvio, Integer clienteId, Float montoAutorizado, String nameProducto,
-			String solicitud, Integer idWSAutenticacion) throws IOException, ParseException, java.text.ParseException {
+	        String solicitud, Integer idWSAutenticacion) throws IOException, ParseException, java.text.ParseException {
 
-		try {
-			DatosDTO respuestaDTO = new DatosDTO();
-			DatosDTO coordenadasDTO = new DatosDTO();
+	    try {
+	        DatosDTO respuestaDTO;
+	        DatosDTO coordenadasDTO;
 
-			// Obtenemos la ruta temporal
-			Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
+	        Configuracion rutaTemporal = configService.obtenerConfiguracion(RUTA_TEMPORAL_WS);
 
-			// Definimos los parámetros de espera
-			int intentosMaximos = 3;
-			int tiempoEspera = 30000; // 30 segundos
-			//int tiempoEspera = 27000; // 45 segundos
+	        int intentosMaximos = 3;
+	        int tiempoEspera = 30000;
 
-			// Realizamos los intentos para encontrar el archivo
-			for (int intento = 1; intento <= intentosMaximos; intento++) {
-				// Se obtiene la ubicación del archivo zip
-				// File ubicacionZip = ubicacionZip();
-				File ubicacionZip = new File(rutaTemporal.getVc_valor_propiedad());
+	        for (int intento = 1; intento <= intentosMaximos; intento++) {
 
-				File archivoZip = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
-				
-				logger.info(" Existe archivo descargado zip: " + archivoZip.exists() + "\t"
-						+ archivoZip.getAbsolutePath() + "\t" + archivoZip.getName());
+	            File ubicacionZip = new File(rutaTemporal.getVc_valor_propiedad());
+	            File archivoZip = new File(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
 
-				
+	            logger.info("Existe archivo descargado zip: " + archivoZip.exists() + "\t"
+	                    + archivoZip.getAbsolutePath() + "\t" + archivoZip.getName());
 
-				if (archivoZip.exists()) {
-					
-					Configuracion rutaFinal = configService.obtenerConfiguracion(RUTA_TEMPORAL_LN);
+	            if (archivoZip.exists()) {
 
-					SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+	                SolicitudEnvio soEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
 
-					int identificador = soEnvio.getI_identificador_ruta();
-					
-					File carpetaVideo = new File(rutaFinal.getVc_valor_propiedad());
-					
-					String carpetaFinal = carpetaVideo + "\\" + clienteId + "\\" + clienteId + "-" + solicitud + "-"
-							+ identificador;
-					File carpetaVideograbación = new File(carpetaFinal + "\\" + CARPETA_NUEVA);
-					//File destino = new File(carpetaVideograbación.getAbsolutePath().toString());
-					//Path destino = Paths.get((carpetaVideograbación.getAbsolutePath()).toString());
-					
-					//moveFile(archivoPdf, destino);
-		            //moveFile(archivoKey, destino);
-		            //moveFile(archivoFad, destino);
-					
-					// Se encontró el archivo, procedemos con el resto del proceso
-					// Obtenemos las coordenadas
-					coordenadasDTO = extaerJSON(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+	                coordenadasDTO = extaerJSON(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
 
-					
-					// Movemos el archivo en la ruta temporal
-//					Path origen = Paths.get(ubicacionZip + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
-//					Path destino = Paths.get(
-//							rutaTemporal.getVc_valor_propiedad() + "\\" + solicitudEnvio + "-" + clienteId + ".zip");
+	                guardarBitacora(solicitudEnvio, ubicacionZip.getAbsolutePath());
+	                extraerArchivos(archivoZip, solicitudEnvio, solicitud, clienteId);
 
-					// logger.info("origen descarga: " + origen + "\ndestino descarga: " + destino);
+	                coordenadasDTO.setCustomerNumber(clienteId.toString());
+	                coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
+	                coordenadasDTO.setOperationAmount(montoAutorizado.toString());
+	                coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
+	                coordenadasDTO.setAccessSystem(nameProducto);
 
-					// Files.move(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-					// logger.info("El archivo ha sido movido exitosamente.");
+	                respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
+	                respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
+	                respuestaDTO.setSolicitudEnvio(solicitudEnvio);
 
-					// Guardamos la bitacora
-//					guardarBitacora(solicitudEnvio, destino.toString());
-					guardarBitacora(solicitudEnvio, ubicacionZip.getAbsolutePath());
-					extraerArchivos(archivoZip, solicitudEnvio, solicitud, clienteId);
-					
-					//SolicitudEnvio sEnvio = solicitudEnvioService.obtenerSolicitudEnvio(solicitudEnvio);
+	                return respuestaDTO;
+	            }
 
-					coordenadasDTO.setCustomerNumber(clienteId.toString());
-					coordenadasDTO.setNumberProvisions(solicitudEnvio.toString());
-					coordenadasDTO.setOperationAmount(montoAutorizado.toString());
-					//coordenadasDTO.setIdProduct(idProduct);
-					coordenadasDTO.setIdProduct(String.valueOf(soEnvio.getI_producto_id()));
-					coordenadasDTO.setAccessSystem(nameProducto);
-					respuestaDTO = llenarGeolocalizacionDTO(coordenadasDTO);
-					respuestaDTO.setIdWSAutenticacion(idWSAutenticacion);
-					respuestaDTO.setSolicitudEnvio(solicitudEnvio);
-					return respuestaDTO;
-				}
+	            try {
+	                Thread.sleep(tiempoEspera);
+	            } catch (InterruptedException e) {
+	                Thread.currentThread().interrupt();
+	                logger.error("Error al esperar el tiempo de espera.", e);
+	                return null;
+	            }
+	        }
 
-				// El archivo no se encontró, esperamos un tiempo antes de intentar nuevamente
-				try {
-					Thread.sleep(tiempoEspera);
-				} catch (InterruptedException e) {
-					logger.error("Error al esperar el tiempo de espera.", e);
-				}
-			}
+	        logger.error("No se pudo encontrar el archivo después de " + intentosMaximos + " intentos.");
 
-			logger.error("No se pudo encontrar el archivo después de " + intentosMaximos + " intentos.");
+	    } catch (Exception e) {
+	        logger.error("Error en guardarDocto", e);
+	    }
 
-		} catch (Exception e) {
-			logger.error(e);
-		}
-		return null;
+	    return null;
 	}
 	
 	private static void archivos(File ubicacionZip, Integer solicitudEnvio, Integer clienteId, Path destino) {
@@ -326,60 +288,46 @@ public class DescargaRestController {
 	@SuppressWarnings("resource")
 	public DatosDTO extaerJSON(String filePath) throws IOException, ParseException {
 
-		DatosDTO responseDTO = new DatosDTO();
+	    DatosDTO responseDTO = new DatosDTO();
+	    String jsonFileName = "data.json";
 
-		// Ruta del archivo ZIP
-		String zipFilePath = filePath;
-		// Nombre del archivo JSON dentro del ZIP
-		String jsonFileName = "data.json";
+	    try (ZipFile zipFile = new ZipFile(filePath)) {
 
-		// Abre el archivo ZIP
-		ZipFile zipFile = new ZipFile(zipFilePath);
+	        ZipEntry jsonEntry = zipFile.getEntry(jsonFileName);
 
-		// Obtiene la entrada del archivo JSON dentro del ZIP
-		ZipEntry jsonEntry = zipFile.getEntry(jsonFileName);
+	        if (jsonEntry == null) {
+	            throw new IOException("El archivo JSON no existe dentro del archivo ZIP.");
+	        }
 
-		// Verifica si el archivo JSON existe dentro del ZIP
-		if (jsonEntry == null) {
-			throw new IOException("El archivo JSON no existe dentro del archivo ZIP.");
-		}
+	        StringBuilder stringBuilder = new StringBuilder();
 
-		// Abre el archivo JSON dentro del ZIP
-		InputStream inputStream = zipFile.getInputStream(jsonEntry);
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+	        try (
+	            InputStream inputStream = zipFile.getInputStream(jsonEntry);
+	            BufferedReader bufferedReader = new BufferedReader(
+	                new InputStreamReader(inputStream, StandardCharsets.UTF_8)
+	            )
+	        ) {
+	            String line;
+	            while ((line = bufferedReader.readLine()) != null) {
+	                stringBuilder.append(line);
+	            }
+	        }
 
-		// Lee el contenido del archivo JSON
-		String line;
-		StringBuilder stringBuilder = new StringBuilder();
-		while ((line = bufferedReader.readLine()) != null) {
-			stringBuilder.append(line);
-		}
+	        JSONParser parser = new JSONParser();
+	        JSONObject jsonObj = (JSONObject) parser.parse(stringBuilder.toString());
 
-		// Cierra los flujos de entrada
-		bufferedReader.close();
-		inputStream.close();
+	        if (jsonObj == null) {
+	            throw new IOException("No se pudo leer el contenido del archivo JSON.");
+	        }
 
-		// Imprime el contenido del archivo JSON
-		// System.out.println(stringBuilder.toString());
+	        String latitude = (String) jsonObj.get("latitude");
+	        String longitude = (String) jsonObj.get("longitude");
 
-		JSONParser parser = new JSONParser();
-		JSONObject jsonObj = null;
-		try {
-			jsonObj = (JSONObject) parser.parse(stringBuilder.toString());
-		} catch (ParseException e) {
-			logger.error(e);
-			// e.printStackTrace();
-		}
+	        responseDTO.setLatitude(latitude);
+	        responseDTO.setLongitude(longitude);
 
-		String latitude = (String) jsonObj.get("latitude");
-		String longitude = (String) jsonObj.get("longitude");
-		responseDTO.setLatitude(latitude);
-		responseDTO.setLongitude(longitude);
-
-		// Cierra el archivo ZIP
-		zipFile.close();
-
-		return responseDTO;
+	        return responseDTO;
+	    }
 	}
 
 
@@ -577,33 +525,33 @@ public class DescargaRestController {
 	 */
 	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
 
-		// System.out.println("comienza la extracción del .zip");
-		logger.info("comienza la extracción del .zip");
-		File Destination_Directory = new File(destinoPath);
+	    logger.info("comienza la extracción del .zip");
 
-		if (!Destination_Directory.exists()) {
-			Destination_Directory.mkdir();
-		}
+	    File destinationDirectory = new File(destinoPath);
 
-		ZipInputStream Zip_Input_Stream = new ZipInputStream(new FileInputStream(archivoZipPath));
-		ZipEntry Zip_Entry = Zip_Input_Stream.getNextEntry();
+	    if (!destinationDirectory.exists()) {
+	        destinationDirectory.mkdir();
+	    }
 
-		while (Zip_Entry != null) {
+	    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(archivoZipPath))) {
 
-			String File_Path = destinoPath + File.separator + Zip_Entry.getName();
+	        ZipEntry zipEntry = zipInputStream.getNextEntry();
 
-			if (!Zip_Entry.isDirectory()) {
-				extractFile(Zip_Input_Stream, File_Path);
-			} else {
-				File directory = new File(File_Path);
-				directory.mkdirs();
-			}
+	        while (zipEntry != null) {
 
-			Zip_Input_Stream.closeEntry();
-			Zip_Entry = Zip_Input_Stream.getNextEntry();
-		}
+	            String filePath = destinoPath + File.separator + zipEntry.getName();
 
-		Zip_Input_Stream.close();
+	            if (!zipEntry.isDirectory()) {
+	                extractFile(zipInputStream, filePath);
+	            } else {
+	                File directory = new File(filePath);
+	                directory.mkdirs();
+	            }
+
+	            zipInputStream.closeEntry();
+	            zipEntry = zipInputStream.getNextEntry();
+	        }
+	    }
 	}
 
 	/**
@@ -613,14 +561,18 @@ public class DescargaRestController {
 	 * @param File_Path
 	 * @throws IOException
 	 */
-	private void extractFile(ZipInputStream Zip_Input_Stream, String File_Path) throws IOException {
-		BufferedOutputStream Buffered_Output_Stream = new BufferedOutputStream(new FileOutputStream(File_Path));
-		byte[] Bytes = new byte[BUFFER_SIZE];
-		int Read_Byte = 0;
-		while ((Read_Byte = Zip_Input_Stream.read(Bytes)) != -1) {
-			Buffered_Output_Stream.write(Bytes, 0, Read_Byte);
-		}
-		Buffered_Output_Stream.close();
+	private void extractFile(ZipInputStream zipInputStream, String filePath) throws IOException {
+
+	    try (BufferedOutputStream bufferedOutputStream =
+	            new BufferedOutputStream(new FileOutputStream(filePath))) {
+
+	        byte[] bytes = new byte[BUFFER_SIZE];
+	        int readByte;
+
+	        while ((readByte = zipInputStream.read(bytes)) != -1) {
+	            bufferedOutputStream.write(bytes, 0, readByte);
+	        }
+	    }
 	}
 
 	/**
