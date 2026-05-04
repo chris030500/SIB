@@ -154,6 +154,9 @@ public class DescargaRestController {
 	        logger.error("No se pudo encontrar el archivo después de " + intentosMaximos + " intentos.");
 
 	    } catch (Exception e) {
+	        if (e instanceof InterruptedException) {
+	            Thread.currentThread().interrupt();
+	        }
 	        logger.error("Error en guardarDocto", e);
 	    }
 
@@ -523,15 +526,20 @@ public class DescargaRestController {
 	 * @param destinoPath
 	 * @throws IOException
 	 */
+	private static final long MAX_ZIP_ENTRY_SIZE = 10 * 1024 * 1024; // 10 MB
+	private static final long MAX_ZIP_TOTAL_SIZE = 50 * 1024 * 1024; // 50 MB
+
 	public void unzip(String archivoZipPath, String destinoPath) throws IOException {
 
 	    logger.info("comienza la extracción del .zip");
 
-	    File destinationDirectory = new File(destinoPath);
+	    Path destinoDir = Paths.get(destinoPath).toAbsolutePath().normalize();
 
-	    if (!destinationDirectory.exists()) {
-	        destinationDirectory.mkdir();
+	    if (!Files.exists(destinoDir)) {
+	        Files.createDirectories(destinoDir);
 	    }
+
+	    long totalExtraido = 0;
 
 	    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(archivoZipPath))) {
 
@@ -539,13 +547,29 @@ public class DescargaRestController {
 
 	        while (zipEntry != null) {
 
-	            String filePath = destinoPath + File.separator + zipEntry.getName();
+	            Path archivoDestino = destinoDir.resolve(zipEntry.getName()).normalize();
 
-	            if (!zipEntry.isDirectory()) {
-	                extractFile(zipInputStream, filePath);
+	            // 🔐 Protección contra Zip Slip
+	            if (!archivoDestino.startsWith(destinoDir)) {
+	                throw new IOException("Entrada ZIP inválida: " + zipEntry.getName());
+	            }
+
+	            if (zipEntry.isDirectory()) {
+	                Files.createDirectories(archivoDestino);
 	            } else {
-	                File directory = new File(filePath);
-	                directory.mkdirs();
+
+	                // Crear carpetas padre
+	                Path parent = archivoDestino.getParent();
+	                if (parent != null && !Files.exists(parent)) {
+	                    Files.createDirectories(parent);
+	                }
+
+	                totalExtraido += extractFile(zipInputStream, archivoDestino);
+
+	                // 🔐 Protección contra Zip Bomb
+	                if (totalExtraido > MAX_ZIP_TOTAL_SIZE) {
+	                    throw new IOException("El ZIP excede el tamaño máximo permitido.");
+	                }
 	            }
 
 	            zipInputStream.closeEntry();
@@ -561,18 +585,29 @@ public class DescargaRestController {
 	 * @param File_Path
 	 * @throws IOException
 	 */
-	private void extractFile(ZipInputStream zipInputStream, String filePath) throws IOException {
+	private long extractFile(ZipInputStream zipInputStream, Path archivoDestino) throws IOException {
 
-	    try (BufferedOutputStream bufferedOutputStream =
-	            new BufferedOutputStream(new FileOutputStream(filePath))) {
+	    long totalArchivo = 0;
 
-	        byte[] bytes = new byte[BUFFER_SIZE];
-	        int readByte;
+	    try (BufferedOutputStream bos =
+	            new BufferedOutputStream(new FileOutputStream(archivoDestino.toFile()))) {
 
-	        while ((readByte = zipInputStream.read(bytes)) != -1) {
-	            bufferedOutputStream.write(bytes, 0, readByte);
+	        byte[] buffer = new byte[BUFFER_SIZE];
+	        int read;
+
+	        while ((read = zipInputStream.read(buffer)) != -1) {
+
+	            totalArchivo += read;
+
+	            if (totalArchivo > MAX_ZIP_ENTRY_SIZE) {
+	                throw new IOException("Archivo dentro del ZIP excede el tamaño máximo permitido.");
+	            }
+
+	            bos.write(buffer, 0, read);
 	        }
 	    }
+
+	    return totalArchivo;
 	}
 
 	/**
