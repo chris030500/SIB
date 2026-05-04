@@ -282,19 +282,37 @@ public class ConfiguracionController {
 	}
 
 	public int validarAcceso(String pantalla) {
-				
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(pantalla));
-		
-		
+
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	    if (authentication == null || authentication.getPrincipal() == null) {
+	        logger.warn("No existe usuario autenticado para validar acceso.");
+	        return 0;
+	    }
+
+	    Object principal = authentication.getPrincipal();
+
+	    String username;
+
+	    if (principal instanceof UserDetails) {
+	        username = ((UserDetails) principal).getUsername();
+	    } else {
+	        username = principal.toString();
+	    }
+
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(username);
+
+	    if (usuario == null || usuario.isEmpty()) {
+	        logger.warn("No se encontró usuario para validar acceso: " + username);
+	        return 0;
+	    }
+
+	    int relacion = opcionesMenuService.buscarRelacion(pantalla);
+
+	    return iRelRolOpcionesRepository.validarAcceso(
+	            usuario.get(0).getRol_idRol().getPk_id_rol(),
+	            relacion
+	    );
 	}
-	
-	
 	
 }
