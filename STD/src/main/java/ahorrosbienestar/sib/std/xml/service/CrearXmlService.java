@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.xml.XMLConstants;
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
@@ -345,6 +346,9 @@ public class CrearXmlService {
 				doc.setXmlStandalone(true);
 				// Se escribe el contenido del XML en un archivo
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+				transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 				Transformer transformer = transformerFactory.newTransformer();
 				transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
