@@ -39,7 +39,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("sccb")
 public class ExpedientesController {
 	
-	private static final Logger logger = Logger.getLogger(ParametrosConfigController.class);
+	private static final Logger logger = Logger.getLogger(ExpedientesController.class);
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
@@ -80,7 +80,7 @@ public class ExpedientesController {
 			return rutaDireccion;
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
-			return null;
+			return Constantes.RUTA_ERROR;
 		}
 	}
 	
@@ -193,7 +193,15 @@ public class ExpedientesController {
 		Map<String, Object> res = new HashMap<>();
 		String mensajeError = null;
 		
-		Optional<ExpedienteCredito> expedienteCredito = expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
+		Optional<ExpedienteCredito> expedienteCredito =
+		        expedienteCreditoService.searchExpedienteCreditoByIdCredito(idCredito);
+
+		if (!expedienteCredito.isPresent()) {
+		    res.put("imagenesCredito", Collections.emptyList());
+		    res.put("mensaje", "No se encontró expediente de crédito.");
+		    return ResponseEntity.ok(res);
+		}
+
 		int idExpediente = expedienteCredito.get().getI_expediente_id();
 		
 		List<Map<String, Object>> imagenesCredito = imagenesExpCreditoService.searchDetalleCredito(idExpediente);
@@ -281,30 +289,38 @@ public class ExpedientesController {
         	
         	
         } catch (Exception e) {
-        	 return ResponseEntity.notFound().build(); 
+            logger.error("Error al obtener imagen", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         
     }
 	
-	public int validarAcceso() {
-		
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-				
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.SCCB_CONSULTA_EXPEDIENTES));
-				
-				
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return 0;
-		}
-			
-			
-	}
+    public int validarAcceso() {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if (!(principal instanceof UserDetails)) {
+                logger.warn("Usuario no autenticado.");
+                return 0;
+            }
+
+            UserDetails userDetails = (UserDetails) principal;
+            List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+            if (usuario == null || usuario.isEmpty()) {
+                logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+                return 0;
+            }
+
+            return iRelRolOpcionesRepository.validarAcceso(
+                    usuario.get(0).getRol_idRol().getPk_id_rol(),
+                    opcionesMenuService.buscarRelacionController(Constantes.SCCB_CONSULTA_EXPEDIENTES)
+            );
+
+        } catch (Exception e) {
+            logger.error(Constantes.MENSAJE_DE_ERROR, e);
+            return 0;
+        }
+    }
 
 }

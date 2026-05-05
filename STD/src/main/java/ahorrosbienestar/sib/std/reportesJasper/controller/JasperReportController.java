@@ -1,7 +1,7 @@
 package ahorrosbienestar.sib.std.reportesJasper.controller;
 
 import java.io.FileOutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -208,10 +208,9 @@ public class JasperReportController {
 	    					
 	    					Path archivoPath = Paths.get(rutaCreacion+"/"+identificadorDoc+report.getVc_extension());
 	    					
-	    					FileOutputStream archivoOutputStream = new FileOutputStream(archivoPath.toString());
-	    					archivoOutputStream.write(responseBody);
-	    					
-	    					archivoOutputStream.close();
+	    					try (FileOutputStream archivoOutputStream = new FileOutputStream(archivoPath.toString())) {
+	    					    archivoOutputStream.write(responseBody);
+	    					}
 	    					logger.error("El archivo \"" + archivoPath.toString() + "\" se ha creado o reemplazado exitosamente.");
 	    					
 						} catch (Exception e) {
@@ -267,16 +266,17 @@ public class JasperReportController {
 	
 	
     
-    private static HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {
-            {
-                String auth = username + ":" + password;
-                String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(Charset.forName("US-ASCII")));
-                String authHeader = "Basic " + encodedAuth;
-                set("Authorization", authHeader);
-            }
-        };
-    }
+	private static HttpHeaders createHeaders(String username, String password) {
+	    HttpHeaders headers = new HttpHeaders();
+
+	    String auth = username + ":" + password;
+	    String encodedAuth = Base64.getEncoder()
+	            .encodeToString(auth.getBytes(StandardCharsets.US_ASCII));
+
+	    headers.set("Authorization", "Basic " + encodedAuth);
+
+	    return headers;
+	}
 
 
     

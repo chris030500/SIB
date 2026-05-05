@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
+import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("rol")
 public class RolController {
 
+	private static final Logger logger = Logger.getLogger(RolController.class);
 	
 	private RolService rolService;
 	
@@ -63,6 +65,23 @@ public class RolController {
 	@Autowired
 	public RolController (RolService rolService) {
 		this.rolService = rolService;
+	}
+	
+	private Usuario obtenerUsuarioAutenticado() {
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
 	}
 	
 	//Inicio de roles
@@ -196,12 +215,12 @@ public class RolController {
 				mensaje = "Registro Correcto.";
 				LocalDate fecha = LocalDate.now();
 				
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+				Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+				if (usuarioAutenticado == null) {
+				    respuesta.add("Usuario no autenticado.");
+				    return ResponseEntity.status(401).body(respuesta);
 				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
 				for (int idOpcion : idsRolOpciones) {
 					if(iRelRolOpcionesRepository.existeOpcion(idRol,idOpcion) == 0) {
@@ -209,13 +228,13 @@ public class RolController {
 						registroRelRolOpcion.setDt_fecha_registro(fecha);
 						registroRelRolOpcion.setFk_opcion(idOpcion);
 						registroRelRolOpcion.setFk_rol(idRol);
-						registroRelRolOpcion.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+						registroRelRolOpcion.setI_usuarioid_registra(usuarioAutenticado.getPk_id_usuario());
 						registroRelRolOpcion.setI_estatus(estatus);
 						
 						iRelRolOpcionesRepository.save(registroRelRolOpcion);
 						
 					}else {
-						iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuario.get(0).getPk_id_usuario());
+						iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuarioAutenticado.getPk_id_usuario());
 					}
 				}
 				respuesta.add(mensaje);
@@ -250,12 +269,12 @@ public class RolController {
 				mensaje = "Menu Actualizado Correctamente.";
 				LocalDate fecha = LocalDate.now();
 				
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+				Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+				if (usuarioAutenticado == null) {
+				    respuesta.add("Usuario no autenticado.");
+				    return ResponseEntity.status(401).body(respuesta);
 				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
 
 				// Alta de nuevos opciones.
@@ -282,13 +301,13 @@ public class RolController {
 							registroRelRolOpcion.setDt_fecha_registro(fecha);
 							registroRelRolOpcion.setFk_opcion(idOpcion);
 							registroRelRolOpcion.setFk_rol(idRol);
-							registroRelRolOpcion.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+							registroRelRolOpcion.setI_usuarioid_registra(usuarioAutenticado.getPk_id_usuario());
 							registroRelRolOpcion.setI_estatus(estatus);
 							
 							iRelRolOpcionesRepository.save(registroRelRolOpcion);
 							
 						}else {
-							iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuario.get(0).getPk_id_usuario());
+							iRelRolOpcionesRepository.activarOpcion(idRol,idOpcion,usuarioAutenticado.getPk_id_usuario());
 						}
 					}
 				}
@@ -296,7 +315,7 @@ public class RolController {
 				if (actualizarDocumentos.size() > 0) {
 					for (int idOpcion : actualizarDocumentos) {
 						if (iRelRolOpcionesRepository.existeOpcion(idRol,idOpcion) != 0) {
-							iRelRolOpcionesRepository.inactivarRelacion(idRol, idOpcion,usuario.get(0).getPk_id_usuario());
+							iRelRolOpcionesRepository.inactivarRelacion(idRol, idOpcion,usuarioAutenticado.getPk_id_usuario());
 						}
 					}
 				}
@@ -318,15 +337,15 @@ public class RolController {
 			ArrayList<String> respuesta = new ArrayList<String>();
 			try {
 				mensaje = "Menu Actualizado Correctamente.";
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
+				Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+				if (usuarioAutenticado == null) {
+				    respuesta.add("Usuario no autenticado.");
+				    return ResponseEntity.status(401).body(respuesta);
 				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 				
 				for (int idDocumento : idsAnteriores) {
-					iRelRolOpcionesRepository.inactivarRelacion(idRol, idDocumento,usuario.get(0).getPk_id_usuario());
+					iRelRolOpcionesRepository.inactivarRelacion(idRol, idDocumento,usuarioAutenticado.getPk_id_usuario());
 				}
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
@@ -339,17 +358,21 @@ public class RolController {
 		}
 		
 		public int validarAcceso() {
-			
-			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-			
-			
+		    try {
+		        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+		        if (usuarioAutenticado == null) {
+		            return 0;
+		        }
+
+		        return iRelRolOpcionesRepository.validarAcceso(
+		                usuarioAutenticado.getRol_idRol().getPk_id_rol(),
+		                opcionesMenuService.buscarRelacion(nombrePantalla)
+		        );
+
+		    } catch (Exception e) {
+		        logger.error("Error al validar acceso.", e);
+		        return 0;
+		    }
 		}
 }

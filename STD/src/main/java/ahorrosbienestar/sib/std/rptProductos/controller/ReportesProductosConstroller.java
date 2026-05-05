@@ -70,8 +70,8 @@ public class ReportesProductosConstroller {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			return null;
+		    logger.error("Error al cargar reportes de productos.", e);
+		    return rutaError;
 		}	
 	}
 	
@@ -110,25 +110,31 @@ public class ReportesProductosConstroller {
 	 * @return
 	 */
 	public int validarAcceso() {
-		
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(rutaDireccion));
-			
-			
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			return 0;
-		}
-		
-	
-		
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	        if (!(principal instanceof UserDetails)) {
+	            logger.warn("Usuario no autenticado.");
+	            return 0;
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+	        List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+	            return 0;
+	        }
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuario.get(0).getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacionController(rutaDireccion)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("Error al validar acceso.", e);
+	        return 0;
+	    }
 	}
 
 }

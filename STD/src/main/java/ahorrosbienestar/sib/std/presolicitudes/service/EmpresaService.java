@@ -386,8 +386,12 @@ public class EmpresaService {
 	        return "Correo enviado correctamente.";
 
 	    } catch (Exception e) {
-	        logger.error("Error: " + e.getMessage());
-	        return "Error al enviar el correo: " + e.getMessage();
+	        if (e instanceof InterruptedException) {
+	            Thread.currentThread().interrupt();
+	        }
+
+	        logger.error("Error al enviar correo por empresa.", e);
+	        return "Error al enviar el correo.";
 	    }
 	}
 
@@ -414,7 +418,7 @@ public class EmpresaService {
 
 
 	public void sendEmailWithAttachment(String destinatario, String asunto, String contenidoHtml, String fileName, byte[] fileBytes) {
-	    System.out.print("Inicia envío de correo");
+		logger.info("Inicia envío de correo");
 
 	    try {
 	        // 🔹 Obtener remitente y contraseña de la BD

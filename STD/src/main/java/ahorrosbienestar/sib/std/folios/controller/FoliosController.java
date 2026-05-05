@@ -406,7 +406,16 @@ public class FoliosController {
 							respuesta.add(mensaje);
 						}
 					}else if(reasignar == 0) {
-						if(observacionService.modObservacion(obsOficio,idObservacion,idAreaAtencion,idResponsableAtencion,idFechaVencimiento,desObservacion,usuarioAutenticado.getPk_id_usuario(),(reasignar == 1)?usuarioAutenticado.getPk_id_usuario():0) == 1) {
+						if (observacionService.modObservacion(
+						        obsOficio,
+						        idObservacion,
+						        idAreaAtencion,
+						        idResponsableAtencion,
+						        idFechaVencimiento,
+						        desObservacion,
+						        usuarioAutenticado.getPk_id_usuario(),
+						        0 // ← ya no necesitas ternario
+						) == 1) {
 							correoCSOService.registrarCorreo(idObservacion,1);
 							respuesta.add(mensaje);
 						}else {
@@ -432,13 +441,12 @@ public class FoliosController {
 			@ResponseBody
 			@RequestMapping(value = "/cargarObservacion/{id}", method = RequestMethod.GET)
 			public Optional<Observaciones> cargarObservacion(@PathVariable("id") Integer id) {
-				try {
-					return iObservacionRepository.findById(id);
-				} catch (Exception e) {
-					logger.error("Error:"+e.getMessage());
-					return null;
-				}
-				
+			    try {
+			        return iObservacionRepository.findById(id);
+			    } catch (Exception e) {
+			        logger.error("Error:" + e.getMessage(), e);
+			        return Optional.empty();
+			    }
 			}
 			
 			@PostMapping("/subirArchivo")
