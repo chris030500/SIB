@@ -1885,6 +1885,19 @@ function btnCancelar() {
 	// @ts-ignore
 	var userReg = parseInt(document.getElementById("idUser").value);
 	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
 	//if si el esatatus es correcto
 	// 
     //
@@ -1905,7 +1918,15 @@ function btnCancelar() {
 		
 		//////
 		// @ts-ignore
-		swal({
+		Swal.fire({
+			icon: 'success',
+			text: 'Actualizado correctamente',
+			confirmButtonText: 'Aceptar'
+		}).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias";
+		});
+		// @ts-ignore
+		/*swal({
 		title: "",
 		text: 'Actualizado correctamente',
 		icon: "success",
@@ -1913,7 +1934,7 @@ function btnCancelar() {
 	    }).then(() => {
 			window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 	        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-	    });
+	    });*/
 		/////
 		//activa el boton Cargar Arhcivo MC
 		// @ts-ignore
@@ -1922,6 +1943,12 @@ function btnCancelar() {
 	})
     .catch(err => {
         console.error("Error en el proceso de SP_CAM_CANCELAR_PROCESO: ", err);
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Ocurrió un problema al cancelar el proceso',
+			confirmButtonText: 'Aceptar'
+		});
     });
 	///termina llamada del SP
     //

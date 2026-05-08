@@ -97,6 +97,8 @@ public class Constantes {
     public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     
+    public static final String REPORTE_EXTRACCION_CAMPANIA = "rpt_extraccion_campanias";
+    
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
     
@@ -191,7 +193,7 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
-
+    
 	//constantes PLD ReporteClientesOpe
     public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
     public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
