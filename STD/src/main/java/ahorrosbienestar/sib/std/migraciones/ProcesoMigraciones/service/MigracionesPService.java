@@ -1,3 +1,4 @@
+//MigracionesPService
 package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service;
 
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
@@ -6,7 +7,9 @@ import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository.Migrac
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,80 +31,110 @@ public class MigracionesPService {
         return migracionesPRepository.findById(id);
     }
 
-    //  Activar ejecución
-    public void activarEjecucion(Integer idMigracion, String usuario) {
+ // =========================================================
+    //  ACTIVAR EJECUCIÓN → 9:00 AM
+    // =========================================================
+    @Transactional
+    public void activarEjecucion(
+            Integer id,
+            LocalDate fechaInicio,
+            LocalDate fechaFin,
+            String usuario) {
 
-        logger.info("==> Inicia activarEjecucion para ID: " + idMigracion + ", usuario: " + usuario);
+        MigracionesP entidad = migracionesPRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Migración no encontrada"));
 
-        Optional<MigracionesP> optional = migracionesPRepository.findById(idMigracion);
-        if (optional.isPresent()) {
-
-            MigracionesP entidad = optional.get();
-
-            LocalDateTime ahora = LocalDateTime.now();
-            int horaActual = ahora.getHour();
-
-            String cron;
-            LocalDateTime fechaEjecucion;
-
-            if (horaActual < 13) {
-                throw new IllegalStateException(
-                    "La migración solo puede ejecutarse a partir de las 13:00 hrs"
-                );
-            } 
-            else if (horaActual >= 13 && horaActual < 17) {
-                cron = "17:00";
-                fechaEjecucion = ahora.withHour(17).withMinute(0).withSecond(0);
-            } 
-            else {
-                cron = "13:00";
-                fechaEjecucion = ahora.plusDays(1)
-                        .withHour(13).withMinute(0).withSecond(0);
-            }
-
-            entidad.setEjecuta(1);
-            entidad.setEstatus(1);
-            entidad.setUsuarioEjecuta(usuario);
-            entidad.setCron(cron);
-            entidad.setFechaEjecucion(fechaEjecucion);
-
-            migracionesPRepository.save(entidad);
-
-
-            logger.info("Migración marcada para ejecución correctamente.");
-            logger.info("Hora real del clic: " + ahora);
-
-        } else {
-            logger.error("No se encontró la migración con ID: " + idMigracion);
-            throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
+        //  No permitir doble ejecución
+        if (entidad.getEjecuta() != null && entidad.getEjecuta() == 1) {
+            throw new IllegalStateException("La migración ya está en ejecución");
         }
+
+        // =========================
+        //  VALIDAR FECHAS
+        // =========================
+        if (fechaFin.isBefore(fechaInicio)) {
+            throw new IllegalArgumentException("La fecha fin no puede ser menor a la fecha inicio");
+        }
+
+        // =========================
+        //  GUARDAR FECHAS
+        // =========================
+        entidad.setFechaInicio(fechaInicio);
+        entidad.setFechaFin(fechaFin);
+
+        // =========================
+        //  CAMBIO REAL 0 → 1
+        // =========================
+        entidad.setEjecuta(1);
+        entidad.setEstatus(1);
+        entidad.setUsuarioEjecuta(usuario);
+        entidad.setMensajeResultado(null);
+
+        // =========================
+        //  PROGRAMAR A LAS 13:00
+        // =========================
+        LocalDateTime ahora = LocalDateTime.now();
+
+        LocalDateTime ejecucion13;
+
+        if (ahora.getHour() < 14) {
+            // 👉 Hoy a las 13:00
+            ejecucion13 = ahora
+                    .withHour(14)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .withNano(0);
+        } else {
+            // 👉 Mañana a las 13:00
+            ejecucion13 = ahora
+                    .plusDays(1)
+                    .withHour(14)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .withNano(0);
+        }
+
+        entidad.setFechaEjecucion(ejecucion13);
+
+        // Informativo para UI
+        entidad.setCron("14:00");
+
+        migracionesPRepository.save(entidad);
     }
 
 
     //  Finalizar migración
-    public void finalizarMigracion(Integer idMigracion, String usuarioActualiza) {
-        logger.info("==> Inicia finalizarMigracion para ID: " + idMigracion + ", usuario: " + usuarioActualiza);
+    @Transactional
+    public void finalizarMigracion(Integer id, String usuario) {
 
-        Optional<MigracionesP> optional = migracionesPRepository.findById(idMigracion);
-        if (optional.isPresent()) {
-            MigracionesP entidad = optional.get();
+        MigracionesP entidad = migracionesPRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Migración no encontrada"));
 
-            entidad.setEjecuta(0);
-            entidad.setEstatus(0);
-            entidad.setUsuarioActualiza(usuarioActualiza);
+        entidad.setEjecuta(0); // ← libera ejecución
+        entidad.setUsuarioActualiza(usuario);
+        entidad.setMensajeResultado(
+                "Migración ejecutada correctamente el " + LocalDateTime.now()
+        );
 
-            String mensaje = "Se migró la información a " + LocalDate.now();
-            entidad.setMensajeResultado(mensaje);
-
-            logger.info("Finalizando migración. Mensaje: " + mensaje);
-
-            migracionesPRepository.save(entidad);
-            logger.info("Migración finalizada y guardada exitosamente.");
-        } else {
-            logger.error("No se encontró la migración con ID: " + idMigracion);
-            throw new IllegalArgumentException("Migración no encontrada con ID: " + idMigracion);
-        }
+        migracionesPRepository.save(entidad);
     }
 
 
+
+
+    
+    @Transactional
+    public void marcarError(Integer idMigracion, String error) {
+
+        MigracionesP entidad = migracionesPRepository.findById(idMigracion)
+            .orElseThrow(() -> new IllegalArgumentException("Migración no encontrada"));
+
+        entidad.setEjecuta(2); // ← ESTADO ERROR
+        entidad.setMensajeResultado("❌ Error: " + error);
+        entidad.setFechaEjecucion(LocalDateTime.now());
+
+        migracionesPRepository.save(entidad);
+
+        logger.error("Migración fallida: " + error);
+    }
 }

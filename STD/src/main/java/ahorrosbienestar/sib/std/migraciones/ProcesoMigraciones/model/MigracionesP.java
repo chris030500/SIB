@@ -1,7 +1,16 @@
+//MigracionesP
 package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model;
 
-import javax.persistence.*;
+// import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "TBL_CONFIG_MIGRACIONES_AOP", schema = "SIB")
@@ -38,6 +47,12 @@ public class MigracionesP {
 
     @Column(name = "VC_MENSAJE_RESULTADO")
     private String mensajeResultado;
+    
+    @Column(name = "DT_FECHA_INICIO")
+    private LocalDate fechaInicio;
+
+    @Column(name = "DT_FECHA_FIN")
+    private LocalDate fechaFin;
 
     // Getters y Setters
 
@@ -119,5 +134,21 @@ public class MigracionesP {
 
     public void setMensajeResultado(String mensajeResultado) {
         this.mensajeResultado = mensajeResultado;
+    }
+    
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
 }

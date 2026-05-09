@@ -1,14 +1,15 @@
+//HistorialReporte
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
@@ -35,7 +36,7 @@ public class HistorialReporte {
     @Column(name = "I_ESTATUS", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Integer estatus;
     
-    @Column(name = "DT_FECHA_VOBO", nullable = false)
+    @Column(name = "DT_FECHA_VOBO")
     private LocalDateTime fechaGeneracionvobo;
     
     @Column(name = "DT_FechaInicio")
@@ -45,7 +46,7 @@ public class HistorialReporte {
     private LocalDateTime fechaFin;
  
     @Column(name = "I_ANIO_GENERACION")
-    private Integer añoGeneracion;
+    private Integer anioGeneracion;
     
     @Column(name = "VC_TIPO_REPORTE")
     private String tipoReporte;
@@ -74,8 +75,13 @@ public class HistorialReporte {
     public LocalDateTime getFechaFin() { return fechaFin; }
     public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
     
-    public Integer getAñoGeneracion() { return añoGeneracion; }
-    public void setañoGeneracion(Integer añoGeneracion) { this.añoGeneracion = añoGeneracion; }
+    public Integer getAnioGeneracion() {
+        return anioGeneracion;
+    }
+
+    public void setAnioGeneracion(Integer anioGeneracion) {
+        this.anioGeneracion = anioGeneracion;
+    }
     
     public String getTipoReporte() { return tipoReporte; }
     public void setTipoReporte(String tipoReporte) { this.tipoReporte = tipoReporte; }
