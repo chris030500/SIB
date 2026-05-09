@@ -16,15 +16,16 @@ public interface IAdminSMSRepository extends JpaRepository<adminSMS, Integer> {
 	List<adminSMS> obtenerMensajess();
 	
 	@Query(value = "SELECT PK_ID_MENSAJE, I_CLIENTEID, VC_NOMBRECOMPLETO, VC_NOMBRE_BASE, VC_ABREVIACION_CLASIFICACION, "
-			+ "VC_TELEFONO_CELULAR, VC_DESC_MENSAJE, I_ESTATUS_SMS "
-			+ "FROM VW_ASIGNACION_OFERTAS "
-			+ "WHERE VC_NOMBRECOMPLETO LIKE %:cliente% "
-			+ "AND PK_ID_PROCESO LIKE %:proce% "
-			+ "AND VC_NOMBRESUCURSAL LIKE %:sucur% "
-			+ "AND I_ESTATUS_SMS = 1", nativeQuery = true) 
+	        + "VC_TELEFONO_CELULAR, VC_DESC_MENSAJE, I_ESTATUS_SMS "
+	        + "FROM VW_ASIGNACION_OFERTAS "
+	        + "WHERE VC_NOMBRECOMPLETO LIKE CONCAT('%', :cliente, '%') "
+	        + "AND PK_ID_PROCESO LIKE CONCAT('%', :proce, '%') "
+	        + "AND VC_NOMBRESUCURSAL LIKE CONCAT('%', :sucur, '%') "
+	        + "AND I_ESTATUS_SMS = 1",
+	        nativeQuery = true)
 	public List<adminSMS> obtenerMensajes(
-			@Param("cliente") String cliente, 
-			@Param("sucur") String sucur, 
-			@Param("proce") String proce
+	        @Param("cliente") String cliente,
+	        @Param("sucur") String sucur,
+	        @Param("proce") String proce
 	);
 }

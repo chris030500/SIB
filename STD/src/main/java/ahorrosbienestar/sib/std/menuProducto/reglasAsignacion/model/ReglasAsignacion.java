@@ -2,11 +2,11 @@ package ahorrosbienestar.sib.std.menuProducto.reglasAsignacion.model;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name="TBL_REGLAS_ASIGNACION")

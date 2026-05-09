@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Liga absoluta
  */

@@ -1,13 +1,9 @@
 package ahorrosbienestar.sib.std.usuarios.controller;
- 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
- 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
- 
-import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
+
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.configuracion.service.ConfiguracionService;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -35,7 +30,6 @@ import ahorrosbienestar.sib.std.roles.service.RolService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
- 
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -150,18 +144,41 @@ public class UsuarioController {
     }
     
     public int validarAcceso() {
-        
-        
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserDetails userDetails = null;
-        if (principal instanceof UserDetails) {
-            userDetails = (UserDetails) principal;
+        try {
+            Object principal = SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            if (!(principal instanceof UserDetails)) {
+                logger.warn("No existe usuario autenticado para validar acceso.");
+                return 0;
+            }
+
+            UserDetails userDetails = (UserDetails) principal;
+
+            List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+            if (usuario == null || usuario.isEmpty()) {
+                logger.warn("No se encontró usuario para validar acceso: " + userDetails.getUsername());
+                return 0;
+            }
+
+            int relacion = opcionesMenuService.buscarRelacion(nombrePantalla);
+
+            if (relacion <= 0) {
+                logger.warn("No se encontró relación de pantalla: " + nombrePantalla);
+                return 0;
+            }
+
+            return iRelRolOpcionesRepository.validarAcceso(
+                    usuario.get(0).getRol_idRol().getPk_id_rol(),
+                    relacion
+            );
+
+        } catch (Exception e) {
+            logger.error("Error al validar acceso de usuario", e);
+            return 0;
         }
-        List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-        
-        return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-        
-        
     }
     
  

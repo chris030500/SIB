@@ -41,19 +41,19 @@ public class DetallePEPsService {
             AtomicInteger actualizados = new AtomicInteger(0);
 
             for (DetallePEPsModel fila : filas) {
-                java.util.Optional<DetallePEPsModel> opt = detallePEPsRepository.findById(fila.getI_clienteid());
-                if (opt.isPresent()) {
-                    DetallePEPsModel existing = opt.get();
-                    if (!Objects.equals(existing.getVc_nombre_cliente(), fila.getVc_nombre_cliente())) {
-                        existing.setVc_nombre_cliente(fila.getVc_nombre_cliente());
+            	detallePEPsRepository.findById(fila.getIClienteId()).ifPresentOrElse(existing -> {
+
+            	    if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
+
+            	        existing.setVcNombreCliente(fila.getVcNombreCliente());
                         detallePEPsRepository.save(existing);
                         actualizados.incrementAndGet();
                     }
-                } else {
-                    fila.setFk_proceso(idProceso);
+                }, () -> {
+                	fila.setFkProceso(idProceso);
                     detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
-                }
+                });
             }
 
             logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);

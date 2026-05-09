@@ -140,15 +140,18 @@
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script th:src="@{/js/jquery-3.5.1.js}"></script>
-		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/js/bootstrap.min.js}"></script>
+
+		<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
 		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
 		<script th:src="@{/js/operaciones/reportes.js}"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
-		<script th:src="@{/css/estilos/estilosOA.css}"></script>
+
+		<link rel="stylesheet" th:href="@{/css/estilos/responsivo.css}">
+		<link rel="stylesheet" th:href="@{/css/estilos/estilosOA.css}">
 	</th:block>
 </body>
 
