@@ -17,8 +17,8 @@
         <link rel="stylesheet" th:href="@{/css/jqgrid-4.8.2/ui.jqgrid-bootstarp.css}">
       	-->
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">
-
+	<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.9/sweetalert2.min.css">-->
+	<link rel="stylesheet" th:href="@{/css/sweetalert2.min.css}">
 
 
 </head>
@@ -27,7 +27,8 @@
 
 	<div class="d-flex align-items-center justify-content-between">
 		<a th:href="@{/inicio}" class="logo d-flex align-items-center">
-			<img src="assets/img/logo.png" alt="">
+			<img th:src="@{/vendor/img/LogoBienestar2012color.jpg}" alt="">
+			
 			<span class="d-none d-lg-block">Bienestar</span>
 		</a>
 		<i class="fa fa-bars toggle-sidebar-btn"></i>
@@ -294,7 +295,33 @@
 					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 						<li th:id="M_O29" class="nav-item" style="display:none;">
 							<a th:href="@{/prevencion/reportesPLD}">
-								<i class="bi bi-receipt-cutoff"></i><span>Reportes PLD</span>
+								<i class="bi bi-receipt-cutoff"></i><span>Histórico de Operaciones</span>
+							</a>
+						</li>
+					</ul>
+					
+					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O37" class="nav-item" style="display:none;">
+							<a th:href="@{/prevencion/reporteOperacionesInusuales}">
+								<i class="bi bi-file-earmark-spreadsheet-fill"></i><span>Reporte Operaciones Inusuales</span>
+							</a>
+						</li>
+					</ul>
+
+<!-- Menu para reporte PDL -->
+                <!-- DES-25-0013 Auditoria-->
+                <!-- andrea.orduno -->
+                <ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li th:id="M_O43" class="nav-item" style="display:none;">
+                            <a th:href="@{/prevencion/reporteClientesOpe}">
+                                <i class="bi bi-filetype-xlsx"></i><span>Reporte de clientes y operaciones</span>
+                            </a>
+                        </li>
+                    </ul>
+					<ul id="config-nav-prevencion" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O51" class="nav-item" style="display:none;">
+							<a th:href="@{/prevencion/reporteBasesEBR}">
+								<i class="bi bi-receipt-cutoff"></i><span>Reporte Bases EBR</span>
 							</a>
 						</li>
 					</ul>
@@ -350,29 +377,28 @@
 							</a>
 						</li>
 					</ul>
-					
 				</li>
 				<!-- Productos -->
 
 				<!-- Operaciones -->
-				<li  style="display:none;"  class="nav-item" th:id="10">
+				<li style="display:none;" class="nav-item" th:id="10">
 					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-operaciones"
 						data-bs-toggle="collapse">
 						<i class="fa-solid fa-comments-dollar"></i><span>Gestion de ventas.</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-operaciones" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-						<li th:id="M_O25" class="nav-item"  style="display:none;">
+						<li th:id="M_O25" class="nav-item" style="display:none;">
 							<a th:href="@{/operaciones/configuracion}">
 								<i class="bi bi-gear-wide"></i><span>Configuracion</span>
 							</a>
 						</li>
-						<li th:id="M_O26" class="nav-item"  style="display:none;">
+						<li th:id="M_O26" class="nav-item" style="display:none;">
 							<a th:href="@{/operaciones/seguimientoGestion}">
 								<i class="bi bi-card-checklist"></i><span>Seguimiento de Gestiones</span>
 							</a>
 						</li>
-						<li th:id="M_O27" class="nav-item"  style="display:none;">
+						<li th:id="M_O27" class="nav-item" style="display:none;">
 							<a th:href="@{/operaciones/reportes}">
 								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
 							</a>
@@ -380,34 +406,33 @@
 					</ul>
 				</li>
 				<!-- Fin Operaciones -->
-				
+
 				<!-- SCCB -->
-				<li  style="display:none;"  class="nav-item" th:id="11">
-					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-sccb"
-						data-bs-toggle="collapse">
+				<li style="display:none;" class="nav-item" th:id="11">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-sccb" data-bs-toggle="collapse">
 						<i class="bi bi-credit-card"></i><span>SCCB</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
 					<ul id="config-nav-sccb" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-						
+
 						<li th:id="M_O30" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/solicitudesCredito}">
 								<i class="bi bi-envelope-paper"></i><span>Solicitudes de Crédito</span>
 							</a>
 						</li>
-						
+
 						<li th:id="M_O31" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/historialCobranza}">
 								<i class="bi bi-cash"></i><span>Historial de Cobranza</span>
 							</a>
 						</li>
-						
+
 						<li th:id="M_O32" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/consultaPagares}">
 								<i class="bi bi-card-heading"></i><span>Consulta de Pagares</span>
 							</a>
 						</li>
-						
+
 						<li th:id="M_O33" class="nav-item" style="display:none;">
 							<a th:href="@{/sccb/expedientes}">
 								<i class="bi bi-file-earmark-text"></i><span>Consulta de Expedientes</span>
@@ -416,32 +441,134 @@
 					</ul>
 				</li>
 				<!-- Fin SCCB -->
-				<!-- CONTABILIDAD -->
-				<li  style="display:none;"  class="nav-item" th:id="12">
-					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-contabilidad"
+				<!-- Marketing -->
+				<li  style="display:none;"  class="nav-item" th:id="13">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-marketing"
 						data-bs-toggle="collapse">
-						<i class="fas fa-balance-scale"></i><span>Contabilidad</span>
+						<i class="bi bi-bar-chart-line-fill"></i><span>Marketing</span>
 						<i class="bi bi-chevron-down ms-auto"></i>
 					</a>
-					<ul id="config-nav-contabilidad" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-						<li th:id="M_O34" class="nav-item"  style="display:none;">
-							<a th:href="@{/contabilidad/parametrosConfiguracion}">
-								<i class="bi bi-wrench-adjustable-circle-fill"></i><span>Parametros Configuracion</span>
-							</a>
-						</li>
-						<li th:id="M_O35" class="nav-item"  style="display:none;">
-							<a th:href="@{/contabilidad/costoNetoFinanciado}">
-								<i class="fas fa-money-check-alt"></i><span>Costo Neto Financiado</span>
-							</a>
-						</li>
-						<li th:id="M_O36" class="nav-item"  style="display:none;">
-							<a th:href="@{/contabilidad/calculoEPRC}">
-								<i class="fas fa-hand-holding-usd"></i><span>Calculo EPRC</span>
+					<ul id="config-nav-marketing" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						
+						<li th:id="M_O38" class="nav-item" style="display:none;">
+							<a th:href="@{/marketing/creditosDesembolsados}">
+								<i class="bi bi-wallet-fill"></i><span>Créditos Desembolsados</span>
 							</a>
 						</li>
 					</ul>
-				</li>				
-				<!-- FIN CONTABILIDAD -->
+				</li>
+				<!-- Fin Marketing -->
+				
+				<!-- Crédito -->
+				<li  style="display:none;"  class="nav-item" th:id="14">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-credito"
+						data-bs-toggle="collapse">
+						<i class="bi bi-credit-card-2-front-fill"></i><span>Crédito</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-credito" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+						
+						<li th:id="M_O39" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/solicitudesAutorizadas}">
+								<i class="bi bi-ui-checks"></i><span>Solicitudes Autorizadas</span>
+							</a>
+						</li>
+						<li th:id="M_O40" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/reportes}">
+								<i class="bi bi-clipboard2-data"></i><span>Reportes</span>
+							</a>
+						</li>
+						<li th:id="M_O44" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/tiposCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Tipos Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O45" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/paramBuroCredito}">
+								<i class="bi bi-clipboard2-data"></i><span>Parametros de Buró de Crédito</span>
+							</a>
+						</li>
+						<li th:id="M_O46" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/exclusiones}">
+								<i class="bi bi-clipboard2-data"></i><span>Exclusiones</span>
+							</a>
+						</li>
+						<li th:id="M_O47" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/campaniasTemporales}">
+								<i class="bi bi-clipboard2-data"></i><span>Campañas Temporales</span>
+							</a>
+						</li>
+						<li th:id="M_O48" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/procesosCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Procesos Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O49" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/reportesCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Reportes Campañas</span>
+							</a>
+						</li>
+						<li th:id="M_O50" class="nav-item" style="display:none;">
+							<a th:href="@{/credito/extraccionCampanias}">
+								<i class="bi bi-clipboard2-data"></i><span>Extracción Campañas</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Crédito -->
+				<!-- VOBO Nomina -->
+				<li style="display:none;" class="nav-item" th:id="15">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-gesVoBo"
+						data-bs-toggle="collapse">
+						<i class="bi bi-bank"></i><span>Gestion VoBo Nomina</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-gesVoBo" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O41" class="nav-item" style="display:none;">
+							<a th:href="@{/configuracionEmpresas/empresas}">
+								<i class="bi bi-cash"></i><span>Configuracion Empresas</span>
+							</a>
+						</li>
+						<li th:id="M_O42" class="nav-item" style="display:none;">
+							<a th:href="@{/configuracionSolicitudes/solicitudes}">
+								<i class="bi bi-cash"></i><span>Presolicitudes</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin VOBO Nomina -->
+
+				<!-- Metas y Comisiones -->
+				<li style="display:none;" class="nav-item" th:id="16">
+					<a href="#" class="nav-link collapsed" data-bs-target="#config-nav-metas-comisiones"
+						data-bs-toggle="collapse">
+						<i class="bi bi-diagram-3"></i><span>Metas y Comisiones</span>
+						<i class="bi bi-chevron-down ms-auto"></i>
+					</a>
+					<ul id="config-nav-metas-comisiones" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+						<li th:id="M_O56" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/permisos/gestion}">
+								<i class="bi bi-shield-lock"></i><span>Permisos</span>
+							</a>
+						</li>
+						<li th:id="M_O53" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/relaciones/gestion}">
+								<i class="bi bi-link-45deg"></i><span>Relaciones</span>
+							</a>
+						</li>
+						<li th:id="M_O54" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/definicion/gestion}">
+								<i class="bi bi-calculator"></i><span>Definicion y Simulacion</span>
+							</a>
+						</li>
+						<li th:id="M_O55" class="nav-item" style="display:none;">
+							<a th:href="@{/metas-comisiones/resultados/gestion}">
+								<i class="bi bi-clipboard-data"></i><span>Resultados y Calculo</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+				<!-- Fin Metas y Comisiones -->
 
 			</ul>
 
@@ -460,7 +587,7 @@
 			<!-- /.content -->
 		</main>
 		<!-- Control Sidebar -->
-		<footer th:replace="layouts/footer :: footer"> </footer>
+		<footer th:replace="~{layouts/footer :: footer}"> </footer>
 		<aside class="control-sidebar control-sidebar-dark">
 			<!-- Control sidebar content goes here -->
 		</aside>
@@ -469,20 +596,15 @@
 
 
 	<!-- jQuery -->
-	<!--<script src="http://code.jquery.com/jquery-1.10.2.js"></script>-->
-	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script src="https://kit.fontawesome.com/e98bc5a543.js" crossorigin="anonymous"></script>
+	<script th:src="@{/js/jquery-3.6.4.min.js}"></script>
+	<script th:src="@{/js/jquery-ui.js}"></script>
+	<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+	<script th:src="@{/js/e98bc5a543.js}"></script>
 	<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/js/main.js}"></script>
 	<script th:src="@{/js/popper.min.js}"></script>
-	<script th:src="@{/js/bootstrap.min.js}"></script>
 	<script th:src="@{/js/layout/layout.js}"></script>
 	<!-- Bootstrap core JavaScript -->
-
-	<!--<script th:src="@{/vendor/js/bootstrap.bundle.min.js}"></script>-->
-
 	<th:block layout:fragment="page-scripts">
 
 	</th:block>

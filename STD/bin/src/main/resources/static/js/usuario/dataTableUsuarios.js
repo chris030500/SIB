@@ -1,3 +1,4 @@
+// @ts-nocheck
 $(document).ready(function() {
 	$("#usuariosTable").DataTable({
 		"language": {

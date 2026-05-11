@@ -6,9 +6,13 @@
 <head th:replace="layouts/base-layout :: head">
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
-	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
-</head>
+	<link th:href="@{/vendor/bootstrap/bootstrap.min.css}" rel="stylesheet">
+
+	<link th:href="@{/css/estilos/responsivo.css}" rel="stylesheet">
+
+	<link th:href="@{/vendor/bootstrapTable/bootstrap-table.min.css}" rel="stylesheet">
+
+	</head>
 
 <body>
 	<section class="content" layout:fragment="page-content">
@@ -209,19 +213,39 @@
 				</div>
 			</div>
 		</div>
-		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
+		<!-- jQuery -->
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+		<!-- Bootstrap -->
+		<script th:src="@{/vendor/bootstrap/bootstrap.min.js}"></script>
+
+		<!-- DataTables -->
+		<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+		<!-- Bootstrap Table -->
+		<script th:src="@{/vendor/bootstrapTable/bootstrap-table.min.js}"></script>
+
+		<!-- BlockUI -->
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+		<!-- SweetAlert2 -->
+		<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+		<!-- Tu JS (SIEMPRE AL FINAL) -->
+		<script th:src="@{/js/cobranza/referencia.js}"></script>
+	
+	<!--	<script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
 		<!--JavaScript-->
-		<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/cobranza/referencia.js}"></script>
-		<script th:src="@{/css/estilos/responsivo.css}"></script>
+		<!--<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script> -->
+
+	<!--	<link rel="stylesheet" th:href="@{/css/estilos/responsivo.css}">-->
 	</th:block>
 </body>
 

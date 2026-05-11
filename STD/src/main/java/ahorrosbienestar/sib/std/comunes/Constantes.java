@@ -191,15 +191,6 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
-    
-	//constantes PLD ReporteClientesOpe
-    public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
-    public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
-    public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
-    public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
-    public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-    public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-   	public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
 
 	//nombres reportes bases EBR
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";

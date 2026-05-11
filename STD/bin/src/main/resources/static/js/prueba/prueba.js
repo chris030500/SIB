@@ -1,3 +1,4 @@
+// @ts-nocheck
 class SellButton extends HTMLElement {
 	constructor() {
 		super();

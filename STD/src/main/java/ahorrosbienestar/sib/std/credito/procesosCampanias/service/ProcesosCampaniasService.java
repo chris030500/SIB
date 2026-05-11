@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +18,7 @@ import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasD
 import ahorrosbienestar.sib.std.credito.procesosCampanias.model.ProcesosCampaniasModel;
 import ahorrosbienestar.sib.std.credito.procesosCampanias.repository.ProcesosCampaniasRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.dto.TiposCampaniasDTO;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 

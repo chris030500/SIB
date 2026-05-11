@@ -4,7 +4,7 @@ package ahorrosbienestar.sib.std.configuracion.service;
 //import java.security.MessageDigest;
 //import java.security.NoSuchAlgorithmException;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
@@ -17,6 +17,7 @@ import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
+import jakarta.transaction.Transactional;
 
 
 
