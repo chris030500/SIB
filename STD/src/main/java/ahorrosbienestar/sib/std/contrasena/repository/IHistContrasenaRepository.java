@@ -1,12 +1,9 @@
 package ahorrosbienestar.sib.std.contrasena.repository;
 
-
-
-
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,19 +15,36 @@ import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 
 @Repository
 public interface IHistContrasenaRepository extends JpaRepository<HistContrasena, Integer> {
-	
-	
-	
-	@Modifying
-	@Transactional
-	@Query(value = "UPDATE TBL_HIST_CONTRASENIA AS hc SET hc.VC_INDICADOR_ACTIVO = 0 \r\n"
-			+ "WHERE Usr_historico_contrasena_id = ?1 and VC_INDICADOR_ACTIVO = 1 \r\n"
-			+ "order by PK_ID_PARAMETROS DESC LIMIT 1", nativeQuery=true)
-	public int bajaContrasena(Integer usuario);
-	
-	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA AS contra INNER JOIN SIB.TBL_CAT_USUARIOS AS u ON u.PK_ID_USUARIO = contra.Usr_historico_contrasena_id WHERE u.PK_ID_USUARIO = :id and contra.VC_INDICADOR_ACTIVO = 1;", nativeQuery = true)
-	public Optional<HistContrasena> findByIdHisto(@Param ( "id" ) Integer id);
-	
-	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA WHERE Usr_historico_contrasena_id = :idUsuario order by PK_ID_PARAMETROS DESC LIMIT :limite", nativeQuery = true)
-	public List<HistContrasena> findTopByUsuarioByFechaDesc(@Param ( "idUsuario" ) Integer idUsuario, @Param ( "limite" ) Integer limite);
+
+    @Modifying
+    @Transactional
+    @Query(value =
+            "UPDATE SIB.TBL_HIST_CONTRASENIA " +
+            "SET VC_INDICADOR_ACTIVO = 0 " +
+            "WHERE Usr_historico_contrasena_id = :usuario " +
+            "AND VC_INDICADOR_ACTIVO = 1 " +
+            "ORDER BY PK_ID_PARAMETROS DESC " +
+            "LIMIT 1",
+            nativeQuery = true)
+    public int bajaContrasena(@Param("usuario") Integer usuario);
+
+    @Query(value =
+            "SELECT contra.* " +
+            "FROM SIB.TBL_HIST_CONTRASENIA contra " +
+            "INNER JOIN SIB.TBL_CAT_USUARIOS u " +
+            "ON u.PK_ID_USUARIO = contra.Usr_historico_contrasena_id " +
+            "WHERE u.PK_ID_USUARIO = :id " +
+            "AND contra.VC_INDICADOR_ACTIVO = 1",
+            nativeQuery = true)
+    public Optional<HistContrasena> findByIdHisto(@Param("id") Integer id);
+
+    @Query(value =
+            "SELECT * " +
+            "FROM SIB.TBL_HIST_CONTRASENIA " +
+            "WHERE Usr_historico_contrasena_id = :idUsuario " +
+            "ORDER BY PK_ID_PARAMETROS DESC",
+            nativeQuery = true)
+    public List<HistContrasena> findTopByUsuarioByFechaDesc(
+            @Param("idUsuario") Integer idUsuario,
+            Pageable pageable);
 }

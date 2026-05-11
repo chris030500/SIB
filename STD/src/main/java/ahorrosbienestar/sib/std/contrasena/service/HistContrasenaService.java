@@ -15,6 +15,7 @@ import ahorrosbienestar.sib.std.contrasena.dto.HistContrasenaDto;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.repository.IHistContrasenaRepository;
 import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class HistContrasenaService {
@@ -61,8 +62,11 @@ public class HistContrasenaService {
 		return iHistContrasenaRepository.findByIdHisto(id);
 	}
 	
-	public List<HistContrasena> findTopByUsuarioByFechaDesc(Integer idUsuario, Integer limite){
-		return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(idUsuario, limite);
+	public List<HistContrasena> findTopByUsuarioByFechaDesc(Integer idUsuario, Integer limite) {
+	    return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(
+	            idUsuario,
+	            PageRequest.of(0, limite)
+	    );
 	}
 
 }
