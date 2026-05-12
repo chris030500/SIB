@@ -1,3 +1,4 @@
+// @ts-nocheck
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -19,7 +20,7 @@ function numMaximoParametrosContrasena(longitud) {
 
 	if (longitud < aux) {
 		//console.log("Excediste el tamaño");
-		swal("Excediste la longitud de la contraseña", "Favor de verificar los parametros agregados", "warning");
+		Swal.fire("Excediste la longitud de la contraseña", "Favor de verificar los parametros agregados", "warning");
 		document.getElementById("mayusculas").value = "";
 		document.getElementById("minusculas").value = "";
 		document.getElementById("numeros").value = "";
@@ -34,11 +35,11 @@ function numMaximoParametrosContrasena(longitud) {
 
 
 function mensaje() {
-	swal({
-		type: 'success',
-		title: 'Configuración guardada',
-		showConfirmButton: false,
-		timer: 24000 // es ms (mili-segundos)
+	Swal.fire({
+	    icon: 'success',
+	    title: 'Desbloqueo correctamente',
+	    showConfirmButton: false,
+	    timer: 2400
 	});
 }
 
@@ -48,21 +49,21 @@ function guardarConfSesion() {
 	var pDias = $('#pDias').val();
 	console.log("Intentos: " + intento);
 	if (intentos = '') {
-		swal({
+		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo de intentos",
 			showConfirmButton: false
 
 		});
 	} else if (pBloqueo == '') {
-		swal({
+		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo periodo de bloqueo",
 			showConfirmButton: false
 
 		});
 	} else if (pDias == '') {
-		swal({
+		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo periodo que se encontrará activa la cuenta",
 			showConfirmButton: false
@@ -74,23 +75,22 @@ function guardarConfSesion() {
 			url: urlBase + "guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
 			type: "POST",
 			success: function() {
-				swal({
-					icon: 'success',
-					title: 'Configuración de parametros de sesión exitosa',
-					showConfirmButton: false,
-					timer: 24000 // es ms (mili-segundos)
-				}).then((result) => {
-					window.location.reload();
-				});
+			    Swal.fire({
+			        icon: 'success',
+			        title: 'Desbloqueo correctamente',
+			        showConfirmButton: false,
+			        timer: 2400
+			    }).then((result) => {
+			        window.location.reload();
+			    });
 
 			},
 			error: function() {
-				swal({
-					icon: 'warning',
-					title: 'No se realizo correctamente el desbloqueo',
-					showConfirmButton: false
-					//timer: 24000 // es ms (mili-segundos)
-				});
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'No se realizó correctamente el desbloqueo',
+			        showConfirmButton: false
+			    });
 			}
 		});
 	}
@@ -119,8 +119,8 @@ function desbloquearUsuario() {
 		type: "POST",
 		data: JSON.stringify(data),
 		success: function() {
-			swal({
-				type: 'success',
+			Swal.fire({
+				icon: 'success',
 				title: 'Desbloqueo correctamente',
 				showConfirmButton: false,
 				timer: 24000 // es ms (mili-segundos)
@@ -130,8 +130,8 @@ function desbloquearUsuario() {
 
 		},
 		error: function() {
-			swal({
-				type: 'warning',
+			Swal.fire({
+				icon: 'warning',
 				title: 'No se realizo correctamente el desbloqueo',
 				showConfirmButton: false
 				//timer: 24000 // es ms (mili-segundos)
@@ -194,8 +194,8 @@ function generarContrasenaold() {
 			url: urlBase + "guardarContrasena?contrasena=" + contrasenia,
 			type: "POST",
 			success: function() {
-				swal({
-					type: 'success',
+				Swal.fire({
+					icon: 'success',
 					title: 'Contraseña por default guardada',
 					showConfirmButton: false,
 					timer: 24000 // es ms (mili-segundos)
@@ -206,8 +206,8 @@ function generarContrasenaold() {
 			},
 			error: function(respuesta) {
 				console.log("Respuesta: " + JSON.stringify(respuesta));
-				swal({
-					type: 'warning',
+				Swal.fire({
+					icon: 'warning',
 					title: 'No se guardo la nueva contraseña por default',
 					showConfirmButton: false
 					//timer: 24000 // es ms (mili-segundos)
@@ -217,7 +217,7 @@ function generarContrasenaold() {
 
 	} else {
 		console.log("La contraseña es vacía");
-		swal({
+		Swal.fire({
 			icon: 'warning',
 			title: 'No se ha ingresado una contraseña, favor de ingresar una',
 			showConfirmButton: false
@@ -241,8 +241,8 @@ function generarContrasena() {
 		success: function(respuesta) {
 			console.log("Entro en success1: " + respuesta);
 			if (respuesta != "Si cumple con los parametros requeridos") {
-				swal({
-					type: 'warning',
+				Swal.fire({
+					icon: 'warning',
 					title: respuesta,
 					showConfirmButton: false
 
@@ -254,8 +254,8 @@ function generarContrasena() {
 					data: contrasenia,
 					success: function() {
 						console.log("Entro en guardar contraseña");
-						swal({
-							type: 'success',
+						Swal.fire({
+							icon: 'success',
 							title: 'Contraseña cambiada correctamente',
 							showConfirmButton: false
 						}).then((result) => {
@@ -268,8 +268,8 @@ function generarContrasena() {
 							var errorMessage = xhr.responseText;
 							// Mostrar el mensaje de error al usuario
 							console.log(errorMessage);
-							swal({
-								type: 'warning',
+							Swal.fire({
+								icon: 'warning',
 								title: errorMessage,
 								showConfirmButton: false
 							}).then((result) => {
@@ -277,8 +277,8 @@ function generarContrasena() {
 							});
 						} else {
 							// Manejar otros errores de la solicitud AJAX
-							swal({
-								type: 'warning',
+							Swal.fire({
+								icon: 'warning',
 								title: "Error al cambiar la contraseña",
 								showConfirmButton: false
 							}).then((result) => {
@@ -294,8 +294,8 @@ function generarContrasena() {
 		error: function(respuesta) {
 			console.log("Entro en error");
 			console.log("Error: " + JSON.stringify(respuesta));
-			swal({
-				type: 'warning',
+			Swal.fire({
+				icon: 'warning',
 				title: respuesta,
 				showConfirmButton: false
 
