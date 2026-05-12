@@ -21,8 +21,8 @@ function generarContrasena() {
 		success: function(respuesta) {
 			console.log("Entro en success1: " + respuesta);
 			if (respuesta != "Si cumple con los parametros requeridos") {
-				swal({
-					type: 'warning',
+				Swal.fire({
+					icon: 'warning',
 					title: respuesta,
 					showConfirmButton: false
 
@@ -34,8 +34,8 @@ function generarContrasena() {
 					data: contrasenia,
 					success: function() {
 						console.log("Entro en guardar contraseña");
-						swal({
-							type: 'success',
+						Swal.fire({
+							icon: 'success',
 							title: 'Contraseña cambiada correctamente',
 							showConfirmButton: false
 						}).then((result) => {
@@ -48,8 +48,8 @@ function generarContrasena() {
 							var errorMessage = xhr.responseText;
 							// Mostrar el mensaje de error al usuario
 							console.log(errorMessage);
-							swal({
-								type: 'warning',
+							Swal.fire({
+								icon: 'warning',
 								title: errorMessage,
 								showConfirmButton: false
 							}).then((result) => {
@@ -57,8 +57,8 @@ function generarContrasena() {
 							});
 						} else {
 							// Manejar otros errores de la solicitud AJAX
-							swal({
-								type: 'warning',
+							Swal.fire({
+								icon: 'warning',
 								title: "Error al cambiar la contraseña",
 								showConfirmButton: false
 							}).then((result) => {
@@ -73,8 +73,8 @@ function generarContrasena() {
 		},
 		error: function(respuesta) {
 			console.log("Entro en error");
-			swal({
-				type: 'warning',
+			Swal.fire({
+				icon: 'warning',
 				title: respuesta,
 				showConfirmButton: false
 

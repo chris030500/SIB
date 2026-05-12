@@ -93,9 +93,12 @@ public class SeguridadAppInicializador {
             )
             .logout(logout -> logout.permitAll())
             .exceptionHandling(ex -> ex.accessDeniedPage("/error_403"))
-            .sessionManagement(session -> session.invalidSessionUrl("/inicio"));
+            .sessionManagement(session -> session.invalidSessionUrl("/login"));
 
-        http.sessionManagement(session -> session.maximumSessions(1).expiredUrl("/inicio").maxSessionsPreventsLogin(true));
+        http.sessionManagement(session -> 
+        session.maximumSessions(1)
+               .expiredUrl("/login?expired")
+               .maxSessionsPreventsLogin(false));
 
         return http.build();
     }
