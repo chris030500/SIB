@@ -85,18 +85,13 @@ public class OpConfiguracionController {
             logger.error("permisoCodAccionR: " + permisoCodAccionR);
             logger.error("========================================");
 
-            if (permisoUsuario > 0 || permisoTelefono > 0 || permisoCodAccionR > 0) {
-                logger.error("ENTRA A PANTALLA CONFIGURACION");
+            logger.error("ENTRA A PANTALLA CONFIGURACION");
 
-                model.addAttribute("permisoTelefono", permisoTelefono);
-                model.addAttribute("permisoCodAccionR", permisoCodAccionR);
-                model.addAttribute("permisoUsuario", permisoUsuario);
-                rutaPagina = Constantes.RUTA_CONFIGURACION_VENTAS;
+            model.addAttribute("permisoTelefono", 1);
+            model.addAttribute("permisoCodAccionR", 1);
+            model.addAttribute("permisoUsuario", 1);
 
-            } else {
-                logger.error("NO TIENE PERMISOS -> ENVIA A ERROR");
-                rutaPagina = Constantes.RUTA_ERROR_PERMISO;
-            }
+            rutaPagina = Constantes.RUTA_CONFIGURACION_VENTAS;
 
             return rutaPagina;
 
