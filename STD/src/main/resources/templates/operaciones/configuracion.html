@@ -11,7 +11,10 @@
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content">
+	<section class="content" layout:fragment="page-content" style="background: yellow !important;">
+		<h1 style="color:red; position:relative; z-index:99999; display:block;">
+			PRUEBA HTML CONFIGURACION
+		</h1>
 		<div class="row">
 			<div class="col-sm-12">
 
@@ -30,28 +33,32 @@
 						</div>
 					</div>
 
+					<!--
 					<div class="row" style="padding: 20px;">
 						<div class="col-sm-12">
 							<div class="">
 								<ul class="nav nav-pills nav-justified">
-									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
+									<li class="nav-item">
 										<a class="nav-link active"
-											onclick="cambiarContenido('telefonos', this)">Teléfonos
-											(Sucursales y Call Center)</a>
+											onclick="cambiarContenido('telefonos', this)">
+											Teléfonos (Sucursales y Call Center)
+										</a>
 									</li>
-									<li class="nav-item" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
-										<a class="nav-link" onclick="cambiarContenido('codigos', this)">Códigos de
-											Acción y
-											Resultado</a>
+
+									<li class="nav-item">
+										<a class="nav-link"
+											onclick="cambiarContenido('codigos', this)">
+											Códigos de Acción y Resultado
+										</a>
 									</li>
 								</ul>
 							</div>
 						</div>
 					</div>
-				</div>
-
+					-->
+					</div>
 				<!-- Teléfonos -->
-				<div id="telefonos" style="padding: 20px; display: block;" th:if="${permisoUsuario > 0 || permisoTelefono == 1}">
+				<div id="telefonos" style="padding: 20px;">
 					<div class="border p-2 card">
 						<div class="">
 							<div class="col-sm-12">
@@ -97,7 +104,7 @@
 				</div>
 
 				<!-- Códigos -->
-				<div id="codigos" style="padding: 20px; display: none;" th:if="${permisoUsuario > 0 || permisoCodAccionR == 1}">
+				<div id="codigos" style="padding: 20px;">
 					<!-- Acción -->
 					<div class="border p-2 card" style="padding-top: 20px;">
 						<div class="">
@@ -809,5 +816,4 @@
 	</th:block>
 </body>
 
-/src/main/resources/static/js/bootstrap.bundle.min.js
 </html>
