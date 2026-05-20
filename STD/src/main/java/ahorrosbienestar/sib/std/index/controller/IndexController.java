@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -138,17 +139,12 @@ public class IndexController {
 
 	    String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
 
-	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
-
-	    LocalDate localDate = LocalDate.parse(fechaActual);
-	    LocalDate localDateHoy = LocalDate.parse(fechaActual);
-
-	    localDate = localDate.plusDays(Long.parseLong(pDias));
+	    LocalDate fechaInicio = LocalDate.now();
+	    LocalDate fechaVencimiento = fechaInicio.plusDays(1);
 
 	    HistContrasena hc = new HistContrasena();
-	    hc.setDt_vig_cont_fin(localDate);
-	    hc.setDt_vig_cont_inicio(localDateHoy);
+	    hc.setDt_vig_cont_inicio(fechaInicio);
+	    hc.setDt_vig_cont_fin(fechaVencimiento);
 	    hc.setVc_indicador_activo(1);
 	    hc.setUsr_historico_contrasena_id(usu);
 	    hc.setVc_contrasenia(passwordEncoder.encode(password));

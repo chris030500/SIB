@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.contrasena.model;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,11 +83,11 @@ public class HistContrasena {
 	}
 
 	public LocalDate getDt_vig_cont_fin() {
-		return dt_vig_cont_fin;
+	    return dt_vig_cont_fin;
 	}
 
 	public void setDt_vig_cont_fin(LocalDate dt_vig_cont_fin) {
-		this.dt_vig_cont_fin = dt_vig_cont_fin;
+	    this.dt_vig_cont_fin = dt_vig_cont_fin;
 	}
 
 	public String getVc_contrasenia() {

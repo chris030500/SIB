@@ -24,6 +24,12 @@ import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import org.springframework.security.core.context.SecurityContextHolder;
+import java.time.LocalDate;
+import java.time.LocalDate;
+import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
+import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
+import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +37,9 @@ public class SeguridadAppInicializador {
 
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private HistContrasenaService histContrasenaService;
 
     @Autowired
     private DataSource datasource;
@@ -70,7 +79,18 @@ public class SeguridadAppInicializador {
             		    String username = authentication.getName();
 
             		    Usuario usuario = usuarioService.findByNombre(username);
+            		    
+            		 // VALIDAR CADUCIDAD DE CONTRASEÑA
+            		    HistContrasena historico =
+            		            histContrasenaService.obtenerContrasenaActiva(usuario.getPk_id_usuario());
 
+            		    if (historico != null &&
+            		        historico.getDt_vig_cont_fin() != null &&
+            		        LocalDate.now().isAfter(historico.getDt_vig_cont_fin())) {
+
+            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
+            		        return;
+            		    }
             		 // VALIDAR SI YA TENÍA SESIÓN ACTIVA
             		    Integer sesionActiva = loginService.obtenerSesionActiva(username);
 
@@ -125,6 +145,7 @@ public class SeguridadAppInicializador {
             		    loginService.spActivarSesion(username);
 
             		    request.getSession().setAttribute("username", username);
+            		    request.getSession().setMaxInactiveInterval(35 * 60);
 
             		    response.sendRedirect(request.getContextPath() + "/inicio");
             		})
