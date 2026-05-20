@@ -37,9 +37,20 @@ function numMaximoParametrosContrasena(longitud) {
 function mensaje() {
 	Swal.fire({
 	    icon: 'success',
-	    title: 'Desbloqueo correctamente',
-	    showConfirmButton: false,
-	    timer: 2400
+	    title: 'Configuración actualizada',
+	    text: 'La configuración se cambió correctamente.',
+	    confirmButtonText: 'Aceptar'
+	});
+}
+
+function guardarConfigContrasena() {
+	Swal.fire({
+		icon: 'success',
+		title: 'Configuración actualizada',
+		text: 'La configuración se cambió correctamente.',
+		confirmButtonText: 'Aceptar'
+	}).then(() => {
+		document.getElementById("ConfContrasena").submit();
 	});
 }
 
@@ -47,59 +58,49 @@ function guardarConfSesion() {
 	var intento = $('#intento').val();
 	var pBloqueo = $('#pBloqueo').val();
 	var pDias = $('#pDias').val();
-	console.log("Intentos: " + intento);
-	if (intentos = '') {
+
+	if (intento == '') {
 		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo de intentos",
-			showConfirmButton: false
-
+			confirmButtonText: "Aceptar"
 		});
 	} else if (pBloqueo == '') {
 		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo periodo de bloqueo",
-			showConfirmButton: false
-
+			confirmButtonText: "Aceptar"
 		});
 	} else if (pDias == '') {
 		Swal.fire({
 			icon: "warning",
 			title: "Agrega un valor en el campo periodo que se encontrará activa la cuenta",
-			showConfirmButton: false
-
+			confirmButtonText: "Aceptar"
 		});
 	} else {
-		console.log(urlBase);
 		$.ajax({
 			url: urlBase + "guardarBloqueoSesiones?intento=" + intento + "&pBloqueo=" + pBloqueo + "&pDias=" + pDias,
 			type: "POST",
 			success: function() {
-			    Swal.fire({
-			        icon: 'success',
-			        title: 'Desbloqueo correctamente',
-			        showConfirmButton: false,
-			        timer: 2400
-			    }).then((result) => {
-			        window.location.reload();
-			    });
-
+				Swal.fire({
+					icon: 'success',
+					title: 'Configuración actualizada',
+					text: 'La configuración se cambió correctamente.',
+					confirmButtonText: 'Aceptar'
+				}).then(() => {
+					window.location.reload();
+				});
 			},
 			error: function() {
-			    Swal.fire({
-			        icon: 'warning',
-			        title: 'No se realizó correctamente el desbloqueo',
-			        showConfirmButton: false
-			    });
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'No se pudo guardar la configuración.',
+					confirmButtonText: 'Aceptar'
+				});
 			}
 		});
 	}
-	/*swal({
-		type: 'success',
-		title: 'Configuración guardada',
-		showConfirmButton: false,
-		timer: 68000 // es ms (mili-segundos)
-	});*/
 }
 
 //Funcion para desbloquear sesion o cuenta del usuario seleccionado

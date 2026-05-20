@@ -31,6 +31,7 @@ import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaDtoService;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Controller
 public class IndexController {
@@ -98,70 +99,78 @@ public class IndexController {
 
 	// Metodo que guarda la contraseña nueva al momento de almacenarla
 	@RequestMapping(value = { "/guardar_contrasena" }, method = RequestMethod.POST)
-	public ResponseEntity<?> guardarCambioContrasena(@RequestParam("password") String password) throws IOException {
-		logger.info("Ejecutando guardarCambioContrasena");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// Buscamos la información del usuario
-		Usuario usu = usuarioService.findByNombre(auth.getName());
-		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
+	public ResponseEntity<?> guardarCambioContrasena(
+	        @RequestParam("password") String password,
+	        HttpServletRequest request,
+	        HttpServletResponse response) throws IOException {
 
-		List<HistContrasena> ultimasContrasenas = histContrasenaService.findTopByUsuarioByFechaDesc(usu.getPk_id_usuario(),
-				Integer.parseInt(valorUltimasContrasenas));
-		boolean coincideContrasena = false;
-		for (HistContrasena historicoContrasena : ultimasContrasenas) {
-			if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
-				coincideContrasena = true;
+	    logger.info("Ejecutando guardarCambioContrasena");
 
-				ResponseEntity.notFound().build();
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-				// return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas
-				// 3 contraseñas");
-				break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
-			}
-		}
-		
-		if (coincideContrasena) {
-			logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
-			return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
-		}
-		logger.info("Puede realizar el cambio de contraseña");
+	    Usuario usu = usuarioService.findByNombre(auth.getName());
 
-		// logger.info("Password: " + password);
+	    String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
 
-		logger.info("Pk_Usu: " + usu.getPk_id_usuario());
-		// Con el id del usuario vamos a dar de baja la contraseña que se tiene
-		int hisContrasena = histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
+	    List<HistContrasena> ultimasContrasenas =
+	            histContrasenaService.findTopByUsuarioByFechaDesc(
+	                    usu.getPk_id_usuario(),
+	                    Integer.parseInt(valorUltimasContrasenas)
+	            );
 
-		// Vamos a obtener el parametro de los días de vigencia de la contraseña
-//		Properties properties = new Properties();
-//		InputStream inputStream = new FileInputStream("src/main/resources/confSesion.properties");
-//		properties.load(inputStream);
-//
-//		properties.getProperty("pDias");
+	    boolean coincideContrasena = false;
 
-		String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-		logger.info("Días que va a estar activa la contraseña: " + pDias);
-		// Establecemos el formato de la fecha
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		// Obtenemos la fecha en String
-		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
-		// Casteamos la fechaActual a localDate
-		LocalDate localDate = LocalDate.parse(fechaActual);
-		LocalDate localDateHoy = LocalDate.parse(fechaActual);
-		// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
+	    for (HistContrasena historicoContrasena : ultimasContrasenas) {
+	        if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+	            coincideContrasena = true;
+	            break;
+	        }
+	    }
 
-		localDate = localDate.plusDays(Long.parseLong(pDias));
+	    if (coincideContrasena) {
+	        logger.error("La nueva contraseña coincide con una de las últimas contraseñas");
+	        return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+	    }
 
-		HistContrasena hc = new HistContrasena();
-		hc.setDt_vig_cont_fin(localDate);
-		hc.setDt_vig_cont_inicio(localDateHoy);
-		hc.setVc_indicador_activo(1);
-		hc.setUsr_historico_contrasena_id(usu);
-		hc.setVc_contrasenia(passwordEncoder.encode(password));
-		// histContrasenaService.save(hc);
-		logger.info("Guardar en historico");
-		// return null;
-		return ResponseEntity.ok(histContrasenaService.save(hc));
+	    logger.info("Puede realizar el cambio de contraseña");
+
+	    histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
+
+	    String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
+
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
+
+	    LocalDate localDate = LocalDate.parse(fechaActual);
+	    LocalDate localDateHoy = LocalDate.parse(fechaActual);
+
+	    localDate = localDate.plusDays(Long.parseLong(pDias));
+
+	    HistContrasena hc = new HistContrasena();
+	    hc.setDt_vig_cont_fin(localDate);
+	    hc.setDt_vig_cont_inicio(localDateHoy);
+	    hc.setVc_indicador_activo(1);
+	    hc.setUsr_historico_contrasena_id(usu);
+	    hc.setVc_contrasenia(passwordEncoder.encode(password));
+
+	    HistContrasena guardada = histContrasenaService.save(hc);
+
+	    // CERRAR SESIÓN CORRECTAMENTE PARA NO BLOQUEAR AL USUARIO
+	    if (auth != null && auth.isAuthenticated()) {
+	        String username = auth.getName();
+
+	        loginService.spDesactivarSesion(username);
+
+	        new SecurityContextLogoutHandler().logout(request, response, auth);
+	    }
+
+	    SecurityContextHolder.clearContext();
+
+	    if (request.getSession(false) != null) {
+	        request.getSession(false).invalidate();
+	    }
+
+	    return ResponseEntity.ok(guardada);
 	}
 
 	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña

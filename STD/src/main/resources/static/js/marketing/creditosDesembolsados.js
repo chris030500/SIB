@@ -47,8 +47,20 @@ function cerrarModal(idModal) {
 	const modalElement = document.getElementById(idModal);
 	if (!modalElement) return;
 
+	if (document.activeElement) {
+		document.activeElement.blur();
+	}
+
 	const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
 	modal.hide();
+
+	setTimeout(() => {
+		document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+		document.body.classList.remove("modal-open");
+		document.body.style.removeProperty("overflow");
+		document.body.style.removeProperty("padding-right");
+		modalElement.removeAttribute("aria-hidden");
+	}, 300);
 }
 
 function editPlantilla(idSMSConfig) {
@@ -107,15 +119,19 @@ function actualizarPlantilla(idSMSConfig, texto, estatus) {
 			return response.json();
 		})
 		.then((data) => {
-			Swal.fire({
-				icon: "success",
-				title: "¡Guardado exitoso!",
-				text: "La plantilla se guardó correctamente.",
-				allowOutsideClick: false
-			}).then(() => {
-				cerrarModal("editPlantillaModal");
+
+			cerrarModal("editPlantillaModal");
+
+			setTimeout(() => {
 				listaPlantillas();
-			});
+
+				Swal.fire({
+					icon: "success",
+					title: "¡Guardado exitoso!",
+					text: "La plantilla se guardó correctamente.",
+					allowOutsideClick: false
+				});
+			}, 300);
 		})
 		.catch((error) => {
 			console.error("Error al actualizar la plantilla:", error);
