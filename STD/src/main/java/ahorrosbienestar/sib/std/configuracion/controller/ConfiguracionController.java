@@ -128,7 +128,7 @@ public class ConfiguracionController {
 		if(validarAcceso(nombrePantalla) == 1) {
 			model.addAttribute("titulo", "Configuración de sesiones");
 			model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
-			model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
+			model.addAttribute("pDias", configService.findAll().get(1).getVc_valor_propiedad());
 			model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
 			
 			rutaDireccion = "configuracion/bloqueoSesiones";
@@ -235,6 +235,10 @@ public class ConfiguracionController {
 
 		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
 		LocalDate localDate = LocalDate.parse(fechaActual);
+
+		LocalDate fechaVencimiento = localDate.plusDays(1);
+
+		//LocalDateTime fechaVencimiento = LocalDateTime.now().plusMinutes(5);
 		// Properties properties = new Properties();
 		// Primero consultamos la contraseña que se ha almacenado con anterioridad
 		// InputStream inputStream = new
@@ -253,7 +257,7 @@ public class ConfiguracionController {
 		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
 		histContrasena.setVc_indicador_activo(1);
-		histContrasena.setDt_vig_cont_fin(localDate);
+		histContrasena.setDt_vig_cont_fin(fechaVencimiento);
 		histContrasena.setUsr_historico_contrasena_id(usu);
 		// System.out.println("Historico de contraseña: " + histContrasena);
 		histContrasenaService.save(histContrasena);

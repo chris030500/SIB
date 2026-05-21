@@ -67,4 +67,8 @@ public class HistContrasenaService {
 	    Pageable pageable = PageRequest.of(0, limite); // página 0, tamaño = limite
 	    return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(idUsuario, pageable);
 	}
+	
+	public HistContrasena obtenerContrasenaActiva(Integer idUsuario) {
+	    return iHistContrasenaRepository.obtenerContrasenaActiva(idUsuario);
+	}
 }

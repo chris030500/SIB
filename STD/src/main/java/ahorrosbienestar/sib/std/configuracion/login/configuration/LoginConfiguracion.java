@@ -3,16 +3,26 @@ package ahorrosbienestar.sib.std.configuracion.login.configuration;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import ahorrosbienestar.sib.std.configuracion.login.component.CustomHttpSessionListener;
 
 @Configuration
 public class LoginConfiguracion {
-	@Bean
-    public ServletListenerRegistrationBean<CustomHttpSessionListener> sessionListener(CustomHttpSessionListener customHttpSessionListener) {
+
+    @Bean
+    public ServletListenerRegistrationBean<CustomHttpSessionListener> sessionListener(
+            CustomHttpSessionListener customHttpSessionListener) {
+
         ServletListenerRegistrationBean<CustomHttpSessionListener> listenerBean =
                 new ServletListenerRegistrationBean<>();
+
         listenerBean.setListener(customHttpSessionListener);
         return listenerBean;
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }

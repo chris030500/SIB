@@ -11,10 +11,7 @@
 </head>
 
 <body>
-	<section class="content" layout:fragment="page-content" style="background: yellow !important;">
-		<h1 style="color:red; position:relative; z-index:99999; display:block;">
-			PRUEBA HTML CONFIGURACION
-		</h1>
+	<section class="content" layout:fragment="page-content">
 		<div class="row">
 			<div class="col-sm-12">
 
@@ -802,17 +799,13 @@
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<script th:src="@{/js/jquery-3.5.1.js}"></script>
-
-		<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
 		<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
-		<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+			<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
 
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+			<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
 
-		<script th:src="@{/js/operaciones/configuracion.js}"></script>
-		<script th:src="@{/js/operaciones/tablas/configuracionTablas.js}"></script>
+			<script th:src="@{/js/operaciones/configuracion.js}"></script>
+			<script th:src="@{/js/operaciones/tablas/configuracionTablas.js}"></script>
 	</th:block>
 </body>
 

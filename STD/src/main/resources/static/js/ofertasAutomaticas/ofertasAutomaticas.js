@@ -199,6 +199,7 @@ function adjuntarFiles(idBase) {
 }
 
 function obtListadoArchivos(ulrServicio){
+
     Swal.fire({
         title: "Consultando información",
         html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
@@ -207,16 +208,52 @@ function obtListadoArchivos(ulrServicio){
         showConfirmButton: false
     });
 
-    $.getJSON(ulrServicio, {}, function(data) {
-        tblAdjuntos.clear().draw();
-        $.each(data, function(idx, opt) {
-            var botones = " <button class='btn btn-info' tabindex='0'"
-                + " title='Ver Archivo' type='button'"
-                + " onclick='verArchivo(this)'>"
-                + " <i class='bi bi-download'></i></button>";
-            tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion, opt.fechaModifacion, opt.rutaArchivo, botones]).draw(false);
-        });
-        Swal.close();
+    $.ajax({
+        url: ulrServicio,
+        type: "GET",
+        dataType: "json",
+
+        success: function(data){
+
+            tblAdjuntos.clear().draw();
+
+            $.each(data, function(idx, opt) {
+
+                var botones =
+                    " <button class='btn btn-info' tabindex='0'"
+                    + " title='Ver Archivo' type='button'"
+                    + " onclick='verArchivo(this)'>"
+                    + " <i class='bi bi-download'></i></button>";
+
+                tblAdjuntos.row.add([
+                    opt.nombreArchivo,
+                    opt.pesoArchivo,
+                    opt.fechaCreacion,
+                    opt.fechaModifacion,
+                    opt.rutaArchivo,
+                    botones
+                ]).draw(false);
+            });
+        },
+
+        error: function(xhr, status, error){
+
+            console.log("ERROR:");
+            console.log(xhr.responseText);
+            console.log(status);
+            console.log(error);
+
+            Swal.fire({
+                title: "Error",
+                text: "No se pudo obtener la información de archivos.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        },
+
+        complete: function(){
+            Swal.close();
+        }
     });
 }
 

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 
+
 @Repository
 public interface IHistContrasenaRepository extends JpaRepository<HistContrasena, Integer> {
 	
@@ -24,6 +25,13 @@ public interface IHistContrasenaRepository extends JpaRepository<HistContrasena,
 			+ "WHERE Usr_historico_contrasena_id = ?1 and VC_INDICADOR_ACTIVO = 1 \r\n"
 			+ "order by PK_ID_PARAMETROS DESC LIMIT 1", nativeQuery=true)
 	public int bajaContrasena(Integer usuario);
+	
+	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA " +
+	        "WHERE Usr_historico_contrasena_id = :idUsuario " +
+	        "AND VC_INDICADOR_ACTIVO = 1 " +
+	        "ORDER BY PK_ID_PARAMETROS DESC " +
+	        "LIMIT 1", nativeQuery = true)
+	HistContrasena obtenerContrasenaActiva(@Param("idUsuario") Integer idUsuario);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA AS contra INNER JOIN SIB.TBL_CAT_USUARIOS AS u ON u.PK_ID_USUARIO = contra.Usr_historico_contrasena_id WHERE u.PK_ID_USUARIO = :id and contra.VC_INDICADOR_ACTIVO = 1;", nativeQuery = true)
 	public Optional<HistContrasena> findByIdHisto(@Param ( "id" ) Integer id);

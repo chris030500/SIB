@@ -28,19 +28,28 @@ public class CustomHttpSessionListener implements HttpSessionListener{
 	    // logger.info("Auth nombre: " + auth.getPrincipal().getClass().getName().get);
 	 }
 
-	 @Override
-	 public void sessionDestroyed(HttpSessionEvent se) {
-		 logger.info("Session destroyed.");
-			logger.info("DestruirSesionUsuario");
-			HttpSession session = se.getSession();
-	        String username = (String) session.getAttribute("username");
-	        // Aquí puedes realizar la lógica para cambiar el estado del usuario en base de datos
-	        // utilizando el nombre de usuario obtenido
-	        logger.info("Session destroyed. User: " + username);
-	        Usuario usuario = usuarioService.findByNombre(username);
-	        logger.info("Id del usuario: " + usuario.getPk_id_usuario());
-	        usuarioService.destruirSesion(usuario.getPk_id_usuario());
+	@Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+        logger.info("Session destroyed.");
 
-	 }
+        HttpSession session = se.getSession();
+        String username = (String) session.getAttribute("username");
 
+        logger.info("Sesión destruida para usuario: " + username);
+
+	    if (username == null || username.trim().isEmpty()) {
+	        logger.warn("Session destroyed sin username. No se desactiva usuario.");
+	        return;
+	    }
+
+	    Usuario usuario = usuarioService.findByNombre(username);
+
+	    if (usuario == null) {
+	        logger.warn("No se encontró usuario para username: " + username);
+	        return;
+	    }
+
+	    logger.info("Id del usuario: " + usuario.getPk_id_usuario());
+	    usuarioService.destruirSesion(usuario.getPk_id_usuario());
+	}
 }

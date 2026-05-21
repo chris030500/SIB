@@ -120,10 +120,18 @@ public class UsuarioController {
     
     @ResponseBody
     @RequestMapping(value = "/usuario/cambioContra/{id}", method = RequestMethod.GET)
-    public Optional<HistContrasena> loadCambioContra(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> loadCambioContra(@PathVariable("id") Integer id) {
+
         logger.info("Ejecutando loadCambioContra en usuarioController");
-        logger.info("Entro en loadCambioContra en usuarioController");
-        return histContrasenaService.findByIdHisto(id);
+        logger.info("Id usuario: " + id);
+
+        Optional<Usuario> usuario = usuarioService.findById(id);
+
+        if (!usuario.isPresent()) {
+            return ResponseEntity.badRequest().body("No se encontró información del usuario seleccionado.");
+        }
+
+        return ResponseEntity.ok(usuario.get());
     }
     
     @GetMapping("/mensajeContrasena")
