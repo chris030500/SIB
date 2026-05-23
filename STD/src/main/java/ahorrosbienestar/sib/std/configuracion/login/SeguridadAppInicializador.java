@@ -80,13 +80,27 @@ public class SeguridadAppInicializador {
 
             		    Usuario usuario = usuarioService.findByNombre(username);
             		    
-            		 // VALIDAR CADUCIDAD DE CONTRASEÑA
             		    HistContrasena historico =
             		            histContrasenaService.obtenerContrasenaActiva(usuario.getPk_id_usuario());
 
-            		    if (historico != null &&
-            		        historico.getDt_vig_cont_fin() != null &&
-            		        LocalDate.now().isAfter(historico.getDt_vig_cont_fin())) {
+            		    // CAMBIO OBLIGATORIO CUANDO LA CONTRASEÑA FUE CAMBIADA HOY
+            		    if (historico != null
+            		            && historico.getDt_vig_cont_inicio() != null
+            		            && LocalDate.now().isEqual(historico.getDt_vig_cont_inicio())) {
+
+            		        request.getSession().setAttribute("username", username);
+            		        request.getSession().setAttribute("CAMBIO_PASSWORD_OBLIGATORIO", true);
+
+            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
+            		        return;
+            		    }
+
+            		    // VALIDAR CADUCIDAD DE CONTRASEÑA
+            		    if (historico != null
+            		            && historico.getDt_vig_cont_fin() != null
+            		            && LocalDate.now().isAfter(historico.getDt_vig_cont_fin())) {
+
+            		        request.getSession().setAttribute("username", username);
 
             		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
             		        return;

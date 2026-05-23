@@ -66,6 +66,9 @@ import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ResponseBody;
  
  
 @Controller
@@ -794,7 +797,8 @@ public class indexOfertasAutoController {
         }
     }
     
-    @GetMapping("/listaArchivos")
+    @GetMapping(value = "/listaArchivos", produces = "application/json")
+    @ResponseBody
     public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(@RequestParam(name = "idBase") Integer idBase) throws IOException {
         
         try {
