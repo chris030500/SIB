@@ -29,6 +29,8 @@ public class OriginacionEstatusOfertaPersistenciaService {
 
 	private static final Logger logger = Logger.getLogger(OriginacionEstatusOfertaPersistenciaService.class);
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+	private static final String ESTATUS_VENTA_CENTRAL_CAPTURA = "Central de captura";
+	private static final String ESTATUS_VENTA_REGISTRADO = "Registrado";
 
 	@Autowired
 	private IOriginacionEstatusOfertaWsRepository repository;
@@ -86,7 +88,7 @@ public class OriginacionEstatusOfertaPersistenciaService {
 
 			int actualizados = 0;
 			for (OriginacionEstatusOfertaWs registro : registros) {
-				if (registro.getIdOferta() != null) {
+				if (registro.getIdOferta() != null && debeActualizarEstatusMc(registro.getVcEstatusVenta())) {
 					actualizados += hisClientesConCampaniaRepository
 							.actualizarEstatusMcPorIdClientesConCampania(registro.getIdOferta());
 				}
@@ -147,5 +149,14 @@ public class OriginacionEstatusOfertaPersistenciaService {
 			return null;
 		}
 		return value.asInt();
+	}
+
+	private boolean debeActualizarEstatusMc(String estatusVenta) {
+		if (estatusVenta == null) {
+			return false;
+		}
+		String valorNormalizado = estatusVenta.trim();
+		return ESTATUS_VENTA_CENTRAL_CAPTURA.equalsIgnoreCase(valorNormalizado)
+				|| ESTATUS_VENTA_REGISTRADO.equalsIgnoreCase(valorNormalizado);
 	}
 }
