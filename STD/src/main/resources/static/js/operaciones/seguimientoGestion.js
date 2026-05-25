@@ -134,15 +134,14 @@ function llenarTablaSeguimiento(condicion) {
 		}
 
 		Swal.fire({
-			title: 'Consultando informacion..',
-			html: 'Espere Por Favor...',
-			allowOutsideClick: false,
-			showConfirmButton: false,
-			onBeforeOpen: () => {
-				Swal.showLoading();
-			}
+		    title: 'Consultando informacion..',
+		    html: 'Espere Por Favor...',
+		    allowOutsideClick: false,
+		    showConfirmButton: false,
+		    didOpen: () => {
+		        Swal.showLoading();
+		    }
 		});
-
 		$.ajax({
 			url: newUrlBase + servicioURL,
 			type: "GET",
@@ -447,7 +446,11 @@ function mostrarGestion(id, asignacion, bloqueo) {
 	bloqueoAsignacion = bloqueo;
 	document.getElementById("numCliente").textContent = id;
 	idOferta = asignacion;
-	$('#modal-seguimiento').modal('show');
+	const modalSeguimiento = new bootstrap.Modal(
+	    document.getElementById('modal-seguimiento')
+	);
+
+	modalSeguimiento.show();
 	listaDeGestiones();
 	datosDeCliente(id);
 	buscarRelacion();
@@ -653,7 +656,11 @@ function editarSegGestion(id) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			$('#modal-editar').modal('show');
+			const modalEditar = new bootstrap.Modal(
+			    document.getElementById('modal-editar')
+			);
+
+			modalEditar.show();
 			// Ahora asignamos los valores a los elementos del modal
 			datosRelacionModal = almacen.listaRelaciones.find(item => item.pk_id_relacion_codigo == respuesta.model.relacionCodigosModel.pk_id_relacion_codigo);
 			let relacionPart = datosRelacionModal.relacion_codigos.split(" ")
@@ -846,12 +853,18 @@ function cerrarModalAlertas(valor) {
 }
 
 function cerrarModalEditar() {
-	$('#modal-editar').modal('hide');
+	bootstrap.Modal.getInstance(
+	    document.getElementById('modal-editar')
+	).hide();
 }
 
 function mostrarAlerta() {
 	todosLosEstatus();
-	$('#modal-alerta').modal('show');
+	const modalAlerta = new bootstrap.Modal(
+	    document.getElementById('modal-alerta')
+	);
+
+	modalAlerta.show();
 }
 
 document.addEventListener('click', function(event) {

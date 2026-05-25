@@ -28,5 +28,21 @@ public class LoginService {
 		logger.info("CALL SIB.SP_DESACTIVAR_SESION(" + usuario + ")");
 		jdbcTemplate.update("CALL SIB.SP_DESACTIVAR_SESION (?)", usuario);
 	}
+	
+	public Integer obtenerSesionActiva(String usuario) {
+	    try {
+	        return jdbcTemplate.queryForObject(
+	            "SELECT IFNULL(I_ESTATUS_SESION, 0) " +
+	            "FROM SIB.TBL_CAT_USUARIOS " +
+	            "WHERE UPPER(TRIM(VC_NOMBRE_USUARIO)) = UPPER(TRIM(?)) " +
+	            "LIMIT 1",
+	            Integer.class,
+	            usuario
+	        );
+	    } catch (Exception e) {
+	        logger.error("Error al obtener sesión activa del usuario: " + usuario, e);
+	        return 0;
+	    }
+	}
 
 }

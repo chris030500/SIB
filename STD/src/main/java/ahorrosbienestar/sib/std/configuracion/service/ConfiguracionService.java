@@ -1,10 +1,12 @@
 package ahorrosbienestar.sib.std.configuracion.service;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+//import java.math.BigInteger;
+//import java.security.MessageDigest;
+//import java.security.NoSuchAlgorithmException;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.repository.IConfiguracionRepository;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.TiposCampaniasRepository;
+import jakarta.transaction.Transactional;
 
 
 
@@ -26,6 +29,9 @@ public class ConfiguracionService {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	private static final Logger logger = Logger.getLogger(ConfiguracionService.class);
@@ -134,20 +140,24 @@ public class ConfiguracionService {
 
 	}
 
-	public static String getMD5(String contrasena) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] messageDigest = md.digest(contrasena.getBytes());
-			BigInteger number = new BigInteger(1, messageDigest);
-			String hashtext = number.toString(16);
+//	public static String getMD5(String contrasena) {
+		//try {
+		//	MessageDigest md = MessageDigest.getInstance("MD5");
+		//	byte[] messageDigest = md.digest(contrasena.getBytes());
+			//BigInteger number = new BigInteger(1, messageDigest);
+		//	String hashtext = number.toString(16);
 
-			while (hashtext.length() < 32) {
-				hashtext = "0" + hashtext;
-			}
-			return hashtext;
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
+			//while (hashtext.length() < 32) {
+				//hashtext = "0" + hashtext;
+			//}
+		//	return hashtext;
+	//	} catch (NoSuchAlgorithmException e) {
+		//	throw new RuntimeException(e);
+	//	}
+	// }
+	
+	public String encriptarContrasena(String contrasena) {
+	    return passwordEncoder.encode(contrasena);
 	}
 	@Transactional
     public boolean actualizarConfiguracion(Configuracion configiracion) {

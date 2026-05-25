@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Parametros de Búro de Crédito</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- FORMULARIO 1: Búsqueda de Campaña -->
+			<form id="formBuscarCampania">
+				<div class="row">
+					<div class="col-md-6">
+						<label class="col-form-label">Campaña de Crédito</label>
+						<input type="search" class="form-control" id="buscarCampania" list="opcionCampania"
+							autocomplete="off" placeholder="Buscar campaña" oninput="this.value = this.value.toUpperCase(); buscarCampanias()"/>
+						<datalist id="opcionCampania"></datalist>
+					</div>
+				</div>
+			</form>
+			<!-- FORMULARIO 2: Parámetros -->
+			<form id="formParametrosBC">
+				<div id="divBusqueda">
+					<fieldset class="border p-2">
+						<legend class="float-none w-auto p-2">Parámetros</legend>
+						<input type="hidden" id="idCampaniaSeleccionada" name="idCampaniaSeleccionada" />
+						<input type="hidden" id="idRegistroParam" name="idRegistroParam" />
+						<!-- Radio buttons -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-4">
+								<label class="col-form-label">Tipo Evaluación</label>
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label">
+									<input type="radio" name="tipoEvaluacion" value="1"
+										onclick="toggleMopMaximo()" />
+									PROSPECTOR
+								</label>
+							</div>
+							<div class="col-md-4">
+								<label class="col-form-label">
+									<input type="radio" name="tipoEvaluacion" value="2"
+										onclick="toggleMopMaximo()" />
+									ADVISER
+								</label>
+							</div>
+						</div>
+
+						<!-- Porcentaje de uso máximo -->
+						<div class="row" style="margin-top: 15px;" id="usoMaximo">
+							<div class="col-md-4">
+								<label class="col-form-label">Porcentaje de Uso Máximo %:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" name="usoMaximo" id="usoMaximo1" class="form-control" min="1" max="100" value="0"/>
+							</div>
+						</div>
+
+						<!-- MOP Máximo -->
+						<div class="row" id="mopMaximoRow" style="margin-top: 15px;">
+							<div class="col-md-4">
+								<label class="col-form-label">MOP Máximo:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" name="mopMaximo" id="mopMaximo" class="form-control" min="1" max="100" value="0"/>
+							</div>
+						</div>
+
+						<!-- BCS Mínimo -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-4">
+								<label class="col-form-label">BCS Mínimo:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" name="bcsMinimo" id="bcsMinimo" class="form-control" min="1" max="100" value="0"/>
+							</div>
+						</div>
+
+						<!-- ICC mínimo -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-4">
+								<label class="col-form-label">ICC Mínimo:</label>
+							</div>
+							<div class="col-md-4">
+								<input type="number" name="iccMinimo" id="iccMinimo" class="form-control" min="1" max="100" value="0"/>
+							</div>
+						</div>
+
+						<!-- Riesgo Máximo -->
+						<div class="row" style="margin-top: 15px;">
+							<div class="col-md-4">
+								<label class="col-form-label">Riesgo Máximo:</label>
+							</div>
+							<div class="col-md-4">
+								<select class="form-control" name="riesgoMaximo[]" id="idTipoArchivo"
+									multiple onchange="asignarArchivo(this)">
+									<option value="0">Seleccione</option>
+									<option th:each="opcionTipo : ${cat_riesgo_Maximo}"
+										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"
+										th:id="${opcionTipo.v_pantalla}">
+									</option>
+								</select>
+							</div>
+						</div>
+
+						<!-- Botón Guardar -->
+						<div class="row mt-4">
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4 text-left">
+								<button type="submit" class="btn btn-primary" id="btnGuardarParamBC"
+								onclick="guardarParametrosBC()">Guardar</button>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</form>
+
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/credito/paramBuroCredito.js}"></script>
+	</th:block>
+</body>
+
+</html>

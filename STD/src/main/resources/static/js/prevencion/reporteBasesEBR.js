@@ -1,3 +1,4 @@
+// @ts-nocheck
 function mostrarTabs() {
 	document.querySelectorAll('#pntConf button[data-bs-toggle="tab"]').forEach(tab => {
 		tab.addEventListener('shown.bs.tab', function() {

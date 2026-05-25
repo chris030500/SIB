@@ -2,144 +2,239 @@ package ahorrosbienestar.sib.std.configuracion.login;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 import ahorrosbienestar.sib.std.configuracion.login.component.CustomAuthenticationFailureHandler;
-import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
-import ahorrosbienestar.sib.std.core_bancario.dto.MenuGeneral;
-import ahorrosbienestar.sib.std.core_bancario.service.CoreBancarioService;
+import ahorrosbienestar.sib.std.configuracion.login.service.LoginService;
 import ahorrosbienestar.sib.std.index.model.Acceso;
 import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
-
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.time.LocalDate;
+import java.time.LocalDate;
+import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
+import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
+import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Configuration
 @EnableWebSecurity
-public class SeguridadAppInicializador extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-	private UsuarioService usuarioService;
+public class SeguridadAppInicializador {
 
-	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private UsuarioService usuarioService;
+    
+    @Autowired
+    private HistContrasenaService histContrasenaService;
 
-	@Autowired
-	private DataSource datasource;
+    @Autowired
+    private DataSource datasource;
 
-	@Autowired
-	private CoreBancarioService coreBancarioService;
-	
-	@Autowired
-	private AccesoService accesoService;
-	
+    @Autowired
+    private AccesoService accesoService;
+
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    
+    @Autowired
+    private LoginService loginService;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		try {
-			// Aqui especificamos a que url el usuario tiene acceso
-			http.
-			csrf().disable()
-			.authorizeRequests()
-			.antMatchers("/css/**", "/js/**", "/images/**","/configuracion/sesionesInactiva", "configuracion/mensajeContrasena/**","/configuracion/**", "/configuracion/guardarConfContrasena/**", "/configuracion/mensajeContrasena/**", "/hist_contrasena/**", "/usuario/**", "/api/**").permitAll();
-			/*
-			 * List<MenuGeneral> menuGeneral = coreBancarioService.menuGeneral();
-			 * if(menuGeneral.size() > 0) { for (MenuGeneral permisos : menuGeneral) {
-			 * http.csrf().disable() .authorizeRequests()
-			 * .antMatchers(permisos.getVc_nombre_controller().split(","))
-			 * .hasAnyRole(permisos.getVc_nombre_rol()); } }
-			 */
-	        http.csrf().disable()
-			.authorizeRequests()
-	        .anyRequest().authenticated().and()
-			.formLogin().successHandler((request, response, authentication) -> {
-					// Obtiene el nombre de usuario
-					String username = authentication.getName();
-					// Obteniendo  informacion del usuario con una consulta por por username
-					Usuario usuario = usuarioService.findByNombre(username);
-					int estatus = usuario.getPk_id_usuario();
-					// Setenado valores al modelo Acceso
-					Acceso acceso = new Acceso();
-					acceso.setDt_fecha_registro(new Date());
-					acceso.setI_cod_accion(1);
-					acceso.setI_id_usuario(estatus);
-					acceso.setVc_descripci("Ingreso");
-					LocalDateTime locaDate = LocalDateTime.now();
-					acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
-					acceso.setVc_host_remoto(request.getRemoteHost());
-					acceso.setVc_ip_remoto(request.getRemoteAddr());
-					acceso.setVc_nom_servidor(request.getServerName());
-					acceso.setVc_usuario(username);
-					//Guardanto los valores de acceso en la base de datos
-					accesoService.save(acceso);
-					System.out.println("Acceso registrado en bitacora correctamente");
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authenticationProvider(authenticationProvider())
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/configuracion/sesionesInactiva",
+                    "/configuracion/mensajeContrasena/**",
+                    "/configuracion/**",
+                    "/configuracion/guardarConfContrasena/**",
+                    "/hist_contrasena/**",
+                    "/usuario/**",
+                    "/api/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+            		.successHandler((request, response, authentication) -> {
 
-					// Almacena el nombre de usuario en la sesión
-					request.getSession().setAttribute("username", username);
+            		    String username = authentication.getName();
 
-					// Redirecciona a la página principal u otra página deseada
-					response.sendRedirect("/STD/inicio");
-				})
-				.loginPage("/login")
-				.failureHandler(customAuthenticationFailureHandler)
-				.permitAll()
-				.and()
-				.logout()
-				.permitAll()
-				.and()
-				.exceptionHandling()
-				.accessDeniedPage("/error_403");
+            		    Usuario usuario = usuarioService.findByNombre(username);
+            		    
+            		    HistContrasena historico =
+            		            histContrasenaService.obtenerContrasenaActiva(usuario.getPk_id_usuario());
 
-		http.sessionManagement()
-		.maximumSessions(1)
-		.expiredUrl("/STD/inicio")
-		.maxSessionsPreventsLogin(false)
-		.and()
-		.invalidSessionUrl("/STD/inicio");
+            		    // CAMBIO OBLIGATORIO CUANDO LA CONTRASEÑA FUE CAMBIADA HOY
+            		    if (historico != null
+            		            && historico.getDt_vig_cont_inicio() != null
+            		            && LocalDate.now().isEqual(historico.getDt_vig_cont_inicio())) {
 
-			
-		} catch (Exception e) {
-			System.out.println("datos"+e.getMessage());
-		}
-	}
+            		        request.getSession().setAttribute("username", username);
+            		        request.getSession().setAttribute("CAMBIO_PASSWORD_OBLIGATORIO", true);
 
-	// Metodo para encriptar la contraseña
-	public static BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
+            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
+            		        return;
+            		    }
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
+            		    // VALIDAR CADUCIDAD DE CONTRASEÑA
+            		    if (historico != null
+            		            && historico.getDt_vig_cont_fin() != null
+            		            && LocalDate.now().isAfter(historico.getDt_vig_cont_fin())) {
 
-		builder.jdbcAuthentication().dataSource(datasource).passwordEncoder(passwordEncoder).usersByUsernameQuery(
-				"SELECT u.VC_NOMBRE_USUARIO, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO FROM TBL_CAT_USUARIOS as u \r\n"
-						+ "inner join TBL_HIST_CONTRASENIA as hc\r\n"
-						+ "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)\r\n"
-						+ "WHERE u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_SESION = 0 and u.I_ESTATUS_CUENTA "
-						+ "and hc.VC_INDICADOR_ACTIVO = 1 \r\n"
-						+ "and u.VC_NOMBRE_USUARIO = ?")
-				.authoritiesByUsernameQuery(
-						"SELECT u.VC_NOMBRE_USUARIO, r.VC_NOMBRE_ROL, hc.VC_CONTRASENIA, hc.VC_INDICADOR_ACTIVO \r\n"
-								+ "FROM TBL_CAT_USUARIOS as u \r\n" + "inner join TBL_CAT_ROL as r \r\n"
-								+ "on (u.Rol_idRol = r.PK_ID_ROL)\r\n" + "inner join TBL_HIST_CONTRASENIA as hc\r\n"
-								+ "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)\r\n"
-								+ "where hc.VC_INDICADOR_ACTIVO = 1 and  u.VC_NOMBRE_USUARIO = ?");
+            		        request.getSession().setAttribute("username", username);
 
-	}
+            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
+            		        return;
+            		    }
+            		 // VALIDAR SI YA TENÍA SESIÓN ACTIVA
+            		    Integer sesionActiva = loginService.obtenerSesionActiva(username);
 
-	
+            		    if (sesionActiva != null && sesionActiva == 1) {
+            		        usuario.setI_estatus_cuenta(0);
+            		        usuarioService.save(usuario);
+
+            		        SecurityContextHolder.clearContext();
+            		        request.getSession().invalidate();
+
+            		        response.sendRedirect(request.getContextPath() + "/login?error=usuarioBloqueado");
+            		        return;
+            		    }
+
+            		    // RESETEAR INTENTOS FALLIDOS
+            		    usuario.setI_intentos_fallidos(0);
+
+            		    usuarioService.save(usuario);
+
+            		    // BITÁCORA DE INGRESO
+            		    int estatus = usuario.getPk_id_usuario();
+
+            		    Acceso acceso = new Acceso();
+
+            		    acceso.setDt_fecha_registro(new Date());
+
+            		    acceso.setI_cod_accion(1);
+
+            		    acceso.setI_id_usuario(estatus);
+
+            		    acceso.setVc_descripci("Ingreso");
+
+            		    LocalDateTime locaDate = LocalDateTime.now();
+
+            		    acceso.setVc_hora_registro(
+            		        locaDate.getHour() + ":" +
+            		        locaDate.getMinute() + ":" +
+            		        locaDate.getSecond()
+            		    );
+
+            		    acceso.setVc_host_remoto(request.getRemoteHost());
+
+            		    acceso.setVc_ip_remoto(request.getRemoteAddr());
+
+            		    acceso.setVc_nom_servidor(request.getServerName());
+
+            		    acceso.setVc_usuario(username);
+
+            		    accesoService.save(acceso);
+
+            		    // ACTIVAR SESIÓN
+            		    loginService.spActivarSesion(username);
+
+            		    request.getSession().setAttribute("username", username);
+            		    request.getSession().setMaxInactiveInterval(35 * 60);
+
+            		    response.sendRedirect(request.getContextPath() + "/inicio");
+            		})
+                .loginPage("/login")
+                .failureHandler(customAuthenticationFailureHandler)
+                .permitAll()
+            )
+            .logout(logout -> logout
+            	    .logoutUrl("/cerrar")
+            	    .logoutSuccessUrl("/login?logout")
+            	    .invalidateHttpSession(true)
+            	    .clearAuthentication(true)
+            	    .deleteCookies("JSESSIONID")
+            	    .permitAll()
+            	)
+            	.exceptionHandling(ex -> ex.accessDeniedPage("/error_403"))
+            	.sessionManagement(session -> session
+            		    .invalidSessionUrl("/login")
+            		    .maximumSessions(1)
+            		    .expiredUrl("/login?expired")
+            		    .maxSessionsPreventsLogin(false)
+            		);
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder() {
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                if (encodedPassword == null) {
+                    return false;
+                }
+
+                String stored = encodedPassword.trim();
+                if (stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$")) {
+                    return super.matches(rawPassword, stored);
+                }
+
+                // Compatibilidad para contraseñas legadas guardadas en texto plano.
+                return stored.contentEquals(rawPassword);
+            }
+        };
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(datasource);
+        manager.setUsersByUsernameQuery(
+            "SELECT u.VC_NOMBRE_USUARIO, TRIM(hc.VC_CONTRASENIA), TRUE FROM TBL_CAT_USUARIOS as u \r\n"
+                + "inner join TBL_HIST_CONTRASENIA as hc\r\n"
+                + "on (hc.Usr_historico_contrasena_id = u.PK_ID_USUARIO)\r\n"
+                + "WHERE u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_CUENTA = 1 "
+                + "and hc.VC_INDICADOR_ACTIVO = 1 \r\n"
+                + "and UPPER(TRIM(u.VC_NOMBRE_USUARIO)) = UPPER(TRIM(?)) \r\n"
+                + "ORDER BY hc.PK_ID_PARAMETROS DESC \r\n"
+                + "LIMIT 1"
+        );
+        manager.setAuthoritiesByUsernameQuery(
+            "SELECT u.VC_NOMBRE_USUARIO, CONCAT('ROLE_', r.VC_NOMBRE_ROL) \r\n"
+            + "FROM TBL_CAT_USUARIOS as u \r\n"
+            + "inner join TBL_CAT_ROL as r \r\n"
+            + "on (u.Rol_idRol = r.PK_ID_ROL)\r\n"
+            + "where u.I_ESTATUS_USUARIO = 1 and u.I_ESTATUS_CUENTA = 1 \r\n"
+            + "and UPPER(TRIM(u.VC_NOMBRE_USUARIO)) = UPPER(TRIM(?))"
+        );
+        return manager;
+    }
 }

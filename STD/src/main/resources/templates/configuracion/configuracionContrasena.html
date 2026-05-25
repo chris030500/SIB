@@ -103,7 +103,7 @@
 
 														<br>
 														<div class="col-sm-2">
-															<button type="submit" onclick="mensaje()"
+															<button type="button" onclick="guardarConfigContrasena()"
 																class="btn btn-primary">Guardar</button>
 														</div>
 													</form>
@@ -185,13 +185,14 @@
 			</div>
 		</div>
 	</section>
-
+	
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-		<script th:src="@{/js/componentes/titulo.js}"></script>
+	    <script th:src="@{/js/jquery-3.6.4.min.js}"></script>
+	    <script th:src="@{/vendor/bootstrap/bootstrap.min.js}"></script>
+	    <script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+	    <script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+	    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+		<script th:src="@{/js/jquery-ui.js}"></script>
 		<script th:src="@{/js/configuracion.js}"></script>
 	</th:block>
 

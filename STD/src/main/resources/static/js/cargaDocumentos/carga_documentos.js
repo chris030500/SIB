@@ -1,3 +1,4 @@
+// @ts-nocheck
 var productoNomina = document.getElementById('productoNomina').value;
  
 window.addEventListener("load", function() {

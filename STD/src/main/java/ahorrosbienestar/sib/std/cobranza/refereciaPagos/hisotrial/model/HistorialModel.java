@@ -3,11 +3,11 @@ package ahorrosbienestar.sib.std.cobranza.refereciaPagos.hisotrial.model;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

@@ -65,7 +65,7 @@ public class DoctoUnificadoController {
 			// System.out.println("url carpeta: " + url);
 			Optional<DoctoUnificado> archivosPdfXml = doctoUnificadoService.findByFkIdSolicituEnvio(soliEnvio);
 			if (archivosPdfXml.isPresent()) {
-				System.out.println("Tiene información");
+				logger.info("Tiene información");
 //				String validacionPDF = archivosPdfXml.get().getVc_ruta_archivo_pdf();
 //				String validacionXML = archivosPdfXml.get().getVc_ruta_archivo_xml();
 				System.out.println("archivoPdf: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf());
@@ -87,11 +87,14 @@ public class DoctoUnificadoController {
 						break;
 					} else {
 						banderaArchivos = 0;
-						System.out.println("Algunos archivos no existen. Esperando " + tiempoEspera + " milisegundos...");
+						logger.info("Algunos archivos no existen. Esperando " + tiempoEspera + " milisegundos...");
 						try {
-							Thread.sleep(tiempoEspera);
+						    Thread.sleep(tiempoEspera);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+						    Thread.currentThread().interrupt();
+						    logger.error("Proceso interrumpido al esperar la validación de archivos.", e);
+						    return ResponseEntity.internalServerError()
+						            .body("Proceso interrumpido al validar archivos.");
 						}
 					}
 				}
@@ -125,7 +128,12 @@ public class DoctoUnificadoController {
 			}
 
 		} catch (Exception e) {
-			return ResponseEntity.ok(e.getMessage());
+		    if (e instanceof InterruptedException) {
+		        Thread.currentThread().interrupt();
+		    }
+		    logger.error("Error al obtener archivos unificados.", e);
+		    return ResponseEntity.internalServerError()
+		            .body("Error al obtener archivos unificados.");
 		}
 		return null;
 
@@ -198,7 +206,7 @@ public class DoctoUnificadoController {
 		// System.out.println("url carpeta: " + url);
 		Optional<DoctoUnificado> archivosPdfXml = doctoUnificadoService.findByFkIdSolicituEnvio(soliEnvio);
 		if (archivosPdfXml.isPresent()) {
-			System.out.println("Tiene información");
+			logger.info("Tiene información");
 			String validacionPDF = archivosPdfXml.get().getVc_ruta_archivo_pdf();
 			String validacionXML = archivosPdfXml.get().getVc_ruta_archivo_xml();
 			System.out.println("URL: " + url);

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.apache.log4j.Logger;
 
 import ahorrosbienestar.sib.std.catalogo_contratos.service.CatContratoService;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
@@ -41,6 +42,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 public class ProductoController {
 
 	private ProductoService productoService;
+	private static final Logger logger = Logger.getLogger(ProductoController.class);
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;
@@ -62,6 +64,23 @@ public class ProductoController {
 
 	@Autowired
 	private IProductoDocumentoRepository iProductoDocumento;
+	
+	private Usuario obtenerUsuarioAutenticado() {
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
+	}
 
 	private int grupo = 2;
 	private int estatus = 1;
@@ -132,12 +151,13 @@ public class ProductoController {
 		int estatus = 1; // activo
 		try {
 
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    mensaje = "Usuario no autenticado.";
+			    respuesta.add(mensaje);
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 			if (productoService.existeProducto(idproducto) == 0) {
 				LocalDate fecha = LocalDate.now();
@@ -151,7 +171,7 @@ public class ProductoController {
 				productoAlta.setI_clasificacion(tipoProducto);
 				productoAlta.setVc_identificador_kyc(identificador);
 				productoAlta.setVc_descripcion_producto(descripcion);
-				productoAlta.setI_usuarioid_registra(usuario.get(0).getPk_id_usuario());
+				productoAlta.setI_usuarioid_registra(usuarioAutenticado.getPk_id_usuario());
 				productoAlta.setFk_id_contrato(catContratoService.findById(idContrato));
 
 				productoService.save(productoAlta);
@@ -165,12 +185,11 @@ public class ProductoController {
 
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("" + e.getMessage());
-			mensaje = "Ocurrio un error. Intente mas tarde.";
-			respuesta.add(mensaje);
+		    logger.error("Error al registrar producto.", e);
+		    mensaje = "Ocurrio un error. Intente mas tarde.";
+		    respuesta.add(mensaje);
+		    return ResponseEntity.badRequest().body(respuesta);
 		}
-
-		return null;
 
 	}
 
