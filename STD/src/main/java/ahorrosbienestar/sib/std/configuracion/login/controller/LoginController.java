@@ -57,35 +57,6 @@ public class LoginController extends HttpServlet {
 	    logger.info("Principal: " + principal);
 	    logger.debug("cargando login");
 
-	    if (principal != null && !"passwordChanged".equals(error)) {
-
-	        String username = principal.getName();
-
-	        logger.info("Sesión anterior detectada sin cierre correcto: " + username);
-
-	        Usuario usuario = usuarioService.findByNombre(username);
-
-	        if (usuario != null) {
-	            usuario.setI_estatus_cuenta(0);
-	            usuarioService.save(usuario);
-	            logger.info("Usuario bloqueado por sesión no cerrada correctamente: " + username);
-	        }
-
-	        SecurityContextHolder.clearContext();
-
-	        if (request.getSession(false) != null) {
-	            request.getSession(false).invalidate();
-	        }
-
-	        HttpSession nuevaSession = request.getSession(true);
-	        nuevaSession.setAttribute(
-	            "error",
-	            "Usuario bloqueado por no cerrar sesión correctamente."
-	        );
-
-	        return "redirect:/login";
-	    }
-
 	    if ("usuarioBloqueado".equals(error)) {
 	        model.addAttribute("error", "Usuario bloqueado. Favor de comunicarse con el administrador.");
 	    }

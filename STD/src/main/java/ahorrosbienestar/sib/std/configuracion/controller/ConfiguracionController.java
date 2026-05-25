@@ -228,49 +228,49 @@ public class ConfiguracionController {
 
 	// Se guarda la contraseña que se haya establecido
 	@PostMapping("/guardarContrasena")
-	public String guardarContrasena(@RequestParam("contrasena") String contrasena, HistContrasena histContrasena)
-			throws IOException {
-		logger.info("Ejecutando guardarContrasena ");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	public String guardarContrasena(@RequestParam("contrasena") String contrasena,
+	                                HistContrasena histContrasena)
+	        throws IOException {
 
-		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
-		LocalDate localDate = LocalDate.parse(fechaActual);
+	    logger.info("Ejecutando guardarContrasena ");
 
-		LocalDate fechaVencimiento = localDate.plusDays(1);
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		//LocalDateTime fechaVencimiento = LocalDateTime.now().plusMinutes(5);
-		// Properties properties = new Properties();
-		// Primero consultamos la contraseña que se ha almacenado con anterioridad
-		// InputStream inputStream = new
-		// FileInputStream("src/main/resources/contrasena.properties");
-		// properties.load(inputStream);
-		// String contrasenaAnterior = properties.getProperty("contrasena");
-		String contrasenaAnterior = configService.findAll().get(5).getVc_valor_propiedad();
-		System.out.println("contrasenaAnterior: " + contrasenaAnterior);
-		System.out.println("contraseña con Bcryp: " + passwordEncoder.encode(contrasenaAnterior));
+	    String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// Obtenemos el nombre del usuario autentificado
-		Usuario usu = usuarioService.findByNombre(auth.getName());
-		
-		// Se agregan los campos para la tabla historico de contraseña
-		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
-		histContrasena.setDt_vig_cont_inicio(localDate);
-		histContrasena.setVc_indicador_activo(1);
-		histContrasena.setDt_vig_cont_fin(fechaVencimiento);
-		histContrasena.setUsr_historico_contrasena_id(usu);
-		// System.out.println("Historico de contraseña: " + histContrasena);
-		histContrasenaService.save(histContrasena);
-		// histContrasena.setUsr_historico_contrasena_id(1L).get();
+	    LocalDate localDate = LocalDate.parse(fechaActual);
 
-		String contrasenia = contrasena;
-		// System.out.println("Contraseña nueva: " + contrasena);
-		logger.info("Usuario que cambia la contraseña: " + auth);
-		logger.info("Contraseña nueva " + contrasena);
-		configService.cambiarContrasenaDefault(contrasenia);
+	    int diasVigencia = Integer.parseInt(
+	            configService.findAll().get(1).getVc_valor_propiedad()
+	    );
 
-		return "redirect:/configuracion/generarContrasena";
+	    LocalDate fechaVencimiento = localDate.plusDays(diasVigencia);
 
+	    String contrasenaAnterior =
+	            configService.findAll().get(5).getVc_valor_propiedad();
+
+	    Authentication auth =
+	            SecurityContextHolder.getContext().getAuthentication();
+
+	    Usuario usu = usuarioService.findByNombre(auth.getName());
+
+	    histContrasena.setVc_contrasenia(
+	            passwordEncoder.encode(contrasenaAnterior)
+	    );
+
+	    histContrasena.setDt_vig_cont_inicio(localDate);
+
+	    histContrasena.setVc_indicador_activo(1);
+
+	    histContrasena.setDt_vig_cont_fin(fechaVencimiento);
+
+	    histContrasena.setUsr_historico_contrasena_id(usu);
+
+	    histContrasenaService.save(histContrasena);
+
+	    configService.cambiarContrasenaDefault(contrasena);
+
+	    return "redirect:/configuracion/generarContrasena";
 	}
 
 	// Mostrar los mensajes que le corresponden al momento de agregar la contraseña

@@ -24,12 +24,17 @@ import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import java.time.LocalDate;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 import ahorrosbienestar.sib.std.contrasena.service.HistContrasenaService;
-import java.util.Optional;
-import java.time.LocalDateTime;
+
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
+
+import java.util.Calendar;
+
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +45,9 @@ public class SeguridadAppInicializador {
     
     @Autowired
     private HistContrasenaService histContrasenaService;
+    
+    @Autowired
+    private ConfigService configService;
 
     @Autowired
     private DataSource datasource;
@@ -76,26 +84,17 @@ public class SeguridadAppInicializador {
             .formLogin(form -> form
             		.successHandler((request, response, authentication) -> {
 
-            		    String username = authentication.getName();
 
-            		    Usuario usuario = usuarioService.findByNombre(username);
-            		    
-            		    HistContrasena historico =
-            		            histContrasenaService.obtenerContrasenaActiva(usuario.getPk_id_usuario());
+            			String username = authentication.getName();
 
-            		    // CAMBIO OBLIGATORIO CUANDO LA CONTRASEÑA FUE CAMBIADA HOY
-            		    if (historico != null
-            		            && historico.getDt_vig_cont_inicio() != null
-            		            && LocalDate.now().isEqual(historico.getDt_vig_cont_inicio())) {
+            			Usuario usuario = usuarioService.findByNombre(username);
 
-            		        request.getSession().setAttribute("username", username);
-            		        request.getSession().setAttribute("CAMBIO_PASSWORD_OBLIGATORIO", true);
+            			HistContrasena historico =
+            			        histContrasenaService.obtenerContrasenaActiva(
+            			                usuario.getPk_id_usuario()
+            			        );
 
-            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
-            		        return;
-            		    }
-
-            		    // VALIDAR CADUCIDAD DE CONTRASEÑA
+            		    // CAMBIO OBLIGATORIO
             		    if (historico != null
             		            && historico.getDt_vig_cont_fin() != null
             		            && LocalDate.now().isAfter(historico.getDt_vig_cont_fin())) {
@@ -105,17 +104,28 @@ public class SeguridadAppInicializador {
             		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
             		        return;
             		    }
+
+            		    // VALIDAR SI YA TENÍA SESIÓN ACTIVA
             		 // VALIDAR SI YA TENÍA SESIÓN ACTIVA
             		    Integer sesionActiva = loginService.obtenerSesionActiva(username);
 
             		    if (sesionActiva != null && sesionActiva == 1) {
+
             		        usuario.setI_estatus_cuenta(0);
             		        usuarioService.save(usuario);
 
             		        SecurityContextHolder.clearContext();
-            		        request.getSession().invalidate();
 
-            		        response.sendRedirect(request.getContextPath() + "/login?error=usuarioBloqueado");
+            		        if (request.getSession(false) != null) {
+            		            request.getSession(false).invalidate();
+            		        }
+
+            		        request.getSession(true).setAttribute(
+            		            "error",
+            		            "Usuario bloqueado por no cerrar sesión correctamente."
+            		        );
+
+            		        response.sendRedirect(request.getContextPath() + "/login");
             		        return;
             		    }
 
@@ -124,25 +134,23 @@ public class SeguridadAppInicializador {
 
             		    usuarioService.save(usuario);
 
-            		    // BITÁCORA DE INGRESO
-            		    int estatus = usuario.getPk_id_usuario();
-
+            		    // BITÁCORA
             		    Acceso acceso = new Acceso();
 
             		    acceso.setDt_fecha_registro(new Date());
 
             		    acceso.setI_cod_accion(1);
 
-            		    acceso.setI_id_usuario(estatus);
+            		    acceso.setI_id_usuario(usuario.getPk_id_usuario());
 
             		    acceso.setVc_descripci("Ingreso");
 
             		    LocalDateTime locaDate = LocalDateTime.now();
 
             		    acceso.setVc_hora_registro(
-            		        locaDate.getHour() + ":" +
-            		        locaDate.getMinute() + ":" +
-            		        locaDate.getSecond()
+            		            locaDate.getHour() + ":" +
+            		            locaDate.getMinute() + ":" +
+            		            locaDate.getSecond()
             		    );
 
             		    acceso.setVc_host_remoto(request.getRemoteHost());
@@ -159,6 +167,7 @@ public class SeguridadAppInicializador {
             		    loginService.spActivarSesion(username);
 
             		    request.getSession().setAttribute("username", username);
+
             		    request.getSession().setMaxInactiveInterval(35 * 60);
 
             		    response.sendRedirect(request.getContextPath() + "/inicio");
