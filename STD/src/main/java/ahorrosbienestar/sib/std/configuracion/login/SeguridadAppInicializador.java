@@ -85,26 +85,14 @@ public class SeguridadAppInicializador {
             		.successHandler((request, response, authentication) -> {
 
 
-            			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            			String username = authentication.getName();
 
-            			String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
+            			Usuario usuario = usuarioService.findByNombre(username);
 
-            			LocalDate localDate = LocalDate.parse(fechaActual);
-
-            			int diasVigencia = Integer.parseInt(
-            			        configService.findAll().get(1).getVc_valor_propiedad()
-            			);
-
-            			LocalDate fechaVencimiento = localDate.plusDays(diasVigencia);
-
-            		    String username = authentication.getName();
-
-            		    Usuario usuario = usuarioService.findByNombre(username);
-
-            		    HistContrasena historico =
-            		            histContrasenaService.obtenerContrasenaActiva(
-            		                    usuario.getPk_id_usuario()
-            		            );
+            			HistContrasena historico =
+            			        histContrasenaService.obtenerContrasenaActiva(
+            			                usuario.getPk_id_usuario()
+            			        );
 
             		    // CAMBIO OBLIGATORIO
             		    if (historico != null
@@ -113,10 +101,7 @@ public class SeguridadAppInicializador {
 
             		        request.getSession().setAttribute("username", username);
 
-            		        response.sendRedirect(
-            		                request.getContextPath() + "/cambio_contrasena"
-            		        );
-
+            		        response.sendRedirect(request.getContextPath() + "/cambio_contrasena");
             		        return;
             		    }
 

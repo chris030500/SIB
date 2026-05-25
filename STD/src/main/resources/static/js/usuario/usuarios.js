@@ -543,87 +543,61 @@ function editarUsuario() {
 
 function cambiarContrasenia() {
 	var idUsuario = document.getElementById('idUsuario1').value;
-	var nombreUsuario = document.getElementById('nombre1').value;
 	var contrasenia = document.getElementById('password').value;
+
 	if (contrasenia == "") {
-		////console.log("Ingresa un password nuevo");
 		Swal.fire({
 			icon: 'warning',
 			title: "El campo de contraseña nueva está vacío, ingresa una contraseña",
 			showConfirmButton: false
-
 		});
-	} else {
-		////console.log("NewUrlBase: " + newUrlBase);
-		$.ajax({
-			url: newUrlBase + "mensajeContrasena?contrasena=" + contrasenia,
-			type: "GET",
-			success: function(respuesta) {
-				////console.log("Entro en success1: " + respuesta);
-				if (respuesta != "Si cumple con los parametros requeridos") {
-					Swal.fire({
-						icon: 'warning',
-						title: respuesta,
-						showConfirmButton: false
+		return;
+	}
 
-					});
-				} else if (respuesta == "Si cumple con los parametros requeridos") {
-					$.ajax({
-						url: urlBase + "editar_usuario/contrasenia?usuario=" + nombreUsuario +
-							"&idUsuario=" + idUsuario + "&password=" + contrasenia,
-						type: "POST",
-						success: function() {
-							console.log("Entro en guardar contraseña");
-							console.log("Respuesta: " + respuesta);
-							Swal.fire({
-								icon: 'success',
-								title: 'Contraseña cambiada correctamente',
-								showConfirmButton: false
-							}).then((result) => {
-								window.location.replace(newUrlBase + "formulario");
-							});
+	$.ajax({
+		url: newUrlBase + "mensajeContrasena?contrasena=" + encodeURIComponent(contrasenia),
+		type: "GET",
+		success: function(respuesta) {
 
-						},
-						error: function(xhr, status, error) {
-							if (xhr.status === 400) {
-								var errorMessage = xhr.responseText;
-								// Mostrar el mensaje de error al usuario
-								console.log(errorMessage);
-								Swal.fire({
-									icon: 'warning',
-									title: errorMessage,
-									showConfirmButton: false
-								}).then((result) => {
-									window.location.replace(newUrlBase + "formulario");
-								});
-							} else {
-								// Manejar otros errores de la solicitud AJAX
-								Swal.fire({
-									icon: 'warning',
-									title: "Error al cambiar la contraseña",
-									showConfirmButton: false
-								}).then((result) => {
-									window.location.replace(newUrlBase + "formulario");
-								});
-							}
-						}
-					});
-				}
-
-
-			},
-			error: function(respuesta) {
-				////console.log("Entro en error");
+			if (respuesta != "Si cumple con los parametros requeridos") {
 				Swal.fire({
 					icon: 'warning',
 					title: respuesta,
 					showConfirmButton: false
-
 				});
-
+				return;
 			}
-		});
-	}
+
+			$.ajax({
+				url: newUrlBase + "guardarCambioContra?idUsuario=" + idUsuario +
+					"&contrasena=" + encodeURIComponent(contrasenia),
+				type: "POST",
+				success: function() {
+					Swal.fire({
+						icon: 'success',
+						title: 'Contraseña cambiada correctamente',
+						showConfirmButton: false
+					}).then(() => {
+						window.location.replace(newUrlBase + "formulario");
+					});
+				},
+				error: function(xhr) {
+					Swal.fire({
+						icon: 'warning',
+						title: xhr.responseText || "Error al cambiar la contraseña",
+						showConfirmButton: false
+					});
+				}
+			});
+		},
+		error: function() {
+			Swal.fire({
+				icon: 'warning',
+				title: "Error al validar la contraseña",
+				showConfirmButton: false
+			});
+		}
+	});
 }
 
 

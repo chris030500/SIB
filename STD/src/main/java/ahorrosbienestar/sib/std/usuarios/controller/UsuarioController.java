@@ -3,6 +3,7 @@ package ahorrosbienestar.sib.std.usuarios.controller;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +150,71 @@ public class UsuarioController {
         return ResponseEntity.ok(configuracionService.mensajeParametros(contrasena, Integer.parseInt(longitud),
                 Integer.parseInt(mayusculas), Integer.parseInt(minusculas), Integer.parseInt(numeros),
                 Integer.parseInt(caracteres)));
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/guardarCambioContra", method = RequestMethod.POST)
+    public ResponseEntity<?> guardarCambioContra(
+            @RequestParam("idUsuario") Integer idUsuario,
+            @RequestParam("contrasena") String contrasena) {
+
+        try {
+
+            Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
+
+            if (!usuarioOpt.isPresent()) {
+                return ResponseEntity.badRequest()
+                        .body("No se encontró el usuario.");
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            HistContrasena historicoActual =
+                    histContrasenaService.obtenerContrasenaActiva(
+                            usuario.getPk_id_usuario()
+                    );
+
+            if (historicoActual != null) {
+                historicoActual.setVc_indicador_activo(0);
+                histContrasenaService.save(historicoActual);
+            }
+
+            HistContrasena nuevoHistorico = new HistContrasena();
+
+            nuevoHistorico.setVc_contrasenia(contrasena);
+
+            nuevoHistorico.setDt_vig_cont_inicio(LocalDate.now());
+
+            // OBLIGAR CAMBIO DE CONTRASEÑA
+            nuevoHistorico.setDt_vig_cont_fin(
+                    LocalDate.now().minusDays(1)
+            );
+
+            nuevoHistorico.setVc_indicador_activo(1);
+
+            nuevoHistorico.setUsr_historico_contrasena_id(usuario);
+
+            nuevoHistorico.setUsr_id_Usr(usuario);
+
+            histContrasenaService.save(nuevoHistorico);
+
+            usuario.setI_intentos_fallidos(0);
+            usuario.setI_estatus_cuenta(1);
+            usuario.setI_estatus_sesion(0);
+
+            usuarioService.save(usuario);
+
+            return ResponseEntity.ok(
+                    "Contraseña actualizada correctamente."
+            );
+
+        } catch (Exception e) {
+
+            logger.error("Error al cambiar contraseña", e);
+
+            return ResponseEntity.badRequest()
+                    .body("Error al cambiar contraseña.");
+        }
     }
     
     public int validarAcceso() {

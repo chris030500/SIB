@@ -111,7 +111,7 @@ public class IndexController {
 
 	    Usuario usu = usuarioService.findByNombre(auth.getName());
 
-	    String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
+	    String valorUltimasContrasenas = "3";
 
 	    List<HistContrasena> ultimasContrasenas =
 	            histContrasenaService.findTopByUsuarioByFechaDesc(
@@ -122,42 +122,65 @@ public class IndexController {
 	    boolean coincideContrasena = false;
 
 	    for (HistContrasena historicoContrasena : ultimasContrasenas) {
-	        if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+
+	    	if (passwordEncoder.matches(password, historicoContrasena.getVc_contrasenia())) {
+
 	            coincideContrasena = true;
 	            break;
 	        }
 	    }
 
 	    if (coincideContrasena) {
-	        logger.error("La nueva contraseña coincide con una de las últimas contraseñas");
-	        return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+
+	        logger.error(
+	                "La nueva contraseña coincide con una de las últimas contraseñas"
+	        );
+
+	        return ResponseEntity.badRequest()
+	                .body(
+	                        "La nueva contraseña coincide con una de las últimas 3 contraseñas"
+	                );
 	    }
 
 	    logger.info("Puede realizar el cambio de contraseña");
 
-	    histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
+	    histContrasenaService.bajaContrasena(
+	            usu.getPk_id_usuario()
+	    );
 
-	    String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
+	    String pDias = configService.findAll().get(1).getVc_valor_propiedad().toString();
 
 	    LocalDate fechaInicio = LocalDate.now();
-	    LocalDate fechaVencimiento = fechaInicio.plusDays(1);
+
+	    LocalDate fechaVencimiento =
+	            fechaInicio.plusDays(Integer.parseInt(pDias));
 
 	    HistContrasena hc = new HistContrasena();
+
 	    hc.setDt_vig_cont_inicio(fechaInicio);
+
 	    hc.setDt_vig_cont_fin(fechaVencimiento);
+
 	    hc.setVc_indicador_activo(1);
+
 	    hc.setUsr_historico_contrasena_id(usu);
-	    hc.setVc_contrasenia(passwordEncoder.encode(password));
 
-	    HistContrasena guardada = histContrasenaService.save(hc);
+	    hc.setVc_contrasenia(
+	            passwordEncoder.encode(password)
+	    );
 
-	    // CERRAR SESIÓN CORRECTAMENTE PARA NO BLOQUEAR AL USUARIO
+	    HistContrasena guardada =
+	            histContrasenaService.save(hc);
+
+	    // CERRAR SESIÓN CORRECTAMENTE
 	    if (auth != null && auth.isAuthenticated()) {
+
 	        String username = auth.getName();
 
 	        loginService.spDesactivarSesion(username);
 
-	        new SecurityContextLogoutHandler().logout(request, response, auth);
+	        new SecurityContextLogoutHandler()
+	                .logout(request, response, auth);
 	    }
 
 	    SecurityContextHolder.clearContext();
