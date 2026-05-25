@@ -106,22 +106,26 @@ public class SeguridadAppInicializador {
             		    }
 
             		    // VALIDAR SI YA TENÍA SESIÓN ACTIVA
+            		 // VALIDAR SI YA TENÍA SESIÓN ACTIVA
             		    Integer sesionActiva = loginService.obtenerSesionActiva(username);
 
             		    if (sesionActiva != null && sesionActiva == 1) {
 
             		        usuario.setI_estatus_cuenta(0);
-
             		        usuarioService.save(usuario);
 
             		        SecurityContextHolder.clearContext();
 
-            		        request.getSession().invalidate();
+            		        if (request.getSession(false) != null) {
+            		            request.getSession(false).invalidate();
+            		        }
 
-            		        response.sendRedirect(
-            		                request.getContextPath() + "/login?error=usuarioBloqueado"
+            		        request.getSession(true).setAttribute(
+            		            "error",
+            		            "Usuario bloqueado por no cerrar sesión correctamente."
             		        );
 
+            		        response.sendRedirect(request.getContextPath() + "/login");
             		        return;
             		    }
 
