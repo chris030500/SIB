@@ -20,9 +20,9 @@ import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 @RestController
 public class FormatoPldRestController {
 
-	private final static int REPOSITORIO_FORMATO = 64;
-	private final static String NOMBRE_ARCHIVO = "FormatoTerceros.txt";
-	private final static String ARCHIVO_FINAL = "FormatoTerceros";
+	private static final int REPOSITORIO_FORMATO = 64;
+	private static final String NOMBRE_ARCHIVO = "FormatoTerceros.txt";
+	private static final String ARCHIVO_FINAL = "FormatoTerceros";
 
 	@Autowired
 	private ConfigService configService;
@@ -52,9 +52,8 @@ public class FormatoPldRestController {
 			logger.info("Copia del archivo creada y movida exitosamente.");
 			return "Copia guardada";
 		} catch (IOException e) {
-			e.printStackTrace();
-			logger.info(e.getMessage());
-			return "Hubo un error";
+		    logger.error("Error al crear o mover la copia del formato PLD.", e);
+		    return "Hubo un error";
 		}
 	}
 

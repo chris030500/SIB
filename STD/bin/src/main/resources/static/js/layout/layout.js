@@ -1,11 +1,14 @@
+// @ts-nocheck
+/* global $, jQuery */
 var opcMenu = "opciones/generarMenu";
+var $ = window['$'];
 $(document).ready(function() {
 	pintarMenuxRol();
 });
 
 function pintarMenuxRol() {
 	var url = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+opcMenu;
-    //var url = window.location.href.substring(0,22)+opcMenu;
+   // var url = window.location.href.substring(0,22)+opcMenu;
 	console.log("datos:"+url);
 	$.getJSON(url, {}, function(data) {
 		$.each(data, function(idx, opt) {

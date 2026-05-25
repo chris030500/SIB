@@ -1,3 +1,4 @@
+// @ts-nocheck
 var optionSelected = "";
 var url = "";
 
@@ -25,10 +26,11 @@ $(document).ready(function() {
 					break;	
 			}
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "Debe seleccionar una opción de búsqueda.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -71,10 +73,11 @@ function buscarNombre(name) {
 			var participantes = res.participantes;
 			console.log(participantes.length);
 			if (participantes.length === 0) {
-				swal({
-					title: "Error, ",
-					text: "El nombre que ingreso no es válido.",
+				Swal.fire({
+					title: "Error",
+					text: "El nombre que ingresó no es válido.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 				cleanScreen();
 			}
@@ -155,10 +158,11 @@ function buscarDatosGenerales() {
 		},
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
 			divDatosGenerales.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra en Cobranza.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra en Cobranza.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -222,10 +226,11 @@ function buscarParticipantes() {
 		},	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
 			divParticipantes.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra en Cobranza.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra en Cobranza.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -300,10 +305,11 @@ function buscarExpedientesNegociacion() {
 		}, 	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
 			divExpedienteNegociacion.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra en Cobranza.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra en Cobranza.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 		
@@ -444,10 +450,11 @@ function showDetalleExpediente() {
 		}, 	
 		error:  function(XMLHttpRequest, textStatus, errorThrown) {
 			divExpDetalle.hide();
-			swal({
-				title: "Error, ",
-						text: "No se encuentra en Cobranza.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "No se encuentra en Cobranza.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -484,10 +491,11 @@ function buscarDatos() {
 			buscarExpedientesNegociacion();	
 		}
 		if ($("#creditoBusqueda").val() === "") {
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe de ingresar un no. de crédito.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}
@@ -501,10 +509,11 @@ function buscarDatos() {
 			buscarExpedientesNegociacion();	
 		}
 		if ($("#nameBusqueda").val() === "") {
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe de ingresar un nombre.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}

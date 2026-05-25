@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Se manda a llamar el mensaje
 window.onload = function() {
 	$.ajax({

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import javax.xml.XMLConstants;
 
 
 import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
@@ -350,6 +351,11 @@ public class CrearXmlController {
 						doc.setXmlStandalone(true);
 						// Se escribe el contenido del XML en un archivo
 						TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+						transformerFactory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
+						transformerFactory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
+						transformerFactory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
 						Transformer transformer = transformerFactory.newTransformer();
 						transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
 						transformer.setOutputProperty(OutputKeys.INDENT, "yes");

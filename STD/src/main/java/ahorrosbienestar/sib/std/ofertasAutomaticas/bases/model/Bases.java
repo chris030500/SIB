@@ -2,10 +2,10 @@ package ahorrosbienestar.sib.std.ofertasAutomaticas.bases.model;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-import javax.persistence.*;
+import jakarta.persistence.*;
  
 /**  Tabla: SIB.TBL_PLD_DESCARGAS  */
 @Entity

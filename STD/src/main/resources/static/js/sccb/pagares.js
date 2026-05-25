@@ -1,3 +1,4 @@
+// @ts-nocheck
 var optionSelected = "";
 var url = "";
 
@@ -27,10 +28,11 @@ $(document).ready(function () {
 			$("#btnBuscar").show();
 			$("#btnClean").show();
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "Debe seleccionar una opción de búsqueda.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -41,7 +43,6 @@ $(document).ready(function () {
 });
 
 function buscarNombre(name) {
-	
 	var selectName = $("#selectName");
 	var option = "";
 	
@@ -56,18 +57,16 @@ function buscarNombre(name) {
 			var nombres = res.nombresPagares;
 			console.log(nombres.length);
 			if (nombres.length === 0) {
-				swal({
-					title: "Error, ",
-					text: "El nombre que ingreso no es válido.",
+				Swal.fire({
+					title: "Error",
+					text: "El nombre que ingresó no es válido.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 				cleanView();
-			}
-			else {
-				for(var i = 0; i < nombres.length; i++) {
-				
+			} else {
+				for (var i = 0; i < nombres.length; i++) {
 					option += "<option value='" + nombres[i].no_cliente + "," + nombres[i].credito_id + "'>" + nombres[i].nombre_cliente + "|" + nombres[i].rol + "|" + nombres[i].credito_id + "</option>";
-				
 					$("select#selectName").empty().append(option);
 				}
 			}
@@ -94,18 +93,18 @@ function getUrl() {
 			break;
 		case "2":
 			noCliente = $("#clienteBusqueda").val();
-			url = getAbsolutePath()	 + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
+			url = getAbsolutePath() + "getPagaresByNoCliente?noCliente=" + Number(noCliente);
 			break;
 		case "3":
 			select = $("#selectName").val();
 			valueSelect = select.toString().split(',');
 			noCliente = valueSelect[0];
 			idCredito = valueSelect[1];
-			url = getAbsolutePath()	 + "getPagaresByNoClienteAndIdCredito?noCliente=" + Number(noCliente) + "&idCredito=" + Number(idCredito);
+			url = getAbsolutePath() + "getPagaresByNoClienteAndIdCredito?noCliente=" + Number(noCliente) + "&idCredito=" + Number(idCredito);
+			break;
 	}
 	
 	console.log(url);
-	
 	return url;
 }
 
@@ -136,13 +135,14 @@ function getPagares() {
 			if (res.pagares.length === 0) {
 				console.log("Error");
 				divPagares.hide();
-				swal({
-					title: "Error, ",
-					text: "No se encuentra el registro de pagare.",
+				Swal.fire({
+					title: "Error",
+					text: "No se encuentra el registro de pagaré.",
 					icon: "warning",
+					allowOutsideClick: false
 				});
 			} else {
-					divPagares.show();
+				divPagares.show();
 				var tbody = "<tbody></tbody>";
 				$("#pagares").append(tbody);
 				$.each(res.pagares, function(idx, opt) {
@@ -183,10 +183,11 @@ function getPagares() {
 			}
 		}, 
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
-						icon: "warning",
+			Swal.fire({
+				title: "Error",
+				text: "Se presentó un error, intente más tarde.",
+				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -198,10 +199,11 @@ function buscarDatos() {
 			getPagares();
 		}
 		if ($("#creditoBusqueda").val() === "") {
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe ingresar un no. de crédito.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}
@@ -210,10 +212,11 @@ function buscarDatos() {
 			getPagares();
 		}
 		if ($("#clienteBusqueda").val() === "") {
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe ingresar un no. de cliente.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}
@@ -222,10 +225,11 @@ function buscarDatos() {
 			getPagares();
 		}
 		if ($("#nameBusqueda").val() === "") {
-			swal({
-				title: "Error, ",
+			Swal.fire({
+				title: "Error",
 				text: "Debe ingresar un nombre.",
 				icon: "warning",
+				allowOutsideClick: false
 			});
 		}
 	}

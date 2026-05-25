@@ -38,7 +38,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("sccb")
 public class HistorialCobranzaController {
 	
-	private static final Logger logger = Logger.getLogger(ParametrosConfigController.class);
+	private static final Logger logger = Logger.getLogger(HistorialCobranzaController.class);
 
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
@@ -75,7 +75,7 @@ public class HistorialCobranzaController {
 			return rutaDireccion;
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
-			return null;
+			return Constantes.RUTA_ERROR;
 		}
 	}
 	
@@ -166,31 +166,58 @@ public class HistorialCobranzaController {
 	@RequestMapping(value = { "/getByIdCreditoDetalleExpediente" }, method = RequestMethod.GET)
 	public ResponseEntity<?> parametroDetalleExpedienteByIdCredito(@RequestParam("idCredito") Integer idCredito) {
 		
-		Optional<DatosSolicitudCredito> datosSolicitud =  datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
-		
-		int idSolicitud = datosSolicitud.get().getI_solicitud_id();
-		
-		return ResponseEntity.ok(historialCobranzaService.searchDetalleExpediente(idSolicitud));
+		Map<String, Object> res = new HashMap<>();
+
+		try {
+			Optional<DatosSolicitudCredito> datosSolicitud = datosSolicitudService.searchDatosSolicitudByIdCredito(idCredito);
+
+			if (!datosSolicitud.isPresent()) {
+				res.put("mensaje", "No se encontró solicitud para el crédito proporcionado.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			}
+
+			int idSolicitud = datosSolicitud.get().getI_solicitud_id();
+			Object detalleExpediente = historialCobranzaService.searchDetalleExpediente(idSolicitud);
+
+			if (detalleExpediente == null) {
+				res.put("mensaje", "No se encontró detalle del expediente.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			}
+
+			return ResponseEntity.ok(detalleExpediente);
+
+		} catch (Exception e) {
+			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
+			res.put(Constantes.MENSAJE_ERROR, Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+		}
 	}
 	
 	public int validarAcceso() {
-		
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.SCCB_HISTORIAL_COBRANZA));
-			
-			
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return 0;
-		}
-		
-		
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	        if (!(principal instanceof UserDetails)) {
+	            logger.warn("Usuario no autenticado.");
+	            return 0;
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+	        List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+	            return 0;
+	        }
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuario.get(0).getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacionController(Constantes.SCCB_HISTORIAL_COBRANZA)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error(Constantes.MENSAJE_DE_ERROR, e);
+	        return 0;
+	    }
 	}
 }

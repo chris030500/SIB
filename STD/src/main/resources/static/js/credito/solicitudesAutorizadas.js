@@ -1,3 +1,4 @@
+// @ts-nocheck
 function ocultarMostrar(divEl) {
 	const id = $(divEl).attr("id");
 	const idDiv = id + 1;

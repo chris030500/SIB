@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.logging.LogFactory;
@@ -128,7 +128,7 @@ public class ConfiguracionController {
 		if(validarAcceso(nombrePantalla) == 1) {
 			model.addAttribute("titulo", "Configuración de sesiones");
 			model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
-			model.addAttribute("pDias", configService.findAll().get(7).getVc_valor_propiedad());
+			model.addAttribute("pDias", configService.findAll().get(1).getVc_valor_propiedad());
 			model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
 			
 			rutaDireccion = "configuracion/bloqueoSesiones";
@@ -235,6 +235,10 @@ public class ConfiguracionController {
 
 		String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
 		LocalDate localDate = LocalDate.parse(fechaActual);
+
+		LocalDate fechaVencimiento = localDate.plusDays(1);
+
+		//LocalDateTime fechaVencimiento = LocalDateTime.now().plusMinutes(5);
 		// Properties properties = new Properties();
 		// Primero consultamos la contraseña que se ha almacenado con anterioridad
 		// InputStream inputStream = new
@@ -253,7 +257,7 @@ public class ConfiguracionController {
 		histContrasena.setVc_contrasenia(passwordEncoder.encode(contrasenaAnterior));
 		histContrasena.setDt_vig_cont_inicio(localDate);
 		histContrasena.setVc_indicador_activo(1);
-		histContrasena.setDt_vig_cont_fin(localDate);
+		histContrasena.setDt_vig_cont_fin(fechaVencimiento);
 		histContrasena.setUsr_historico_contrasena_id(usu);
 		// System.out.println("Historico de contraseña: " + histContrasena);
 		histContrasenaService.save(histContrasena);
@@ -282,19 +286,37 @@ public class ConfiguracionController {
 	}
 
 	public int validarAcceso(String pantalla) {
-				
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(pantalla));
-		
-		
+
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	    if (authentication == null || authentication.getPrincipal() == null) {
+	        logger.warn("No existe usuario autenticado para validar acceso.");
+	        return 0;
+	    }
+
+	    Object principal = authentication.getPrincipal();
+
+	    String username;
+
+	    if (principal instanceof UserDetails) {
+	        username = ((UserDetails) principal).getUsername();
+	    } else {
+	        username = principal.toString();
+	    }
+
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(username);
+
+	    if (usuario == null || usuario.isEmpty()) {
+	        logger.warn("No se encontró usuario para validar acceso: " + username);
+	        return 0;
+	    }
+
+	    int relacion = opcionesMenuService.buscarRelacion(pantalla);
+
+	    return iRelRolOpcionesRepository.validarAcceso(
+	            usuario.get(0).getRol_idRol().getPk_id_rol(),
+	            relacion
+	    );
 	}
-	
-	
 	
 }

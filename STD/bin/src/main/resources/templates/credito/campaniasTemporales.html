@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/base-layout}">
+<!-- DES-25-0014 Campinias -->
+<!-- viviana.zamudio -->
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+		<div class="border p-2 card">
+			<div class="bg-info text-white">
+				<div class="row no-gutters">
+					<div class="col-md-2"></div>
+					<div class="col-md-8">
+						<div>
+							<h2 style="text-align:center">Campañas Temporales</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="divTemporales">
+				<input type="hidden" id="codCampaniaR" name="codCampaniaR" />
+				<!-- FORMULARIO 1: Búsqueda de Campaña Temporales -->
+				<form id="formBuscarCampania">
+					<div class="row">
+						<!-- Campo de búsqueda -->
+						<div class="col-md-6">
+							<label class="col-form-label">Campañas Temporales</label>
+							<input type="search" class="form-control" id="buscarCampaniaTemporales" value="0"
+								list="opcionCampania" autocomplete="off" placeholder="Buscar campaña"
+								oninput="this.value = this.value.toUpperCase(); buscarCampaniasTemporales()" />
+							<datalist id="opcionCampania"></datalist>
+						</div>
+
+					</div>
+				</form>
+				<div id="divRegistro">
+					<!-- FORMULARIO 1: Registro de datos campaña -->
+					<form id="formDatosCampania" method="post">
+						<fieldset class="border p-2">
+							<legend class="float-none w-auto p-2">Información Campaña Temporal</legend>
+							<input type="hidden" id="idCampaniaSeleccionada" name="idCampaniaSeleccionada" />
+							
+							<!-- Nombre de Campaña -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Nombre de Campaña:</label>
+								</div>
+								<div class="col-md-4">
+									<input type="text" class="form-control" id="nombreCampania" name="nombreCampania" 
+										placeholder="Ingrese nombre de campaña..."
+										oninput="this.value = this.value.toUpperCase();" />
+								</div>
+							</div>
+
+							<!-- Descripción -->
+							<!--
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Descripción de la Campaña:</label>
+								</div>
+								<div class="col-md-4">
+									<textarea class="form-control" id="descripcionCampania" name="descripcionCampania"
+										rows="4" placeholder="Ingrese la descripción de la campaña..."></textarea>
+								</div>
+							</div>-->
+
+							<!-- Vigencia -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<label class="col-form-label">Vigencia (meses):</label>
+								</div>
+								<div class="col-md-4">
+									<input type="number" class="form-control" id="vigenciaMeses" name="vigenciaMeses"
+										min="1" value="0" /><!-- onchange="obtFechaFin()"-->
+								</div>
+							</div>
+							
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha Registro Campaña:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaRegistro"
+										name="fechaRegistro" readonly/></div>
+							</div>
+							
+							<!-- Fecha de envío MC -->
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Envío a MC:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaEnvioMC"
+										name="fechaEnvioMC" /></div>
+							</div>
+
+							<!-- Fechas -->
+							<!--
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Inicio:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaInicio"
+										name="fechaInicio"  onchange="obtFechaFin()"/></div>
+							</div>-->
+
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Fecha de Fin:</label></div>
+								<div class="col-md-4"><input type="date" class="form-control" id="fechaFin"
+										name="fechaFin" readonly/></div>
+							</div>
+
+							
+
+							<!-- Estatus -->
+							<div class="row mt-3">
+								<div class="col-md-3"><label class="col-form-label">Estatus:</label></div>
+								<div class="col-md-4">
+									<select class="form-control" name="estatusCampania" id="estatusCampania">
+										<option value="0">Seleccione</option>
+										<option th:each="opcionTipo : ${cat_estatus}" th:value="${opcionTipo.i_opcion}"
+											th:text="${opcionTipo.v_valor}" th:id="${opcionTipo.v_pantalla}">
+										</option>
+									</select>
+								</div>
+							</div>
+
+							
+
+							<!-- Checkbox -->
+							<div class="row mt-3">
+								<div class="col-md-3">
+									<div class="form-check mt-1">
+										<input type="checkbox" class="form-check-input" id="checkRecurrente"
+											name="recurrente" value="true" />
+										<label class="form-check-label" for="checkRecurrente">Recurrente</label>
+									</div>
+								</div>
+							</div>
+
+							<!-- Botón guardar -->
+							<div class="row mt-4">
+								<div class="col-md-12 text-right">
+									<button type="submit" class="btn btn-primary" id="btnGuardarCampania">Guardar
+										Campaña</button>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+
+					<hr />
+					<fieldset class="border p-2" id="dtosCampania">
+						<legend class="float-none w-auto p-2">Datos campaña temporal</legend>
+
+						<button type="button" class="btn btn-success" data-bs-toggle="modal"
+							data-bs-target="#modalArchivoCampania" id="btnSubirAchivoMdl">
+							<i class="bi bi-upload"></i> Subir Archivo
+						</button>
+
+						<div class="row mt-3">
+							<div class="table-responsive">
+								<table class="table table-sm" style="width: 100%;" id="tblInformacionProceso">
+									<thead class="table-primary">
+										<tr>
+											<th>ID Proceso</th>
+											<th>Usuario Registro</th>
+											<th>Fecha Registro</th>
+											<th>Estatus</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+					<!-- FORMULARIO 2: Carga de archivo -->
+					<div class="modal fade" id="modalArchivoCampania" tabindex="-1"
+						aria-labelledby="modalArchivoCampaniaLabel" aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalArchivoCampaniaLabel">Detalle campaña temporal</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+
+								<div class="modal-body">
+									<!-- FORMULARIO 2: Carga de archivo -->
+									<form id="formArchivoCampaniaTmp" enctype="multipart/form-data">
+										<div class="row mt-3">
+											<div class="col-md-8">
+												<label for="file" class="form-label">Seleccionar Archivo:</label>
+												<input class="form-control" type="file" id="file" name="file"
+													accept=".xls,.xlsx" required>
+											</div>
+										</div>
+
+										<div class="mt-4 text-end">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+												Cancelar
+											</button>
+											<button type="button" class="btn btn-success" id="btnGuardarFile">
+												Subir Archivo
+											</button>
+										</div>
+									</form>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<th:block layout:fragment="page-scripts">
+		<!--JavaScript-->
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+		<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+		<script th:src="@{/js/credito/tiposCampaniasTemporales.js}"></script>
+	</th:block>
+</body>
+
+</html>

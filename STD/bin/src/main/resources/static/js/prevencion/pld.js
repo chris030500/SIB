@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Funcion para obtener la liga absoluta
 function getAbsolutePath() {
 	var loc = window.location;

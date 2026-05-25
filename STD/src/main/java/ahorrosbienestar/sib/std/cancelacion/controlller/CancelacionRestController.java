@@ -62,9 +62,16 @@ public class CancelacionRestController {
 
 		// Autentificación para obtener el nombre del usuario logueado
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            logger.error("No se encontró usuario autenticado para la cancelación manual. envioID=" + envioID);
+            return HttpStatus.UNAUTHORIZED;
+        }
 
-		// Obtenemos el usuario logueado
-		Usuario usuario = usuarioService.findByNombre(auth.getName());
+        Usuario usuario = usuarioService.findByNombre(auth.getName());
+        if (usuario == null) {
+            logger.error("No se encontró el usuario en BD para la cancelación manual. usuario=" + auth.getName());
+            return HttpStatus.UNAUTHORIZED;
+        }
 		
 		// Hora
 		Date diaActual = new Date();

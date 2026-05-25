@@ -10,35 +10,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class HashService {
 
-	public static String getFileChecksum(MessageDigest digest, File file) throws IOException {
-		// Get file input stream for reading the file content
-		FileInputStream fis = new FileInputStream(file);
+    public static String getFileChecksum(MessageDigest digest, File file) throws IOException {
 
-		// Create byte array to read data in chunks
-		byte[] byteArray = new byte[1024];
-		int bytesCount = 0;
+        byte[] byteArray = new byte[1024];
 
-		// Read file data and update in message digest
-		while ((bytesCount = fis.read(byteArray)) != -1) {
-			digest.update(byteArray, 0, bytesCount);
-		}
-		;
+        try (FileInputStream fis = new FileInputStream(file)) {
+            int bytesCount;
 
-		// close the stream; We don't need it now.
-		fis.close();
+            while ((bytesCount = fis.read(byteArray)) != -1) {
+                digest.update(byteArray, 0, bytesCount);
+            }
+        }
 
-		// Get the hash's bytes
-		byte[] bytes = digest.digest();
+        byte[] bytes = digest.digest();
 
-		// This bytes[] has bytes in decimal format;
-		// Convert it to hexadecimal format
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < bytes.length; i++) {
-			sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-		}
+        StringBuilder sb = new StringBuilder();
+        for (byte value : bytes) {
+            sb.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));
+        }
 
-		// return complete hash
-		//System.out.println("hash" + sb.toString());
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 }
