@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TBL_WS_CONFIGURACIONES")
+@Table(name = "TBL_WSCAMPANIAS_CONFIGURACIONES")
 public class WSConfiguracion {
 
 	@Id

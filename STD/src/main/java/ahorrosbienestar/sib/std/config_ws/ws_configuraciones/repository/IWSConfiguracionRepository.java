@@ -12,11 +12,11 @@ import ahorrosbienestar.sib.std.config_ws.ws_configuraciones.model.WSConfiguraci
 @Repository
 public interface IWSConfiguracionRepository extends JpaRepository<WSConfiguracion, Integer> {
 
-	@Query(value = "SELECT * FROM TBL_WS_CONFIGURACIONES WHERE PK_ID = :pkId AND I_ESTATUS = :iEstatus", nativeQuery = true)
+	@Query(value = "SELECT * FROM TBL_WSCAMPANIAS_CONFIGURACIONES WHERE PK_ID = :pkId AND I_ESTATUS = :iEstatus", nativeQuery = true)
 	Optional<WSConfiguracion> findConfiguracionActivaPorId(@Param("pkId") Integer pkId,
 			@Param("iEstatus") Integer iEstatus);
 
-	@Query(value = "SELECT * FROM TBL_WS_CONFIGURACIONES WHERE VC_DESCRIPCION = :vcDescripcion AND I_ESTATUS = :iEstatus", nativeQuery = true)
+	@Query(value = "SELECT * FROM TBL_WSCAMPANIAS_CONFIGURACIONES WHERE VC_DESCRIPCION = :vcDescripcion AND I_ESTATUS = :iEstatus", nativeQuery = true)
 	Optional<WSConfiguracion> findConfiguracionActivaPorDescripcion(@Param("vcDescripcion") String vcDescripcion,
 			@Param("iEstatus") Integer iEstatus);
 }

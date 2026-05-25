@@ -48,7 +48,7 @@ public class OriginacionConsultaEstatusService {
 				.buscarConfiguracionActivaPorDescripcion(DESCRIPCION_WS_ORIGINACION);
 		if (!configuracionOpt.isPresent()) {
 			return new OriginacionWsResponse(400, HttpMethod.POST.name(), null,
-					"No se encontro configuracion activa en TBL_WS_CONFIGURACIONES para la descripcion "
+					"No se encontro configuracion activa en TBL_WSCAMPANIAS_CONFIGURACIONES para la descripcion "
 							+ DESCRIPCION_WS_ORIGINACION + ".");
 		}
 
