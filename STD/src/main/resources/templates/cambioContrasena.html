@@ -47,14 +47,12 @@
 
 					</form>
 
-					<form id="logoutForm" th:action="@{/logout}" method="post">
-						<a type="submit" onclick="document.getElementById('logoutForm').submit();"
-							class="dropdown-item d-flex align-items-center" href="#">
-							<i class="bi bi-box-arrow-right"></i>
-							<span>Salir</span>
-						</a>
-						<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
-					</form>
+					<div class="col-12">
+					    <a th:href="@{/cerrar}" class="dropdown-item d-flex align-items-center">
+					        <i class="bi bi-box-arrow-right"></i>
+					        <span>Salir</span>
+					    </a>
+					</div>
 
 				</div>
 			</div>

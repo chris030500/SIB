@@ -163,12 +163,14 @@ public class SeguridadAppInicializador {
 
             		    accesoService.save(acceso);
 
-            		    // ACTIVAR SESIÓN
+            		 // ACTIVAR SESIÓN
             		    loginService.spActivarSesion(username);
 
             		    request.getSession().setAttribute("username", username);
 
-            		    request.getSession().setMaxInactiveInterval(35 * 60);
+            		    Integer minutosSesion = configService.obtenerPeriodoBloqueoMinutos();
+
+            		    request.getSession().setMaxInactiveInterval(minutosSesion * 60);
 
             		    response.sendRedirect(request.getContextPath() + "/inicio");
             		})
@@ -186,7 +188,7 @@ public class SeguridadAppInicializador {
             	)
             	.exceptionHandling(ex -> ex.accessDeniedPage("/error_403"))
             	.sessionManagement(session -> session
-            		    .invalidSessionUrl("/login")
+            		    .invalidSessionUrl("/login?expired")
             		    .maximumSessions(1)
             		    .expiredUrl("/login?expired")
             		    .maxSessionsPreventsLogin(false)
