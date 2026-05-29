@@ -19,6 +19,7 @@ import ahorrosbienestar.sib.std.index.model.Acceso;
 import ahorrosbienestar.sib.std.index.service.AccesoService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
+import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -28,6 +29,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Autowired
     private AccesoService accesoService;
+    
+    @Autowired
+    private ConfigService configService;
 
     private static final Logger logger = Logger.getLogger(CustomAuthenticationFailureHandler.class);
 
@@ -84,8 +88,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         usuario.setI_intentos_fallidos(failedAttempts);
 
         registrarAcceso(request, usuario, username, 2, "Intento de Acceso");
+        
+        Integer intentosMaximos = configService.obtenerIntentosMaximos();
 
-        if (failedAttempts >= 3) {
+        if (failedAttempts >= intentosMaximos) {
             usuario.setI_estatus_cuenta(0);
 
             registrarAcceso(request, usuario, username, 4, "Cuenta Bloqueada");
@@ -100,10 +106,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             request.getSession().setAttribute(
                     "error",
                     "Nombre de usuario o contraseña incorrecta. Intento "
-                            + failedAttempts + " de 3."
+                            + failedAttempts + " de " + intentosMaximos + "."
             );
 
-            logger.info("Intento fallido " + failedAttempts + " de 3 para usuario: " + username);
+            logger.info("Intento fallido " + failedAttempts + " de " + intentosMaximos + " para usuario: " + username);
         }
 
         usuarioService.save(usuario);

@@ -123,21 +123,21 @@ public class ConfiguracionController {
 	// Cargamos la vista de la configuracion del bloqueo de sesiones
 	@GetMapping("/bloqueoSesiones")
 	public String sesiones(Model model) throws IOException {
-		logger.info("Ejecutando Sesiones");
-		String nombrePantalla = "Sesiones";
-		if(validarAcceso(nombrePantalla) == 1) {
-			model.addAttribute("titulo", "Configuración de sesiones");
-			model.addAttribute("pBloqueo", configService.findAll().get(6).getVc_valor_propiedad());
-			model.addAttribute("pDias", configService.findAll().get(1).getVc_valor_propiedad());
-			model.addAttribute("intentos", configService.findAll().get(8).getVc_valor_propiedad());
-			
-			rutaDireccion = "configuracion/bloqueoSesiones";
-		}else {
-			rutaDireccion = rutaError;
-		}
-		
-		
-		return rutaDireccion;
+	    logger.info("Ejecutando Sesiones");
+	    String nombrePantalla = "Sesiones";
+
+	    if (validarAcceso(nombrePantalla) == 1) {
+	        model.addAttribute("titulo", "Configuración de sesiones");
+	        model.addAttribute("pBloqueo", configService.valorPropiedad("pBloqueo").getVc_valor_propiedad());
+	        model.addAttribute("pDias", configService.valorPropiedad("pDias").getVc_valor_propiedad());
+	        model.addAttribute("intentos", configService.valorPropiedad("intentos").getVc_valor_propiedad());
+
+	        rutaDireccion = "configuracion/bloqueoSesiones";
+	    } else {
+	        rutaDireccion = rutaError;
+	    }
+
+	    return rutaDireccion;
 	}
 
 	@PostMapping("/guardarBloqueoSesiones")
@@ -240,9 +240,7 @@ public class ConfiguracionController {
 
 	    LocalDate localDate = LocalDate.parse(fechaActual);
 
-	    int diasVigencia = Integer.parseInt(
-	            configService.findAll().get(1).getVc_valor_propiedad()
-	    );
+	    int diasVigencia = configService.obtenerPeriodoDiasPassword();
 
 	    LocalDate fechaVencimiento = localDate.plusDays(diasVigencia);
 

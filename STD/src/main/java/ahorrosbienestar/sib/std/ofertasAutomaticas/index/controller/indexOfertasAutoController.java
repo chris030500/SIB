@@ -66,9 +66,6 @@ import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ResponseBody;
  
  
 @Controller
@@ -154,24 +151,6 @@ public class indexOfertasAutoController {
     @Autowired
     private EnvioCorreoService envioCorreoService;
     
-    private Usuario obtenerUsuarioAutenticado() {
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (!(principal instanceof UserDetails)) {
-            return null;
-        }
-
-        UserDetails userDetails = (UserDetails) principal;
-        List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-
-        if (usuarios == null || usuarios.isEmpty()) {
-            return null;
-        }
-
-        return usuarios.get(0);
-    }
-    
     private int catTipoCampanias = 11;
     List<Usuario> usuario = null;
     private int tipoArchivo = 12;
@@ -181,16 +160,13 @@ public class indexOfertasAutoController {
     @GetMapping("/index")
     public String indexOfertasAuto(Model model) throws IOException {
      try {
-    	 Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
-
-    	 if (usuarioAutenticado == null) {
-    	     logger.warn("Usuario no autenticado o no encontrado.");
-    	     return Constantes.RUTA_ERROR;
-    	 }
-
-    	 String username = usuarioAutenticado.getVc_nombre_usuario();
-
-    	 if (validarAcceso(username) == 1) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = null;
+        if (principal instanceof UserDetails) {
+            userDetails = (UserDetails) principal;
+        }
+        
+        if(validarAcceso(userDetails.getUsername())== 1){
             Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
             model.addAttribute("cat_tipo_campanias", iCatalogoRepository.generarOpciones(catTipoCampanias));
             model.addAttribute("mensajeCampana", mensajeCampana.getVc_valor_propiedad());
@@ -198,14 +174,10 @@ public class indexOfertasAutoController {
             //model.addAttribute("lista_configuracion", baseService.findAll());
             List<Bases> bases = basesService.findAll();
             model.addAttribute("bases", bases);
-            model.addAttribute("permiso_ejecucion_gestion",
-                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_GESTION, username));
-
-            model.addAttribute("permiso_ejecucion_base",
-                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_BASE, username));
-
-            model.addAttribute("permiso_admin",
-                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS, username));
+            model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
+            model.addAttribute("permiso_ejecucion_gestion",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_GESTION,userDetails.getUsername()));
+            model.addAttribute("permiso_ejecucion_base",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EJECUCION_BASE,userDetails.getUsername()));
+            model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
             rutaDireccion ="ofertasAutomaticas/indexOfertasAutomaticas";
         }else {
             rutaDireccion = Constantes.RUTA_ERROR;
@@ -245,8 +217,9 @@ public class indexOfertasAutoController {
  
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
-        	logger.error("Error al guardar parámetros.", e);
-        	return Constantes.RUTA_ERROR;
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
  
@@ -276,8 +249,9 @@ public class indexOfertasAutoController {
  
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
-        	logger.error("Error al guardar parámetros.", e);
-        	return Constantes.RUTA_ERROR;
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
  
@@ -350,8 +324,9 @@ public class indexOfertasAutoController {
             }
  
         } catch (Exception e) {
-        	logger.error("Error al guardar parámetros.", e);
-        	return Constantes.RUTA_ERROR;
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+            return e.getMessage();
         }
  
     }
@@ -797,8 +772,7 @@ public class indexOfertasAutoController {
         }
     }
     
-    @GetMapping(value = "/listaArchivos", produces = "application/json")
-    @ResponseBody
+    @GetMapping("/listaArchivos")
     public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(@RequestParam(name = "idBase") Integer idBase) throws IOException {
         
         try {
