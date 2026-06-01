@@ -1,3 +1,4 @@
+//AuditoriaRepository
 /*package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

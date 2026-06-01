@@ -215,13 +215,29 @@
 </section>
  
 <th:block layout:fragment="page-scripts">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script th:src="@{/js/jquery-3.5.1.js}"></script>
-    <script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-    <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
+	<!-- jQuery -->
+	<script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+	<!-- Bootstrap -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+	<!-- DataTables -->
+	<script src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+
+	<!-- SweetAlert2 -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<!-- Axios -->
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+	<!-- XLSX -->
+	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+	<!-- BlockUI -->
+	<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+	<!-- Tu JS -->
+	<script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
 </th:block>
 </body>
 </html>

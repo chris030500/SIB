@@ -21,9 +21,11 @@ public interface IExpedienteAfiliacionRepository extends JpaRepository<Expedient
 			+ "WHERE T1.VC_NOMBRE_CLIENTE = :nombre ", nativeQuery = true)
 	public Optional<Map<String, Object>> getExpedienteAfiliacionByName(@Param("nombre")String nombre);
 	
-	@Query( value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente "
-			+ "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION T1 "
-			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nombre% "
-			+ "LIMIT 100 ", nativeQuery = true )
-	public List<Map<String, Object>> getByNameExpedienteAfiliacion(@Param("nombre") String nombre);
+	@Query(value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente "
+	        + "FROM SIB.TBL_SCCB_EXPEDIENTE_AFILIACION T1 "
+	        + "WHERE T1.VC_NOMBRE_CLIENTE LIKE CONCAT('%', :nombre, '%') "
+	        + "LIMIT 100",
+	        nativeQuery = true)
+	public List<Map<String, Object>> getByNameExpedienteAfiliacion(
+	        @Param("nombre") String nombre);
 }

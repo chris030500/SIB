@@ -105,19 +105,23 @@ public class IndexController {
 		Usuario usu = usuarioService.findByNombre(auth.getName());
 		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
 
-		List<HistContrasena> ultimasContrasenas = histContrasenaService.findTopByUsuarioByFechaDesc(usu.getPk_id_usuario(),
-				Integer.parseInt(valorUltimasContrasenas));
-		boolean coincideContrasena = false;
-		for (HistContrasena historicoContrasena : ultimasContrasenas) {
-			if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
-				coincideContrasena = true;
+		HistContrasena historicoContrasena =
+			    histContrasenaService.findTopByUsuarioByFechaDesc(
+			        usu.getPk_id_usuario()
+			    );
 
-				ResponseEntity.notFound().build();
+			boolean coincideContrasena = false;
+
+			if (historicoContrasena != null &&
+			    BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+
+			    coincideContrasena = true;
+		
 
 				// return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas
 				// 3 contraseñas");
-				break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
-			}
+				// La nueva contraseña coincide con una de las últimas 3 contraseñas
+			
 		}
 		
 		if (coincideContrasena) {
