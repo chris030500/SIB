@@ -258,13 +258,19 @@ function obtListadoArchivos(ulrServicio){
 }
 
 var abrirArchivo = "verArchivo?ruta=";
-function verArchivo(dtosArchivo) {
-	$(dtosArchivo).parents("tr").find("td").eq(4).html();
-	url = "";
-	url = getAbsolutePath() + abrirArchivo + encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(4).html()) + "&nombre=" + encodeURIComponent($(dtosArchivo).parents("tr").find("td").eq(0).html());
-	window.open(url);
-	window.focus();
 
+function verArchivo(dtosArchivo) {
+    var ruta = $(dtosArchivo).closest("tr").find("td").eq(4).text().trim();
+    var nombre = $(dtosArchivo).closest("tr").find("td").eq(0).text().trim();
+
+    var urlDescarga = getAbsolutePath() + abrirArchivo
+        + encodeURIComponent(ruta)
+        + "&nombre="
+        + encodeURIComponent(nombre);
+
+    console.log("URL DESCARGA:", urlDescarga);
+
+    window.open(urlDescarga, "_blank");
 }
 
 function asignarArchivo(archivo) {

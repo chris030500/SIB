@@ -773,70 +773,96 @@ public class indexOfertasAutoController {
     }
     
     @GetMapping("/listaArchivos")
-    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(@RequestParam(name = "idBase") Integer idBase) throws IOException {
-        
+    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(
+            @RequestParam(name = "idBase") Integer idBase) throws IOException {
+
         try {
             Optional<Bases> bases = basesService.findById(idBase);
-            String folderPath = bases.get().getVc_ruta_proceso();   
+            String folderPath = bases.get().getVc_ruta_proceso();
+
             Path folder = Paths.get(folderPath);
- 
             List<ArchivoOfertasAutomaticas> listaArchivos = new ArrayList<>();
- 
-            // Listar los archivos en la carpeta
+
             Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
-                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                     ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
-                     archivos.setNombreArchivo(file.getFileName().toString());
-                     archivos.setPesoArchivo((attrs.size()/1024)+" KB");
-                     
-                    logger.info("Nombre:"+archivos.getNombreArchivo());
-                    logger.info("tamaño:"+archivos.getPesoArchivo());
-                    long millis = attrs.creationTime().toMillis();
-                    FileTime fileTime = FileTime.fromMillis(millis);
-                    LocalDate fechaCreacion = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    String fechaFormateada = fechaCreacion.toString();
-                    archivos.setFechaCreacion(fechaFormateada);
-                    
-                    long fechaModificacion =     attrs.lastModifiedTime().toMillis();
-                    FileTime fileTimeMod = FileTime.fromMillis(fechaModificacion);
-                    LocalDate fechaMod = fileTimeMod.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    String fechaFormateadaMod = fechaMod.toString();
-                    archivos.setFechaModifacion(fechaFormateadaMod);
-                    
-                    logger.info("fecha de creacion:"+fechaFormateada);
-                    logger.info("fecha de Modificacion:"+fechaFormateadaMod);
-                    archivos.setRutaArchivo(bases.get().getVc_ruta_proceso()+file.getFileName().toString());
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+                    ArchivoOfertasAutomaticas archivos = new ArchivoOfertasAutomaticas();
+
+                    archivos.setNombreArchivo(file.getFileName().toString());
+                    archivos.setPesoArchivo((attrs.size() / 1024) + " KB");
+
+                    LocalDate fechaCreacion = attrs.creationTime()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+
+                    LocalDate fechaMod = attrs.lastModifiedTime()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+
+                    archivos.setFechaCreacion(fechaCreacion.toString());
+                    archivos.setFechaModifacion(fechaMod.toString());
+
+                    archivos.setRutaArchivo(file.toAbsolutePath().toString());
+
                     listaArchivos.add(archivos);
+
                     return FileVisitResult.CONTINUE;
                 }
             });
+
             return ResponseEntity.ok(listaArchivos);
+
         } catch (Exception e) {
-            logger.error("Error:"+e.getMessage());
-            return null;
+            logger.error("Error: " + e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
     }
     
     @GetMapping("/verArchivo")
-    public ResponseEntity<Resource> descargarArchivo(@RequestParam String ruta,@RequestParam String  nombre) throws IOException {
-                
+    public ResponseEntity<Resource> descargarArchivo(
+            @RequestParam("ruta") String ruta,
+            @RequestParam("nombre") String nombre) {
+
         try {
-        File file = new File(ruta);
-        byte[] bytesPDF = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
-        
-        
-        ContentDisposition contentDisposition = null;
-        HttpHeaders h2 = new HttpHeaders();
-        
-        contentDisposition = ContentDisposition.builder("attachment").filename(nombre).build();
-        h2.setContentDisposition(contentDisposition);
-        
-        return ResponseEntity.ok().contentLength((long) bytesPDF.length)
-                .contentType(MediaType.APPLICATION_PDF)
-                .headers(h2).body(new ByteArrayResource(bytesPDF));
-        }catch (Exception e) {
-            logger.info("Error:"+e.getMessage());
-            return null;
+
+            Path path = Paths.get(ruta).normalize();
+
+            logger.info("Ruta recibida: " + ruta);
+            logger.info("Ruta completa: " + path.toAbsolutePath());
+
+            if (!Files.exists(path)) {
+                logger.error("El archivo no existe: " + path);
+                return ResponseEntity.notFound().build();
+            }
+
+            if (!Files.isReadable(path)) {
+                logger.error("El archivo no tiene permisos de lectura: " + path);
+                return ResponseEntity.status(403).build();
+            }
+
+            byte[] archivoBytes = Files.readAllBytes(path);
+
+            String contentType = Files.probeContentType(path);
+
+            if (contentType == null) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            }
+
+            return ResponseEntity.ok()
+                    .contentLength(archivoBytes.length)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + nombre + "\"")
+                    .body(new ByteArrayResource(archivoBytes));
+
+        } catch (Exception e) {
+
+            logger.error("Error al descargar archivo: ", e);
+
+            return ResponseEntity.internalServerError().build();
         }
     }
     
