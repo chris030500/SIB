@@ -18,5 +18,6 @@ public interface IOpcionesMenuRepository extends JpaRepository<OpcionesMenu, Int
 	public int buscarRelacionController(String nombreController);
 
 
+
 }
 

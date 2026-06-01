@@ -97,6 +97,8 @@ public class Constantes {
     public static final String REPORTE_BASES_CAMPANIAS_MC = "rpt_bases_campanias_mc";
     public static final String REPORTE_BURO_CREDITO = "rpt_archivo_buro";
     
+    public static final String REPORTE_EXTRACCION_CAMPANIA = "rpt_extraccion_campanias";
+    
     //NOMBRE DE PANTALLAS
     public static final String NOMBRE_PANTALLA_OFERTAS = "Ofertas Automaticas";
     
@@ -198,8 +200,9 @@ public class Constantes {
     public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
     public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
     public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-    public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-   	public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?)}";
+	public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
+    public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
+    public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
 
 	//nombres reportes bases EBR
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
