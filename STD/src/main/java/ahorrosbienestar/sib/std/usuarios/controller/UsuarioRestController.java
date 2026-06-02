@@ -205,83 +205,68 @@ public class UsuarioRestController {
  
     }
 
-    @RequestMapping(value = { "/editar_usuario/contrasenia" }, method = RequestMethod.POST)
-    public ResponseEntity<?> cambiarContraseniaUsuario(
-            @RequestParam("usuario") String usuario,
-            @RequestParam("idUsuario") Integer idUsuario,
-            @RequestParam("password") String password) {
+	@RequestMapping(value = { "/editar_usuario/contrasenia" }, method = RequestMethod.POST)
+	public ResponseEntity<?> cambiarContraseniaUsuario(@RequestParam("usuario") String usuario,
+			@RequestParam("idUsuario") Integer idUsuario, @RequestParam("password") String password) {
+		logger.info("Usuario: " + usuario);
+		logger.info("IdUsuario: " + idUsuario);
+		logger.info("Ingreso en cambiarContraseniaUsuario");
+		logger.info("Usuario: " + usuario);
+		logger.info("IdUsuario: " + idUsuario);
+		
+		String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
+		//System.out.println("valorUltimasContrasenas: " + valorUltimasContrasenas);
+		
+		if (usuario != null && idUsuario != null) {
+			List<HistContrasena> ultimasContrasenas = histContrasenaService.findTopByUsuarioByFechaDesc(idUsuario, Integer.parseInt(valorUltimasContrasenas));
+			boolean coincideContrasena = false;
+			for (HistContrasena historicoContrasena : ultimasContrasenas) {
+	            if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
+	            	coincideContrasena = true;
+	            	
+	            	ResponseEntity.notFound().build();
+	            	
+					//return ResponseEntity.ok("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+					break;// La nueva contraseña coincide con una de las últimas 3 contraseñas
+	            }
+	        }
+			
+			if (coincideContrasena) {
+				logger.error("La nueva contraseña coincide con una de las últimas " + "contraseñas");
+				return ResponseEntity.badRequest().body("La nueva contraseña coincide con una de las últimas 3 contraseñas");
+			}
+			logger.info("Puede realizar el cambio de contraseña");
 
-        try {
-            logger.info("Ingreso en cambiarContraseniaUsuario");
-            logger.info("Usuario: " + usuario);
-            logger.info("IdUsuario: " + idUsuario);
+			Usuario usu = usuarioService.findById(idUsuario).get();
+			histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
+			String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
+			//logger.info("Días que va a estar activa la contraseña: " + pDias);
+			// Establecemos el formato de la fecha
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			// Obtenemos la fecha en String
+			String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
+			// Casteamos la fechaActual a localDate
+			LocalDate localDate = LocalDate.parse(fechaActual);
+			LocalDate localDateHoy = LocalDate.parse(fechaActual);
+			// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
 
-            if (usuario == null || idUsuario == null || password == null || password.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Datos incompletos para cambiar la contraseña.");
-            }
-            logger.info("1. Antes de obtener configuración");
+			//localDate = localDate.plusDays(Long.parseLong(pDias));
 
-            String valorUltimasContrasenas = configService.findAll().get(8).getVc_valor_propiedad().toString();
-            int limite = Integer.parseInt(valorUltimasContrasenas);
-            
-            logger.info("2. valorUltimasContrasenas: " + valorUltimasContrasenas);
+			HistContrasena hc = new HistContrasena();
+			hc.setDt_vig_cont_fin(localDateHoy);
+			hc.setDt_vig_cont_inicio(localDateHoy);
+			hc.setVc_indicador_activo(1);
+			hc.setUsr_historico_contrasena_id(usu);
+			hc.setVc_contrasenia(passwordEncoder.encode(password));
+			// histContrasenaService.save(hc);
+			logger.info("Guardar en historico");
+			// return null;
+			return ResponseEntity.ok(histContrasenaService.save(hc));
+		}
+		logger.info("No puede realizar el cambio de usuario");
+		return ResponseEntity.notFound().build();
 
-            logger.info("3. Antes de consultar historial");
-
-            List<HistContrasena> ultimasContrasenas =
-                    histContrasenaService.findByUsuarioOrderByFechaDesc(idUsuario);
-
-            if (ultimasContrasenas.size() > limite) {
-                ultimasContrasenas = ultimasContrasenas.subList(0, limite);
-            }
-
-            for (HistContrasena historicoContrasena : ultimasContrasenas) {
-
-                if (historicoContrasena.getVc_contrasenia() == null 
-                        || historicoContrasena.getVc_contrasenia().trim().isEmpty()) {
-                    logger.warn("Contraseña histórica vacía para usuario ID: " + idUsuario);
-                    continue;
-                }
-
-                if (BCrypt.checkpw(password, historicoContrasena.getVc_contrasenia())) {
-                    return ResponseEntity.badRequest()
-                            .body("La nueva contraseña coincide con una de las últimas " + limite + " contraseñas");
-                }
-            }
-
-            Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
-
-            if (!usuarioOpt.isPresent()) {
-                return ResponseEntity.badRequest().body("No se encontró el usuario con ID: " + idUsuario);
-            }
-
-            Usuario usu = usuarioOpt.get();
-
-            histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
-
-            String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-
-            LocalDate fechaInicio = LocalDate.now();
-            LocalDate fechaFin = fechaInicio.plusDays(Long.parseLong(pDias));
-
-            HistContrasena hc = new HistContrasena();
-            hc.setDt_vig_cont_inicio(fechaInicio);
-            hc.setDt_vig_cont_fin(fechaFin);
-            hc.setVc_indicador_activo(1);
-            hc.setUsr_historico_contrasena_id(usu);
-            hc.setVc_contrasenia(passwordEncoder.encode(password));
-
-            logger.info("Guardar en historico");
-
-            HistContrasena guardado = histContrasenaService.save(hc);
-
-            return ResponseEntity.ok(guardado);
-
-        } catch (Exception e) {
-            logger.error("ERROR AL CAMBIAR CONTRASEÑA", e);
-            return ResponseEntity.status(500).body("Error al cambiar la contraseña: " + e.getMessage());
-        }
-    }
+	}
 
 
 
