@@ -1,8 +1,11 @@
+//ProcesosPEPsRepository
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository;
  
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.ProcesosPEPsModel;
+//import jakarta.transaction.Transactional;
+
 import javax.transaction.Transactional;
- 
+
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
  
