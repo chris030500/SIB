@@ -143,7 +143,7 @@ function generarReporte() {
 
 	} else {
 
-		swal({
+		Swal.fire({
 			title: "",
 			text: mensajeError,
 			icon: "warning",
@@ -176,7 +176,7 @@ function peticionPost(urlServicio) {
 			window.focus();
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
@@ -223,12 +223,12 @@ function listaClientes() {
 	});
 }
 
-if (buscarCliente) {
-    buscarCliente.addEventListener('input', debouncedListaClientes);
-    buscarCliente.addEventListener('input', function() {
-        listaClientes();
-    });
-}
+buscarCliente.addEventListener('input', debouncedListaClientes);
+
+buscarCliente.addEventListener('input', function() {
+	// Actualiza el valor seleccionado cada vez que se ingresa texto
+	listaClientes();
+});
 /**
  * Fin
  */

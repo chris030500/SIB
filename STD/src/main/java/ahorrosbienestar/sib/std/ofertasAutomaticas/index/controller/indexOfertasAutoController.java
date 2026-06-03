@@ -24,6 +24,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -773,14 +774,35 @@ public class indexOfertasAutoController {
     }
     
     @GetMapping("/listaArchivos")
-    public ResponseEntity<List<ArchivoOfertasAutomaticas>> listFilesInFolder(
-            @RequestParam(name = "idBase") Integer idBase) throws IOException {
+    public ResponseEntity<?> listFilesInFolder(@RequestParam(name = "idBase") Integer idBase) {
 
         try {
             Optional<Bases> bases = basesService.findById(idBase);
+
+            if (!bases.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No existe la base con idBase: " + idBase);
+            }
+
             String folderPath = bases.get().getVc_ruta_proceso();
 
+            if (folderPath == null || folderPath.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body("La base no tiene ruta configurada.");
+            }
+
             Path folder = Paths.get(folderPath);
+
+            if (!Files.exists(folder)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("La carpeta no existe: " + folderPath);
+            }
+
+            if (!Files.isDirectory(folder)) {
+                return ResponseEntity.badRequest()
+                        .body("La ruta no es una carpeta: " + folderPath);
+            }
+
             List<ArchivoOfertasAutomaticas> listaArchivos = new ArrayList<>();
 
             Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
@@ -804,7 +826,6 @@ public class indexOfertasAutoController {
 
                     archivos.setFechaCreacion(fechaCreacion.toString());
                     archivos.setFechaModifacion(fechaMod.toString());
-
                     archivos.setRutaArchivo(file.toAbsolutePath().toString());
 
                     listaArchivos.add(archivos);
@@ -816,8 +837,9 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(listaArchivos);
 
         } catch (Exception e) {
-            logger.error("Error: " + e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            logger.error("Error al listar archivos: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al listar archivos: " + e.getMessage());
         }
     }
     

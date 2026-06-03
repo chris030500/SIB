@@ -54,12 +54,23 @@ public class PldController {
 		try {
 
 			if (validarAcceso() == 1) {
-				model.addAttribute("cat_reportes_pld", iCatalogoRepository.generarOpciones(opcBusquedaGrupo));
-				model.addAttribute("cat_reportes_pld_ext", iCatalogoRepository.generarOpciones(opcBusquedaGrupo2));
-				// rutaDireccion = "reportesProductos/reportesProducto";
-				rutaDireccion = "prevencion/reportesPLD";
+
+			    List<?> reportes = iCatalogoRepository.generarOpciones(opcBusquedaGrupo);
+			    List<?> extensiones = iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+			    
+			    logger.info("REPORTES = " + reportes);
+			    logger.info("EXTENSIONES = " + extensiones);
+
+			    logger.info("Reportes PLD encontrados: " + reportes.size());
+			    logger.info("Extensiones PLD encontradas: " + extensiones.size());
+
+			    model.addAttribute("cat_reportes_pld", reportes);
+			    model.addAttribute("cat_reportes_pld_ext", extensiones);
+
+			    rutaDireccion = "prevencion/reportesPLD";
+
 			} else {
-				rutaDireccion = rutaError;
+			    rutaDireccion = rutaError;
 			}
 			return rutaDireccion;
 		} catch (Exception e) {

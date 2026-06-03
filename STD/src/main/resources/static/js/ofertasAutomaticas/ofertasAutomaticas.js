@@ -202,7 +202,7 @@ function obtListadoArchivos(ulrServicio){
 
     Swal.fire({
         title: "Consultando información",
-        html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        html: '<div class="spinner-border text-primary" role="status"></div>',
         allowOutsideClick: false,
         allowEscapeKey: false,
         showConfirmButton: false
@@ -214,6 +214,8 @@ function obtListadoArchivos(ulrServicio){
         dataType: "json",
 
         success: function(data){
+
+            Swal.close();
 
             tblAdjuntos.clear().draw();
 
@@ -234,25 +236,25 @@ function obtListadoArchivos(ulrServicio){
                     botones
                 ]).draw(false);
             });
+
+            $("#modalAdjuntos").modal("show");
         },
 
         error: function(xhr, status, error){
 
-            console.log("ERROR:");
+            Swal.close();
+
+            console.log("ERROR listaArchivos:");
             console.log(xhr.responseText);
             console.log(status);
             console.log(error);
 
             Swal.fire({
                 title: "Error",
-                text: "No se pudo obtener la información de archivos.",
+                text: xhr.responseText || "No se pudo obtener la información de archivos.",
                 icon: "error",
                 confirmButtonText: "Aceptar"
             });
-        },
-
-        complete: function(){
-            Swal.close();
         }
     });
 }
