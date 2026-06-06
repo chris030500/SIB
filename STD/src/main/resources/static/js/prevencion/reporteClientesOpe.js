@@ -143,7 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });*/
  
  // Evento click del botón para generar el reporte
-btnProcesar.addEventListener("click", async (event) => {
+ if (btnProcesar) {
+   btnProcesar.addEventListener("click", async (event) => {
   event.preventDefault();
  
   const inicio = inputInicio.value;
@@ -207,10 +208,12 @@ btnProcesar.addEventListener("click", async (event) => {
     btnProcesar.disabled = false;
     btnProcesar.textContent = "Generar Reporte";
   }
-});
+    });
+  }
  
 // Evento click del botón para generar proceso
-btnProcesarProceso.addEventListener("click", async (event) => {
+if (btnProcesarProceso) {
+  btnProcesarProceso.addEventListener("click", async (event) => {
   event.preventDefault();
  
   const inicio = inputInicio.value;
@@ -273,8 +276,10 @@ btnProcesarProceso.addEventListener("click", async (event) => {
     btnProcesarProceso.disabled = false;
     btnProcesarProceso.textContent = "Generar Proceso";
   }
-});
-});
+    });
+  }
+
+  });
  
 // Evento para cuando se selecciona "No"
 $('#infoNo').on('change', function() {
