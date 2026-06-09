@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import ahorrosbienestar.sib.std.contrasena.dto.HistContrasenaDto;
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
@@ -61,8 +60,9 @@ public class HistContrasenaService {
 		return iHistContrasenaRepository.findByIdHisto(id);
 	}
 	
-	public List<HistContrasena> findTopByUsuarioByFechaDesc(Integer idUsuario, Integer limite){
-		return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(idUsuario, limite);
+	public List<HistContrasena> findTopByUsuarioByFechaDesc(Integer idUsuario, Integer limite) {
+	    Pageable pageable = PageRequest.of(0, limite);
+	    return iHistContrasenaRepository.findTopByUsuarioByFechaDesc(idUsuario, pageable);
 	}
 
 }

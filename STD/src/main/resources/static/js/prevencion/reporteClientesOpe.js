@@ -299,164 +299,173 @@ $('#infoNo').on('change', function() {
 });
  
 // Evento para el botón "Visto Bueno"
-$(document).on("click", "#btnVistoBueno", function () {
-
-  swal({
+$(document).on("click", "#btnVistoBueno", async function () {
+  const result = await Swal.fire({
     title: "Visto bueno",
     text: "Seleccione el tipo de reporte",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: `
-          <label>
-            <input type="checkbox" id="chkClientes"> Clientes
-          </label><br>
-          <label>
-            <input type="checkbox" id="chkOperaciones"> Operaciones
-          </label>
-        `
+    html: `
+      <div style="text-align:left;">
+        <label>
+          <input type="checkbox" id="chkClientes"> Clientes
+        </label><br>
+        <label>
+          <input type="checkbox" id="chkOperaciones"> Operaciones
+        </label>
+      </div>
+    `,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Registrar",
+    cancelButtonText: "Cancelar",
+    preConfirm: () => {
+      const clientes = document.getElementById("chkClientes")?.checked;
+      const operaciones = document.getElementById("chkOperaciones")?.checked;
+ 
+      if (!clientes && !operaciones) {
+        Swal.showValidationMessage("Debe seleccionar al menos un reporte");
+        return false;
       }
-    },
-    buttons: {
-      cancel: "Cancelar",
-      confirm: {
-        text: "Registrar",
-        closeModal: false
-      }
+ 
+      return { clientes, operaciones };
     }
-  }).then(async (ok) => {
-
-    if (!ok) return;
-
-    const clientes    = document.getElementById("chkClientes").checked;
-    const operaciones = document.getElementById("chkOperaciones").checked;
-
-    if (!clientes && !operaciones) {
-      swal("Atención", "Debe seleccionar al menos un reporte", "warning");
-      return;
-    }
-
-    let tipoReporte = "";
-
-    if (clientes && operaciones) {
-      tipoReporte = "AMBOS";
-    } else if (clientes) {
-      tipoReporte = "CLIENTES";
-    } else if (operaciones) {
-      tipoReporte = "OPERACIONES";
-    }
-
-    try {
-
-      const fechaInicioOper = $("#fechaInicioMigracion").val();
-      const fechaFinOper    = $("#fechaFinMigracion").val();
-      const fechaCorteClientes = $("#fechaFinMigracion").val();
-      const anio = fechaInicioOper.substring(0, 4);
-
-      const res = await fetch("ejecutarVistoBueno", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          anio,
-          fechaInicioOper,
-          fechaFinOper,
-          fechaCorteClientes,
-          tipoReporte
-        })
-      });
-
-      const data = await res.json();
-
-      swal(
-        data.tipo === "success" ? "¡Éxito!" : "Error",
-        data.mensaje,
-        data.tipo
-      );
-
-      if (data.tipo === "success") {
-        await cargarEstadoProceso();
-        iniciaTblHistorico();
-      }
-
-    } catch (e) {
-      swal("Error", "No se pudo registrar el visto bueno", "error");
-    }
-
   });
+ 
+  if (!result.isConfirmed) return;
+ 
+  const { clientes, operaciones } = result.value;
+ 
+  let tipoReporte = "";
+  if (clientes && operaciones) {
+    tipoReporte = "AMBOS";
+  } else if (clientes) {
+    tipoReporte = "CLIENTES";
+  } else if (operaciones) {
+    tipoReporte = "OPERACIONES";
+  }
+ 
+  try {
+    const fechaInicioOper = $("#fechaInicioMigracion").val();
+    const fechaFinOper = $("#fechaFinMigracion").val();
+    const fechaCorteClientes = $("#fechaFinMigracion").val();
+    const anio = fechaInicioOper.substring(0, 4);
+ 
+    Swal.fire({
+      title: "Registrando visto bueno...",
+      html: '<div class="spinner-border text-primary"></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+ 
+    const res = await fetch("ejecutarVistoBueno", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        anio,
+        fechaInicioOper,
+        fechaFinOper,
+        fechaCorteClientes,
+        tipoReporte
+      })
+    });
+ 
+    const data = await res.json();
+ 
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
+      title: data.tipo === "success" ? "¡Éxito!" : "Error",
+      text: data.mensaje
+    });
+ 
+    if (data.tipo === "success") {
+      await cargarEstadoProceso();
+      iniciaTblHistorico();
+    }
+ 
+  } catch (e) {
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo registrar el visto bueno"
+    });
+  }
 });
 // ==========================================================
 //  Validar archivo Excel antes de subirlo
 // ==========================================================
-document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
-  e.preventDefault();
- 
+document.addEventListener("DOMContentLoaded", () => {
+  const formUpload = document.getElementById("uploadFormPEP");
   const input = document.getElementById("fileUploadPEP");
-  const files = input.files;
  
-  if (!files || files.length === 0) {
-    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
+  if (!formUpload) {
+    console.warn("No existe el formulario uploadFormPEP");
     return;
   }
  
-  const fd = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    fd.append("file", files[i]);
-  }
+  formUpload.addEventListener("submit", async (e) => {
+    e.preventDefault();
  
-  swal({
-    title: "Procesando archivo(s)...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML:
-          '<div class="spinner-border text-primary" role="status"></div>',
-        style:
-          "display:flex;justify-content:center;align-items:center;padding:20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
- 
-  try {
-    const res = await fetch(
-      getAbsolutePath() + "reporteClientesOpe/uploadPEP",
-      {
-        method: "POST",
-        body: fd,
-      }
-    );
- 
-    let respuesta;
- 
-    if (res.ok) {
-      respuesta = await res.json();
-    } else {
-      const texto = await res.text();
-      throw new Error(texto || "Error interno del servidor");
+    if (!input || !input.files || input.files.length === 0) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atención",
+        text: "Debes seleccionar al menos un archivo."
+      });
+      return;
     }
  
-    swal.close();
+    const fd = new FormData();
+    for (let i = 0; i < input.files.length; i++) {
+      fd.append("file", input.files[i]);
+    }
  
-    swal({
-      title: "¡Éxito!",
-      text: respuesta[0],
-      icon: "success",
-      button: "Aceptar",
+    Swal.fire({
+      title: "Procesando archivo(s)...",
+      html: '<div class="spinner-border text-primary" role="status"></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
     });
  
-  } catch (error) {
-    swal.close();
-    console.error("❌ Error en upload PEP:", error);
+    try {
+      const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
+        method: "POST",
+        body: fd
+      });
  
-    swal({
-      title: "Error",
-      text: error.message || "Se presentó un error, intente más tarde.",
-      icon: "error",
-      button: "Aceptar",
-    });
-  }
+      let respuesta;
+ 
+      if (res.ok) {
+        respuesta = await res.json();
+      } else {
+        const texto = await res.text();
+        throw new Error(texto || "Error interno del servidor");
+      }
+ 
+      await Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: respuesta[0] || "Archivo cargado correctamente."
+      });
+ 
+    } catch (error) {
+      console.error("Error en upload PEP:", error);
+ 
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Se presentó un error, intente más tarde."
+      });
+    }
+  });
 });
  
  
@@ -494,38 +503,41 @@ function esFinDeMes(fechaStr) {
 async function ejecutarVistoBueno() {
  
   const fechaInicioOper = $("#fechaInicio").val() || $("#fechaInicioMigracion").val();
-  const fechaFinOper    = $("#fechaFin").val()    || $("#fechaFinMigracion").val();
+  const fechaFinOper = $("#fechaFin").val() || $("#fechaFinMigracion").val();
   const fechaCorteClientes = $("#fechaFinMigracion").val();
  
   if (!fechaInicioOper || !fechaFinOper || !fechaCorteClientes) {
-    swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Debe seleccionar un rango de fechas válido."
+    });
     return;
   }
  
   const anio = fechaInicioOper.substring(0, 4);
  
-  const confirmar = await swal({
+  const confirmar = await Swal.fire({
+    icon: "warning",
     title: "¿Desea registrar el visto bueno global?",
     text: "Esto consolidará los reportes de CLIENTES y OPERACIONES en el histórico.",
-    icon: "warning",
-    buttons: ["Cancelar", "Sí, continuar"],
-    dangerMode: true
+    showCancelButton: true,
+    confirmButtonText: "Sí, continuar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true
   });
  
-  if (!confirmar) return;
+  if (!confirmar.isConfirmed) return;
  
-  swal({
+  Swal.fire({
     title: "Registrando visto bueno...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
   });
  
   try {
@@ -552,18 +564,16 @@ async function ejecutarVistoBueno() {
       data = { tipo: "error", mensaje: "Respuesta inválida del servidor" };
     }
  
-    swal.close();
+    Swal.close();
  
-    swal({
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
       title: data.tipo === "success" ? "¡Éxito!" : "Error",
       text: data.mensaje,
-      icon: data.tipo,
-      button: "Aceptar"
+      confirmButtonText: "Aceptar"
     });
  
     if (data.tipo === "success") {
- 
-      // Persistir estado del proceso
       await fetch("/STD/prevencion/estado-proceso/vobo", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -576,13 +586,13 @@ async function ejecutarVistoBueno() {
  
   } catch (err) {
  
-    swal.close();
+    Swal.close();
     console.error("Error en fetch:", err);
  
-    swal({
+    await Swal.fire({
+      icon: "warning",
       title: "Atención",
-      text: "El visto bueno se registró, pero ocurrió un problema al actualizar la interfaz.",
-      icon: "warning"
+      text: "El visto bueno se registró, pero ocurrió un problema al actualizar la interfaz."
     });
   }
 }
@@ -594,56 +604,57 @@ var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
  
 function iniciaTblHistorico() {
-  url = getAbsolutePath() + "obtHistoricoProcesos";
-  $.getJSON(url, {}, function (data) {
+ 
+  url = "/STD/prevencion/obtHistoricoProcesos";
+ 
+  $.getJSON(url, function (data) {
+ 
     tblHistorico.clear().draw();
  
     if (!data || data.length === 0) {
       console.warn("No se encontraron registros en el historial.");
       $("#sinResultados").removeClass("d-none");
       return;
-    } else {
-      $("#sinResultados").addClass("d-none");
     }
  
+    $("#sinResultados").addClass("d-none");
+ 
     $.each(data, function (idx, opt) {
+ 
       const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
  
-      // Mostrar rango adecuado según el tipo
       let rangoFechas = "";
+      let acciones = "";
+      const idReporte = opt.idReporte || opt.id || opt.i_reporte || opt.idHistorico;
+ 
       if (tipo === "CLIENTES") {
-    const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
-    rangoFechas =
-        `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
-     } else if (tipo === "OPERACIONES") {
+        const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+        rangoFechas = `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
+ 
+        acciones = `
+          <button type="button"
+                  class="btn btn-sm btn-primary"
+                  onclick="generarHistoricoClientes('${idReporte}')">
+            Descargar
+          </button>
+        `;
+      } else if (tipo === "OPERACIONES") {
         const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
         const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
         rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
-      } else {
-        rangoFechas = `<span class="text-muted">Sin rango definido</span>`;
+ 
+        acciones = `
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  onclick="generarHistoricoOperaciones('${idReporte}')">
+            Descargar
+          </button>
+        `;
       }
  
       const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
       const confirmado = opt.estatus === 1 ? "Sí" : "No";
       const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
- 
-      //  Mostrar solo el botón del tipo correspondiente
-      let btn = "";
-      if (tipo === "CLIENTES") {
-        btn = `<button class='btn btn-success btn-sm' title='Descargar histórico de clientes'
-                 onclick='generarHistoricoClientes(${opt.id})'>
-                 <i class='bi bi-file-earmark-person'></i>
-               </button>`;
-      } else if (tipo === "OPERACIONES") {
-        btn = `<button class='btn btn-primary btn-sm' title='Descargar histórico de operaciones'
-                 onclick='generarHistoricoOperaciones(${opt.id})'>
-                 <i class='bi bi-file-earmark-diff'></i>
-               </button>`;
-      } else {
-        btn = `<button class='btn btn-secondary btn-sm' disabled title='Tipo desconocido'>
-                 <i class='bi bi-question-circle'></i>
-               </button>`;
-      }
  
       tblHistorico.row.add([
         opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
@@ -652,10 +663,13 @@ function iniciaTblHistorico() {
         usuario,
         confirmado,
         fechaVobo,
-        btn
+        acciones
       ]).draw(false);
+ 
     });
+ 
   });
+ 
 }
  
  
@@ -703,24 +717,24 @@ async function cargarEstadoInicial() {
     try {
         const res = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
-
+ 
         const data = await res.json();
-
+ 
         // Guardar estado global para usarlo en renderProcesoUI
         estadoMigracionGlobal = data;
-
+ 
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
-
+ 
         if (checkbox && label) {
             checkbox.checked = data.estatus === 1;
             label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
         }
-
+ 
         // Control de botones y mensaje
         renderEstadoMigracion(data);
         renderAvisoMigracion(data);
-
+ 
     } catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
@@ -825,13 +839,13 @@ async function cambiarEstatus(checkbox) {
  // window.onload = cargarEstadoInicial;
 // Para cargar mensaje de resultado en pantalla
 function renderAvisoMigracion(data) {
-
+ 
     const mensaje = document.getElementById("mensajeResultado");
     if (!mensaje) return;
-
+ 
     let texto = "";
     let clase = "text-muted";
-
+ 
     if (data.ejecuta === 1) {
         texto = "⏳ Migración en proceso…";
         clase = "text-warning";
@@ -844,11 +858,11 @@ function renderAvisoMigracion(data) {
         texto = `✔ ${data.mensajeResultado}`;
         clase = "text-success";
     }
-
+ 
     if (data.cron) {
         texto += ` (Programada: ${data.cron})`;
     }
-
+ 
     mensaje.className = `mt-2 fw-bold ${clase}`;
     mensaje.innerText = texto;
     mensaje.style.display = "block";
@@ -887,64 +901,78 @@ function mostrarOpcionesPorTipo() {
 // ========================================================
 // Función completa para generar reporte de clientes
 async function generarReporteClientes() {
-
-  swal({
+  const fechaCorte = document.getElementById("fechaFinMigracion").value;
+ 
+  if (!fechaCorte) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "Debe seleccionar la fecha de corte."
+    });
+    return;
+  }
+ 
+  Swal.fire({
     title: "Generando reporte de clientes...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
   });
-
+ 
   try {
-
-    // 1️⃣ Generar reporte CLIENTES
     const res = await fetch("generarRptClientesPorFechaCorte", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        fechaCorte: document.getElementById("fechaFinMigracion").value
-      })
+      body: new URLSearchParams({ fechaCorte })
     });
-
-    if (!res.ok) throw new Error();
-
+ 
+    if (!res.ok) {
+      throw new Error("No se pudo generar el reporte.");
+    }
+ 
     const respuesta = await res.json();
     const url = respuesta[0];
-
+ 
     const base = window.location.href.substring(
       0,
       window.location.href.indexOf("STD/") + 4
     );
-
-    // 2️⃣ Abrir Excel
+ 
     window.open(base + url);
     window.focus();
-
-    // 3️⃣ 🔥 MARCAR CLIENTES_DESCARGADO 🔥
+ 
     await fetch("/STD/prevencion/estado-proceso/clientes-descargado", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     });
-
-    // 4️⃣ Reconstruir UI desde BD
+ 
     await cargarEstadoProceso();
-
-    swal.close();
-    swal("¡Éxito!", "Reporte de clientes generado.", "success");
-
+ 
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      text: "Reporte de clientes generado."
+    });
+ 
   } catch (e) {
-    swal.close();
-    swal("Error", "No se pudo generar el reporte.", "error");
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo generar el reporte."
+    });
+ 
+    console.error("Error en generarReporteClientes:", e);
   }
 }
-
+ 
  
  
  
@@ -955,27 +983,41 @@ async function procesarAuditoriaClientes() {
   const fechaCorte = document.getElementById("fechaFinMigracion").value;
  
   if (!fechaCorte) {
-    swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
+    await Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "Debe seleccionar la fecha de corte."
+    });
     return;
   }
  
   if (fechaCorte < "2024-01-01") {
-    swal("La fecha debe ser del año 2024 en adelante.", { icon: "error" });
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "La fecha debe ser del año 2024 en adelante."
+    });
     return;
   }
  
   if (!esFinDeMes(fechaCorte)) {
-    swal("La fecha seleccionada NO es el último día del mes.", { icon: "error" });
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "La fecha seleccionada NO es el último día del mes."
+    });
     return;
   }
  
-  swal({
+  Swal.fire({
     title: "Procesando auditoría...",
-    content: {
-      element: "div",
-      attributes: { innerHTML: '<div class="spinner-border text-primary"></div>' }
-    },
-    buttons: false
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
   });
  
   try {
@@ -987,16 +1029,15 @@ async function procesarAuditoriaClientes() {
  
     const data = await res.json();
  
-    swal.close();
+    Swal.close();
  
-    swal({
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
       title: data.tipo === "success" ? "¡Éxito!" : "Error",
       text: data.mensaje,
-      icon: data.tipo,
-      button: "Aceptar"
+      confirmButtonText: "Aceptar"
     });
  
-    // ✅ PERSISTIR ESTADO: AUDITORIA_OK
     if (data.tipo === "success") {
       await fetch("/STD/prevencion/estado-proceso/auditoria-ok", {
         method: "POST",
@@ -1004,17 +1045,19 @@ async function procesarAuditoriaClientes() {
         body: new URLSearchParams({ fechaCorte })
       });
  
-      // 🔄 Reconstruir UI desde BD
       await cargarEstadoProceso();
     }
  
   } catch (error) {
-    swal.close();
-    swal("Ocurrió un error al procesar la auditoría", { icon: "error" });
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ocurrió un error al procesar la auditoría."
+    });
   }
 }
- 
- 
  
 // ========================================================
 //  Generar reporte de OPERACIONES filtrado por rango de fechas
@@ -1025,22 +1068,23 @@ async function generarReporteOperaciones() {
   const fechaFin    = document.getElementById("fechaFinMigracion").value;
  
   if (!fechaInicio || !fechaFin) {
-    swal("Error", "Debe seleccionar fecha inicio y fecha fin.", "warning");
+    await Swal.fire({
+      icon: "warning",
+      title: "Error",
+      text: "Debe seleccionar fecha inicio y fecha fin."
+    });
     return;
   }
  
-  swal({
+  Swal.fire({
     title: "Generando reporte de operaciones...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
   });
  
   try {
@@ -1050,7 +1094,9 @@ async function generarReporteOperaciones() {
       body: new URLSearchParams({ fechaInicio, fechaFin })
     });
  
-    if (!res.ok) throw new Error();
+    if (!res.ok) {
+      throw new Error("No se pudo generar el reporte.");
+    }
  
     const respuesta = await res.json();
     const url = respuesta[0];
@@ -1063,10 +1109,6 @@ async function generarReporteOperaciones() {
     window.open(base + url);
     window.focus();
  
-    swal.close();
-    swal("¡Éxito!", "Reporte de operaciones generado.", "success");
- 
-    // ✅ PERSISTIR ESTADO: OPERACIONES_DESCARGADO
     await fetch("/STD/prevencion/estado-proceso/operaciones-descargado", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -1075,28 +1117,42 @@ async function generarReporteOperaciones() {
       })
     });
  
-    // 🔄 Reconstruir UI desde BD
     await cargarEstadoProceso();
  
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      text: "Reporte de operaciones generado."
+    });
+ 
   } catch (e) {
-    swal.close();
-    swal("Error", "No se pudo generar el reporte.", "error");
+    Swal.close();
+ 
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo generar el reporte."
+    });
+ 
+    console.error("Error en generarReporteOperaciones:", e);
   }
 }
  
  
  
 function renderEstadoMigracion(data) {
-
+ 
     if (!data) return;
-
+ 
     const btnEjecutar = document.getElementById("btnEjecutarMigracion");
     const btnAuditoria = document.getElementById("btnProcesarAuditoriaClientes");
-
+ 
     const estado = data.ejecuta; // 0,1,2
-
+ 
     if (btnEjecutar) {
-
+ 
         // 🔵 EN EJECUCIÓN → SOLO DESHABILITAR
         if (estado === 1) {
             btnEjecutar.style.display = "inline-block";
@@ -1105,7 +1161,7 @@ function renderEstadoMigracion(data) {
             btnEjecutar.classList.add("btn-secondary");
             btnEjecutar.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
         }
-
+ 
         // 🟢 FINALIZADO OK
         else if (estado === 0 || estado === null) {
             btnEjecutar.style.display = "inline-block";
@@ -1114,7 +1170,7 @@ function renderEstadoMigracion(data) {
             btnEjecutar.classList.add("btn-outline-primary");
             btnEjecutar.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
         }
-
+ 
         // 🟡 ERROR → REINTENTAR
         else if (estado === 2) {
             btnEjecutar.style.display = "inline-block";
@@ -1124,13 +1180,13 @@ function renderEstadoMigracion(data) {
             btnEjecutar.innerHTML = '<i class="fas fa-exclamation-triangle"></i> REINTENTAR';
         }
     }
-
+ 
     // 🟡 BOTÓN AMARILLO (Procesar Auditoría)
     if (btnAuditoria) {
-
+ 
     const enProceso = data.ejecuta === 1;
     const hayError  = data.ejecuta === 2;
-
+ 
     if (!enProceso && !hayError && data.ejecuta === 0) {
         btnAuditoria.style.display = "inline-block";
     } else {
@@ -1140,9 +1196,9 @@ function renderEstadoMigracion(data) {
 }
  
 function renderProcesoUI(estado) {
-
+ 
   if (!estado) return;
-
+ 
   // Botón amarillo SOLO si:
   // - proceso ejecutado
   // - migración NO esté en proceso
@@ -1151,12 +1207,12 @@ function renderProcesoUI(estado) {
   } else {
       $("#btnProcesarAuditoriaClientes").hide();
   }
-
+ 
   if (estado.auditoriaOk) {
     $("#btnGenerarClientes").show();
     $("#btnGenerarOperaciones").show();
   }
-
+ 
   if (estado.operacionesDescargado && !estado.operacionesVobo) {
     $("#bloqueVistoBueno").show();
   }
@@ -1164,82 +1220,83 @@ function renderProcesoUI(estado) {
  
  
  
-document.getElementById("btnEjecutarMigracion")
-  .addEventListener("click", async function () {
-
-    const btn = this;
-
-    const fechaCorte = $("#fechaFinMigracion").val();
-
-    if (!fechaCorte) {
-      swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
-      return;
-    }
-
-    // 🔒 BLOQUEO INMEDIATO
-    btn.disabled = true;
-    btn.classList.remove("btn-outline-primary");
-    btn.classList.add("btn-secondary");
-    btn.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
-
-    swal({
-      title: "Iniciando proceso...",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary"></div>'
+document.addEventListener("DOMContentLoaded", () => {
+  const btnEjecutarMigracion = document.getElementById("btnEjecutarMigracion");
+ 
+  if (btnEjecutarMigracion) {
+    btnEjecutarMigracion.addEventListener("click", async function () {
+      const btn = this;
+      const fechaCorte = $("#fechaFinMigracion").val();
+ 
+      if (!fechaCorte) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Atención",
+          text: "Debe seleccionar la fecha de corte."
+        });
+        return;
+      }
+ 
+      btn.disabled = true;
+      btn.classList.remove("btn-outline-primary");
+      btn.classList.add("btn-secondary");
+      btn.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
+ 
+      Swal.fire({
+        title: "Iniciando proceso...",
+        html: '<div class="spinner-border text-primary"></div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false
+      });
+ 
+      try {
+        const activar = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            fechaInicio: $("#fechaInicioMigracion").val() || "",
+            fechaFin: fechaCorte
+          })
+        });
+ 
+        if (!activar.ok) throw new Error("Error activando migración");
+ 
+        const ejecutar = await fetch("/STD/prevencion/estado-proceso/ejecutar", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            fechaInicio: $("#fechaInicioMigracion").val(),
+            fechaCorte: $("#fechaFinMigracion").val()
+          })
+        });
+ 
+        if (!ejecutar.ok) throw new Error("Error ejecutando proceso");
+ 
+        Swal.close();
+        await cargarEstadoInicial();
+        await cargarEstadoProceso();
+ 
+      } catch (e) {
+        Swal.close();
+        btn.disabled = false;
+        btn.classList.remove("btn-secondary");
+        btn.classList.add("btn-outline-primary");
+        btn.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
+ 
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo iniciar el proceso."
+        });
+ 
+        console.error(e);
+      }
     });
-
-    try {
-
-      // ACTIVAR MIGRACIÓN
-      const activar = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          fechaInicio: $("#fechaInicioMigracion").val() || "",
-          fechaFin: fechaCorte
-        })
-      });
-
-      if (!activar.ok) throw new Error("Error activando migración");
-
-      // INICIAR PROCESO PLD
-      const ejecutar = await fetch("/STD/prevencion/estado-proceso/ejecutar", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          fechaInicio: $("#fechaInicioMigracion").val(),
-          fechaCorte:  $("#fechaFinMigracion").val()
-        })
-      });
-
-      if (!ejecutar.ok) throw new Error("Error ejecutando proceso");
-
-      swal.close();
-
-      // 🔄 Reconstruir estado real desde BD
-      await cargarEstadoInicial();
-      await cargarEstadoProceso();
-
-    } catch (e) {
-
-      swal.close();
-
-      // 🔓 SOLO si hubo error
-      btn.disabled = false;
-      btn.classList.remove("btn-secondary");
-      btn.classList.add("btn-outline-primary");
-      btn.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
-
-      swal("Error", "No se pudo iniciar el proceso.", "error");
-      console.error(e);
-    }
+  }
 });
  
 document.addEventListener("DOMContentLoaded", () => {

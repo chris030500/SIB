@@ -2,6 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DetallePEPsService {
 
-    private static final Logger logger =
-            Logger.getLogger(DetallePEPsService.class);
+    private static final Logger logger = Logger.getLogger(DetallePEPsService.class);
 
     @Autowired
     private DetallePEPsRepository detallePEPsRepository;
@@ -29,49 +30,51 @@ public class DetallePEPsService {
 
     public void procesarCargaConUsuario(MultipartFile file, int idProceso) {
         try {
-            logger.info("Iniciando lectura del archivo Excel PEP...");
+            logger.info("Iniciando lectura del archivo...");
 
             List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
 
-            if (filas == null || filas.isEmpty()) {
-                logger.warn("El archivo no contiene filas validas.");
+            logger.info("Archivo leído. Total de filas: " + filas.size());
+
+            if (filas.isEmpty()) {
+                logger.warn("El archivo no contiene filas válidas.");
                 return;
             }
 
-            logger.info("Filas leidas: " + filas.size());
-
-            int insertados = 0;
-            int actualizados = 0;
+            AtomicInteger insertados = new AtomicInteger(0);
+            AtomicInteger actualizados = new AtomicInteger(0);
 
             for (DetallePEPsModel fila : filas) {
-                List<DetallePEPsModel> existentes =
-                        detallePEPsRepository.buscarPorClienteId(fila.getIClienteId());
 
-                if (!existentes.isEmpty()) {
-                    DetallePEPsModel existing = existentes.get(0);
+                Optional<DetallePEPsModel> optional =
+                        detallePEPsRepository.findById(fila.getIClienteId());
+
+                if (optional.isPresent()) {
+
+                    DetallePEPsModel existing = optional.get();
+
                     if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
+
                         existing.setVcNombreCliente(fila.getVcNombreCliente());
                         detallePEPsRepository.save(existing);
-                        actualizados++;
+                        actualizados.incrementAndGet();
                     }
+
                 } else {
+
                     fila.setFkProceso(idProceso);
                     detallePEPsRepository.save(fila);
-                    insertados++;
+                    insertados.incrementAndGet();
                 }
             }
 
-            logger.info(
-                    "Proceso finalizado -> Registros insertados: " + insertados
-                    + ", actualizados: " + actualizados
-            );
+            logger.info("Proceso finalizado. Insertados: " + insertados.get()
+                    + ", Actualizados: " + actualizados.get());
 
         } catch (Exception e) {
-            logger.error("Error en procesarCargaConUsuario", e);
+            logger.error("Error en procesarCargaConUsuario: ", e);
             throw new RuntimeException(
-                    e.getMessage() != null
-                            ? e.getMessage()
-                            : "Error al procesar archivo Excel PEP"
+                    "Formato de archivo inválido o columnas incorrectas. Verifica que el archivo Excel sea correcto."
             );
         }
     }

@@ -53,9 +53,11 @@ public interface ISolicitudesCreditoRepository extends JpaRepository<Solicitudes
 			@Param("idCredito") Integer idCredito);
 	
 	@Query(value = "SELECT T1.VC_NOMBRE_CLIENTE AS nombre_cliente, T1.I_CREDITO_ID AS credito_id, "
-			+ "T1.VC_ROL AS rol "
-			+ "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
-			+ "WHERE T1.VC_NOMBRE_CLIENTE LIKE %:nomCliente% "
-			+ "LIMIT 100 ", nativeQuery = true)
-	public List<Map<String, Object>> getNamesSolicitudes(@Param("nomCliente") String nomCliente);
+	        + "T1.VC_ROL AS rol "
+	        + "FROM SIB.TBL_SCCB_SOLICITUDES T1 "
+	        + "WHERE T1.VC_NOMBRE_CLIENTE LIKE CONCAT('%', :nomCliente, '%') "
+	        + "LIMIT 100",
+	        nativeQuery = true)
+	public List<Map<String, Object>> getNamesSolicitudes(
+	        @Param("nomCliente") String nomCliente);
 }

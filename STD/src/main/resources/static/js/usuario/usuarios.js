@@ -1,3 +1,4 @@
+// @ts-nocheck
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -45,7 +46,12 @@ function buscarEmpleado(empleado) {
 					/*//console.log()
 					//console.log("nombre : " + nombre);
 					//console.log("idUsuario : " + idUsuario);*/
-					option += '<option value="' + respuesta[i].empleadoID + ' " data-descripcion=' + respuesta[i].descripcion + ' >' + respuesta[i].nombreCompleto + '</option>';
+					option += '<option value="' + respuesta[i].empleadoID + '" ' +
+					          'data-empleadoid="' + respuesta[i].empleadoID + '" ' +
+					          'data-nombre="' + respuesta[i].nombreCompleto + '" ' +
+					          'data-puesto="' + respuesta[i].descripcion + '">' +
+					          respuesta[i].nombreCompleto +
+					          '</option>';
 					$("select#selectEmpleado").empty().append(option);
 					//' data-descripcion='+ respuesta[i].descripcion+'
 				}
@@ -56,36 +62,31 @@ function buscarEmpleado(empleado) {
 
 }
 
-document.getElementById('selectEmpleado').onchange = function() {
-	//console.log("Entro en jquery");
-	var selectEmpleado = document.getElementById('selectEmpleado').value;
-	var divEmpleado = document.getElementById("datosUsuario");
-	//console.log("SelectEmpleado: " + selectEmpleado);
-	if (selectEmpleado > 0) {
-		//console.log("Entro en mayor a 0");
-		divEmpleado.style.display = "block";
-	} else {
-		//console.log("No tiene valor");
-	}
-	/* Referencia al option seleccionado */
-	var mOption = this.options[this.selectedIndex];
-	/* Referencia a los atributos data de la opción seleccionada */
-	var mData = mOption.dataset;
+var selectEmpleado = document.getElementById('selectEmpleado');
 
-	/* Referencia a los input */
-	var EmpleadoId = document.getElementById('EmpleadoId');
-	var Nombre = document.getElementById('Nombre');
-	var Puesto = document.getElementById('Puesto');
+if (selectEmpleado) {
+    selectEmpleado.onchange = function () {
 
+        var divEmpleado = document.getElementById("datosUsuario");
+        var mOption = this.options[this.selectedIndex];
+        var mData = mOption.dataset;
 
-	//Asignamos el valor del ID Empleado
-	EmpleadoId.value = this.value;
-	//Asignamos el valor del nombre del empleado
-	Nombre.value = mOption.text;
-	//Asignamos el valor del puesto del empleado
-	Puesto.value = mData.descripcion;  /*Se usará el valor que se muestra*/
+        if (this.value !== "") {
+            divEmpleado.style.display = "block";
 
-};
+            document.getElementById('EmpleadoId').value = mData.empleadoid || this.value;
+            document.getElementById('Nombre').value = mData.nombre || "";
+            document.getElementById('Puesto').value = mData.puesto || "";
+
+        } else {
+            divEmpleado.style.display = "none";
+
+            document.getElementById('EmpleadoId').value = "";
+            document.getElementById('Nombre').value = "";
+            document.getElementById('Puesto').value = "";
+        }
+    };
+}
 
 $(document).ready(function($) {
 	$("#edit-form").submit(function(event) {
@@ -136,15 +137,13 @@ function showEditModal(index) {
 
 function modalCambioContra(index) {
 
-	//console.log("index: " + index);
-	console.lo
-	var url = newUrlBase + "usuario/cambioContra/";
+    console.log("index: " + index);
 
-	//console.log("entro en modalCambioContra");
+    var url = newUrlBase + "usuario/cambioContra/";
 
-	var editUrl = url + index;
-	//console.log("editUrl: " + editUrl);
-	loadCambioContra(editUrl);
+    var editUrl = url + index;
+
+    loadCambioContra(editUrl);
 }
 
 function loadCambioContra(url) {
@@ -164,18 +163,33 @@ function loadEntity(url) {
 }
 
 function populateModalContra(data) {
-	//console.log("Data en populateModalContra: " + JSON.stringify(data));
 
-	var usuario = data.usr_historico_contrasena_id.vc_nombre_usuario;
-	var idUsu = data.usr_historico_contrasena_id.pk_id_usuario;
-	//console.log("Nombre usuario: " + usuario);
-	//console.log("idUsuario: " + idUsu);
-	$('#nombre1').val(usuario);
-	//var pk_id_parametros = data.pk_id_parametros;
-	//$('#idUsuario').val(idUsu);
-	$('#idUsuario1').val(idUsu);
-	$('#password').val();
-	//$('#update-name').val(data.name);
+    console.log("Data en populateModalContra:", data);
+
+    if (!data) {
+        swal({
+            icon: 'warning',
+            title: 'No se encontró información del usuario'
+        });
+        return;
+    }
+
+    var usuarioObj = data.usr_historico_contrasena_id || data.usr_id_Usr;
+
+    if (!usuarioObj) {
+        swal({
+            icon: 'warning',
+            title: 'El historial de contraseña no tiene usuario relacionado'
+        });
+        return;
+    }
+
+    var usuario = usuarioObj.vc_nombre_usuario;
+    var idUsu = usuarioObj.pk_id_usuario;
+
+    $('#nombre1').val(usuario);
+    $('#idUsuario1').val(idUsu);
+    $('#password').val('');
 }
 
 // Assign the data values to the modal form.

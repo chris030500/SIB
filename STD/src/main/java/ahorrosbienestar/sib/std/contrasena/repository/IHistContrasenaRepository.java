@@ -1,18 +1,16 @@
 package ahorrosbienestar.sib.std.contrasena.repository;
 
-
-
-
-
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import ahorrosbienestar.sib.std.contrasena.model.HistContrasena;
 
@@ -31,6 +29,13 @@ public interface IHistContrasenaRepository extends JpaRepository<HistContrasena,
 	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA AS contra INNER JOIN SIB.TBL_CAT_USUARIOS AS u ON u.PK_ID_USUARIO = contra.Usr_historico_contrasena_id WHERE u.PK_ID_USUARIO = :id and contra.VC_INDICADOR_ACTIVO = 1;", nativeQuery = true)
 	public Optional<HistContrasena> findByIdHisto(@Param ( "id" ) Integer id);
 	
-	@Query(value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA WHERE Usr_historico_contrasena_id = :idUsuario order by PK_ID_PARAMETROS DESC LIMIT :limite", nativeQuery = true)
-	public List<HistContrasena> findTopByUsuarioByFechaDesc(@Param ( "idUsuario" ) Integer idUsuario, @Param ( "limite" ) Integer limite);
+	@Query(
+		    value = "SELECT * FROM SIB.TBL_HIST_CONTRASENIA " +
+		            "WHERE Usr_historico_contrasena_id = :idUsuario " +
+		            "ORDER BY PK_ID_PARAMETROS DESC",
+		    nativeQuery = true
+		)
+		List<HistContrasena> findTopByUsuarioByFechaDesc(
+		        @Param("idUsuario") Integer idUsuario,
+		        Pageable pageable);
 }
