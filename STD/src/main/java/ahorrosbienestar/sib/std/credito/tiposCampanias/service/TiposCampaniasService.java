@@ -144,6 +144,10 @@ public class TiposCampaniasService {
         return repository.findAll();
     }
 
+	public Integer obtenerMaximaVigenciaCampaniaActiva() {
+		return repository.obtenerMaximaVigenciaCampaniaActiva();
+	}
+
 	public int existeNombre(String nombreCampania, int idcampania) {
 		return repository.existeNombre(nombreCampania,idcampania);
 	}
