@@ -1,4 +1,3 @@
-//EstadoProcesoReporteService
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
  
 import java.time.LocalDate;

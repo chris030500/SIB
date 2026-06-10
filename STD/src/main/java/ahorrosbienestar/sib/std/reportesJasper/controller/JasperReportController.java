@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.reportesJasper.controller;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,8 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
-import org.apache.tomcat.util.codec.binary.Base64;
+import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -65,95 +68,119 @@ public class JasperReportController {
     
 	@SuppressWarnings("deprecation")
 	@RequestMapping("generarReporte")
-    public ResponseEntity<Resource> reporteJasper(@RequestParam(name = "idReporte") Integer idReporte, @RequestParam(name = "parametros") String parametros, @RequestParam(name = "tipoDocumento") String tipoDocumento, @RequestParam(name = "identificadorDoc") String identificadorDoc) {
-   	 
-    	try {
-    		/**
-    		 * 
-    		 * para el campo parametros si envian mas de 1 parametro usar el caracter "~" para dividir los parametros ejemplo: FECHA_INICIO=2023/03/01~FECHA_FIN=2023/03/05
-						
-    		 */
-    					logger.info("datos:IDreporte"+idReporte+"parametros:"+parametros+"tipoDocumento:"+tipoDocumento+"identificadorDoc:"+identificadorDoc);
-						ReporteJasper report = iReporteRepository.getById(idReporte);
-    				
-    					String urlGenerarReporte = iConfiguracionRepository.buscarPropiedad(jaspersserver_url)+report.getVc_url_reporte()+tipoDocumento+parametros.replace("~", "&");
-    					
-    					logger.info("url:"+urlGenerarReporte);
-    				
-    					
-    					HttpHeaders headers = new HttpHeaders();
-    				    headers = createHeaders(iConfiguracionRepository.buscarPropiedad(jaspersserver_username), desencriptar.decrypt(iConfiguracionRepository.buscarPropiedad(jaspersserver_password)));
-    				    		//configService.findAll().get(16).getVc_valor_propiedad());
-    					headers.set("Content-Type",report.getVc_tipo_contenido());
-    					headers.setAccept(Arrays.asList(MediaType.APPLICATION_PDF, MediaType.APPLICATION_OCTET_STREAM));
-      					
-    					   					
-    					// Request Body
-    					MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+	public ResponseEntity<Resource> reporteJasper(
+	        @RequestParam(name = "idReporte") Integer idReporte,
+	        @RequestParam(name = "parametros") String parametros,
+	        @RequestParam(name = "tipoDocumento") String tipoDocumento,
+	        @RequestParam(name = "identificadorDoc") String identificadorDoc) {
 
-    					// Request Entity
-    					HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-    					
-    					// RestTemplate
-    					RestTemplate restTemplate = new RestTemplate();
+	    try {
+	        logger.info("datos:IDreporte" + idReporte
+	                + " parametros:" + parametros
+	                + " tipoDocumento:" + tipoDocumento
+	                + " identificadorDoc:" + identificadorDoc);
 
-    					// DELETE cancelar
-    					ResponseEntity<byte[]> response = restTemplate.exchange(urlGenerarReporte, HttpMethod.GET, requestEntity, byte[].class);
+	        ReporteJasper report = iReporteRepository.getById(idReporte);
 
-    					// ResponseBody
-    					byte[] responseBody = response.getBody();
-    					
-    					//exportar reporte 
-    					//String fechaCreacion = null;
-    					StringBuilder stringBuilder = null;
-    					ContentDisposition contentDisposition = null;
-    					HttpHeaders h2 = new HttpHeaders();
-                        MediaType mediaType = MediaType.APPLICATION_PDF;
-    					if(extPDF.equalsIgnoreCase(tipoDocumento)) {
-    						//fecha de creacion
-        					//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
-        				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
-        				    contentDisposition = ContentDisposition.builder("inline")
-        				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc)
-        				    .append(tipoDocumento)
-        				    .toString())
-        				    .build();
-        				    h2.setContentDisposition(contentDisposition);
-        				    mediaType = MediaType.APPLICATION_PDF;
-    					}else if(extXLS.equalsIgnoreCase(tipoDocumento)) {
-    						//fechaCreacion = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
-        				    stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
-        				    contentDisposition = ContentDisposition.builder("attachment")
-        				    .filename(stringBuilder.append("_")
-        				    .append(identificadorDoc)
-        				    .append(tipoDocumento)
-        				    .toString())
-        				    .build();
-        				    h2.setContentDisposition(contentDisposition);
-        				    mediaType = MediaType.parseMediaType("application/vnd.ms-excel");
-    					} else if (extXLSX.equalsIgnoreCase(tipoDocumento)) {
-    						stringBuilder = new StringBuilder().append(report.getVc_nombre_reporte());
-    			            contentDisposition = ContentDisposition.builder("attachment")
-    			                    .filename(stringBuilder.append("_")
-    			                            .append(identificadorDoc)
-    			                            .append(tipoDocumento)
-    			                            .toString())
-    			                    .build();
-    			            h2.setContentDisposition(contentDisposition);
-    			            mediaType = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    			        }
-    					
-    				    return ResponseEntity.ok().contentLength((long) responseBody.length)
-    				    .contentType(mediaType)
-    				    .headers(h2).body(new ByteArrayResource(responseBody));
-    					    		
-    	
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		return null;
-    }
+	        String urlGenerarReporte =
+	                iConfiguracionRepository.buscarPropiedad(jaspersserver_url)
+	                        + report.getVc_url_reporte()
+	                        + tipoDocumento
+	                        + parametros.replace("~", "&");
+
+	        logger.info("url:" + urlGenerarReporte);
+
+	        String username = iConfiguracionRepository.buscarPropiedad(jaspersserver_username);
+	        String password = desencriptar.decrypt(
+	                iConfiguracionRepository.buscarPropiedad(jaspersserver_password)
+	        );
+
+	        logger.info("USUARIO JASPER: " + username);
+	        logger.info("PASSWORD JASPER DESENCRIPTADO ES NULL?: " + (password == null));
+	        logger.info("PASSWORD JASPER DESENCRIPTADO VACIO?: " + password.trim().isEmpty());
+
+	        logger.info("PASO 1 - Antes de crear headers");
+
+	        HttpHeaders headers = createHeaders(username, password);
+
+	        logger.info("PASO 2 - Headers creados");
+
+	        headers.setAccept(Arrays.asList(
+	                MediaType.APPLICATION_OCTET_STREAM,
+	                MediaType.parseMediaType("application/vnd.ms-excel"),
+	                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	        ));
+
+	        logger.info("PASO 3 - Accept agregado");
+
+	        HttpEntity<Void> requestEntity = new HttpEntity<Void>(headers);
+
+	        logger.info("PASO 4 - RequestEntity creado");
+
+	        RestTemplate restTemplate = new RestTemplate();
+
+	        logger.info("PASO 5 - RestTemplate creado");
+
+	        logger.info("ANTES DEL EXCHANGE");
+
+	        ResponseEntity<byte[]> response = restTemplate.exchange(
+	                urlGenerarReporte,
+	                HttpMethod.GET,
+	                requestEntity,
+	                byte[].class
+	        );
+
+	        logger.info("DESPUES DEL EXCHANGE");
+
+	        byte[] responseBody = response.getBody();
+
+	        if (responseBody == null || responseBody.length == 0) {
+	            throw new RuntimeException("JasperServer regresó un archivo vacío.");
+	        }
+
+	        HttpHeaders h2 = new HttpHeaders();
+
+	        ContentDisposition contentDisposition = ContentDisposition
+	                .builder("attachment")
+	                .filename(report.getVc_nombre_reporte() + "_" + identificadorDoc + tipoDocumento)
+	                .build();
+
+	        h2.setContentDisposition(contentDisposition);
+
+	        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
+
+	        if (extPDF.equalsIgnoreCase(tipoDocumento)) {
+	            mediaType = MediaType.APPLICATION_PDF;
+	        } else if (extXLS.equalsIgnoreCase(tipoDocumento)) {
+	            mediaType = MediaType.parseMediaType("application/vnd.ms-excel");
+	        } else if (extXLSX.equalsIgnoreCase(tipoDocumento)) {
+	            mediaType = MediaType.parseMediaType(
+	                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	            );
+	        }
+
+	        return ResponseEntity.ok()
+	                .contentLength(responseBody.length)
+	                .contentType(mediaType)
+	                .headers(h2)
+	                .body(new ByteArrayResource(responseBody));
+
+	    }  catch (Exception e) {
+	        logger.error("ERROR GENERANDO REPORTE", e);
+
+	        ByteArrayResource errorBody = new ByteArrayResource(
+	                ("ERROR JASPER: " + e.getMessage()).getBytes()
+	        );
+
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.TEXT_PLAIN);
+
+	        return ResponseEntity
+	                .status(200)
+	                .headers(headers)
+	                .body(errorBody);
+	    }
+	}
 	
 	@SuppressWarnings("deprecation")
 	@RequestMapping("generarArchivoRuta")
@@ -264,16 +291,18 @@ public class JasperReportController {
 	
 	
     
-    private static HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {
-            {
-                String auth = username + ":" + password;
-                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
-                String authHeader = "Basic " + new String(encodedAuth);
-                set("Authorization", authHeader);
-            }
-        };
-    }
+	private static HttpHeaders createHeaders(String username, String password) {
+
+	    HttpHeaders headers = new HttpHeaders();
+
+	    String auth = username + ":" + password;
+	    String encodedAuth = Base64.getEncoder()
+	            .encodeToString(auth.getBytes(Charset.forName("US-ASCII")));
+
+	    headers.set("Authorization", "Basic " + encodedAuth);
+
+	    return headers;
+	}
 
 
     

@@ -272,12 +272,19 @@ function generarReportProcesosCampanias() {
 		},
 		success: function(respuesta) {
 
-			var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			//var urlReporte = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[0];
+			
+			var base = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4);
 			//var urlReporte = window.location.href.substring(0, 22) + respuesta[0];
 
 			//console.log(urlReporte);
 			//urlReporte = "http://localhost:8080/STD/exportarReporte/generarReporte?idReporte=9&parametros=?FechaInicio=2023-10-01~FechaFin=2023-10-02&tipoDocumento=.pdf&identificadorDoc=OA";
-			window.open(urlReporte);
+			//window.open(urlReporte);
+			 // Abrir cada reporte
+		    respuesta.forEach(function(url) {
+		        var urlReporte = base + url;
+		        window.open(urlReporte);
+		    });
 			window.focus();
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {

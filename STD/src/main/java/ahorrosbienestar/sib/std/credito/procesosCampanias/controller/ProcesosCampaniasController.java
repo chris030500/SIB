@@ -187,13 +187,18 @@ public class ProcesosCampaniasController {
 		try {
 			
 			ReporteJasper datosReporte = iReporteRepository.buscarReporte(Constantes.REPORTE_PROCESOS_CAMPANIA);
+			ReporteJasper datosReporte2 = iReporteRepository.buscarReporte(Constantes.REPORTE_EXTRACCION_CAMPANIA);
 
 			String reporteURL = iConfiguracionRepository.buscarPropiedad(controllerReporte)
 					+ datosReporte.getPk_id_reporte() + "&parametros=?Proceso=" + proceso + "&tipoDocumento=" +datosReporte.getVc_extension()+ "&identificadorDoc=OA";
+			
+			String reporteURL2 = iConfiguracionRepository.buscarPropiedad(controllerReporte)
+					+ datosReporte2.getPk_id_reporte() + "&parametros=?Proceso=" + proceso + "&tipoDocumento=" +datosReporte2.getVc_extension()+ "&identificadorDoc=OA";
 
 			//System.out.println("reporteURL: " + reporteURL);
 			
 			respuesta.add(reporteURL);
+			respuesta.add(reporteURL2);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:" + e.getMessage());

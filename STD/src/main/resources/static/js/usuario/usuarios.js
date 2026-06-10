@@ -46,7 +46,12 @@ function buscarEmpleado(empleado) {
 					/*//console.log()
 					//console.log("nombre : " + nombre);
 					//console.log("idUsuario : " + idUsuario);*/
-					option += '<option value="' + respuesta[i].empleadoID + ' " data-descripcion=' + respuesta[i].descripcion + ' >' + respuesta[i].nombreCompleto + '</option>';
+					option += '<option value="' + respuesta[i].empleadoID + '" ' +
+					          'data-empleadoid="' + respuesta[i].empleadoID + '" ' +
+					          'data-nombre="' + respuesta[i].nombreCompleto + '" ' +
+					          'data-puesto="' + respuesta[i].descripcion + '">' +
+					          respuesta[i].nombreCompleto +
+					          '</option>';
 					$("select#selectEmpleado").empty().append(option);
 					//' data-descripcion='+ respuesta[i].descripcion+'
 				}
@@ -63,23 +68,22 @@ if (selectEmpleado) {
     selectEmpleado.onchange = function () {
 
         var divEmpleado = document.getElementById("datosUsuario");
-
-        if (selectEmpleado.value !== "") {
-            if (divEmpleado) {
-                divEmpleado.style.display = "block";
-            }
-        } else {
-            if (divEmpleado) {
-                divEmpleado.style.display = "none";
-            }
-        }
-
         var mOption = this.options[this.selectedIndex];
         var mData = mOption.dataset;
 
-        var EmpleadoId = document.getElementById('EmpleadoId');
-        if (EmpleadoId) {
-            EmpleadoId.value = mData.empleadoid || "";
+        if (this.value !== "") {
+            divEmpleado.style.display = "block";
+
+            document.getElementById('EmpleadoId').value = mData.empleadoid || this.value;
+            document.getElementById('Nombre').value = mData.nombre || "";
+            document.getElementById('Puesto').value = mData.puesto || "";
+
+        } else {
+            divEmpleado.style.display = "none";
+
+            document.getElementById('EmpleadoId').value = "";
+            document.getElementById('Nombre').value = "";
+            document.getElementById('Puesto').value = "";
         }
     };
 }

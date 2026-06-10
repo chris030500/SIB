@@ -1,14 +1,13 @@
-//ExcelPEPReader
-package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util;
-
+ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util;
+ 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
-
+ 
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
 
 public class ExcelPEPReader {
@@ -44,6 +43,7 @@ public class ExcelPEPReader {
 
             if (!"clienteid".equals(col0) || !"nombre_completo".equals(col1)) {
                 throw new RuntimeException(
+
                     "Encabezados inválidos. Se esperan: ClienteID | nombre_completo"
                 );
             }

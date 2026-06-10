@@ -82,7 +82,7 @@
         class="btn btn-outline-primary btn-sm">
     <i class="fas fa-play"></i> EJECUTAR
 </button>
-
+ 
     </div>
  
     <div id="mensajeResultado"
@@ -216,20 +216,27 @@
  
 <th:block layout:fragment="page-scripts">
 
-<script th:src="@{/js/jquery-3.5.1.js}"></script>
 
-<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 
-<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+<!-- DataTables Bootstrap -->
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
 
-<script th:src="@{/vendor/xlsxNew/xlsx.full.min.js}"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script th:src="@{/vendor/axiosNew/axios.min.js}"></script>
+<!-- XLSX (SheetJS) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<!-- Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<!-- JS de la pantalla -->
 <script th:src="@{/js/prevencion/reporteClientesOpe.js}"></script>
-
 </th:block>
 </body>
 </html>

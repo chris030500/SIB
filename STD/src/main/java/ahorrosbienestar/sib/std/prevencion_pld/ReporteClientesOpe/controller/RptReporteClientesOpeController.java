@@ -1,4 +1,3 @@
-//controller
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.controller;
  
 //import java.io.IOException;
@@ -473,59 +472,59 @@ public class RptReporteClientesOpeController {
             @RequestParam("fechaFinOper") String fechaFinOper,
             @RequestParam("fechaCorteClientes") String fechaCorteClientes,
             @RequestParam("tipoReporte") String tipoReporte) {
-
+ 
         logger.info("/ejecutarVistoBueno - Año: " + anio 
                     + ", Operaciones: " + fechaInicioOper + " a " + fechaFinOper
                     + ", CorteClientes: " + fechaCorteClientes);
-
+ 
         Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement callableStatement = null;
-
+ 
         try {
-
+ 
             // ===========================
             // OBTENER USUARIO LOGEADO
             // ===========================
             Object principal = SecurityContextHolder.getContext()
                     .getAuthentication()
                     .getPrincipal();
-
+ 
             Integer idUsuario = null;
-
+ 
             if (principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
                 List<Usuario> usuarios =
                         iUsuarioRepository.findByNombreUsuario(username);
-
+ 
                 if (!usuarios.isEmpty()) {
                     idUsuario = usuarios.get(0).getPk_id_usuario();
                 }
             }
-
+ 
             if (idUsuario == null) {
                 respuesta.put("mensaje", "No se pudo obtener el ID del usuario.");
                 respuesta.put("tipo", "error");
                 return ResponseEntity.ok(respuesta);
             }
-
+ 
             // ===========================
             // PARSEAR FECHAS
             // ===========================
             int year = Integer.parseInt(anio);
-
+ 
             Date fInicioOper     = Date.valueOf(fechaInicioOper);
             Date fFinOper        = Date.valueOf(fechaFinOper);
             Date fCorteClientes  = Date.valueOf(fechaCorteClientes);
-
+ 
             // ===========================
             // LLAMADA AL SP
             // ===========================
             connection = jdbcTemplate.getDataSource().getConnection();
-
+ 
             callableStatement = connection.prepareCall(
                     "{CALL SIB.SP_VISTO_BUENO_AUDITORIA(?, ?, ?, ?, ?, ?, ?)}");
-
+ 
             callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
             callableStatement.setInt(2, idUsuario);                   // p_iusuario
             callableStatement.setInt(3, year);                        // p_ianio
@@ -533,14 +532,14 @@ public class RptReporteClientesOpeController {
             callableStatement.setDate(5, fFinOper);                   // p_fechaFin OPERACIONES
             callableStatement.setDate(6, fCorteClientes);             // p_fechaFin CLIENTES
             callableStatement.setString(7, tipoReporte);
-
+ 
             callableStatement.execute();
-
+ 
             // ===========================
             // RESULTADO
             // ===========================
             String errorMessage = callableStatement.getString(1);
-
+ 
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 respuesta.put("mensaje", errorMessage);
                 respuesta.put("tipo", "error");
@@ -548,20 +547,20 @@ public class RptReporteClientesOpeController {
                 respuesta.put("mensaje", "Visto bueno registrado correctamente.");
                 respuesta.put("tipo", "success");
             }
-
+ 
             return ResponseEntity.ok(respuesta);
-
+ 
         } catch (Exception e) {
-
+ 
             logger.error("Error al ejecutar SP visto bueno", e);
-
+ 
             respuesta.put("mensaje", "Error: " + e.getMessage());
             respuesta.put("tipo", "error");
-
+ 
             return ResponseEntity.ok(respuesta);
-
+ 
         } finally {
-
+ 
             try {
                 if (callableStatement != null) callableStatement.close();
                 if (connection != null) connection.close();
@@ -655,9 +654,9 @@ public class RptReporteClientesOpeController {
     @GetMapping(value="/obtHistoricoProcesos", produces="application/json")
     @ResponseBody
     public ResponseEntity<List<HistorialReporte>> obtHistoricoProceso() {
-
+ 
         logger.info("/obtHistoricoProcesos");
-
+ 
         try {
             return ResponseEntity.ok(guardarhistorialreporte.procesoVobo());
         } catch (Exception e) {
@@ -751,11 +750,11 @@ public class RptReporteClientesOpeController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> ejecutarVistoBuenoPorProceso(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         Map<String, Object> respuesta = new HashMap<>();
         Connection connection = null;
         CallableStatement cs = null;
-
+ 
         try {
             // ============================
             // 1️⃣ OBTENER PROCESO ACTIVO
@@ -764,11 +763,11 @@ public class RptReporteClientesOpeController {
                     estadoProcesoReporteService.obtenerProcesoActivo(
                             userDetails.getUsername()
                     );
-
+ 
             if (proceso == null) {
                 throw new IllegalStateException("No existe un proceso activo para registrar visto bueno.");
             }
-
+ 
             // ============================
             // 2️⃣ OBTENER USUARIO
             // ============================
@@ -776,24 +775,24 @@ public class RptReporteClientesOpeController {
                     .findByNombreUsuario(userDetails.getUsername())
                     .get(0)
                     .getPk_id_usuario();
-
+ 
             // ============================
             // 3️⃣ EJECUTAR SP
             // ============================
             connection = jdbcTemplate.getDataSource().getConnection();
             cs = connection.prepareCall(Constantes.VISTO_BUENO_PROCESO);
-
+ 
             // 1️⃣ IN → ID_PROCESO
             cs.setLong(1, proceso.getIdProceso());
-
+ 
             // 2️⃣ OUT → error_message
             cs.registerOutParameter(2, Types.VARCHAR);
-
+ 
             cs.execute();
-
+ 
             // Obtener mensaje de error
             String error = cs.getString(2);
-
+ 
             // ============================
             // 4️⃣ RESPUESTA
             // ============================
@@ -801,57 +800,57 @@ public class RptReporteClientesOpeController {
                 respuesta.put("tipo", "error");
                 respuesta.put("mensaje", error);
             } else {
-
+ 
                 // ACTUALIZAR ESTADO PROCESO
                 estadoProcesoReporteService.marcarOperacionesVobo(
                     userDetails.getUsername()
                 );
-
+ 
                 respuesta.put("tipo", "success");
                 respuesta.put("mensaje", "Visto bueno registrado correctamente por proceso.");
             }
-
+ 
             return ResponseEntity.ok(respuesta);
-
+ 
         } catch (Exception e) {
             logger.error("❌ Error al ejecutar visto bueno por proceso", e);
             respuesta.put("tipo", "error");
             respuesta.put("mensaje", e.getMessage());
             return ResponseEntity.ok(respuesta);
-
+ 
         } finally {
             try { if (cs != null) cs.close(); } catch (Exception ignored) {}
             try { if (connection != null) connection.close(); } catch (Exception ignored) {}
         }
     }
-
+ 
     @PostMapping("/estado-proceso/vobo-seleccion")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> registrarVoboSeleccion(
             @RequestParam boolean clientes,
             @RequestParam boolean operaciones,
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         Map<String, Object> resp = new HashMap<>();
-
+ 
         try {
-
+ 
             // 🔴 PRIMERO insertar los dos registros base
             estadoProcesoReporteService.preInsertarHistorial(
                     userDetails.getUsername()
             );
-
+ 
             // 🔵 LUEGO ejecutar el flujo normal de visto bueno
             estadoProcesoReporteService.registrarVoboProceso(
                     userDetails.getUsername(),
                     clientes,
                     operaciones
             );
-
+ 
             resp.put("tipo", "success");
             resp.put("mensaje", "Visto bueno registrado correctamente");
             return ResponseEntity.ok(resp);
-
+ 
         } catch (Exception e) {
             logger.error("Error al registrar visto bueno.", e);
             resp.put("tipo", "error");
@@ -859,25 +858,25 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.badRequest().body(resp);
         }
     }
-
-
+ 
+ 
     @PostMapping("/estado-proceso/pre-insert-historial")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> preInsertHistorial(
             @AuthenticationPrincipal UserDetails userDetails) {
-
+ 
         Map<String, Object> resp = new HashMap<>();
-
+ 
         try {
-
+ 
             estadoProcesoReporteService.preInsertarHistorial(
                     userDetails.getUsername()
             );
-
+ 
             resp.put("tipo", "success");
             resp.put("mensaje", "Historial pre-registrado");
             return ResponseEntity.ok(resp);
-
+ 
         } catch (Exception e) {
             logger.error("Error al pre-registrar historial.", e);
             resp.put("tipo", "error");
@@ -885,8 +884,8 @@ public class RptReporteClientesOpeController {
             return ResponseEntity.badRequest().body(resp);
         }
     }
-
-
+ 
+ 
     
     @PostMapping("/procesarAuditoriaClientes")
     public ResponseEntity<Map<String, Object>> procesarAuditoriaClientes(
