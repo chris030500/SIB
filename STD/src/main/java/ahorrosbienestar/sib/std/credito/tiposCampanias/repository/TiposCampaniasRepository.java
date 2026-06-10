@@ -33,6 +33,9 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, VC_TIPO_CAMPANIA FROM SIB.TBL_TIPOS_CAMPANIA WHERE I_ESTATUS = :valor", nativeQuery = true)
 	List<TiposCampaniasModel> listaTiposCampanias(@Param("valor") Integer valor);	
+
+	@Query(value = "SELECT MAX(I_VIGENCIA_CAMPANIA) FROM SIB.TBL_TIPOS_CAMPANIA WHERE I_ESTATUS = 1", nativeQuery = true)
+	Integer obtenerMaximaVigenciaCampaniaActiva();
 	
 	@Modifying
 	@Transactional // Necesario para ejecutar updates
