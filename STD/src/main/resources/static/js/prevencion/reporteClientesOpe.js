@@ -73,15 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // Evento click del botón para generar el reporte
 /*btnProcesar.addEventListener("click", async (event) => {
   event.preventDefault();
-
+ 
   const inicio = inputInicio.value;
   const fin = inputFin.value;
-
+ 
   if (fechasInvalidas(inicio, fin)) return;
-
+ 
   btnProcesar.disabled = true;
   btnProcesar.textContent = "Generando...";
-
+ 
   // Mostrar alerta con spinner
   swal({
     title: "Generando reporte...",
@@ -98,18 +98,18 @@ document.addEventListener("DOMContentLoaded", () => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   try {
     const res = await fetch(
       `download?fechaInicio=${encodeURIComponent(inicio)}&fechaFin=${encodeURIComponent(fin)}`
     );
-
+ 
     if (!res.ok) throw new Error("Error generando el reporte.");
-
+ 
     // Convertir la respuesta en blob (archivo binario)
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
-
+ 
     // Descargar con nombre dinámico
     const a = document.createElement("a");
     a.href = url;
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-
+ 
     swal.close();
     swal({
       title: "¡Éxito!",
@@ -141,19 +141,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 });*/
-
+ 
  // Evento click del botón para generar el reporte
 btnProcesar.addEventListener("click", async (event) => {
   event.preventDefault();
-
+ 
   const inicio = inputInicio.value;
   const fin = inputFin.value;
-
+ 
   if (fechasInvalidas(inicio, fin)) return;
-
+ 
   btnProcesar.disabled = true;
   btnProcesar.textContent = "Generando...";
-
+ 
   // Mostrar alerta con spinner
   swal({
     title: "Generando reporte...",
@@ -170,23 +170,23 @@ btnProcesar.addEventListener("click", async (event) => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   try {
     const res = await fetch("generarRptReporteClientesOpeController", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
     });
-
+ 
     if (!res.ok) throw new Error("Error generando el reporte.");
-
+ 
     const respuesta = await res.json();
     url = respuesta[0];
     window.open(
       window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]
     );
     window.focus();
-
+ 
     swal.close();
     swal({
       title: "¡Éxito!",
@@ -208,19 +208,19 @@ btnProcesar.addEventListener("click", async (event) => {
     btnProcesar.textContent = "Generar Reporte";
   }
 });
-
+ 
 // Evento click del botón para generar proceso
 btnProcesarProceso.addEventListener("click", async (event) => {
   event.preventDefault();
-
+ 
   const inicio = inputInicio.value;
   const fin = inputFin.value;
-
+ 
   if (fechasInvalidas(inicio, fin)) return;
-
+ 
   btnProcesarProceso.disabled = true;
   btnProcesarProceso.textContent = "Procesando...";
-
+ 
   swal({
     title: "Procesando reporte...",
     content: {
@@ -236,23 +236,23 @@ btnProcesarProceso.addEventListener("click", async (event) => {
     closeOnClickOutside: false,
     closeOnEsc: false,
   });
-
+ 
   try {
     const res = await fetch("generarRptOperacionesAuditoria", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ fechaInicio: inicio, fechaFin: fin }),
     });
-
+ 
     if (!res.ok) throw new Error("Error generando el reporte.");
-
+ 
     const respuesta = await res.json();
     url = respuesta[0];
     window.open(
       window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0]
     );
     window.focus();
-
+ 
     swal.close();
     swal({
       title: "¡Éxito!",
@@ -299,98 +299,183 @@ $('#infoNo').on('change', function() {
 });
  
 // Evento para el botón "Visto Bueno"
-document.getElementById("btnVistoBueno").addEventListener("click", function() {
-  var ValorSi = $('#infoSi').is(':checked');
- 
-  if (ValorSi) {
-    swal({
-      title: "¡Éxito!",
-      text: "Visto bueno registrado correctamente.",
-      icon: "success",
-      button: "Aceptar",
-    }).then(() => {
-      ejecutarVistoBueno();
+$(document).on("click", "#btnVistoBueno", async function () {
+  const result = await Swal.fire({
+    title: "Visto bueno",
+    text: "Seleccione el tipo de reporte",
+    html: `
+      <div style="text-align:left;">
+        <label>
+          <input type="checkbox" id="chkClientes"> Clientes
+        </label><br>
+        <label>
+          <input type="checkbox" id="chkOperaciones"> Operaciones
+        </label>
+      </div>
+    `,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Registrar",
+    cancelButtonText: "Cancelar",
+    preConfirm: () => {
+      const clientes = document.getElementById("chkClientes")?.checked;
+      const operaciones = document.getElementById("chkOperaciones")?.checked;
+
+      if (!clientes && !operaciones) {
+        Swal.showValidationMessage("Debe seleccionar al menos un reporte");
+        return false;
+      }
+
+      return { clientes, operaciones };
+    }
+  });
+
+  if (!result.isConfirmed) return;
+
+  const { clientes, operaciones } = result.value;
+
+  let tipoReporte = "";
+  if (clientes && operaciones) {
+    tipoReporte = "AMBOS";
+  } else if (clientes) {
+    tipoReporte = "CLIENTES";
+  } else if (operaciones) {
+    tipoReporte = "OPERACIONES";
+  }
+
+  try {
+    const fechaInicioOper = $("#fechaInicioMigracion").val();
+    const fechaFinOper = $("#fechaFinMigracion").val();
+    const fechaCorteClientes = $("#fechaFinMigracion").val();
+    const anio = fechaInicioOper.substring(0, 4);
+
+    Swal.fire({
+      title: "Registrando visto bueno...",
+      html: '<div class="spinner-border text-primary"></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
     });
-  } else {
-    swal("Debes seleccionar la opción 'Sí' para continuar.", {
-      icon: "warning",
+
+    const res = await fetch("ejecutarVistoBueno", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        anio,
+        fechaInicioOper,
+        fechaFinOper,
+        fechaCorteClientes,
+        tipoReporte
+      })
+    });
+
+    const data = await res.json();
+
+    Swal.close();
+
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
+      title: data.tipo === "success" ? "¡Éxito!" : "Error",
+      text: data.mensaje
+    });
+
+    if (data.tipo === "success") {
+      await cargarEstadoProceso();
+      iniciaTblHistorico();
+    }
+
+  } catch (e) {
+    Swal.close();
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo registrar el visto bueno"
     });
   }
 });
- 
- 
- 
- 
 // ==========================================================
 //  Validar archivo Excel antes de subirlo
 // ==========================================================
-document.getElementById("uploadFormPEP").addEventListener("submit", async e => {
-  e.preventDefault();
- 
+document.addEventListener("DOMContentLoaded", () => {
+  const formUpload = document.getElementById("uploadFormPEP");
   const input = document.getElementById("fileUploadPEP");
-  const files = input.files;
- 
-  if (!files || files.length === 0) {
-    swal("Debes seleccionar al menos un archivo.", { icon: "warning" });
+
+  if (!formUpload) {
+    console.warn("No existe el formulario uploadFormPEP");
     return;
   }
- 
-  const fd = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    fd.append("file", files[i]); 
-  }
- 
-  swal({
-    title: "Procesando archivo(s)...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-        style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-      },
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false,
-  });
- 
-  try {
-    const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
-      method: "POST",
-      body: fd
-    });
- 
-    const respuesta = await res.json(); 
-    swal.close();
- 
-    if (res.ok && Array.isArray(respuesta)) {
-      swal({
-        title: "¡Éxito!",
-        text: respuesta[0],
-        icon: "success",
-        button: "Aceptar",
-      }).then(() => {
-       
+
+  formUpload.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!input || !input.files || input.files.length === 0) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atención",
+        text: "Debes seleccionar al menos un archivo."
       });
-    } else {
-      swal({
-        title: "Error",
-        text: respuesta[0] || "Ocurrió un error inesperado.",
+      return;
+    }
+
+    const fd = new FormData();
+    for (let i = 0; i < input.files.length; i++) {
+      fd.append("file", input.files[i]);
+    }
+
+    Swal.fire({
+      title: "Procesando archivo(s)...",
+      html: '<div class="spinner-border text-primary" role="status"></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    try {
+      const res = await fetch(getAbsolutePath() + "reporteClientesOpe/uploadPEP", {
+        method: "POST",
+        body: fd
+      });
+
+      let respuesta;
+
+      if (res.ok) {
+        respuesta = await res.json();
+      } else {
+        const texto = await res.text();
+        throw new Error(texto || "Error interno del servidor");
+      }
+
+      await Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: respuesta[0] || "Archivo cargado correctamente."
+      });
+
+    } catch (error) {
+      console.error("Error en upload PEP:", error);
+
+      await Swal.fire({
         icon: "error",
-        button: "Aceptar",
+        title: "Error",
+        text: error.message || "Se presentó un error, intente más tarde."
       });
     }
- 
-  } catch (error) {
-    swal.close();
-    console.error("Error en fetch:", error);
-    swal("Se presentó un error, intente más tarde.", {
-      icon: "error",
-      closeOnClickOutside: false,
-    });
-  }
+  });
 });
-
+ 
+ 
+function ocultarTodoProceso() {
+  $("#btnProcesarAuditoriaClientes").hide();
+  $("#btnGenerarClientes").hide();
+  $("#btnGenerarOperaciones").hide();
+  $("#bloqueVistoBueno").hide();
+}
+ 
  
  
  
@@ -401,155 +486,193 @@ function confirmar(valor) {
       else return r.text().then(alert);
     });
 }
-
+ 
 function esFinDeMes(fechaStr) {
     // formato: yyyy-MM-dd
     const fecha = new Date(fechaStr + "T00:00:00");
-
+ 
     const anio = fecha.getFullYear();
     const mes = fecha.getMonth(); // 0–11
     const dia = fecha.getDate();
-
+ 
     const ultimoDia = new Date(anio, mes + 1, 0).getDate();
-
+ 
     return dia === ultimoDia;
 }
  
-function ejecutarVistoBueno() {
-  const fechaInicio = $("#fechaInicio").val();
-  const fechaFin = $("#fechaFin").val();
+async function ejecutarVistoBueno() {
 
-  if (!fechaInicio || !fechaFin) {
-    swal("Error", "Debe seleccionar un rango de fechas válido.", "error");
+  const fechaInicioOper = $("#fechaInicio").val() || $("#fechaInicioMigracion").val();
+  const fechaFinOper = $("#fechaFin").val() || $("#fechaFinMigracion").val();
+  const fechaCorteClientes = $("#fechaFinMigracion").val();
+
+  if (!fechaInicioOper || !fechaFinOper || !fechaCorteClientes) {
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Debe seleccionar un rango de fechas válido."
+    });
     return;
   }
 
-  const anio = fechaInicio.substring(0, 4);  // ← CALCULA AÑO AUTOMÁTICAMENTE
+  const anio = fechaInicioOper.substring(0, 4);
 
-  swal({
+  const confirmar = await Swal.fire({
+    icon: "warning",
     title: "¿Desea registrar el visto bueno global?",
     text: "Esto consolidará los reportes de CLIENTES y OPERACIONES en el histórico.",
-    icon: "warning",
-    buttons: ["Cancelar", "Sí, continuar"],
-    dangerMode: true,
-  }).then((willExecute) => {
-    if (!willExecute) return;
-
-    swal({
-      title: "Registrando visto bueno...",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary"></div>',
-          style: "display:flex;justify-content:center;padding:20px;"
-        }
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false
-    });
-
-fetch("ejecutarVistoBueno", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-        anio,
-        fechaInicioOper: $("#fechaInicio").val(),
-        fechaFinOper: $("#fechaFin").val(),
-        fechaCorteClientes: $("#fechaCorteClientes").val()
-    })
-})
-
-    .then(res => res.json())
-    .then(data => {
-      swal.close();
-      swal({
-        title: data.tipo === "success" ? "¡Éxito!" : "Error",
-        text: data.mensaje,
-        icon: data.tipo,
-        button: "Aceptar"
-      }).then(() => {
-        if (data.tipo === "success") iniciaTblHistorico();
-      });
-    })
-    .catch(err => {
-      swal.close();
-      swal("Error", "No se pudo registrar el visto bueno. Intente más tarde.", "error");
-      console.error("Error en fetch:", err);
-    });
+    showCancelButton: true,
+    confirmButtonText: "Sí, continuar",
+    cancelButtonText: "Cancelar",
+    reverseButtons: true
   });
-}
 
+  if (!confirmar.isConfirmed) return;
+
+  Swal.fire({
+    title: "Registrando visto bueno...",
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  try {
+
+    const res = await fetch("ejecutarVistoBueno", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        anio,
+        fechaInicioOper,
+        fechaFinOper,
+        fechaCorteClientes
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error("Respuesta HTTP inválida");
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      data = { tipo: "error", mensaje: "Respuesta inválida del servidor" };
+    }
+
+    Swal.close();
+
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
+      title: data.tipo === "success" ? "¡Éxito!" : "Error",
+      text: data.mensaje,
+      confirmButtonText: "Aceptar"
+    });
+
+    if (data.tipo === "success") {
+      await fetch("/STD/prevencion/estado-proceso/vobo", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaCorte: fechaCorteClientes })
+      });
+
+      iniciaTblHistorico();
+      await cargarEstadoProceso();
+    }
+
+  } catch (err) {
+
+    Swal.close();
+    console.error("Error en fetch:", err);
+
+    await Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "El visto bueno se registró, pero ocurrió un problema al actualizar la interfaz."
+    });
+  }
+}
+ 
+ 
+ 
 var btnsROpera = "";
 var btnsRCientes = "";
 var cargatblHistorico = "obtHistoricoProcesos";
  
 function iniciaTblHistorico() {
-  url = getAbsolutePath() + "obtHistoricoProcesos";
-  $.getJSON(url, {}, function (data) {
+
+  url = "/STD/prevencion/obtHistoricoProcesos";
+
+  $.getJSON(url, function (data) {
+
     tblHistorico.clear().draw();
 
     if (!data || data.length === 0) {
       console.warn("No se encontraron registros en el historial.");
       $("#sinResultados").removeClass("d-none");
       return;
-    } else {
-      $("#sinResultados").addClass("d-none");
     }
 
-    $.each(data, function (idx, opt) {
-      const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
+    $("#sinResultados").addClass("d-none");
 
-      // Mostrar rango adecuado según el tipo
-      let rangoFechas = "";
-      if (tipo === "CLIENTES") {
-    const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
-    rangoFechas =
-        `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
-     } else if (tipo === "OPERACIONES") {
-        const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
-        const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
-        rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
-      } else {
-        rangoFechas = `<span class="text-muted">Sin rango definido</span>`;
-      }
+	$.each(data, function (idx, opt) {
 
-      const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
-      const confirmado = opt.estatus === 1 ? "Sí" : "No";
-      const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
+	  const tipo = opt.tipoReporte ? opt.tipoReporte.toUpperCase() : "DESCONOCIDO";
 
-      //  Mostrar solo el botón del tipo correspondiente
-      let btn = "";
-      if (tipo === "CLIENTES") {
-        btn = `<button class='btn btn-success btn-sm' title='Descargar histórico de clientes'
-                 onclick='generarHistoricoClientes(${opt.id})'>
-                 <i class='bi bi-file-earmark-person'></i>
-               </button>`;
-      } else if (tipo === "OPERACIONES") {
-        btn = `<button class='btn btn-primary btn-sm' title='Descargar histórico de operaciones'
-                 onclick='generarHistoricoOperaciones(${opt.id})'>
-                 <i class='bi bi-file-earmark-diff'></i>
-               </button>`;
-      } else {
-        btn = `<button class='btn btn-secondary btn-sm' disabled title='Tipo desconocido'>
-                 <i class='bi bi-question-circle'></i>
-               </button>`;
-      }
+	  let rangoFechas = "";
+	  let acciones = "";
+	  const idReporte = opt.idReporte || opt.id || opt.i_reporte || opt.idHistorico;
 
-      tblHistorico.row.add([
-        opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
-        tipo,
-        rangoFechas,
-        usuario,
-        confirmado,
-        fechaVobo,
-        btn
-      ]).draw(false);
-    });
+	  if (tipo === "CLIENTES") {
+	    const fechaFin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+	    rangoFechas = `<span class="text-success fw-bold">Hasta: ${fechaFin}</span>`;
+
+	    acciones = `
+	      <button type="button"
+	              class="btn btn-sm btn-primary"
+	              onclick="generarHistoricoClientes('${idReporte}')">
+	        Descargar
+	      </button>
+	    `;
+	  } else if (tipo === "OPERACIONES") {
+	    const ini = opt.fechaInicio ? opt.fechaInicio.split("T")[0] : "-";
+	    const fin = opt.fechaFin ? opt.fechaFin.split("T")[0] : "-";
+	    rangoFechas = `<span class="text-primary fw-bold">${ini} a ${fin}</span>`;
+
+	    acciones = `
+	      <button type="button"
+	              class="btn btn-sm btn-danger"
+	              onclick="generarHistoricoOperaciones('${idReporte}')">
+	        Descargar
+	      </button>
+	    `;
+	  }
+
+	  const usuario = opt.i_usuario?.vc_nombre_usuario || "Desconocido";
+	  const confirmado = opt.estatus === 1 ? "Sí" : "No";
+	  const fechaVobo = opt.fechaGeneracionvobo ? opt.fechaGeneracionvobo.split("T")[0] : "-";
+
+	  tblHistorico.row.add([
+	    opt.fechaGeneracion ? opt.fechaGeneracion.split("T")[0] : "-",
+	    tipo,
+	    rangoFechas,
+	    usuario,
+	    confirmado,
+	    fechaVobo,
+	    acciones
+	  ]).draw(false);
+
+	});
+
   });
+
 }
-
-
+ 
+ 
  
 function generarHistoricoOperaciones(idBuscarHO) {
   fetch("generarRptHistoricoOperaciones", {
@@ -589,122 +712,163 @@ function generarHistoricoClientes(idBuscarHO) {
  
 const idMigracion = 1;
 const BASE_URL = "/STD/prevencion";
-
+ 
 async function cargarEstadoInicial() {
     try {
         const res = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
         if (!res.ok) throw new Error("No se pudo obtener el estado de la migración");
+
         const data = await res.json();
+
+        // Guardar estado global para usarlo en renderProcesoUI
+        estadoMigracionGlobal = data;
 
         const checkbox = document.getElementById("estatusSwitch");
         const label = document.getElementById("labelEstado");
-        checkbox.checked = data.estatus === 1;
-        label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
 
-        const btnEjecutar = document.getElementById("btnEjecutarMigracion");
-        if (btnEjecutar) {
-            const enEjecucion = data.ejecuta === 1;
-            btnEjecutar.disabled = enEjecucion;
-            btnEjecutar.classList.toggle("disabled", enEjecucion);
+        if (checkbox && label) {
+            checkbox.checked = data.estatus === 1;
+            label.innerText = data.estatus === 1 ? "Activo" : "Inactivo";
         }
 
-        // Agrega esta línea para mostrar el mensaje siempre
-        mostrarMensajeMigracion(data);
+        // Control de botones y mensaje
+        renderEstadoMigracion(data);
+        renderAvisoMigracion(data);
 
     } catch (error) {
         console.error("Error al cargar estado inicial:", error);
     }
 }
-
-
+ 
+ 
 async function activarMigracion() {
+ 
+    const inputInicio = document.getElementById("fechaInicioMigracion");
+    const inputFin    = document.getElementById("fechaFinMigracion");
+ 
+    const fechaInicio = inputInicio ? inputInicio.value : "";
+    const fechaFin    = inputFin ? inputFin.value : "";
+ 
+    if (!fechaFin) {
+        swal("Fecha requerida", "Debe seleccionar la fecha fin.", "warning");
+        return;
+    }
+ 
     const btn = document.getElementById("btnEjecutarMigracion");
-
-    if (btn.disabled) return;
-
+ 
+    // 🔒 Bloqueo inmediato
     btn.disabled = true;
     btn.classList.add("disabled");
-
+ 
     try {
         const res = await fetch(`${BASE_URL}/activar-ejecucion/${idMigracion}`, {
-            method: "POST"
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                fechaInicio,
+                fechaFin
+            })
         });
-
-        if (res.ok) {
-            Swal.fire({
-                title: "¡Éxito!",
-                text: "Migración programada correctamente.",
-                icon: "success",
-                timer: 2000,
-                showConfirmButton: false
-            });
-
-            // Re-consultar para obtener mensaje actualizado
-            setTimeout(async () => {
-                const estado = await fetch(`${BASE_URL}/obtener-migracion/${idMigracion}`);
-                if (estado.ok) {
-                    const data = await estado.json();
-                    mostrarMensajeMigracion(data);
-                }
-                cargarEstadoInicial(); // También actualiza estados visuales
-            }, 2100);
-
-        } else {
-            Swal.fire("Error", "No se pudo programar la migración", "error");
-            btn.disabled = false;
-            btn.classList.remove("disabled");
+ 
+        if (!res.ok) {
+            throw new Error("Error backend");
         }
-
+ 
+        // ✅ ALERTA SIN ROMPER EJECUCIÓN
+        swal({
+            title: "Migración activada",
+            text: "La ejecución fue programada correctamente.",
+            icon: "success",
+            timer: 2000
+        });
+ 
+        // 🔄 Releer estado REAL (ejecuta = 1)
+        cargarEstadoInicial();
+ 
     } catch (error) {
-        console.error("→ Error de conexión:", error);
-        Swal.fire("Error", "Falló la conexión con el servidor", "error");
+        console.error(error);
+ 
+        // 🔓 SOLO revertir si FALLA el backend
         btn.disabled = false;
         btn.classList.remove("disabled");
+ 
+        swal("Error", "No se pudo activar la migración.", "error");
     }
 }
-
-
+ 
+ 
+ 
 async function cambiarEstatus(checkbox) {
     const estatus = checkbox.checked ? 1 : 0;
     const label = document.getElementById("labelEstado");
-
+ 
     try {
         const res = await fetch(`${BASE_URL}/cambiar-estatus`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `id=${idMigracion}&estatus=${estatus}`
         });
-
+ 
         if (res.ok) {
+            // 🔴 AQUÍ CAMBIA INACTIVO / ACTIVO
             label.innerText = estatus === 1 ? "Activo" : "Inactivo";
-            Swal.fire({ title: "¡Éxito!", text: `Estatus cambiado a ${estatus === 1 ? 'Activo' : 'Inactivo'}`, icon: "success", timer: 2000, showConfirmButton: false });
+ 
+            Swal.fire({
+                title: "¡Éxito!",
+                text: `Estatus cambiado a ${estatus === 1 ? "Activo" : "Inactivo"}`,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
         } else {
             Swal.fire("Error", "No se pudo actualizar el estatus", "error");
-            checkbox.checked = !checkbox.checked;
+            checkbox.checked = !checkbox.checked; // rollback
         }
     } catch (error) {
         console.error("Error:", error);
         Swal.fire("Error", "Falló la conexión con el servidor", "error");
-        checkbox.checked = !checkbox.checked;
+        checkbox.checked = !checkbox.checked; // rollback
     }
 }
-
- window.onload = cargarEstadoInicial;
+ 
+ 
+// renderEstadoMigracion(data);
+// renderAvisoMigracion(data);
+ 
+ 
+ // window.onload = cargarEstadoInicial;
 // Para cargar mensaje de resultado en pantalla
-function mostrarMensajeMigracion(data) {
+function renderAvisoMigracion(data) {
+
     const mensaje = document.getElementById("mensajeResultado");
     if (!mensaje) return;
 
-    mensaje.innerText = "";
-    if (data.mensajeResultado) {
-        mensaje.innerText = data.mensajeResultado;
+    let texto = "";
+    let clase = "text-muted";
+
+    if (data.ejecuta === 1) {
+        texto = "⏳ Migración en proceso…";
+        clase = "text-warning";
+    } 
+    else if (data.ejecuta === 2) {
+        texto = data.mensajeResultado || "❌ Error en migración.";
+        clase = "text-danger";
     }
+    else if (data.ejecuta === 0 && data.mensajeResultado) {
+        texto = `✔ ${data.mensajeResultado}`;
+        clase = "text-success";
+    }
+
     if (data.cron) {
-        mensaje.innerText += ` (Siguiente ejecución: ${data.cron})`;
+        texto += ` (Programada: ${data.cron})`;
     }
+
+    mensaje.className = `mt-2 fw-bold ${clase}`;
+    mensaje.innerText = texto;
     mensaje.style.display = "block";
 }
-
+ 
+ 
 //  Función para mostrar/ocultar opciones según el tipo de reporte seleccionado
 function mostrarOpcionesPorTipo() {
   const tipo = document.getElementById("tipoReporte").value;
@@ -713,14 +877,14 @@ function mostrarOpcionesPorTipo() {
   const btnClientes = document.getElementById("btnProcesarClientes");
   const btnOperaciones = document.getElementById("btnProcesarOperaciones");
   const bloqueVistoBueno = document.getElementById("bloqueVistoBueno"); // nuevo
-
+ 
   // Reiniciar visibilidad
   bloqueClientes.style.display = "none";
   bloqueOperaciones.style.display = "none";
   bloqueVistoBueno.style.display = "none"; // Ocultar por defecto
   btnClientes.disabled = true;
   btnOperaciones.disabled = true;
-
+ 
   if (tipo === "clientes") {
     bloqueClientes.style.display = "block";
     btnClientes.disabled = false;
@@ -731,198 +895,196 @@ function mostrarOpcionesPorTipo() {
     bloqueVistoBueno.style.display = "block"; // mostrar solo para operaciones
   }
 }
-
+ 
 // ========================================================
 //  Generar reporte de CLIENTES filtrado por año
 // ========================================================
 // Función completa para generar reporte de clientes
 async function generarReporteClientes() {
-    const fechaCorte = document.getElementById("fechaCorteClientes")
-        ? document.getElementById("fechaCorteClientes").value
-        : null;
+  const fechaCorte = document.getElementById("fechaFinMigracion").value;
 
-    if (!fechaCorte) {
-        swal("Debe seleccionar una fecha de corte.", { icon: "warning" });
-        return;
+  if (!fechaCorte) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "Debe seleccionar la fecha de corte."
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: "Generando reporte de clientes...",
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
     }
+  });
 
-    // ✔ Validar fin de mes correcto
-    if (!esFinDeMes(fechaCorte)) {
-        swal("La fecha seleccionada NO es fin de mes. Debe ser el último día del mes.", {
-            icon: "error"
-        });
-        return;
-    }
-
-    swal({
-        title: "Generando reporte de clientes...",
-        content: {
-            element: "div",
-            attributes: {
-                innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-                style: "display:flex;justify-content:center;padding:20px;"
-            }
-        },
-        buttons: false,
-        closeOnClickOutside: false,
-        closeOnEsc: false
+  try {
+    const res = await fetch("generarRptClientesPorFechaCorte", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaCorte })
     });
 
-    try {
-        // ✔ Enviar fecha al backend
-        const res = await fetch("generarRptClientesPorFechaCorte", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ fechaCorte })
-        });
-
-        if (!res.ok) throw new Error("Error generando el reporte.");
-
-        const respuesta = await res.json();
-        const url = respuesta[0];
-
-        // ✔ Abrir el archivo generado
-        const base = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4);
-        window.open(base + url);
-        window.focus();
-
-        swal.close();
-        swal({
-            title: "¡Éxito!",
-            text: "El reporte de clientes se generó correctamente.",
-            icon: "success",
-            button: "Aceptar"
-        }).then(() => {
-            const confirmacionDiv = document.getElementById("confirmacionClientes");
-            if (confirmacionDiv) confirmacionDiv.style.display = "block";
-
-            // Resetear radios
-            $("input[name='clientes_correcto']").prop("checked", false);
-
-            // ✔ Evento SI
-            $("#clientesSi").off("change").on("change", function () {
-                if ($(this).is(":checked")) {
-                    swal({
-                        title: "Continuar con Operaciones",
-                        text: "Ahora puede generar el reporte de operaciones.",
-                        icon: "info",
-                        button: "Aceptar"
-                    }).then(() => {
-                        $("#tipoReporte").val("operaciones").trigger("change");
-                        confirmacionDiv.style.display = "none";
-                    });
-                }
-            });
-
-            // ✔ Evento NO
-            $("#clientesNo").off("change").on("change", function () {
-                if ($(this).is(":checked")) {
-                    swal({
-                        title: "Volver a cargar archivo",
-                        text: "Revisa el archivo y vuelve a generar el reporte.",
-                        icon: "warning",
-                        button: "Aceptar"
-                    }).then(() => {
-                        $("#archivos-tab").click();
-                        confirmacionDiv.style.display = "none";
-                    });
-                }
-            });
-        });
-
-    } catch (error) {
-        swal.close();
-        console.error("❌ Error al generar el reporte de clientes:", error);
-        swal({
-            title: "Error",
-            text: "Ocurrió un problema al generar el reporte de clientes.",
-            icon: "error",
-            button: "Aceptar"
-        });
+    if (!res.ok) {
+      throw new Error("No se pudo generar el reporte.");
     }
+
+    const respuesta = await res.json();
+    const url = respuesta[0];
+
+    const base = window.location.href.substring(
+      0,
+      window.location.href.indexOf("STD/") + 4
+    );
+
+    window.open(base + url);
+    window.focus();
+
+    await fetch("/STD/prevencion/estado-proceso/clientes-descargado", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    });
+
+    await cargarEstadoProceso();
+
+    Swal.close();
+
+    await Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      text: "Reporte de clientes generado."
+    });
+
+  } catch (e) {
+    Swal.close();
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo generar el reporte."
+    });
+
+    console.error("Error en generarReporteClientes:", e);
+  }
 }
 
-
+ 
+ 
+ 
 // ========================================================
 //  Procesar Auditoría de CLIENTES (llama SP en backend)
 // ========================================================
 async function procesarAuditoriaClientes() {
-    const fechaCorte = document.getElementById("fechaCorteClientes").value;
+  const fechaCorte = document.getElementById("fechaFinMigracion").value;
 
-    if (!fechaCorte) {
-        swal("Debe seleccionar la fecha de corte.", { icon: "warning" });
-        return;
+  if (!fechaCorte) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "Debe seleccionar la fecha de corte."
+    });
+    return;
+  }
+
+  if (fechaCorte < "2024-01-01") {
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "La fecha debe ser del año 2024 en adelante."
+    });
+    return;
+  }
+
+  if (!esFinDeMes(fechaCorte)) {
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "La fecha seleccionada NO es el último día del mes."
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: "Procesando auditoría...",
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
     }
+  });
 
-    // Validar solo fechas >= 2024
-    if (fechaCorte < "2024-01-01") {
-        swal("La fecha debe ser del año 2024 en adelante.", { icon: "error" });
-        return;
-    }
-
-    // Validar fin de mes
-    if (!esFinDeMes(fechaCorte)) {
-        swal("La fecha seleccionada NO es el último día del mes.", { icon: "error" });
-        return;
-    }
-
-    swal({
-        title: "Procesando auditoría...",
-        content: {
-            element: "div",
-            attributes: { innerHTML: '<div class="spinner-border text-primary"></div>' }
-        },
-        buttons: false
+  try {
+    const res = await fetch("procesarAuditoria", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fechaCorte })
     });
 
-    try {
-        const res = await fetch("procesarAuditoria", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ fechaCorte })
-        });
+    const data = await res.json();
 
-        const data = await res.json();
+    Swal.close();
 
-        swal.close();
-        swal({
-            title: data.tipo === "success" ? "¡Éxito!" : "Error",
-            text: data.mensaje,
-            icon: data.tipo,
-            button: "Aceptar"
-        });
+    await Swal.fire({
+      icon: data.tipo === "success" ? "success" : "error",
+      title: data.tipo === "success" ? "¡Éxito!" : "Error",
+      text: data.mensaje,
+      confirmButtonText: "Aceptar"
+    });
 
-    } catch (error) {
-        swal.close();
-        swal("Ocurrió un error al procesar la auditoría", { icon: "error" });
+    if (data.tipo === "success") {
+      await fetch("/STD/prevencion/estado-proceso/auditoria-ok", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ fechaCorte })
+      });
+
+      await cargarEstadoProceso();
     }
+
+  } catch (error) {
+    Swal.close();
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ocurrió un error al procesar la auditoría."
+    });
+  }
 }
-
-
+ 
 // ========================================================
 //  Generar reporte de OPERACIONES filtrado por rango de fechas
 // ========================================================
 async function generarReporteOperaciones() {
-  const fechaInicio = document.getElementById("fechaInicio")?.value;
-  const fechaFin = document.getElementById("fechaFin")?.value;
+
+  const fechaInicio = document.getElementById("fechaInicioMigracion").value;
+  const fechaFin    = document.getElementById("fechaFinMigracion").value;
 
   if (!fechaInicio || !fechaFin) {
-    swal("Debe seleccionar un rango de fechas antes de generar el reporte.", { icon: "warning" });
+    await Swal.fire({
+      icon: "warning",
+      title: "Error",
+      text: "Debe seleccionar fecha inicio y fecha fin."
+    });
     return;
   }
 
-  swal({
+  Swal.fire({
     title: "Generando reporte de operaciones...",
-    content: {
-      element: "div",
-      attributes: {
-        innerHTML: '<div class="spinner-border text-primary" role="status"></div>',
-        style: "display:flex;justify-content:center;padding:20px;"
-      }
-    },
-    buttons: false,
-    closeOnClickOutside: false,
-    closeOnEsc: false
+    html: '<div class="spinner-border text-primary"></div>',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
   });
 
   try {
@@ -932,34 +1094,284 @@ async function generarReporteOperaciones() {
       body: new URLSearchParams({ fechaInicio, fechaFin })
     });
 
-    if (!res.ok) throw new Error("Error generando el reporte.");
+    if (!res.ok) {
+      throw new Error("No se pudo generar el reporte.");
+    }
 
     const respuesta = await res.json();
     const url = respuesta[0];
 
-    // Abrir el reporte Jasper generado
-    window.open(
-      window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + url
+    const base = window.location.href.substring(
+      0,
+      window.location.href.indexOf("STD/") + 4
     );
+
+    window.open(base + url);
     window.focus();
 
-    swal.close();
-    swal({
-      title: "¡Éxito!",
-      text: "El reporte de operaciones se generó correctamente.",
+    await fetch("/STD/prevencion/estado-proceso/operaciones-descargado", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        fechaCorte: fechaFin
+      })
+    });
+
+    await cargarEstadoProceso();
+
+    Swal.close();
+
+    await Swal.fire({
       icon: "success",
-      button: "Aceptar"
+      title: "¡Éxito!",
+      text: "Reporte de operaciones generado."
     });
-  } catch (error) {
-    console.error("❌ Error al generar el reporte de operaciones:", error);
-    swal.close();
-    swal({
-      title: "Error",
-      text: "Ocurrió un problema al generar el reporte de operaciones.",
+
+  } catch (e) {
+    Swal.close();
+
+    await Swal.fire({
       icon: "error",
-      button: "Aceptar"
+      title: "Error",
+      text: "No se pudo generar el reporte."
     });
+
+    console.error("Error en generarReporteOperaciones:", e);
   }
 }
+ 
+ 
+ 
+function renderEstadoMigracion(data) {
 
+    if (!data) return;
 
+    const btnEjecutar = document.getElementById("btnEjecutarMigracion");
+    const btnAuditoria = document.getElementById("btnProcesarAuditoriaClientes");
+
+    const estado = data.ejecuta; // 0,1,2
+
+    if (btnEjecutar) {
+
+        // 🔵 EN EJECUCIÓN → SOLO DESHABILITAR
+        if (estado === 1) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = true;
+            btnEjecutar.classList.remove("btn-danger");
+            btnEjecutar.classList.add("btn-secondary");
+            btnEjecutar.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
+        }
+
+        // 🟢 FINALIZADO OK
+        else if (estado === 0 || estado === null) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = false;
+            btnEjecutar.classList.remove("btn-danger", "btn-secondary");
+            btnEjecutar.classList.add("btn-outline-primary");
+            btnEjecutar.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
+        }
+
+        // 🟡 ERROR → REINTENTAR
+        else if (estado === 2) {
+            btnEjecutar.style.display = "inline-block";
+            btnEjecutar.disabled = false;
+            btnEjecutar.classList.remove("btn-outline-primary", "btn-secondary");
+            btnEjecutar.classList.add("btn-danger");
+            btnEjecutar.innerHTML = '<i class="fas fa-exclamation-triangle"></i> REINTENTAR';
+        }
+    }
+
+    // 🟡 BOTÓN AMARILLO (Procesar Auditoría)
+    if (btnAuditoria) {
+
+    const enProceso = data.ejecuta === 1;
+    const hayError  = data.ejecuta === 2;
+
+    if (!enProceso && !hayError && data.ejecuta === 0) {
+        btnAuditoria.style.display = "inline-block";
+    } else {
+        btnAuditoria.style.display = "none";
+    }
+}
+}
+ 
+function renderProcesoUI(estado) {
+
+  if (!estado) return;
+
+  // Botón amarillo SOLO si:
+  // - proceso ejecutado
+  // - migración NO esté en proceso
+  if (estado.ejecutado && estadoMigracionGlobal?.ejecuta !== 1) {
+      $("#btnProcesarAuditoriaClientes").show();
+  } else {
+      $("#btnProcesarAuditoriaClientes").hide();
+  }
+
+  if (estado.auditoriaOk) {
+    $("#btnGenerarClientes").show();
+    $("#btnGenerarOperaciones").show();
+  }
+
+  if (estado.operacionesDescargado && !estado.operacionesVobo) {
+    $("#bloqueVistoBueno").show();
+  }
+}
+ 
+ 
+ 
+document.addEventListener("DOMContentLoaded", () => {
+  const btnEjecutarMigracion = document.getElementById("btnEjecutarMigracion");
+
+  if (btnEjecutarMigracion) {
+    btnEjecutarMigracion.addEventListener("click", async function () {
+      const btn = this;
+      const fechaCorte = $("#fechaFinMigracion").val();
+
+      if (!fechaCorte) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Atención",
+          text: "Debe seleccionar la fecha de corte."
+        });
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.remove("btn-outline-primary");
+      btn.classList.add("btn-secondary");
+      btn.innerHTML = '<i class="fas fa-clock"></i> EN PROCESO';
+
+      Swal.fire({
+        title: "Iniciando proceso...",
+        html: '<div class="spinner-border text-primary"></div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      try {
+        const activar = await fetch(`/STD/prevencion/activar-ejecucion/${idMigracion}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            fechaInicio: $("#fechaInicioMigracion").val() || "",
+            fechaFin: fechaCorte
+          })
+        });
+
+        if (!activar.ok) throw new Error("Error activando migración");
+
+        const ejecutar = await fetch("/STD/prevencion/estado-proceso/ejecutar", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            fechaInicio: $("#fechaInicioMigracion").val(),
+            fechaCorte: $("#fechaFinMigracion").val()
+          })
+        });
+
+        if (!ejecutar.ok) throw new Error("Error ejecutando proceso");
+
+        Swal.close();
+        await cargarEstadoInicial();
+        await cargarEstadoProceso();
+
+      } catch (e) {
+        Swal.close();
+        btn.disabled = false;
+        btn.classList.remove("btn-secondary");
+        btn.classList.add("btn-outline-primary");
+        btn.innerHTML = '<i class="fas fa-play"></i> EJECUTAR';
+
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo iniciar el proceso."
+        });
+
+        console.error(e);
+      }
+    });
+  }
+});
+ 
+document.addEventListener("DOMContentLoaded", () => {
+ 
+  const btnAuditoria = document.getElementById("btnProcesarAuditoriaClientes");
+ 
+  if (!btnAuditoria) {
+    console.warn("⚠️ No existe btnProcesarAuditoriaClientes en el DOM");
+    return;
+  }
+ 
+  btnAuditoria.addEventListener("click", async function () {
+    await procesarAuditoriaClientes();
+  });
+ 
+});
+ 
+ 
+async function cargarEstadoProceso() {
+ 
+  const res = await fetch("/STD/prevencion/estado-proceso");
+ 
+  // 🔴 NO HAY PROCESO ACTIVO → estado final válido
+  if (res.status === 204 || res.status === 404) {
+    ocultarTodoProceso();
+    return;
+  }
+ 
+  if (!res.ok) return;
+ 
+  const estado = await res.json();
+ 
+  // 🔹 RECONSTRUIR FECHAS (si existen)
+  if (estado?.fechaInicio) {
+    $("#fechaInicioMigracion").val(estado.fechaInicio);
+  }
+ 
+  if (estado?.fechaCorte) {
+    $("#fechaFinMigracion").val(estado.fechaCorte);
+  }
+ 
+  ocultarTodoProceso();
+  renderProcesoUI(estado);
+}
+ 
+ 
+ 
+ 
+ 
+$(document).ready(async () => {
+ 
+  // 1️⃣ Cargar estado de migración (switch + botón)
+  await cargarEstadoInicial();
+ 
+  // 2️⃣ Reconstruir proceso PLD desde BD
+  await cargarEstadoProceso();
+ 
+  // 3️⃣ Cargar histórico
+  iniciaTblHistorico();
+});
+ 
+ 
+ 
+function existeElemento(id) {
+    return document.getElementById(id) !== null;
+}
+ 
+document.addEventListener("DOMContentLoaded", () => {
+ 
+    const switchEstatus = document.getElementById("estatusSwitch");
+ 
+    if (switchEstatus) {
+        switchEstatus.addEventListener("change", function () {
+            cambiarEstatus(this);
+        });
+    }
+ 
+});

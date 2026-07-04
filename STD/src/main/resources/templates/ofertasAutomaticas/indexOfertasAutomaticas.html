@@ -33,11 +33,12 @@
 						</div>
 						<div class="col-lg-2">
 							<label>Ver Documentos</label>					
-							<button class='btn btn-info' tabindex='0' data-bs-toggle='modal'
-								title='Adjuntar Archivos' data-bs-target='#modalAdjuntos' aria-controls='table-datatable' type='button'
-								onclick='adjuntarFiles(2)' 
-					 			data-tooltip='Add'>
-								<i class='bi bi-files'></i>
+							<button class="btn btn-info"
+							        tabindex="0"
+							        title="Adjuntar Archivos"
+							        type="button"
+							        onclick="adjuntarFiles(2)">
+							    <i class="bi bi-files"></i>
 							</button>
 							
 						</div>
@@ -480,8 +481,11 @@
 			</div>
 			<!--Fin Modal Detalle Campaña-->
 			<!-- Inicio Ajuntos -->
-			<div class="modal fade" id="modalAdjuntos" data-backdrop="static" tabindex="-1" data-keyboard="false"
-				role="dialog">
+			<div class="modal fade" id="modalAdjuntos"
+			     data-backdrop="static"
+			     tabindex="-1"
+			     data-keyboard="false"
+			     role="dialog">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
 					<div class="modal-content">
 						<fieldset class="border p-2">
@@ -589,17 +593,21 @@
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script th:src="@{/js/jquery-3.5.1.js}"></script>
-		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-		<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.10/dist/sweetalert2.all.min.js"></script>-->
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
-		<script th:src="@{/js/ofertasAutomaticas/parametrosFidelidad.js}"></script>
-		<script th:src="@{/js/ofertasAutomaticas/parametrosCampanaVIP.js}"></script>
-		<script th:src="@{/js/ofertasAutomaticas/ofertasAutomaticas.js}"></script>
+
+	<script th:src="@{/js/jquery-3.5.1.js}"></script>
+	<script th:src="@{/js/bootstrap.min.js}"></script>
+
+	<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+	<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+	<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+	<script th:src="@{/js/ofertasAutomaticas/dataTableClasificacion.js}"></script>
+	<script th:src="@{/js/ofertasAutomaticas/parametrosFidelidad.js}"></script>
+	<script th:src="@{/js/ofertasAutomaticas/parametrosCampanaVIP.js}"></script>
+	<script th:src="@{/js/ofertasAutomaticas/ofertasAutomaticas.js}"></script>
 	</th:block>
 </body>
 

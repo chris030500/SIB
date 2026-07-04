@@ -4,10 +4,10 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -46,72 +46,75 @@ public class LoginController extends HttpServlet {
 //		BasicConfigurator.configure();
 //	}
 	
-    @GetMapping("/login")
-    public String login(@RequestParam(value="error", required = false) String error, HttpServletRequest request,
-            Model model, Principal principal, RedirectAttributes flash, HttpSession session) {
-        logger.info("Principal: " + principal);
-        logger.debug("cargando index");
-        String sessionStatus = (String) session.getAttribute("sessionStatus");
-        System.out.println("sessionStatus: " + sessionStatus);
-        //HttpSession misession= request.getSession();
-        //System.out.println("missesion: " + misession.getAttribute(principal.toString()));
-        //System.out.println("Principal: " + principal);
-        if ("activo".equals(sessionStatus)) {
-            // La sesión está activa
-        	System.out.println("La sesión está activa");
-        } else {
-            // La sesión está inactiva
-        	System.out.println("La sesión está inactiva");
-        }
-        
-        if(principal != null) {
-            
-            logger.info("Principal != null");
-            return "redirect:/";
-        }
-        //model.addAttribute("error", "Mensaje de error");
+	@GetMapping("/login")
+	public String login(@RequestParam(value="error", required = false) String error,
+	        HttpServletRequest request,
+	        Model model,
+	        Principal principal,
+	        RedirectAttributes flash,
+	        HttpSession session) {
 
-        
-        if (request.getSession().getAttribute("error") != null) {
-            model.addAttribute("error", request.getSession().getAttribute("error"));
-            request.getSession().removeAttribute("error"); // Eliminar el mensaje de error anterior
-        }
-        
-        return "login";
-    }
+	    logger.info("Principal: " + principal);
+	    logger.debug("cargando login");
+
+	    if ("usuarioBloqueado".equals(error)) {
+	        model.addAttribute("error", "Usuario bloqueado. Favor de comunicarse con el administrador.");
+	    }
+
+	    if (request.getSession().getAttribute("error") != null) {
+	        model.addAttribute("error", request.getSession().getAttribute("error"));
+	        request.getSession().removeAttribute("error");
+	    }
+
+	    return "login";
+	}
 	
 	@GetMapping("/cerrar")
 	public String cerrar(HttpServletRequest request, HttpServletResponse response) {
-		//System.out.println("Controller logout");
-		logger.info("Ejecutando logout");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		loginService.spDesactivarSesion(auth.getName());
-		
-		// Obteniendo  informacion del usuario con una consulta por por username
-		Usuario usuario = usuarioService.findByNombre(auth.getName());
-		int estatus = usuario.getPk_id_usuario();
-		// Setenado valores al modelo Acceso
-		Acceso acceso = new Acceso();
-		acceso.setDt_fecha_registro(new Date());
-		acceso.setI_cod_accion(3);
-		acceso.setI_id_usuario(estatus);
-		acceso.setVc_descripci("Salida del Sistema");
-		LocalDateTime locaDate = LocalDateTime.now();
-		acceso.setVc_hora_registro(locaDate.getHour()  + ":"+ locaDate.getMinute() +":"+locaDate.getSecond());
-		acceso.setVc_host_remoto(request.getRemoteHost());
-		acceso.setVc_ip_remoto(request.getRemoteAddr());
-		acceso.setVc_nom_servidor(request.getServerName());
-		acceso.setVc_usuario(auth.getName());
-		//Guardanto los valores de acceso en la base de datos
-		accesoService.save(acceso);
-		System.out.println("Acceso registrado en bitacora correctamente");
-		
-		if(auth != null) {
-			//System.out.println("auth != null");
-			logger.info("auth != null");
-			new SecurityContextLogoutHandler().logout(request, response, auth);
-		}
-		return "redirect:/";
+
+	    logger.info("Ejecutando logout");
+
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+	    if (auth != null && auth.isAuthenticated()) {
+
+	        String username = auth.getName();
+
+	        loginService.spDesactivarSesion(username);
+
+	        Usuario usuario = usuarioService.findByNombre(username);
+
+	        if (usuario != null) {
+	            Acceso acceso = new Acceso();
+	            acceso.setDt_fecha_registro(new Date());
+	            acceso.setI_cod_accion(3);
+	            acceso.setI_id_usuario(usuario.getPk_id_usuario());
+	            acceso.setVc_descripci("Salida del Sistema");
+
+	            LocalDateTime locaDate = LocalDateTime.now();
+	            acceso.setVc_hora_registro(
+	                locaDate.getHour() + ":" + locaDate.getMinute() + ":" + locaDate.getSecond()
+	            );
+
+	            acceso.setVc_host_remoto(request.getRemoteHost());
+	            acceso.setVc_ip_remoto(request.getRemoteAddr());
+	            acceso.setVc_nom_servidor(request.getServerName());
+	            acceso.setVc_usuario(username);
+
+	            accesoService.save(acceso);
+	            logger.info("Acceso registrado en bitácora correctamente");
+	        }
+
+	        new SecurityContextLogoutHandler().logout(request, response, auth);
+
+	        if (request.getSession(false) != null) {
+	            request.getSession(false).invalidate();
+	        }
+
+	        SecurityContextHolder.clearContext();
+	    }
+
+	    return "redirect:/login?logout";
 	}
 	
 	

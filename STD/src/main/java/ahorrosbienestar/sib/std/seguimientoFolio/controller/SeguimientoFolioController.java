@@ -129,30 +129,43 @@ public class SeguimientoFolioController {
 	 * @return
 	 */
 	@GetMapping("/buscarActividadesxEmpleado")
-	public ResponseEntity<?> buscarActividadesPlan(@RequestParam("idFolio") Integer idFolio,@RequestParam("estatus") Integer estatus) {
-		
-		try {
-//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//			UserDetails userDetails = null;
-//			if (principal instanceof UserDetails) {
-//				userDetails = (UserDetails) principal;
-//			}
-//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			List<ActividadesPA> listaActividades = null;
-			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
-				listaActividades = catalogosCEService.buscarActividadesSupervisor(idFolio, usuario.get(0).getI_id_empleado(),usuario.get(0).getPk_id_usuario(),estatus);
-			}else if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo))
-				listaActividades = catalogosCEService.buscarActividades(idFolio,estatus);
-			else{
-				listaActividades = catalogosCEService.buscarActividadesxEmpleado(idFolio, usuario.get(0).getI_id_empleado(),estatus);
-			}
-			
-			return ResponseEntity.ok((listaActividades != null)?listaActividades:0);
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return null;
-		}
+	public ResponseEntity<?> buscarActividadesPlan(
+	        @RequestParam("idFolio") Integer idFolio,
+	        @RequestParam("estatus") Integer estatus) {
+
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            return ResponseEntity.status(401).body("Usuario no autenticado.");
+	        }
+
+	        List<ActividadesPA> listaActividades = null;
+	        String rol = usuarioAutenticado.getRol_idRol().getVc_nombre_rol();
+
+	        if (rol.equals(rolAdmin) || rol.equals(rolResponsable)) {
+	            listaActividades = catalogosCEService.buscarActividadesSupervisor(
+	                    idFolio,
+	                    usuarioAutenticado.getI_id_empleado(),
+	                    usuarioAutenticado.getPk_id_usuario(),
+	                    estatus
+	            );
+	        } else if (rol.equals(rolMonitoreo)) {
+	            listaActividades = catalogosCEService.buscarActividades(idFolio, estatus);
+	        } else {
+	            listaActividades = catalogosCEService.buscarActividadesxEmpleado(
+	                    idFolio,
+	                    usuarioAutenticado.getI_id_empleado(),
+	                    estatus
+	            );
+	        }
+
+	        return ResponseEntity.ok((listaActividades != null) ? listaActividades : 0);
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
 	}
 	/**
 	 * 
@@ -170,19 +183,19 @@ public class SeguimientoFolioController {
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
 			SeguimientoFolio altaSeguimiento = new SeguimientoFolio();
 			LocalDate fecha = LocalDate.now();
 			
 			altaSeguimiento.setDt_fecha_registro(fecha);
 			altaSeguimiento.setI_planaccion(idActividad);
-			altaSeguimiento.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+			altaSeguimiento.setI_usuario_registro(usuarioAutenticado.getPk_id_usuario());
 			altaSeguimiento.setVc_desc_seguimiento(desc_seguimiento);
 			altaSeguimiento.setI_confirmacion_responsable(estatus);
 			
@@ -218,14 +231,14 @@ public class SeguimientoFolioController {
 		String mensaje ="Se Actualizo Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			seguimientoFolioService.modificarSeguimiento(idSeguimiento,desc_seguimiento,estatus,usuario.get(0).getPk_id_usuario());
+			seguimientoFolioService.modificarSeguimiento(idSeguimiento,desc_seguimiento,estatus,usuarioAutenticado.getPk_id_usuario());
 			if(estatus == 1) {
 				catalogosCEService.actEstatus(idActividad,3,1);
 				correoCSOService.registrarCorreo(idActividad,2);
@@ -368,81 +381,115 @@ public class SeguimientoFolioController {
 			return ResponseEntity.ok(respuesta);
 		}
 	}
-	public int datosArchivo(String urlArchivo,String idFolio, String nombreArchivo){
-		Integer estatus = 1;
-		Integer respuesta=0;
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			LocalDate fecha = LocalDate.now();
-			ArchivosFolios alta = new ArchivosFolios();
-			alta.setI_folio(Integer.parseInt(idFolio));
-			alta.setDt_fecha_registro(fecha);
-			alta.setI_estatus(estatus);
-			alta.setVc_ruta_docto(urlArchivo);
-			alta.setVc_nombre_docto(nombreArchivo);
-			alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
-			
-			
-			ArchivosFolios registro = archivosFoliosService.registrar(alta);
-			
-			if(registro.getPk_id_archivo() > 0) {
-				respuesta = 1;
-			}else {
-				respuesta = 0;
-			}
-			return respuesta;
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return 0;
-		}
+	public int datosArchivo(String urlArchivo, String idFolio, String nombreArchivo) {
+	    Integer estatus = 1;
+	    Integer respuesta = 0;
+
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            logger.warn("Usuario no autenticado.");
+	            return 0;
+	        }
+
+	        LocalDate fecha = LocalDate.now();
+
+	        ArchivosFolios alta = new ArchivosFolios();
+	        alta.setI_folio(Integer.parseInt(idFolio));
+	        alta.setDt_fecha_registro(fecha);
+	        alta.setI_estatus(estatus);
+	        alta.setVc_ruta_docto(urlArchivo);
+	        alta.setVc_nombre_docto(nombreArchivo);
+	        alta.setI_empleado_registro(usuarioAutenticado.getI_id_empleado());
+
+	        ArchivosFolios registro = archivosFoliosService.registrar(alta);
+
+	        if (registro.getPk_id_archivo() > 0) {
+	            respuesta = 1;
+	        }
+
+	        return respuesta;
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return 0;
+	    }
 	}
 	
 	@GetMapping("/obtFolios")
-	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
-		try {
-//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//			UserDetails userDetails = null;
-//			if (principal instanceof UserDetails) {
-//				userDetails = (UserDetails) principal;
-//			}
-//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			List<ListaFolioXEmpleado> listaFolio = null;
-			
-			if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolAdmin) || this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolResponsable)) {
-				listaFolio = catalogosCEService.listaActividadPASupervisor(this.usuario.get(0).getI_id_empleado(),this.usuario.get(0).getPk_id_usuario(),estatus);
-			}else if(this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equals(rolMonitoreo)){
-				listaFolio = catalogosCEService.listaActividades(estatus);
-			}else {
-				listaFolio = catalogosCEService.listaActividadPAXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);
-			}
+	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus) {
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
 
-			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return null;
-		}
+	        if (usuarioAutenticado == null) {
+	            return ResponseEntity.status(401).body("Usuario no autenticado.");
+	        }
+
+	        List<ListaFolioXEmpleado> listaFolio = null;
+	        String rol = usuarioAutenticado.getRol_idRol().getVc_nombre_rol();
+
+	        if (rol.equals(rolAdmin) || rol.equals(rolResponsable)) {
+	            listaFolio = catalogosCEService.listaActividadPASupervisor(
+	                    usuarioAutenticado.getI_id_empleado(),
+	                    usuarioAutenticado.getPk_id_usuario(),
+	                    estatus
+	            );
+	        } else if (rol.equals(rolMonitoreo)) {
+	            listaFolio = catalogosCEService.listaActividades(estatus);
+	        } else {
+	            listaFolio = catalogosCEService.listaActividadPAXEmpleado(
+	                    usuarioAutenticado.getI_id_empleado(),
+	                    estatus
+	            );
+	        }
+
+	        return ResponseEntity.ok((listaFolio != null) ? listaFolio : 0);
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
+	}
 	
+	private Usuario obtenerUsuarioAutenticado() {
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        logger.warn("Usuario no autenticado.");
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+	        return null;
+	    }
+
+	    return usuarios.get(0);
 	}
 	
 	public int validarAcceso() {
-		
-		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-		
-		
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            return 0;
+	        }
+
+	        usuario = new ArrayList<>();
+	        usuario.add(usuarioAutenticado);
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuarioAutenticado.getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacion(nombrePantalla)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return 0;
+	    }
 	}
 }

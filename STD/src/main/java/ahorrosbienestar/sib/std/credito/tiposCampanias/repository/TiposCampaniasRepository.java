@@ -3,7 +3,7 @@ package ahorrosbienestar.sib.std.credito.tiposCampanias.repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
+import jakarta.transaction.Transactional;
 
  
 @Repository
@@ -20,9 +21,10 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 	 
 	//@Query(value = "SELECT VC_TIPO_CAMPANIA FROM SIB.TBL_TIPOS_CAMPANIA WHERE VC_TIPO_CAMPANIA LIKE %:valor%", nativeQuery = true)
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
-			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
-			+ " WHERE I_TIPO_CAMPANIA = 2"
-			+ " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE %:valor%", nativeQuery = true)
+	        + " FROM SIB.TBL_TIPOS_CAMPANIA"
+	        + " WHERE I_TIPO_CAMPANIA = 2"
+	        + " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE CONCAT('%', :valor, '%')",
+	        nativeQuery = true)
 	List<Object[]> listaCampanias(@Param("valor") String valor);
 	
 	@Query(value = "SELECT * FROM SIB.TBL_TIPOS_CAMPANIA WHERE PK_ID_TIPO_CAMPANIA = :pk_id_tipo_campania", nativeQuery = true)
@@ -151,17 +153,17 @@ public interface TiposCampaniasRepository extends JpaRepository<TiposCampaniasMo
 
 	
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
-			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
-			+ " WHERE I_ESTATUS = 1"
-			//+ " AND VC_TIPO_CAMPANIA LIKE %:valorBusqueda%", nativeQuery = true)
-			+ " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE %:valorBusqueda%", nativeQuery = true)
+	        + " FROM SIB.TBL_TIPOS_CAMPANIA"
+	        + " WHERE I_ESTATUS = 1"
+	        + " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE CONCAT('%', :valorBusqueda, '%')",
+	        nativeQuery = true)
 	List<Object[]> listaCampaniasActivas(@Param("valorBusqueda") String valorBusqueda);
 	
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) AS VC_TIPO_CAMPANIA"
-			+ " FROM SIB.TBL_TIPOS_CAMPANIA"
-			+ " WHERE I_TIPO_CAMPANIA=1"
-			//+ " AND VC_TIPO_CAMPANIA LIKE %:valorBusqueda%", nativeQuery = true)
-			+ " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE %:valorBusqueda%", nativeQuery = true)
+	        + " FROM SIB.TBL_TIPOS_CAMPANIA"
+	        + " WHERE I_TIPO_CAMPANIA = 1"
+	        + " AND CONCAT(PK_ID_TIPO_CAMPANIA, ' - ', VC_TIPO_CAMPANIA) LIKE CONCAT('%', :valorBusqueda, '%')",
+	        nativeQuery = true)
 	List<Object[]> buscarCampaniasTemporales(@Param("valorBusqueda") String valorBusqueda);
 	
 	@Query(value = "SELECT PK_ID_TIPO_CAMPANIA, VC_TIPO_CAMPANIA "

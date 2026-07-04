@@ -31,11 +31,13 @@ public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagare
 			@Param("noCliente") Integer noCliente,
 			@Param("idCredito") Integer idCredito);
 	
-	@Query( value = "SELECT DISTINCT T1.I_NO_CLIENTE AS no_cliente, T2.VC_NOMBRECLIENTE AS nombre_cliente, "
-			+ "T2.VC_ROLPARTICIPANTE AS rol, T1.I_CREDITO_ID AS credito_id "
-			+ "FROM SIB.TBL_SCCB_PAGARES T1 "
-			+ "JOIN SIB.TBL_SCCB_PARTICIPANTES T2 ON T1.I_NO_CLIENTE = T2.I_NOCLIENTE "
-			+ "WHERE T2.VC_NOMBRECLIENTE LIKE %:nombre% "
-			+ "LIMIT 100 ", nativeQuery = true)
-	List<Map<String, Object>> getCustumerNamesPagares(@Param("nombre") String nombre);
+	@Query(value = "SELECT DISTINCT T1.I_NO_CLIENTE AS no_cliente, T2.VC_NOMBRECLIENTE AS nombre_cliente, "
+	        + "T2.VC_ROLPARTICIPANTE AS rol, T1.I_CREDITO_ID AS credito_id "
+	        + "FROM SIB.TBL_SCCB_PAGARES T1 "
+	        + "JOIN SIB.TBL_SCCB_PARTICIPANTES T2 ON T1.I_NO_CLIENTE = T2.I_NOCLIENTE "
+	        + "WHERE T2.VC_NOMBRECLIENTE LIKE CONCAT('%', :nombre, '%') "
+	        + "LIMIT 100",
+	        nativeQuery = true)
+	List<Map<String, Object>> getCustumerNamesPagares(
+	        @Param("nombre") String nombre);
 }

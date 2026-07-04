@@ -996,18 +996,28 @@ public class RestOpConfiguracionController {
 	}
 	
 	public String obtenerUsuarioLogueado() {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			
-			return userDetails.getUsername();
-		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
-			return null;
-		}
+	    try {
+	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	        if (authentication == null || authentication.getPrincipal() == null) {
+	            logger.warn("No existe usuario autenticado.");
+	            return null;
+	        }
+
+	        Object principal = authentication.getPrincipal();
+
+	        if (!(principal instanceof UserDetails)) {
+	            logger.warn("El principal no es instancia de UserDetails.");
+	            return null;
+	        }
+
+	        UserDetails userDetails = (UserDetails) principal;
+	        return userDetails.getUsername();
+
+	    } catch (Exception e) {
+	        logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
+	        return null;
+	    }
 	}
 	
 	public int obtenerEmpleadoLogueado() {

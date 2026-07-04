@@ -1,3 +1,4 @@
+// @ts-nocheck
 var altaCSO = "altaBusqueda?iTodos=";
 
 $(document).ready(function() {

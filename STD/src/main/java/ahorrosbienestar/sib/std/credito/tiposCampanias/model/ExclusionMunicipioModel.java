@@ -1,6 +1,13 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.model;
 
-import javax.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+//import javax.persistence.*;
 
 @Entity
 @Table(name = "TBL_EXCLUSION_MUNICIPIOS", schema = "SIB")

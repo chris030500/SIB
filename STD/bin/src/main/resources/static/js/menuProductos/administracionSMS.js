@@ -1,5 +1,6 @@
 // @ts-nocheck
 var botones = "";
+
 function getAbsolutePath() {
 	return window.location.href.substring(0, window.location.href.indexOf("STD/") + 4);
 }
@@ -23,7 +24,6 @@ function listaMensajes() {
 		tblMensajesGenerados.clear().draw();
 		$.each(data, function(idx, opt) {
 
-			var botonesActivar = "";
 			var botonesActivar = " <button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' "
 				+ " title='Actualizar Estatus'  type='button'"
 				+ " onclick='actualizarEstatus("
@@ -33,7 +33,7 @@ function listaMensajes() {
 				+ " data-tooltip='Add'>"
 				+ ((opt.i_activo == 1) ? "<i class='bi bi-unlock-fill'></i></button>" : "<i class='bi bi-lock-fill'></i></button>")
 				+ "&nbsp;";
-			var botonesEditar = "";
+
 			var botonesEditar = "<button class='btn btn-secundary bg-info text-black btn-xs' tabindex='0' data-bs-toggle='modal'"
 				+ " title='Editar Registro' data-bs-target='#altaPlantilla' aria-controls='table-datatable' type='button'"
 				+ " onclick='editarPlantilla("
@@ -45,14 +45,20 @@ function listaMensajes() {
 
 			botones = botonesActivar + botonesEditar;
 
-
-
-			tblMensajesGenerados.row.add([opt.clienteID, opt.nombreCompleto, opt.nombreBase, opt.nombreClasificacion, opt.telefonoCelular, opt.descMensaje, (opt.estMensaje == 1 ? 'ACTIVO' : 'INACTIVO'), botones]).draw(false);
+			tblMensajesGenerados.row.add([
+				opt.clienteID,
+				opt.nombreCompleto,
+				opt.nombreBase,
+				opt.nombreClasificacion,
+				opt.telefonoCelular,
+				opt.descMensaje,
+				(opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'),
+				botones
+			]).draw(false);
 		});
 	});
 }
 
-// Función para mostrar u ocultar los campos de búsqueda según la opción seleccionada
 function toggleSearchFields() {
 	var filterType = document.getElementById("filterType").value;
 	if (filterType === "client") {
@@ -71,7 +77,6 @@ function toggleSearchFields() {
 	}
 }
 
-// Llamar a la función toggleSearchFields() cuando se cambie la opción del select
 document.getElementById("filterType").addEventListener("change", toggleSearchFields);
 
 var buscarCliente = document.getElementById('buscarCliente');
@@ -96,7 +101,6 @@ function listaClientes() {
 				opciones.appendChild(option);
 			});
 
-			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
 			actualizarValorSeleccionado();
 			buscarCliente.disabled = false;
 			spinnerClie.style.display = "none";
@@ -123,7 +127,6 @@ function listaSucursales() {
 				opciones.appendChild(option);
 			});
 
-			// Aquí, después de agregar las opciones, actualiza el valor seleccionado
 			actualizarValorSucursal();
 			buscarSucursal.disabled = false;
 		}
@@ -134,28 +137,19 @@ var obtDatosProcesos = "mensajes/obtProcesos"
 function listaProcesos() {
 	url = getAbsolutePath() + obtDatosProcesos;
 	$.getJSON(url, {}, function(data) {
-		var select = $('#process'); // Seleccionar el elemento select por su ID
-
-		// Limpiar opciones existentes
+		var select = $('#process');
 		select.empty();
-
-		// Agregar opción predeterminada
 		select.append('<option value="">Seleccionar proceso</option>');
 
-		// Iterar sobre los datos recibidos y agregar opciones al select
 		$.each(data, function(index, proceso) {
-			// Crear una nueva opción con el nombre del proceso y su ID
 			var option = $('<option>', {
-				value: proceso.procesoID, // Suponiendo que el ID del proceso está en la propiedad "id"
-				text: proceso.tipoBase // Suponiendo que el nombre del proceso está en la propiedad "nombre"
+				value: proceso.procesoID,
+				text: proceso.tipoBase
 			});
-
-			// Agregar la opción al select
 			select.append(option);
 		});
 	});
 }
-
 
 function actualizarValorSeleccionado() {
 	var opcionSeleccionada = document.querySelector('option[value="' + buscarCliente.value + '"]');
@@ -168,12 +162,10 @@ function actualizarValorSucursal() {
 }
 
 buscarSucursal.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	actualizarValorSucursal();
 });
 
 buscarCliente.addEventListener('input', function() {
-	// Actualiza el valor seleccionado cada vez que se ingresa texto
 	actualizarValorSeleccionado();
 });
 
@@ -196,75 +188,63 @@ function validarBusqueda() {
 }
 
 function llenarTablaSeguimiento() {
-    sms = [];
+	sms = [];
+	servicioURL = "mensajes/obtSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce;
 
-    servicioURL = "mensajes/obtSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce;
+	$.ajax({
+		url: getAbsolutePath() + servicioURL,
+		type: "GET",
+		dataType: "JSON",
+		success: function(respuesta) {
+			document.getElementById("ver-cargaSeguimiento").style.display = "none";
+			document.getElementById("ver-listaSeguimiento").style.display = "block";
 
-    $.ajax({
-        url: getAbsolutePath() + servicioURL,
-        type: "GET",
-        dataType: "JSON",
-        success: function(respuesta) {
-            document.getElementById("ver-cargaSeguimiento").style.display = "none";
-            document.getElementById("ver-listaSeguimiento").style.display = "block";
-            
-            // Desactivar la actualización automática del DataTable
-            tblMensajesGenerados.clear().draw(false);
+			tblMensajesGenerados.clear().draw(false);
+			const data = [];
 
-            // Crear un array de datos para las filas
-            const data = [];
+			$.each(respuesta.lista, function(idx, opt) {
+				var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
+				var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID + "\")'><i class='fas fa-paper-plane'></i></button>";
+				var botones = "";
 
-            $.each(respuesta.lista, function(idx, opt) {
-                var botonesEditar = "<button class='btn btn-primary btn-sm' tabindex='0' type='button' onclick='editarMensaje(" + opt.mensajeID + ", \"" + opt.descMensaje + "\")'><i class='fas fa-edit'></i></button>";
-                var botonesEnviar = "<button class='btn btn-success btn-sm' tabindex='0' title='Enviar SMS' type='button' onclick='enviarSMS(" + opt.telefonoCelular + ", \"" + opt.descMensaje + "\", \"" + opt.mensajeID +"\")'><i class='fas fa-paper-plane'></i></button>";
-                var botonesInactivar = "<button class='btn btn-danger btn-sm' tabindex='0' title='Inactivar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 0)'><i class='fas fa-ban'></i></button>";
-                var botonesActivar = "<button class='btn btn-success btn-sm' tabindex='0' title='Activar SMS' type='button' onclick='inactivarSMS(" + opt.mensajeID + ", 1)'><i class='fas fa-check'></i></button>";
-                var botones = "";
+				if (opt.estMensaje == 1) {
+					botones = botonesEditar + " " + botonesEnviar;
+				}
+				if (opt.estMensaje == 2) {
+					botones = "El mensaje esta siendo procesado por el proveedor";
+				}
+				if (opt.estMensaje == 3) {
+					botones = "El mensaje ya se envio";
+				}
 
-                if (opt.estMensaje == 1) {
-                    botones = botonesEditar + " " + botonesEnviar + " " + botonesInactivar;
-                }
-                if (opt.estMensaje == 0) {
-                    botones = botonesEditar + " " + botonesActivar;
-                }
-                if (opt.estMensaje == 2) {
-                    botones = "El mensaje ya se envio";
-                }
+				var mensaje = {
+					telefono: opt.telefonoCelular,
+					mensaje: opt.descMensaje,
+					idMensaje: opt.mensajeID
+				};
 
-                // Agregar el telefono y el mensaje a los arrays correspondientes
-                var mensaje = {
-                    telefono: opt.telefonoCelular,
-                    mensaje: opt.descMensaje,
-                    idMensaje: opt.mensajeID
-                };
+				if (opt.estMensaje == 1) {
+					sms.push(mensaje);
+				}
 
-                if(opt.estMensaje == 1){
-                    sms.push(mensaje);
-                }
-                
-                //console.log(sms);
+				data.push([
+					opt.clienteID,
+					opt.nombreCompleto,
+					opt.nombreBase,
+					opt.nombreClasificacion,
+					opt.telefonoCelular,
+					opt.descMensaje,
+					(opt.estMensaje == 1 ? 'ACTIVO' : opt.estMensaje == 2 ? 'EN PROCESO...' : opt.estMensaje == 3 ? 'ENVIADO' : 'ESTADO DESCONOCIDO'),
+					botones
+				]);
+			});
 
-                data.push([
-                    opt.clienteID,
-                    opt.nombreCompleto,
-                    opt.nombreBase,
-                    opt.nombreClasificacion,
-                    opt.telefonoCelular,
-                    opt.descMensaje,
-                    (opt.estMensaje == 0 ? 'INACTIVO' : opt.estMensaje == 1 ? 'ACTIVO' : 'ENVIADO'),
-                    botones
-                ]);
-            });
-
-            // Agregar todas las filas al DataTable de una vez
-            tblMensajesGenerados.rows.add(data).draw();
-        },
-        error: function(error) {
-            //console.log(error.error);
-        }
-    });
+			tblMensajesGenerados.rows.add(data).draw();
+		},
+		error: function(error) {
+		}
+	});
 }
-
 
 function editarMensaje(id, mensaje) {
 	$('#editarMensajeModal').modal('show');
@@ -285,67 +265,20 @@ function guardarCambios() {
 		url: getAbsolutePath() + servicioURL,
 		type: "GET",
 		success: function(response) {
-			swal(
-				"¡Aplicado!",
-				"El mensaje se actualizo correctamente.",
-				"success"
-			);
+			Swal.fire({
+				title: '¡Aplicado!',
+				text: 'El mensaje se actualizo correctamente.',
+				icon: 'success',
+				confirmButtonText: 'Aceptar'
+			});
 
-			// Aquí puedes manejar la respuesta del servidor si es necesario
 			$('#editarMensajeModal').modal('hide');
 			llenarTablaSeguimiento();
 		},
 		error: function(xhr, status, error) {
-			// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
 			console.error("Error al enviar los datos: " + error);
 		}
 	});
-}
-
-function inactivarSMS(mensajeID, estatus) {
-	servicioURL = "mensajes/inactivarSMS?id=" + mensajeID + "&estatus=" + estatus
-	var tituloAlerta = "";
-	var textoAlerta = "";
-	var confirmButton = "";
-
-	if (estatus === 0) {
-		tituloAlerta = "¿Estás seguro de inactivar el mensaje?";
-		textoAlerta = "¡El mensaje se inactivará y no sera tomado encuenta para el envio masivo!";
-		confirmButton = "Inactivar";
-	} else if (estatus === 1) {
-		tituloAlerta = "¿Estás seguro de activar el mensaje?";
-		textoAlerta = "¡El mensaje se activará y sera tomado encuenta para el envio masivo!";
-		confirmButton = "Activar";
-	}
-
-	swal({
-		title: tituloAlerta,
-		text: textoAlerta,
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		cancelButtonText: 'Cancelar',
-		confirmButtonText: confirmButton,
-	}).then((result) => {
-		if (result.value) {
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "GET",
-				success: function(response) {
-					swal(
-						"¡Procesado!",
-						"El estatus del mensaje ha sido actualizado.",
-						"success"
-					)
-					llenarTablaSeguimiento();
-				},
-				error: function(xhr, status, error) {
-					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
-					console.error("Error al enviar los datos: " + error);
-				}
-			});
-		}
-	})
 }
 
 function enviarSMS(telefono, mensaje, mensajeID) {
@@ -354,15 +287,15 @@ function enviarSMS(telefono, mensaje, mensajeID) {
 	var textoAlerta = "¡El mensaje se enviará y no será posible cancelar el envío!";
 	var confirmButton = "Enviar";
 
-	var mensaje = {
+	var mensajeObj = {
 		telefono: telefono,
 		mensaje: mensaje,
 		idMensaje: mensajeID
 	};
 
-	mens.push(mensaje);
+	mens.push(mensajeObj);
 
-	swal({
+	Swal.fire({
 		title: tituloAlerta,
 		text: textoAlerta,
 		showCancelButton: true,
@@ -370,78 +303,86 @@ function enviarSMS(telefono, mensaje, mensajeID) {
 		cancelButtonColor: '#d33',
 		cancelButtonText: 'Cancelar',
 		confirmButtonText: confirmButton,
+		icon: 'warning'
 	}).then((result) => {
-		if (result.value) {
-			console.log(mens)
+		if (result.isConfirmed) {
 			$.ajax({
 				url: getAbsolutePath() + servicioURL,
 				type: "POST",
 				contentType: "application/json",
 				data: JSON.stringify(mens),
 				success: function(response) {
-					swal(
-						"¡Enviado!",
-						"El mensaje ha sido enviado.",
-						"success"
-					)
+					Swal.fire({
+						title: '¡Enviado!',
+						text: 'El mensaje ha sido enviado.',
+						icon: 'success',
+						confirmButtonText: 'Aceptar'
+					});
 					llenarTablaSeguimiento();
 					mens = [];
 				},
 				error: function(xhr, status, error) {
-					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
 					console.error("Error al enviar los datos: " + error);
 				}
 			});
-			
-			mens = [];
-			
 		}
-	})
+		mens = [];
+	});
 }
 
 function enviarMasivo() {
 	servicioURL = "mensajes/sendSMSMasivo"
 	var tituloAlerta = "<div style='text-align:center'><i class='fas fa-paper-plane'></i></div><br><div style='text-align:center'>¿Estás seguro de enviar todos los mensajes?</div>";
 	var textoAlerta = "¡Los mensajes se enviarán de manera masiva y no será posible cancelar el envío!";
-	var confirmButton = "Enviar";
 
-	swal({
+	Swal.fire({
 		title: tituloAlerta,
 		text: textoAlerta,
 		showCancelButton: true,
 		confirmButtonColor: '#28a745',
 		cancelButtonColor: '#d33',
 		cancelButtonText: 'Cancelar',
-		confirmButtonText: confirmButton,
-	}).then((result) => {
-		if (result.value) {
-			console.log(sms)
-			$.ajax({
-				url: getAbsolutePath() + servicioURL,
-				type: "POST",
-				contentType: "application/json",
-				data: JSON.stringify(sms),
-				success: function(response) {
-					swal(
-						"¡Enviado!",
-						"El mensaje ha sido enviado.",
-						"success"
-					)
-					llenarTablaSeguimiento();
-				},
-				error: function(xhr, status, error) {
-					// Aquí puedes manejar cualquier error que ocurra durante la solicitud AJAX
-					console.error("Error al enviar los datos: " + error);
-				}
+		confirmButtonText: 'Enviar',
+		showLoaderOnConfirm: true,
+		preConfirm: () => {
+			return new Promise((resolve) => {
+				$.ajax({
+					url: getAbsolutePath() + servicioURL,
+					type: "POST",
+					contentType: "application/json",
+					data: JSON.stringify(sms),
+					success: function(response) {
+						resolve(response);
+					},
+					error: function(xhr, status, error) {
+						console.error("Error al enviar los datos: " + error);
+						Swal.fire({
+							title: 'Error',
+							text: 'Hubo un problema al enviar el mensaje.',
+							icon: 'error',
+							confirmButtonText: 'Aceptar'
+						});
+						resolve(null);
+					}
+				});
 			});
 		}
-	})
+	}).then((result) => {
+		if (result.isConfirmed) {
+			Swal.fire({
+				title: '¡Enviado!',
+				text: 'El mensaje ha sido enviado.',
+				icon: 'success',
+				confirmButtonText: 'Aceptar'
+			});
+			llenarTablaSeguimiento();
+		}
+	});
 }
 
 function downloadReport() {
-	
 	servicioURL = "mensajes/reporteSMS?cliente=" + parametroCliente + "&sucur=" + parametroSucu + "&proce=" + parametroProce
-	
+
 	$.ajax({
 		url: getAbsolutePath() + servicioURL,
 		type: "GET",
@@ -453,23 +394,17 @@ function downloadReport() {
 			setTimeout($.unblockUI, 500);
 		},
 		success: function(respuesta) {
-
 			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
-
 			window.open(urlReporte);
 			window.focus();
-
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			Swal.fire({
+				title: 'Error',
+				text: 'Se presento un error, intente mas tarde.',
+				icon: 'warning',
+				confirmButtonText: 'Aceptar'
 			});
 		}
 	});
 }
-
-
-
-
-

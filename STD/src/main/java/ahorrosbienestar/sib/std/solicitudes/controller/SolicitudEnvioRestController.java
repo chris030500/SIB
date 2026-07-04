@@ -235,9 +235,9 @@ public class SolicitudEnvioRestController {
 					String estatusUnir = unirArchivosService.guardarArchivoPDF(idSolicitud);
 					logger.info("EstatusUnir: " + estatusUnir);
 					// solicitudEnvioService.validarSoliEnvio(3, idSolicitud);
-					if (estatusUnir != "1") {
-						return ResponseEntity.ok(estatusUnir);
-					} else if (estatusUnir == "1") {
+					if (!"1".equals(estatusUnir)) {
+					    return ResponseEntity.ok(estatusUnir);
+					} else if ("1".equals(estatusUnir)) {
 						logger.info("Crea el archivo XML");
 						crearXmlService.crearArchivoXML(idSolicitud, idSolicitudCore);
 					}
@@ -251,9 +251,8 @@ public class SolicitudEnvioRestController {
 				
 			}
 		} catch (Exception e) {
-			logger.info("Error en falló de validación en solicitud: " + e.getMessage());
-			e.printStackTrace();
-			return ResponseEntity.ok("Falló la validación de la solicitud");
+		    logger.error("Error en validación de solicitud", e);
+		    return ResponseEntity.ok("Falló la validación de la solicitud");
 		}
 
 		return ResponseEntity.ok("Falló la validación de la solicitud");

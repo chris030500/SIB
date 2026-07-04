@@ -1,3 +1,4 @@
+// @ts-nocheck
 function getAbsolutePath() {
 	var loc = window.location;
 	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
@@ -5,7 +6,7 @@ function getAbsolutePath() {
 }
 
 var urlBase = getAbsolutePath();
-var newUrlBase = urlBase.replace("f", "");
+var newUrlBase = urlBase.replace("usuario/formulario", "");
 //////console.log("newUrlBase: " + newUrlBase);
 
 function buscarEmpleado(empleado) {
@@ -56,36 +57,48 @@ function buscarEmpleado(empleado) {
 
 }
 
-document.getElementById('selectEmpleado').onchange = function() {
-	//console.log("Entro en jquery");
-	var selectEmpleado = document.getElementById('selectEmpleado').value;
-	var divEmpleado = document.getElementById("datosUsuario");
-	//console.log("SelectEmpleado: " + selectEmpleado);
-	if (selectEmpleado > 0) {
-		//console.log("Entro en mayor a 0");
-		divEmpleado.style.display = "block";
-	} else {
-		//console.log("No tiene valor");
-	}
-	/* Referencia al option seleccionado */
-	var mOption = this.options[this.selectedIndex];
-	/* Referencia a los atributos data de la opción seleccionada */
-	var mData = mOption.dataset;
+var selectEmpleadoElement = document.getElementById('selectEmpleado');
 
-	/* Referencia a los input */
-	var EmpleadoId = document.getElementById('EmpleadoId');
-	var Nombre = document.getElementById('Nombre');
-	var Puesto = document.getElementById('Puesto');
+if (selectEmpleadoElement) {
 
+	selectEmpleadoElement.onchange = function() {
 
-	//Asignamos el valor del ID Empleado
-	EmpleadoId.value = this.value;
-	//Asignamos el valor del nombre del empleado
-	Nombre.value = mOption.text;
-	//Asignamos el valor del puesto del empleado
-	Puesto.value = mData.descripcion;  /*Se usará el valor que se muestra*/
+		//console.log("Entro en jquery");
 
-};
+		var selectEmpleado = document.getElementById('selectEmpleado').value;
+		var divEmpleado = document.getElementById("datosUsuario");
+
+		//console.log("SelectEmpleado: " + selectEmpleado);
+
+		if (selectEmpleado > 0) {
+			//console.log("Entro en mayor a 0");
+			divEmpleado.style.display = "block";
+		} else {
+			//console.log("No tiene valor");
+		}
+
+		/* Referencia al option seleccionado */
+		var mOption = this.options[this.selectedIndex];
+
+		/* Referencia a los atributos data de la opción seleccionada */
+		var mData = mOption.dataset;
+
+		/* Referencia a los input */
+		var EmpleadoId = document.getElementById('EmpleadoId');
+		var Nombre = document.getElementById('Nombre');
+		var Puesto = document.getElementById('Puesto');
+
+		//Asignamos el valor del ID Empleado
+		EmpleadoId.value = this.value;
+
+		//Asignamos el valor del nombre del empleado
+		Nombre.value = mOption.text;
+
+		//Asignamos el valor del puesto del empleado
+		Puesto.value = mData.descripcion;
+
+	};
+}
 
 $(document).ready(function($) {
 	$("#edit-form").submit(function(event) {
@@ -135,23 +148,26 @@ function showEditModal(index) {
 }
 
 function modalCambioContra(index) {
-
-	//console.log("index: " + index);
-	console.lo
-	var url = newUrlBase + "usuario/cambioContra/";
-
-	//console.log("entro en modalCambioContra");
-
-	var editUrl = url + index;
-	//console.log("editUrl: " + editUrl);
+	var base = window.location.origin + "/STD/";
+	var editUrl = base + "usuario/usuario/cambioContra/" + index;
 	loadCambioContra(editUrl);
 }
-
 function loadCambioContra(url) {
-	//console.log("entro en loadCambioContra")
-	//console.log("url: " + url);
-	$.getJSON(url, {}, function(data) {
-		populateModalContra(data);
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		success: function(data) {
+			populateModalContra(data);
+		},
+		error: function(xhr) {
+			Swal.fire({
+				icon: 'warning',
+				title: 'No se pudo cargar la información',
+				text: xhr.responseText || 'El usuario no tiene histórico de contraseña.',
+				confirmButtonText: 'Aceptar'
+			});
+		}
 	});
 }
 
@@ -164,18 +180,9 @@ function loadEntity(url) {
 }
 
 function populateModalContra(data) {
-	//console.log("Data en populateModalContra: " + JSON.stringify(data));
-
-	var usuario = data.usr_historico_contrasena_id.vc_nombre_usuario;
-	var idUsu = data.usr_historico_contrasena_id.pk_id_usuario;
-	//console.log("Nombre usuario: " + usuario);
-	//console.log("idUsuario: " + idUsu);
-	$('#nombre1').val(usuario);
-	//var pk_id_parametros = data.pk_id_parametros;
-	//$('#idUsuario').val(idUsu);
-	$('#idUsuario1').val(idUsu);
-	$('#password').val();
-	//$('#update-name').val(data.name);
+	$('#nombre1').val(data.vc_nombre_usuario);
+	$('#idUsuario1').val(data.pk_id_usuario);
+	$('#password').val('');
 }
 
 // Assign the data values to the modal form.
@@ -200,13 +207,19 @@ function altaUsuario() {
 	//console.log("Rol: " + rol);*/
 	if (idEmpleado == '') {
 		////console.log("Ingrese un colaborador");
-		swal("Precaución", "Ingrese un colaborador.",
-			"info");
+		Swal.fire({
+			title: "Precaución",
+			text: "Ingrese un colaborador.",
+			icon: "info"
+		});
 	} else if (idEmpleado != '') {
 		if (nombreUsuario == '') {
 			////console.log("Ingrese un usuario");
-			swal("Precaución", "Ingrese un nombre de usuario.",
-				"info");
+			Swal.fire({
+				title: "Precaución",
+				text: "Ingrese un nombre de usuario.",
+				icon: "info"
+			});
 		} else {
 			////console.log("Puede continuar");
 
@@ -219,8 +232,11 @@ function altaUsuario() {
 					/*//console.log("Validar NombreUsuario: ");
 					//console.log("Respuesta: " + respuesta);*/
 					if (respuesta == true) {
-						swal("Precaución", "Usuario ya registrado, intente con otro nombre.",
-							"info");
+						Swal.fire({
+							title: "Precaución",
+							text: "Usuario ya registrado, intente con otro nombre.",
+							icon: "info"
+						});
 					} else {
 						////console.log("Usuario para registrar");
 						$.ajax({
@@ -228,8 +244,11 @@ function altaUsuario() {
 							type: "GET",
 							success: function(respuesta) {
 								if (respuesta == true) {
-									swal("Precaución", "Id Empleado ya registrado, intente con otro usuario.",
-										"info");
+									Swal.fire({
+										title: "Precaución",
+										text: "Id Empleado ya registrado, intente con otro usuario.",
+										icon: "info"
+									});
 								} else {
 									//console.log("Puede continuar en agregar el usuario");
 									$.ajax({
@@ -279,7 +298,7 @@ function altaUsuario() {
 																	/*//console.log("Entro en success de get");
 																	//console.log("Respuesta: " +respuesta);*/
 																	//console.log("Se guardo la contraseña en historial contraseña: ");
-																	swal({
+																	Swal.fire({
 																		icon: "success",
 																		title: "Registro de usuario exitoso.",
 																		showConfirmButton: false
@@ -293,14 +312,14 @@ function altaUsuario() {
 																	//console.log("Entro en error");
 																	//console.log("Respuesta usuario: " + JSON.stringify(respuesta));
 																	if (respuesta.status == 500) {
-																		swal({
+																		Swal.fire({
 																			icon: "warning",
 																			title: respuesta.status + "No se pudo guardar la contraseña, debido a un fallo de conexión",
 																			showConfirmButton: false
 
 																		});
 																	} else {
-																		swal({
+																		Swal.fire({
 																			icon: "warning",
 																			title: respuesta.status,
 																			showConfirmButton: false
@@ -323,7 +342,7 @@ function altaUsuario() {
 										},
 										error: function(respuesta) {
 											//console.log("Entro en error");
-											swal({
+											Swal.fire({
 												icon: "warning",
 												title: "No se pudo agregar el usuario",
 												showConfirmButton: false
@@ -337,7 +356,7 @@ function altaUsuario() {
 							},
 							error: function(respuesta) {
 								//console.log("Entro en error");
-								swal({
+								Swal.fire({
 									icon: 'warning',
 									title: respuesta,
 									showConfirmButton: false
@@ -352,7 +371,7 @@ function altaUsuario() {
 				error: function(respuesta) {
 					//console.log("Entro en error");
 					//console.log("Usu: " + JSON.stringify(respuesta));
-					swal({
+					Swal.fire({
 						icon: 'warning',
 						title: respuesta,
 						showConfirmButton: false
@@ -382,7 +401,7 @@ function validarNombreUsuario(nombreUsuario) {
 		},
 		error: function(respuesta) {
 			//console.log("Entro en error");
-			swal({
+			Swal.fire({
 				icon: 'warning',
 				title: respuesta,
 				showConfirmButton: false
@@ -405,7 +424,7 @@ function bajaUsuario(usuario) {
 			/*//console.log("Entro en success de get");
 			//console.log("Respuesta: " +respuesta);*/
 			//console.log("Validar NombreUsuario: ");
-			swal({
+			Swal.fire({
 				icon: 'success',
 				title: "Baja de usuario correctamente.",
 				showConfirmButton: false
@@ -417,7 +436,7 @@ function bajaUsuario(usuario) {
 		},
 		error: function() {
 			//console.log("Entro en error");
-			swal({
+			Swal.fire({
 				icon: 'warning',
 				title: "No se realizo la baja del usuario",
 				showConfirmButton: false
@@ -443,7 +462,7 @@ function reactivarUsuario(usuario) {
 			//console.log("Respuesta: " +respuesta);*/
 			//console.log("Validar NombreUsuario: ");
 
-			swal({
+			Swal.fire({
 				icon: 'success',
 				title: "Reactivación de usuario correctamente.",
 				showConfirmButton: false
@@ -455,7 +474,7 @@ function reactivarUsuario(usuario) {
 		},
 		error: function() {
 			//console.log("Entro en error");
-			swal({
+			Swal.fire({
 				icon: 'warning',
 				title: "No se reactivo el usuario",
 				showConfirmButton: false
@@ -478,7 +497,7 @@ function editarUsuario() {
 	//Primero validamos que el nombre de usuario no exista.
 	if (nombreUsuario == "") {
 		//console.log("Ingresa un nombre de usuario");
-		swal({
+		Swal.fire({
 			icon: 'warning',
 			title: "El campo de nombre de usuario está vacío, ingresa un nombre",
 			showConfirmButton: false
@@ -495,7 +514,7 @@ function editarUsuario() {
 				//console.log("Respuesta: " +respuesta);*/
 
 
-				swal({
+				Swal.fire({
 					icon: 'success',
 					title: "Se cambio correctamente el usuario: " + nombreUsuario,
 					showConfirmButton: false
@@ -507,7 +526,7 @@ function editarUsuario() {
 			},
 			error: function() {
 				////console.log("Entro en error");
-				swal({
+				Swal.fire({
 					icon: 'warning',
 					title: "No se realizo los cambios del usuario, favor de validar los datos ingresados. ",
 					showConfirmButton: false
@@ -524,87 +543,61 @@ function editarUsuario() {
 
 function cambiarContrasenia() {
 	var idUsuario = document.getElementById('idUsuario1').value;
-	var nombreUsuario = document.getElementById('nombre1').value;
 	var contrasenia = document.getElementById('password').value;
+
 	if (contrasenia == "") {
-		////console.log("Ingresa un password nuevo");
-		swal({
+		Swal.fire({
 			icon: 'warning',
 			title: "El campo de contraseña nueva está vacío, ingresa una contraseña",
 			showConfirmButton: false
-
 		});
-	} else {
-		////console.log("NewUrlBase: " + newUrlBase);
-		$.ajax({
-			url: newUrlBase + "mensajeContrasena?contrasena=" + contrasenia,
-			type: "GET",
-			success: function(respuesta) {
-				////console.log("Entro en success1: " + respuesta);
-				if (respuesta != "Si cumple con los parametros requeridos") {
-					swal({
-						type: 'warning',
-						title: respuesta,
-						showConfirmButton: false
+		return;
+	}
 
-					});
-				} else if (respuesta == "Si cumple con los parametros requeridos") {
-					$.ajax({
-						url: urlBase + "editar_usuario/contrasenia?usuario=" + nombreUsuario +
-							"&idUsuario=" + idUsuario + "&password=" + contrasenia,
-						type: "POST",
-						success: function() {
-							console.log("Entro en guardar contraseña");
-							console.log("Respuesta: " + respuesta);
-							swal({
-								type: 'success',
-								title: 'Contraseña cambiada correctamente',
-								showConfirmButton: false
-							}).then((result) => {
-								window.location.replace(newUrlBase + "formulario");
-							});
+	$.ajax({
+		url: newUrlBase + "mensajeContrasena?contrasena=" + encodeURIComponent(contrasenia),
+		type: "GET",
+		success: function(respuesta) {
 
-						},
-						error: function(xhr, status, error) {
-							if (xhr.status === 400) {
-								var errorMessage = xhr.responseText;
-								// Mostrar el mensaje de error al usuario
-								console.log(errorMessage);
-								swal({
-									type: 'warning',
-									title: errorMessage,
-									showConfirmButton: false
-								}).then((result) => {
-									window.location.replace(newUrlBase + "formulario");
-								});
-							} else {
-								// Manejar otros errores de la solicitud AJAX
-								swal({
-									type: 'warning',
-									title: "Error al cambiar la contraseña",
-									showConfirmButton: false
-								}).then((result) => {
-									window.location.replace(newUrlBase + "formulario");
-								});
-							}
-						}
-					});
-				}
-
-
-			},
-			error: function(respuesta) {
-				////console.log("Entro en error");
-				swal({
-					type: 'warning',
+			if (respuesta != "Si cumple con los parametros requeridos") {
+				Swal.fire({
+					icon: 'warning',
 					title: respuesta,
 					showConfirmButton: false
-
 				});
-
+				return;
 			}
-		});
-	}
+
+			$.ajax({
+				url: newUrlBase + "guardarCambioContra?idUsuario=" + idUsuario +
+					"&contrasena=" + encodeURIComponent(contrasenia),
+				type: "POST",
+				success: function() {
+					Swal.fire({
+						icon: 'success',
+						title: 'Contraseña cambiada correctamente',
+						showConfirmButton: false
+					}).then(() => {
+						window.location.replace(newUrlBase + "formulario");
+					});
+				},
+				error: function(xhr) {
+					Swal.fire({
+						icon: 'warning',
+						title: xhr.responseText || "Error al cambiar la contraseña",
+						showConfirmButton: false
+					});
+				}
+			});
+		},
+		error: function() {
+			Swal.fire({
+				icon: 'warning',
+				title: "Error al validar la contraseña",
+				showConfirmButton: false
+			});
+		}
+	});
 }
 
 
@@ -614,8 +607,8 @@ function reactivarEstatusUsuario(usuario) {
 		url: urlBase + "reactivar_usuario_sesion/" + usuario,
 		type: "POST",
 		success: function() {
-			swal({
-				type: 'success',
+			Swal.fire({
+				icon: 'success',
 				title: 'Desbloqueo correctamente',
 				showConfirmButton: false,
 				timer: 24000 // es ms (mili-segundos)
@@ -625,8 +618,8 @@ function reactivarEstatusUsuario(usuario) {
 
 		},
 		error: function() {
-			swal({
-				type: 'warning',
+			Swal.fire({
+				icon: 'warning',
 				title: 'No se realizo correctamente el desbloqueo',
 				showConfirmButton: false
 				//timer: 24000 // es ms (mili-segundos)

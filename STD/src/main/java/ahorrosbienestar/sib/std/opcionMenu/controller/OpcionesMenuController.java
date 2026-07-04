@@ -27,23 +27,49 @@ public class OpcionesMenuController {
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
+	private Usuario obtenerUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
+	}
 	
 	@GetMapping("/generarMenu")
 	public ResponseEntity<?> opcionesXMenu(Model model) {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			logger.info("controller /opciones");
-			return ResponseEntity.ok(coreBancarioService.listaOpcionesxRol(4, usuario.get(0).getRol_idRol().getPk_id_rol()));
-		} catch (Exception e) {
-			logger.error("--" + e.getMessage());
-			return null;
-		}
-			
+	    try {
+
+	        Usuario usuario = obtenerUsuarioAutenticado();
+
+	        if (usuario == null) {
+	            logger.warn("Usuario no autenticado o no encontrado");
+	            return ResponseEntity.status(401).body("Usuario no autenticado");
+	        }
+
+	        logger.info("controller /opciones");
+
+	        return ResponseEntity.ok(
+	            coreBancarioService.listaOpcionesxRol(
+	                4,
+	                usuario.getRol_idRol().getPk_id_rol()
+	            )
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("Error en opcionesXMenu", e);
+	        return ResponseEntity.internalServerError().body("Error interno");
+	    }
 	}
 	
 }
