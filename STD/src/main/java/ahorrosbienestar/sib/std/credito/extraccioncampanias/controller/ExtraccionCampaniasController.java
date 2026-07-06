@@ -110,6 +110,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	ConfigService configService;
 	
 	@Autowired
+	private ConfiguracionService configuracionService;
+	
+	@Autowired
 	private IReporteRepository iReporteRepository;
 	
 	@Autowired

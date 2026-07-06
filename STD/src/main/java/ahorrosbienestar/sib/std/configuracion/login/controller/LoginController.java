@@ -46,6 +46,12 @@ public class LoginController extends HttpServlet {
 //		BasicConfigurator.configure();
 //	}
 	
+	@GetMapping("/cambioContrasena")
+	public String cambioContrasena() {
+	    logger.info("Mostrando pantalla de cambio de contraseña");
+	    return "cambioContrasena";
+	}
+	
     @GetMapping("/login")
     public String login(@RequestParam(value="error", required = false) String error, HttpServletRequest request,
             Model model, Principal principal, RedirectAttributes flash, HttpSession session) {
