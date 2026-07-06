@@ -1,5 +1,7 @@
 package ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ahorrosbienestar.sib.std.config_ws.ws_configuraciones.model.WSConfiguracion;
 import ahorrosbienestar.sib.std.config_ws.ws_configuraciones.service.WSConfiguracionService;
+import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.dto.ConsultaEstatusOfertasCampaniasRequest;
 import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.dto.OriginacionWsResponse;
 
@@ -30,6 +33,7 @@ public class OriginacionConsultaEstatusService {
 
 	private static final Logger logger = Logger.getLogger(OriginacionConsultaEstatusService.class);
 	private static final String DESCRIPCION_WS_ORIGINACION = "Consulta Estatus Ofertas Campanias";
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	@Autowired
 	private WSConfiguracionService wsConfiguracionService;
@@ -37,11 +41,30 @@ public class OriginacionConsultaEstatusService {
 	@Autowired
 	private OriginacionEstatusOfertaPersistenciaService persistenciaService;
 
+	@Autowired
+	private TiposCampaniasService tiposCampaniasService;
+
 	@Value("${ws.originacion.consulta-estatus.connect-timeout-ms:10000}")
 	private int connectTimeout;
 
 	@Value("${ws.originacion.consulta-estatus.read-timeout-ms:30000}")
 	private int readTimeout;
+
+	public OriginacionWsResponse consultarConFechasPorVigencia() {
+		LocalDate diaActual = LocalDate.now();
+		Integer vigenciaCampaniaMeses = tiposCampaniasService.obtenerMaximaVigenciaCampaniaActiva();
+		int mesesRestar = vigenciaCampaniaMeses != null ? vigenciaCampaniaMeses.intValue() : 0;
+		LocalDate fechaInicioProceso = diaActual.minusMonths(mesesRestar);
+
+		ConsultaEstatusOfertasCampaniasRequest request = new ConsultaEstatusOfertasCampaniasRequest();
+		request.setFechaInicio(fechaInicioProceso.format(FORMATTER));
+		request.setFechaFin(diaActual.format(FORMATTER));
+
+		logger.info("Ejecutando consulta de originacion por vigencia. vigenciaMeses: " + mesesRestar
+				+ ", fechaInicio: " + request.getFechaInicio() + ", fechaFin: " + request.getFechaFin());
+
+		return consultar(request);
+	}
 
 	public OriginacionWsResponse consultar(ConsultaEstatusOfertasCampaniasRequest request) {
 		Optional<WSConfiguracion> configuracionOpt = wsConfiguracionService
