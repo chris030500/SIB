@@ -47,6 +47,8 @@ import ahorrosbienestar.sib.std.credito.tiposCampanias.model.HisTiposCampaniasMo
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.TiposCampaniasModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.HisTiposCampaniasService;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.service.TiposCampaniasService;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.dto.OriginacionWsResponse;
+import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.service.OriginacionConsultaEstatusService;
 import ahorrosbienestar.sib.std.opcionMenu.repository.IRelRolOpcionesRepository;
 import ahorrosbienestar.sib.std.opcionMenu.service.OpcionesMenuService;
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
@@ -117,6 +119,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	
 	@Autowired
 	private ICatalogoRepository iCatalogoRepository;
+	
+	@Autowired
+	private OriginacionConsultaEstatusService originacionWsService;
 	
 	private static final int opcBusquedaGrupo = 38;
 
@@ -518,6 +523,10 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
             @RequestParam("tipoCampania") int tipoCampania,
             @RequestParam("procesoCampania") int procesoCampania) {
         try {
+        	
+        	//manda llamar la consulta del WS para los estatus
+        	originacionWsService.consultarConFechasPorVigencia();
+        	
         	procesosCampaniasService.ejecutarDepuracionBC(tipoCampania, procesoCampania);
             return ResponseEntity.ok("Procedimiento ejecutado correctamente depuracion buro");
         } catch (Exception e) {
