@@ -33,6 +33,9 @@ document.getElementById("Campania").addEventListener("change", function() {
 	        //desabilita todos los botones
 	        // @ts-ignore
 			document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+			//habilita el boton btnWsEstatusCampanias
+			// @ts-ignore
+    		document.getElementById("btnWsEstatusCampanias").disabled = false;
 			
 	        if(data === 0){
 				
@@ -126,6 +129,9 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+	//habilita el boton btnWsEstatusCampanias
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = false;
 	console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
@@ -1699,6 +1705,58 @@ function btnDepuracionBuro() {
         console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
     });
 	
+}
+
+function btnWsEstatusCampanias() {
+	
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = true;
+	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
+	//mandar llamar WS
+	fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias?")
+    .then(resp => {
+        if (!resp.ok) {
+            throw new Error("Error en el proceso de WS.");
+        }
+        return resp.text(); // porque el backend regresa un int
+    })
+    .then(dataSP => {
+		
+		//////
+		// @ts-ignore
+		Swal.fire({
+			icon: 'success',
+			text: 'Actualizado correctamente',
+			confirmButtonText: 'Aceptar'
+		}).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias";
+		});
+		
+		
+	})
+    .catch(err => {
+        console.error("Error en el proceso de WS: ", err);
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Ocurrió un problema al cancelar el proceso del WS',
+			confirmButtonText: 'Aceptar'
+		});
+    });
+	///termina llamada del WS
 }
 
 function btnArchivoMc() {
