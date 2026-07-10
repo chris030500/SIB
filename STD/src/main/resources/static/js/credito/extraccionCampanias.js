@@ -33,6 +33,9 @@ document.getElementById("Campania").addEventListener("change", function() {
 	        //desabilita todos los botones
 	        // @ts-ignore
 			document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+			//habilita el boton btnWsEstatusCampanias
+			// @ts-ignore
+    		document.getElementById("btnWsEstatusCampanias").disabled = false;
 			
 	        if(data === 0){
 				
@@ -126,6 +129,9 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+	//habilita el boton btnWsEstatusCampanias
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = false;
 	console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
@@ -1699,6 +1705,69 @@ function btnDepuracionBuro() {
         console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
     });
 	
+}
+
+function btnWsEstatusCampanias() {
+	
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = true;
+	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
+	//mandar llamar WS
+	fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias?")
+    .then(async resp => {
+        const mensaje = await resp.text();
+        if (!resp.ok) {
+            throw new Error(mensaje || "Error en el proceso de WS.");
+        }
+        return mensaje;
+    })
+    .then(mensaje => {
+		
+		//////
+		// @ts-ignore
+		Swal.fire({
+			icon: 'success',
+			text: mensaje || 'WS Estatus Campanias ejecutado correctamente',
+			confirmButtonText: 'Aceptar'
+		}).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias";
+		});
+		
+		
+	})
+    .catch(err => {
+        console.error("Error en el proceso de WS: ", err);
+        // @ts-ignore
+        document.getElementById("btnWsEstatusCampanias").disabled = false;
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			title: 'Error en WS Estatus Campanias',
+			text: err.message || 'Ocurrio un problema al ejecutar el WS Estatus Campanias',
+			confirmButtonText: 'Aceptar'
+		});
+		return;
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Ocurrió un problema al cancelar el proceso del WS',
+			confirmButtonText: 'Aceptar'
+		});
+    });
+	///termina llamada del WS
 }
 
 function btnArchivoMc() {

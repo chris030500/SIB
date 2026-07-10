@@ -525,7 +525,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         try {
         	
         	//manda llamar la consulta del WS para los estatus
-        	originacionWsService.consultarConFechasPorVigencia();
+        	//originacionWsService.consultarConFechasPorVigencia();
         	
         	procesosCampaniasService.ejecutarDepuracionBC(tipoCampania, procesoCampania);
             return ResponseEntity.ok("Procedimiento ejecutado correctamente depuracion buro");
@@ -587,6 +587,33 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: " + e.getMessage());
+        }
+    }
+    
+    //WS estatus campanias
+    @GetMapping("/api/ejecutarWsEstatusCampanias")
+    public ResponseEntity<String> ejecutarWsEstatusCampanias() {
+        try {
+        	OriginacionWsResponse response = originacionWsService.consultarConFechasPorVigencia();
+        	if (response.getStatus() == 200) {
+        		logger.info("Procedimiento ejecutado correctamente WS Estatus Campanias");
+        		return ResponseEntity.ok("Procedimiento ejecutado correctamente WS Estatus Campanias");
+        	}
+
+        	String mensajeError = "Error al ejecutar WS Estatus Campanias. Status: " + response.getStatus()
+        			+ ", detalle: " + response.getResponseBody();
+        	logger.error(mensajeError);
+
+        	HttpStatus httpStatus = HttpStatus.resolve(response.getStatus());
+        	if (httpStatus == null) {
+        		httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        	}
+
+        	return ResponseEntity.status(httpStatus).body(mensajeError);
+        } catch (Exception e) {
+        	logger.error("Error al ejecutar el procedimiento WS Estatus Campanias: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al ejecutar el procedimiento WS Estatus Campanias: " + e.getMessage());
         }
     }
     
