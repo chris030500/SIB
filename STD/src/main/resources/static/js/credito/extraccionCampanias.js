@@ -33,6 +33,9 @@ document.getElementById("Campania").addEventListener("change", function() {
 	        //desabilita todos los botones
 	        // @ts-ignore
 			document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+			//habilita el boton btnWsEstatusCampanias
+			// @ts-ignore
+    		document.getElementById("btnWsEstatusCampanias").disabled = false;
 			
 	        if(data === 0){
 				
@@ -126,6 +129,9 @@ document.getElementById("Estatus").addEventListener("change", function() {
     var tipoCampania = parseInt(document.getElementById("Campania").value);
 	// @ts-ignore
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
+	//habilita el boton btnWsEstatusCampanias
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = false;
 	console.log("valor:", valor);
 	
 	if (valor === "0") { // Buscar
@@ -1701,6 +1707,69 @@ function btnDepuracionBuro() {
 	
 }
 
+function btnWsEstatusCampanias() {
+	
+	// @ts-ignore
+	document.getElementById("btnWsEstatusCampanias").disabled = true;
+	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
+	//mandar llamar WS
+	fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias?")
+    .then(async resp => {
+        const mensaje = await resp.text();
+        if (!resp.ok) {
+            throw new Error(mensaje || "Error en el proceso de WS.");
+        }
+        return mensaje;
+    })
+    .then(mensaje => {
+		
+		//////
+		// @ts-ignore
+		Swal.fire({
+			icon: 'success',
+			text: mensaje || 'WS Estatus Campanias ejecutado correctamente',
+			confirmButtonText: 'Aceptar'
+		}).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias";
+		});
+		
+		
+	})
+    .catch(err => {
+        console.error("Error en el proceso de WS: ", err);
+        // @ts-ignore
+        document.getElementById("btnWsEstatusCampanias").disabled = false;
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			title: 'Error en WS Estatus Campanias',
+			text: err.message || 'Ocurrio un problema al ejecutar el WS Estatus Campanias',
+			confirmButtonText: 'Aceptar'
+		});
+		return;
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Ocurrió un problema al cancelar el proceso del WS',
+			confirmButtonText: 'Aceptar'
+		});
+    });
+	///termina llamada del WS
+}
+
 function btnArchivoMc() {
 	//console.log("Botón clickeado, ejecutando función");
 	//deshabilita el boton Cargar Arhcivo MC
@@ -1885,6 +1954,19 @@ function btnCancelar() {
 	// @ts-ignore
 	var userReg = parseInt(document.getElementById("idUser").value);
 	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
 	//if si el esatatus es correcto
 	// 
     //
@@ -1905,7 +1987,15 @@ function btnCancelar() {
 		
 		//////
 		// @ts-ignore
-		swal({
+		Swal.fire({
+			icon: 'success',
+			text: 'Actualizado correctamente',
+			confirmButtonText: 'Aceptar'
+		}).then(() => {
+			window.location.href = newUrlBase + "credito/extraccionCampanias";
+		});
+		// @ts-ignore
+		/*swal({
 		title: "",
 		text: 'Actualizado correctamente',
 		icon: "success",
@@ -1913,7 +2003,7 @@ function btnCancelar() {
 	    }).then(() => {
 			window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 	        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-	    });
+	    });*/
 		/////
 		//activa el boton Cargar Arhcivo MC
 		// @ts-ignore
@@ -1922,6 +2012,12 @@ function btnCancelar() {
 	})
     .catch(err => {
         console.error("Error en el proceso de SP_CAM_CANCELAR_PROCESO: ", err);
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Ocurrió un problema al cancelar el proceso',
+			confirmButtonText: 'Aceptar'
+		});
     });
 	///termina llamada del SP
     //
