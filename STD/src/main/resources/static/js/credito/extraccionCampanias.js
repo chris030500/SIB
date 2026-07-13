@@ -1813,19 +1813,20 @@ function btnWsEstatusCampanias() {
 	
 	//mandar llamar WS
 	fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias?")
-    .then(resp => {
+    .then(async resp => {
+        const mensaje = await resp.text();
         if (!resp.ok) {
-            throw new Error("Error en el proceso de WS.");
+            throw new Error(mensaje || "Error en el proceso de WS.");
         }
-        return resp.text(); // porque el backend regresa un int
+        return mensaje;
     })
-    .then(dataSP => {
+    .then(mensaje => {
 		
 		//////
 		// @ts-ignore
 		Swal.fire({
 			icon: 'success',
-			text: 'Actualizado correctamente',
+			text: mensaje || 'WS Estatus Campanias ejecutado correctamente',
 			confirmButtonText: 'Aceptar'
 		}).then(() => {
 			window.location.href = newUrlBase + "credito/extraccionCampanias";
@@ -1835,6 +1836,16 @@ function btnWsEstatusCampanias() {
 	})
     .catch(err => {
         console.error("Error en el proceso de WS: ", err);
+        // @ts-ignore
+        document.getElementById("btnWsEstatusCampanias").disabled = false;
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			title: 'Error en WS Estatus Campanias',
+			text: err.message || 'Ocurrio un problema al ejecutar el WS Estatus Campanias',
+			confirmButtonText: 'Aceptar'
+		});
+		return;
         // @ts-ignore
         Swal.fire({
 			icon: 'error',

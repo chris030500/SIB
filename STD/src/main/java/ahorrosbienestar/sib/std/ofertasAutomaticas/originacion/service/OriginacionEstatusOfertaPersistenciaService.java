@@ -80,6 +80,7 @@ public class OriginacionEstatusOfertaPersistenciaService {
 			ejecutarSpProcesaEstatusWsOriginacion(fechaConsulta);
 		} catch (Exception e) {
 			logger.error("Error al guardar respuesta del WS originacion en BD: " + e.getMessage(), e);
+			throw new RuntimeException("Error al guardar respuesta del WS originacion en BD: " + e.getMessage(), e);
 		}
 	}
 
@@ -96,6 +97,8 @@ public class OriginacionEstatusOfertaPersistenciaService {
 					+ fechaConsulta + ".");
 		} catch (SQLException e) {
 			logger.error("Error al ejecutar el SP SIB.SP_PROCESA_ESTATUS_WS_ORIGINACION: " + e.getMessage(), e);
+			throw new RuntimeException("Error al ejecutar el SP SIB.SP_PROCESA_ESTATUS_WS_ORIGINACION: "
+					+ e.getMessage(), e);
 		} finally {
 			if (callableStatement != null) {
 				try {

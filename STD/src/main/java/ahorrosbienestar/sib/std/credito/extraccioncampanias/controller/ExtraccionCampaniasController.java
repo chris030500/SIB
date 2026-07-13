@@ -594,9 +594,22 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
     @GetMapping("/api/ejecutarWsEstatusCampanias")
     public ResponseEntity<String> ejecutarWsEstatusCampanias() {
         try {
-        	originacionWsService.consultarConFechasPorVigencia();
-        	logger.info("Procedimiento ejecutado correctamente WS Estatus Campanias");
-            return ResponseEntity.ok("Procedimiento ejecutado correctamente WS Estatus Campanias");
+        	OriginacionWsResponse response = originacionWsService.consultarConFechasPorVigencia();
+        	if (response.getStatus() == 200) {
+        		logger.info("Procedimiento ejecutado correctamente WS Estatus Campanias");
+        		return ResponseEntity.ok("Procedimiento ejecutado correctamente WS Estatus Campanias");
+        	}
+
+        	String mensajeError = "Error al ejecutar WS Estatus Campanias. Status: " + response.getStatus()
+        			+ ", detalle: " + response.getResponseBody();
+        	logger.error(mensajeError);
+
+        	HttpStatus httpStatus = HttpStatus.resolve(response.getStatus());
+        	if (httpStatus == null) {
+        		httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        	}
+
+        	return ResponseEntity.status(httpStatus).body(mensajeError);
         } catch (Exception e) {
         	logger.error("Error al ejecutar el procedimiento WS Estatus Campanias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
