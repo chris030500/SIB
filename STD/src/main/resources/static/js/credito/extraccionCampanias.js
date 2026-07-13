@@ -1410,6 +1410,19 @@ function btnDepuracionBuro() {
 	//let estatusCampania = 3;
 	let banderaCampania = 2;
 	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
+	
 	fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&banderaCampania=" + banderaCampania)
     //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
     .then(resp => {
@@ -1592,8 +1605,19 @@ function btnDepuracionBuro() {
 											///////////
 									    })*/
 									    .then(msg => {
+											
+											//////
+											// @ts-ignore
+											Swal.fire({
+												icon: 'success',
+												text: 'Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.',
+												confirmButtonText: 'Aceptar'
+											}).then(() => {
+												window.location.href = newUrlBase + "credito/extraccionCampanias";
+											});
+											
 										    // @ts-ignore
-										    Swal.fire({
+										    /*Swal.fire({
 										        title: "",
 										        text: "Proceso guardado correctamente, se ejecutará en 6 minutos con una duración de aproximadamente de 10 minutos.",
 										        icon: "success",
@@ -1604,33 +1628,59 @@ function btnDepuracionBuro() {
 										        if (result.isConfirmed) {
 										            window.location.href = newUrlBase + "credito/extraccionCampanias";
 										        }
-										    });
+										    });*/
 										})
 										.catch(err => {
 										    console.error("Error: actualizarParamExt", err);
 										    // @ts-ignore
-										    Swal.fire({
+										    /*Swal.fire({
 										        title: "Error",
 										        text: err.message,
 										        icon: "error",
 										        confirmButtonText: "Cerrar"
-										    });
+										    });*/
+										    
+										    // @ts-ignore
+									        Swal.fire({
+												icon: 'error',
+												text: err.message,
+												confirmButtonText: 'Aceptar'
+											});
+										    
 										});
 										/////
 								    })
 									.catch(err => {
 									    console.error("Error: actualizarParamExt", err);
 									    // @ts-ignore
-									    Swal.fire({
+									    /*Swal.fire({
 									        title: "Error",
 									        text: err.message,
 									        icon: "error",
 									        confirmButtonText: "Cerrar"
-									    });
+									    });*/
+									    // @ts-ignore
+								        Swal.fire({
+											icon: 'error',
+											text: err.message,
+											confirmButtonText: 'Aceptar'
+										});
+									    
 									});
 								}else{
+									
+									//////
 									// @ts-ignore
-								    Swal.fire({
+									Swal.fire({
+										icon: 'success',
+										text: 'Proceso generado correctamente.',
+										confirmButtonText: 'Aceptar'
+									}).then(() => {
+										window.location.href = newUrlBase + "credito/extraccionCampanias";
+									});
+									
+									// @ts-ignore
+								    /*Swal.fire({
 								        title: "",
 								        text: "Proceso generado correctamente.",
 								        icon: "success",
@@ -1641,7 +1691,7 @@ function btnDepuracionBuro() {
 								        if (result.isConfirmed) {
 								            window.location.href = newUrlBase + "credito/extraccionCampanias";
 								        }
-								    });
+								    });*/
 								}
 								
 								
@@ -1650,11 +1700,17 @@ function btnDepuracionBuro() {
 							.catch(err => {
 							 console.error("Error al validar tipo de campania recurrente/temporal:", err);
 							   // @ts-ignore
-							   swal({
+							   /*swal({
 								title: "",
 								text: 'Error al actualizar',
 							        icon: 'error'
-							    });
+							    });*/
+							    // @ts-ignore
+						        Swal.fire({
+									icon: 'error',
+									text: 'Error al actualizar',
+									confirmButtonText: 'Aceptar'
+								});
 							    return;
 							});
 							//termina condicion temporales
@@ -1662,6 +1718,12 @@ function btnDepuracionBuro() {
 						})
 					    .catch(err => {
 					        console.error("Error en el proceso de depuracion de respuesta buro en SP: ", err);
+					        // @ts-ignore
+					        Swal.fire({
+								icon: 'error',
+								text: 'Error al actualizar',
+								confirmButtonText: 'Aceptar'
+							});
 					    });
 						///termina llamada del SP
 					    //
@@ -1671,17 +1733,29 @@ function btnDepuracionBuro() {
 					.catch(err => {
 					    console.error("Error:", err);
 					    // @ts-ignore
-					    Swal.fire({
+					    /*Swal.fire({
 					        title: "Error",
 					        text: err.message,
 					        icon: "error",
 					        confirmButtonText: "Cerrar"
-					    });
+					    });*/
+					    // @ts-ignore
+					    Swal.fire({
+							icon: 'error',
+							text: err.message,
+							confirmButtonText: 'Aceptar'
+						});
 					});
 					/////aqui termina
 				})
 				.catch(err => {
 			        console.error("Error al validar campania para obtener codigo campania:: ", err);
+			        // @ts-ignore
+			        Swal.fire({
+						icon: 'error',
+						text: 'Error al actualizar',
+						confirmButtonText: 'Aceptar'
+					});
 			    });
 				///--
 				
@@ -1691,11 +1765,17 @@ function btnDepuracionBuro() {
 			.catch(err => {
 			    //console.error("Error al actualizar Proceso Campania:", err);
 			   // @ts-ignore
-			   swal({
+			   /*swal({
 				title: "",
 				text: 'Error al actualizar Proceso Campania',
 			        icon: 'error'
-			    });
+			    });*/
+			    // @ts-ignore
+			    Swal.fire({
+					icon: 'error',
+					text: 'Error al actualizar Proceso Campania',
+					confirmButtonText: 'Aceptar'
+				});
 			});
 	    ///
 	    ///
@@ -1703,6 +1783,12 @@ function btnDepuracionBuro() {
     })
     .catch(err => {
         console.error("Error al validar campania para procesar validacion respuesta buro: ", err);
+        // @ts-ignore
+	    Swal.fire({
+			icon: 'error',
+			text: 'Error al actualizar Proceso Campania',
+			confirmButtonText: 'Aceptar'
+		});
     });
 	
 }
@@ -1775,6 +1861,19 @@ function btnArchivoMc() {
 	var estatusCampania = parseInt(document.getElementById("Estatus").value);
 	
 	let banderaCampania = 2;
+	
+	// @ts-ignore
+	Swal.fire({
+		title: 'Procesando...',
+		text: 'Por favor espera',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		showConfirmButton: false, 
+		didOpen: () => {
+			// @ts-ignore
+			Swal.showLoading();
+		}
+	});
 	
 	fetch(newUrlBase + "credito/api/procesoCamEstatus?tipoCampania=" + tipoCampania + "&estatusCampania=" + estatusCampania + "&banderaCampania=" + banderaCampania)
     //fetch(newUrlBase + "credito/api/reporteBuroCredito?tipoCampania=" + tipoCampania)
@@ -1867,9 +1966,18 @@ function btnArchivoMc() {
 					    })
 					    .then(dataSP => {
 							
+							// @ts-ignore
+							Swal.fire({
+								icon: 'success',
+								text: 'Actualizado correctamente',
+								confirmButtonText: 'Aceptar'
+							}).then(() => {
+								window.location.href = newUrlBase + "credito/extraccionCampanias";
+							});
+							
 							//////
 							// @ts-ignore
-							swal({
+							/*swal({
 							title: "",
 							text: 'Actualizado correctamente',
 							icon: "success",
@@ -1877,7 +1985,7 @@ function btnArchivoMc() {
 						    }).then(() => {
 								window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-						    });
+						    });*/
 							/////
 							//activa el boton Cargar Arhcivo MC
 							// @ts-ignore
@@ -1886,6 +1994,12 @@ function btnArchivoMc() {
 						})
 					    .catch(err => {
 					        console.error("Error en el proceso de SP_DEP_CAM_EXTRACCIONCAMPCRED: ", err);
+					        // @ts-ignore
+					        Swal.fire({
+								icon: 'error',
+								text: 'Ocurrió un problema en el proceso de SP_DEP_CAM_EXTRACCIONCAMPCRED.',
+								confirmButtonText: 'Aceptar'
+							});
 					    });
 						///termina llamada del SP
 					    //
@@ -1894,18 +2008,32 @@ function btnArchivoMc() {
 					})
 					.catch(err => {
 					    console.error("Error:", err);
+					    
 					    // @ts-ignore
-					    Swal.fire({
+				        Swal.fire({
+							icon: 'error',
+							text: err.message,
+							confirmButtonText: 'Aceptar'
+						});
+					    
+					    // @ts-ignore
+					    /*Swal.fire({
 					        title: "Error",
 					        text: err.message,
 					        icon: "error",
 					        confirmButtonText: "Cerrar"
-					    });
+					    });*/
 					});
 					/////aqui termina
 				})
 				.catch(err => {
 			        console.error("Error al validar campania para obtener codigo campania archivo MC: ", err);
+			        // @ts-ignore
+			        Swal.fire({
+						icon: 'error',
+						text: err.message,
+						confirmButtonText: 'Aceptar'
+					});
 			    });
 				///--
 				
@@ -1914,12 +2042,20 @@ function btnArchivoMc() {
 			})
 			.catch(err => {
 			    //console.error("Error al actualizar Proceso Campania:", err);
+			    
+			    // @ts-ignore
+		        Swal.fire({
+					icon: 'error',
+					text: 'Error al actualizar Proceso Campania de archivo MC',
+					confirmButtonText: 'Aceptar'
+				});
+						
 			   // @ts-ignore
-			   swal({
+			   /*swal({
 				title: "",
 				text: 'Error al actualizar Proceso Campania de archivo MC',
 			        icon: 'error'
-			    });
+			    });*/
 			});
 	    ///
 	    ///
@@ -1927,6 +2063,12 @@ function btnArchivoMc() {
     })
     .catch(err => {
         console.error("Error al validar campania para procesar validacion archivo MC: ", err);
+        // @ts-ignore
+        Swal.fire({
+			icon: 'error',
+			text: 'Error al actualizar Proceso Campania de archivo MC',
+			confirmButtonText: 'Aceptar'
+		});
     });
 }
 
