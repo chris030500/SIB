@@ -618,10 +618,11 @@ function btnGenerarArchivoBuro() {
 			///termina ajuste de activar boton generar archivo buro
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
 			// @ts-ignore
-			swal({
-				title: "Error, ",
-				text: "Se presento un error al generar reporte de buro credito, intente mas tarde.",
-				icon: "warning",
+			Swal.fire({
+			    title: "Error",
+			    text: "Se presentó un error al generar el reporte de Buró de Crédito. Intente nuevamente más tarde.",
+			    icon: "error",
+			    confirmButtonText: "Aceptar"
 			});
 		}
 		});
@@ -750,8 +751,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	    }
 	});
 	 
-    let modal = new bootstrap.Modal(document.getElementById('modalCargarBuro'));
-    modal.show();
+    $("#modalCargarBuro").modal("show");
     
   }
 
@@ -779,24 +779,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (!tipo) {
       	// @ts-ignore
-		swal({
-			title: "",
-			text: 'Seleccione un tipo de archivo.',
-			icon: "error",
-	    
-	    });
+		Swal.fire({
+		    title: "Error",
+		    text: "Seleccione un tipo de archivo.",
+		    icon: "error",
+		    confirmButtonText: "Aceptar"
+		});
       return;
     }
 
     if (!archivo) {
       
       // @ts-ignore
-		swal({
-			title: "",
-			text: 'Adjunte un archivo Excel.',
-			icon: "error",
-	    
-	    });
+	  Swal.fire({
+	      title: "Error",
+	      text: "Adjunte un archivo Excel.",
+	      icon: "error",
+	      confirmButtonText: "Aceptar"
+	  });
       return;
     }
 
@@ -1093,12 +1093,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				}));
 			}else{
 				// @ts-ignore
-				swal({
-					title: "",
-					text: 'Seleccione un tipo de archivo.',
-					icon: "error",
-			    
-			    });
+				Swal.fire({
+				    title: "Error",
+				    text: "Seleccione un tipo de archivo.",
+				    icon: "error",
+				    confirmButtonText: "Aceptar"
+				});
 			    return;
 			}
 		    //console.log("Registros a enviar:", registros);
@@ -1244,12 +1244,12 @@ document.addEventListener("DOMContentLoaded", function() {
 											.then(() => {
 											
 													// @ts-ignore
-													swal({
-													title: "",
-													text: 'Actualizado correctamente',
-													icon: "success",
-												    // @ts-ignore
-												    }).then(() => {
+													Swal.fire({
+													    title: "Éxito",
+													    text: "Actualizado correctamente",
+													    icon: "success",
+													    confirmButtonText: "Aceptar"
+													}).then(() => {
 														//deshabilita el boton Cargar Respuesta Buro
 														// @ts-ignore
 														document.getElementById("btnCargar").disabled = true;
@@ -1261,11 +1261,12 @@ document.addEventListener("DOMContentLoaded", function() {
 											.catch(err => {
 											    console.error("Error al actualizar datos vigencia buro:", err);
 											   // @ts-ignore
-											   swal({
-												title: "",
-												text: 'Error al actualizar',
-											        icon: 'error'
-											    });
+											   Swal.fire({
+											       title: "Error",
+											       text: "Error al actualizar",
+											       icon: "error",
+											       confirmButtonText: "Aceptar"
+											   });
 											});
 											
 											///
@@ -1300,11 +1301,12 @@ document.addEventListener("DOMContentLoaded", function() {
 										.catch(err => {
 										    console.error("Error al actualizar datos Tipo Buro de Credito:", err);
 										   // @ts-ignore
-										   swal({
-											title: "",
-											text: 'Error al actualizar',
-										        icon: 'error'
-										    });
+										   Swal.fire({
+										       title: "Error",
+										       text: "Error al actualizar",
+										       icon: "error",
+										       confirmButtonText: "Aceptar"
+										   });
 										});
 										
 									})
@@ -1339,11 +1341,12 @@ document.addEventListener("DOMContentLoaded", function() {
 					.catch(err => {
 					    //console.error("Error al actualizar Proceso Campania:", err);
 					   // @ts-ignore
-					   swal({
-						title: "",
-						text: 'Error al actualizar Proceso Campania',
-					        icon: 'error'
-					    });
+					   Swal.fire({
+					       title: "Error",
+					       text: "Error al actualizar Proceso Campania",
+					       icon: "error",
+					       confirmButtonText: "Aceptar"
+					   });
 					});
 			    ///
 			    ///
@@ -1358,11 +1361,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		.catch(err => {
 		 console.error("Error al validar campania para procesar vigencia buro:", err);
 		   // @ts-ignore
-		   swal({
-			title: "",
-			text: 'Error al actualizar',
-		        icon: 'error'
-		    });
+		   Swal.fire({
+		       title: "Error",
+		       text: "Error al actualizar",
+		       icon: "error",
+		       confirmButtonText: "Aceptar"
+		   });
 		    return;
 		});
 	    
@@ -1375,8 +1379,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Cerrar modal
-    let modal = bootstrap.Modal.getInstance(document.getElementById('modalCargarBuro'));
-    modal.hide();
+    $("#modalCargarBuro").modal("hide");
      
   }
 
@@ -1644,11 +1647,12 @@ function btnDepuracionBuro() {
 							.catch(err => {
 							 console.error("Error al validar tipo de campania recurrente/temporal:", err);
 							   // @ts-ignore
-							   swal({
-								title: "",
-								text: 'Error al actualizar',
-							        icon: 'error'
-							    });
+							   Swal.fire({
+							       title: "Error",
+							       text: "Error al actualizar",
+							       icon: "error",
+							       confirmButtonText: "Aceptar"
+							   });
 							    return;
 							});
 							//termina condicion temporales
@@ -1685,11 +1689,12 @@ function btnDepuracionBuro() {
 			.catch(err => {
 			    //console.error("Error al actualizar Proceso Campania:", err);
 			   // @ts-ignore
-			   swal({
-				title: "",
-				text: 'Error al actualizar Proceso Campania',
-			        icon: 'error'
-			    });
+			   Swal.fire({
+			       title: "Error",
+			       text: "Error al actualizar Proceso Campania",
+			       icon: "error",
+			       confirmButtonText: "Aceptar"
+			   });
 			});
 	    ///
 	    ///
@@ -1811,12 +1816,12 @@ function btnArchivoMc() {
 							
 							//////
 							// @ts-ignore
-							swal({
-							title: "",
-							text: 'Actualizado correctamente',
-							icon: "success",
-						    // @ts-ignore
-						    }).then(() => {
+							Swal.fire({
+							    title: "",
+							    text: "Actualizado correctamente",
+							    icon: "success",
+							    confirmButtonText: "Aceptar"
+							}).then(() => {
 								window.location.href = newUrlBase + "credito/extraccionCampanias"; // Redirige después de aceptar
 						        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
 						    });
@@ -1857,11 +1862,12 @@ function btnArchivoMc() {
 			.catch(err => {
 			    //console.error("Error al actualizar Proceso Campania:", err);
 			   // @ts-ignore
-			   swal({
-				title: "",
-				text: 'Error al actualizar Proceso Campania de archivo MC',
-			        icon: 'error'
-			    });
+			   Swal.fire({
+			       title: "Error",
+			       text: "Error al actualizar Proceso Campania de archivo MC.",
+			       icon: "error",
+			       confirmButtonText: "Aceptar"
+			   });
 			});
 	    ///
 	    ///
@@ -1919,9 +1925,10 @@ function btnCancelar() {
 		//////
 		// @ts-ignore
 		Swal.fire({
-			icon: 'success',
-			text: 'Actualizado correctamente',
-			confirmButtonText: 'Aceptar'
+		    title: "Éxito",
+		    text: "Actualizado correctamente",
+		    icon: "success",
+		    confirmButtonText: "Aceptar"
 		}).then(() => {
 			window.location.href = newUrlBase + "credito/extraccionCampanias";
 		});

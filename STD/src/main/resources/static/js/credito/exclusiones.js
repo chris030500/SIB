@@ -270,7 +270,12 @@ function cargarArchivoExcel() {
 			console.log("Entra a función tieneInformacion");
 			// @ts-ignore
 			 Swal.close(); // Cierra el loading
-			alert("El archivo no contiene información en las filas después del encabezado.");
+			 // @ts-ignore
+			 Swal.fire({
+			     title: "Advertencia",
+			     text: "El archivo no contiene información después del encabezado.",
+			     icon: "warning"
+			 });
 			return; //Detenemos aquí
 		}
 
@@ -302,7 +307,12 @@ function cargarArchivoExcel() {
 			Swal.close(); // Cierra el loading
 			console.error("Error:", error);
 			console.error("Error real backend:", error.message);
-			alert("Ocurrió un error al cargar el archivo.");
+			// @ts-ignore
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al cargar el archivo.",
+			    icon: "error"
+			});
 		});
 	};
 	reader.readAsArrayBuffer(archivo);
@@ -399,50 +409,48 @@ function listaMunicipiosExclusion() {
 
 
 
-$('#buscarCliente').on('change', function() {
-	const valor = $(this).val();
-	idCliente = null;
+$("#buscarCliente").on("change", function () {
+    const valor = $(this).val();
+    idCliente = null;
 
-	$('#opcionCliente option').each(function() {
-		if ($(this).val() === valor) {
-			idCliente = $(this).data('id');
-			
-			//console.log('idCliente::::', idCliente);
-		}
-	});
-	
-	//deshabilita el boton eliminar cliente y agregar cliente
+    $("#opcionCliente option").each(function () {
+        if ($(this).val() === valor) {
+            idCliente = $(this).data("id");
+            return false;
+        }
+    });
 	// @ts-ignore
-	document.getElementById("btnEliminarCliente").disabled = true;
+    document.getElementById("btnEliminarCliente").disabled = true;
 	// @ts-ignore
-	document.getElementById("btnAgregarCliente").disabled = true;
+    document.getElementById("btnAgregarCliente").disabled = true;
 
-	//$('#clienteIdSeleccionado').val(idCliente);
-	
-	//validar si el clientes esta bloqueado
-	
-	$.ajax({
-	    url: newUrlBase + "credito/api/countClienteEliminar?idCliente="+idCliente,
-	    type: "GET",
-	    success: function(data) {
-			
-	        if(data > 0){
-				
-				//habilta el boton Eliminar
+    // Evita enviar null, undefined o un cliente no seleccionado
+    if (!idCliente) {
+        return;
+    }
+
+    $.ajax({
+        url:
+            newUrlBase +
+            "credito/api/countClienteEliminar?idCliente=" +
+            encodeURIComponent(idCliente),
+        type: "GET",
+        success: function (data) {
+            if (Number(data) > 0) {
 				// @ts-ignore
-        		document.getElementById("btnEliminarCliente").disabled = false;
-        		
-			}else{
-				//habilta el boton Agregar
+                document.getElementById("btnEliminarCliente").disabled = false;
+            } else {
 				// @ts-ignore
-        		document.getElementById("btnAgregarCliente").disabled = false;
-			}
-	    },
-	    error: function(err) {
-	        console.error("Error al obtener si el cliente esta eliminado:", err);
-	    }
-	});
-	
+                document.getElementById("btnAgregarCliente").disabled = false;
+            }
+        },
+        error: function (xhr) {
+            console.error(
+                "Error al obtener si el cliente está eliminado:",
+                xhr.responseText
+            );
+        }
+    });
 });
 
 
@@ -465,10 +473,15 @@ $('#formExclusionCliente').on('submit', function (e) {
 	//console.error(idCliente);
 	
 	
-    if (!idCliente) {
-        alert("Selecciona un cliente válido de la lista.");
-        return;
-    }
+	if (!idCliente) {
+	    // @ts-ignore
+	    Swal.fire({
+	        title: "Advertencia",
+	        text: "Selecciona un cliente válido de la lista.",
+	        icon: "warning"
+	    });
+	    return;
+	}
     const data = {
 	    clienteId:idCliente,
             buscarEmpleado: nombreCliente,
@@ -504,14 +517,14 @@ $('#formExclusionCliente').on('submit', function (e) {
         },
         success: function () {
             //alert("Cliente excluido correctamente.");
-            // @ts-ignore
-            swal({
-			title: "",
-			text: 'Cliente excluido correctamente.',
-			icon: "success",
-		    }).then(() => {
-		        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-		    });
+			// @ts-ignore
+			Swal.fire({
+			    title: "",
+			    text: "Cliente excluido correctamente.",
+			    icon: "success"
+			}).then(() => {
+
+			});
 		    fetch(newUrlBase + 'credito/api/crearHisExcCliente', {
 		        method: 'POST',
 		        headers: {
@@ -528,7 +541,12 @@ $('#formExclusionCliente').on('submit', function (e) {
         },
         error: function (xhr) {
             console.error(xhr);
-            alert("Error al guardar exclusión.");
+			// @ts-ignore
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al guardar la exclusión.",
+			    icon: "error"
+			});
         }
     });
 });
@@ -586,22 +604,22 @@ function eliminarCliente() {
 		///
 		
 		// @ts-ignore
-		swal({
-		title: "",
-		text: 'Actualizado correctamente',
-		icon: "success",
-	    }).then(() => {
-	        //window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-	    });
+		Swal.fire({
+		    title: "",
+		    text: "Actualizado correctamente",
+		    icon: "success"
+		}).then(() => {
+
+		});
 	})
 	.catch(err => {
 	    console.error("Error al actualizar exclusion cliente:", err);
-	   // @ts-ignore
-	   swal({
-		title: "",
-		text: 'Error al actualizar exclusion cliente',
-	        icon: 'error'
-	    });
+		// @ts-ignore
+		Swal.fire({
+		    title: "Error",
+		    text: "Error al actualizar la exclusión del cliente.",
+		    icon: "error"
+		});
 	});
 	
 }

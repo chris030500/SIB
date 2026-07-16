@@ -507,20 +507,20 @@ function modificarTiposCampanias(){
 	
 	if (document.getElementById('tipoCampanias').value == 0) {
 		
-		swal({
-			title: "",
-			text: "Debe seleccionar Tipo Campaña.",
-			icon: "warning",
+		Swal.fire({
+		    title: "",
+		    text: "Debe seleccionar Tipo Campaña.",
+		    icon: "warning"
 		});
 			
 	} else if (document.getElementById('tipoCampanias').value != 0) {
 		
 		if (document.getElementById('VentanaMayor').value == '') {
 				
-			swal({
-				title: "",
-				text: "Debe ingresar el campo Ventana mayor que.",
-				icon: "warning",
+			Swal.fire({
+			    title: "",
+			    text: "Debe ingresar el campo Ventana mayor que.",
+			    icon: "warning"
 			});
 				
 		} else if (document.getElementById('Ventana').value != '') {
@@ -966,20 +966,22 @@ function modificarTiposCampanias(){
 																																														    })
 																																															///
 																																															
-																																															swal({
-																																															title: "",
-																																															text: 'Actualizado correctamente',
-																																															icon: "success",
-																																														    }).then(() => {
-																																														        window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-																																														    });
+																																															Swal.fire({
+																																															    title: "",
+																																															    text: "Actualizado correctamente",
+																																															    icon: "success"
+																																															}).then(() => {
+																																															    window.location.href =
+																																															        newUrlBase + "credito/tiposCampanias";
+																																															});
 																																														})
 																																														.catch(err => {
 																																														    console.error("Error al actualizar:", err);
-																																														   swal({
-																																															title: "",
-																																															text: 'Error al actualizar',
-																																														        icon: 'error'
+
+																																														    Swal.fire({
+																																														        title: "",
+																																														        text: "Error al actualizar",
+																																														        icon: "error"
 																																														    });
 																																														});
 																																														///////////////////////
@@ -1183,15 +1185,13 @@ function mensajeAlertaTipoBuro(tipoBuroSelec){
 	
 	if(parseInt(tipoBuroSelec) !== tipoBuroRegistrado && parseInt(tipoBuroSelec) > 0 ){
 			
-	swal({
- 	title: "Alerta",
-    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
-    icon: 'info',
-    allowOutsideClick: false,
-    closeOnClickOutside: false,
-    dangerMode: true,
-    timer: 10000 // 10 segundos
-	});
+		Swal.fire({
+		    title: "Alerta",
+		    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
+		    icon: "info",
+		    allowOutsideClick: false,
+		    timer: 10000
+		});
 		
 	}
 

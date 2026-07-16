@@ -73,17 +73,21 @@ function buscarCampaniasA(valorBusqueda) {
 					mapaCampanias.set(campania.vc_tipo_campania, campania.pk_id_tipo_campania); // guarda el id
 				});
 			} else {
-				swal("La respuesta no contiene una lista válida de campañas", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "Advertencia",
+				    text: "La respuesta no contiene una lista válida de campañas",
+				    icon: "warning",
+				    allowOutsideClick: false
 				});
 			}
 		})
 		.catch(error => {
 			console.error("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false
 			});
 		})
 		.finally(() => {
@@ -107,7 +111,11 @@ function obtDatosBuro() {
 		.then(data => {
 
 			if (!data || Object.keys(data).length === 0) {
-				swal("No se cuenta con informacion registrada", { icon: "warning" });
+				Swal.fire({
+				    title: "",
+				    text: "No se cuenta con información registrada",
+				    icon: "warning"
+				});
 			} else {
 				llenarFormulario(data);
 			}
@@ -117,9 +125,11 @@ function obtDatosBuro() {
 		})
 		.catch(error => {
 			console.log("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false
 			});
 		})
 		.finally(() => {
@@ -138,27 +148,42 @@ function llenarFormulario(param) {
 	var deshabilitar = false;
 	//cuando no tiene registro de parametros de buro y es una campaña recurrente
 	if (param.idParametro == null) {
-		if (param.idCampania.i_tipo_campania > 1) {
-			deshabilitar = true;
-			tipoEval = Number(param.idCampania.i_tipo_buro);
-			Array.from(radios).forEach(radio => {
-				radio.checked = Number(radio.value) === tipoEval;
-				radio.disabled = deshabilitar;
-			});
-			swal("No cuenta con informacion registrada", { icon: "warning" });
+	    if (param.idCampania.i_tipo_campania > 1) {
+	        deshabilitar = true;
+	        tipoEval = Number(param.idCampania.i_tipo_buro);
 
-		} else {
-			swal("No cuenta con informacion registrada", { icon: "warning" });
-		}
+	        Array.from(radios).forEach(radio => {
+	            radio.checked = Number(radio.value) === tipoEval;
+	            radio.disabled = deshabilitar;
+	        });
+
+	        Swal.fire({
+	            title: "Advertencia",
+	            text: "No cuenta con información registrada.",
+	            icon: "warning",
+	            allowOutsideClick: false
+	        });
+
+	    } else {
+
+	        Swal.fire({
+	            title: "Advertencia",
+	            text: "No cuenta con información registrada.",
+	            icon: "warning",
+	            allowOutsideClick: false
+	        });
+
+	    }
 
 	} else {
-		// radio
-		tipoEval = Number(param.tipoEvaluacion);
 
-		Array.from(radios).forEach(radio => {
-			radio.checked = Number(radio.value) === tipoEval;
-			radio.disabled = param.idCampania.i_tipo_campania > 1;
-		});
+	    // Radio
+	    tipoEval = Number(param.tipoEvaluacion);
+
+	    Array.from(radios).forEach(radio => {
+	        radio.checked = Number(radio.value) === tipoEval;
+	        radio.disabled = param.idCampania.i_tipo_campania > 1;
+	    });
 
 	}
 
@@ -218,64 +243,57 @@ function obtenerIdCampaniaSeleccionada() {
 
 var dtosGuardarParamBC = "registroParamBC"
 function guardarParametrosBC() {
+    const form = document.getElementById("formParametrosBC");
+    const formData = new FormData(form);
 
-	//if (validarCampo() > 1) {
-	const form = document.getElementById('formParametrosBC');
-	const formData = new FormData(form);
+    document.getElementById("btnGuardarParamBC").disabled = true;
 
-	// Opcional: deshabilitar botón para evitar doble envío
-	document.getElementById('btnGuardarParamBC').disabled = true;
+    const tipoSeleccionado = document.querySelector(
+        'input[name="tipoEvaluacion"]:checked'
+    );
 
-	const tipoSeleccionado = document.querySelector('input[name="tipoEvaluacion"]:checked');
+    if (tipoSeleccionado) {
+        formData.set("tipoEvaluacion", tipoSeleccionado.value);
+    }
 
-	if (tipoSeleccionado) {
-		formData.set("tipoEvaluacion", tipoSeleccionado.value);
-	}
+    Swal.fire({
+        title: "Procesando solicitud",
+        text: "Por favor espera",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false
+    });
 
-	swal({
-		title: 'Procesando solicitud',
-		text: 'Por favor espera',
-		allowOutsideClick: false,
-		buttons: false,
-		closeOnClickOutside: false,
-		icon: 'info',
-	});
+    fetch(getAbsolutePath() + dtosGuardarParamBC, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Error en la solicitud");
+        }
 
-	fetch(getAbsolutePath() + dtosGuardarParamBC, {
-		method: "POST",
-		body: formData
-	})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error("Error en la solicitud");
-			}
-			return response.json(); // o .json() si el backend devuelve JSON
-		})
-		.then(data => {
-			console.log("Respuesta del servidor:", data);
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            title: "",
+            text: data.mensaje,
+            icon: data.tipo
+        });
+    })
+    .catch(error => {
+        console.error("Error:", error);
 
-			// Leer mensaje y tipo desde el JSON recibido
-			const mensaje = data.mensaje;
-			const tipo = data.tipo;
-			swal("", mensaje, tipo);
-
-		})
-		.catch(error => {
-			console.log("Error:", error);
-			alert("Ocurrió un error al guardar la campaña");
-		})
-		.finally(() => {
-			swal.close(); // cerrar el "Cargando..."
-			document.getElementById('btnGuardarParamBC').disabled = false;
-		});
-	/*} else {
-		swal("Hay datos requeridos", {
-			icon: "warning",
-			closeOnClickOutside: false,
-		});
-	}*/
-
-
+        Swal.fire({
+            title: "",
+            text: "Ocurrió un error al guardar la campaña",
+            icon: "error"
+        });
+    })
+    .finally(() => {
+        document.getElementById("btnGuardarParamBC").disabled = false;
+    });
 }
 function validarCampo() {
 	var pasaRegistro = 1;
@@ -372,9 +390,11 @@ function validarCampo() {
 				}
 			}
 		} else {
-			swal("Debes seleccionar una opción de tipo de evaluación", {
-				icon: "warning",
-				closeOnClickOutside: false,
+			Swal.fire({
+			    title: "",
+			    text: "Debes seleccionar una opción de tipo de evaluación",
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 			pasaRegistro = 0;
 		}

@@ -121,9 +121,11 @@ function subirArchivo() {
 
 		} else {
 
-			swal("Es necesario seleccionar un Archivo.", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "Error",
+			    text: "Es necesario seleccionar un archivo.",
+			    icon: "error",
+			    allowOutsideClick: false
 			});
 		}
 
@@ -141,11 +143,11 @@ function guardarDtosTmp() {
 
 
 	if (validarFormulario(form)) {
-		swal({
-			title: 'Datos requeridos',
-			text: 'Por favor complete todos los campos obligatorios.',
-			icon: 'warning',
-			button: 'Aceptar'
+		Swal.fire({
+		    title: "Datos requeridos",
+		    text: "Por favor complete todos los campos obligatorios.",
+		    icon: "warning",
+		    confirmButtonText: "Aceptar"
 		});
 
 	} else {
@@ -159,13 +161,15 @@ function guardarDtosTmp() {
 		formData.append("codCampania", codigoCamp);
 		// Opcional: deshabilitar botón para evitar doble envío
 		document.getElementById('btnGuardarCampania').disabled = true;
-		swal({
-			title: 'Procesando solicitud',
-			text: 'Por favor espera',
-			allowOutsideClick: false,
-			buttons: false,
-			closeOnClickOutside: false,
-			icon: 'info',
+		Swal.fire({
+		    title: "Procesando solicitud",
+		    text: "Por favor espera",
+		    icon: "info",
+		    allowOutsideClick: false,
+		    showConfirmButton: false,
+		    didOpen: () => {
+		        Swal.showLoading();
+		    }
 		});
 
 		fetch(getAbsolutePath() + dtosCampaniaTmp, {
@@ -197,15 +201,23 @@ function guardarDtosTmp() {
     				//mostrarOcultarProceso((data.registros.i_tipo_campania ===2)?0:1);
 				}
 
-				swal("", mensaje, tipo);
+				Swal.fire({
+				    title: "",
+				    text: mensaje,
+				    icon: tipo
+				});
 				
 			})
 			.catch(error => {
 				console.log("Error:", error);
-				alert("Ocurrió un error al guardar la campaña");
+				Swal.fire({
+				    title: "Error",
+				    text: "Ocurrió un error al guardar la campaña.",
+				    icon: "error"
+				});
 			})
 			.finally(() => {
-				swal.close(); // cerrar el "Cargando..."
+				Swal.close(); // cerrar el "Cargando..."
 				document.getElementById('btnGuardarCampania').disabled = false;
 				
 				
@@ -307,7 +319,11 @@ function procesarCampaniaTmp(data) {
 			
 			tablaProceso(data.listaProcesos);
 			
-			swal("", mensaje, tipo);
+			Swal.fire({
+			    title: "",
+			    text: mensaje,
+			    icon: tipo
+			});
 			
 			if (tipo === "success" || tipo === "OK") {
             	cerrarModalArchivo();
@@ -319,7 +335,7 @@ function procesarCampaniaTmp(data) {
 			alert("Ocurrió un error");
 		})
 		.finally(() => {
-			swal.close(); // cerrar el "Cargando..."
+			Swal.close(); // cerrar el "Cargando..."
 			document.getElementById('btnGuardarFile').disabled = false;
 			// ajuste por incidencia
 			//window.location.href = getAbsolutePath() + "campaniasTemporales";
@@ -382,9 +398,11 @@ function buscarCampaniasT(valorBusqueda) {
 		})
 		.catch(error => {
 			console.error("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al buscar campañas activas.",
+			    icon: "error",
+			    allowOutsideClick: false
 			});
 		})
 		.finally(() => {
@@ -532,7 +550,11 @@ function obtFechaFin(){
 			if(data.dfin.length === 0){
 				const mensaje = data.mensaje;
 				const tipo = data.tipo;
-				swal("", mensaje, tipo);
+				Swal.fire({
+				    title: "",
+				    text: mensaje,
+				    icon: tipo
+				});
 			}else{
 				document.getElementById('fechaFin').value = data.dfin.split('T')[0];
 			}
