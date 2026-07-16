@@ -281,7 +281,6 @@ searchInput.addEventListener('input', function() {
  * Lista de telefonos
  */
 function listaTelefonos() {
-	console.log("AQUI")
 	$.ajax({
 		url: newUrlBase + "lista_telefonos",
 		type: "GET",
@@ -291,28 +290,26 @@ function listaTelefonos() {
 			$.each(respuesta.telefonos, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-6'>"
-					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='abrirTelefono("
-					+ opt.pk_id_telefono
-					+ ")' id="
-					+ opt.pk_id_telefono
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-pencil'></i></button></div>";
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+					+ " title='Editar' type='button'"
+					+ " onclick='abrirTelefono(" + opt.pk_id_telefono + ")' id='" + opt.pk_id_telefono + "'>"
+					+ "<i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Vigencia' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='vigenciaTelefono("
-					+ opt.pk_id_telefono + ', ' + opt.i_estatus
-					+ ")' id="
-					+ opt.pk_id_telefono
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-unlock'></i></button></div></div>";
+				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;'"
+					+ " class='btn btn-primary' title='Vigencia' type='button'"
+					+ " onclick='vigenciaTelefono(" + opt.pk_id_telefono + ", " + opt.i_estatus + ")'"
+					+ " id='" + opt.pk_id_telefono + "'>"
+					+ "<i class='bi bi-unlock'></i></button></div></div>";
 
 				var vigente = opt.i_estatus == 1 ? "Si" : "No";
 
-				var validarCorreo = opt.vc_correo_electronico.length > 30 ? opt.vc_correo_electronico.substring(0, 30) + '...' : opt.vc_correo_electronico;
-				var validarDireccion = opt.fk_id_sucursal.vc_direccioncompleta.length > 30 ? opt.fk_id_sucursal.vc_direccioncompleta.substring(0, 30) + '...' : opt.fk_id_sucursal.vc_direccioncompleta;
+				var validarCorreo = opt.vc_correo_electronico.length > 30
+					? opt.vc_correo_electronico.substring(0, 30) + '...'
+					: opt.vc_correo_electronico;
+
+				var validarDireccion = opt.fk_id_sucursal.vc_direccioncompleta.length > 30
+					? opt.fk_id_sucursal.vc_direccioncompleta.substring(0, 30) + '...'
+					: opt.fk_id_sucursal.vc_direccioncompleta;
 
 				vistaTablaTel.row.add([
 					opt.pk_id_telefono,
@@ -326,11 +323,6 @@ function listaTelefonos() {
 					btnEditar + btnEstatus
 				]).draw(false);
 			});
-
-			//console.log(telefonos);
-		},
-		error: function(error) {
-			//console.log(error);
 		}
 	});
 }
@@ -352,21 +344,27 @@ function agregarTelefono(dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			swal(
-				"¡Procesado!",
-				"El estatus del mensaje ha sido actualizado.",
-				"success"
-			)
-			limpiarFormTelefonos();
-			listaTelefonos();
-			$("#telefonoModal").hide();
-			$('body').removeClass('modal-open');
-			$('.modal-backdrop').remove();
-		}, error: function(error) {
-			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'success',
+				title: '¡Procesado!',
+				text: 'El estatus del mensaje ha sido actualizado.'
+			}).then(() => {
+				limpiarFormTelefonos();
+				listaTelefonos();
+
+				const modalEl = document.getElementById('telefonoModal');
+				const modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+				if (modalInstance) {
+					modalInstance.hide();
+				}
+			});
+		},
+		error: function(error) {
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de guardar los datos',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -382,8 +380,12 @@ function agregarTelefono(dto) {
  */
 // Función para cerrar el modal
 function cerrarModal() {
-	$('#editarTelModal').modal('hide');
-	limpiarAlertas();
+    const modalEl = document.getElementById('editarTelModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) {
+        modal.hide();
+    }
+    limpiarAlertas();
 }
 
 function limpiarAlertas() {
@@ -422,21 +424,27 @@ function editarTelefono(id, dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			swal(
-				"¡Procesado!",
-				"El estatus del mensaje ha sido actualizado.",
-				"success"
-			)
-			limpiarFormTelefonos();
-			listaTelefonos();
-			$("#editarTelModal").hide();
-			$('body').removeClass('modal-open');
-			$('.modal-backdrop').remove();
-		}, error: function(error) {
-			//console.log(error);
-			swal("Hubo un error al momento de actualizar los datos", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'success',
+				title: '¡Procesado!',
+				text: 'El estatus del mensaje ha sido actualizado.'
+			}).then(() => {
+				limpiarFormTelefonos();
+				listaTelefonos();
+
+				const modalEl = document.getElementById('editarTelModal');
+				const modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+				if (modalInstance) {
+					modalInstance.hide();
+				}
+			});
+		},
+		error: function(error) {
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de actualizar los datos',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -468,7 +476,9 @@ function abrirTelefono(id) {
 		dataType: "JSON",
 		success: function(respuesta) {
 			// Mostrar el modal de editar
-			$('#editarTelModal').modal('show');
+			const modalEl = document.getElementById('editarTelModal');
+			const modal = new bootstrap.Modal(modalEl);
+			modal.show();
 
 			sucursal.value = respuesta.telefono.fk_id_sucursal.vc_nombresucursal;
 			direccion.value = respuesta.telefono.fk_id_sucursal.vc_direccioncompleta;
@@ -480,9 +490,10 @@ function abrirTelefono(id) {
 
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de mostrar la información", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -501,18 +512,18 @@ function vigenciaTelefono(id, vigente) {
 	//console.log(id);
 	estatus = vigente == 1 ? 0 : 1;
 	//console.log(estatus);
-	swal({
-		text: '¿Cambiar la vigencia del teléfono?',
-		closeOnClickOutside: false,
-		icon: "warning",
-		buttons: ["Salir", "Aceptar"],
-		confirmButtonColor: '#3498DB',
-	})
-		.then((willDelete) => {
-			if (willDelete) {
-				cambiarEstatusTelefono(id, estatus);
-			} else { }
-		});
+	Swal.fire({
+	    text: '¿Cambiar la vigencia del teléfono?',
+	    icon: 'warning',
+	    showCancelButton: true,
+	    confirmButtonText: 'Aceptar',
+	    cancelButtonText: 'Salir',
+	    allowOutsideClick: false
+	}).then((result) => {
+	    if (result.isConfirmed) {
+	        cambiarEstatusTelefono(id, estatus);
+	    }
+	});
 }
 
 function cambiarEstatusTelefono(id, estatus) {
@@ -521,15 +532,16 @@ function cambiarEstatusTelefono(id, estatus) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaTelefonos();
 				});
 		}, error: function(error) {
-			swal({
+			Swal.fire({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
 				icon: "warning",
@@ -559,23 +571,16 @@ function listaCodigosAccion() {
 			$.each(respuesta.lista, function(idx, opt) {
 
 				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
-					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='abrirAccion("
-					+ opt.pk_id_codigo_accion
-					+ ")' id="
-					+ opt.pk_id_codigo_accion
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-pencil'></i></button></div>";
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+					+ " title='Editar' type='button'"
+					+ " onclick='abrirAccion(" + opt.pk_id_codigo_accion + ")' id='" + opt.pk_id_codigo_accion + "'>"
+					+ "<i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-4'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='estatusAccion("
-					+ opt.pk_id_codigo_accion + ', ' + opt.i_estatus
-					+ ")' id="
-					+ opt.pk_id_codigo_accion
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
+				var btnEstatus = "<div class='col-sm-4'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+					+ " title='Estatus' type='button'"
+					+ " onclick='estatusAccion(" + opt.pk_id_codigo_accion + ", " + opt.i_estatus + ")'"
+					+ " id='" + opt.pk_id_codigo_accion + "'>"
+					+ "<i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
 
 				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 
@@ -619,7 +624,7 @@ function validarFormAccion() {
 	// Si los valores son diferentes de vacio
 	if (codA.includes(nombreAccion)) {
 
-		swal("El codigo ya fue registrado anteriormente", {
+		Swal.fire("El codigo ya fue registrado anteriormente", {
 			icon: "warning"
 		});
 
@@ -635,7 +640,7 @@ function validarFormAccion() {
 			// Si los valores estan vacios
 		} else {
 			// Se ejecuta la validacion
-			swal("Falta información por llenar", {
+			Swal.fire("Falta información por llenar", {
 				icon: "warning"
 			});
 		}
@@ -655,9 +660,10 @@ function agregarAccion(dto) {
 		success: function(respuesta) {
 			document.getElementById('modal-codigoAccion').style.display = 'none';
 			$('#modal-codigoAccion').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosAccion();
@@ -666,7 +672,7 @@ function agregarAccion(dto) {
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
+			Swal.fire("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
@@ -697,7 +703,7 @@ function validarEditarAccion(id) {
 		// Si los valores estan vacios
 	} else {
 		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
+		Swal.fire("Falta información por llenar", {
 			icon: "warning"
 		});
 	}
@@ -715,16 +721,17 @@ function editarAccion(id, dto) {
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoAccion').style.display = 'none';
 			$('#modalEditar-codigoAccion').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosAccion();
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de actualizar los datos", {
+			Swal.fire("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
@@ -752,9 +759,10 @@ function abrirAccion(id) {
 
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de mostrar la información", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -773,7 +781,7 @@ function estatusAccion(id, valor) {
 	//console.log(id);
 	estatus = valor == 1 ? 0 : 1;
 	//console.log(estatus);
-	swal({
+	Swal.fire({
 		text: '¿Cambiar el estatus del código de acción?',
 		closeOnClickOutside: false,
 		icon: "warning",
@@ -793,15 +801,16 @@ function cambiarEstatusAccion(id, estatus) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosAccion();
 				});
 		}, error: function(error) {
-			swal({
+			Swal.fire({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
 				icon: "warning",
@@ -829,24 +838,17 @@ function listaCodigosResultado() {
 			vistaTablaCR.clear().draw();
 			$.each(respuesta.lista, function(idx, opt) {
 
-				var btnEditar = "<div class='row'><div class='col-sm-2'></div><div class='col-sm-4'>"
-					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Editar' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='abrirResultado("
-					+ opt.pk_id_codigo_resultado
-					+ ")' id="
-					+ opt.pk_id_codigo_resultado
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-pencil'></i></button></div>";
+				var btnEditar = "<div class='row'><div class='col-sm-6'>"
+					+ "<button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary'"
+					+ " title='Editar' type='button'"
+					+ " onclick='abrirResultado(" + opt.pk_id_codigo_resultado + ")' id='" + opt.pk_id_codigo_resultado + "'>"
+					+ "<i class='bi bi-pencil'></i></button></div>";
 
-				var btnEstatus = "<div class='col-sm-4'><button style='background: #0dcaf0; border-color: #0dcaf0;' class='btn btn-primary' tabindex='0' data-bs-toggle='modal'"
-					+ " title='Estatus' data-bs-target='#' aria-controls='table-datatable' type='button'"
-					+ " onclick='estatusResultado("
-					+ opt.pk_id_codigo_resultado + ', ' + opt.i_estatus
-					+ ")' id="
-					+ opt.pk_id_codigo_resultado
-					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-unlock'></i></button></div><div class='col-sm-2'></div>";
+				var btnEstatus = "<div class='col-sm-6'><button style='background: #0dcaf0; border-color: #0dcaf0;'"
+					+ " class='btn btn-primary' title='Estatus' type='button'"
+					+ " onclick='estatusResultado(" + opt.pk_id_codigo_resultado + ", " + opt.i_estatus + ")'"
+					+ " id='" + opt.pk_id_codigo_resultado + "'>"
+					+ "<i class='bi bi-unlock'></i></button></div></div>";
 
 				var estatus = opt.i_estatus == 1 ? "Activo" : "Inactivo";
 
@@ -889,7 +891,7 @@ function validarFormResultado() {
 	var descripcionResultado = $('#descripcionResultado').val();
 	if (codR.includes(nombreResultado)) {
 
-		swal("El codigo ya fue registrado anteriormente", {
+		Swal.fire("El codigo ya fue registrado anteriormente", {
 			icon: "warning"
 		});
 
@@ -906,7 +908,7 @@ function validarFormResultado() {
 			// Si los valores estan vacios
 		} else {
 			// Se ejecuta la validacion
-			swal("Falta información por llenar", {
+			Swal.fire("Falta información por llenar", {
 				icon: "warning"
 			});
 		}
@@ -924,9 +926,10 @@ function agregarResultado(dto) {
 		success: function(respuesta) {
 			document.getElementById('modal-codigoResultado').style.display = 'none';
 			$('#modal-codigoResultado').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosResultado();
@@ -935,9 +938,10 @@ function agregarResultado(dto) {
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    icon: 'warning',
+			    text: 'Hubo un error al momento de guardar los datos',
+			    allowOutsideClick: false
 			});
 		}
 	});
@@ -965,7 +969,7 @@ function validarEditarResultado(id) {
 		// Si los valores estan vacios
 	} else {
 		// Se ejecuta la validacion
-		swal("Falta información por llenar", {
+		Swal.fire("Falta información por llenar", {
 			icon: "warning"
 		});
 	}
@@ -983,16 +987,17 @@ function editarResultado(id, dto) {
 		success: function(respuesta) {
 			document.getElementById('modalEditar-codigoResultado').style.display = 'none';
 			$('#modalEditar-codigoResultado').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosResultado();
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de actualizar los datos", {
+			Swal.fire("Hubo un error al momento de actualizar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
@@ -1020,9 +1025,10 @@ function abrirResultado(id) {
 
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de mostrar la información", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1041,7 +1047,7 @@ function estatusResultado(id, valor) {
 	//console.log(id);
 	estatus = valor == 1 ? 0 : 1;
 	//console.log(estatus);
-	swal({
+	Swal.fire({
 		text: '¿Cambiar el estatus del código de resultado?',
 		closeOnClickOutside: false,
 		icon: "warning",
@@ -1061,15 +1067,16 @@ function cambiarEstatusResultado(id, estatus) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaCodigosResultado();
 				});
 		}, error: function(error) {
-			swal({
+			Swal.fire({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
 				icon: "warning",
@@ -1138,10 +1145,10 @@ function catalogoCodigoA() {
 				valorCodigoA = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1170,10 +1177,10 @@ function catalogoCodigoR() {
 				valorCodigoR = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1201,10 +1208,10 @@ function catalogoAccionRealizar() {
 				valorAccionR = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1232,10 +1239,10 @@ function catalogoBloqueo() {
 				valorBloqueo = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1265,10 +1272,10 @@ function catalogoGestion() {
 				valorAccionR = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1301,10 +1308,10 @@ function catalogoTipoGestion() {
 				valorAccionR = opcionBusqueda.value;
 			});
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1354,12 +1361,12 @@ function validarFormRelacion() {
 			agregarRelacion(dto);
 
 		} else {
-			swal("Falta información por llenar", {
+			Swal.fire("Falta información por llenar", {
 				icon: "warning"
 			});
 		}
 	} else {
-		swal("Ya existe una relacion entre los dos codigos seleccionados", {
+		Swal.fire("Ya existe una relacion entre los dos codigos seleccionados", {
 			icon: "warning"
 		});
 	}
@@ -1378,9 +1385,10 @@ function agregarRelacion(dto) {
 		success: function(respuesta) {
 			document.getElementById('modal-agregarRelacion').style.display = 'none';
 			$('#modal-agregarRelacion').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaDeRelaciones();
@@ -1389,7 +1397,7 @@ function agregarRelacion(dto) {
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
+			Swal.fire("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
@@ -1496,9 +1504,10 @@ function abrirRelacion(id) {
 			catalogoTipoGes(selectTipoGes, relacion);
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de mostrar la información", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1527,10 +1536,10 @@ function catalogoCodigoAe(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1559,10 +1568,10 @@ function catalogoCodigoRe(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1600,10 +1609,10 @@ function catalogoRealizarE(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1632,10 +1641,10 @@ function catalogoGestionE(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1665,10 +1674,10 @@ function catalogoBloqueoE(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1702,10 +1711,10 @@ function catalogoTipoGes(select, relacion) {
 				}
 			}
 		}, error: function(error) {
-			swal({
-				closeOnClickOutside: false,
-				text: "Hubo un error al momento de mostrar la información",
-				icon: "warning",
+			Swal.fire({
+				icon: 'warning',
+				text: 'Hubo un error al momento de mostrar la información',
+				allowOutsideClick: false
 			});
 		}
 	});
@@ -1755,16 +1764,17 @@ function editarRelacion(dto) {
 		success: function(respuesta) {
 			document.getElementById('modal-editarRelacion').style.display = 'none';
 			$('#modal-editarRelacion').modal('hide');
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaDeRelaciones();
 				});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
+			Swal.fire("Hubo un error al momento de guardar los datos", {
 				closeOnClickOutside: false,
 				icon: "warning",
 			});
@@ -1782,7 +1792,7 @@ function editarRelacion(dto) {
 function vigenciaRelacion(id, vigente) {
 	var estatus = null;
 	estatus = vigente == 1 ? 0 : 1;
-	swal({
+	Swal.fire({
 		text: '¿Cambiar el estatus de la relación?',
 		closeOnClickOutside: false,
 		icon: "warning",
@@ -1802,15 +1812,16 @@ function cambiarEstatusRelacion(id, estatus) {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			swal(respuesta.mensaje, {
-				closeOnClickOutside: false,
-				icon: "success",
+			Swal.fire({
+				icon: 'success',
+				text: respuesta.mensaje,
+				allowOutsideClick: false
 			})
 				.then((value) => {
 					listaDeRelaciones();
 				});
 		}, error: function(error) {
-			swal({
+			Swal.fire({
 				closeOnClickOutside: false,
 				text: "Hubo un error al momento de actualizar los datos",
 				icon: "warning",

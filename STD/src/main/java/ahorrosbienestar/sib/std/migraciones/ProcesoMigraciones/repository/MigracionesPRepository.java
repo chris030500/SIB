@@ -3,10 +3,8 @@ package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository;
  
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import java.time.LocalDateTime;
-
-import javax.transaction.Transactional;
-
-// import jakarta.transaction.Transactional;
+ 
+import jakarta.transaction.Transactional;
  
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

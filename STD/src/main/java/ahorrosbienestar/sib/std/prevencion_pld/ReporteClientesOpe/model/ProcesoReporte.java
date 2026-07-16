@@ -1,19 +1,10 @@
 //ProcesoReporte
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-//import jakarta.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
  
 /**  Tabla: SIB.TBL_PLD_PROCESO_REPORTE  */
 @Entity

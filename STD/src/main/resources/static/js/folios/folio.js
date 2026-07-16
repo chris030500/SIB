@@ -1,3 +1,4 @@
+// @ts-nocheck
 var folioID;
 var puesto = "buscarPuesto?empleadoID=";
 var buscarxArea = "busquedaxArea?areaID=";
@@ -70,7 +71,7 @@ function tamFile() {
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
 		if (this.files[0].size > tamMaxFile) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
 				icon: "warning",
@@ -244,7 +245,7 @@ function calcularVencimiento(opcion) {
 				fechaFinD = calcularPlazo(1, fechaInicioD, fechaFinD);
 
 			} else {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Seleccionar dia habil",
 					icon: "warning",
@@ -260,7 +261,7 @@ function calcularVencimiento(opcion) {
 				}
 
 			} else {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Seleccionar dia habil",
 					icon: "warning",
@@ -317,21 +318,21 @@ function eventosModal() {
 
 
 				} else {
-					swal({
+					Swal.fire({
 						title: "Error",
 						text: "Registrar datos obligatorios",
 						icon: "warning",
 					});
 				}
 			} else {
-				swal({
+				Swal.fire({
 					title: "Error",
 					text: "Fecha de Registro y/o Fecha de Vencimiento son Incorrectas",
 					icon: "warning",
 				});
 			}
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "Fecha en fin de semana.",
 				icon: "warning",
@@ -356,7 +357,7 @@ function eventosModal() {
 				tblObservacionesLoad();
 			}
 		} else {
-			swal({
+			Swal.fire({
 				title: "Error",
 				text: "Fecha de vencimiento de la observacion es mayor a la fecha de vencimiento del folio.",
 				icon: "warning",
@@ -390,10 +391,10 @@ function eventosModal() {
 			});
 
 		} else {
-			swal({
+			Swal.fire({
 				title: "Informacion.",
 				text: "Es necesario seleccionar un Archivo.",
-				icon: "Warning",
+				icon: "warning",
 				confirmButtonText: 'Aceptar'
 			});
 		}
@@ -445,14 +446,14 @@ function verPDF(id) {
 
 function mnstblAdjuntos(num) {
 	if (num > 0) {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "Lista de Archivos del Oficio.",
 			icon: "success",
 			confirmButtonText: 'Aceptar'
 		})
 	} else {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "El Oficio no cuenta con Archivos registrados",
 			icon: "success",
@@ -475,7 +476,7 @@ function addArchivos(data) {
 			$.blockUI({ message: '<H2>Espere un momento...</H2>' });
 		},
 		success: function(data) {
-			swal({
+			Swal.fire({
 				title: "",
 				text: data[0],
 				icon: "success",
@@ -485,7 +486,7 @@ function addArchivos(data) {
 			});
 		},
 		error: function(data) {
-			swal({
+			Swal.fire({
 				title: "Alerta",
 				text: "El tamaño del archivo es mayor al permitirdo 30MB.",
 				icon: "warning",
@@ -521,7 +522,7 @@ function tblObservacionesLoad() {
 			urlServicio = urlServicio + "&obsOficio=" + encodeURIComponent(document.getElementById("obsOficio").value);
 			peticionPost(urlServicio, 2, folioID);
 		} else {
-			swal({
+			Swal.fire({
 				title: "Alerta",
 				text: "Todos los datos son obligatorios.",
 				icon: "warning",
@@ -529,7 +530,7 @@ function tblObservacionesLoad() {
 		}
 
 	} else {
-		swal({
+		Swal.fire({
 			title: "Alerta",
 			text: "Debe seleccionar un Oficio para relacionar la Observacion",
 			icon: "warning",
@@ -610,14 +611,14 @@ function modificarObs() {
 
 			peticionPost(urlServicio, 2, folioID);
 		} else {
-			swal({
+			Swal.fire({
 				title: "Alerta",
 				text: "Todos los datos son obligatorios.",
 				icon: "warning",
 			});
 		}
 	} else {
-		swal({
+		Swal.fire({
 			title: "Alerta",
 			text: "Debe seleccionar un Oficio para relacionar la Observacion",
 			icon: "warning",
@@ -683,36 +684,32 @@ function peticionPost(urlServicio, num, numFolio) {
 			setTimeout($.unblockUI, 100);
 		},
 		success: function(respuesta) {
-			swal({
-				title: "",
-				text: respuesta[0],
-				icon: "success",
-				confirmButtonText: 'Aceptar'
-			}).then(resp => {
+		    Swal.fire({
+		        title: "",
+		        text: respuesta[0],
+		        icon: "success",
+		        confirmButtonText: "Aceptar"
+		    }).then(() => {
 
-				if (num == 2) {
-					//obtener registros y cargar datos en tabla observaciones
-					var url = getAbsolutePath() + buscarObservaciones + numFolio;
-					obtenerDatostblObservaciones(url);
-					cargarTablaFolios();
-					reiniciarDatos();
-				} else if (num == 1) {
-					//cargar datos de la tabla de folios
-					document.getElementById("idFolioSelec").value == 0;
-					folioID = 0;
-					tblObservacion.clear().draw();
-					cargarTablaFolios();
-					reiniciarDatos();
-					document.getElementById("lblSeleccion").innerText = "";
+		        if (num == 2) {
+		            var url = getAbsolutePath() + buscarObservaciones + numFolio;
+		            obtenerDatostblObservaciones(url);
+		            cargarTablaFolios();
+		            reiniciarDatos();
+		        } else if (num == 1) {
+		            document.getElementById("idFolioSelec").value = 0;
+		            folioID = 0;
+		            tblObservacion.clear().draw();
+		            cargarTablaFolios();
+		            reiniciarDatos();
+		            document.getElementById("lblSeleccion").innerText = "";
+		        }
 
-					//window.location.href = getAbsolutePath() + inicio;
-				}
-				setTimeout($.unblockUI, 100);
-			});
-
-
+		        setTimeout($.unblockUI, 100);
+		    });
+		
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
@@ -825,7 +822,7 @@ function obtEmpleadoArea(idArea) {
 		var buscarEmpleados = getAbsolutePath() + buscarxArea + idArea.value;
 		listaResponsable(buscarEmpleados, 0);
 	} else {
-		swal({
+		Swal.fire({
 			title: "",
 			text: "Seleccione una Area de Atencion Valida.",
 			icon: "warning",
@@ -914,14 +911,14 @@ function obtenerDatostblObservaciones(url) {
 
 function mnsExisteRegistros(num) {
 	if (num > 0) {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "Se consultaron las observaciones del Oficio.",
 			icon: "success",
 			confirmButtonText: 'Aceptar'
 		})
 	} else {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "El Oficio no cuenta con observaciones registradas",
 			icon: "success",
@@ -940,36 +937,35 @@ var tblOficio;
 var tblAdjuntos;
 function inicioTabla() {
 
-	tblOficio = $("#tblOficio").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
-	});
+    tblOficio = $("#tblOficio").DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        'aoColumnDefs': [{
+            'bSortable': false,
+            'aTargets': [-1]
+        }]
+    });
 
-	tblObservacion = $("#tblObservacion").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
+    tblObservacion = $("#tblObservacion").DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        'aoColumnDefs': [{
+            'bSortable': false,
+            'aTargets': [-1]
+        }]
+    });
 
-	});
-	tblAdjuntos = $("#tblAdjuntos").DataTable({
-		"language": {
-			"url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-		},
-		'aoColumnDefs': [{
-			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
-		}]
-
-	});
+    tblAdjuntos = $("#tblAdjuntos").DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+        },
+        'aoColumnDefs': [{
+            'bSortable': false,
+            'aTargets': [-1]
+        }]
+    });
 }
 function editarFolio(id) {
 
@@ -1036,7 +1032,7 @@ function obtenerObservacion(url) {
 		setTimeout($.unblockUI, 100);
 	});
 	setTimeout($.unblockUI, 100);
-	swal({
+	Swal.fire({
 		title: "Informacion.",
 		text: "Se consulto la informacion de la observacion",
 		icon: "success",
@@ -1053,7 +1049,7 @@ function asignarArchivo(archivo) {
 		$('#file').attr("accept", extension);
 		$('#file').attr("disabled", false);
 	} else {
-		swal({
+		Swal.fire({
 			title: "Informacion.",
 			text: "Se requiere seleccionar una opcion valida",
 			icon: "success",

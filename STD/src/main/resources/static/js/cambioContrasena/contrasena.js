@@ -5,81 +5,79 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
+function irLogin() {
+	window.location.replace(window.location.origin + "/STD/login?error=passwordChanged");
+}
+
 //Funcion para que genere la contraseña
 function generarContrasena() {
 	var urlBase = getAbsolutePath();
 	console.log("Entro en generarContrasena");
 	var contrasenia = $('#password').val();
 
-	//var contrasena = $('#contrasena').val();
-	//let mensaje = data.value;
 	console.log("Contraeña: " + contrasenia);
-	//Primero validamos que la contraseña cumpla con los parametros solicitados
+
 	$.ajax({
 		url: urlBase + "mensajeContrasena?contrasena=" + contrasenia,
 		type: "GET",
 		success: function(respuesta) {
 			console.log("Entro en success1: " + respuesta);
-			if (respuesta != "Si cumple con los parametros requeridos") {
-				swal({
-					type: 'warning',
-					title: respuesta,
-					showConfirmButton: false
 
+			if (respuesta != "Si cumple con los parametros requeridos") {
+				Swal.fire({
+					icon: 'warning',
+					title: respuesta,
+					confirmButtonText: 'Aceptar'
 				});
-			} else if (respuesta == "Si cumple con los parametros requeridos") {
+
+			} else {
 				$.ajax({
 					url: urlBase + "guardar_contrasena?password=" + contrasenia,
 					type: "POST",
 					data: contrasenia,
 					success: function() {
 						console.log("Entro en guardar contraseña");
-						swal({
-							type: 'success',
-							title: 'Contraseña cambiada correctamente',
-							showConfirmButton: false
-						}).then((result) => {
-							window.location.replace(urlBase);
-						});
 
+						Swal.fire({
+							icon: 'success',
+							title: 'Contraseña cambiada correctamente',
+							confirmButtonText: 'Aceptar'
+						}).then(() => {
+							irLogin();
+						});
 					},
-					error: function(xhr, status, error) {
+					error: function(xhr) {
 						if (xhr.status === 400) {
 							var errorMessage = xhr.responseText;
-							// Mostrar el mensaje de error al usuario
-							console.log(errorMessage);
-							swal({
-								type: 'warning',
+
+							Swal.fire({
+								icon: 'warning',
 								title: errorMessage,
-								showConfirmButton: false
-							}).then((result) => {
-								window.location.replace(urlBase);
+								confirmButtonText: 'Aceptar'
+							}).then(() => {
+								irLogin();
 							});
 						} else {
-							// Manejar otros errores de la solicitud AJAX
-							swal({
-								type: 'warning',
+							Swal.fire({
+								icon: 'warning',
 								title: "Error al cambiar la contraseña",
-								showConfirmButton: false
-							}).then((result) => {
-								window.location.replace(urlBase);
+								confirmButtonText: 'Aceptar'
+							}).then(() => {
+								irLogin();
 							});
 						}
 					}
 				});
 			}
-
-
 		},
 		error: function(respuesta) {
 			console.log("Entro en error");
-			swal({
-				type: 'warning',
+
+			Swal.fire({
+				icon: 'warning',
 				title: respuesta,
-				showConfirmButton: false
-
+				confirmButtonText: 'Aceptar'
 			});
-
 		}
 	});
 }

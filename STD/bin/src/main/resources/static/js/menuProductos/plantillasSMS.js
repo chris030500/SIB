@@ -32,7 +32,12 @@ function eventoGuardar(){
 		}	
 
 	}else{
-		swal("!Alerta¡", "Registrar datos obligatorios","error");
+		Swal.fire({
+					title: '¡Alerta!',
+					text: 'Registrar datos obligatorios',
+					icon: 'error',
+					confirmButtonText: 'Aceptar'
+				});
 	}
 	
 }
@@ -73,14 +78,14 @@ function serviciosSMS(servicio){
 function peticionPost(urlServicio, servicio) {
 	
 	Swal.fire({
-    		title: 'Procesando..',
-    		html: 'Espere Por Favor...',
-    		allowOutsideClick: false,
-    		showConfirmButton: false,
-    		onBeforeOpen: () => {
-      			Swal.showLoading();
-    		}
-  	});
+			title: 'Procesando..',
+			html: 'Espere Por Favor...',
+			allowOutsideClick: false,
+			showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
 	
 	$.ajax({
 		url: urlServicio,
@@ -91,7 +96,11 @@ function peticionPost(urlServicio, servicio) {
 		complete: function() {
 		},
 		success: function(respuesta) {
-			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
+			Swal.fire({
+							text: respuesta.mensaje,
+							icon: respuesta.tipo === 'error' ? 'error' : 'success',
+							confirmButtonText: 'Aceptar'
+						}).then((resp) => {
 
 				if (servicio == 1) {
 					limpiarDatosPlantilla();
@@ -111,8 +120,13 @@ function peticionPost(urlServicio, servicio) {
 			});
 
 
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal("Error","Se presento un error, intente mas tarde.", "error");
+		}, 		error: function(XMLHttpRequest, textStatus, errorThrown) {
+					Swal.fire({
+						title: 'Error',
+						text: 'Se presento un error, intente mas tarde.',
+						icon: 'error',
+						confirmButtonText: 'Aceptar'
+					});
 		}
 	});
 }
@@ -133,11 +147,11 @@ function obtDatosClass(idClass) {
 		
 		listaClasifacion(url,0);
 	} else {
-		swal({
-			title: "",
-			text: "Seleccione un tipo de Campaña.",
-			icon: "warning",
-		});
+		Swal.fire({
+					text: 'Seleccione un tipo de Campaña.',
+					icon: 'warning',
+					confirmButtonText: 'Aceptar'
+				});
 		
 		$("#slcClasificacion").empty();
 		$("#slcClasificacion").prepend("<option value=0  selected='selected'>Seleccione</opcion>");
@@ -239,16 +253,15 @@ function editarPlantilla(idEditar){
 }
 
 function mensajeBanner(){
-		// Mostrar el mensaje de procesamiento utilizando Swal
-    Swal.fire({
-        title: 'Consultando Informacion...',
-        html: 'Espere por favor...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        onBeforeOpen: () => {
-            Swal.showLoading();
-        }
-    });
+	Swal.fire({
+		title: 'Consultando Informacion...',
+		html: 'Espere por favor...',
+		allowOutsideClick: false,
+		showConfirmButton: false,
+		didOpen: () => {
+			Swal.showLoading();
+		}
+	});
 }
 
 function obtPlantilla(urlObt){

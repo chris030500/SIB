@@ -199,36 +199,25 @@ function adjuntarFiles(idBase) {
 }
 
 function obtListadoArchivos(ulrServicio){
-	// Mostrar SweetAlert con spinner
-
-    swal({
-      title: "Consultando información",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        },
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false,
+    Swal.fire({
+        title: "Consultando información",
+        html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
     });
-    
-	$.getJSON(url, {}, function(data) {
-		tblAdjuntos.clear().draw();
-		$.each(data, function(idx, opt) {
 
-			var botones = " <button class='btn btn-info' tabindex='0'"
-				+ " title='Ver Archivo' type='button'"
-				+ " onclick='verArchivo(this)'>"
-				+ " <i class='bi bi-download'></i></button>";
-			tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion, opt.fechaModifacion, opt.rutaArchivo, botones]).draw(false);
-		});
-		swal.close();
-		//setTimeout($.unblockUI, 100);
-		//tblAdjuntos.column(4).visible(false);
-	});
+    $.getJSON(ulrServicio, {}, function(data) {
+        tblAdjuntos.clear().draw();
+        $.each(data, function(idx, opt) {
+            var botones = " <button class='btn btn-info' tabindex='0'"
+                + " title='Ver Archivo' type='button'"
+                + " onclick='verArchivo(this)'>"
+                + " <i class='bi bi-download'></i></button>";
+            tblAdjuntos.row.add([opt.nombreArchivo, opt.pesoArchivo, opt.fechaCreacion, opt.fechaModifacion, opt.rutaArchivo, botones]).draw(false);
+        });
+        Swal.close();
+    });
 }
 
 var abrirArchivo = "verArchivo?ruta=";
@@ -242,105 +231,96 @@ function verArchivo(dtosArchivo) {
 }
 
 function asignarArchivo(archivo) {
+    if (document.getElementById(archivo.id).value > 0) {
+        var opcionesArchivo = document.getElementById(archivo.id);
+        var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+        document.getElementById("file").value = "";
+        $('#file').attr("accept", extension);
+        $('#file').attr("disabled", false);
+    } else {
+        Swal.fire({
+            text: "Se requiere seleccionar una opcion valida.",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
 
-	if (document.getElementById(archivo.id).value > 0) {
-		var opcionesArchivo = document.getElementById(archivo.id);
-		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
-		document.getElementById("file").value = "";
-		$('#file').attr("accept", extension);
-		$('#file').attr("disabled", false);
-	} else {	
-		swal("Se requiere seleccionar una opcion valida.", {
-				closeOnClickOutside: false,
-				icon: "error",
-			});
-
-		
-
-		var opcionesArchivo = document.getElementById(archivo.id);
-		var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
-		document.getElementById("file").value = "";
-		$('#file').attr("accept", "");
-		$('#file').attr("disabled", true);
-
-	}
-
-
+        var opcionesArchivo = document.getElementById(archivo.id);
+        var extension = opcionesArchivo.options[opcionesArchivo.selectedIndex].id;
+        document.getElementById("file").value = "";
+        $('#file').attr("accept", "");
+        $('#file').attr("disabled", true);
+    }
 }
 
 var agregarArchivos = "subirArchivo?idBase=2";
 function addArchivos(data) {
-	
-	$.ajax({
-		async: false,
-		url: getAbsolutePath() + agregarArchivos,
-		type: "POST",
-		enctype: 'multipart/form-data',
-		data: data, //pass the form data
-		processData: false,
-		contentType: false,
-		complete: function() {
-			swal.close();
-		},
-		success: function(data) {
-			
-			swal(data[0], {
-				closeOnClickOutside: false,
-				icon: "success",
-			}).then(resp => {
-				adjuntarFiles(2);
-			});
-		},
-		error: function(data) {
-					
-			swal("El tamaño del archivo es mayor al permitirdo 30MB.", {
-				closeOnClickOutside: false,
-				icon: "warning",
-			});
-			
-			
-		},
-		complete: function() {
-			setTimeout($.unblockUI, 600);
-		}
-	});
-
+    $.ajax({
+        async: false,
+        url: getAbsolutePath() + agregarArchivos,
+        type: "POST",
+        enctype: 'multipart/form-data',
+        data: data,
+        processData: false,
+        contentType: false,
+        complete: function() {
+            Swal.close();
+        },
+        success: function(data) {
+            Swal.fire({
+                text: data[0],
+                icon: "success",
+                confirmButtonText: "Aceptar"
+            }).then(resp => {
+                adjuntarFiles(2);
+            });
+        },
+        error: function(data) {
+            Swal.fire({
+                text: "El tamaño del archivo es mayor al permitirdo 30MB.",
+                icon: "warning",
+                confirmButtonText: "Aceptar"
+            });
+        },
+        complete: function() {
+            setTimeout($.unblockUI, 600);
+        }
+    });
 }
 
 function tamFile() {
-	const tamMaxFile = 31457280;
-	var fileTam = document.getElementById("file");
-	fileTam.onchange = function() {
-		if (this.files[0].size > tamMaxFile) {
-			swal("El archivo seleccionado excede el tamaño maximo permitido (30MB)", {
-				closeOnClickOutside: false,
-				icon: "warning",
-			}).then(resp => {
-				this.value = "";
-			});
-		};
-	};
+    const tamMaxFile = 31457280;
+    var fileTam = document.getElementById("file");
+    fileTam.onchange = function() {
+        if (this.files[0].size > tamMaxFile) {
+            Swal.fire({
+                text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+                icon: "warning",
+                confirmButtonText: "Aceptar"
+            }).then(resp => {
+                this.value = "";
+            });
+        }
+    };
 }
 
 
 
 
-function ejecutarProceso(idBaseEjecutar) {	
-   // title: "¿Está seguro de ejecutar el proceso manual para Generar la Base?",
-   //   text: "El proceso inactivara los registros actuales de Base seleccionada .",
-	 swal({
-      title: "¿Está seguro de ejecutar el proceso manual para Generar la Base?",
-      text: "El proceso inactivara los registros actuales de Base seleccionada.",
-      icon: 'warning',
-      buttons: ["Cancelar", "Confirmar"],
-    }).then(resultado => {
-		if (resultado) {
-			url = "";
-			url = "ejecutarProceso?idBase=" + idBaseEjecutar;
-			peticionPost(3, getAbsolutePath() + url);
-		}
-	});
-
+function ejecutarProceso(idBaseEjecutar) {
+    Swal.fire({
+        title: "¿Está seguro de ejecutar el proceso manual para Generar la Base?",
+        text: "El proceso inactivara los registros actuales de Base seleccionada.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar"
+    }).then((resultado) => {
+        if (resultado.isConfirmed) {
+            url = "";
+            url = "ejecutarProceso?idBase=" + idBaseEjecutar;
+            peticionPost(3, getAbsolutePath() + url);
+        }
+    });
 }
 
 var obtClasificacion = "obtClasificacion";
@@ -492,10 +472,11 @@ function btnsModal(){
        			}
     		}else{
 				
-				swal("Existen campos vacíos, favor de validar.", {
-					closeOnClickOutside: false,
+				Swal.fire({
+					text: "Existen campos vacíos, favor de validar.",
 					icon: "error",
-				});	
+					confirmButtonText: "Aceptar"
+				});
 	
      		}
 		}else if( procesoGestionID> 0){
@@ -534,19 +515,13 @@ function btnsModal(){
 	$("#btnGuardarFile").click(function() {
 
 		if (document.getElementById("file").value.length > 0) {
-			swal({
-				title: "Procesando información.",
-      			content: {
-        			element: "div",
-        			attributes: {
-          			innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          			style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        			},
-      			},
-				timer: 4000, // tiempo en milisegundos
-				buttons: false,
-      			closeOnClickOutside: false,
-      			closeOnEsc: false,
+			Swal.fire({
+			    title: "Procesando información.",
+			    html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+			    timer: 4000,
+			    showConfirmButton: false,
+			    allowOutsideClick: false,
+			    allowEscapeKey: false
 			}).then((result) => {
 				// Este código se ejecutará después de que el temporizador haya terminado
 				
@@ -558,10 +533,11 @@ function btnsModal(){
 
 		} else {
 			
-				swal("Es necesario seleccionar un Archivo.", {
-					closeOnClickOutside: false,
-					icon: "error",
-				});			
+			Swal.fire({
+			    text: "Es necesario seleccionar un Archivo.",
+			    icon: "error",
+			    confirmButtonText: "Aceptar"
+			});	
 		}
 
 	});
@@ -639,9 +615,10 @@ function validarFechas() {
 
 	if (dComienzoCampana >= dFinalCampana) {
 	
-		swal("El día que comienza el proceso debe ser menor al día que termina el proceso.", {
-			closeOnClickOutside: false,
-			icon: "error",
+		Swal.fire({
+		    text: "El día que comienza el proceso debe ser menor al día que termina el proceso.",
+		    icon: "error",
+		    confirmButtonText: "Aceptar"
 		});
 		
 		
@@ -657,9 +634,10 @@ function validarHoras() {
 
 	if (hComienzoCampana === hFinalCampana) {
 		
-		swal("Las horas de inicio y finalización son iguales, favor de agregar horas diferentes.", {
-			closeOnClickOutside: false,
+		Swal.fire({
+			text: "Las horas de inicio y finalización son iguales, favor de agregar horas diferentes.",
 			icon: "error",
+			confirmButtonText: "Aceptar"
 		});
 		
 		
@@ -667,9 +645,10 @@ function validarHoras() {
 	}
 
 	if (hComienzoCampana >= hFinalCampana) {
-		swal("La hora de inicio debe ser menor que la hora de fin del proceso.", {
-			closeOnClickOutside: false,
+		Swal.fire({
+			text: "La hora de inicio debe ser menor que la hora de fin del proceso.",
 			icon: "error",
+			confirmButtonText: "Aceptar"
 		});
 		return false; // Indica que la validación falló
 	}
@@ -679,66 +658,60 @@ function validarHoras() {
 //enviar actualizacion
 
 function peticionPost(metodo, metodoUrl) {
-	
-	 swal({
-      title: "Procesando información.",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        },
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false,
+    Swal.fire({
+        title: "Procesando información.",
+        html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false
     });
-	
-	
-	$.ajax({
-		url: metodoUrl,
-		type: "POST",
-		dataType: "JSON",
-		beforeSend: function() {
-		
-		},
-		complete: function() {
-			swal.close();
-		},
-		success: function(respuesta) {
-   			url = "";			
-			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
 
-				if (metodo == 1) {
-					iniciaTblParametros();
-					limpiarParametros();
+    $.ajax({
+        url: metodoUrl,
+        type: "POST",
+        dataType: "JSON",
+        beforeSend: function() {
+        },
+        complete: function() {
+            Swal.close();
+        },
+        success: function(respuesta) {
+            url = "";
+            Swal.fire({
+                text: respuesta.mensaje,
+                icon: respuesta.tipo,
+                confirmButtonText: "Aceptar"
+            }).then(resp => {
 
-				} else if (metodo == 2) {
-					iniciaTblClasificacion();
-					limpiarDatosClasificacion();
-				}else if(metodo == 3){
-					//proceso manual Bases de ofertas automaticas. 
-					if(respuesta.envio == "1" ){
-						correosAsignacion();
-					}
-				}else if(metodo == 4){
-					cargatblProcesoG();
-					limpiarParametros();	
-				}else if(metodo == 5){
-		
-					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
-					window.focus();
-				}
-			});
+                if (metodo == 1) {
+                    iniciaTblParametros();
+                    limpiarParametros();
 
+                } else if (metodo == 2) {
+                    iniciaTblClasificacion();
+                    limpiarDatosClasificacion();
+                } else if (metodo == 3) {
+                    if (respuesta.envio == "1") {
+                        correosAsignacion();
+                    }
+                } else if (metodo == 4) {
+                    cargatblProcesoG();
+                    limpiarParametros();
+                } else if (metodo == 5) {
+                    window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
+                    window.focus();
+                }
+            });
 
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal("Se presento un error, intente mas tarde.", {
-				closeOnClickOutside: false,
-				icon: "error",
-			});
-		}
-	});
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            Swal.fire({
+                text: "Se presento un error, intente mas tarde.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            });
+        }
+    });
 }
 
 //clasificacion 
@@ -862,9 +835,10 @@ function dtosClasificacion() {
 		peticionPost(2, getAbsolutePath() + url);
 	} else {
 				
-		swal("Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.", {
-				closeOnClickOutside: false,
-				icon: "error",
+		Swal.fire({
+		    text: "Existen campos vacíos o el valor seleccionado es incorrecto, favor de validar.",
+		    icon: "error",
+		    confirmButtonText: "Aceptar"
 		});
 	}
 }
@@ -889,7 +863,7 @@ function editarClasificacion(idClasi) {
 }
 
 function peticionClasificacion(ruta) {
-	$.getJSON(url, {}, function(data) {
+	$.getJSON(ruta, {}, function(data) {
 		modalClass(data);
 	});
 }
@@ -925,12 +899,14 @@ function activarClasificacion(idClass) {
 	if (estatus == 0) {
 		
 		
-		 swal({
-      		title: "¿Se activara la Clasificación?",
-      		icon: 'warning',
-      		buttons: ["Cancelar", "Confirmar"],
-    	 }).then(resultado => {
-			if (resultado) {
+		Swal.fire({
+		    title: "¿Se activara la Clasificación?",
+		    icon: "warning",
+		    showCancelButton: true,
+		    confirmButtonText: "Confirmar",
+		    cancelButtonText: "Cancelar"
+		}).then((resultado) => {
+		    if (resultado.isConfirmed) {
 				url = "";
 				url = "activarClasificacion?idClass=" + $(idClass).attr('id');
 				peticionPost(2, getAbsolutePath() + url);
@@ -938,9 +914,10 @@ function activarClasificacion(idClass) {
 		});
 	} else {
 				
-		swal("La Clasificación esta Activa.", {
-				closeOnClickOutside: false,
-				icon: "warning",
+		Swal.fire({
+		    text: "La Clasificación esta Activa.",
+		    icon: "warning",
+		    confirmButtonText: "Aceptar"
 		});
 		
 		
@@ -951,13 +928,14 @@ function bajaClasificacion(idClass) {
 	var estatus = $(idClass).attr('for');
 	if (estatus == 1) {
 		
-		 swal({
-      		title: "¿Se inactivara la Clasificación?",
-      		icon: 'warning',
-      		buttons: ["Cancelar", "Confirmar"],
-    	 })
-		.then(resultado => {
-			if (resultado) {
+		Swal.fire({
+			title: "¿Se inactivara la Clasificación?",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Confirmar",
+			cancelButtonText: "Cancelar"
+		}).then((resultado) => {
+			if (resultado.isConfirmed) {
 				url = "";
 				url = "bajaClasificacion?idClass=" + $(idClass).attr('id');
 				peticionPost(2, getAbsolutePath() + url);
@@ -965,9 +943,10 @@ function bajaClasificacion(idClass) {
 		});
 	} else {
 						
-		swal("La Clasificación esta inactiva.", {
-				closeOnClickOutside: false,
-				icon: "warning",
+		Swal.fire({
+			text: "La Clasificación esta inactiva.",
+			icon: "warning",
+			confirmButtonText: "Aceptar"
 		});
 		
 	}
@@ -1058,7 +1037,13 @@ function cargatblProcesoG(){
 					+ " onclick='mostrarGestiones()' id="
 					+ opt.pk_id_gestion
 					+ " data-tooltip='Add'>"
-					+ " <i class='bi bi-journals'></i></button>";
+					+ " <i class='bi bi-journals'></i></button>"
+					
+					var btnReporte= " <button type='button' class='btn btn-info btn-sm' tabindex='0' "
+					+ "title='Ver Extracción de Asignaciones.' aria-controls='table-datatable' onclick='descargaRptAsignaciones()'"
+					+ "data-tooltip='Add'>"
+					+ "<i class='bi bi-filetype-xls'></i>"
+					+ "</button>";
 
 
 					
@@ -1068,7 +1053,7 @@ function cargatblProcesoG(){
       				,opt.vc_hora_inicio_proceso
       				,opt.vc_hora_fin_proceso
       				,opt.vc_periodo_ejecucion_proceso
-      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones:btnsActualizar+btnEjecutar]).draw(false); 
+      				,(opt.i_reporte == 1)?btnsActualizar+btnEjecutar+btnGestiones+btnReporte:btnsActualizar+btnEjecutar]).draw(false); 
       		}
 		
    		});
@@ -1107,23 +1092,22 @@ function modalGestion(data) {
  }
 
 
-function ejecutarDatosProceso(idProceso){
-	
-	swal({
-		title: "¿Está seguro de ejecutar el proceso manual para Generar la Asignacion de las Bases?",
-      	text: "El proceso inactivara los registros actuales de Asignacion.",
-      	icon: 'warning',
-      	buttons: ["Cancelar", "Confirmar"],
-	}).then(resultado => {
-			if (resultado) {
-					url= "";
-					url = "ejecutarDatosProceso?idProceso="+idProceso;
-					peticionPost(3,getAbsolutePath()+url);
-					
-			}
-	});
-
-}
+ function ejecutarDatosProceso(idProceso){
+ 	Swal.fire({
+ 		title: "¿Está seguro de ejecutar el proceso manual para Generar la Asignacion de las Bases?",
+ 		text: "El proceso inactivara los registros actuales de Asignacion.",
+ 		icon: "warning",
+ 		showCancelButton: true,
+ 		confirmButtonText: "Confirmar",
+ 		cancelButtonText: "Cancelar"
+ 	}).then((resultado) => {
+ 		if (resultado.isConfirmed) {
+ 			url = "";
+ 			url = "ejecutarDatosProceso?idProceso=" + idProceso;
+ 			peticionPost(3, getAbsolutePath() + url);
+ 		}
+ 	});
+ }
 
 var obtGeneralesGestion = "obtGeneralesGestion";
 function mostrarGestiones(){
@@ -1168,6 +1152,40 @@ function descargarArchivoAsignaciones(sucursal){
 	peticionPost(5, url);
 }
 
+var reporteExtraccionAsignaciones = "reporteExtraccionAsignaciones";
+
+function descargaRptAsignaciones() {
+	
+	url = getAbsolutePath() + reporteExtraccionAsignaciones;
+	
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "JSON",
+		beforeSend: function() {
+			$.blockUI({ message: 'Espere un momento...' });
+		},
+		complete: function() {
+			setTimeout($.unblockUI, 500);
+		},
+		success: function(respuesta) {
+
+			var urlReporte = window.location.href.substring(0, window.location.href.indexOf("STD/") + 4) + respuesta[0];
+
+			window.open(urlReporte);
+			window.focus();
+
+		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
+			Swal.fire({
+				title: "Error",
+				text: "Se presento un error, intente mas tarde.",
+				icon: "warning",
+				confirmButtonText: "Aceptar"
+			});
+		}
+	});
+	
+}
 
 /**
  * Modal de alertas
@@ -1195,28 +1213,40 @@ function correosAsignacion() {
 	});
 }
 var urlEnviarCorreo = "enviaCorreoSucursal?numSucursal="
+
 function enviarCorreo(numSucursal){
-	
-	 swal({
-      		title: "¿Esta seguro de enviar por correo la base de asignacion de la sucursal seleccionada?",
-      		icon: 'warning',
-      		buttons: ["Cancelar", "Confirmar"],
-    	 })
-		.then(resultado => {
-			if (resultado) {
-				$.ajax({
-					url: getAbsolutePath() + urlEnviarCorreo+numSucursal,
-					type: "POST",
-					dataType: "JSON",
-					success: function(data) {
-        				console.log('Datos recibidos: ', data);
-   					},
-    				error: function(jqXHR, textStatus, errorThrown) {
-        				console.log('Error: ', textStatus, errorThrown);
-    				}
-				});
-			}
-		});
+	Swal.fire({
+		title: "¿Esta seguro de enviar por correo la base de asignacion de la sucursal seleccionada?",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Confirmar",
+		cancelButtonText: "Cancelar"
+	}).then((resultado) => {
+		if (resultado.isConfirmed) {
+			$.ajax({
+				url: getAbsolutePath() + urlEnviarCorreo + numSucursal,
+				type: "POST",
+				success: function(data) {
+					console.log('Datos recibidos: ', data);
+					Swal.fire({
+						title: "Correcto",
+						text: "El correo fue enviado correctamente.",
+						icon: "success",
+						confirmButtonText: "Aceptar"
+					});
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log('Status:', jqXHR.status);
+					console.log('Response:', jqXHR.responseText);
+					console.log('Error: ', textStatus, errorThrown);
+					Swal.fire({
+						title: "Error",
+						text: "Ocurrió un error al enviar el correo.",
+						icon: "error",
+						confirmButtonText: "Aceptar"
+					});
+				}
+			});
+		}
+	});
 }
-
-

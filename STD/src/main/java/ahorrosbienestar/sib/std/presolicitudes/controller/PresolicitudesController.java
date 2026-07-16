@@ -7,6 +7,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,12 +20,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -357,12 +359,13 @@ public class PresolicitudesController {
             Sheet sheet = workbook.getSheetAt(0);
             List<Map<String, String>> solicitudes = new ArrayList<>();
             Iterator<Row> rowIterator = sheet.iterator();
+            DataFormatter dataFormatter = new DataFormatter();
 
             // Leer encabezados
             Row headerRow = rowIterator.next();
             List<String> headers = new ArrayList<>();
             for (Cell cell : headerRow) {
-                headers.add(cell.getStringCellValue().trim());
+                headers.add(normalizarEncabezadoExcel(dataFormatter.formatCellValue(cell)));
             }
             logger.info("[INFO] Encabezados detectados: " + headers);
 
@@ -376,22 +379,11 @@ public class PresolicitudesController {
                     String cellValue = "";
 
                     if (cell != null) {
-                        switch (cell.getCellType()) {
-                            case STRING:
-                                cellValue = cell.getStringCellValue().trim();
-                                break;
-                            case NUMERIC:
-                                if (DateUtil.isCellDateFormatted(cell)) {
-                                    cellValue = cell.getDateCellValue().toString();
-                                } else {
-                                    cellValue = String.valueOf((int) cell.getNumericCellValue());
-                                }
-                                break;
-                            case BOOLEAN:
-                                cellValue = String.valueOf(cell.getBooleanCellValue());
-                                break;
-                            default:
-                                cellValue = "";
+                        if (cell.getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC
+                                && DateUtil.isCellDateFormatted(cell)) {
+                            cellValue = cell.getDateCellValue().toString();
+                        } else {
+                            cellValue = dataFormatter.formatCellValue(cell).trim();
                         }
                     }
                     solicitud.put(headers.get(i), cellValue);
@@ -408,7 +400,7 @@ public class PresolicitudesController {
             // Obtener IDs de solicitudes para reconsultar
             List<Integer> solicitudIds = solicitudes.stream()
                     .map(s -> {
-                        String idStr = s.get("NoSolicitud");
+                        String idStr = s.get("NOSOLICITUD");
                         return idStr != null ? Integer.parseInt(idStr) : null;
                     })
                     .filter(Objects::nonNull)
@@ -481,6 +473,17 @@ public class PresolicitudesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al procesar el archivo: " + e.getMessage());
         }
+    }
+
+    private String normalizarEncabezadoExcel(String header) {
+        if (header == null) {
+            return "";
+        }
+
+        return Normalizer.normalize(header, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toUpperCase()
+                .replaceAll("[^A-Z0-9]", "");
     }
 
     private String generarCuerpoCorreo(Integer sucursal) {

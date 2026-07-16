@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ArchivoValidadorComponent {
 	
-	@Autowired
+
 	private static final Logger logger = Logger.getLogger(ArchivoValidadorComponent.class);
 	
 	public boolean existeArchivo(String directorioPaht, String nombreArchivo) {

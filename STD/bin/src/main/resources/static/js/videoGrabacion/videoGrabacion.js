@@ -1,3 +1,4 @@
+// @ts-nocheck
 var servicioReporte = "solicitudes/";
 var buscarCliente = "buscarCliente/"
 var opcionSeleccionada = "";

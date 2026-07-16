@@ -54,6 +54,24 @@ public class ExclusionesBasesNominaController {
 	@Autowired
 	private ExclusionSucursalesService sucursalesService;
 	
+	private Integer obtenerIdUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuario == null || usuario.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuario.get(0).getPk_id_usuario();
+	}
+	
 	List<Usuario> usuario = null;
 	
 	@RequestMapping(value = { "/getEstados" }, method = RequestMethod.GET)
@@ -166,18 +184,12 @@ public class ExclusionesBasesNominaController {
 		
 		try {
 			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			Integer idUsuario = obtenerIdUsuarioAutenticado();
+
+			if (idUsuario == null) {
+			    response.put(Constantes.MENSAJE_ERROR, "Usuario no autenticado o no encontrado.");
+			    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
 			MunicipiosRepub updatedMunicipio = municipiosRepubService.actualizarIndicadorMunicipiosRepub(idEstado, idMunicipio, indicadorDepurar, idUsuario);
 			
@@ -279,16 +291,12 @@ public class ExclusionesBasesNominaController {
 		
 		try {
 			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
+			Integer idUsuario = obtenerIdUsuarioAutenticado();
+
+			if (idUsuario == null) {
+			    response.put(Constantes.MENSAJE_ERROR, "Usuario no autenticado o no encontrado.");
+			    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
 			ConveniosNomina updatedConvenio = conveniosNominaService.actualizarIndicadorConveniosNomina(idConvenio, indicadorDepurar, idUsuario);
 		
@@ -386,17 +394,12 @@ public class ExclusionesBasesNominaController {
 		
 		try {
 			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			Integer idUsuario = obtenerIdUsuarioAutenticado();
+
+			if (idUsuario == null) {
+			    response.put(Constantes.MENSAJE_ERROR, "Usuario no autenticado o no encontrado.");
+			    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
 			CatPuestosOcupacion updatedPuesto = puestosOcupacionService.actualizarIndicadorPuestosOcupacion(idPuesto, indicadorDepurar, idUsuario);
 		
@@ -493,17 +496,12 @@ public class ExclusionesBasesNominaController {
 		
 		try {
 			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			
-			if (principal instanceof UserDetails) {
-				
-				userDetails = (UserDetails) principal;
-				
+			Integer idUsuario = obtenerIdUsuarioAutenticado();
+
+			if (idUsuario == null) {
+			    response.put(Constantes.MENSAJE_ERROR, "Usuario no autenticado o no encontrado.");
+			    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 			}
-			
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			Integer idUsuario = usuario.get(0).getPk_id_usuario();
 
 			ExclusionSucursales updatedSucursal = sucursalesService.actualizarIndicadorSucursal(idSucursal, indicadorDepurar, idUsuario);
 		

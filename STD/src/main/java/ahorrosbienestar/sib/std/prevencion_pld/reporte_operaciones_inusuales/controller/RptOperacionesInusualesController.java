@@ -86,8 +86,8 @@ public class RptOperacionesInusualesController {
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(Constantes.MENSAJE_ERROR + e.getMessage());
-			return null;
+		    logger.error(Constantes.MENSAJE_ERROR + e.getMessage(), e);
+		    return Constantes.RUTA_ERROR;
 		}
 	}
 	
@@ -151,30 +151,43 @@ public class RptOperacionesInusualesController {
 	}
 	
 	@RequestMapping(value = "/getReporteJasper", method = RequestMethod.GET)
-	public ResponseEntity<?> getReporteJasper() {
+	public ResponseEntity<ControlReporteJasper> getReporteJasper() {
 
-		ControlReporteJasper reporteJasper = reporteJasperService.getReporteJasper(Constantes.PLD_CONTROL_REPORTE_JASPER);
-		if (reporteJasper != null) {
-			return new ResponseEntity<>(reporteJasper, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	    ControlReporteJasper reporteJasper =
+	            reporteJasperService.getReporteJasper(Constantes.PLD_CONTROL_REPORTE_JASPER);
+
+	    if (reporteJasper != null) {
+	        return ResponseEntity.ok(reporteJasper);
+	    }
+
+	    return ResponseEntity.notFound().build();
 	}
 	
 	public int validarAcceso() {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacionController(Constantes.PLD_REPORTE_OPEACIONES_INUSUALES));
+	        if (!(principal instanceof UserDetails)) {
+	            logger.warn("Usuario no autenticado.");
+	            return 0;
+	        }
 
-		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			return 0;
-		}
+	        UserDetails userDetails = (UserDetails) principal;
+	        List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+	            return 0;
+	        }
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuario.get(0).getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacionController(Constantes.PLD_REPORTE_OPEACIONES_INUSUALES)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("Error al validar acceso.", e);
+	        return 0;
+	    }
 	}
 }

@@ -12,13 +12,11 @@ import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.NumClienteM
 @Repository
 public interface NumClienteRepository extends JpaRepository<NumClienteModel, Integer> {
 
-    @Query(value =
-            "SELECT I_ClienteID, " +
-            "CONCAT(I_ClienteID, ' - ', VC_NombreCompleto) AS ClienteInfo " +
-            "FROM SIB.TBL_CLIENTES_ACTIVOS " +
-            "WHERE CONCAT(I_ClienteID, ' - ', VC_NombreCompleto) " +
-            "LIKE CONCAT('%', :valor, '%')",
-            nativeQuery = true)
-    public List<NumClienteModel> listaClientes(@Param("valor") String valor);
+	@Query(value = "SELECT I_ClienteID, CONCAT(I_ClienteID, ' - ', VC_NombreCompleto) AS ClienteInfo "
+	        + "FROM SIB.TBL_CLIENTES_ACTIVOS "
+	        + "WHERE CONCAT(I_ClienteID, ' - ', VC_NombreCompleto) LIKE CONCAT('%', :valor, '%')",
+	        nativeQuery = true)
+	public List<NumClienteModel> listaClientes(
+	        @Param("valor") String valor);
 
 }
