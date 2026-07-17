@@ -169,6 +169,57 @@ var url = "";
 	 }); 
  }
  
+ /**
+ * Cargar tabla municipios con cobertura
+ */
+ var obtenerMunicipiosConCobertura = "exclusiones/getMunicipiosConCobertura";
+ function listaMunicipiosConCobertura(){
+	 
+	 tblMunicipiosConCobertura.clear().draw();
+	 mostrarSpinner();
+	 
+	 url = getAbsolutePath() + obtenerMunicipiosConCobertura;
+	 $.getJSON(url, {}, function(data) {
+		 
+		 $.each(data.municipios, function(idx, municipio) {
+			 
+			 const date = new Date(municipio.fecha_modifico);
+			 const fechaFormateada = formatDate(date);
+			 
+			// Crear los botones de acción según el valor de indicador_depurar
+			var botonesDeshabilitar = "<button class='btn btn-xs btn-danger' tabindex='0' " +
+                "title='Remover municipio' type='button' " +
+                "onclick='updateMunicipios(" + municipio.id_estado + ", " + municipio.id_municipio + ", " + 1 + ")'" +
+                "id=" + municipio.id_municipio +
+                " for=" + municipio.indicador_depurar + ">" +
+                "<i class='bi bi-dash'></i>" +
+                "</button>&nbsp;";
+
+            // Agregar la fila con los datos del municipio a la tabla
+            tblMunicipiosConCobertura.row.add([
+				municipio.nombre_estado,
+                municipio.nombre_municipio,
+                (municipio.usuario_modifico == null ? '---' : municipio.usuario_modifico), // Usuario que modificó
+                (municipio.fecha_modifico == null ? '----/--/--' : fechaFormateada), // Fecha de modificación
+                botonesDeshabilitar, // Botón para deshabilitar (indicador de depurar)
+            ]).draw(false); // Redibujar la tabla
+			 
+		 });
+		 ocultarSpinner();
+	 }); 
+ }
+ 
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Meses desde 0
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
+ 
  // Función para mostrar el spinner
 function mostrarSpinner() {
     $("#spinner-container").html('<div role="status" style="font-size: 40px;"><span class="text-primary">Consultando ... </span><div class="spinner-border text-primary" role="status" aria-hidden="true"></div>');

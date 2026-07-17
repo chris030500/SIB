@@ -1,44 +1,32 @@
 package ahorrosbienestar.sib.std.contratos.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
 
+import jakarta.validation.constraints.NotNull;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import ahorrosbienestar.sib.std.contratos.repository.IReporteContratoRepository;
 import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @Service
 public class ReporteContratoService implements IReporteContratoRepository {
-	
-	@Autowired
-	private DataSource datasource;
-	
-	@Autowired
-	JasperReportController jasperReportController;
-	
-	@Override
-	@NotNull
-	public ResponseEntity<Resource> export(int id, int solicitud) {
+
+    private static final Logger logger = Logger.getLogger(ReporteContratoService.class);
+
+    @Autowired
+    private DataSource datasource;
+
+    @Autowired
+    JasperReportController jasperReportController;
+
+    @Override
+    @NotNull
+    public ResponseEntity<Resource> export(int id, int solicitud) {
 		
 		try {
 			/*
@@ -72,13 +60,11 @@ public class ReporteContratoService implements IReporteContratoRepository {
 	            .headers(headers).body(new ByteArrayResource(reporte));
 	        */
 	        
-	        return null;
-	      } catch (Exception e) {
-	        e.printStackTrace();
-	        System.out.print(""+e.getMessage());
-	      }
-		return null;
-	}
-	
+			 return null;
 
+        } catch (Exception e) {
+            logger.error("Error al exportar reporte de contrato. ID: " + id + ", solicitud: " + solicitud, e);
+            return null;
+        }
+    }
 }

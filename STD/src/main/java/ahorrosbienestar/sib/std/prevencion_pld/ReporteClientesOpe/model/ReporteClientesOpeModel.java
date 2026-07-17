@@ -1,14 +1,9 @@
 //ReporteClientesOpeModel
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-//import jakarta.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
  
 // -------- ReporteClientesOpeModel --------

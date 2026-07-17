@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +111,7 @@ public class EmpresasController {
 
 		} catch (Exception e) {
 			// Imprimir el error en el log del servidor para depuración
-			e.printStackTrace();
+			logger.error("No se pudo guardar la empresa.", e);
 
 			respuesta.put("error", "No se pudo guardar la empresa: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);

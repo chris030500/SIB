@@ -1,3 +1,4 @@
+// @ts-nocheck
 var buscarActividades = "buscarActividadesxEmpleado?idFolio=";
 var seguimientoAlta = "altaSeguimiento?idActividad=";
 var buscarSeguimiento = "obtSeguimiento?idActividad=";

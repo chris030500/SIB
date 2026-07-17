@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Variables | validacion de la liga absoluta
 window.onload = function() {
 	//tablaEmpresas();

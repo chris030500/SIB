@@ -9,13 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.net.URI;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import javax.persistence.PersistenceContext;
  
  
 @Service

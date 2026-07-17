@@ -5,9 +5,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,8 @@ import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController
 import ahorrosbienestar.sib.std.reportesJasper.model.ReporteJasper;
 import ahorrosbienestar.sib.std.reportesJasper.repository.IReporteRepository;
 
-import javax.mail.util.ByteArrayDataSource;
-import javax.activation.DataSource;
+import jakarta.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataSource;
 
 
 @Service
@@ -46,7 +46,6 @@ public class EnvioCorreoService {
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
 	
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
 	
 	@Autowired

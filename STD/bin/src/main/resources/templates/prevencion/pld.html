@@ -161,23 +161,24 @@
         </div>
  
     </section>
-    <th:block layout:fragment="page-scripts">
-        <!--JavaScript-->
-        <script src="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-        <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-        <script th:src="@{/js/prevencion/pld.js}"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script th:src="@{/css/estilos/responsivo.css}"></script>
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <!-- jQuery library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-        <!-- Latest compiled JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    </th:block>
+	<link th:href="@{/vendor/datatablesNew/dataTables.bootstrap.min.css}" rel="stylesheet">
+	<link th:href="@{/css/estilos/responsivo.css}" rel="stylesheet">
+
+	<th:block layout:fragment="page-scripts">
+
+	    <script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+	    <script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}"></script>
+	    <script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}"></script>
+
+	    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+	    <script th:src="@{/vendor/xlsxNew/xlsx.full.min.js}"></script>
+
+	    <script th:src="@{/vendor/axiosNew/axios.min.js}"></script>
+
+	    <script th:src="@{/js/prevencion/pld.js}"></script>
+
+	</th:block>
 </body>
 </html>

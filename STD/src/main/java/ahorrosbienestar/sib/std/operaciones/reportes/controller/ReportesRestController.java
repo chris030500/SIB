@@ -46,7 +46,6 @@ public class ReportesRestController {
 	@Autowired
 	private IConfiguracionRepository iConfiguracionRepository;
 
-	@Autowired
 	private static final Logger logger = Logger.getLogger(ReportesRestController.class);
 
 	private static final int idGrupoBusqueda = 15;

@@ -11,8 +11,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.time.LocalDateTime;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -242,19 +243,12 @@ public class UsuarioRestController {
 			String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
 			//logger.info("Días que va a estar activa la contraseña: " + pDias);
 			// Establecemos el formato de la fecha
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			// Obtenemos la fecha en String
-			String fechaActual = dateFormat.format(Calendar.getInstance().getTime());
-			// Casteamos la fechaActual a localDate
-			LocalDate localDate = LocalDate.parse(fechaActual);
-			LocalDate localDateHoy = LocalDate.parse(fechaActual);
-			// Vamos a agregarle los días de vigencía conforme al parametro ya establecido.
-
-			//localDate = localDate.plusDays(Long.parseLong(pDias));
+			LocalDate fechaInicio = LocalDate.now();
+			LocalDate fechaVencimiento = fechaInicio.plusDays(1);
 
 			HistContrasena hc = new HistContrasena();
-			hc.setDt_vig_cont_fin(localDateHoy);
-			hc.setDt_vig_cont_inicio(localDateHoy);
+			hc.setDt_vig_cont_inicio(fechaInicio);
+			hc.setDt_vig_cont_fin(fechaVencimiento);
 			hc.setVc_indicador_activo(1);
 			hc.setUsr_historico_contrasena_id(usu);
 			hc.setVc_contrasenia(passwordEncoder.encode(password));

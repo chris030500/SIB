@@ -12,8 +12,12 @@ import ahorrosbienestar.sib.std.cat_catalogos.clientes_activos.model.ClientesAct
 @Repository
 public interface ClientesActivosRepository extends JpaRepository<ClientesActivosModel, Integer> {
 
-    @Query(value = "SELECT * FROM SIB.TBL_CLIENTES_ACTIVOS WHERE VC_NombreCompleto LIKE CONCAT('%', :valor, '%')",
-           nativeQuery = true)
-    public List<ClientesActivosModel> listaClientes(@Param("valor") String valor);
-
+ 
+	@Query(value = "SELECT * FROM SIB.TBL_CLIENTES_ACTIVOS "
+	        + "WHERE VC_NombreCompleto LIKE CONCAT('%', :valor, '%')",
+	        nativeQuery = true)
+	public List<ClientesActivosModel> listaClientes(
+	        @Param("valor") String valor);
+ 
 }
+

@@ -1,5 +1,5 @@
 package ahorrosbienestar.sib.std.comunes;
-
+ 
 public class Constantes {
     
     //Constantes Rutas de Acceso
@@ -24,7 +24,7 @@ public class Constantes {
     public static final int FIDELIDAD = 2;
     public static final int CAMPANAS_VIP = 3;
     
-    //Constante mensajes y propiedades 
+    //Constante mensajes y propiedades
     public static final String MENSAJE_CAMPANA_VIP = "mensajeCampanasVIP";
     
     // constantes logger
@@ -201,7 +201,7 @@ public class Constantes {
     public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
     public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
     public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
-
+ 
 	//nombres reportes bases EBR
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
     public static final String RPT_EBR_BASE_OPERACIONES = "rpt_ebr_base_operaciones";

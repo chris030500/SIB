@@ -76,6 +76,23 @@ public class ReporteCSOController {
 		this.reporteCSOService = reporteCSOService;
 	} 
 	
+	private Usuario obtenerUsuarioAutenticado() {
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
+	}
+	
 	@GetMapping("/reporteCSO")
 	public String inicioFolio(Model model) {
 		try {
@@ -92,9 +109,9 @@ public class ReporteCSOController {
 
 		return rutaDireccion;
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
+		    logger.error("Error al cargar reporte CSO.", e);
+		    return rutaError;
 		}
-		return null;
 	}
 	
 	@PostMapping("/altaBusqueda")
@@ -111,12 +128,12 @@ public class ReporteCSOController {
 		ArrayList<String> respuesta = new ArrayList<String>();
 		
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 			BusquedaCSO altaBusqueda = new BusquedaCSO();
 			LocalDate fecha = LocalDate.now();
@@ -128,7 +145,7 @@ public class ReporteCSOController {
 			altaBusqueda.setI_estatus(iEstatus);
 			altaBusqueda.setI_organo_emite(iEmite);
 			altaBusqueda.setI_tipo_oficio(iTipo);
-			altaBusqueda.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+			altaBusqueda.setI_usuario_registro(usuarioAutenticado.getPk_id_usuario());
 			altaBusqueda.setI_folio(idOficio);
 			
 			iReporteCSORepository.save(altaBusqueda);
@@ -141,24 +158,28 @@ public class ReporteCSOController {
 			respuesta.add(reporteURL);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
-			respuesta.add(e.getMessage());
-			return ResponseEntity.ok(respuesta);
+		    logger.error("Error al registrar búsqueda CSO.", e);
+		    respuesta.add("Ocurrió un error al registrar la búsqueda.");
+		    return ResponseEntity.badRequest().body(respuesta);
 		}		
 	}
 	
 	public int validarAcceso() {
-		
-		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-		
-		
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            return 0;
+	        }
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuarioAutenticado.getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacion(nombrePantalla)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("Error al validar acceso.", e);
+	        return 0;
+	    }
 	}
 }

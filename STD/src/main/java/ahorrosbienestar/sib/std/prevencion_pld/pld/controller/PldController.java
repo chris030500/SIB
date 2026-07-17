@@ -54,12 +54,23 @@ public class PldController {
 		try {
 
 			if (validarAcceso() == 1) {
-				model.addAttribute("cat_reportes_pld", iCatalogoRepository.generarOpciones(opcBusquedaGrupo));
-				model.addAttribute("cat_reportes_pld_ext", iCatalogoRepository.generarOpciones(opcBusquedaGrupo2));
-				// rutaDireccion = "reportesProductos/reportesProducto";
-				rutaDireccion = "prevencion/reportesPLD";
+
+			    List<?> reportes = iCatalogoRepository.generarOpciones(opcBusquedaGrupo);
+			    List<?> extensiones = iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+			    
+			    logger.info("REPORTES = " + reportes);
+			    logger.info("EXTENSIONES = " + extensiones);
+
+			    logger.info("Reportes PLD encontrados: " + reportes.size());
+			    logger.info("Extensiones PLD encontradas: " + extensiones.size());
+
+			    model.addAttribute("cat_reportes_pld", reportes);
+			    model.addAttribute("cat_reportes_pld_ext", extensiones);
+
+			    rutaDireccion = "prevencion/reportesPLD";
+
 			} else {
-				rutaDireccion = rutaError;
+			    rutaDireccion = rutaError;
 			}
 			return rutaDireccion;
 		} catch (Exception e) {
@@ -69,21 +80,31 @@ public class PldController {
 	}
 
 	public int validarAcceso() {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+	    try {
+	        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-			return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
-					opcionesMenuService.buscarRelacion(nombrePantalla));
+	        if (!(principal instanceof UserDetails)) {
+	            logger.warn("Usuario no autenticado.");
+	            return 0;
+	        }
 
-		} catch (Exception e) {
-			logger.error("Error:" + e.getMessage());
-			return 0;
-		}
+	        UserDetails userDetails = (UserDetails) principal;
+	        List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.warn("Usuario no encontrado: " + userDetails.getUsername());
+	            return 0;
+	        }
+
+	        return iRelRolOpcionesRepository.validarAcceso(
+	                usuario.get(0).getRol_idRol().getPk_id_rol(),
+	                opcionesMenuService.buscarRelacion(nombrePantalla)
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("Error al validar acceso en PLD.", e);
+	        return 0;
+	    }
 	}
 
 }

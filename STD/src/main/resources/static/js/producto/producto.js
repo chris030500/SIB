@@ -1,3 +1,4 @@
+// @ts-nocheck
 var opcionSeleccionada = "";
 var altaProductos = "alta/";
 var altaDocumentos = "altaDocumentos/";

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Gestión de Solicitudes</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+	<link rel="stylesheet" href="@{/css/estilos/responsivo.css}">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+			:root {
+				--sib-primary: #1565c0;
+				--sib-primary-dark: #0d47a1;
+				--sib-accent: #42a5f5;
+				--sib-success: #1f8f5f;
+				--sib-warning: #d3a11d;
+				--sib-danger: #c03d4f;
+				--sib-bg: #eef3f8;
+				--sib-surface: #ffffff;
+				--sib-surface-soft: #f7fbff;
+				--sib-border: #d7e3f0;
+				--sib-text: #1f2a37;
+				--sib-muted: #66768a;
+				--sib-radius: 20px;
+				--sib-shadow: 0 18px 44px rgba(15, 76, 129, 0.12);
+				--sib-shadow-soft: 0 10px 24px rgba(31, 42, 55, 0.08);
+			}
+
+			.content {
+				background:
+					radial-gradient(circle at top left, rgba(31, 122, 224, 0.09), transparent 26%),
+					linear-gradient(180deg, #f8fbff 0%, var(--sib-bg) 100%);
+				font-family: 'Inter', system-ui, sans-serif;
+				min-height: 100vh;
+				padding-bottom: 32px;
+			}
+
+			.sib-shell {
+				max-width: 1420px;
+				margin: 0 auto;
+				padding: 28px 22px 0;
+			}
+
+			.sib-hero {
+				background: linear-gradient(135deg, #2f80ed 0%, var(--sib-accent) 55%, #7cc4ff 100%);
+				border-radius: 0 0 22px 22px;
+				box-shadow: var(--sib-shadow);
+				color: #fff;
+				margin-bottom: 18px;
+				overflow: hidden;
+				padding: 18px 0;
+				position: relative;
+			}
+
+			.sib-hero::before,
+			.sib-hero::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.08);
+			}
+
+			.sib-hero::before {
+				width: 180px;
+				height: 180px;
+				top: -80px;
+				right: -20px;
+			}
+
+			.sib-hero::after {
+				width: 120px;
+				height: 120px;
+				left: -30px;
+				bottom: -50px;
+			}
+
+			.sib-hero-grid {
+				position: relative;
+				z-index: 1;
+			}
+
+			.sib-eyebrow {
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.18em;
+				margin-bottom: 6px;
+				opacity: 0.82;
+				text-transform: uppercase;
+			}
+
+			.sib-hero-copy h1 {
+				font-size: 1.45rem;
+				font-weight: 800;
+				margin: 0;
+			}
+
+			.sib-hero-copy p {
+				display: none;
+			}
+
+			.sib-stats {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+				margin: -22px 0 16px;
+				position: relative;
+				z-index: 2;
+			}
+
+			.sib-stat-card {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(8px);
+				border: 1px solid rgba(255, 255, 255, 0.6);
+				border-radius: 16px;
+				box-shadow: var(--sib-shadow-soft);
+				padding: 14px 16px;
+			}
+
+			.sib-stat-label {
+				color: var(--sib-muted);
+				display: block;
+				font-size: 0.78rem;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				margin-bottom: 8px;
+				text-transform: uppercase;
+			}
+
+			.sib-stat-value {
+				color: var(--sib-text);
+				font-size: 1.35rem;
+				font-weight: 800;
+				line-height: 1;
+			}
+
+			.sib-stat-helper {
+				color: var(--sib-muted);
+				display: none;
+			}
+
+			.sib-panel-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: flex-end;
+			}
+
+			.sib-panel {
+				background: var(--sib-surface);
+				border: 1px solid var(--sib-border);
+				border-radius: 22px;
+				box-shadow: var(--sib-shadow-soft);
+				overflow: hidden;
+			}
+
+			.sib-panel-head {
+				align-items: center;
+				background: linear-gradient(180deg, var(--sib-surface-soft) 0%, #fff 100%);
+				border-bottom: 1px solid var(--sib-border);
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: space-between;
+				padding: 18px 20px;
+			}
+
+			.sib-panel-head h3 {
+				color: var(--sib-text);
+				font-size: 1rem;
+				font-weight: 700;
+				margin: 0;
+			}
+
+			.sib-pill-group {
+				display: none;
+			}
+
+			.sib-pill {
+				display: none;
+			}
+
+			.table-responsive {
+				padding: 8px 14px 16px;
+			}
+
+			#tablaSolicitudes {
+				margin-bottom: 0;
+				table-layout: fixed;
+				width: 100% !important;
+			}
+
+			#tablaSolicitudes thead th {
+				background: linear-gradient(135deg, #2f80ed 0%, var(--sib-accent) 55%, #7cc4ff 100%) !important;
+				border: none;
+				color: #fff !important;
+				font-size: 0.67rem;
+				font-weight: 800;
+				letter-spacing: 0.08em;
+				padding: 10px 8px;
+				text-transform: uppercase;
+				white-space: normal;
+			}
+
+			#tablaSolicitudes tbody tr:hover td {
+				background: #eef6ff !important;
+			}
+
+			#tablaSolicitudes td {
+				border: none;
+				border-bottom: 1px solid #edf2f7;
+				color: var(--sib-text);
+				font-size: 0.8rem;
+				padding: 10px 8px;
+				vertical-align: middle;
+				white-space: normal;
+				word-break: break-word;
+			}
+
+			#tablaSolicitudes tbody tr:last-child td {
+				border-bottom: none;
+			}
+
+			.btn {
+				border-radius: 10px;
+				font-family: 'Inter', system-ui, sans-serif;
+				font-weight: 700;
+				transition: transform 0.16s ease, box-shadow 0.16s ease;
+			}
+
+			.btn:hover {
+				box-shadow: 0 10px 18px rgba(15, 76, 129, 0.18);
+				transform: translateY(-1px);
+			}
+
+			.btn-primary {
+				background: linear-gradient(135deg, var(--sib-primary-dark), var(--sib-primary));
+				border: none;
+			}
+
+			.sib-btn-original {
+				background: #0d6efd !important;
+				border: 1px solid #0d6efd !important;
+				border-radius: 0.375rem;
+				box-shadow: none !important;
+				font-weight: 600;
+				transform: none !important;
+			}
+
+			.sib-btn-original:hover,
+			.sib-btn-original:focus {
+				background: #0b5ed7 !important;
+				border-color: #0a58ca !important;
+				box-shadow: none !important;
+			}
+
+			.modal-content {
+				border: none;
+				border-radius: 22px;
+				box-shadow: 0 24px 64px rgba(31, 42, 55, 0.18);
+				overflow: hidden;
+			}
+
+			.modal-header {
+				border-bottom: 1px solid var(--sib-border);
+				padding: 18px 22px;
+			}
+
+			.modal-header.bg-primary {
+				background: linear-gradient(135deg, var(--sib-primary-dark), var(--sib-primary)) !important;
+				border-bottom: none;
+			}
+
+			.modal-header.bg-info {
+				border-bottom: none;
+				padding: 18px 22px;
+			}
+
+			.modal-title {
+				font-size: 1rem;
+				font-weight: 800;
+			}
+
+			.modal-body {
+				padding: 22px;
+			}
+
+			.modal-footer {
+				background: #f8fbff;
+				border-top: 1px solid var(--sib-border);
+				padding: 14px 22px;
+			}
+
+			.form-label {
+				color: var(--sib-muted);
+				font-size: 0.78rem;
+				font-weight: 800;
+				letter-spacing: 0.08em;
+				margin-bottom: 6px;
+				text-transform: uppercase;
+			}
+
+			.form-control,
+			.form-select,
+			.input-group-text {
+				border-radius: 12px;
+			}
+
+			.form-control,
+			.form-select {
+				background: #fff;
+				border: 1.5px solid var(--sib-border);
+				color: var(--sib-text);
+				font-size: 0.92rem;
+				padding: 10px 12px;
+			}
+
+			.form-control:focus,
+			.form-select:focus {
+				border-color: var(--sib-accent);
+				box-shadow: 0 0 0 4px rgba(31, 122, 224, 0.12);
+			}
+
+			.input-group-text {
+				background: #f1f6fc;
+				border: 1.5px solid var(--sib-border);
+				color: var(--sib-primary);
+				font-weight: 700;
+			}
+
+			#spinner {
+				z-index: 9999;
+			}
+
+			@media (max-width: 768px) {
+				.sib-shell {
+					padding: 18px 14px 0;
+				}
+
+				.sib-hero {
+					border-radius: 0 0 22px 22px;
+					padding: 24px 0;
+				}
+
+				.sib-hero-copy h1 {
+					font-size: 1.6rem;
+				}
+
+				.sib-stats {
+					margin-top: -30px;
+				}
+
+				.sib-toolbar,
+				.sib-panel-head {
+					padding: 16px;
+				}
+
+				.table-responsive {
+					padding: 6px 8px 12px;
+				}
+			}
+		</style>
+
+		<div class="sib-hero">
+			<div class="sib-shell sib-hero-grid">
+				<div class="sib-hero-copy">
+					<div class="sib-eyebrow">VoBo Nómina</div>
+					<h1>Solicitudes de crédito</h1>
+				</div>
+			</div>
+		</div>
+
+		<div class="sib-shell">
+			<div class="sib-stats">
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Total</span>
+					<div class="sib-stat-value" id="solicitudesTotal">0</div>
+					<div class="sib-stat-helper">Solicitudes visibles en la tabla.</div>
+				</div>
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">En revisión</span>
+					<div class="sib-stat-value" id="solicitudesRevision">0</div>
+					<div class="sib-stat-helper">Pendientes de resolución.</div>
+				</div>
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Aprobadas</span>
+					<div class="sib-stat-value" id="solicitudesAprobadas">0</div>
+					<div class="sib-stat-helper">Listas para continuar el flujo.</div>
+				</div>
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Rechazadas</span>
+					<div class="sib-stat-value" id="solicitudesRechazadas">0</div>
+					<div class="sib-stat-helper">Requieren seguimiento o corrección.</div>
+				</div>
+			</div>
+
+			<div id="spinner" class="spinner-border text-primary"
+				style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+				<span class="sr-only">Cargando...</span>
+			</div>
+
+			<div class="sib-panel">
+				<div class="sib-panel-head">
+					<div>
+						<h3>Listado de solicitudes</h3>
+					</div>
+					<div class="sib-panel-actions">
+						<div id="contenedorBotonExcel" class="d-none">
+							<button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+								<i class="fas fa-file-excel"></i> Cargar Excel
+							</button>
+						</div>
+						<button class="btn btn-primary sib-btn-original" data-bs-toggle="modal" data-bs-target="#solicitudModal">
+							<i class="fas fa-plus"></i> Nueva solicitud
+						</button>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-sm" style="width: 100%;" id="tablaSolicitudes">
+						<thead class="table-primary">
+							<tr>
+								<th>No. Solicitud</th>
+								<th>Nombre de Cliente</th>
+								<th>No. Empleado</th>
+								<th>Fecha de Solicitud</th>
+								<th>Nombre de Empresa</th>
+								<th>Monto</th>
+								<th>Cuota</th>
+								<th>Usuario Registro</th>
+								<th>Sucursal</th>
+								<th>Estatus</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="solicitudModal" tabindex="-1" aria-labelledby="solicitudModalLabel">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="solicitudModalLabel">Registro de solicitud de crédito</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="solicitudForm">
+							<input type="hidden" id="idSolicitud">
+
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="buscarEmpresa" class="form-label">Nombre de la Empresa</label>
+									<input type="search" class="form-control" id="buscarEmpresa" list="opcionEmpresa"
+										autocomplete="off" placeholder="Buscar empresa">
+									<datalist id="opcionEmpresa"></datalist>
+									<div id="spinnerEmpresas" class="spinner-border text-primary" style="display: none;"></div>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="buscarEmpleado" class="form-label">Nombre del Empleado</label>
+									<input type="search" class="form-control" id="buscarEmpleado" list="opcionEmpleado"
+										autocomplete="off" placeholder="Buscar empleado">
+									<datalist id="opcionEmpleado"></datalist>
+									<div id="spinnerEmpleado" class="spinner-border text-primary" style="display: none;"></div>
+								</div>
+							</div>
+
+							<div class="col-md-12">
+								<label for="buscarProducto" class="form-label">Producto</label>
+								<input type="search" class="form-control mb-2" id="buscarProducto" list="opcionProducto"
+									autocomplete="off" placeholder="Buscar producto">
+								<datalist id="opcionProducto"></datalist>
+								<div id="spinnerProducto" class="spinner-border text-primary" style="display: none;"></div>
+
+								<div id="checkboxNomiPrestamoRow" class="form-check mt-2" style="display: none;">
+									<input class="form-check-input" type="checkbox" id="checkNomiprestamo">
+									<label class="form-check-label" for="checkNomiprestamo">
+										¿Este crédito es una renovación?
+									</label>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<div class="col-md-4">
+									<label class="form-label">Núm. Empleado</label>
+									<input type="text" id="numEmpleado" class="form-control"
+										placeholder="Ejemplo: 2434">
+								</div>
+								<div class="col-md-4">
+									<label class="form-label">Puesto</label>
+									<select id="puesto" class="form-select">
+										<option value="" disabled selected>Seleccione un puesto...</option>
+									</select>
+								</div>
+								<div class="col-md-4">
+									<label for="" class="form-label">Plazo</label>
+									<div id="plazoCreditoContainer">
+										<select class="form-select" id="plazoCredito">
+											<option value="" disabled selected>Seleccione...</option>
+										</select>
+									</div>
+									<span id="spinnerPlazo" style="display:none;">Cargando...</span>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<div class="col-md-4">
+									<label class="form-label">Frecuencia de Pago</label>
+									<select class="form-select" id="frecuenciaCredito">
+										<option value="0">Seleccione una frecuencia</option>
+										<option th:each="tipoFrecuencia : ${cat_tipo_frecuencia}"
+											th:value="${tipoFrecuencia.id}" th:text="${tipoFrecuencia.descFrecuencia}"
+											th:for="${tipoFrecuencia.frecuencia}">
+										</option>
+									</select>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label">Monto Solicitado</label>
+									<div class="input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" id="montoSolicitado" class="form-control text-end"
+											placeholder="Ejemplo: 10000" min="0" step="0.01">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label class="form-label">Monto a descontar</label>
+									<div class="input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" id="montoDescontar" class="form-control text-end"
+											placeholder="Ejemplo: 500" min="0" step="0.01" readonly>
+									</div>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<label for="comentariosSolicitud" class="form-label">Comentarios</label>
+									<textarea class="form-control" id="comentariosSolicitud" rows="3"
+										placeholder="Escribe un comentario (opcional)..."></textarea>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="btnGuardarSolicitud">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="mensajeModalLabel">Texto del correo</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="mensajeTexto" class="form-label">Mensaje</label>
+								<textarea class="form-control" id="mensajeTexto" rows="4"
+									placeholder="Escribe tu mensaje aquí"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="cambiarEstatusModal" tabindex="-1" aria-labelledby="cambiarEstatusModalLabel">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-primary text-white">
+						<h5 class="modal-title" id="cambiarEstatusModalLabel">
+							<i class="fas fa-exchange-alt me-2"></i> Cambiar estatus de solicitud
+						</h5>
+						<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" id="idSolicitudEstatus">
+						<div class="mb-3 row">
+							<label class="col-sm-4 col-form-label fw-semibold">No. Solicitud</label>
+							<div class="col-sm-8">
+								<p id="lblIdSolicitudEstatus" class="form-control-plaintext"></p>
+							</div>
+						</div>
+						<div class="mb-3 row">
+							<label class="col-sm-4 col-form-label fw-semibold">Estatus actual</label>
+							<div class="col-sm-8 d-flex align-items-center">
+								<span id="lblEstatusActual"></span>
+							</div>
+						</div>
+						<div class="mb-3 row">
+							<label for="selectNuevoEstatus" class="col-sm-4 col-form-label fw-semibold">Nuevo estatus</label>
+							<div class="col-sm-8">
+								<select id="selectNuevoEstatus" class="form-select">
+									<option value="0">Cancelada</option>
+									<option value="1">En Revision</option>
+									<option value="2">Enviada</option>
+									<option value="3">Aprobada</option>
+									<option value="4">Rechazada</option>
+									<option value="5">Aceptada</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="btnConfirmarEstatus">
+							<i class="fas fa-save me-1"></i> Guardar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-info text-white">
+						<h5 class="modal-title" id="uploadExcelModalLabel">Subir archivo Excel</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="uploadExcelForm">
+							<div class="mb-3">
+								<label for="excelFile" class="form-label">Seleccionar archivo Excel</label>
+								<input type="file" class="form-control" id="excelFile" accept=".xls,.xlsx">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="uploadExcelButton">Subir</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script th:src="@{/js/jquery-3.5.1.js}"></script>
+		<script th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script th:src="@{/js/presolicitudes/presolicitudes.js}"></script>
+		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	</th:block>
+</body>
+
+</html>

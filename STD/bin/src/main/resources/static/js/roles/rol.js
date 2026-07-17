@@ -1,8 +1,11 @@
+// @ts-nocheck
 var altaRoles = "altaRoles?nombreRol=";
 var updateRoles = "updateRoles?idRol=";
 var cargarRolEditar = "cargarRol/";
 var modificarRoles = "modificarRoles?idRol=";
 var inicio = "index";
+var idsSeleccionados = new Set();
+var tablaMenuRol = null;
 
 /**
  * relacionar opciones 
@@ -15,18 +18,17 @@ var bajaOpciones = "bajaOpciones?idRol=";
 $(document).ready(function() {
 	
 	$("#btnRegistrar").click(function() {
-		
-		if(vacioAlta() == false){
+		if (vacioAlta() == false) {
 			altaRol();
-		}else{
-			swal({
-					title:"Error",
-					text: "Registrar datos obligatorios",
-					icon: "warning",
-				});
+		} else {
+			Swal.fire({
+				title: "Error",
+				text: "Registrar datos obligatorios",
+				icon: "warning",
+			});
 		}
 	});
-	
+
 	$("#btnCancelar").click(function() {
 		$("#modalRol").modal("hide");
 		document.getElementById("nombreRol").style.borderColor = '';
@@ -34,77 +36,82 @@ $(document).ready(function() {
 		document.getElementById("nombreRol").value = "";
 		document.getElementById("descripcionRol").value = "";
 	});
-	
+
 	$("#btnModificar").click(function() {
-		
-		if(vacioModificar() == false){
+		if (vacioModificar() == false) {
 			modificarRol();
-		}else{
-			swal({
-					title:"Error",
-					text: "Registrar datos obligatorios",
-					icon: "warning",
-				});
+		} else {
+			Swal.fire({
+				title: "Error",
+				text: "Registrar datos obligatorios",
+				icon: "warning",
+			});
 		}
-	});	
+	});
+
 	$("#btnCerrar").click(function() {
 		$("#editarRol").modal("hide");
 		document.getElementById("inombreRol").style.borderColor = '';
 		document.getElementById("inputDescripcion").style.borderColor = '';
 	});
-	
-	$("#btnRelRolOpciones").click(function() {
-		var ids = "";
-		document.querySelectorAll('#menuRol input[type=checkbox]:checked').forEach(function(checkElement) {
-			if (checkElement.id != 'idTodos') {
-				ids += checkElement.id + " ";
+
+	$(document).on('change', '#menuRol input[type=checkbox]', function() {
+			if (this.id === 'idTodos') {
+				return;
+			}
+
+			if (this.checked) {
+				idsSeleccionados.add(this.id);
+			} else {
+				idsSeleccionados.delete(this.id);
 			}
 		});
-		
-		var listaOpciones = "";
+
+
+	$("#btnRelRolOpciones").click(function() {
+		var listaOpciones = Array.from(idsSeleccionados);
 		var listaOpcionesAnteriores = "";
 		var urlGuardar = "";
-		var idRolSelect =$("#idRolRel").val();
-		
-		
-		if (ids.trim().length > 0 && idsAnteriores.trim().length == 0) {
-			listaOpciones = ids.trim().split(' ');
-			urlGuardar = getAbsolutePath() + altaRelRolOpcion + listaOpciones+"&idRol="+idRolSelect;
+		var idRolSelect = $("#idRolRel").val();
 
+		if (listaOpciones.length > 0 && idsAnteriores.trim().length == 0) {
+			urlGuardar = getAbsolutePath() + altaRelRolOpcion + listaOpciones + "&idRol=" + idRolSelect;
 			enviarPeticion(urlGuardar);
-		}else if (ids.trim().length > 0 && idsAnteriores.trim().length > 0) {
-			listaOpciones = ids.trim().split(' ');
+
+		} else if (listaOpciones.length > 0 && idsAnteriores.trim().length > 0) {
 			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
 
-			urlGuardar = getAbsolutePath() + actualizarOpciones + idRolSelect +  "&idsOpciones=" + listaOpciones + "&idsAnteriores=" + listaOpcionesAnteriores;
+			urlGuardar = getAbsolutePath() + actualizarOpciones + idRolSelect +
+				"&idsOpciones=" + listaOpciones +
+				"&idsAnteriores=" + listaOpcionesAnteriores;
 
 			enviarPeticion(urlGuardar);
-		}else if (ids.trim().length == 0 && idsAnteriores.trim().length > 0) {
+
+		} else if (listaOpciones.length == 0 && idsAnteriores.trim().length > 0) {
 			listaOpcionesAnteriores = idsAnteriores.trim().split(' ');
 			urlGuardar = getAbsolutePath() + bajaOpciones + idRolSelect + "&idsAnteriores=" + listaOpcionesAnteriores;
-			//baja
 			enviarPeticion(urlGuardar);
-		}else {
-			swal({
+
+		} else {
+			Swal.fire({
 				title: "",
 				text: "No ha seleccionado ninguna opcion",
 				icon: "warning",
 				confirmButtonText: 'Aceptar'
-			})
+			});
 		}
-		
 	});
-	
+
 	$("#btnCerrarRelRol").click(function() {
 		$("#rolMenu").modal("hide");
 		limpiarcheck();
 	});
 
 	eventosContadorNombreRol();
-    eventosContadorDesRol();
-    eventosContadorNombreRolE();
-    eventosContadorDesRolE();
-    	
+	eventosContadorDesRol();
+	eventosContadorNombreRolE();
+	eventosContadorDesRolE();
+
 	inicioTabla();
 });
 
@@ -164,25 +171,27 @@ function getAbsolutePath() {
 	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
-function inicioTabla(){
+function inicioTabla() {
 	$("#rolTable").DataTable({
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-        },
 		'aoColumnDefs': [{
 			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
+			'aTargets': [-1]
 		}]
 	});
 	
-	$("#menuRol").DataTable({
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-        },
+	tablaMenuRol = $("#menuRol").DataTable({
 		'aoColumnDefs': [{
 			'bSortable': false,
-			'aTargets': [-1] /* 1st one, start by the right */
+			'aTargets': [-1]
 		}]
+	});
+
+	$('#menuRol').on('draw.dt', function() {
+		$('#menuRol input[type=checkbox]').each(function() {
+			if (this.id !== 'idTodos') {
+				this.checked = idsSeleccionados.has(this.id);
+			}
+		});
 	});
 }
 
@@ -222,7 +231,7 @@ function peticion(urlServicio){
 					setTimeout($.unblockUI, 500); 
 				},
 				success: function(respuesta) {
-					swal({
+					Swal.fire({
 						title: "",
 						text: respuesta[0],
 						icon: "success",
@@ -233,7 +242,7 @@ function peticion(urlServicio){
 					
 
 				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
+					Swal.fire({
 						title: "Error, ",
 						text: "Se presento un error, intente mas tarde.",
 						icon: "warning",
@@ -265,11 +274,11 @@ function populateModalRol(data) {
 /**Relacionar opciones de Menu */
 var consultaOpciones = "consultaOpciones?idRol=";
 var idsAnteriores = " ";
-function consultarOpciones(idRol){
-	document.querySelector('#lblTituloRol').innerText ="Opciones relacionadas al Rol:"+$(idRol).parents("tr").find("td").eq(1).html();
+function consultarOpciones(idRol) {
+	document.querySelector('#lblTituloRol').innerText = "Opciones relacionadas al Rol:" + $(idRol).parents("tr").find("td").eq(1).html();
 	$("#idRolRel").val($(idRol).attr("id"));
 	
-	var urlGuardar = getAbsolutePath()+consultaOpciones+$("#idRolRel").val();
+	var urlGuardar = getAbsolutePath() + consultaOpciones + $("#idRolRel").val();
 	console.log("consultar datos");
 	
 	$.ajax({
@@ -278,26 +287,32 @@ function consultarOpciones(idRol){
 		dataType: "JSON",
 		success: function(respuesta) {
 			idsAnteriores = "";
-			for (var i in respuesta) {
-				document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+			idsSeleccionados.clear();
 
-					if (checkElement.id != 'idTodos') {
-						if (checkElement.id == respuesta[i].fk_opcion) {
-							idsAnteriores += checkElement.id + " ";
-							checkElement.checked = true;
-						}
-					}
-				});
+			for (var i in respuesta) {
+				var idOpcion = String(respuesta[i].fk_opcion);
+				idsAnteriores += idOpcion + " ";
+				idsSeleccionados.add(idOpcion);
 			}
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
+
+			$('#menuRol input[type=checkbox]').each(function() {
+				if (this.id !== 'idTodos') {
+					this.checked = idsSeleccionados.has(this.id);
+				}
+			});
+
+			if (tablaMenuRol) {
+				tablaMenuRol.draw(false);
+			}
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			Swal.fire({
+				title: "Error",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
 			});
 		}
 	});
-	
 }
 /**
  * 
@@ -306,53 +321,68 @@ function consultarOpciones(idRol){
 function checkTodo() {
 	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
 		checkElement.checked = true;
+		if (checkElement.id !== 'idTodos') {
+			idsSeleccionados.add(checkElement.id);
+		}
 	});
 }
 
 function limpiarcheck() {
+	idsSeleccionados.clear();
+
 	document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
 		checkElement.checked = false;
 	});
 }
 
 
-function checkOpciones(id){
+function checkOpciones(id) {
 	var idTabla = $(id).attr('id');
-	console.log(""+id);
-	if (id.checked) {
-			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = true;
+
+	document.querySelectorAll('#' + idTabla + ' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = id.checked;
+
+		if (checkElement.id !== 'idTodos') {
+			if (id.checked) {
+				idsSeleccionados.add(checkElement.id);
+			} else {
+				idsSeleccionados.delete(checkElement.id);
+			}
+		}
 	});
-	}else{
-			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = false;
-	});
-	}
 }
 
-function checkMenu(id){
+function checkMenu(id) {
 	var idTabla = $(id).parents("tr").find("table").attr("id");
-	console.log(""+id);
-	if (id.checked) {
-			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = true;
+
+	document.querySelectorAll('#' + idTabla + ' input[type=checkbox]').forEach(function(checkElement) {
+		checkElement.checked = id.checked;
+
+		if (checkElement.id !== 'idTodos') {
+			if (id.checked) {
+				idsSeleccionados.add(checkElement.id);
+			} else {
+				idsSeleccionados.delete(checkElement.id);
+			}
+		}
 	});
-	}else{
-			document.querySelectorAll('#'+idTabla+' input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = false;
-	});
-	}
 }
 
-function checkTodos(id){
+function checkTodos(id) {
 	if (id.checked) {
 		document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = true;
-	});
-	}else{
-			document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
-		checkElement.checked = false;
-	});
+			checkElement.checked = true;
+			if (checkElement.id !== 'idTodos') {
+				idsSeleccionados.add(checkElement.id);
+			}
+		});
+	} else {
+		document.querySelectorAll('#menuRol input[type=checkbox]').forEach(function(checkElement) {
+			checkElement.checked = false;
+			if (checkElement.id !== 'idTodos') {
+				idsSeleccionados.delete(checkElement.id);
+			}
+		});
 	}
 }
 
@@ -372,7 +402,7 @@ function enviarPeticion(urlGuardar) {
 		},
 		success: function(respuesta) {
 			$("#rolMenu").modal("hide");
-			swal({
+			Swal.fire({
 				title: "",
 				text: respuesta[0],
 				icon: "success",
@@ -382,7 +412,7 @@ function enviarPeticion(urlGuardar) {
 			});
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
+			Swal.fire({
 				title: "Error, ",
 				text: "Se presento un error, intente mas tarde.",
 				icon: "warning",
