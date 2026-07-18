@@ -35,6 +35,10 @@ public class TiposCampaniasService {
 	public TiposCampaniasModel obtenerCampaniaPorId(Integer id) {
 	    return repository.mostrarCampania(id);
 	}
+
+	public Integer obtenerMaximaVigenciaCampaniaActiva() {
+		return repository.obtenerMaximaVigenciaCampaniaActiva();
+	}
 	
 	@Transactional
     public boolean actualizarCampania(TiposCampaniasModel campania) {
