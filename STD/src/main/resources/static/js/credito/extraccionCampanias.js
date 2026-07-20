@@ -1406,11 +1406,13 @@ document.getElementById("btnCancelar").disabled = true;
 
 // @ts-ignore
 var tipoCampania = parseInt(
+	// @ts-ignore
     document.getElementById("Campania").value
 );
 
 // @ts-ignore
 var estatusCampania = parseInt(
+	// @ts-ignore
     document.getElementById("Estatus").value
 );
 
@@ -1810,80 +1812,70 @@ fetch(
 }
  
 function btnWsEstatusCampanias() {
-	
-	// @ts-ignore
-	document.getElementById("btnWsEstatusCampanias").disabled = true;
-	
-	// @ts-ignore
-	Swal.fire({
-		title: 'Procesando...',
-		text: 'Por favor espera',
-		allowOutsideClick: false,
-		allowEscapeKey: false,
-		showConfirmButton: false, 
-		didOpen: () => {
-			// @ts-ignore
-			Swal.showLoading();
-		}
-	});
-	
-	//mandar llamar WS
-	fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias?")
-    .then(async resp => {
-        const mensaje = await resp.text();
-        if (!resp.ok) {
-            throw new Error(mensaje || "Error en el proceso de WS.");
+
+    // @ts-ignore
+    document.getElementById("btnWsEstatusCampanias").disabled = true;
+
+    // @ts-ignore
+    Swal.fire({
+        title: "Procesando...",
+        text: "Por favor espera",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            // @ts-ignore
+            Swal.showLoading();
         }
-        return resp.text(); // porque el backend regresa un int
-    })
-    .then(dataSP => {
-        
-        //////
-        // @ts-ignore
-        Swal.fire({
-            icon: 'success',
-            text: 'Actualizado correctamente',
-            confirmButtonText: 'Aceptar'
-        }).then(() => {
-            window.location.href = newUrlBase + "credito/extraccionCampanias";
-        });
-        
-        
-    })
-    .then(mensaje => {
-		
-		//////
-		// @ts-ignore
-		Swal.fire({
-			icon: 'success',
-			text: mensaje || 'WS Estatus Campanias ejecutado correctamente',
-			confirmButtonText: 'Aceptar'
-		}).then(() => {
-			window.location.href = newUrlBase + "credito/extraccionCampanias";
-		});
-		
-		
-	})
-    .catch(err => {
-        console.error("Error en el proceso de WS: ", err);
-        // @ts-ignore
-        document.getElementById("btnWsEstatusCampanias").disabled = false;
-        // @ts-ignore
-        Swal.fire({
-			icon: 'error',
-			title: 'Error en WS Estatus Campanias',
-			text: err.message || 'Ocurrio un problema al ejecutar el WS Estatus Campanias',
-			confirmButtonText: 'Aceptar'
-		});
-		return;
-        // @ts-ignore
-        Swal.fire({
-			icon: 'error',
-			text: 'Ocurrió un problema al cancelar el proceso del WS',
-			confirmButtonText: 'Aceptar'
-		});
     });
-    ///termina llamada del WS
+
+    fetch(newUrlBase + "credito/api/ejecutarWsEstatusCampanias")
+        .then(async resp => {
+            const mensaje = await resp.text();
+
+            if (!resp.ok) {
+                throw new Error(
+                    mensaje || "Error en el proceso de WS Estatus Campañas."
+                );
+            }
+
+            return mensaje;
+        })
+        .then(mensaje => {
+            // @ts-ignore
+            Swal.fire({
+                icon: "success",
+                title: "Éxito",
+                text: mensaje || "WS Estatus Campañas ejecutado correctamente.",
+                confirmButtonText: "Aceptar",
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href =
+                        newUrlBase + "credito/extraccionCampanias";
+                }
+            });
+        })
+        .catch(err => {
+            console.error("Error en el proceso de WS:", err);
+
+            // @ts-ignore
+            document.getElementById(
+                "btnWsEstatusCampanias"
+				// @ts-ignore
+            ).disabled = false;
+
+            // @ts-ignore
+            Swal.fire({
+                icon: "error",
+                title: "Error en WS Estatus Campañas",
+                text:
+                    err.message ||
+                    "Ocurrió un problema al ejecutar el WS Estatus Campañas.",
+                confirmButtonText: "Aceptar"
+            });
+        });
 }
  
 function btnArchivoMc() {
