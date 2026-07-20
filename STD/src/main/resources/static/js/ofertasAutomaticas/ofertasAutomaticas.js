@@ -703,9 +703,12 @@ function validarHoras() {
 //enviar actualizacion
 
 function peticionPost(metodo, metodoUrl) {
+
     Swal.fire({
         title: "Procesando información.",
-        html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        html: '<div class="spinner-border text-primary" role="status">' +
+              '<span class="sr-only">Cargando...</span>' +
+              '</div>',
         showConfirmButton: false,
         allowOutsideClick: false,
         allowEscapeKey: false
@@ -715,18 +718,25 @@ function peticionPost(metodo, metodoUrl) {
         url: metodoUrl,
         type: "POST",
         dataType: "JSON",
-        beforeSend: function() {
-        },
-        complete: function() {
-            Swal.close();
-        },
+
         success: function(respuesta) {
+
+            // Cierra únicamente el mensaje de carga
+            Swal.close();
+
             url = "";
+
             Swal.fire({
                 text: respuesta.mensaje,
                 icon: respuesta.tipo,
-                confirmButtonText: "Aceptar"
-            }).then(resp => {
+                confirmButtonText: "Aceptar",
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
 
                 if (metodo == 1) {
                     iniciaTblParametros();
@@ -735,25 +745,48 @@ function peticionPost(metodo, metodoUrl) {
                 } else if (metodo == 2) {
                     iniciaTblClasificacion();
                     limpiarDatosClasificacion();
+
                 } else if (metodo == 3) {
                     if (respuesta.envio == "1") {
                         correosAsignacion();
                     }
+
                 } else if (metodo == 4) {
                     cargatblProcesoG();
                     limpiarParametros();
+
                 } else if (metodo == 5) {
-                    window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta.reporte);
+                    var urlReporte =
+                        window.location.href.substring(
+                            0,
+                            window.location.href.indexOf("STD/") + 4
+                        ) + respuesta.reporte;
+
+                    window.open(urlReporte);
                     window.focus();
                 }
             });
-
         },
+
         error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+            // Cierra únicamente el mensaje de carga
+            Swal.close();
+
+            console.error("Error en peticionPost:");
+            console.error("Estatus:", XMLHttpRequest.status);
+            console.error("Respuesta:", XMLHttpRequest.responseText);
+            console.error("Error:", errorThrown);
+
             Swal.fire({
-                text: "Se presento un error, intente mas tarde.",
+                title: "Error",
+                text:
+                    XMLHttpRequest.responseText ||
+                    "Se presentó un error, intente más tarde.",
                 icon: "error",
-                confirmButtonText: "Aceptar"
+                confirmButtonText: "Aceptar",
+                allowOutsideClick: false,
+                allowEscapeKey: false
             });
         }
     });
