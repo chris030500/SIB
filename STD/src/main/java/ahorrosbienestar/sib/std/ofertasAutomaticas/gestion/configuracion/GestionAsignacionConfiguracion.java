@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,25 +133,37 @@ public class GestionAsignacionConfiguracion {
 
 
 	public synchronized String procesarAsignacion(Integer idProceso, int tipoProceso) {
-		try {
-			
-			logger.info("Ejecuta los SP Asignacion");
-			error = procesoGestionAsignado();
-			
-			if(error == null || error.equals(Constantes.ENVIA_CORREO_ASIGNACION) || error.equals(Constantes.NO_ENVIA_CORREO_ASIGNACION)) {
-				if(tipoProceso == Constantes.PROCESO_AUTOMATICO && error.equals(Constantes.ENVIA_CORREO_ASIGNACION) ) {
-					envioCorreoService.preparCorreoAdjunto(Constantes.CORREO_ASIGNACION,Constantes.REPORTE_ASIGNACION,Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,Constantes.NOMBRE_REPORTE_ASIGNACION,Constantes.TIPO_BUSQUEDA_1);
-				}
-	        }else{
-				logger.error("Error:"+error);
-			}
-			return error;
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			return "Error:"+error+"-"+e.getMessage();
-		}
-		
-		
+	    try {
+
+	        logger.info("Ejecuta los SP Asignacion");
+	        error = procesoGestionAsignado();
+
+	        if (error == null
+	                || Constantes.ENVIA_CORREO_ASIGNACION.equals(error)
+	                || Constantes.NO_ENVIA_CORREO_ASIGNACION.equals(error)) {
+
+	            if (tipoProceso == Constantes.PROCESO_AUTOMATICO
+	                    && Constantes.ENVIA_CORREO_ASIGNACION.equals(error)) {
+
+	                envioCorreoService.preparCorreoAdjunto(
+	                        Constantes.CORREO_ASIGNACION,
+	                        Constantes.REPORTE_ASIGNACION,
+	                        Constantes.PARAMETRO_ADJUNTO_ASIGNACION_REASIGMACIONES,
+	                        Constantes.NOMBRE_REPORTE_ASIGNACION,
+	                        Constantes.TIPO_BUSQUEDA_1
+	                );
+	            }
+
+	        } else {
+	            logger.error("Error:" + error);
+	        }
+
+	        return error;
+
+	    } catch (Exception e) {
+	        logger.error("Error:" + e.getMessage(), e);
+	        return "Error:" + error + "-" + e.getMessage();
+	    }
 	}
 	
 	 public String procesoGestionAsignado() {

@@ -1,12 +1,9 @@
-//EstadoProcesoReporteRepository
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
-//import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

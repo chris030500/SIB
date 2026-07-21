@@ -1,4 +1,3 @@
-//DetallePEPsService
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
  
 import java.util.List;
@@ -42,24 +41,19 @@ public class DetallePEPsService {
             AtomicInteger actualizados = new AtomicInteger(0);
 
             for (DetallePEPsModel fila : filas) {
+            	detallePEPsRepository.findById(fila.getIClienteId()).ifPresentOrElse(existing -> {
 
-                DetallePEPsModel existing = detallePEPsRepository
-                        .findById(fila.getIClienteId())
-                        .orElse(null);
+            	    if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
 
-                if (existing != null) {
-
-                    if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
-                        existing.setVcNombreCliente(fila.getVcNombreCliente());
+            	        existing.setVcNombreCliente(fila.getVcNombreCliente());
                         detallePEPsRepository.save(existing);
                         actualizados.incrementAndGet();
                     }
-
-                } else {
-                    fila.setFkProceso(idProceso);
+                }, () -> {
+                	fila.setFkProceso(idProceso);
                     detallePEPsRepository.save(fila);
                     insertados.incrementAndGet();
-                }
+                });
             }
 
             logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);

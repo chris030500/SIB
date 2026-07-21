@@ -23,6 +23,7 @@ public interface IParticipantesRepository extends JpaRepository<Participantes, I
 	        + "WHERE VC_NOMBRECLIENTE LIKE CONCAT('%', :nombre, '%') "
 	        + "LIMIT 100",
 	        nativeQuery = true)
-	public List<Participantes> getByNameParticipantes(@Param("nombre") String nombre);
+	public List<Participantes> getByNameParticipantes(
+	        @Param("nombre") String nombre);
 	
 }

@@ -55,45 +55,54 @@ function updateEstatusRegla(idRegla){
 }
 
 function peticionPostRegla(urlServicio, servicio) {
-	
-	Swal.fire({
-    		title: 'Procesando..',
-    		html: 'Espere Por Favor...',
-    		allowOutsideClick: false,
-    		showConfirmButton: false,
-    		onBeforeOpen: () => {
-      			Swal.showLoading();
-    		}
-  	});
-	
-	$.ajax({
-		url: urlServicio,
-		type: "POST",
-		dataType: "JSON",
-		beforeSend: function() {
-		},
-		complete: function() {
-		},
-		success: function(respuesta) {
-			swal("",respuesta.mensaje,respuesta.tipo).then(resp => {
-				if (servicio == 1) {
-					obtTblReglas();
-				}
-				if (servicio == 2 || servicio == 3) {
-					$("#regParams").modal("hide");
-					limpiarDatosParams();
-					obtTblParamsAsig(idReglaParams);
-				}
-				if(servicio == 3){
-					idParametro=0;
-				}
-			});
 
+    Swal.fire({
+        title: 'Procesando..',
+        html: 'Espere Por Favor...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal("Error","Se presento un error, intente mas tarde.", "error");
-		}
-	});
+    $.ajax({
+        url: urlServicio,
+        type: "POST",
+        dataType: "JSON",
+        beforeSend: function() {
+        },
+        complete: function() {
+        },
+        success: function(respuesta) {
+            Swal.fire({
+                text: respuesta.mensaje,
+                icon: respuesta.tipo === 'error' ? 'error' : 'success',
+                confirmButtonText: 'Aceptar'
+            }).then((resp) => {
+                if (servicio == 1) {
+                    obtTblReglas();
+                }
+                if (servicio == 2 || servicio == 3) {
+                    $("#regParams").modal("hide");
+                    limpiarDatosParams();
+                    obtTblParamsAsig(idReglaParams);
+                }
+                if (servicio == 3) {
+                    idParametro = 0;
+                }
+            });
+
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Se presento un error, intente mas tarde.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    });
 }
 
 var obtTblParams="reglas/obtRegistrosParams?idRegla=";
@@ -143,37 +152,22 @@ function cerrarModalParams(tipoModal) {
 }
 
 function guardarModalParams() {
-		if(guardarVacioParams() == 0){
-			
-			if(idParametro == 0){
-					  servicioParams(2);//alta de registro 
-			}else{
-					  servicioParams(3);//actualizacion de registro 
-			}
-			
-		  /*Swal.fire({
-			  	title: '<span style="color: #007BFF;"><i class="fa-solid fa-gear"></i>Procesando Información.',
-				html: '<span class="spinner-border"></span>',
-				timer: 1000, // tiempo en milisegundos,
-				icon: 'info',
-				timerProgressBar: true,
-				showConfirmButton: false
-		  }).then((result) => {
-			  if (result.dismiss === Swal.DismissReason.timer) {
-				  if(idParametro == 0){
-					  servicioParams(2);//alta de registro 
-				  }else{
-					  servicioParams(3);//actualizacion de registro 
-				  }
-			  }
-			
-		  });*/
-			
-			
-		}else{
-			swal("!Alerta¡", "Registrar datos obligatorios","error");
-		}
-		
+    if (guardarVacioParams() == 0) {
+
+        if (idParametro == 0) {
+            servicioParams(2);//alta de registro 
+        } else {
+            servicioParams(3);//actualizacion de registro 
+        }
+
+    } else {
+        Swal.fire({
+            title: '¡Alerta!',
+            text: 'Registrar datos obligatorios',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 }
 var registroParams="reglas/registroParams?idRegla=";
 var actualizaParams="reglas/actualizaParams?idParams=";

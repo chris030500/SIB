@@ -1,3 +1,4 @@
+// @ts-nocheck
 var consultaDocumento = "altaDocumento/";
 var eliminar = "eliminar/";
 var reactivar = "reactivar/";
@@ -34,7 +35,7 @@ $(document).ready(function() {
 		if ($("#inputDocumento").val().trim().length > 0) {
 			altaDocumentos();
 		} else {
-			swal({
+			swal.Fire({
 				title: "Error",
 				text: "Ingresar el nombre del Documento",
 				icon: "warning",

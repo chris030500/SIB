@@ -1,15 +1,7 @@
-//ProcesosPEPsModel
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
  
-//import jakarta.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
  
 @Entity
 @Table(name = "TBL_PROCESOS_PEPS", schema = "SIB")

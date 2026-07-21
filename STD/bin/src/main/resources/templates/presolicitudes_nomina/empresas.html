@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/base-layout}">
+
+<head th:replace="layouts/base-layout :: head">
+	<meta charset="UTF-8">
+	<title>Gestión de Empresas</title>
+	<link href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css" rel="stylesheet">
+	<link th:href="@{/vendor/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+	<section class="content" layout:fragment="page-content">
+
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+			:root {
+				--sib-primary: #1565c0;
+				--sib-primary-dark: #0d47a1;
+				--sib-accent: #42a5f5;
+				--sib-success: #1f8f5f;
+				--sib-danger: #c03d4f;
+				--sib-bg: #eef3f8;
+				--sib-surface: #ffffff;
+				--sib-surface-soft: #f8fbff;
+				--sib-border: #d7e3f0;
+				--sib-text: #1f2a37;
+				--sib-muted: #66768a;
+				--sib-radius: 18px;
+				--sib-shadow: 0 18px 44px rgba(15, 76, 129, 0.12);
+				--sib-shadow-soft: 0 10px 24px rgba(31, 42, 55, 0.08);
+			}
+
+			.content {
+				background:
+					radial-gradient(circle at top right, rgba(31, 122, 224, 0.12), transparent 28%),
+					linear-gradient(180deg, #f7fbff 0%, var(--sib-bg) 100%);
+				font-family: 'Inter', system-ui, sans-serif;
+				min-height: 100vh;
+				padding-bottom: 32px;
+			}
+
+			.sib-shell {
+				max-width: 1380px;
+				margin: 0 auto;
+				padding: 28px 22px 0;
+			}
+
+			.sib-hero {
+				background: linear-gradient(135deg, #2f80ed 0%, var(--sib-accent) 55%, #7cc4ff 100%);
+				border-radius: 0 0 22px 22px;
+				box-shadow: var(--sib-shadow);
+				color: #fff;
+				margin-bottom: 18px;
+				overflow: hidden;
+				padding: 18px 22px;
+				position: relative;
+			}
+
+			.sib-hero::before,
+			.sib-hero::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.08);
+			}
+
+			.sib-hero::before {
+				width: 180px;
+				height: 180px;
+				top: -80px;
+				right: -30px;
+			}
+
+			.sib-hero::after {
+				width: 120px;
+				height: 120px;
+				bottom: -60px;
+				left: -20px;
+			}
+
+			.sib-hero-body {
+				position: relative;
+				z-index: 1;
+			}
+
+			.sib-eyebrow {
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.18em;
+				margin-bottom: 6px;
+				opacity: 0.82;
+				text-transform: uppercase;
+			}
+
+			.sib-hero h1 {
+				font-size: 1.45rem;
+				font-weight: 800;
+				margin: 0;
+			}
+
+			.sib-hero p {
+				display: none;
+			}
+
+			.sib-stats {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+				margin: -24px 0 16px;
+				position: relative;
+				z-index: 2;
+			}
+
+			.sib-stat-card {
+				background: rgba(255, 255, 255, 0.94);
+				backdrop-filter: blur(6px);
+				border: 1px solid rgba(255, 255, 255, 0.6);
+				border-radius: 16px;
+				box-shadow: var(--sib-shadow-soft);
+				padding: 14px 16px;
+			}
+
+			.sib-stat-label {
+				color: var(--sib-muted);
+				display: block;
+				font-size: 0.78rem;
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				margin-bottom: 8px;
+				text-transform: uppercase;
+			}
+
+			.sib-stat-value {
+				color: var(--sib-text);
+				font-size: 1.35rem;
+				font-weight: 800;
+				line-height: 1;
+			}
+
+			.sib-stat-helper {
+				color: var(--sib-muted);
+				display: none;
+			}
+
+			.sib-toolbar {
+				align-items: center;
+				background: var(--sib-surface);
+				border: 1px solid var(--sib-border);
+				border-radius: 20px;
+				box-shadow: var(--sib-shadow-soft);
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px;
+				justify-content: space-between;
+				margin-bottom: 18px;
+				padding: 18px 20px;
+			}
+
+			.sib-toolbar-copy {
+				min-width: 260px;
+			}
+
+			.sib-toolbar-copy h2 {
+				color: var(--sib-text);
+				font-size: 1.05rem;
+				font-weight: 700;
+				margin: 0;
+			}
+
+			.sib-toolbar-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: flex-end;
+			}
+
+			.sib-panel {
+				background: var(--sib-surface);
+				border: 1px solid var(--sib-border);
+				border-radius: 22px;
+				box-shadow: var(--sib-shadow-soft);
+				overflow: hidden;
+			}
+
+			.sib-panel-head {
+				align-items: center;
+				background: linear-gradient(180deg, var(--sib-surface-soft) 0%, #fff 100%);
+				border-bottom: 1px solid var(--sib-border);
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: space-between;
+				padding: 18px 20px;
+			}
+
+			.sib-panel-head h3 {
+				color: var(--sib-text);
+				font-size: 1rem;
+				font-weight: 700;
+				margin: 0;
+			}
+
+			.sib-pill {
+				display: none;
+			}
+
+			.table-responsive {
+				padding: 8px 14px 16px;
+			}
+
+			#tblRegistroEmpresas {
+				margin-bottom: 0;
+				table-layout: fixed;
+				width: 100% !important;
+			}
+
+			#tblRegistroEmpresas thead th {
+				background: linear-gradient(135deg, #2f80ed 0%, var(--sib-accent) 55%, #7cc4ff 100%) !important;
+				border: none;
+				color: #fff !important;
+				font-size: 0.68rem;
+				font-weight: 800;
+				letter-spacing: 0.08em;
+				padding: 11px 10px;
+				text-transform: uppercase;
+				white-space: normal;
+			}
+
+			#tblRegistroEmpresas tbody tr {
+				transition: background-color 0.16s ease, transform 0.16s ease;
+			}
+
+			#tblRegistroEmpresas tbody tr:hover td {
+				background: #eef6ff !important;
+			}
+
+			#tblRegistroEmpresas td {
+				border: none;
+				border-bottom: 1px solid #edf2f7;
+				color: var(--sib-text);
+				font-size: 0.84rem;
+				padding: 11px 10px;
+				vertical-align: middle;
+				white-space: normal;
+				word-break: break-word;
+			}
+
+			#tblRegistroEmpresas tbody tr:last-child td {
+				border-bottom: none;
+			}
+
+			.btn {
+				border-radius: 10px;
+				font-family: 'Inter', system-ui, sans-serif;
+				font-weight: 700;
+				transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+			}
+
+			.btn:hover {
+				box-shadow: 0 10px 18px rgba(15, 76, 129, 0.18);
+				transform: translateY(-1px);
+			}
+
+			.btn-primary {
+				background: linear-gradient(135deg, var(--sib-primary-dark), var(--sib-primary));
+				border: none;
+			}
+
+			.btn-outline-secondary,
+			.btn-outline-primary {
+				border-width: 1.5px;
+			}
+
+			.sib-modal-note {
+				display: none;
+			}
+
+			.modal-content {
+				border: none;
+				border-radius: 22px;
+				box-shadow: 0 24px 64px rgba(31, 42, 55, 0.18);
+				overflow: hidden;
+			}
+
+			.modal-header {
+				background: linear-gradient(180deg, #f8fbff 0%, #f2f7fd 100%);
+				border-bottom: 1px solid var(--sib-border);
+				padding: 18px 22px;
+			}
+
+			.modal-title {
+				color: var(--sib-text);
+				font-size: 1rem;
+				font-weight: 800;
+			}
+
+			.modal-body {
+				padding: 22px;
+			}
+
+			.modal-footer {
+				background: #f8fbff;
+				border-top: 1px solid var(--sib-border);
+				padding: 14px 22px;
+			}
+
+			.form-label {
+				color: var(--sib-muted);
+				font-size: 0.78rem;
+				font-weight: 800;
+				letter-spacing: 0.08em;
+				margin-bottom: 6px;
+				text-transform: uppercase;
+			}
+
+			.form-control,
+			.form-select {
+				background: #fbfdff;
+				border: 1.5px solid var(--sib-border);
+				border-radius: 12px;
+				color: var(--sib-text);
+				font-size: 0.92rem;
+				padding: 10px 12px;
+			}
+
+			.form-control:focus,
+			.form-select:focus {
+				background: #fff;
+				border-color: var(--sib-accent);
+				box-shadow: 0 0 0 4px rgba(31, 122, 224, 0.12);
+			}
+
+			.sib-inline-spinner {
+				display: none;
+				margin-top: 8px;
+			}
+
+			@media (max-width: 768px) {
+				.sib-shell {
+					padding: 18px 14px 0;
+				}
+
+				.sib-hero {
+					border-radius: 0 0 22px 22px;
+					padding: 22px 18px;
+				}
+
+				.sib-hero h1 {
+					font-size: 1.55rem;
+				}
+
+				.sib-stats {
+					margin-top: -30px;
+				}
+
+				.sib-toolbar,
+				.sib-panel-head {
+					padding: 16px;
+				}
+
+				.table-responsive {
+					padding: 6px 10px 12px;
+				}
+			}
+		</style>
+
+		<div class="sib-hero">
+			<div class="sib-shell sib-hero-body">
+				<div class="sib-eyebrow">VoBo Nómina</div>
+				<h1>Empresas</h1>
+			</div>
+		</div>
+
+		<div class="sib-shell">
+			<div class="sib-stats">
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Total registradas</span>
+					<div class="sib-stat-value" id="empresasTotal">0</div>
+					<div class="sib-stat-helper">Catálogo visible en la pantalla.</div>
+				</div>
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Activas</span>
+					<div class="sib-stat-value" id="empresasActivas">0</div>
+					<div class="sib-stat-helper">Disponibles para operación.</div>
+				</div>
+				<div class="sib-stat-card">
+					<span class="sib-stat-label">Inactivas</span>
+					<div class="sib-stat-value" id="empresasInactivas">0</div>
+					<div class="sib-stat-helper">Pendientes de reactivación.</div>
+				</div>
+			</div>
+
+			<div class="sib-toolbar">
+				<div class="sib-toolbar-copy">
+					<h2>Catálogo operativo</h2>
+				</div>
+				<div class="sib-toolbar-actions">
+					<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#mensajeModal">
+						<i class="fas fa-envelope"></i> Configurar correo
+					</button>
+					<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empresaModal">
+						<i class="fas fa-plus"></i> Registrar empresa
+					</button>
+				</div>
+			</div>
+
+			<div class="sib-panel">
+				<div class="sib-panel-head">
+					<div>
+						<h3>Listado de empresas</h3>
+					</div>
+					<div class="sib-pill">Búsqueda y paginación en tabla</div>
+				</div>
+				<div class="table-responsive">
+					<table id="tblRegistroEmpresas" class="table table-sm text-center">
+						<thead class="bg-primary text-white">
+							<tr>
+								<th>Nombre</th>
+								<th>Correo</th>
+								<th>Contacto</th>
+								<th>Frecuencia</th>
+								<th>Estatus</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="empresaModal" tabindex="-1" aria-labelledby="empresaModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="empresaModalLabel">Registrar empresa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="mb-3">
+								<label for="buscarEmpresa" class="form-label">Nombre de la empresa</label>
+								<input type="search" class="form-control" id="buscarEmpresa" list="opcionEmpresa"
+									autocomplete="off" placeholder="Buscar empresa">
+								<datalist id="opcionEmpresa"></datalist>
+								<div id="spinnerEmpresas" class="spinner-border text-primary sib-inline-spinner"></div>
+							</div>
+							<div class="mb-3">
+								<label for="correoEmpresa" class="form-label">Correos de contacto</label>
+								<textarea class="form-control" id="correoEmpresa" rows="3"
+									placeholder="correo1@dominio.com; correo2@dominio.com"></textarea>
+							</div>
+							<div class="mb-3">
+								<label for="personaContacto" class="form-label">Persona de contacto</label>
+								<input type="text" class="form-control" id="personaContacto"
+									placeholder="Nombre del contacto">
+							</div>
+							<div class="mb-3">
+								<label for="frecuencia" class="form-label">Frecuencia</label>
+								<select class="form-select" id="frecuencia">
+									<option value="1">Semanal</option>
+									<option value="2">Quincenal</option>
+									<option value="3">Mensual</option>
+									<option value="4">Diaria</option>
+									<option value="5">Inmediata</option>
+								</select>
+							</div>
+							<div class="mb-0">
+								<label for="estatus" class="form-label">Estatus</label>
+								<select class="form-select" id="estatus">
+									<option value="1">Activa</option>
+									<option value="0">Inactiva</option>
+								</select>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="btnGuardarEmpresa">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="modalEmpresa" tabindex="-1" aria-labelledby="modalEmpresaLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modalEmpresaLabel">Editar empresa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="formEmpresa">
+							<input type="hidden" id="empresaId">
+							<div class="mb-3">
+								<label for="empresaNombre" class="form-label">Nombre</label>
+								<input type="text" class="form-control" id="empresaNombre" disabled>
+							</div>
+							<div class="mb-3">
+								<label for="empresaCorreo" class="form-label">Correos de contacto</label>
+								<textarea class="form-control" id="empresaCorreo" rows="3"
+									placeholder="correo1@dominio.com; correo2@dominio.com"></textarea>
+							</div>
+							<div class="mb-3">
+								<label for="empresaContacto" class="form-label">Persona de contacto</label>
+								<input type="text" class="form-control" id="empresaContacto"
+									placeholder="Nombre del contacto">
+							</div>
+							<div class="mb-3">
+								<label for="empresaFrecuencia" class="form-label">Frecuencia</label>
+								<select class="form-select" id="empresaFrecuencia">
+									<option value="1">Semanal</option>
+									<option value="2">Quincenal</option>
+									<option value="3">Mensual</option>
+									<option value="4">Diaria</option>
+									<option value="5">Inmediata</option>
+								</select>
+							</div>
+							<div class="mb-3">
+								<label for="empresaEstatus" class="form-label">Estatus</label>
+								<select class="form-select" id="empresaEstatus">
+									<option value="1">Activa</option>
+									<option value="0">Inactiva</option>
+								</select>
+							</div>
+							<button type="submit" class="btn btn-primary">Guardar cambios</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="mensajeModal" tabindex="-1" aria-labelledby="mensajeModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="mensajeModalLabel">Configuración de correo</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="formCorreo">
+							<div class="mb-3">
+								<label for="correoRemitente" class="form-label">Correo electrónico</label>
+								<input type="email" class="form-control" id="correoRemitente" required>
+							</div>
+							<div class="mb-3">
+								<label for="correoPassword" class="form-label">Contraseña</label>
+								<div class="input-group">
+									<input type="password" class="form-control" id="correoPassword" required>
+									<button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+										<i class="bi bi-eye"></i>
+									</button>
+								</div>
+							</div>
+							<div class="mb-3">
+								<label for="mensajeTexto" class="form-label">Mensaje</label>
+								<div class="input-group">
+									<textarea class="form-control" id="mensajeTexto" rows="4"></textarea>
+									<button class="btn btn-outline-primary dropdown-toggle" type="button"
+										data-bs-toggle="dropdown">
+										Comodines
+									</button>
+									<ul class="dropdown-menu">
+										<li><a class="dropdown-item" href="#"
+												onclick="insertarComodin('{nombre}')">Nombre</a></li>
+										<li><a class="dropdown-item" href="#"
+												onclick="insertarComodin('{empresa}')">Empresa</a></li>
+										<li><a class="dropdown-item" href="#"
+												onclick="insertarComodin('{fecha}')">Fecha</a></li>
+									</ul>
+								</div>
+								<small class="text-muted">Puedes usar comodines como <strong>{nombre}</strong>, <strong>{empresa}</strong> y <strong>{fecha}</strong>.</small>
+							</div>
+							<div class="mb-0">
+								<label for="horaCron" class="form-label">Hora de ejecución</label>
+								<input type="time" class="form-control" id="horaCron" required>
+								<small class="text-muted">Formato de 24 horas. Ejemplo: <strong>14:00</strong>.</small>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary"
+							onclick="actualizarConfiguracionCorreo()">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<th:block layout:fragment="page-scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script th:src="@{/js/presolicitudes/empresas.js}"></script>
+		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+		<script th:src="@{/js/presolicitudes/configuracionTablas.js}"></script>
+	</th:block>
+</body>
+
+</html>

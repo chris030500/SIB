@@ -74,56 +74,88 @@ public class ParametrosConfigController {
 
 	@GetMapping("/configuracion")
 	public String paramsConfiguracion(Model model) throws IOException {
-		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
-			}
-			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			if (validarAcceso() == 1) {
-				List<Bases> bases = basesService.findAll();
-				List<ConfiguracionSistema> configuraciones = configuracionService.obtenerConfiguraciones();
-				List<Usuario> usuarios = usuarioService.findAll();
-				model.addAttribute("cat_tipo_estatus", iCatalogoRepository.generarOpciones(catTipoEstatus));
-				model.addAttribute("cat_tipo_comodines", iCatalogoRepository.generarOpciones(catTipoComodines));
-				model.addAttribute("cat_tipo_asignacion", iCatalogoRepository.generarOpciones(catTipoAsignacion));
-				model.addAttribute("cat_tipo_cliente", iCatalogoRepository.generarOpciones(catTipoCliente));
-				model.addAttribute("cat_tipo_cartera", iCatalogoRepository.generarOpciones(catTipoCartera));
-				model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
-				model.addAttribute("bases", bases);
-				model.addAttribute("usuarios", usuarios);
-				model.addAttribute("puestos",microfinUsuarioService.obtenerPuestos());
-				model.addAttribute("permiso_desbloqueo",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_DESBLOQUEO,userDetails.getUsername()));
-				model.addAttribute("permiso_admin",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS,userDetails.getUsername()));
-				model.addAttribute("permiso_reglas",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_REGLAS_ASIGNACION,userDetails.getUsername()));
-				model.addAttribute("permiso_admin_sms",configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_SMS,userDetails.getUsername()));
-				model.addAttribute("permiso_exclusiones", configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EXCLUSION_NOMINA, userDetails.getUsername()));  
-				model.addAttribute("lista_param_conf",configuraciones);
-				
-				rutaDireccion = "menuProductos/inicioParametros";
-			} else {
-				rutaDireccion = rutaError;
-			}
-			return rutaDireccion;
-		} catch (Exception e) {
-			logger.error("error:" + e.getMessage());
-			return null;
-		}
+	    try {
+	        String username = obtenerUsernameAutenticado();
+
+	        if (username == null) {
+	            logger.warn("Usuario no autenticado.");
+	            return rutaError;
+	        }
+
+	        usuario = iUsuarioRepository.findByNombreUsuario(username);
+
+	        if (usuario == null || usuario.isEmpty()) {
+	            logger.warn("No se encontró usuario: " + username);
+	            return rutaError;
+	        }
+
+	        if (validarAcceso(username) == 1) {
+	            List<Bases> bases = basesService.findAll();
+	            List<ConfiguracionSistema> configuraciones = configuracionService.obtenerConfiguraciones();
+	            List<Usuario> usuarios = usuarioService.findAll();
+
+	            model.addAttribute("cat_tipo_estatus", iCatalogoRepository.generarOpciones(catTipoEstatus));
+	            model.addAttribute("cat_tipo_comodines", iCatalogoRepository.generarOpciones(catTipoComodines));
+	            model.addAttribute("cat_tipo_asignacion", iCatalogoRepository.generarOpciones(catTipoAsignacion));
+	            model.addAttribute("cat_tipo_cliente", iCatalogoRepository.generarOpciones(catTipoCliente));
+	            model.addAttribute("cat_tipo_cartera", iCatalogoRepository.generarOpciones(catTipoCartera));
+	            model.addAttribute("cat_tipo_prioridad", iCatalogoRepository.generarOpciones(catTipoPrioridad));
+	            model.addAttribute("bases", bases);
+	            model.addAttribute("usuarios", usuarios);
+	            model.addAttribute("puestos", microfinUsuarioService.obtenerPuestos());
+	            model.addAttribute("permiso_desbloqueo",
+	                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_DESBLOQUEO, username));
+	            model.addAttribute("permiso_admin",
+	                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_ADMIN_OFERTAS, username));
+	            model.addAttribute("permiso_reglas",
+	                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_REGLAS_ASIGNACION, username));
+	            model.addAttribute("permiso_admin_sms",
+	                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIOS_SMS, username));
+	            model.addAttribute("permiso_exclusiones",
+	                    configuracionSistemaService.buscarConfiguracion(Constantes.USUARIO_EXCLUSION_NOMINA, username));
+	            model.addAttribute("lista_param_conf", configuraciones);
+
+	            rutaDireccion = "menuProductos/inicioParametros";
+	        } else {
+	            rutaDireccion = rutaError;
+	        }
+
+	        return rutaDireccion;
+
+	    } catch (Exception e) {
+	        logger.error("Error al cargar parámetros de configuración.", e);
+	        return rutaError;
+	    }
 	}
 
-	public int validarAcceso() {
+	public int validarAcceso(String username) {
 
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(username);
 
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(),
-				opcionesMenuService.buscarRelacion(nombrePantalla));
+	    if (usuario == null || usuario.isEmpty()) {
+	        logger.warn("No se encontró usuario para validar acceso: " + username);
+	        return 0;
+	    }
 
+	    return iRelRolOpcionesRepository.validarAcceso(
+	            usuario.get(0).getRol_idRol().getPk_id_rol(),
+	            opcionesMenuService.buscarRelacion(nombrePantalla)
+	    );
+	}
+
+	private String obtenerUsernameAutenticado() {
+
+	    if (SecurityContextHolder.getContext().getAuthentication() == null) {
+	        return null;
+	    }
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (principal instanceof UserDetails) {
+	        return ((UserDetails) principal).getUsername();
+	    }
+
+	    return null;
 	}
 
 }

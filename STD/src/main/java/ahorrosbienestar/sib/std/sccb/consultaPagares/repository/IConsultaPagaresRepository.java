@@ -38,5 +38,6 @@ public interface IConsultaPagaresRepository extends JpaRepository<ConsultaPagare
 	        + "WHERE T2.VC_NOMBRECLIENTE LIKE CONCAT('%', :nombre, '%') "
 	        + "LIMIT 100",
 	        nativeQuery = true)
-	List<Map<String, Object>> getCustumerNamesPagares(@Param("nombre") String nombre);
+	List<Map<String, Object>> getCustumerNamesPagares(
+	        @Param("nombre") String nombre);
 }

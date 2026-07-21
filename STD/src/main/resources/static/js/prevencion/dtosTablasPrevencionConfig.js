@@ -1,3 +1,4 @@
+// @ts-nocheck
 function getAbsolutePath() {
 	let loc = window.location;
 	let pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);

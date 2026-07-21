@@ -1,4 +1,3 @@
-//ExcelPEPReader
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util;
 
 import java.io.InputStream;
