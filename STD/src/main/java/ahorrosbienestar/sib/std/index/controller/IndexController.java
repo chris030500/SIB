@@ -148,12 +148,14 @@ public class IndexController {
 	            usu.getPk_id_usuario()
 	    );
 
-	    String pDias = configService.findAll().get(1).getVc_valor_propiedad().toString();
+	    int diasVigencia = configService.obtenerPeriodoDiasPassword();
 
 	    LocalDate fechaInicio = LocalDate.now();
+	    LocalDate fechaVencimiento = fechaInicio.plusDays(diasVigencia);
 
-	    LocalDate fechaVencimiento =
-	            fechaInicio.plusDays(Integer.parseInt(pDias));
+	    logger.info("Días de vigencia: " + diasVigencia);
+	    logger.info("Fecha inicio: " + fechaInicio);
+	    logger.info("Fecha vencimiento: " + fechaVencimiento);
 
 	    HistContrasena hc = new HistContrasena();
 

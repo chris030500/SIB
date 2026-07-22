@@ -1,3 +1,4 @@
+
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table(name = "TBL_PLD_ESTADO_PROCESO", schema = "SIB")

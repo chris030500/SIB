@@ -21,14 +21,14 @@ public interface ISolicitudAutorizadaRepository extends JpaRepository<SolicitudA
 			+ "LEFT JOIN SIB.TBL_CLIENTES_ACTIVOS T2 ON T1.ClienteID = T2.I_ClienteID "
 			+ "WHERE (CONCAT(T1.ClienteID, ' - ', T2.VC_NombreCompleto) LIKE CONCAT('%', :valor, '%') "
 			+ "OR CONCAT(T1.ClienteID, ' - ', T1.SoloNombres) LIKE CONCAT('%', :valor, '%')) "
-			+ "AND T1.Estatus = 'A' ", nativeQuery = true)
+			+ "AND T1.Estatus = 'A' ",
+			nativeQuery = true)
 	List<Map<String, Object>> getClientes(@Param("valor") String valor);
 	
 	@Query(value = "SELECT TelefonoCelular AS telCelular "
-	        + "FROM SIB.TBL_AUTORIZADAS_PRODUCCION "
-	        + "WHERE TelefonoCelular LIKE CONCAT('%', :valor, '%') "
-	        + "AND Estatus = 'A'",
-	        nativeQuery = true)
-	List<Map<String, Object>> getCustomerCellphones(
-	        @Param("valor") String valor);
+			+ "FROM SIB.TBL_AUTORIZADAS_PRODUCCION "
+			+ "WHERE TelefonoCelular LIKE CONCAT('%', :valor, '%') "
+			+ "AND Estatus = 'A'",
+			nativeQuery = true)
+	List<Map<String, Object>> getCustomerCellphones(@Param("valor") String valor);
 }

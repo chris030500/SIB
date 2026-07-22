@@ -3,9 +3,9 @@
 var opcMenu = "opciones/generarMenu";
 var $ = window['$'];
 $(document).ready(function() {
-	pintarMenuxRol();
+    pintarMenuxRol();
 });
-
+ 
 function pintarMenuxRol() {
 	var url = window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+opcMenu;
     //var url = window.location.href.substring(0,22)+opcMenu;
@@ -31,10 +31,10 @@ function pintarMenuxRol() {
 	
 
 }
-
-
+ 
+ 
 function getAbsolutePath() {
-	var loc = window.location;
-	var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-	return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+    var loc = window.location;
+    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
