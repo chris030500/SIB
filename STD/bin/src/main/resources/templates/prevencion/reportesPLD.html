@@ -20,7 +20,7 @@
 					<div class="col-md-2"></div>
 					<div class="col-md-8">
 						<div>
-							<h2 style="text-align:center">Reportes PLD</h2>
+							<h2 style="text-align:center">Histórico de Operaciones</h2>
 						</div>
 					</div>
 				</div>
@@ -88,12 +88,15 @@
 		</div>
 	</section>
 	<th:block layout:fragment="page-scripts">
-		<!--JavaScript-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-		<script th:src="@{/js/jquery-3.5.1.js}"></script>
-		<script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
-		<script th:src="@{/js/prevencion/reportesPLD.js}"></script>
+
+	    <script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+	    <script th:src="@{/vendor/blockUI/jquery.blockUI.js}"></script>
+
+	    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
+
+	    <script th:src="@{/js/prevencion/reportesPLD.js}"></script>
+
 	</th:block>
 </body>
 

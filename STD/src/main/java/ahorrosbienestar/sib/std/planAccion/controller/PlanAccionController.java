@@ -92,6 +92,24 @@ public class PlanAccionController {
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;
 	
+	private Usuario obtenerUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuarios = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuarios == null || usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuarios.get(0);
+	}
+	
 	
 	private int catEstatus = 6;
 	private int catFinActividad = 8;
@@ -117,15 +135,17 @@ public class PlanAccionController {
 	public String inicioFolio(Model model) {
 		try {
 			
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    return rutaError;
 			}
-			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+			usuario = new ArrayList<>();
+			usuario.add(usuarioAutenticado);
 			
 			if(validarAcceso() == 1) {
-				model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuario.get(0).getI_id_empleado()));
+				model.addAttribute("lista_encargados", catalogosCEService.busquedaxAreaEmpleado(usuarioAutenticado.getI_id_empleado()));
 				model.addAttribute("cat_lista_estatus", iCatalogoRepository.generarOpciones(catEstatus));
 				model.addAttribute("cat_lista_tipoArchivo", iCatalogoRepository.generarOpciones(tipoArchivo));
 				model.addAttribute("cat_opcion_fin", iCatalogoRepository.generarOpciones(catFinActividad));
@@ -152,14 +172,14 @@ public class PlanAccionController {
 		String mensaje ="Actualizo estatus correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			iObservacionRepository.aceptarObservacion(idObservacion,usuario.get(0).getPk_id_usuario());
+			iObservacionRepository.aceptarObservacion(idObservacion,usuarioAutenticado.getPk_id_usuario());
 			catalogosCEService.actEstatus(idObservacion,2,2);
 			respuesta.add(mensaje);
 				
@@ -183,13 +203,13 @@ public class PlanAccionController {
 		String mensaje ="Actualizo registro correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-			if(iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo,usuario.get(0).getPk_id_usuario()) == 1) {
+			if(iObservacionRepository.rechazarObservacion(idObservacion,vc_motivo,usuarioAutenticado.getPk_id_usuario()) == 1) {
 				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
@@ -214,16 +234,32 @@ public class PlanAccionController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/listaObservaciones", method = RequestMethod.GET)
-	public List<ObservacionesxFolio> listaObservaciones(@RequestParam("idFolio") Integer idFolio, @RequestParam("estatus") Integer estatus) {
-		try {
-			
-			return (this.usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo))?catalogosCEService.obtObservaciones(idFolio,estatus):catalogosCEService.obtObservacionesxEmpleado(this.usuario.get(0).getI_id_empleado(), idFolio,estatus);
-			
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return null;
-		}
-		
+	public List<ObservacionesxFolio> listaObservaciones(
+	        @RequestParam("idFolio") Integer idFolio,
+	        @RequestParam("estatus") Integer estatus) {
+
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            logger.warn("Usuario no autenticado.");
+	            return new ArrayList<>();
+	        }
+
+	        if (usuarioAutenticado.getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo)) {
+	            return catalogosCEService.obtObservaciones(idFolio, estatus);
+	        }
+
+	        return catalogosCEService.obtObservacionesxEmpleado(
+	                usuarioAutenticado.getI_id_empleado(),
+	                idFolio,
+	                estatus
+	        );
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return new ArrayList<>();
+	    }
 	}
 	
 	/**
@@ -274,12 +310,12 @@ public class PlanAccionController {
 		String mensaje ="Registro Correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 
 				PlanAccion altaActividad = new PlanAccion();
 				LocalDate fecha = LocalDate.now();
@@ -289,7 +325,7 @@ public class PlanAccionController {
 				altaActividad.setDt_fecha_vencimiento(LocalDate.parse(dtFechaVencimiento));
 				altaActividad.setI_observacion(idObservacion);
 				altaActividad.setVc_desc_actividad(nombreActividad);
-				altaActividad.setI_usuario_registro(usuario.get(0).getPk_id_usuario());
+				altaActividad.setI_usuario_registro(usuarioAutenticado.getPk_id_usuario());
 				altaActividad.setI_estatus(estatusActivo);
 				altaActividad.setI_usuario_mod(0);
 				altaActividad.setI_usuario_elimino(0);
@@ -314,15 +350,13 @@ public class PlanAccionController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/editarActividad", method = RequestMethod.GET)
-	public Optional<PlanAccion> cargarObservacion(@RequestParam(name = "idActividad") Integer idActividad ) {
-		try {
-			return iPlanAccionRepository.findById(idActividad);
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return null;
-		}
-		
-		
+	public Optional<PlanAccion> cargarObservacion(@RequestParam(name = "idActividad") Integer idActividad) {
+	    try {
+	        return iPlanAccionRepository.findById(idActividad);
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return Optional.empty();
+	    }
 	}
 	
 	//Modifcar una actividad del plan de accion.
@@ -339,14 +373,14 @@ public class PlanAccionController {
 		String mensaje ="Se actualizo registro correctamente.";
 		ArrayList<String> respuesta = new ArrayList<String>();
 		try {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    respuesta.add("Usuario no autenticado.");
+			    return ResponseEntity.status(401).body(respuesta);
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
-			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuario.get(0).getPk_id_usuario(),confirmaResponsable);
+			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuarioAutenticado.getPk_id_usuario(),confirmaResponsable);
 			catalogosCEService.actEstatus(idActividad,4,5);
 			catalogosCEService.actEstatusCascada(idActividad);
 			logger.info(respuesta);
@@ -463,12 +497,12 @@ public class PlanAccionController {
 		Integer respuesta=0;
 		try {
 		
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			UserDetails userDetails = null;
-			if (principal instanceof UserDetails) {
-				userDetails = (UserDetails) principal;
+			Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+			if (usuarioAutenticado == null) {
+			    logger.warn("Usuario no autenticado.");
+			    return 0;
 			}
-			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 			
 			LocalDate fecha = LocalDate.now();
 			ArchivosFolios alta = new ArchivosFolios();
@@ -477,7 +511,7 @@ public class PlanAccionController {
 			alta.setI_estatus(estatus);
 			alta.setVc_ruta_docto(urlArchivo);
 			alta.setVc_nombre_docto(nombreArchivo);
-			alta.setI_empleado_registro(usuario.get(0).getI_id_empleado());
+			alta.setI_empleado_registro(usuarioAutenticado.getI_id_empleado());
 			
 			ArchivosFolios registro = archivosFoliosService.registrar(alta);
 			
@@ -494,44 +528,45 @@ public class PlanAccionController {
 	}
 	
 	@GetMapping("/obtFolios")
-	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus){
-		try {
-//			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//			UserDetails userDetails = null;
-//			if (principal instanceof UserDetails) {
-//				userDetails = (UserDetails) principal;
-//			}
-//			List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-//			
-			List<ListaFolioXEmpleado>  listaFolio = null;
-			
-			if(usuario.get(0).getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo)) {
-				listaFolio = catalogosCEService.listaFolios(estatus);
-			}else {
-				listaFolio = catalogosCEService.listaFolioXEmpleado(this.usuario.get(0).getI_id_empleado(),estatus);	
-			}
-			
-			return ResponseEntity.ok((listaFolio != null)?listaFolio:0);
-		} catch (Exception e) {
-			logger.error("error:"+e.getMessage());
-			return null;
-		}
-	
+	public ResponseEntity<?> obtFolios(@RequestParam("estatus") Integer estatus) {
+	    try {
+	        Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	        if (usuarioAutenticado == null) {
+	            return ResponseEntity.status(401).body("Usuario no autenticado.");
+	        }
+
+	        List<ListaFolioXEmpleado> listaFolio = null;
+
+	        if (usuarioAutenticado.getRol_idRol().getVc_nombre_rol().equalsIgnoreCase(rolMonitoreo)) {
+	            listaFolio = catalogosCEService.listaFolios(estatus);
+	        } else {
+	            listaFolio = catalogosCEService.listaFolioXEmpleado(
+	                    usuarioAutenticado.getI_id_empleado(),
+	                    estatus
+	            );
+	        }
+
+	        return ResponseEntity.ok((listaFolio != null) ? listaFolio : 0);
+
+	    } catch (Exception e) {
+	        logger.error("error:" + e.getMessage(), e);
+	        return ResponseEntity.internalServerError().body("Error al obtener folios.");
+	    }
 	}
 	
 	public int validarAcceso() {
-		
-		
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		UserDetails userDetails = null;
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
-		}
-		List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
-		
-		return iRelRolOpcionesRepository.validarAcceso(usuario.get(0).getRol_idRol().getPk_id_rol(), opcionesMenuService.buscarRelacion(nombrePantalla));
-		
-		
+
+	    Usuario usuarioAutenticado = obtenerUsuarioAutenticado();
+
+	    if (usuarioAutenticado == null) {
+	        return 0;
+	    }
+
+	    return iRelRolOpcionesRepository.validarAcceso(
+	            usuarioAutenticado.getRol_idRol().getPk_id_rol(),
+	            opcionesMenuService.buscarRelacion(nombrePantalla)
+	    );
 	}
 	
 }

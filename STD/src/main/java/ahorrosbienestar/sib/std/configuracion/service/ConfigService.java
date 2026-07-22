@@ -86,5 +86,37 @@ public class ConfigService {
 	public Configuracion valorPropiedad(String valor) {
 		return iConfiguracionRepository.valorPropiedad(valor);
 	}
+	
+	public Integer obtenerPeriodoBloqueoMinutos() {
+	    return obtenerValorEntero("pBloqueo", 35);
+	}
+
+	public Integer obtenerPeriodoDiasPassword() {
+	    Configuracion config = valorPropiedad("pDias");
+	    return Integer.parseInt(config.getVc_valor_propiedad().trim());
+	}
+
+	public Integer obtenerIntentosMaximos() {
+
+	    Configuracion config = valorPropiedad("intentos");
+
+	    return Integer.parseInt(config.getVc_valor_propiedad().trim());
+	}
+
+	private Integer obtenerValorEntero(String propiedad, Integer valorDefault) {
+	    Configuracion config = valorPropiedad(propiedad);
+
+	    if (config == null || config.getVc_valor_propiedad() == null) {
+	        return valorDefault;
+	    }
+
+	    try {
+	        return Integer.parseInt(config.getVc_valor_propiedad().trim());
+	    } catch (Exception e) {
+	        return valorDefault;
+	    }
+	}
+	
+	
 
 }

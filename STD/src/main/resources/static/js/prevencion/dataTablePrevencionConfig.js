@@ -1,3 +1,4 @@
+// @ts-nocheck
 var tblHistoricoBases;
 
 $(document).ready(function() {

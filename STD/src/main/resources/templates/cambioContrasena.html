@@ -47,25 +47,23 @@
 
 					</form>
 
-					<form id="logoutForm" th:action="@{/logout}" method="post">
-						<a type="submit" onclick="document.getElementById('logoutForm').submit();"
-							class="dropdown-item d-flex align-items-center" href="#">
-							<i class="bi bi-box-arrow-right"></i>
-							<span>Salir</span>
-						</a>
-						<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
-					</form>
+					<div class="col-12">
+					    <a th:href="@{/cerrar}" class="dropdown-item d-flex align-items-center">
+					        <i class="bi bi-box-arrow-right"></i>
+					        <span>Salir</span>
+					    </a>
+					</div>
 
 				</div>
 			</div>
 		</div>
 
 		<!-- Scripts -->
-		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-		<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<script th:src="@{/js/jquery-1.10.2.js}"></script>
+		<script th:src="@{/js/jquery-ui.js}"></script>
 		<script th:src="@{/js/popper.min.js}"></script>
 		<script th:src="@{/js/bootstrap.min.js}"></script>
-		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+		<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
 		<script th:src="@{/js/cambioContrasena/contrasena.js}"></script>
 
 	</body>

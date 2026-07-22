@@ -1,12 +1,13 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ahorrosbienestar.sib.std.credito.tiposCampanias.model.ExclisionesClientesModel;
 import ahorrosbienestar.sib.std.credito.tiposCampanias.repository.ExclusionClienteRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ExclusionClienteService {

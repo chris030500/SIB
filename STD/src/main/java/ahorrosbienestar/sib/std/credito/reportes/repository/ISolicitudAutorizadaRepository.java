@@ -27,7 +27,8 @@ public interface ISolicitudAutorizadaRepository extends JpaRepository<SolicitudA
 	@Query(value = "SELECT TelefonoCelular AS telCelular "
 	        + "FROM SIB.TBL_AUTORIZADAS_PRODUCCION "
 	        + "WHERE TelefonoCelular LIKE CONCAT('%', :valor, '%') "
-	        + "AND Estatus = 'A' ",
+	        + "AND Estatus = 'A'",
 	        nativeQuery = true)
-	List<Map<String, Object>> getCustomerCellphones(@Param("valor") String valor);
+	List<Map<String, Object>> getCustomerCellphones(
+	        @Param("valor") String valor);
 }

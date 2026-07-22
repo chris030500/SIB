@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Variables | para geolocalización
 var clienteID;
 var montoAuto;

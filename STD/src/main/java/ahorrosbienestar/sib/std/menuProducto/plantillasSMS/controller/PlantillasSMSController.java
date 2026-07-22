@@ -48,6 +48,24 @@ public class PlantillasSMSController {
 	@Autowired
 	private BasesService basesService;
 	
+	private Usuario obtenerUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuario == null || usuario.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuario.get(0);
+	}
+	
 	@GetMapping("/obtClasificacion")
 	public ResponseEntity<?> obtClasificacion(@RequestParam("idBase") Integer idBase){
 		try {
@@ -93,12 +111,13 @@ public class PlantillasSMSController {
 			
 			if(plantillasSMSService.existeNombre(nombrePlantilla) == 0) {
 				if(plantillasSMSService.existeRegistro(slcCampania,slcClasificacion) == 0) {
-					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-					UserDetails userDetails = null;
-					if (principal instanceof UserDetails) {
-						userDetails = (UserDetails) principal;
+					Usuario usuario = obtenerUsuarioAutenticado();
+
+					if (usuario == null) {
+					    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+					    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+					    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
 					}
-					List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
 					
 					LocalDate fecha = LocalDate.now();
 				
@@ -112,7 +131,7 @@ public class PlantillasSMSController {
 					plantillasSMS.setVc_contenido(txtContenido);
 					plantillasSMS.setI_activo(slcEstatus);
 					plantillasSMS.setDt_fecha_registro(fecha);
-					plantillasSMS.setI_usuario_registro(usuario.get(0));
+					plantillasSMS.setI_usuario_registro(usuario);
 				
 					plantillasSMSService.save(plantillasSMS);
 				}else {
@@ -169,12 +188,13 @@ public class PlantillasSMSController {
 			try {
 				if(plantillasSMSService.existeNombreMod(nombrePlantilla,idPlantilla) == 0) {
 					if(plantillasSMSService.existeRegistroMod(slcCampania,slcClasificacion,idPlantilla) == 0) {
-						Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-						UserDetails userDetails = null;
-						if (principal instanceof UserDetails) {
-							userDetails = (UserDetails) principal;
-						}
-						List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+						Usuario usuario = obtenerUsuarioAutenticado();
+
+						if (usuario == null) {
+						    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+						    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+						    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+						}	
 						LocalDate fecha = LocalDate.now();
 						Optional<PlantillasSMS> plantillasSMS = plantillasSMSService.findById(idPlantilla);
 					
@@ -189,7 +209,7 @@ public class PlantillasSMSController {
 						plantillasSMS.get().setVc_contenido(txtContenido);
 						plantillasSMS.get().setI_activo(slcEstatus);
 						plantillasSMS.get().setDt_fecha_mod(fecha);
-						plantillasSMS.get().setI_usuario_mod(usuario.get(0));
+						plantillasSMS.get().setI_usuario_mod(usuario);
 
 						plantillasSMSService.save(plantillasSMS.get());
 						

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ public class FidelidadService {
 	@Autowired
 	private final JdbcTemplate jdbcTemplate;
 	
-	@Autowired
 	private static final Logger logger = Logger.getLogger(FidelidadService.class);
 	
 
@@ -68,7 +67,7 @@ public class FidelidadService {
 		            }
 		        });
 		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
+			logger.error("Error al registrar fidelidad.", e);
 
 		}
 	}
@@ -83,8 +82,7 @@ public class FidelidadService {
 
 	      
 		} catch (Exception e) {
-			logger.error("Error al insertar en la base de datos"+e.getMessage());
-			e.printStackTrace();
+		    logger.error("Error al insertar en la base de datos.", e);
 		}
 		
 	}

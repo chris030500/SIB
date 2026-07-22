@@ -111,7 +111,7 @@ public class Constantes {
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
- 
+
     //MENSAJES SEGUIMIENTOS 
     public static final String ERROR_GESTION_ASIGNADA = "La gestión del cliente ya esta asignada a otro usuario y/o esta asignada a otra sucursal.";
     public static final String ERROR_SIN_REGISTROS = "La busqueda no genero registros. Verificar los parametros ingresados.";
@@ -191,16 +191,6 @@ public class Constantes {
     
     //nombres reportes Prevención PLD
     public static final String RPT_OPERACIONES_INUSUALES_X_TIPO_PRODUCTO = "rpt_operaciones_inusuales_x_tipo_producto";
-    
-	//constantes PLD ReporteClientesOpe
-    public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
-    public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
-    public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
-    public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
-    public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
-    public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
-    public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
-    public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
 
 	//nombres reportes bases EBR
     public static final String RPT_EBR_BASE_CLIENTES = "rpt_ebr_base_clientes";
@@ -212,6 +202,16 @@ public class Constantes {
     public static final String RPT_HISTORICO_EBR_BASE_REMESAS = "rpt_historico_ebr_base_remesas";
     public static final String RPT_HISTORICO_EBR_BASE_DESEMBOLSOS = "rpt_historico_ebr_base_desembolsos";
     
+  //constantes PLD ReporteClientesOpe
+      public static String PLD_REPORTE_CLIENTES_OPE = "prevencion/reporteClientesOpe";
+      public static String RPT_CLIENTES_OPERACIONES_AUDITOR= "rpt_Clientes_Operaciones_Auditoria";
+      public static String RPT_OPERACIONES_AUDITORIA= "rpt_Operaciones_auditoria";
+      public static String RPT_OPERACIONES_HISTORICO= "rpt_Operaciones_Historico";
+      public static String RPT_CLIENTES_HISTORICO= "rpt_Clientes_Historico";
+      public static final String PEPS_CLIENTES = "{call SIB.SP_ACTUALIZA_PEPS_CLIENTES_OPERACIONES (?, ?)}";
+      public static final String VISTO_BUENO = "{call SIB.SP_VISTO_BUENO_AUDITORIA (?, ?, ?, ?, ?, ?, ?)}";
+      public static final String VISTO_BUENO_PROCESO = "{CALL SIB.SP_VISTO_BUENO_AUDITORIA_POR_PROCESO(?, ?, ?)}";
+
     //constantes marketing
     public static final String MARKETING_CREDITOS_DESEMBOLSADOS = "marketing/creditosDesembolsados";
     public static final String HORA_INICIO_SEMANAL = "HORA_INICIO_SEMANAL_SMS";
@@ -235,6 +235,11 @@ public class Constantes {
 	public static final String CAMPANIAS_EXTRACCION = "credito/extraccionCampanias";
 	public static final String CAMPANIAS_EXCLUSIONES = "credito/exclusiones";
 	
+    //constantes metas y comisiones
+    public static final String METAS_COMISIONES_RELACIONES = "metas-comisiones/relaciones/gestion";
+    public static final String METAS_COMISIONES_DEFINICION = "metas-comisiones/definicion/gestion";
+    public static final String METAS_COMISIONES_RESULTADOS = "metas-comisiones/resultados/gestion";
+    public static final String METAS_COMISIONES_PERMISOS = "metas-comisiones/permisos/gestion";
     
     //nombres reportes Crédito
     public static final String RPT_SMS_SOLICITUDES_AUTORIZADAS = "rpt_sms_solicitudes_autorizadas";

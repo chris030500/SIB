@@ -3,7 +3,7 @@ package ahorrosbienestar.sib.std.presolicitudes.model;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TBL_EMPRESAS_VOBO")

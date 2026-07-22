@@ -46,6 +46,24 @@ public class ReglasAsignacionController {
 	@Autowired
 	private ParametrosReglasService  parametrosReglasService;
 	
+	private Usuario obtenerUsuarioAutenticado() {
+
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    if (!(principal instanceof UserDetails)) {
+	        return null;
+	    }
+
+	    UserDetails userDetails = (UserDetails) principal;
+	    List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+
+	    if (usuario == null || usuario.isEmpty()) {
+	        return null;
+	    }
+
+	    return usuario.get(0);
+	}
+	
 	//@Autowired
 	//private ConstantesParametrosService constantesParametrosService;
 	
@@ -75,34 +93,36 @@ public class ReglasAsignacionController {
 		try {
 			
 			if((estatus == 1) && (reglasAsignacionService.existeActivo() == 0)) {
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				Usuario usuario = obtenerUsuarioAutenticado();
+
+				if (usuario == null) {
+				    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+				    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+				    return ResponseEntity.ok(respuesta);
+				}		
 				LocalDate fecha = LocalDate.now();
 				
 				Optional<ReglasAsignacion> editarRegla = reglasAsignacionService.findById(idRegla);
 				
 				editarRegla.get().setDt_fecha_mod(fecha);
-				editarRegla.get().setI_usuario_mod(usuario.get(0));
+				editarRegla.get().setI_usuario_mod(usuario);
 				editarRegla.get().setI_estatus(estatus);
 				
 				reglasAsignacionService.save(editarRegla.get());
 			}else if(estatus == 2){
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				Usuario usuario = obtenerUsuarioAutenticado();
+
+				if (usuario == null) {
+				    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+				    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+				    return ResponseEntity.ok(respuesta);
+				}		
 				LocalDate fecha = LocalDate.now();
 				
 				Optional<ReglasAsignacion> editarRegla = reglasAsignacionService.findById(idRegla);
 				
 				editarRegla.get().setDt_fecha_mod(fecha);
-				editarRegla.get().setI_usuario_mod(usuario.get(0));
+				editarRegla.get().setI_usuario_mod(usuario);
 				editarRegla.get().setI_estatus(estatus);
 				
 				reglasAsignacionService.save(editarRegla.get());
@@ -153,12 +173,13 @@ public class ReglasAsignacionController {
 			
 			if(parametrosReglasAsignacionService.existeRegistro(slAsignar,tipoCliente,slcTipoCartera,idRegla,tipoPrioridad) == 0) {
 
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+				Usuario usuario = obtenerUsuarioAutenticado();
+
+				if (usuario == null) {
+				    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+				    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+				    return ResponseEntity.ok(respuesta);
+				}		
 				LocalDate fecha = LocalDate.now();
 							
 				Optional<ReglasAsignacion> reglasAsignacion = reglasAsignacionService.findById(idRegla);
@@ -172,7 +193,7 @@ public class ReglasAsignacionController {
 				parametrosReglasAsignacion.setI_prioridad(tipoPrioridad);
 				parametrosReglasAsignacion.setI_estatus(slEstatus);
 				parametrosReglasAsignacion.setDt_fecha_registro(fecha);
-				parametrosReglasAsignacion.setI_usuario_registro(usuario.get(0));
+				parametrosReglasAsignacion.setI_usuario_registro(usuario);
 				
 				parametrosReglasAsignacionService.save(parametrosReglasAsignacion);
 
@@ -221,12 +242,13 @@ public class ReglasAsignacionController {
 		Map<String, Object> respuesta = new HashMap<>();
 		
 		try {
-				Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				UserDetails userDetails = null;
-				if (principal instanceof UserDetails) {
-					userDetails = (UserDetails) principal;
-				}
-				List<Usuario> usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());			
+			Usuario usuario = obtenerUsuarioAutenticado();
+
+			if (usuario == null) {
+			    respuesta.put(Constantes.TEXTO_MNS, "Usuario no autenticado.");
+			    respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+			    return ResponseEntity.ok(respuesta);
+			}		
 				LocalDate fecha = LocalDate.now();
 
 				Optional<ParametrosReglasAsignacion> parametrosReglasAsignacion = parametrosReglasAsignacionService.findById(idParams);
@@ -238,7 +260,7 @@ public class ReglasAsignacionController {
 				parametrosReglasAsignacion.get().setI_prioridad(tipoPrioridad);
 				parametrosReglasAsignacion.get().setI_estatus(slEstatus);
 				parametrosReglasAsignacion.get().setDt_fecha_mod(fecha);
-				parametrosReglasAsignacion.get().setI_usuario_mod(usuario.get(0));
+				parametrosReglasAsignacion.get().setI_usuario_mod(usuario);
 				
 				parametrosReglasAsignacionService.save(parametrosReglasAsignacion.get());
 
