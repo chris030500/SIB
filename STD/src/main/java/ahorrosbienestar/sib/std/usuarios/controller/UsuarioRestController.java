@@ -240,11 +240,14 @@ public class UsuarioRestController {
 
 			Usuario usu = usuarioService.findById(idUsuario).get();
 			histContrasenaService.bajaContrasena(usu.getPk_id_usuario());
-			String pDias = configService.findAll().get(7).getVc_valor_propiedad().toString();
-			//logger.info("Días que va a estar activa la contraseña: " + pDias);
-			// Establecemos el formato de la fecha
+			int diasVigencia = configService.obtenerPeriodoDiasPassword();
+
 			LocalDate fechaInicio = LocalDate.now();
-			LocalDate fechaVencimiento = fechaInicio.plusDays(1);
+			LocalDate fechaVencimiento = fechaInicio.plusDays(diasVigencia);
+
+			logger.info("Días de vigencia de contraseña: " + diasVigencia);
+			logger.info("Fecha de inicio: " + fechaInicio);
+			logger.info("Fecha de vencimiento: " + fechaVencimiento);
 
 			HistContrasena hc = new HistContrasena();
 			hc.setDt_vig_cont_inicio(fechaInicio);
