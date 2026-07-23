@@ -37,8 +37,7 @@
 								<label class="col-form-label">Reporte:</label>
 							</div>
 							<div class="col-md-4">
-								<select class="form-control" name="reporte" id="idReporte"
-									onchange="asignarArchivo(this)">
+								<select class="form-control" name="reporte" id="idReporte">
 									<option value="0">Seleccione</option>
 									<option th:each="opcionTipo : ${cat_reportes}"
 										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"

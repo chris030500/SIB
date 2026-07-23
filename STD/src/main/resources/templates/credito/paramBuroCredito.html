@@ -111,7 +111,7 @@
 							</div>
 							<div class="col-md-4">
 								<select class="form-control" name="riesgoMaximo[]" id="idTipoArchivo"
-									multiple onchange="asignarArchivo(this)">
+									multiple>
 									<option value="0">Seleccione</option>
 									<option th:each="opcionTipo : ${cat_riesgo_Maximo}"
 										th:value="${opcionTipo.i_opcion}" th:text="${opcionTipo.v_valor}"

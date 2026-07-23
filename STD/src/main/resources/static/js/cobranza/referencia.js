@@ -96,22 +96,25 @@ function validarInformacion(value) {
 					}
 					buscarCliente(dto);
 				} else {
-					swal("Solo valores númericos", {
-						closeOnClickOutside: false,
-						icon: "warning",
+					Swal.fire({
+					    title: "Solo valores númericos",
+					    icon: "warning",
+					    allowOutsideClick: false
 					});
 				}
 			}
 		} else {
-			swal("El campo 'Buscar cliente' está vacío", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: "El campo 'Buscar cliente' está vacío",
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 		}
 	} else {
-		swal("Selecciona el tipo de busqueda", {
-			closeOnClickOutside: false,
-			icon: "warning",
+		Swal.fire({
+		    title: "Selecciona el tipo de busqueda",
+		    icon: "warning",
+		    allowOutsideClick: false
 		});
 	}
 }
@@ -141,9 +144,10 @@ function buscarCliente(datos) {
 				infoCliente.style.display = "none";
 				mostrarCtaPrincipal.style.display = "none";
 				mostrarCredito.style.display = "none"
-				swal("No se encontró el cliente", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "No se encontró el cliente",
+				    icon: "warning",
+				    allowOutsideClick: false
 				});
 			} else {
 				clienteId = resp[0].i_cliente_id;
@@ -152,9 +156,10 @@ function buscarCliente(datos) {
 		}, error: function(error) {
 			paginaCompleta.style.display = "none";
 			paginaCarga.style.display = "block";
-			swal("Se identifico un error", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: "Se identifico un error",
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 		}
 	});
@@ -352,15 +357,17 @@ function mandarConsulta(datos) {
 		contentType: "application/json; charset=utf-8",
 		success: function(resp) {
 			if (resp == null) {
-				swal("Se identifico un error", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "Se identifico un error",
+				    icon: "warning",
+				    allowOutsideClick: false
 				});
 			}
 		}, error: function(error) {
-			swal("Se identifico un error", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: "Se identifico un error",
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 		}
 	});
@@ -378,9 +385,9 @@ function validarFechas() {
 	if (document.getElementById("dtFechaInicio").value != "" && document.getElementById("dtFechaFin").value != "") {
 		generarReporteHrl(document.getElementById("dtFechaInicio").value, document.getElementById("dtFechaFin").value);
 	} else {
-		swal({
-			text: "Hay fechas vacias",
-			icon: "warning",
+		Swal.fire({
+		    text: "Hay fechas vacias",
+		    icon: "warning"
 		});
 	}
 }
@@ -405,10 +412,10 @@ function generarReporteHrl(inicio, fin) {
 			window.focus();
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
+			Swal.fire({
+			    title: "Error",
+			    text: "Se presento un error, intente mas tarde.",
+			    icon: "warning"
 			});
 		}
 	});
