@@ -715,13 +715,9 @@ function peticionPost(metodo, metodoUrl) {
         url: metodoUrl,
         type: "POST",
         dataType: "JSON",
-        beforeSend: function() {
-        },
-        complete: function() {
-            Swal.close();
-        },
         success: function(respuesta) {
             url = "";
+			Swal.close();
             Swal.fire({
                 text: respuesta.mensaje,
                 icon: respuesta.tipo,
@@ -750,6 +746,7 @@ function peticionPost(metodo, metodoUrl) {
 
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
+			Swal.close();
             Swal.fire({
                 text: "Se presento un error, intente mas tarde.",
                 icon: "error",
