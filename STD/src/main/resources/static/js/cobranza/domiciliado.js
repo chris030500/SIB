@@ -41,9 +41,10 @@ inputArchivo.addEventListener('change', function(event) {
 				spinner.style.display = "none";
 				principal.style.display = "block";
 				botonGenerar.style.display = "none";
-				swal("El encabezado no es válido o el archivo no es de tipo .txt", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "El encabezado no es válido o el archivo no es de tipo .txt",
+				    icon: "warning",
+				    allowOutsideClick: false
 				});
 				// Puedes restablecer el valor del campo de entrada de archivos si lo deseas
 				inputArchivo.value = '';
@@ -64,9 +65,10 @@ function validarEncabezado(archivoContenido) {
 		spinner.style.display = "none";
 		principal.style.display = "block";
 		botonGenerar.style.display = "none";
-		swal("El archivo está vacío", {
-			closeOnClickOutside: false,
-			icon: "warning",
+		Swal.fire({
+		    title: "El archivo está vacío",
+		    icon: "warning",
+		    allowOutsideClick: false
 		});
 		// Puedes restablecer el valor del campo de entrada de archivos si lo deseas
 		inputArchivo.value = '';
@@ -132,9 +134,10 @@ function datosCuentaClabe(clabes) {
 			principal.style.display = "block";
 			botonGenerar.style.display = "none";
 			inputArchivo.value = '';
-			swal(error.responseJSON.error, {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: error.responseJSON.error,
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 		}
 	});
@@ -184,9 +187,10 @@ inputArchivo.addEventListener('change', (event) => {
 			principal.style.display = "block";
 			botonGenerar.style.display = "none";
 			// El archivo seleccionado no es un archivo .txt
-			swal("Por favor, selecciona un archivo .txt", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: "Por favor, selecciona un archivo .txt",
+			    icon: "warning",
+			    allowOutsideClick: false
 			});
 			// Puedes restablecer el valor del campo de entrada de archivos si lo deseas
 			inputArchivo.value = '';
@@ -273,20 +277,21 @@ document.getElementById('nuevoLayout').addEventListener('click', () => {
 			downloadLink.click();
 			document.body.removeChild(downloadLink);
 
-			swal({
-				title: '¿El archivo se generó de manera correcta?',
-				text: "En caso de que si, dar en Aceptar para actualizar la bitacora",
-				closeOnClickOutside: false,
-				icon: "warning",
-				buttons: ["Recargar", "Aceptar"],
-				confirmButtonColor: '#3498DB',
-			})
-				.then((save) => {
-					if (save) {
-						mandarValores();
-					} else {
-						window.location.reload();
-					}
+			Swal.fire({
+			    title: "¿El archivo se generó de manera correcta?",
+			    text: "En caso de que si, dar en Aceptar para actualizar la bitacora",
+			    icon: "warning",
+			    allowOutsideClick: false,
+			    showCancelButton: true,
+			    confirmButtonText: "Aceptar",
+			    cancelButtonText: "Recargar",
+			    confirmButtonColor: "#3498DB"
+			}).then((result) => {
+				if (result.isConfirmed) {
+				        mandarValores();
+				    } else if (result.dismiss === Swal.DismissReason.cancel) {
+				        window.location.reload();
+				    }
 				});
 		};
 
@@ -378,14 +383,14 @@ function mandarValores() {
 		success: function(resp) {
 			// console.log(resp);
 			if (resp == "OK") {
-				swal("Filtro realizado", {
-					closeOnClickOutside: false,
-					text: "Bitacora actualizada",
-					icon: "success",
-				})
-					.then((value) => {
-						window.location.reload();
-					});
+				Swal.fire({
+				    title: "Filtro realizado",
+				    text: "Bitacora actualizada",
+				    icon: "success",
+				    allowOutsideClick: false
+				}).then((result) => {
+				    window.location.reload();
+				});
 			}
 		}, error: function(error) {
 			// console.log(error);

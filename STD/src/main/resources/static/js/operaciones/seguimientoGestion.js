@@ -150,12 +150,14 @@ function llenarTablaSeguimiento(condicion) {
 			success: function(respuesta) {
 
 				if (respuesta.lista == null) {
-					swal({
+					Swal.fire({
 						text: respuesta.error,
-						icon: 'error',
-						buttons: ["Cancelar", "Confirmar"],
+						icon: "error",
+						showCancelButton: true,
+						cancelButtonText: "Cancelar",
+						confirmButtonText: "Confirmar"
 					}).then(resultado => {
-						if (resultado) {
+						if (resultado.isConfirmed) {
 							llenarTablaSeguimiento(false);
 						}
 					});
@@ -206,9 +208,12 @@ function llenarTablaSeguimiento(condicion) {
 		});
 
 	} else {
-		swal("No cuenta con los permisos de consulta.", {
-			closeOnClickOutside: false,
-			icon: "error",
+		Swal.fire({
+		    title: "",
+		    text: "No cuenta con los permisos de consulta.",
+		    icon: "error",
+		    allowOutsideClick: false,
+		    confirmButtonText: "Aceptar"
 		});
 
 		document.getElementById("filtroSeguimiento").style.display = "none";
@@ -241,9 +246,12 @@ function validarBusqueda() {
 		llenarTablaSeguimiento(true);
 	} else {
 		document.getElementById("ver-cargaSeguimiento").style.display = "none";
-		swal("Llenar mínimo un campo para realizar la busqueda", {
-			closeOnClickOutside: false,
-			icon: "warning",
+		Swal.fire({
+		    title: "Alerta",
+		    text: "Llenar mínimo un campo para realizar la busqueda",
+		    icon: "warning",
+		    allowOutsideClick: false,
+		    confirmButtonText: "Aceptar"
 		});
 	}
 
@@ -412,22 +420,27 @@ function registrarGestion(dto) {
 		dataType: "JSON",
 		contentType: "application/json; charset=utf-8",
 		success: function(respuesta) {
-			swal("Se registró la gestión", {
-				closeOnClickOutside: false,
-				icon: "success",
-			})
-				.then((value) => {
-					bloqueoAsignacion = respuesta.valor;
-					validarBotonRegistro(respuesta.valor);
-					listaDeGestiones();
-					limpiarVariablesModal();
-					llenarTablaSeguimiento(false);
-				});
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Se registró la gestión",
+			    icon: "success",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
+			}).then((result) => {
+			    bloqueoAsignacion = respuesta.valor;
+			    validarBotonRegistro(respuesta.valor);
+			    listaDeGestiones();
+			    limpiarVariablesModal();
+			    llenarTablaSeguimiento(false);
+			});
 		}, error: function(error) {
 			//console.log(error);
-			swal("Hubo un error al momento de guardar los datos", {
-				closeOnClickOutside: false,
-				icon: "warning",
+			Swal.fire({
+			    title: "",
+			    text: "Hubo un error al momento de guardar los datos",
+			    icon: "warning",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		}
 	});
@@ -1007,15 +1020,17 @@ function editarSegGestionG() {
 		type: "GET",
 		dataType: "JSON",
 		success: function(respuesta) {
-			swal("Se edito la gestión", {
-				closeOnClickOutside: false,
-				icon: "success",
-			})
-				.then((value) => {
-					console.log(respuesta)
-					listaDeGestiones()
-					cerrarModalEditar()
-				});
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Se edito la gestión",
+			    icon: "success",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
+			}).then((result) => {
+			    console.log(respuesta);
+			    listaDeGestiones();
+			    cerrarModalEditar();
+			});
 
 
 		}
@@ -1034,21 +1049,23 @@ function cancelarSegGestion(gestionID) {
 
 	console.log(newUrlBase)
 
-	swal({
-		title: tituloAlerta,
-		text: textoAlerta,
-		showCancelButton: true,
-		confirmButtonColor: '#3085d6',
-		cancelButtonColor: '#d33',
-		cancelButtonText: 'Cancelar',
-		confirmButtonText: confirmButton,
+	Swal.fire({
+	        title: tituloAlerta,
+	        text: textoAlerta,
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonColor: "#3085d6",
+	        cancelButtonColor: "#d33",
+	        cancelButtonText: "Cancelar",
+	        confirmButtonText: confirmButton,
+	        allowOutsideClick: false
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
 				url: newUrlBase + "inactivar_gestion?idGestion=" + gestionID,
 				type: "GET",
 				success: function(response) {
-					swal(
+					Swal.fire(
 						"¡Procesado!",
 						"El seguimiento ha sido eliminado.",
 						"success"
@@ -1182,7 +1199,7 @@ function segGestionRealizado(gestionID) {
 		url: newUrlBase + "gestion_realizada?idGestion=" + gestionID,
 		type: "GET",
 		success: function(response) {
-			swal(
+			Swal.fire(
 				"¡Procesado!",
 				"El seguimiento ha sido realizado.",
 				"success"

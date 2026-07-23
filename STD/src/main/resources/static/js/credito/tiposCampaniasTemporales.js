@@ -77,11 +77,14 @@ function tamFile() {
 	var fileTam = document.getElementById("file");
 	fileTam.onchange = function() {
 		if (this.files[0].size > tamMaxFile) {
-			swal("El archivo seleccionado excede el tamaño maximo permitido (30MB)", {
-				closeOnClickOutside: false,
-				icon: "warning",
-			}).then(resp => {
-				this.value = "";
+			Swal.fire({
+			    title: "Alerta",
+			    text: "El archivo seleccionado excede el tamaño maximo permitido (30MB)",
+			    icon: "warning",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
+			}).then((result) => {
+			    this.value = "";
 			});
 		};
 	};
@@ -121,9 +124,12 @@ function subirArchivo() {
 
 		} else {
 
-			swal("Es necesario seleccionar un Archivo.", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "",
+			    text: "Es necesario seleccionar un Archivo.",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		}
 
@@ -141,11 +147,11 @@ function guardarDtosTmp() {
 
 
 	if (validarFormulario(form)) {
-		swal({
-			title: 'Datos requeridos',
-			text: 'Por favor complete todos los campos obligatorios.',
-			icon: 'warning',
-			button: 'Aceptar'
+		Swal.fire({
+		    title: "Datos requeridos",
+		    text: "Por favor complete todos los campos obligatorios.",
+		    icon: "warning",
+		    confirmButtonText: "Aceptar"
 		});
 
 	} else {
@@ -159,13 +165,16 @@ function guardarDtosTmp() {
 		formData.append("codCampania", codigoCamp);
 		// Opcional: deshabilitar botón para evitar doble envío
 		document.getElementById('btnGuardarCampania').disabled = true;
-		swal({
-			title: 'Procesando solicitud',
-			text: 'Por favor espera',
-			allowOutsideClick: false,
-			buttons: false,
-			closeOnClickOutside: false,
-			icon: 'info',
+		Swal.fire({
+		    title: "Procesando solicitud",
+		    text: "Por favor espera",
+		    icon: "info",
+		    allowOutsideClick: false,
+		    showConfirmButton: false,
+		    allowEscapeKey: false,
+		    didOpen: () => {
+		        Swal.showLoading();
+		    }
 		});
 
 		fetch(getAbsolutePath() + dtosCampaniaTmp, {
@@ -196,16 +205,25 @@ function guardarDtosTmp() {
     				
     				//mostrarOcultarProceso((data.registros.i_tipo_campania ===2)?0:1);
 				}
+				
+				// Cerrar ventana de procesamiento
+				Swal.close();
 
-				swal("", mensaje, tipo);
+				// Mostrar mensaje resultado
+				Swal.fire("", mensaje, tipo);
 				
 			})
 			.catch(error => {
-				console.log("Error:", error);
-				alert("Ocurrió un error al guardar la campaña");
+				Swal.close();
+
+				Swal.fire({
+					title: "Error",
+					text: "Ocurrió un error al guardar la campaña",
+					icon: "error"
+				});
 			})
 			.finally(() => {
-				swal.close(); // cerrar el "Cargando..."
+				
 				document.getElementById('btnGuardarCampania').disabled = false;
 				
 				
@@ -254,13 +272,16 @@ function validarFormulario(camposForm) {
 var procesarArchivo = "procesarArchivo";
 function procesarCampaniaTmp(data) {
 
-	swal({
-		title: 'Procesando solicitud',
-		text: 'Por favor espera',
-		allowOutsideClick: false,
-		buttons: false,
-		closeOnClickOutside: false,
-		icon: 'info',
+	Swal.fire({
+	    title: "Procesando solicitud",
+	    text: "Por favor espera",
+	    icon: "info",
+	    allowOutsideClick: false,
+	    showConfirmButton: false,
+	    allowEscapeKey: false,
+	    didOpen: () => {
+	        Swal.showLoading();
+	    }
 	});
 
 	fetch(getAbsolutePath() + procesarArchivo, {
@@ -285,11 +306,19 @@ function procesarCampaniaTmp(data) {
 					a.click();
 					a.remove();
 
-					swal("Error Carga Archivo", "Error al cargar archivo, se genera txt con la incidencias presentadas", "error");
-					
-					cerrarModalArchivo();
-					
-					return null; 
+					// Cerrar carga
+					Swal.close();
+
+					// Mostrar error de carga
+					return Swal.fire({
+					       title: "Error Carga Archivo",
+					       text: "Error al cargar archivo, se genera txt con las incidencias presentadas.",
+					       icon: "error",
+					       confirmButtonText: "Aceptar"
+					}).then(() => {
+					   cerrarModalArchivo();
+					   return null;
+					});
 				});
 			}
 
@@ -307,22 +336,36 @@ function procesarCampaniaTmp(data) {
 			
 			tablaProceso(data.listaProcesos);
 			
-			swal("", mensaje, tipo);
-			
-			if (tipo === "success" || tipo === "OK") {
-            	cerrarModalArchivo();
-       		}
+			// Cerrar loading
+			Swal.close();
+
+	        // Mostrar resultado
+			Swal.fire({
+			    title: "",
+			    text: mensaje,
+			    icon: tipo,
+			    confirmButtonText: "Aceptar"
+			}).then(() => {
+	           if (tipo === "success" || tipo === "OK") {
+	               cerrarModalArchivo();
+	           }
+  	        });
 			
 		})
 		.catch(error => {
 			console.log("Error:", error);
-			alert("Ocurrió un error");
+
+			Swal.close();
+
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al procesar el archivo.",
+			    icon: "error",
+			    confirmButtonText: "Aceptar"
+			});
 		})
 		.finally(() => {
-			swal.close(); // cerrar el "Cargando..."
 			document.getElementById('btnGuardarFile').disabled = false;
-			// ajuste por incidencia
-			//window.location.href = getAbsolutePath() + "campaniasTemporales";
 		});
 }
 
@@ -374,17 +417,23 @@ function buscarCampaniasT(valorBusqueda) {
 					mapaCampanias.set(campania.vc_tipo_campania, campania.pk_id_tipo_campania); // guarda el id
 				});
 			} else {
-				swal("La respuesta no contiene una lista válida de campañas", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "Alerta",
+				    text: "La respuesta no contiene una lista válida de campañas",
+				    icon: "warning",
+				    allowOutsideClick: false,
+				    confirmButtonText: "Aceptar"
 				});
 			}
 		})
 		.catch(error => {
 			console.error("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		})
 		.finally(() => {
@@ -416,7 +465,12 @@ function obtDatosCampaTemporales() {
 		method: "GET",
 	}).then(response => {
 		if (!response.ok || response.status === 204) {
-			swal("No se encontraron parámetros para esta campaña", { icon: "warning" });
+			Swal.fire({
+			    title: "Alerta",
+			    text: "No se encontraron parámetros para esta campaña",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
+			});
 			return null;
 		} else {
 			return response.json();
@@ -438,9 +492,12 @@ function obtDatosCampaTemporales() {
 		})
 		.catch(error => {
 			console.log("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		})
 		.finally(() => {
@@ -520,7 +577,12 @@ function obtFechaFin(){
 		method: "GET",
 	}).then(response => {
 		if (!response.ok || response.status === 204) {
-			swal("Ha ocurrido un error. Consulte al administrador del sistema.", { icon: "warning" });
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Ha ocurrido un error. Consulte al administrador del sistema.",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
+			});
 			return null;
 		} else {
 			return response.json();
@@ -532,7 +594,7 @@ function obtFechaFin(){
 			if(data.dfin.length === 0){
 				const mensaje = data.mensaje;
 				const tipo = data.tipo;
-				swal("", mensaje, tipo);
+				Swal.fire("", mensaje, tipo);
 			}else{
 				document.getElementById('fechaFin').value = data.dfin.split('T')[0];
 			}
@@ -540,9 +602,12 @@ function obtFechaFin(){
 		})
 		.catch(error => {
 			console.log("Error en calculo de la fecha fin:", error);
-			swal("Ocurrió un error al calcular la fecha fin", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "",
+			    text: "Ocurrió un error al calcular la fecha fin",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		})
 		.finally(() => {

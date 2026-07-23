@@ -50,11 +50,7 @@ function generarReporte(){
    	if(valVacio(document.getElementById("dtFechaInicio").value,document.getElementById("dtFechaFin").value) == false){
      	peticionPost(url);
     }else{
-     	swal({
-				title: "",
-				text: "Fechas Incorrectas. Verificar datos.",
-				icon: "warning",
-		});
+     	Swal.fire("", "Fechas Incorrectas. Verificar datos.", "warning");
     }	
   }
   
@@ -62,47 +58,52 @@ function generarReporte(){
   function peticionPost(urlServicio) {
     
     
-	 swal({
-      title: "Procesando información.",
-      content: {
-        element: "div",
-        attributes: {
-          innerHTML: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
-          style: "display: flex; justify-content: center; align-items: center; padding: 20px;",
-        },
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false,
-    });
+	Swal.fire({
+	    title: "Procesando información.",
+	    html: `
+	        <div style="display: flex; justify-content: center; align-items: center; padding: 20px;">
+	            <div class="spinner-border text-primary" role="status">
+	                <span class="sr-only">Cargando...</span>
+	            </div>
+	        </div>
+	    `,
+	    showConfirmButton: false,
+	    allowOutsideClick: false,
+	    allowEscapeKey: false
+	});
     
 	$.ajax({
 		url: urlServicio,
 		type: "POST",
 		dataType: "JSON",
-		beforeSend: function() {
-			
-		},
-		complete: function() {
-			swal.close();
-		},
 		success: function(respuesta) {
 
-			swal(respuesta[0], {
-				closeOnClickOutside: false,
-				icon: "success",
+			// Cerrar ventana de procesamiento
+			Swal.close();
+			
+			Swal.fire({
+			    title: "",
+			    text: respuesta[0],
+			    icon: "success",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			}).then(resp => {
 
+				if (resp.isConfirmed) {
 					window.open(window.location.href.substring(0,window.location.href.indexOf("STD/")+4)+respuesta[1]);
 					window.focus();
+				}
 				
 			});
 
 		}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-			swal({
-				title: "Error, ",
-				text: "Se presento un error, intente mas tarde.",
-				icon: "warning",
+			// Cerrar ventana de carga
+			Swal.close();
+			Swal.fire({
+			    title: "Error",
+			    text: "Se presentó un error, intente más tarde.",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
 			});
 		}
 	});

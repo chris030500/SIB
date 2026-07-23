@@ -507,20 +507,22 @@ function modificarTiposCampanias(){
 	
 	if (document.getElementById('tipoCampanias').value == 0) {
 		
-		swal({
-			title: "",
-			text: "Debe seleccionar Tipo Campaña.",
-			icon: "warning",
+		Swal.fire({
+		    title: "Campo requerido",
+		    text: "Debe seleccionar un Tipo de Campaña.",
+		    icon: "warning",
+		    confirmButtonText: "Aceptar"
 		});
 			
 	} else if (document.getElementById('tipoCampanias').value != 0) {
 		
 		if (document.getElementById('VentanaMayor').value == '') {
 				
-			swal({
-				title: "",
-				text: "Debe ingresar el campo Ventana mayor que.",
-				icon: "warning",
+			Swal.fire({
+			    title: "Campo requerido",
+			    text: "Debe ingresar un valor en el campo 'Ventana mayor que'.",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
 			});
 				
 		} else if (document.getElementById('Ventana').value != '') {
@@ -530,10 +532,11 @@ function modificarTiposCampanias(){
 		
 			if (document.getElementById('Ventana').value == '') {
 					
-				swal({
-					title: "",
-					text: "Debe ingresar el campo Ventana.",
-					icon: "warning",
+				Swal.fire({
+				    title: "Campo requerido",
+				    text: "Debe ingresar un valor en el campo 'Ventana mayor que'.",
+				    icon: "warning",
+				    confirmButtonText: "Aceptar"
 				});
 					
 			} else if (document.getElementById('Ventana').value != '') {
@@ -542,10 +545,11 @@ function modificarTiposCampanias(){
 					
 					if (document.getElementById('EdadMaxima').value == '') {
 			
-						swal({
-							title: "",
-							text: "Debe ingresar el campo Edad Máxima.",
-							icon: "warning",
+						Swal.fire({
+						    title: "Campo requerido",
+						    text: "Debe ingresar el campo Edad Máxima.",
+						    icon: "warning",
+						    confirmButtonText: "Aceptar"
 						});
 					
 					} else if (document.getElementById('EdadMaxima').value != '' && document.getElementById('EdadMaxima').value > 0) {
@@ -554,20 +558,22 @@ function modificarTiposCampanias(){
 							
 							if (document.getElementById('EdadMinima').value == '') {
 				
-								swal({
-									title: "",
-									text: "Debe ingresar el campo Edad Minima.",
-									icon: "warning",
+								Swal.fire({
+								    title: "Campo requerido",
+								    text: "Debe ingresar el campo Edad Mínima.",
+								    icon: "warning",
+								    confirmButtonText: "Aceptar"
 								});
 								
 							} else if (document.getElementById('EdadMinima').value != '' && document.getElementById('EdadMinima').value > 0) {
 								if(esEntero(document.getElementById('EdadMinima').value)){
 									if (document.getElementById('MontoMinimo').value == '') {
 					
-										swal({
-											title: "",
-											text: "Debe ingresar el campo Monto Minimo.",
-											icon: "warning",
+										Swal.fire({
+										    title: "Campo requerido",
+										    text: "Debe ingresar el campo Monto Mínimo.",
+										    icon: "warning",
+										    confirmButtonText: "Aceptar"
 										});
 										
 									} else if (document.getElementById('MontoMinimo').value != '' && document.getElementById('MontoMinimo').value > 0) {
@@ -576,10 +582,11 @@ function modificarTiposCampanias(){
 											
 											if (document.getElementById('MontoMaximo').value == '') {
 						
-												swal({
-													title: "",
-													text: "Debe ingresar el campo Monto Máximo.",
-													icon: "warning",
+												Swal.fire({
+												    title: "Campo requerido",
+												    text: "Debe ingresar el campo Monto Máximo.",
+												    icon: "warning",
+												    confirmButtonText: "Aceptar"
 												});
 												
 											} else if (document.getElementById('MontoMaximo').value != '' && document.getElementById('MontoMaximo').value > 0) {
@@ -596,80 +603,88 @@ function modificarTiposCampanias(){
 														//if(esDecimalPositivo(document.getElementById('MoraMaxima').value)){
 															if (document.getElementById('PorceCubiertoCap').value == '') {
 								
-																swal({
-																	title: "",
-																	text: "Debe ingresar el campo Porcentaje Cubierto Capital.",
-																	icon: "warning",
+																Swal.fire({
+																    title: "Campo requerido",
+																    text: "Debe ingresar el campo Porcentaje Cubierto Capital.",
+																    icon: "warning",
+																    confirmButtonText: "Aceptar"
 																});
 																
 															} else if (document.getElementById('PorceCubiertoCap').value != '') {
 																if(esDecimalPositivo(document.getElementById('PorceCubiertoCap').value) && document.getElementById('PorceCubiertoCap').value <= 100 && document.getElementById('PorceCubiertoCap').value > 0){
 																	if (document.getElementById('DiasGracia').value == '') {
 									
-																		swal({
-																			title: "",
-																			text: "Debe ingresar el campo Días Gracia.",
-																			icon: "warning",
+																		Swal.fire({
+																		    title: "Campo requerido",
+																		    text: "Debe ingresar el campo Días Gracia.",
+																		    icon: "warning",
+																		    confirmButtonText: "Aceptar"
 																		});
 																		
 																	} else if (document.getElementById('DiasGracia').value != '') {
 																		if(esEntero(document.getElementById('DiasGracia').value)){
 																			if (document.getElementById('DiasMora').value == '') {
 										
-																				swal({
-																					title: "",
-																					text: "Debe ingresar el campo Días Mora.",
-																					icon: "warning",
+																				Swal.fire({
+																				    title: "Campo requerido",
+																				    text: "Debe ingresar el campo Días Mora.",
+																				    icon: "warning",
+																				    confirmButtonText: "Aceptar"
 																				});
 																				
 																			} else if (document.getElementById('DiasMora').value != '') {
 																				if(esEntero(document.getElementById('DiasMora').value)){
 																					if (document.getElementById('PlazoMaximoAnios').value == '') {
 											
-																						swal({
-																							title: "",
-																							text: "Debe ingresar el campo Plazo Máximo Años.",
-																							icon: "warning",
+																						Swal.fire({
+																						    title: "Campo requerido",
+																						    text: "Debe ingresar el campo Plazo Máximo Años.",
+																						    icon: "warning",
+																						    confirmButtonText: "Aceptar"
 																						});
 																						
 																					} else if (document.getElementById('PlazoMaximoAnios').value != '') {
 																						if(esEntero(document.getElementById('PlazoMaximoAnios').value) && document.getElementById('PlazoMaximoAnios').value>0){
 																							if (document.getElementById('MinimoVida').value == '') {
 												
-																								swal({
-																									title: "",
-																									text: "Debe ingresar el campo Minimo Vida.",
-																									icon: "warning",
+																								Swal.fire({
+																								    title: "Campo requerido",
+																								    text: "Debe ingresar el campo Mínimo Vida.",
+																								    icon: "warning",
+																								    confirmButtonText: "Aceptar"
 																								});
 																								
 																							} else if (document.getElementById('MinimoVida').value != '') {
 																								if(esEntero(document.getElementById('MinimoVida').value) && document.getElementById('MinimoVida').value>0){
 																									if (document.getElementById('VigenciaBC').value == '') {
 													
-																										swal({
-																											title: "",
-																											text: "Debe ingresar el campo Vigencia BC.",
-																											icon: "warning",
+																										Swal.fire({
+																										    title: "Campo requerido",
+																										    text: "Debe ingresar el campo Vigencia BC.",
+																										    icon: "warning",
+																										    confirmButtonText: "Aceptar"
 																										});
 																										
 																									} else if (document.getElementById('VigenciaBC').value != '') {
 																										if(esEntero(document.getElementById('VigenciaBC').value)){
 																											if (document.getElementById('VigenciaCampania').value == '') {
 														
-																												swal({
-																													title: "",
-																													text: "Debe ingresar el campo Vigencia Campaña.",
-																													icon: "warning",
+																												Swal.fire({
+																												    title: "Validación requerida",
+																												    text: "Debe ingresar el campo Vigencia Campaña.",
+																												    icon: "warning",
+																												    confirmButtonText: "Aceptar"
 																												});
 																												
 																											} else if (document.getElementById('VigenciaCampania').value != '') {
 																												if(esEntero(document.getElementById('VigenciaCampania').value)){
 																													if (document.getElementById('CreditosLiquidados').value == '') {
 															
-																														swal({
-																															title: "",
-																															text: "Debe ingresar el campo Créditos Liquidados.",
-																															icon: "warning",
+																														Swal.fire({
+																														    title: "Campo requerido",
+																														    text: "Debe ingresar el campo Créditos Liquidados.",
+																														    icon: "warning",
+																														    confirmButtonText: "Aceptar"
 																														});
 																														
 																													} else if (document.getElementById('CreditosLiquidados').value != '') {
@@ -678,20 +693,22 @@ function modificarTiposCampanias(){
 																															
 																															if (!seleccion) {
 																
-																																swal({
-																																	title: "",
-																																	text: "Debe seleccionar una opción en Es Renovación.",
-																																	icon: "warning",
+																																Swal.fire({
+																																    title: "Campo requerido",
+																																    text: "Debe seleccionar una opción en Es Renovación.",
+																																    icon: "warning",
+																																    confirmButtonText: "Aceptar"
 																																});
 																																
 																															} else{
 																																
 																																if (document.getElementById('convivenciaCamp').value == 0) {
 																	
-																																	swal({
-																																		title: "",
-																																		text: "Debe seleccionar el campo Convivencia Campaña.",
-																																		icon: "warning",
+																																	Swal.fire({
+																																	    title: "Campo requerido",
+																																	    text: "Debe seleccionar el campo Convivencia Campaña.",
+																																	    icon: "warning",
+																																	    confirmButtonText: "Aceptar"
 																																	});
 																																	
 																																} else if (document.getElementById('convivenciaCamp').value > 0) {
@@ -700,30 +717,33 @@ function modificarTiposCampanias(){
 																																	//let seleccionados = document.querySelectorAll('input[name="productos"]:checked');
 																																	if (seleccionProd.length === 0) {
 																	
-																																		swal({
-																																			title: "",
-																																			text: "Debe seleccionar al menos un producto.",
-																																			icon: "warning",
+																																		Swal.fire({
+																																		    title: "Campo requerido",
+																																		    text: "Debe seleccionar al menos un producto.",
+																																		    icon: "warning",
+																																		    confirmButtonText: "Aceptar"
 																																		});
 																																		
 																																	} else{
 																																		//////////////como debe ir ProdCredito?//////////////7
 																																		if (document.getElementById('prodCredito').value == 0) {
 																	
-																																			swal({
-																																				title: "",
-																																				text: "Debe seleccionar el campo ProdCredito.",
-																																				icon: "warning",
+																																			Swal.fire({
+																																			    title: "Campo requerido",
+																																			    text: "Debe seleccionar el campo ProdCredito.",
+																																			    icon: "warning",
+																																			    confirmButtonText: "Aceptar"
 																																			});
 																																			
 																																		} else if (document.getElementById('prodCredito').value != '') {
 																																			
 																																			if (document.getElementById('PorceIncremento').value == '') {
 																	
-																																				swal({
-																																					title: "",
-																																					text: "Debe ingresar el campo PorceIncremento.",
-																																					icon: "warning",
+																																				Swal.fire({
+																																				    title: "Campo requerido",
+																																				    text: "Debe ingresar el campo PorceIncremento.",
+																																				    icon: "warning",
+																																				    confirmButtonText: "Aceptar"
 																																				});
 																																				
 																																			} else if (document.getElementById('PorceIncremento').value != '') {
@@ -753,10 +773,11 @@ function modificarTiposCampanias(){
 																																								
 																																								if (document.getElementById('TasaOrdinaria').value == '') {
 																		
-																																									swal({
-																																										title: "",
-																																										text: "Debe ingresar el campo TasaOrdinaria.",
-																																										icon: "warning",
+																																									Swal.fire({
+																																									    title: "Campo requerido",
+																																									    text: "Debe ingresar el campo TasaOrdinaria.",
+																																									    icon: "warning",
+																																									    confirmButtonText: "Aceptar"
 																																									});
 																																									
 																																								} else if (document.getElementById('TasaOrdinaria').value != '') {
@@ -767,20 +788,22 @@ function modificarTiposCampanias(){
 																															
 																																										if (!seleccionActiva) {
 																			
-																																											swal({
-																																												title: "",
-																																												text: "Debe ingresar el campo checksActiva.",
-																																												icon: "warning",
+																																											Swal.fire({
+																																											    title: "Campo requerido",
+																																											    text: "Debe ingresar el campo checksActiva.",
+																																											    icon: "warning",
+																																											    confirmButtonText: "Aceptar"
 																																											});
 																																											
 																																										} else {
 																																											
 																																											if (document.getElementById('MontoMaximoOferta').value == '') {
 																				
-																																												swal({
-																																													title: "",
-																																													text: "Debe ingresar el campo Monto Máximo Oferta.",
-																																													icon: "warning",
+																																												Swal.fire({
+																																												    title: "Campo requerido",
+																																												    text: "Debe ingresar el campo Monto Máximo Oferta.",
+																																												    icon: "warning",
+																																												    confirmButtonText: "Aceptar"
 																																												});
 																																												
 																																											} else if (document.getElementById('MontoMaximoOferta').value != '') {
@@ -808,10 +831,11 @@ function modificarTiposCampanias(){
 																																															
 																																															console.log("entra a Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).");
 												
-																																															swal({
-																																																title: "",
-																																																text: "Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).",
-																																																icon: "warning",
+																																															Swal.fire({
+																																															    title: "Campo requerido",
+																																															    text: "Debe ingresar el campo Minimo Vida del Crédito Renovación(meses).",
+																																															    icon: "warning",
+																																															    confirmButtonText: "Aceptar"
 																																															});
 																																															
 																																														} else if (document.getElementById('MinimoVidaR').value != '') {
@@ -822,10 +846,11 @@ function modificarTiposCampanias(){
 																																																}else{
 																																																	banderaMinimoVidaCredito = 1;
 																																																	console.log("entra a no es entero");
-																																																	swal({
-																																																		title: "",
+																																																	Swal.fire({
+																																																		title: "Error",
 																																																		text: mensajeError,
 																																																		icon: "warning",
+																																																		confirmButtonText: "Aceptar"
 																																																	});
 																																																}
 																																														}
@@ -876,10 +901,11 @@ function modificarTiposCampanias(){
 																																													    if(idTipoCampania === 0){
 																																															if (document.getElementById('NomTipoCampania').value == '') {
 																					
-																																																swal({
-																																																	title: "",
-																																																	text: "Debe ingresar descripción para tipo campaña.",
-																																																	icon: "warning",
+																																																Swal.fire({
+																																																    title: "Campo requerido",
+																																																    text: "Debe ingresar descripción para tipo campaña.",
+																																																    icon: "warning",
+																																																    confirmButtonText: "Aceptar"
 																																																});
 																																																
 																																															} else if (document.getElementById('NomTipoCampania').value != '') {
@@ -966,53 +992,73 @@ function modificarTiposCampanias(){
 																																														    })
 																																															///
 																																															
-																																															swal({
+																																															/*swal({
 																																															title: "",
 																																															text: 'Actualizado correctamente',
 																																															icon: "success",
 																																														    }).then(() => {
 																																														        window.location.href = newUrlBase + "credito/tiposCampanias"; // Redirige después de aceptar
-																																														    });
+																																														    });*/
+																																															
+																																															Swal.fire({
+																																															    title: "Operación exitosa",
+																																															    text: "La información se actualizó correctamente.",
+																																															    icon: "success",
+																																															    confirmButtonText: "Aceptar"
+																																															}).then(() => {
+																																															    window.location.href = newUrlBase + "credito/tiposCampanias";
+																																															});
+																																															
 																																														})
 																																														.catch(err => {
 																																														    console.error("Error al actualizar:", err);
-																																														   swal({
-																																															title: "",
-																																															text: 'Error al actualizar',
-																																														        icon: 'error'
-																																														    });
+																																														
+																																															Swal.fire({
+																																															    title: "Error",
+																																															    text: "Error al actualizar.",
+																																															    icon: "error",
+																																															    confirmButtonText: "Aceptar"
+																																															});
 																																														});
 																																														///////////////////////
 																																													}else{
-																																														swal({
-																																															title: "",
-																																															text: mensajeError,
-																																															icon: "warning",
+																																														Swal.fire({
+																																														    title: "Error",
+																																														    text: mensajeError,
+																																														    icon: "warning",
+																																														    confirmButtonText: "Aceptar"
 																																														});
+																																														
+																																														
+																																														
 																																													}///aqui termina el ultimo else de la validaciones
 																																												}else{ 
-																																														swal({
-																																															title: "",
+																																														Swal.fire({
+																																															title: "Error",
 																																															text: mensajeError,
 																																															icon: "warning",
+																																															confirmButtonText: "Aceptar"
 																																														});
 																																													}
 																																											}
 																																										}
 																																									}else{
-																																										swal({
-																																											title: "",
+																																										Swal.fire({
+																																											title: "Error",
 																																											text: mensajeError,
 																																											icon: "warning",
+																																											confirmButtonText: "Aceptar"
 																																										});
+																																										
 																																									}
 																																									
 																																								}
 																																							}else{
-																																								swal({
-																																									title: "",
-																																									text: mensajeError,
-																																									icon: "warning",
+																																								Swal.fire({
+																																								title: "Error",
+																																								text: mensajeError,
+																																								icon: "warning",
+																																								confirmButtonText: "Aceptar"
 																																								});
 																																							}
 																																							
@@ -1034,74 +1080,83 @@ function modificarTiposCampanias(){
 																																}
 																															}
 																														}else{
-																															swal({
-																																title: "",
+																															Swal.fire({
+																																title: "Error",
 																																text: mensajeError,
 																																icon: "warning",
+																																confirmButtonText: "Aceptar"
 																															});
 																														}
 																													}
 																												}else{
-																													swal({
-																														title: "",
+																													Swal.fire({
+																														title: "Error",
 																														text: mensajeError,
 																														icon: "warning",
+																														confirmButtonText: "Aceptar"
 																													});
 																												}
 																											}
 																										}else{
-																											swal({
-																												title: "",
+																											Swal.fire({
+																												title: "Error",
 																												text: mensajeError,
 																												icon: "warning",
+																												confirmButtonText: "Aceptar"
 																											});
 																										}
 																									}
 																								}else{
-																									swal({
-																										title: "",
+																									Swal.fire({
+																										title: "Error",
 																										text: mensajeError,
 																										icon: "warning",
+																										confirmButtonText: "Aceptar"
 																									});
 																								}
 																							}
 																						}else{
-																							swal({
-																								title: "",
+																							Swal.fire({
+																								title: "Error",
 																								text: mensajeError,
 																								icon: "warning",
+																								confirmButtonText: "Aceptar"
 																							});
 																						}
 																					}
 																				}else{
-																					swal({
-																						title: "",
+																					Swal.fire({
+																						title: "Error",
 																						text: mensajeError,
 																						icon: "warning",
+																						confirmButtonText: "Aceptar"
 																					});
 																				}
 																			}
 																		}else{
-																			swal({
-																				title: "",
+																			Swal.fire({
+																				title: "Error",
 																				text: mensajeError,
 																				icon: "warning",
+																				confirmButtonText: "Aceptar"
 																			});
 																		}
 																	}
 																}else{
-																	swal({
-																		title: "",
+																	Swal.fire({
+																		title: "Error",
 																		text: mensajeError,
 																		icon: "warning",
+																		confirmButtonText: "Aceptar"
 																	});
 																}
 															}
 														}else{
-															swal({
-																title: "",
+															Swal.fire({
+																title: "Error",
 																text: mensajeError,
 																icon: "warning",
+																confirmButtonText: "Aceptar"
 															});
 														}
 													//}
@@ -1114,35 +1169,39 @@ function modificarTiposCampanias(){
 												}*/
 											}
 										}else{
-											swal({
-												title: "",
+											Swal.fire({
+												title: "Error",
 												text: mensajeError,
 												icon: "warning",
+												confirmButtonText: "Aceptar"
 											});
 										}
 										
 									}
 								}else{
-									swal({
-										title: "",
+									Swal.fire({
+										title: "Error",
 										text: mensajeError,
 										icon: "warning",
+										confirmButtonText: "Aceptar"
 									});
 								}
 							}
 						}else{
-							swal({
-								title: "",
+							Swal.fire({
+								title: "Error",
 								text: mensajeError,
 								icon: "warning",
+								confirmButtonText: "Aceptar"
 							});
 						}
 					}
 				}else{
-					swal({
-						title: "",
+					Swal.fire({
+						title: "Error",
 						text: mensajeError,
 						icon: "warning",
+						onfirmButtonText: "Aceptar"
 					});
 				}
 			}
@@ -1183,15 +1242,14 @@ function mensajeAlertaTipoBuro(tipoBuroSelec){
 	
 	if(parseInt(tipoBuroSelec) !== tipoBuroRegistrado && parseInt(tipoBuroSelec) > 0 ){
 			
-	swal({
- 	title: "Alerta",
-    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
-    icon: 'info',
-    allowOutsideClick: false,
-    closeOnClickOutside: false,
-    dangerMode: true,
-    timer: 10000 // 10 segundos
-	});
+		Swal.fire({
+		    title: "Alerta",
+		    text: "Si el cambio se confirma, la configuración actual de tipo de buró se inactivará y se deberá configurar nuevamente.",
+		    icon: "info",
+		    allowOutsideClick: false,
+		    timer: 10000,
+		    confirmButtonText: "Aceptar"
+		});
 		
 	}
 
