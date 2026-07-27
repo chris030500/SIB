@@ -143,10 +143,11 @@ function generarReporte() {
 					window.focus();
 		
 				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
-						title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
-						icon: "warning",
+					Swal.fire({
+					    title: "Error",
+					    text: "Se presento un error, intente mas tarde.",
+					    icon: "warning",
+					    confirmButtonText: "Aceptar"
 					});
 				}
 				});
@@ -180,10 +181,11 @@ function generarReporte() {
 					window.focus();
 		
 				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
-						title: "Error, ",
-						text: "Se presento un error, intente mas tarde.",
-						icon: "warning",
+					Swal.fire({
+					    title: "Error",
+					    text: "Se presento un error, intente mas tarde.",
+					    icon: "warning",
+					    confirmButtonText: "Aceptar"
 					});
 				}
 				});
@@ -284,10 +286,11 @@ function generarReporte() {
 			//let seleccionProd = Array.from(select.selectedOptions);
 			if (seleccionProd.length === 0) {
 	
-				swal({
-					title: "",
-					text: "Debe seleccionar al menos una campaña.",
-					icon: "warning",
+				Swal.fire({
+				    title: "Alerta",
+				    text: "Debe seleccionar al menos una campaña.",
+				    icon: "warning",
+				    confirmButtonText: "Aceptar"
 				});
 				
 			}else{
@@ -332,10 +335,11 @@ function generarReporte() {
 					window.focus();
 		
 				}, error: function(XMLHttpRequest, textStatus, errorThrown) {
-					swal({
-						title: "Error, ",
+					Swal.fire({
+						title: "Error",
 						text: "Se presento un error, intente mas tarde.",
 						icon: "warning",
+						confirmButtonText: "Aceptar"
 					});
 				}
 				});
@@ -344,18 +348,21 @@ function generarReporte() {
 			
 		}else{
 			
-			swal({
-					title: "",
-					text: "Debe seleccionar un reporte.",
-					icon: "warning",
-				});
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Debe seleccionar un reporte.",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
+			});
 		}
 	} else {
 
-		swal({
-			title: "",
-			text: mensajeError,
-			icon: "warning",
+		
+		Swal.fire({
+		    title: "Alerta",
+		    text: mensajeError,
+		    icon: "warning",
+		    confirmButtonText: "Aceptar"
 		});
 	}
 }

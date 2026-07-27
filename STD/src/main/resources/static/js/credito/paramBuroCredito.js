@@ -73,17 +73,23 @@ function buscarCampaniasA(valorBusqueda) {
 					mapaCampanias.set(campania.vc_tipo_campania, campania.pk_id_tipo_campania); // guarda el id
 				});
 			} else {
-				swal("La respuesta no contiene una lista válida de campañas", {
-					closeOnClickOutside: false,
-					icon: "warning",
+				Swal.fire({
+				    title: "Alerta",
+				    text: "La respuesta no contiene una lista válida de campañas",
+				    icon: "warning",
+				    allowOutsideClick: false,
+				    confirmButtonText: "Aceptar"
 				});
 			}
 		})
 		.catch(error => {
 			console.error("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		})
 		.finally(() => {
@@ -107,7 +113,7 @@ function obtDatosBuro() {
 		.then(data => {
 
 			if (!data || Object.keys(data).length === 0) {
-				swal("No se cuenta con informacion registrada", { icon: "warning" });
+				Swal.fire("No se cuenta con informacion registrada", { icon: "warning" });
 			} else {
 				llenarFormulario(data);
 			}
@@ -117,9 +123,12 @@ function obtDatosBuro() {
 		})
 		.catch(error => {
 			console.log("Error en la búsqueda:", error);
-			swal("Ocurrió un error al buscar campañas activas", {
-				closeOnClickOutside: false,
-				icon: "error",
+			Swal.fire({
+			    title: "Error",
+			    text: "Ocurrió un error al buscar campañas activas",
+			    icon: "error",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 		})
 		.finally(() => {
@@ -145,10 +154,19 @@ function llenarFormulario(param) {
 				radio.checked = Number(radio.value) === tipoEval;
 				radio.disabled = deshabilitar;
 			});
-			swal("No cuenta con informacion registrada", { icon: "warning" });
-
+			Swal.fire({
+			    title: "Alerta",
+			    text: "No cuenta con informacion registrada",
+			    icon: "warning",
+			    confirmButtonText: "Aceptar"
+			});
 		} else {
-			swal("No cuenta con informacion registrada", { icon: "warning" });
+			Swal.fire({
+				title: "Alerta",
+				text: "No cuenta con informacion registrada",
+				icon: "warning",
+				confirmButtonText: "Aceptar"
+			});
 		}
 
 	} else {
@@ -232,15 +250,17 @@ function guardarParametrosBC() {
 		formData.set("tipoEvaluacion", tipoSeleccionado.value);
 	}
 
-	swal({
-		title: 'Procesando solicitud',
-		text: 'Por favor espera',
-		allowOutsideClick: false,
-		buttons: false,
-		closeOnClickOutside: false,
-		icon: 'info',
+	Swal.fire({
+	    title: "Procesando solicitud",
+	    text: "Por favor espera",
+	    allowOutsideClick: false,
+	    showConfirmButton: false,
+	    allowEscapeKey: false,
+	    didOpen: () => {
+	        Swal.showLoading();
+	    }
 	});
-
+	
 	fetch(getAbsolutePath() + dtosGuardarParamBC, {
 		method: "POST",
 		body: formData
@@ -257,15 +277,25 @@ function guardarParametrosBC() {
 			// Leer mensaje y tipo desde el JSON recibido
 			const mensaje = data.mensaje;
 			const tipo = data.tipo;
-			swal("", mensaje, tipo);
+			
+			// Cerrar mensaje de procesando
+			Swal.close();
 
+			// Mostrar resultado
+			Swal.fire("", mensaje, tipo)
+			
 		})
 		.catch(error => {
-			console.log("Error:", error);
-			alert("Ocurrió un error al guardar la campaña");
+			Swal.close();
+
+			    Swal.fire({
+			        title: "Error",
+			        text: "Ocurrió un error al guardar la campaña",
+			        icon: "error"
+			    });
 		})
 		.finally(() => {
-			swal.close(); // cerrar el "Cargando..."
+			//Swal.close(); // cerrar el "Cargando..."
 			document.getElementById('btnGuardarParamBC').disabled = false;
 		});
 	/*} else {
@@ -372,9 +402,12 @@ function validarCampo() {
 				}
 			}
 		} else {
-			swal("Debes seleccionar una opción de tipo de evaluación", {
-				icon: "warning",
-				closeOnClickOutside: false,
+			Swal.fire({
+			    title: "Alerta",
+			    text: "Debes seleccionar una opción de tipo de evaluación",
+			    icon: "warning",
+			    allowOutsideClick: false,
+			    confirmButtonText: "Aceptar"
 			});
 			pasaRegistro = 0;
 		}
