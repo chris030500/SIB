@@ -24,6 +24,7 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 import ahorrosbienestar.sib.std.catalogos.model.Catalogo;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
 import ahorrosbienestar.sib.std.comunes.Constantes;
+import ahorrosbienestar.sib.std.credito.campaniastemporales.controller.CampaniasTemporalesController;
 import ahorrosbienestar.sib.std.credito.paramburocredito.controller.ParamBuroCreditoController;
 import ahorrosbienestar.sib.std.credito.paramburocredito.model.ParamBuroCreditoModel;
 import ahorrosbienestar.sib.std.credito.paramburocredito.service.ParamBuroCreditoService;
@@ -46,7 +47,7 @@ import java.util.Map;
 @RequestMapping("credito")
 
 public class tiposCampaniasController {
-	private static final Logger logger = Logger.getLogger(ParamBuroCreditoController.class);
+	private static final Logger logger = Logger.getLogger(tiposCampaniasController.class);
 	
 	@Autowired
 	private TiposCampaniasService service;
@@ -73,6 +74,9 @@ public class tiposCampaniasController {
 	private OpcionesMenuService opcionesMenuService;
 	@Autowired
 	private ParamBuroCreditoService paramBuroCreditoService;
+	
+	@Autowired
+	private CampaniasTemporalesController campaniasTemporalesController;
 	
 	List<Usuario> usuario = null;
 	
@@ -307,8 +311,24 @@ public class tiposCampaniasController {
 	public ResponseEntity<String> crear(@RequestBody TiposCampaniasModel campania) {
 	    try {
 	        //boolean creada = service.crearCampania(campania);
-	        
+	    	
+	    	Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			
+			
+			UserDetails userDetails = (UserDetails) principal;
+			usuario = iUsuarioRepository.findByNombreUsuario(userDetails.getUsername());
+			Integer idUsuario = usuario.get(0).getPk_id_usuario();
+	    	
 	    	if(service.save(campania) !=null) {
+	    		//cambio para agregar campania recurrente en ofertas automaticas
+	    		//logger.info("Valores: " + campania.getVc_tipo_campania() + " " + campania.getPk_id_tipo_campania() + " " + campania.getI_user_reg().getPk_id_usuario());
+		    	logger.info("Ofertas Automaticas:" + campania.getVc_tipo_campania() + " " + campania.getPk_id_tipo_campania() + " " + idUsuario);
+		    	
+	    		if(campaniasTemporalesController.relacionBasesOA(campania.getVc_tipo_campania(), campania.getPk_id_tipo_campania(), idUsuario) == null) {
+					logger.info("Se proceso el registro en Bases y Clasificacion");
+				}else {
+					logger.error("Error al procesar el registro en Bases y Clasificacion");
+				}
 				return ResponseEntity.ok("Campaña guardada correctamente");
 			}else {
 				return ResponseEntity.ok("Error al guardar campania");
