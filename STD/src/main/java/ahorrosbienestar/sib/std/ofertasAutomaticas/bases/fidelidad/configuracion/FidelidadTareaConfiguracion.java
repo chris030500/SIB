@@ -234,342 +234,322 @@ public class FidelidadTareaConfiguracion {
 		}
 	}
 
-	@Transactional
 	public void procesarArchivoExcel(String filePath) throws IOException, ParseException {
-		String rowNull ="";	
-		
-		try {
-			logger.info("procesarArchivoExcel");
-			String nombreHoja = configService.valorPropiedad(propiedadNombreHoja).getVc_valor_propiedad();
-			logger.info("nombreHoja: " + nombreHoja);
-			FileInputStream inputStream = new FileInputStream(filePath);
-			Workbook workbook = new XSSFWorkbook(inputStream);
-			Sheet sheet = workbook.getSheet(nombreHoja); // Cambiar al nombre correcto de la hoja
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); // Cambia el formato según lo que se encuentre
-																			// en la celda
-			List<String> errores = new ArrayList<>();
-			int filaInicial = 1;
-			
-			for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null || row.getCell(0) == null) {
-					break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
-				}
-				
-				logger.info("for de row: " + (i + 1));
-				rowNull = "El renglon: " + (i + 1)+" contiene datos nulos, todos los datos son obligatorios.";
-				
-				try {
-					double clienteIdCellValue = row.getCell(0).getNumericCellValue();
-					int clienteId = (int) clienteIdCellValue; // Convertir a int
-		
-					logger.info("clienteId: " + clienteId);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en clienteId: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Cliente Id no es numérico");
-					continue; // Ir a la siguiente fila
-				}
-				try {
-					String nombreCliente = row.getCell(1).getStringCellValue();
-					
-					logger.info("nombreCliente: " + nombreCliente);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en nombreCliente: El valor no es una cadena de texto.");
-					errores.add("Fila " + (i + 1) + " El campo Nombre Cliente no es una cadena de texto");
-					continue; // Ir a la siguiente fila
-				}
+	    String rowNull = "";
 
-				try {
-					String region = row.getCell(2).getStringCellValue();
-					logger.info("region: " + region);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en region: El valor no es una cadena de texto.");
-					errores.add("Fila " + (i + 1) + " El campo Region no es una cadena de texto");
-					continue; // Ir a la siguiente fila
-				}
+	    try {
 
-				try {
-					String nombreSucursal = row.getCell(3).getStringCellValue();
-					logger.info("nombreSucursal: " + nombreSucursal);
-				} catch (IllegalStateException e) {
-					// TODO: handle exception
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en nombreSucursal: El valor no es una cadena de texto.");
-					errores.add("Fila " + (i + 1) + " El campo Nombre Sucursal no es una cadena de texto");
-					continue; // Ir a la siguiente fila
-				}
+	        logger.info("Inicio procesarArchivoExcel");
 
-				try {
-					Date fechaNacimiento = row.getCell(4).getDateCellValue();
-					logger.info("fechaNacimiento: " + dateFormat.format(fechaNacimiento));
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en fechaNacimiento: El valor no es una fecha valida.");
-					errores.add("Fila " + (i + 1) + " El campo Fecha de Nacimiento no es una fecha valida ");
-					continue;
-				}
+	        String nombreHoja = configService
+	                .valorPropiedad(propiedadNombreHoja)
+	                .getVc_valor_propiedad();
 
-				try {
-					double edadCellValue = row.getCell(5).getNumericCellValue();
-					int edad = (int) edadCellValue;
-					logger.info("edad: " + edad);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en edad: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Edad no es numérico");
-					continue;
-				}
+	        logger.info("nombreHoja: {}"+nombreHoja);
 
-				try {
-					double creditoIdCellValue = row.getCell(6).getNumericCellValue();
-					int creditoId = (int) creditoIdCellValue;
-					logger.info("creditoId: " + creditoId);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en creditoId: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Credito Id no es numérico");
-					continue;
-				}
+	        Date fechaRegistro = new Date();
 
-				try {
-					String nombreProducto = row.getCell(7).getStringCellValue();
-					logger.info("nombreProducto: " + nombreProducto);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en nombreProducto: El valor no es una cadena de texto.");
-					errores.add("Fila " + (i + 1) + " El campo Nombre Producto no es una cadena de texto");
-					continue;
-				}
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	        DecimalFormat decimalFormat = new DecimalFormat("#");
 
-				try {
-					double montoOriginal = row.getCell(8).getNumericCellValue();
-					logger.info("montoOriginal: " + montoOriginal);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en montoOriginal: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Monto Original no es numérico");
-					continue;
-				}
+	        List<String> errores = new ArrayList<>();
+	        List<Fidelidad> listaFidelidad = new ArrayList<>(1000);
 
-				try {
-					double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
-					int maxDiasMora = (int) maxDiasMoraCellValue;
-					logger.info("maxDiasMora: " + maxDiasMora);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en maxDiasMora: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Maximo Dias Mora no es numérico");
-					continue;
-				}
+	        int filaInicial = 1;
+	        int totalFilas = 0;
 
-				try {
-					double telCelularCellValue = row.getCell(10).getNumericCellValue();
-					int telCelular = (int) telCelularCellValue;
-					logger.info("telCelular: " + telCelular);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telCelular: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Celular no es numérico");
-					continue;
-				}
+	        try (FileInputStream inputStream = new FileInputStream(filePath);
+	             Workbook workbook = new XSSFWorkbook(inputStream)) {
 
-				try {
-					double telRecadosCellValue = row.getCell(11).getNumericCellValue();
-					int telRecados = (int) telRecadosCellValue;
-					logger.info("telRecados: " + telRecados);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telRecados: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Recados no es numérico");
-					continue;
-				}
+	            Sheet sheet = workbook.getSheet(nombreHoja);
 
-				try {
-					double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
-					int telEmpleado = (int) telEmpleadoCellValue;
-					logger.info("telEmpleado: " + telEmpleado);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telEmpleado: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Empleado no es numérico");
-					continue;
-				}
+	            if (sheet == null) {
+	                throw new IllegalArgumentException(
+	                        "No se encontró la hoja: " + nombreHoja);
+	            }
 
-				try {
-					double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
-					int telReferencia1 = (int) telReferencia1CellValue;
-					logger.info("telReferencia1: " + telReferencia1);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telReferencia1: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 1 no es numérico");
-					continue;
-				}
+	            int ultimaFila = sheet.getLastRowNum();
 
-				try {
-					double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
-					int telReferencia2 = (int) telReferencia2CellValue;
-					logger.info("telReferencia2: " + telReferencia2);
+	            logger.info("Total de filas a procesar: {}"+ ultimaFila);
 
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en telReferencia2: El valor no es numérico.");
-					errores.add("Fila " + (i + 1) + " El campo Telefono Referencia 2 no es numérico");
-					continue;
-				}
-				
-				try {
-					String plazoOferta = row.getCell(15).getStringCellValue();
-					logger.info("plazoOferta: " + plazoOferta);
-				} catch (IllegalStateException e) {
-					logger.error("Error:"+e.getMessage());
-					logger.info("Error en plazoOferta: El valor no es una cadena de texto.");
-					errores.add("Fila " + (i + 1) + " El campo plazo oferta no es una cadena de texto");
-					continue; // Ir a la siguiente fila
-				}
+	           
+	            for (int i = filaInicial; i <= ultimaFila; i++) {
 
-			}
+	                Row row = sheet.getRow(i);
 
-			logger.error("lista errores: " + errores.isEmpty());
-			if (!errores.isEmpty()) {
-				// Mostrar o manejar los errores encontrados antes de insertar en BD
-				logger.info("HAY ERRORES: ");
-				String erroresMns = "";
-				for (String error : errores) {
-					erroresMns = erroresMns+"-"+error+"<br>";
-					logger.error(error);
-				}
-				tipoCorreo = 3;
-				logger.info("ERROR CONTENIDO");
-				envioCorreoService.prepararCorreo(tipoCorreo,erroresMns);
-				logger.info("Error archivo:"+erroresMns);
+	                if (row == null || row.getCell(0) == null) {
+	                    contRegistro = i;
+	                    break;
+	                }
 
-			} else {
-				// Llamar al método para insertar en BD solo si no hay errores
-				logger.info("No hay errores");
-				try {
-				
-					
-					Date fechaRegistro = new Date();
-					List<Fidelidad> listaFidelidad = new ArrayList<>();
-					for (int i = filaInicial; i <= sheet.getLastRowNum(); i++) {
-						Row row = sheet.getRow(i);
-						if (row == null || row.getCell(0) == null) {
-							contRegistro = i;
-							break; // Detener la iteración si la fila es nula o la celda en la columna 0 es nula
-						}
-						
-						DecimalFormat decimalFormat = new DecimalFormat("#");
-						
-						Fidelidad registroExcel = new Fidelidad();
-						
-						double clienteIdCellValue = row.getCell(0).getNumericCellValue();
-						int clienteId = (int) clienteIdCellValue; // Convertir a int
-						
-						
-						registroExcel.setI_cliente_id(clienteId);
+	                totalFilas++;
 
-						String nombreCliente = row.getCell(1).getStringCellValue();
-						registroExcel.setVc_nombre_completo_cliente(nombreCliente);
+	                if (i % 1000 == 0) {
+	                    logger.info("Validando fila: {} de {}"+i + 1+ultimaFila + 1);
+	                }
 
-						String region = row.getCell(2).getStringCellValue();
-						registroExcel.setVc_region(region);
+	                rowNull = "El renglon: " + (i + 1)
+	                        + " contiene datos nulos, todos los datos son obligatorios.";
 
-						String nombreSucursal = row.getCell(3).getStringCellValue();
-						registroExcel.setVc_nombre_sucurs(nombreSucursal);
+	                try {
 
-						Date fechaNacimiento = row.getCell(4).getDateCellValue();
-						String fechaFormateada = dateFormat.format(fechaNacimiento); // Aquí obtienes la fecha formateada// como cadena
-						// Convertir la cadena formateada nuevamente a un objeto Date
-						Date fechaFormateadaComoDate = dateFormat.parse(fechaFormateada);
-						registroExcel.setDt_fecha_nacimiento(fechaFormateadaComoDate);
-						
+	                    /*
+	                     * Cliente ID
+	                     */
+	                    double clienteIdCellValue =
+	                            row.getCell(0).getNumericCellValue();
 
-						double edadCellValue = row.getCell(5).getNumericCellValue();
-						int edad = (int) edadCellValue;
-						registroExcel.setI_edad(edad);
+	                    int clienteId = (int) clienteIdCellValue;
 
-						double creditoIdCellValue = row.getCell(6).getNumericCellValue();
-						long creditoId = Long.parseLong(decimalFormat.format(creditoIdCellValue));
-						registroExcel.setI_credito_id(creditoId);
 
-						String nombreProducto = row.getCell(7).getStringCellValue();
-						registroExcel.setVc_nombre_producto(nombreProducto);
+	                    /*
+	                     * Nombre Cliente
+	                     */
+	                    String nombreCliente =
+	                            row.getCell(1).getStringCellValue();
 
-						double montoOriginal = row.getCell(8).getNumericCellValue();
-						registroExcel.setD_monto_original(montoOriginal);
 
-						double maxDiasMoraCellValue = row.getCell(9).getNumericCellValue();
-						int maxDiasMora = (int) maxDiasMoraCellValue;
-						registroExcel.setI_max_dia_mora(maxDiasMora);
+	                    /*
+	                     * Región
+	                     */
+	                    String region =
+	                            row.getCell(2).getStringCellValue();
 
-						
-	                    //String formattedValue = decimalFormat.format(numericValue);
-						
-						double telCelularCellValue = row.getCell(10).getNumericCellValue();
-						String telCelular = decimalFormat.format(telCelularCellValue);  
-								//String.valueOf((int) telCelularCellValue);
-						registroExcel.setVc_telefono_celular(telCelular);
 
-						double telRecadosCellValue = row.getCell(11).getNumericCellValue();
-						String telRecados = decimalFormat.format(telRecadosCellValue);
-						registroExcel.setVc_telefono_recados(telRecados);
+	                    /*
+	                     * Nombre Sucursal
+	                     */
+	                    String nombreSucursal =
+	                            row.getCell(3).getStringCellValue();
 
-						double telEmpleadoCellValue = row.getCell(12).getNumericCellValue();
-						String telEmpleado = decimalFormat.format(telEmpleadoCellValue);
-						registroExcel.setVc_telefono_empleado(telEmpleado);
 
-						double telReferencia1CellValue = row.getCell(13).getNumericCellValue();
-						String telReferencia1 = decimalFormat.format(telReferencia1CellValue);
-						registroExcel.setVc_telefono_referencia_1(telReferencia1);
+	                    /*
+	                     * Fecha nacimiento
+	                     */
+	                    Date fechaNacimiento =
+	                            row.getCell(4).getDateCellValue();
 
-						double telReferencia2CellValue = row.getCell(14).getNumericCellValue();
-						String telReferencia2 = decimalFormat.format(telReferencia2CellValue);
-						registroExcel.setVc_telefono_referencia_2(telReferencia2);
-						
-						String plazoOferta = row.getCell(15).getStringCellValue();
-						registroExcel.setVc_plazo_oferta(plazoOferta);
-						
-						registroExcel.setDt_fecha_registro(fechaRegistro);
-						
-						
-						listaFidelidad.add(registroExcel);
-						if(listaFidelidad.size() == 1000) {
-							fidelidadService.registrarFidelidad(listaFidelidad);
-							listaFidelidad.clear();
-						}
-						
-					}
-					
-					fidelidadService.registrarFidelidad(listaFidelidad);
-					listaFidelidad.clear();
-					
-				} catch (Exception e) {
-					
-					logger.error("Error al insertar en la base de datos: " + e.getMessage());
-					throw e;
-				}
 
-			}
+	                    /*
+	                     * Edad
+	                     */
+	                    double edadCellValue =
+	                            row.getCell(5).getNumericCellValue();
 
-			workbook.close();
-			inputStream.close();
-			
-		} catch (Exception e) {
-			logger.error("Error:"+e.getMessage());
-			logger.info("ERROR CONTENIDO");
-			tipoCorreo =3;
-			envioCorreoService.prepararCorreo(tipoCorreo,rowNull);
-		}
-		
-		
+	                    int edad = (int) edadCellValue;
 
+
+	                    /*
+	                     * Crédito ID
+	                     */
+	                    double creditoIdCellValue =
+	                            row.getCell(6).getNumericCellValue();
+
+	                    long creditoId =
+	                            Long.parseLong(
+	                                    decimalFormat.format(creditoIdCellValue)
+	                            );
+
+
+	                    /*
+	                     * Nombre producto
+	                     */
+	                    String nombreProducto =
+	                            row.getCell(7).getStringCellValue();
+
+
+	                    /*
+	                     * Monto original
+	                     */
+	                    double montoOriginal =
+	                            row.getCell(8).getNumericCellValue();
+
+
+	                    /*
+	                     * Máximo días mora
+	                     */
+	                    double maxDiasMoraCellValue =
+	                            row.getCell(9).getNumericCellValue();
+
+	                    int maxDiasMora =
+	                            (int) maxDiasMoraCellValue;
+
+
+	                    /*
+	                     * Teléfono celular
+	                     */
+	                    double telCelularCellValue =
+	                            row.getCell(10).getNumericCellValue();
+
+	                    String telCelular =
+	                            decimalFormat.format(telCelularCellValue);
+
+
+	                    /*
+	                     * Teléfono recados
+	                     */
+	                    double telRecadosCellValue =
+	                            row.getCell(11).getNumericCellValue();
+
+	                    String telRecados =
+	                            decimalFormat.format(telRecadosCellValue);
+
+
+	                    /*
+	                     * Teléfono empleado
+	                     */
+	                    double telEmpleadoCellValue =
+	                            row.getCell(12).getNumericCellValue();
+
+	                    String telEmpleado =
+	                            decimalFormat.format(telEmpleadoCellValue);
+
+
+	                    /*
+	                     * Teléfono referencia 1
+	                     */
+	                    double telReferencia1CellValue =
+	                            row.getCell(13).getNumericCellValue();
+
+	                    String telReferencia1 =
+	                            decimalFormat.format(telReferencia1CellValue);
+
+
+	                    /*
+	                     * Teléfono referencia 2
+	                     */
+	                    double telReferencia2CellValue =
+	                            row.getCell(14).getNumericCellValue();
+
+	                    String telReferencia2 =
+	                            decimalFormat.format(telReferencia2CellValue);
+
+
+	                    /*
+	                     * Plazo oferta
+	                     */
+	                    String plazoOferta =
+	                            row.getCell(15).getStringCellValue();
+
+
+	                   
+	                    Fidelidad registroExcel = new Fidelidad();
+
+	                    registroExcel.setI_cliente_id(clienteId);
+	                    registroExcel.setVc_nombre_completo_cliente(nombreCliente);
+	                    registroExcel.setVc_region(region);
+	                    registroExcel.setVc_nombre_sucurs(nombreSucursal);
+	                    registroExcel.setDt_fecha_nacimiento(fechaNacimiento);
+	                    registroExcel.setI_edad(edad);
+	                    registroExcel.setI_credito_id(creditoId);
+	                    registroExcel.setVc_nombre_producto(nombreProducto);
+	                    registroExcel.setD_monto_original(montoOriginal);
+	                    registroExcel.setI_max_dia_mora(maxDiasMora);
+	                    registroExcel.setVc_telefono_celular(telCelular);
+	                    registroExcel.setVc_telefono_recados(telRecados);
+	                    registroExcel.setVc_telefono_empleado(telEmpleado);
+	                    registroExcel.setVc_telefono_referencia_1(telReferencia1);
+	                    registroExcel.setVc_telefono_referencia_2(telReferencia2);
+	                    registroExcel.setVc_plazo_oferta(plazoOferta);
+	                    registroExcel.setDt_fecha_registro(fechaRegistro);
+
+	                    listaFidelidad.add(registroExcel);
+
+	                } catch (IllegalStateException e) {
+
+	                    
+	                    logger.error("Error en fila {}: {}"+i + 1);
+
+	                    errores.add("Error en fila {}: {}"+i + 1);
+
+	                } catch (Exception e) {
+
+	                    String mensaje =
+	                            "Fila " + (i + 1)
+	                            + " contiene datos inválidos: "
+	                            + e.getMessage();
+
+	                    logger.error(mensaje, e);
+
+	                    errores.add(mensaje);
+	                }
+	            }
+
+	            logger.info("Fin lectura Excel. Filas procesadas: {}. Errores: {}"+ totalFilas+ errores.size());
+
+
+	            if (!errores.isEmpty()) {
+
+	                logger.error("El archivo contiene {} errores. No se realizará inserción."+errores.size()
+	                );
+
+	                StringBuilder erroresMns = new StringBuilder();
+
+	                for (String error : errores) {
+	                    erroresMns.append("-")
+	                              .append(error)
+	                              .append("<br>");
+
+	                    logger.error(error);
+	                }
+
+	                tipoCorreo = 3;
+
+	                envioCorreoService.prepararCorreo(
+	                        tipoCorreo,
+	                        erroresMns.toString()
+	                );
+
+	                logger.info("Archivo rechazado por errores de validación.");
+
+	                return;
+	            }
+
+	          
+	            logger.info("No existen errores. Registros válidos: {}"+listaFidelidad.size());
+
+	            if (!listaFidelidad.isEmpty()) {
+
+	                for (int inicio = 0;
+	                     inicio < listaFidelidad.size();
+	                     inicio += 1000) {
+
+	                    int fin = Math.min(
+	                            inicio + 1000,
+	                            listaFidelidad.size()
+	                    );
+
+	                    List<Fidelidad> lote =
+	                            listaFidelidad.subList(inicio, fin);
+
+	                    logger.info("Insertando registros {} - {} de {}"+inicio + 1+fin+listaFidelidad.size());
+
+	                    fidelidadService.registrarFidelidad(
+	                            new ArrayList<>(lote)
+	                    );
+	                }
+	            }
+
+	            listaFidelidad.clear();
+
+	            logger.info("Proceso terminado correctamente.");
+
+	        }
+
+	    } catch (Exception e) {
+
+	        logger.error("Error procesando archivo Excel", e);
+
+	        tipoCorreo = 3;
+
+	        envioCorreoService.prepararCorreo(
+	                tipoCorreo,
+	                rowNull
+	        );
+	    }
 	}
-
+	
 	public void procesarCampaniaFidelidad() {
 		
 		try {
