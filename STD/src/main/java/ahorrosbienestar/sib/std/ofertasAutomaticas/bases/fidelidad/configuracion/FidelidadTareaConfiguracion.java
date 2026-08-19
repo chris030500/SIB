@@ -234,7 +234,6 @@ public class FidelidadTareaConfiguracion {
 		}
 	}
 
-	@Transactional
 	public void procesarArchivoExcel(String filePath) throws IOException, ParseException {
 		String rowNull ="";	
 		
