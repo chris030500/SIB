@@ -110,6 +110,8 @@ public class Constantes {
     public static final String MENSAJE_BASE_FIDELIZACION_NOMINA = "Se proceso Base Fidelizacion Nomina.";
     public static final String MENSAJE_BASE_FIDELIZACION_RENOVADO = "Se proceso Base Fidelizacion Renovado.";
     public static final String MENSAJE_BASE_CAMPANIA_FIDELIDAD = "Se proceso Base Campaña Fidelidad.";
+    public static final String MENSAJE_BASE_CAMPANIA_DEFAULT = "Se proceso campaña seleccionada.";
+    
     
     //TIPOS DE BUSQUEDA CITA Y VENCIDOS
     public static final int BUSQUEDA_POR_USUARIO = 1;
@@ -157,6 +159,7 @@ public class Constantes {
     public static final int CORREO_REASIGNACION = 10;
     public static final int CORREO_BASE_PROSPECTOR = 11;
     public static final int CORREO_BASE_CAMPANIA_FIDELIDAD = 14;
+    public static final int CORREO_BASE_CAMPANIA_PROCESO_NUEVO = 15;
     
     //Bases de procesamiento
     public static final int BASE_NOMINA = 1;
