@@ -35,7 +35,25 @@ document.getElementById("Campania").addEventListener("change", function() {
 			document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
 			//habilita el boton btnWsEstatusCampanias
 			// @ts-ignore
-    		document.getElementById("btnWsEstatusCampanias").disabled = false;
+    		//document.getElementById("btnWsEstatusCampanias").disabled = false;
+			//valida si existe un proceso ejecutandose no activa boton de WS
+			$.ajax({
+				    url: newUrlBase + "credito/api/countProceso",
+				    type: "GET",
+				    success: function(data2) {
+						
+						if(data2 === 0){
+										
+							//habilita el boton btnWsEstatusCampanias
+							// @ts-ignore
+				    		document.getElementById("btnWsEstatusCampanias").disabled = false;
+						}
+			
+			},
+			    error: function(err) {
+			        console.error("Error al obtener el conteo para activar boton WS :", err);
+			    }
+			});
 			
 	        if(data === 0){
 				
@@ -131,8 +149,26 @@ document.getElementById("Estatus").addEventListener("change", function() {
 	document.querySelectorAll(".row button").forEach(btn => btn.disabled = true);
 	//habilita el boton btnWsEstatusCampanias
 	// @ts-ignore
-	document.getElementById("btnWsEstatusCampanias").disabled = false;
+	//document.getElementById("btnWsEstatusCampanias").disabled = false;
 	console.log("valor:", valor);
+	//valida si existe un proceso ejecutandose no activa boton de WS
+	$.ajax({
+		    url: newUrlBase + "credito/api/countProceso",
+		    type: "GET",
+		    success: function(data2) {
+				
+				if(data2 === 0){
+								
+					//habilita el boton btnWsEstatusCampanias
+					// @ts-ignore
+		    		document.getElementById("btnWsEstatusCampanias").disabled = false;
+				}
+	
+	},
+	    error: function(err) {
+	        console.error("Error al obtener el conteo para activar boton WS :", err);
+	    }
+	});
 	
 	if (valor === "0") { // Buscar
 		//se activa si el count de la tabla proceso no es >=1, si no hay campañas en estatus 1 y bandera 1
