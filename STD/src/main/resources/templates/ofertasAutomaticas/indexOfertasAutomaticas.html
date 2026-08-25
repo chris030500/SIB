@@ -164,6 +164,20 @@
 									<label for="rutaArchivo" id="lblRuta">Agregar la ruta del archivo</label>
 									<input type="text" class="form-control" id="rutaArchivo" th:value="${rutaArchivo}">
 								</div>
+								<div id="restriccionesCampania">
+									<div class="form-group">
+										<div class="custom-control custom-switch">
+											<input type="checkbox" class="custom-control-input" id="gestionSinRestriccionReus">
+											<label class="custom-control-label" for="gestionSinRestriccionReus">Gesti&oacute;n sin restricci&oacute;n REUS</label>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="custom-control custom-switch">
+											<input type="checkbox" class="custom-control-input" id="gestionSinRestriccionPublicidad">
+											<label class="custom-control-label" for="gestionSinRestriccionPublicidad">Gesti&oacute;n sin restricci&oacute;n clientes sin publicidad</label>
+										</div>
+									</div>
+								</div>
 
 							</div>
 							<div class="modal-footer">

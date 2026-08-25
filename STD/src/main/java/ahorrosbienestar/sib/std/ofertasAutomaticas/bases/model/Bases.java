@@ -64,9 +64,17 @@ public class Bases {
 	columnDefinition = "INT DEFAULT 0")
 	private int i_subir_archivo;
 	
-	@Column(name = "I_BOTON_HISTORICO", 
+	@Column(name = "I_BOTON_HISTORICO",
 	columnDefinition = "INT DEFAULT 0")
 	private int i_boton_historico;
+
+	@Column(name = "I_GESTION_SIN_RESTRICCION_REUS",
+	columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
+	private int i_gestion_sin_restriccion_reus;
+
+	@Column(name = "I_GESTION_SIN_RESTRICCION_PUBLICIDAD",
+	columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
+	private int i_gestion_sin_restriccion_publicidad;
 	
 
 	public int getI_subir_archivo() {
@@ -179,6 +187,22 @@ public class Bases {
 
 	public void setI_boton_historico(int i_boton_historico) {
 		this.i_boton_historico = i_boton_historico;
+	}
+
+	public int getI_gestion_sin_restriccion_reus() {
+		return i_gestion_sin_restriccion_reus;
+	}
+
+	public void setI_gestion_sin_restriccion_reus(int i_gestion_sin_restriccion_reus) {
+		this.i_gestion_sin_restriccion_reus = i_gestion_sin_restriccion_reus;
+	}
+
+	public int getI_gestion_sin_restriccion_publicidad() {
+		return i_gestion_sin_restriccion_publicidad;
+	}
+
+	public void setI_gestion_sin_restriccion_publicidad(int i_gestion_sin_restriccion_publicidad) {
+		this.i_gestion_sin_restriccion_publicidad = i_gestion_sin_restriccion_publicidad;
 	}
 
 }

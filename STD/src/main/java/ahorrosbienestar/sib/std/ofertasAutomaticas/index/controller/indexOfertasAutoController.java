@@ -403,16 +403,26 @@ public class indexOfertasAutoController {
             @RequestParam(name = "hComienzoProceso") String hComienzoProceso,
             @RequestParam(name = "hFinalProceso") String hFinalProceso,
             @RequestParam(name = "mPeriodoEjecucion") String mPeriodoEjecucion,
-            @RequestParam(name = "rutaArchivo") String rutaArchivo
+            @RequestParam(name = "rutaArchivo") String rutaArchivo,
+            @RequestParam(name = "gestionSinRestriccionReus") int gestionSinRestriccionReus,
+            @RequestParam(name = "gestionSinRestriccionPublicidad") int gestionSinRestriccionPublicidad
             ){
         
         logger.info("/actualizarParametro");
         String mensaje ="";
         String tipo =Constantes.MENSAJE_OK;
         Map<String, Object> respuesta = new HashMap<>();
-        
+
         try {
-            if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo) == 1) {
+            if ((gestionSinRestriccionReus != 0 && gestionSinRestriccionReus != 1)
+                    || (gestionSinRestriccionPublicidad != 0 && gestionSinRestriccionPublicidad != 1)) {
+                respuesta.put(Constantes.TEXTO_MNS, "La configuración de restricciones no es válida.");
+                respuesta.put(Constantes.TIPO_MNS, Constantes.MENSAJE_ERROR);
+                return ResponseEntity.badRequest().body(respuesta);
+            }
+
+            if(basesService.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,
+                    mPeriodoEjecucion,rutaArchivo,gestionSinRestriccionReus,gestionSinRestriccionPublicidad) == 1) {
                 switch(basesID){
                     case 1:
                         nominaTareaConfiguracion.actualizarExpresionCronNomina();
