@@ -84,6 +84,7 @@ public class tiposCampaniasController {
 	private static final int opcBusquedaGrupo = 32;
 	private static final int opcBusquedaGrupo2 = 33;
 	private static final int opcBusquedaGrupo3 = 38;
+	private static final int opcBusquedaGrupo4 = 40;
 	
 	
 	@GetMapping("/tiposCampanias")
@@ -230,6 +231,13 @@ public class tiposCampaniasController {
 	@ResponseBody
 	public List<Catalogo> getCatalogoActiva() {
 	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo2);
+	}
+	
+	//llenar opcion % DE AVANCE (TIEMPO)
+	@GetMapping("/api/porceAvanceTiempo")
+	@ResponseBody
+	public List<Catalogo> getPorceAvanceTiempo() {
+	    return iCatalogoRepository.generarOpciones(opcBusquedaGrupo4);
 	}
 	
 	//llenar el combo de tipos buro de credito (Adviser/Prospector)
