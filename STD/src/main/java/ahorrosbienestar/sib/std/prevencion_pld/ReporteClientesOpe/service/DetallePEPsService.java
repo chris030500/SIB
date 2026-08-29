@@ -1,66 +1,116 @@
 package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
- 
+
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
- 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
- 
+
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetallePEPsModel;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.repository.DetallePEPsRepository;
 import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.ExcelPEPReader;
-import lombok.AllArgsConstructor;
- 
+
 @Service
-@AllArgsConstructor
 public class DetallePEPsService {
-    
-     private static final Logger logger = Logger.getLogger(DetallePEPsService.class);
+
+    private static final Logger logger =
+            Logger.getLogger(DetallePEPsService.class);
+
+    private final DetallePEPsRepository detallePEPsRepository;
+
     @Autowired
-    private DetallePEPsRepository  detallePEPsRepository;
-    
+    public DetallePEPsService(
+            DetallePEPsRepository detallePEPsRepository
+    ) {
+        this.detallePEPsRepository = detallePEPsRepository;
+    }
+
     public DetallePEPsModel save(DetallePEPsModel model) {
         return detallePEPsRepository.save(model);
     }
- 
-    public void procesarCargaConUsuario(MultipartFile file, int idProceso) {
+
+    @Transactional
+    public void procesarCargaConUsuario(
+            MultipartFile file,
+            int idProceso
+    ) {
+
         try {
+
             logger.info("Iniciando lectura del archivo...");
-            List<DetallePEPsModel> filas = ExcelPEPReader.parse(file);
-            logger.info("Archivo leído. Total de filas: " + filas.size());
+
+            List<DetallePEPsModel> filas =
+                    ExcelPEPReader.parse(file);
+
+            logger.info(
+                "Archivo leído. Total de registros válidos: "
+                + filas.size()
+            );
 
             if (filas.isEmpty()) {
-                logger.warn("El archivo no contiene filas válidas.");
-                return;
+                throw new IllegalArgumentException(
+                    "El archivo no contiene registros válidos."
+                );
             }
 
-            AtomicInteger insertados = new AtomicInteger(0);
-            AtomicInteger actualizados = new AtomicInteger(0);
-
+            /*
+             * Cada registro debe insertarse como nuevo y quedar
+             * relacionado con el proceso generado para la carga.
+             */
             for (DetallePEPsModel fila : filas) {
-            	detallePEPsRepository.findById(fila.getIClienteId()).ifPresentOrElse(existing -> {
 
-            	    if (!Objects.equals(existing.getVcNombreCliente(), fila.getVcNombreCliente())) {
+                /*
+                 * Se establece en NULL para que Hibernate genere
+                 * un nuevo PK_ID_DETALLE.
+                 */
+                fila.setPkIdDetalle(null);
 
-            	        existing.setVcNombreCliente(fila.getVcNombreCliente());
-                        detallePEPsRepository.save(existing);
-                        actualizados.incrementAndGet();
-                    }
-                }, () -> {
-                	fila.setFkProceso(idProceso);
-                    detallePEPsRepository.save(fila);
-                    insertados.incrementAndGet();
-                });
+                /*
+                 * Todos los registros del archivo pertenecen
+                 * al proceso actual.
+                 */
+                fila.setFkProceso(idProceso);
             }
 
-            logger.info("Proceso finalizado. Insertados: " + insertados + ", Actualizados: " + actualizados);
+            List<DetallePEPsModel> guardados =
+                    detallePEPsRepository.saveAll(filas);
+
+            detallePEPsRepository.flush();
+
+            if (guardados.size() != filas.size()) {
+
+                throw new IllegalStateException(
+                    "La cantidad guardada no coincide con la cantidad leída. "
+                    + "Leídos: "
+                    + filas.size()
+                    + ", guardados: "
+                    + guardados.size()
+                );
+            }
+
+            logger.info(
+                "Proceso finalizado. Registros leídos: "
+                + filas.size()
+                + ", registros insertados: "
+                + guardados.size()
+                + ", proceso: "
+                + idProceso
+            );
+
         } catch (Exception e) {
-            logger.error("Error en procesarCargaConUsuario: ", e);
-            throw new RuntimeException("Formato de archivo inválido o columnas incorrectas. Verifica que el archivo Excel sea correcto.");
+
+            logger.error(
+                "Error en procesarCargaConUsuario: ",
+                e
+            );
+
+            throw new RuntimeException(
+                "No fue posible procesar el archivo PEP. "
+                + "Verifica que el formato y las columnas sean correctos.",
+                e
+            );
         }
     }
 }
-
