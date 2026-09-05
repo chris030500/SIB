@@ -124,6 +124,7 @@ public class Constantes {
     //CATALOGOS DE PANTALLAS
     public static final int CATALOGO_GESTION = 14;
     public static final int CATALOGO_OPCIONES_BUSQUEDA = 15;
+    public static final int CATALOGO_CRM = 16;
     
     //PROCESO A EJECUTAR
     public static final String PROCESO_ASIGNACION = "{call SIB.SP_PROCESOS_ASIGNACION (?)}";
