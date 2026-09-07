@@ -56,130 +56,160 @@
 
                 <!-- ARCHIVO DETECTADO -->
 
-                <div class="col-md-4">
+				<div class="col-md-4">
 
-                    <div class="row mb-3">
+				    <div class="row mb-3">
 
-                        <div class="col-md-4">
+				        <div class="col-md-4">
+				            <label>
+				                Archivo:
+				            </label>
+				        </div>
 
-                            <label>
-                                Archivo:
-                            </label>
+				        <div class="col-md-8">
 
-                        </div>
+				            <strong id="nombreArchivo"
+				                    th:if="${archivoEncontrado}"
+				                    th:text="${nombreArchivo}">
+				            </strong>
 
+				            <span th:if="${archivoEncontrado == false}"
+				                  class="text-muted">
+				                -
+				            </span>
 
-                        <div class="col-md-8">
+				        </div>
 
-							<strong id="nombreArchivo"
-							        th:text="${nombreArchivo}">
-							</strong>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="row">
-
-                        <div class="col-md-4">
-
-                            <label>
-                                Fecha archivo:
-                            </label>
-
-                        </div>
+				    </div>
 
 
-                        <div class="col-md-8">
+				    <div class="row">
 
-							<strong id="fechaArchivo"
-							        th:text="${fechaArchivo}">
-							</strong>
+				        <div class="col-md-4">
+				            <label>
+				                Fecha archivo:
+				            </label>
+				        </div>
 
-                        </div>
+				        <div class="col-md-8">
 
-                    </div>
+				            <strong id="fechaArchivo"
+				                    th:if="${archivoEncontrado}"
+				                    th:text="${fechaArchivo}">
+				            </strong>
 
-                </div>
+				            <span th:if="${archivoEncontrado == false}"
+				                  class="text-muted">
+				                -
+				            </span>
 
+				        </div>
 
+				    </div>
 
-                <!-- ULTIMO ARCHIVO PROCESADO -->
-
-                <div class="col-md-5">
-
-                    <div class="row mb-3">
-
-                        <div class="col-md-5">
-
-                            <label>
-                                Último archivo procesado:
-                            </label>
-
-                        </div>
+				</div>
 
 
-                        <div class="col-md-7">
 
-                            <strong id="ultimoArchivoProcesado">
-                                PRECRM_16082026.xlsx
-                            </strong>
+				<!-- ULTIMO ARCHIVO PROCESADO -->
 
-                        </div>
+				<div class="col-md-5">
 
-                    </div>
+				    <div class="row mb-3">
+
+				        <div class="col-md-5">
+
+				            <label>
+				                Último archivo procesado:
+				            </label>
+
+				        </div>
+
+				        <div class="col-md-7">
+
+				            <strong id="ultimoArchivoProcesado"
+				                    th:text="${ultimoArchivoProcesado != null 
+				                              ? ultimoArchivoProcesado 
+				                              : '-'}">
+				            </strong>
+
+				        </div>
+
+				    </div>
 
 
-                    <div class="row">
+				    <div class="row">
 
-                        <div class="col-md-5">
+				        <div class="col-md-5">
 
-                            <label>
-                                Último procesamiento:
-                            </label>
+				            <label>
+				                Último procesamiento:
+				            </label>
 
-                        </div>
+				        </div>
 
+				        <div class="col-md-7">
 
-                        <div class="col-md-7">
+				            <strong id="ultimoProcesamiento"
+				                    th:text="${ultimoProcesamiento != null 
+				                              ? ultimoProcesamiento 
+				                              : '-'}">
+				            </strong>
 
-                            <strong id="ultimoProcesamiento">
-                                16/08/2026 08:30
-                            </strong>
+				        </div>
 
-                        </div>
+				    </div>
 
-                    </div>
-
-                </div>
+				</div>
 
 
 
                 <!-- BOTON PROCESAR ARCHIVO -->
 
-                <div class="col-md-3">
+				<div class="col-md-3">
 
-                    <button id="btnProcesarArchivo"
-                            type="button"
-                            class="btn btn-primary w-100 py-3">
+				    <form id="formUploadPRECRM"
+				          th:action="@{/precrm/subirArchivo}"
+				          method="post"
+				          enctype="multipart/form-data">
 
-                        <i class="bi bi-cloud-arrow-up"></i>
 
-                        PROCESAR ARCHIVO
+				        <!-- INPUT OCULTO -->
+				        <input type="file"
+				               id="fileUploadPRECRM"
+				               name="file"
+				               accept=".xlsx"
+				               class="d-none"
+				               onchange="subirArchivoPRECRM(this)">
 
-                    </button>
 
-                </div>
+				        <!-- BOTON -->
+				        <button id="btnProcesarArchivo"
+				                type="button"
+				                class="btn w-100 py-3"
+				                th:classappend="${archivoEncontrado or carpetaDisponible == false}
+				                                ? 'btn-secondary'
+				                                : 'btn-primary'"
+				                th:disabled="${archivoEncontrado or carpetaDisponible == false}"
+				                onclick="abrirSelectorPRECRM()">
+
+				            <i class="bi bi-cloud-arrow-up"></i>
+
+				            PROCESAR ARCHIVO
+
+				        </button>
+
+				    </form>
+
+				</div>
 
             </div>
 
 
 
-            <!-- MENSAJE DE ARCHIVO DETECTADO -->
+			<!-- ARCHIVO ENCONTRADO -->
 
-			<div class="alert alert-primary py-1 mt-3 mb-0"
-			     id="mensajeArchivoPendiente"
+			<div class="alert alert-primary py-2 mt-3 mb-0"
 			     th:if="${archivoEncontrado}">
 
 			    Se procesará el archivo más reciente detectado:
@@ -187,13 +217,15 @@
 			    <strong th:text="${nombreArchivo}"></strong>
 
 			</div>
-			
-			<!-- MENSAJE DE ARCHIVO NO DETECTADO -->
+
+
+			<!-- ARCHIVO NO ENCONTRADO -->
+
 			<div class="alert alert-warning mt-3 mb-0"
 			     th:if="${archivoEncontrado == false}">
 
 			    <span th:text="${mensajeArchivo}">
-			        No se encontró archivo para procesar.
+			        No se encontró un archivo PRECRM para procesar.
 			    </span>
 
 			</div>
@@ -578,6 +610,8 @@
     <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}"></script>
 
     <script th:src="@{/vendor/axiosNew/axios.min.js}"></script>
+
+    <script th:src="@{/js/CRM/PRECRM.js}"></script>
 
 </th:block>
 

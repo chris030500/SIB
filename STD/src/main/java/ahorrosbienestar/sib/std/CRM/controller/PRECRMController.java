@@ -11,7 +11,11 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 
@@ -27,6 +31,10 @@ public class PRECRMController {
     }
 
 
+    // =========================================================
+    // MOSTRAR PANTALLA PRE CRM
+    // =========================================================
+
     @GetMapping
     public String mostrarPRECRM(Model model) {
 
@@ -34,31 +42,29 @@ public class PRECRMController {
 
         try {
 
-            // Buscar archivo PRECRM más reciente
-            Path archivo = precrmService.obtenerArchivoMasReciente();
+            // =====================================================
+            // ARCHIVO ACTUAL EN CARPETA
+            // =====================================================
+
+            Path archivo =
+                    precrmService.obtenerArchivoMasReciente();
 
             if (archivo != null) {
 
-                // Nombre del archivo
                 String nombreArchivo =
                         archivo.getFileName().toString();
 
-
-                // Fecha de última modificación del archivo
                 LocalDateTime fechaArchivo =
                         Files.getLastModifiedTime(archivo)
                              .toInstant()
                              .atZone(ZoneId.systemDefault())
                              .toLocalDateTime();
 
-
                 DateTimeFormatter formato =
                         DateTimeFormatter.ofPattern(
-                            "dd/MM/yyyy HH:mm"
+                                "dd/MM/yyyy HH:mm"
                         );
 
-
-                // Información para la pantalla
                 model.addAttribute(
                         "archivoEncontrado",
                         true
@@ -87,16 +93,39 @@ public class PRECRMController {
                 );
             }
 
-        } catch (Exception e) {
+
+            // =====================================================
+            // ULTIMO ARCHIVO PROCESADO
+            // =====================================================
+
+            String ultimoArchivoProcesado =
+                    precrmService.obtenerUltimoArchivoProcesado();
+
+            String ultimoProcesamiento =
+                    precrmService.obtenerUltimoProcesamiento();
+
 
             model.addAttribute(
-                "archivoEncontrado",
-                false
+                    "ultimoArchivoProcesado",
+                    ultimoArchivoProcesado
             );
 
             model.addAttribute(
-                "mensajeArchivo",
-                "Error al consultar PRE-CRM: " + e.getMessage()
+                    "ultimoProcesamiento",
+                    ultimoProcesamiento
+            );
+
+
+        } catch (Exception e) {
+
+            model.addAttribute(
+                    "archivoEncontrado",
+                    false
+            );
+
+            model.addAttribute(
+                    "mensajeArchivo",
+                    "No fue posible consultar los archivos de PRE-CRM."
             );
 
             e.printStackTrace();
@@ -104,6 +133,41 @@ public class PRECRMController {
 
 
         return "CRM/PRECRM";
+    }
+
+
+    // =========================================================
+    // SUBIR ARCHIVO PRE CRM
+    // =========================================================
+
+    @PostMapping("/subirArchivo")
+    public String subirArchivo(
+            @RequestParam("file") MultipartFile archivo,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+
+            precrmService.guardarArchivo(archivo);
+
+
+            redirectAttributes.addFlashAttribute(
+                    "mensajeExito",
+                    "El archivo se cargó correctamente."
+            );
+
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "mensajeError",
+                    e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+
+
+        return "redirect:/precrm";
     }
 
 }
