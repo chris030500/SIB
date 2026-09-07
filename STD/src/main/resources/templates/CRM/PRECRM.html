@@ -491,121 +491,157 @@
 
 
 
-        <!-- ===================================================== -->
-        <!--                 DETALLE DE INCIDENCIAS                -->
-        <!-- ===================================================== -->
+		<!-- ===================================================== -->
+		<!--              DETALLE DE INCIDENCIAS                   -->
+		<!-- ===================================================== -->
 
-        <div class="border p-3 card">
-
-
-            <h5 class="mb-3">
-                DETALLE DE INCIDENCIAS
-            </h5>
+		<div class="border p-3 card mb-3">
 
 
-            <div class="table-responsive">
+		    <h5 class="mb-3">
+
+		        DETALLE DE INCIDENCIAS
+
+		    </h5>
 
 
-                <table id="tblIncidencias"
-                       class="table table-sm table-bordered"
-                       style="width: 100%;">
+		    <div class="table-responsive">
 
 
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Fila
-                            </th>
-
-                            <th>
-                                Sospechoso
-                            </th>
-
-                            <th>
-                                Resultado
-                            </th>
-
-                            <th>
-                                Motivo
-                            </th>
-
-                        </tr>
-
-                    </thead>
+		        <table class="table table-bordered table-sm mb-0">
 
 
-                    <tbody>
+		            <thead>
+
+		                <tr>
+
+		                    <th>
+		                        Fila
+		                    </th>
+
+		                    <th>
+		                        Sospechoso
+		                    </th>
+
+		                    <th>
+		                        Resultado
+		                    </th>
+
+		                    <th>
+		                        Motivo
+		                    </th>
+
+		                </tr>
+
+		            </thead>
 
 
-                        <!-- REGISTRO DE EJEMPLO -->
-
-                        <tr>
-
-                            <td>
-                                15
-                            </td>
-
-                            <td>
-                                Juan Pérez
-                            </td>
-
-                            <td>
-
-                                <span class="badge bg-warning text-dark">
-
-                                    Duplicado
-
-                                </span>
-
-                            </td>
-
-                            <td>
-                                Nombre + Teléfono
-                            </td>
-
-                        </tr>
+		            <tbody>
 
 
+		                <!-- ========================================= -->
+		                <!-- EXISTEN INCIDENCIAS                      -->
+		                <!-- ========================================= -->
 
-                        <!-- REGISTRO DE EJEMPLO -->
-
-                        <tr>
-
-                            <td>
-                                34
-                            </td>
-
-                            <td>
-                                Laura Díaz
-                            </td>
-
-                            <td>
-
-                                <span class="badge bg-danger">
-
-                                    Error
-
-                                </span>
-
-                            </td>
-
-                            <td>
-                                Fecha inválida
-                            </td>
-
-                        </tr>
+		                <tr th:each="incidencia : ${incidencias}">
 
 
-                    </tbody>
+		                    <!-- FILA EXCEL -->
+
+		                    <td th:text="${incidencia.filaExcel}">
+
+		                        -
+
+		                    </td>
 
 
-                </table>
+		                    <!-- NOMBRE DEL SOSPECHOSO -->
 
-            </div>
+		                    <td th:text="${incidencia.nombreProspecto != null
+		                                 && !incidencia.nombreProspecto.isEmpty()
+		                                 ? incidencia.nombreProspecto
+		                                 : '-'}">
 
-        </div>
+		                        -
+
+		                    </td>
+
+
+		                    <!-- RESULTADO -->
+
+		                    <td>
+
+
+		                        <!-- DUPLICADO -->
+
+		                        <span
+		                            th:if="${incidencia.resultadoCarga == 'DUPLICADO'}"
+		                            class="badge bg-warning text-dark">
+
+		                            Duplicado
+
+		                        </span>
+
+
+		                        <!-- ERROR -->
+
+		                        <span
+		                            th:if="${incidencia.resultadoCarga == 'ERROR'}"
+		                            class="badge bg-danger">
+
+		                            Error
+
+		                        </span>
+
+
+		                    </td>
+
+
+		                    <!-- MOTIVO -->
+
+		                    <td th:text="${incidencia.motivoResultado != null
+		                                 && !incidencia.motivoResultado.isEmpty()
+		                                 ? incidencia.motivoResultado
+		                                 : '-'}">
+
+		                        -
+
+		                    </td>
+
+
+		                </tr>
+
+
+		                <!-- ========================================= -->
+		                <!-- SIN INCIDENCIAS                          -->
+		                <!-- ========================================= -->
+
+		                <tr th:if="${incidencias == null
+		                            || #lists.isEmpty(incidencias)}">
+
+
+		                    <td colspan="4"
+		                        class="text-center text-muted">
+
+		                        No se encontraron incidencias
+		                        en el último procesamiento.
+
+		                    </td>
+
+
+		                </tr>
+
+
+		            </tbody>
+
+
+		        </table>
+
+
+		    </div>
+
+
+		</div>
 
 
     </div>

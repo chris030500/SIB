@@ -2148,4 +2148,44 @@ public class PRECRMService {
 
         return carpeta;
     }
+    
+ // =========================================================
+ // OBTENER INCIDENCIAS DEL ULTIMO PROCESAMIENTO
+ // =========================================================
+
+ public List<PRECRMCargaDetalle>
+         obtenerIncidenciasUltimoProcesamiento() {
+
+
+     PRECRMCarga ultimaCarga =
+             cargaRepository
+                 .findTopByOrderByFechaProcesamientoDesc()
+                 .orElse(null);
+
+
+     if (ultimaCarga == null) {
+
+         return new ArrayList<>();
+     }
+
+
+     List<String> resultados =
+             new ArrayList<>();
+
+
+     resultados.add(
+         "DUPLICADO"
+     );
+
+     resultados.add(
+         "ERROR"
+     );
+
+
+     return detalleRepository
+             .findByFkCargaAndResultadoCargaInOrderByFilaExcelAsc(
+                 ultimaCarga.getPkCarga(),
+                 resultados
+             );
+ }
 }

@@ -8,6 +8,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 
@@ -231,6 +233,20 @@ public class PRECRMController {
              0
          );
      }
+     
+  // =========================================================
+  // DETALLE DE INCIDENCIAS
+  // =========================================================
+
+  List<PRECRMCargaDetalle> incidencias =
+          precrmService
+              .obtenerIncidenciasUltimoProcesamiento();
+
+
+  model.addAttribute(
+      "incidencias",
+      incidencias
+  );
 
         return "CRM/PRECRM";
     }
