@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 
@@ -156,6 +157,80 @@ public class PRECRMController {
             e.printStackTrace();
         }
 
+     // =========================================================
+     // RESULTADO DEL ULTIMO PROCESAMIENTO
+     // =========================================================
+
+     PRECRMCarga ultimaCarga =
+             precrmService.obtenerUltimaCarga();
+
+
+     if (ultimaCarga != null) {
+
+    	 model.addAttribute(
+    			    "totalEncontrados",
+    			    ultimaCarga.getTotalEncontrados()
+    			);
+
+    			model.addAttribute(
+    			    "totalCargados",
+    			    ultimaCarga.getTotalCargados()
+    			);
+
+    			model.addAttribute(
+    			    "totalDuplicados",
+    			    ultimaCarga.getTotalDuplicados()
+    			);
+
+    			model.addAttribute(
+    			    "totalErrores",
+    			    ultimaCarga.getTotalErrores()
+    			);
+
+
+         if (ultimaCarga.getFechaProcesamiento() != null) {
+
+             DateTimeFormatter formato =
+                     DateTimeFormatter.ofPattern(
+                         "dd/MM/yyyy HH:mm"
+                     );
+
+             model.addAttribute(
+                 "ultimoProcesamiento",
+                 ultimaCarga
+                     .getFechaProcesamiento()
+                     .format(formato)
+             );
+         }
+
+
+     } else {
+
+         model.addAttribute(
+             "totalEncontrados",
+             0
+         );
+
+         model.addAttribute(
+             "totalCargados",
+             0
+         );
+
+         model.addAttribute(
+             "totalDuplicados",
+             0
+         );
+
+         model.addAttribute(
+             "totalErrores",
+             0
+         );
+
+         model.addAttribute(
+             "totalNoViables",
+             0
+         );
+     }
 
         return "CRM/PRECRM";
     }

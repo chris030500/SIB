@@ -11,7 +11,11 @@ import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 public interface PRECRMCargaRepository
         extends JpaRepository<PRECRMCarga, Long> {
 
-    boolean existsByNombreArchivo(String nombreArchivo);
+
+    boolean existsByNombreArchivo(
+        String nombreArchivo
+    );
+
 
     Optional<PRECRMCarga>
         findTopByOrderByFechaProcesamientoDesc();

@@ -1940,6 +1940,17 @@ public class PRECRMService {
 
         return null;
     }
+    
+ // =========================================================
+ // OBTENER ULTIMA CARGA PROCESADA
+ // =========================================================
+
+ public PRECRMCarga obtenerUltimaCarga() {
+
+     return cargaRepository
+             .findTopByOrderByFechaProcesamientoDesc()
+             .orElse(null);
+ }
 
 
     // =========================================================
