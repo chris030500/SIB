@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<apache-poi.version>5.2.3</apache-poi.version>
+		<commons-io.version>2.15.1</commons-io.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -247,6 +248,11 @@
         	<artifactId>commons-compress</artifactId>
         	<version>1.26.1</version>
     	</dependency>
+    	<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>${commons-io.version}</version>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

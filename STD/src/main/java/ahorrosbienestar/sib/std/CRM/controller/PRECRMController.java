@@ -4,6 +4,7 @@ import static ahorrosbienestar.sib.std.comunes.Constantes.CATALOGO_CRM;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 
+
 @Controller
 @RequestMapping("/precrm")
 public class PRECRMController {
@@ -26,44 +28,66 @@ public class PRECRMController {
     private final PRECRMService precrmService;
 
 
-    public PRECRMController(PRECRMService precrmService) {
+    public PRECRMController(
+            PRECRMService precrmService) {
+
+        System.out.println(
+            ">>> CONSTRUYENDO PRECRMController"
+        );
+
         this.precrmService = precrmService;
     }
 
 
     // =========================================================
-    // MOSTRAR PANTALLA PRE CRM
+    // MOSTRAR PRE CRM
+    // DETECTAR Y PROCESAR ARCHIVO AUTOMATICAMENTE
     // =========================================================
 
     @GetMapping
-    public String mostrarPRECRM(Model model) {
+    public String mostrarPRECRM(
+            Model model,
+            Principal principal) {
 
-        model.addAttribute("catalogo", CATALOGO_CRM);
+        model.addAttribute(
+                "catalogo",
+                CATALOGO_CRM
+        );
+
+        String usuario =
+                principal != null
+                ? principal.getName()
+                : "SISTEMA";
 
         try {
 
-            // =====================================================
-            // ARCHIVO ACTUAL EN CARPETA
-            // =====================================================
-
             Path archivo =
-                    precrmService.obtenerArchivoMasReciente();
+                    precrmService
+                        .obtenerArchivoMasReciente();
+
 
             if (archivo != null) {
 
                 String nombreArchivo =
-                        archivo.getFileName().toString();
+                        archivo.getFileName()
+                               .toString();
+
 
                 LocalDateTime fechaArchivo =
-                        Files.getLastModifiedTime(archivo)
-                             .toInstant()
-                             .atZone(ZoneId.systemDefault())
-                             .toLocalDateTime();
+                        Files
+                            .getLastModifiedTime(archivo)
+                            .toInstant()
+                            .atZone(
+                                ZoneId.systemDefault()
+                            )
+                            .toLocalDateTime();
+
 
                 DateTimeFormatter formato =
                         DateTimeFormatter.ofPattern(
-                                "dd/MM/yyyy HH:mm"
+                            "dd/MM/yyyy HH:mm"
                         );
+
 
                 model.addAttribute(
                         "archivoEncontrado",
@@ -80,6 +104,29 @@ public class PRECRMController {
                         fechaArchivo.format(formato)
                 );
 
+
+                // =============================================
+                // PROCESAR Y REGISTRAR EN BD
+                // =============================================
+
+                try {
+
+                    precrmService.procesarArchivo(
+                            archivo,
+                            usuario
+                    );
+
+                } catch (Exception e) {
+
+                    model.addAttribute(
+                            "mensajeProcesamiento",
+                            "No fue posible procesar el archivo: "
+                            + e.getMessage()
+                    );
+
+                    e.printStackTrace();
+                }
+
             } else {
 
                 model.addAttribute(
@@ -92,28 +139,6 @@ public class PRECRMController {
                         "No se encontró un archivo PRECRM para procesar."
                 );
             }
-
-
-            // =====================================================
-            // ULTIMO ARCHIVO PROCESADO
-            // =====================================================
-
-            String ultimoArchivoProcesado =
-                    precrmService.obtenerUltimoArchivoProcesado();
-
-            String ultimoProcesamiento =
-                    precrmService.obtenerUltimoProcesamiento();
-
-
-            model.addAttribute(
-                    "ultimoArchivoProcesado",
-                    ultimoArchivoProcesado
-            );
-
-            model.addAttribute(
-                    "ultimoProcesamiento",
-                    ultimoProcesamiento
-            );
 
 
         } catch (Exception e) {
@@ -136,37 +161,52 @@ public class PRECRMController {
     }
 
 
+
     // =========================================================
-    // SUBIR ARCHIVO PRE CRM
+    // SUBIR ARCHIVO MANUALMENTE
     // =========================================================
 
     @PostMapping("/subirArchivo")
     public String subirArchivo(
-            @RequestParam("file") MultipartFile archivo,
+            @RequestParam("file")
+            MultipartFile archivo,
             RedirectAttributes redirectAttributes) {
 
         try {
 
-            precrmService.guardarArchivo(archivo);
+            // Solo colocamos el archivo en Públicos
+            precrmService.guardarArchivo(
+                    archivo
+            );
 
 
-            redirectAttributes.addFlashAttribute(
+            redirectAttributes
+                .addFlashAttribute(
                     "mensajeExito",
                     "El archivo se cargó correctamente."
-            );
+                );
 
 
         } catch (Exception e) {
 
-            redirectAttributes.addFlashAttribute(
+            redirectAttributes
+                .addFlashAttribute(
                     "mensajeError",
                     e.getMessage()
-            );
+                );
 
             e.printStackTrace();
         }
 
 
+        /*
+         * Al regresar a /precrm:
+         *
+         * 1. Detecta el archivo.
+         * 2. Lo lee.
+         * 3. Lo procesa.
+         * 4. Lo registra en BD.
+         */
         return "redirect:/precrm";
     }
 
