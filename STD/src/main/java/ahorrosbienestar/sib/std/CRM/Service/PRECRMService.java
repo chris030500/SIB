@@ -14,12 +14,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,10 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.CRM.dto.PRECRMRegistroDTO;
-
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
-
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaDetalleRepository;
 
@@ -47,26 +48,29 @@ public class PRECRMService {
     private String rutaArchivos;
 
 
-   private final PRECRMCargaRepository cargaRepository;
+    private final PRECRMCargaRepository cargaRepository;
 
-   private final PRECRMCargaDetalleRepository detalleRepository;
+    private final PRECRMCargaDetalleRepository detalleRepository;
 
 
     // =========================================================
     // CONSTRUCTOR
     // =========================================================
 
-   public PRECRMService(
-	        PRECRMCargaRepository cargaRepository,
-	        PRECRMCargaDetalleRepository detalleRepository) {
+    public PRECRMService(
+            PRECRMCargaRepository cargaRepository,
+            PRECRMCargaDetalleRepository detalleRepository) {
 
-	    System.out.println(
-	        ">>> CONSTRUYENDO PRECRMService CON AMBOS REPOSITORIES"
-	    );
+        System.out.println(
+            ">>> CONSTRUYENDO PRECRMService CON AMBOS REPOSITORIES"
+        );
 
-	    this.cargaRepository = cargaRepository;
-	    this.detalleRepository = detalleRepository;
-	}
+        this.cargaRepository =
+                cargaRepository;
+
+        this.detalleRepository =
+                detalleRepository;
+    }
 
 
     // =========================================================
@@ -76,25 +80,37 @@ public class PRECRMService {
     private static final String[] ENCABEZADOS_PRECRM = {
 
         "Id",
+
         "Hora de inicio",
+
         "Hora de finalización",
+
         "Correo electrónico",
+
         "Nombre",
+
         "Sucursal Registro",
+
         "Nombre del prospecto (Cliente)",
+
         "Fecha de nacimiento",
+
         "Tipo",
 
         "Teléfono de Contacto (ingrese un número de teléfono de 10 dígitos, sin espacios, guiones ni paréntesis)",
 
         "Correo electrónico del contacto",
+
         "Fuente/Origen",
+
         "Estatus",
+
         "Producto de interes",
 
         "Monto de interés (Capture el monto en pesos mexicanos (MXN), sin el signo \"$\" y sin comas)",
 
         "Observaciones",
+
         "Nombre1"
     };
 
@@ -105,6 +121,7 @@ public class PRECRMService {
 
     public Path obtenerArchivoMasReciente()
             throws IOException {
+
 
         Path carpeta =
                 obtenerCarpetaPRECRM();
@@ -117,36 +134,43 @@ public class PRECRMService {
             Optional<Path> archivoMasReciente =
                     archivos
 
-                    .filter(Files::isRegularFile)
+                    .filter(
+                        Files::isRegularFile
+                    )
 
                     .filter(path -> {
 
                         String nombre =
-                                path.getFileName()
+                                path
+                                    .getFileName()
                                     .toString()
                                     .trim()
                                     .toUpperCase();
 
 
                         return nombre.matches(
-                                "PRECRM_\\d{8}\\.XLSX"
+                            "PRECRM_\\d{8}\\.XLSX"
                         );
                     })
 
                     .max(
-                        Comparator.comparing(path -> {
+                        Comparator.comparing(
+                            path -> {
 
-                            try {
+                                try {
 
-                                return Files
-                                        .getLastModifiedTime(path);
+                                    return Files
+                                            .getLastModifiedTime(
+                                                path
+                                            );
 
-                            } catch (IOException e) {
+                                } catch (IOException e) {
 
-                                return FileTime
-                                        .fromMillis(0);
+                                    return FileTime
+                                            .fromMillis(0);
+                                }
                             }
-                        })
+                        )
                     );
 
 
@@ -157,7 +181,7 @@ public class PRECRMService {
 
 
     // =========================================================
-    // GUARDAR ARCHIVO SELECCIONADO
+    // GUARDAR ARCHIVO SELECCIONADO MANUALMENTE
     // =========================================================
 
     public Path guardarArchivo(
@@ -188,18 +212,20 @@ public class PRECRMService {
 
 
         String nombreArchivo =
-                Paths.get(nombreOriginal)
-                     .getFileName()
-                     .toString()
-                     .trim();
+                Paths
+                    .get(nombreOriginal)
+                    .getFileName()
+                    .toString()
+                    .trim();
 
 
         String nombreValidacion =
-                nombreArchivo.toUpperCase();
+                nombreArchivo
+                    .toUpperCase();
 
 
         // =====================================================
-        // VALIDAR NOMBRE
+        // VALIDAR NOMBRE DEL ARCHIVO
         // =====================================================
 
         if (!nombreValidacion.matches(
@@ -217,7 +243,9 @@ public class PRECRMService {
 
 
         Path destino =
-                carpeta.resolve(nombreArchivo);
+                carpeta.resolve(
+                    nombreArchivo
+                );
 
 
         if (Files.exists(destino)) {
@@ -261,7 +289,8 @@ public class PRECRMService {
 
         try (Workbook workbook =
                 WorkbookFactory.create(
-                    archivo.toFile())) {
+                    archivo.toFile()
+                )) {
 
 
             if (workbook.getNumberOfSheets() == 0) {
@@ -316,7 +345,8 @@ public class PRECRMService {
 
 
                 Cell celda =
-                        filaEncabezados.getCell(i);
+                        filaEncabezados
+                            .getCell(i);
 
 
                 String encabezadoArchivo =
@@ -331,8 +361,10 @@ public class PRECRMService {
                         ENCABEZADOS_PRECRM[i];
 
 
-                if (!encabezadoEsperado.equals(
-                        encabezadoArchivo)) {
+                if (!encabezadoEsperado
+                        .equals(
+                            encabezadoArchivo
+                        )) {
 
                     throw new IOException(
                         "Formato de archivo incorrecto. "
@@ -359,7 +391,9 @@ public class PRECRMService {
             throws IOException {
 
 
-        validarEstructuraArchivo(archivo);
+        validarEstructuraArchivo(
+            archivo
+        );
 
 
         List<PRECRMRegistroDTO> registros =
@@ -368,7 +402,8 @@ public class PRECRMService {
 
         try (Workbook workbook =
                 WorkbookFactory.create(
-                    archivo.toFile())) {
+                    archivo.toFile()
+                )) {
 
 
             Sheet hoja =
@@ -381,8 +416,9 @@ public class PRECRMService {
 
             /*
              * Fila 0 = encabezados.
-             * Empezamos en fila 1.
+             * Datos comienzan en fila 1.
              */
+
             for (int i = 1;
                  i <= hoja.getLastRowNum();
                  i++) {
@@ -404,134 +440,171 @@ public class PRECRMService {
 
 
                 /*
-                 * Apache POI empieza en 0.
-                 * Excel visualmente empieza en 1.
+                 * Apache POI inicia en 0.
+                 * Excel visualmente inicia en 1.
                  */
+
                 registro.setFilaExcel(
-                        i + 1
+                    i + 1
                 );
 
 
                 registro.setId(
                     obtenerValorCelda(
-                        fila, 0, formatter
+                        fila,
+                        0,
+                        formatter
                     )
                 );
 
 
                 registro.setHoraInicio(
                     obtenerValorCelda(
-                        fila, 1, formatter
+                        fila,
+                        1,
+                        formatter
                     )
                 );
 
 
                 registro.setHoraFinalizacion(
                     obtenerValorCelda(
-                        fila, 2, formatter
+                        fila,
+                        2,
+                        formatter
                     )
                 );
 
 
                 registro.setCorreoElectronico(
                     obtenerValorCelda(
-                        fila, 3, formatter
+                        fila,
+                        3,
+                        formatter
                     )
                 );
 
 
                 registro.setNombre(
                     obtenerValorCelda(
-                        fila, 4, formatter
+                        fila,
+                        4,
+                        formatter
                     )
                 );
 
 
                 registro.setSucursalRegistro(
                     obtenerValorCelda(
-                        fila, 5, formatter
+                        fila,
+                        5,
+                        formatter
                     )
                 );
 
 
                 registro.setNombreProspecto(
                     obtenerValorCelda(
-                        fila, 6, formatter
+                        fila,
+                        6,
+                        formatter
                     )
                 );
 
 
                 registro.setFechaNacimiento(
                     obtenerValorCelda(
-                        fila, 7, formatter
+                        fila,
+                        7,
+                        formatter
                     )
                 );
 
 
                 registro.setTipo(
                     obtenerValorCelda(
-                        fila, 8, formatter
+                        fila,
+                        8,
+                        formatter
                     )
                 );
 
 
                 registro.setTelefonoContacto(
                     obtenerValorCelda(
-                        fila, 9, formatter
+                        fila,
+                        9,
+                        formatter
                     )
                 );
 
 
                 registro.setCorreoContacto(
                     obtenerValorCelda(
-                        fila, 10, formatter
+                        fila,
+                        10,
+                        formatter
                     )
                 );
 
 
                 registro.setFuenteOrigen(
                     obtenerValorCelda(
-                        fila, 11, formatter
+                        fila,
+                        11,
+                        formatter
                     )
                 );
 
 
                 registro.setEstatus(
                     obtenerValorCelda(
-                        fila, 12, formatter
+                        fila,
+                        12,
+                        formatter
                     )
                 );
 
 
                 registro.setProductoInteres(
                     obtenerValorCelda(
-                        fila, 13, formatter
+                        fila,
+                        13,
+                        formatter
                     )
                 );
 
 
                 registro.setMontoInteres(
                     obtenerValorCelda(
-                        fila, 14, formatter
+                        fila,
+                        14,
+                        formatter
                     )
                 );
 
 
                 registro.setObservaciones(
                     obtenerValorCelda(
-                        fila, 15, formatter
+                        fila,
+                        15,
+                        formatter
                     )
                 );
 
 
                 registro.setNombre1(
                     obtenerValorCelda(
-                        fila, 16, formatter
+                        fila,
+                        16,
+                        formatter
                     )
                 );
 
 
-                registros.add(registro);
+                registros.add(
+                    registro
+                );
             }
         }
 
@@ -540,259 +613,989 @@ public class PRECRMService {
     }
 
 
- // =========================================================
- // PROCESAR ARCHIVO - PRUEBA INSERT TBL_PRECRM_CARGA
- // =========================================================
+    // =========================================================
+    // PROCESAR ARCHIVO PRECRM
+    // =========================================================
 
- @Transactional
- public void procesarArchivo(
-         Path archivo,
-         String usuario)
-         throws IOException {
+    @Transactional
+    public void procesarArchivo(
+            Path archivo,
+            String usuario)
+            throws IOException {
 
-     System.out.println("======================================");
-     System.out.println("ENTRO A procesarArchivo()");
-     System.out.println("ARCHIVO: " + archivo.getFileName());
 
+        System.out.println(
+            "======================================"
+        );
 
-     String nombreArchivo =
-             archivo.getFileName().toString();
+        System.out.println(
+            "INICIA PROCESAMIENTO PRECRM"
+        );
 
+        System.out.println(
+            "ARCHIVO: "
+            + archivo.getFileName()
+        );
 
-     // =====================================================
-     // 1. VALIDAR SI YA EXISTE EN BD
-     // =====================================================
+        System.out.println(
+            "USUARIO: "
+            + usuario
+        );
 
-     System.out.println(
-         "1. ANTES DE existsByNombreArchivo()"
-     );
+        System.out.println(
+            "======================================"
+        );
 
 
-     boolean archivoYaExiste =
-             cargaRepository
-                 .existsByNombreArchivo(
-                     nombreArchivo
-                 );
+        try {
 
 
-     System.out.println(
-         "2. DESPUES DE existsByNombreArchivo()"
-     );
+            String nombreArchivo =
+                    archivo
+                        .getFileName()
+                        .toString();
 
 
-     System.out.println(
-         "RESULTADO: " + archivoYaExiste
-     );
+            // =================================================
+            // 1. VALIDAR SI EL ARCHIVO YA FUE PROCESADO
+            // =================================================
 
+            System.out.println(
+                "PASO 1 - VALIDANDO SI ARCHIVO YA EXISTE"
+            );
 
-     if (archivoYaExiste) {
 
-         System.out.println(
-             "El archivo ya fue registrado previamente."
-         );
+            boolean archivoYaExiste =
+                    cargaRepository
+                        .existsByNombreArchivo(
+                            nombreArchivo
+                        );
 
-         System.out.println(
-             "FIN DEL PROCESO - NO SE INSERTA NUEVAMENTE"
-         );
 
-         return;
-     }
+            System.out.println(
+                "ARCHIVO YA EXISTE: "
+                + archivoYaExiste
+            );
 
 
-     // =====================================================
-     // 2. LEER EXCEL
-     // =====================================================
+            if (archivoYaExiste) {
 
-     System.out.println(
-         "3. Leyendo archivo Excel..."
-     );
+                System.out.println(
+                    "El archivo ya fue procesado previamente: "
+                    + nombreArchivo
+                );
 
+                return;
+            }
 
-     List<PRECRMRegistroDTO> registros =
-             leerArchivo(archivo);
 
+            // =================================================
+            // 2. LEER EXCEL
+            // =================================================
 
-     System.out.println(
-         "4. Excel leído correctamente."
-     );
+            System.out.println(
+                "PASO 2 - LEYENDO EXCEL"
+            );
 
 
-     System.out.println(
-         "TOTAL ENCONTRADOS: "
-         + registros.size()
-     );
+            List<PRECRMRegistroDTO> registros =
+                    leerArchivo(
+                        archivo
+                    );
 
 
-     // =====================================================
-     // 3. OBTENER FECHA DEL ARCHIVO
-     // =====================================================
+            System.out.println(
+                "PASO A - EXCEL LEIDO. REGISTROS: "
+                + registros.size()
+            );
 
-     LocalDateTime fechaArchivo =
-             Files
-                 .getLastModifiedTime(archivo)
-                 .toInstant()
-                 .atZone(
-                     ZoneId.systemDefault()
-                 )
-                 .toLocalDateTime();
 
+            // =================================================
+            // 3. FECHA DEL ARCHIVO
+            // =================================================
 
-     // =====================================================
-     // 4. CREAR CABECERA DE CARGA
-     // =====================================================
+            LocalDateTime fechaArchivo =
+                    Files
+                        .getLastModifiedTime(
+                            archivo
+                        )
+                        .toInstant()
+                        .atZone(
+                            ZoneId.systemDefault()
+                        )
+                        .toLocalDateTime();
 
-     PRECRMCarga carga =
-             new PRECRMCarga();
 
+            // =================================================
+            // 4. CREAR CABECERA
+            // =================================================
 
-     carga.setNombreArchivo(
-             nombreArchivo
-     );
+            PRECRMCarga carga =
+                    new PRECRMCarga();
 
 
-     carga.setFechaArchivo(
-             fechaArchivo
-     );
+            carga.setNombreArchivo(
+                nombreArchivo
+            );
 
 
-     carga.setFechaProcesamiento(
-             LocalDateTime.now()
-     );
+            carga.setFechaArchivo(
+                fechaArchivo
+            );
 
 
-     carga.setTipoCarga(
-             "AUTOMATICA"
-     );
+            carga.setFechaProcesamiento(
+                LocalDateTime.now()
+            );
 
 
-     carga.setEstatusProceso(
-             "EN_PROCESO"
-     );
+            /*
+             * Por el momento queda AUTOMATICA.
+             * Después distinguiremos MANUAL/AUTOMATICA.
+             */
+            carga.setTipoCarga(
+                "AUTOMATICA"
+            );
 
 
-     carga.setTotalEncontrados(
-             registros.size()
-     );
+            carga.setEstatusProceso(
+                "EN_PROCESO"
+            );
 
 
-     carga.setTotalCargados(0);
+            carga.setTotalEncontrados(
+                registros.size()
+            );
 
-     carga.setTotalDuplicados(0);
 
-     carga.setTotalErrores(0);
+            carga.setTotalCargados(0);
 
-     carga.setTotalNoViables(0);
+            carga.setTotalDuplicados(0);
 
+            carga.setTotalErrores(0);
 
-     carga.setUsuarioProceso(
-             usuario
-     );
+            carga.setTotalNoViables(0);
 
 
-     carga.setFechaRegistro(
-             LocalDateTime.now()
-     );
+            carga.setUsuarioProceso(
+                usuario
+            );
 
 
-     // =====================================================
-     // 5. PROBAR INSERT EN TBL_PRECRM_CARGA
-     // =====================================================
+            carga.setFechaRegistro(
+                LocalDateTime.now()
+            );
 
-     System.out.println(
-         "5. ANTES DE cargaRepository.saveAndFlush()"
-     );
 
+            // =================================================
+            // 5. GUARDAR CABECERA
+            // =================================================
 
-     try {
+            System.out.println(
+                "PASO B1 - ANTES DE INSERTAR CABECERA"
+            );
 
-         carga =
-             cargaRepository.saveAndFlush(
-                 carga
-             );
 
+            carga =
+                cargaRepository
+                    .saveAndFlush(
+                        carga
+                    );
 
-         System.out.println(
-             "6. DESPUES DE cargaRepository.saveAndFlush()"
-         );
 
+            Long pkCarga =
+                    carga.getPkCarga();
 
-         System.out.println(
-             "PK_CARGA GENERADA: "
-             + carga.getPkCarga()
-         );
 
+            System.out.println(
+                "PASO B - CABECERA INSERTADA. PK: "
+                + pkCarga
+            );
 
-         System.out.println(
-             "ARCHIVO INSERTADO CORRECTAMENTE "
-             + "EN TBL_PRECRM_CARGA"
-         );
 
+            // =================================================
+            // 6. CONTADORES
+            // =================================================
 
-     } catch (Exception e) {
+            int totalCargados = 0;
 
-         System.err.println(
-             "============================================"
-         );
+            int totalDuplicados = 0;
 
+            int totalErrores = 0;
 
-         System.err.println(
-             "ERROR INSERTANDO TBL_PRECRM_CARGA"
-         );
+            int totalNoViables = 0;
 
 
-         System.err.println(
-             "TIPO ERROR: "
-             + e.getClass().getName()
-         );
+            /*
+             * Se utiliza para detectar duplicados
+             * dentro del mismo archivo.
+             */
+            Set<String> registrosArchivo =
+                    new HashSet<>();
 
 
-         System.err.println(
-             "MENSAJE: "
-             + e.getMessage()
-         );
+            // =================================================
+            // 7. RECORRER REGISTROS
+            // =================================================
 
+            for (PRECRMRegistroDTO registro
+                    : registros) {
 
-         Throwable causa =
-                 e.getCause();
 
+                System.out.println(
+                    "--------------------------------------"
+                );
 
-         while (causa != null) {
 
-             System.err.println(
-                 "CAUSA: "
-                 + causa.getClass().getName()
-             );
+                System.out.println(
+                    "PASO C - PROCESANDO FILA EXCEL: "
+                    + registro.getFilaExcel()
+                );
 
 
-             System.err.println(
-                 "MENSAJE CAUSA: "
-                 + causa.getMessage()
-             );
+                System.out.println(
+                    "HORA INICIO ORIGINAL: ["
+                    + registro.getHoraInicio()
+                    + "]"
+                );
 
 
-             causa =
-                 causa.getCause();
-         }
+                System.out.println(
+                    "HORA FINAL ORIGINAL: ["
+                    + registro.getHoraFinalizacion()
+                    + "]"
+                );
 
 
-         System.err.println(
-             "============================================"
-         );
+                System.out.println(
+                    "FECHA NACIMIENTO ORIGINAL: ["
+                    + registro.getFechaNacimiento()
+                    + "]"
+                );
 
 
-         throw e;
-     }
+                String resultado;
 
+                String motivo = null;
 
-     System.out.println(
-         "===== FIN PRUEBA TBL_PRECRM_CARGA ====="
-     );
 
-     System.out.println(
-         "======================================"
-     );
+                // =============================================
+                // 7.1 NO VIABLE
+                // =============================================
 
- } // <-- ESTA LLAVE CIERRA procesarArchivo()
+                if (esNoViable(
+                        registro
+                    )) {
+
+
+                    resultado =
+                            "NO_VIABLE";
+
+
+                    motivo =
+                            "Registro marcado como No viable "
+                            + "desde origen";
+
+
+                    totalNoViables++;
+                }
+
+
+                // =============================================
+                // 7.2 VALIDAR ERRORES
+                // =============================================
+
+                else {
+
+
+                    String errores =
+                            obtenerErroresRegistro(
+                                registro
+                            );
+
+
+                    if (errores != null) {
+
+
+                        resultado =
+                                "ERROR";
+
+
+                        motivo =
+                                errores;
+
+
+                        totalErrores++;
+                    }
+
+
+                    // =========================================
+                    // 7.3 DUPLICADOS
+                    // =========================================
+
+                    else {
+
+
+                        String claveDuplicado =
+                                generarClaveDuplicado(
+                                    registro
+                                );
+
+
+                        boolean duplicadoArchivo =
+                                registrosArchivo
+                                    .contains(
+                                        claveDuplicado
+                                    );
+
+
+                        boolean duplicadoBD =
+                                detalleRepository
+                                    .existsByNombreProspectoIgnoreCaseAndTelefonoContactoAndResultadoCarga(
+
+                                        registro
+                                            .getNombreProspecto()
+                                            .trim(),
+
+                                        registro
+                                            .getTelefonoContacto()
+                                            .trim(),
+
+                                        "CARGADO"
+                                    );
+
+
+                        if (duplicadoArchivo ||
+                            duplicadoBD) {
+
+
+                            resultado =
+                                    "DUPLICADO";
+
+
+                            motivo =
+                                    "Prospecto duplicado por "
+                                    + "Nombre + Teléfono";
+
+
+                            totalDuplicados++;
+                        }
+
+
+                        else {
+
+
+                            resultado =
+                                    "CARGADO";
+
+
+                            totalCargados++;
+
+
+                            registrosArchivo.add(
+                                claveDuplicado
+                            );
+                        }
+                    }
+                }
+
+
+                System.out.println(
+                    "RESULTADO FILA "
+                    + registro.getFilaExcel()
+                    + ": "
+                    + resultado
+                );
+
+
+                if (motivo != null) {
+
+                    System.out.println(
+                        "MOTIVO: "
+                        + motivo
+                    );
+                }
+
+
+                // =============================================
+                // 8. CREAR DETALLE
+                // =============================================
+
+                PRECRMCargaDetalle detalle =
+                        new PRECRMCargaDetalle();
+
+
+                detalle.setFkCarga(
+                    pkCarga
+                );
+
+
+                detalle.setFilaExcel(
+                    registro.getFilaExcel()
+                );
+
+
+                detalle.setIdForm(
+                    registro.getId()
+                );
+
+
+                // =============================================
+                // CONVERTIR FECHAS
+                // =============================================
+
+                LocalDateTime horaInicio =
+                        convertirFechaHora(
+                            registro.getHoraInicio()
+                        );
+
+
+                LocalDateTime horaFinalizacion =
+                        convertirFechaHora(
+                            registro.getHoraFinalizacion()
+                        );
+
+
+                LocalDate fechaNacimiento =
+                        convertirFecha(
+                            registro.getFechaNacimiento()
+                        );
+
+
+                System.out.println(
+                    "HORA INICIO CONVERTIDA: "
+                    + horaInicio
+                );
+
+
+                System.out.println(
+                    "HORA FINAL CONVERTIDA: "
+                    + horaFinalizacion
+                );
+
+
+                System.out.println(
+                    "FECHA NACIMIENTO CONVERTIDA: "
+                    + fechaNacimiento
+                );
+
+
+                detalle.setHoraInicio(
+                    horaInicio
+                );
+
+
+                detalle.setHoraFinalizacion(
+                    horaFinalizacion
+                );
+
+
+                detalle.setFechaNacimiento(
+                    fechaNacimiento
+                );
+
+
+                // =============================================
+                // DEMAS CAMPOS
+                // =============================================
+
+                detalle.setCorreoRegistro(
+                    registro.getCorreoElectronico()
+                );
+
+
+                detalle.setNombreRegistro(
+                    registro.getNombre()
+                );
+
+
+                detalle.setSucursalRegistro(
+                    registro.getSucursalRegistro()
+                );
+
+
+                detalle.setNombreProspecto(
+                    registro.getNombreProspecto()
+                );
+
+
+                detalle.setTipo(
+                    registro.getTipo()
+                );
+
+
+                detalle.setTelefonoContacto(
+                    registro.getTelefonoContacto()
+                );
+
+
+                detalle.setCorreoContacto(
+                    registro.getCorreoContacto()
+                );
+
+
+                detalle.setFuenteOrigen(
+                    registro.getFuenteOrigen()
+                );
+
+
+                detalle.setEstatusOrigen(
+                    registro.getEstatus()
+                );
+
+
+                detalle.setProductoInteres(
+                    registro.getProductoInteres()
+                );
+
+
+                detalle.setMontoInteres(
+                    convertirMonto(
+                        registro.getMontoInteres()
+                    )
+                );
+
+
+                detalle.setObservaciones(
+                    registro.getObservaciones()
+                );
+
+
+                detalle.setNombre1(
+                    registro.getNombre1()
+                );
+
+
+                // =============================================
+                // RESULTADO DEL ANALISIS
+                // =============================================
+
+                detalle.setResultadoCarga(
+                    resultado
+                );
+
+
+                detalle.setMotivoResultado(
+                    motivo
+                );
+
+
+                detalle.setFechaRegistro(
+                    LocalDateTime.now()
+                );
+
+
+                // =============================================
+                // 9. INSERTAR DETALLE
+                // =============================================
+
+                System.out.println(
+                    "PASO D - ANTES DE INSERTAR DETALLE FILA "
+                    + registro.getFilaExcel()
+                );
+
+
+                detalleRepository
+                    .saveAndFlush(
+                        detalle
+                    );
+
+
+                System.out.println(
+                    "PASO E - DETALLE INSERTADO FILA "
+                    + registro.getFilaExcel()
+                );
+            }
+
+
+            // =================================================
+            // 10. TERMINAR DETALLES
+            // =================================================
+
+            System.out.println(
+                "PASO F - TODOS LOS DETALLES TERMINADOS"
+            );
+
+
+            // =================================================
+            // 11. ACTUALIZAR CABECERA
+            // =================================================
+
+            carga.setTotalCargados(
+                totalCargados
+            );
+
+
+            carga.setTotalDuplicados(
+                totalDuplicados
+            );
+
+
+            carga.setTotalErrores(
+                totalErrores
+            );
+
+
+            carga.setTotalNoViables(
+                totalNoViables
+            );
+
+
+            carga.setEstatusProceso(
+                "COMPLETADO"
+            );
+
+
+            cargaRepository
+                .saveAndFlush(
+                    carga
+                );
+
+
+            System.out.println(
+                "PASO G - CABECERA ACTUALIZADA A COMPLETADO"
+            );
+
+
+            // =================================================
+            // RESULTADO FINAL
+            // =================================================
+
+            System.out.println(
+                "======================================"
+            );
+
+
+            System.out.println(
+                "PROCESAMIENTO PRECRM COMPLETADO"
+            );
+
+
+            System.out.println(
+                "Encontrados: "
+                + registros.size()
+            );
+
+
+            System.out.println(
+                "Cargados: "
+                + totalCargados
+            );
+
+
+            System.out.println(
+                "Duplicados: "
+                + totalDuplicados
+            );
+
+
+            System.out.println(
+                "Errores: "
+                + totalErrores
+            );
+
+
+            System.out.println(
+                "No viables: "
+                + totalNoViables
+            );
+
+
+            System.out.println(
+                "======================================"
+            );
+        }
+
+
+        catch (IOException e) {
+
+
+            System.err.println(
+                "======================================"
+            );
+
+
+            System.err.println(
+                "ERROR IO PROCESANDO PRECRM"
+            );
+
+
+            System.err.println(
+                "TIPO: "
+                + e.getClass().getName()
+            );
+
+
+            System.err.println(
+                "MENSAJE: "
+                + e.getMessage()
+            );
+
+
+            e.printStackTrace();
+
+
+            System.err.println(
+                "======================================"
+            );
+
+
+            throw e;
+        }
+
+
+        catch (RuntimeException e) {
+
+
+            System.err.println(
+                "======================================"
+            );
+
+
+            System.err.println(
+                "ERROR GENERAL PROCESANDO PRECRM"
+            );
+
+
+            System.err.println(
+                "TIPO: "
+                + e.getClass().getName()
+            );
+
+
+            System.err.println(
+                "MENSAJE: "
+                + e.getMessage()
+            );
+
+
+            e.printStackTrace();
+
+
+            System.err.println(
+                "======================================"
+            );
+
+
+            throw e;
+        }
+    }
+
+
+    // =========================================================
+    // VALIDAR NO VIABLE
+    // =========================================================
+
+    private boolean esNoViable(
+            PRECRMRegistroDTO registro) {
+
+
+        return registro.getEstatus() != null
+
+            && registro
+                .getEstatus()
+                .trim()
+                .equalsIgnoreCase(
+                    "No viable"
+                );
+    }
+
+
+    // =========================================================
+    // VALIDAR ERRORES DEL REGISTRO
+    // =========================================================
+
+    private String obtenerErroresRegistro(
+            PRECRMRegistroDTO registro) {
+
+
+        List<String> errores =
+                new ArrayList<>();
+
+
+        // =====================================================
+        // NOMBRE DEL PROSPECTO
+        // =====================================================
+
+        if (registro.getNombreProspecto() == null ||
+            registro
+                .getNombreProspecto()
+                .trim()
+                .isEmpty()) {
+
+
+            errores.add(
+                "Nombre del prospecto vacío"
+            );
+        }
+
+
+        // =====================================================
+        // SUCURSAL
+        // =====================================================
+
+        if (registro.getSucursalRegistro() == null ||
+            registro
+                .getSucursalRegistro()
+                .trim()
+                .isEmpty()) {
+
+
+            errores.add(
+                "Sucursal de registro vacía"
+            );
+        }
+
+
+        // =====================================================
+        // TIPO
+        // =====================================================
+
+        if (registro.getTipo() == null ||
+            registro
+                .getTipo()
+                .trim()
+                .isEmpty()) {
+
+
+            errores.add(
+                "Tipo vacío"
+            );
+        }
+
+
+        // =====================================================
+        // ESTATUS
+        // =====================================================
+
+        if (registro.getEstatus() == null ||
+            registro
+                .getEstatus()
+                .trim()
+                .isEmpty()) {
+
+
+            errores.add(
+                "Estatus vacío"
+            );
+        }
+
+
+        // =====================================================
+        // TELEFONO
+        // =====================================================
+
+        if (registro.getTelefonoContacto() == null ||
+            !registro
+                .getTelefonoContacto()
+                .trim()
+                .matches("\\d{10}")) {
+
+
+            errores.add(
+                "Teléfono de contacto inválido"
+            );
+        }
+
+
+        // =====================================================
+        // FECHA DE NACIMIENTO
+        // =====================================================
+
+        if (registro.getFechaNacimiento() != null &&
+            !registro
+                .getFechaNacimiento()
+                .trim()
+                .isEmpty()) {
+
+
+            LocalDate fechaNacimiento =
+                    convertirFecha(
+                        registro.getFechaNacimiento()
+                    );
+
+
+            if (fechaNacimiento == null) {
+
+
+                errores.add(
+                    "Fecha de nacimiento inválida"
+                );
+            }
+        }
+
+
+        // =====================================================
+        // MONTO
+        // =====================================================
+
+        if (registro.getMontoInteres() != null &&
+            !registro
+                .getMontoInteres()
+                .trim()
+                .isEmpty()) {
+
+
+            BigDecimal monto =
+                    convertirMonto(
+                        registro.getMontoInteres()
+                    );
+
+
+            if (monto == null) {
+
+
+                errores.add(
+                    "Monto de interés inválido"
+                );
+            }
+        }
+
+
+        if (errores.isEmpty()) {
+
+            return null;
+        }
+
+
+        return String.join(
+            "; ",
+            errores
+        );
+    }
+
+
+    // =========================================================
+    // GENERAR CLAVE DUPLICADO
+    // NOMBRE + TELEFONO
+    // =========================================================
+
+    private String generarClaveDuplicado(
+            PRECRMRegistroDTO registro) {
+
+
+        String nombre =
+                registro
+                    .getNombreProspecto()
+                    .trim()
+                    .replaceAll(
+                        "\\s+",
+                        " "
+                    )
+                    .toUpperCase();
+
+
+        String telefono =
+                registro
+                    .getTelefonoContacto()
+                    .trim();
+
+
+        return nombre
+                + "|"
+                + telefono;
+    }
+
 
     // =========================================================
     // ANALIZAR ARCHIVO
@@ -804,7 +1607,9 @@ public class PRECRMService {
 
 
         List<PRECRMRegistroDTO> registros =
-                leerArchivo(archivo);
+                leerArchivo(
+                    archivo
+                );
 
 
         return registros.size();
@@ -822,7 +1627,8 @@ public class PRECRMService {
 
         try (Workbook workbook =
                 WorkbookFactory.create(
-                    archivo.toFile())) {
+                    archivo.toFile()
+                )) {
 
 
             Sheet hoja =
@@ -844,6 +1650,7 @@ public class PRECRMService {
                 if (fila != null &&
                     !filaEstaVacia(fila)) {
 
+
                     totalRegistros++;
                 }
             }
@@ -854,34 +1661,158 @@ public class PRECRMService {
     }
 
 
-    // =========================================================
-    // OBTENER VALOR DE CELDA
-    // =========================================================
+ // =========================================================
+ // OBTENER VALOR DE CELDA
+ // =========================================================
 
-    private String obtenerValorCelda(
-            Row fila,
-            int columna,
-            DataFormatter formatter) {
-
-
-        Cell celda =
-                fila.getCell(
-                    columna,
-                    Row.MissingCellPolicy
-                       .RETURN_BLANK_AS_NULL
-                );
+ private String obtenerValorCelda(
+         Row fila,
+         int columna,
+         DataFormatter formatter) {
 
 
-        if (celda == null) {
+     Cell celda =
+             fila.getCell(
+                 columna,
+                 Row.MissingCellPolicy
+                    .RETURN_BLANK_AS_NULL
+             );
 
-            return "";
-        }
+
+     if (celda == null) {
+
+         if (columna == 1 ||
+             columna == 2 ||
+             columna == 7) {
+
+             System.out.println(
+                 "FECHA - FILA "
+                 + (fila.getRowNum() + 1)
+                 + " COLUMNA "
+                 + (columna + 1)
+                 + " = CELDA NULL"
+             );
+         }
+
+         return "";
+     }
 
 
-        return formatter
-                .formatCellValue(celda)
-                .trim();
-    }
+     // =====================================================
+     // DEBUG COLUMNAS DE FECHA
+     // =====================================================
+
+     if (columna == 1 ||
+         columna == 2 ||
+         columna == 7) {
+
+         System.out.println(
+             "FECHA - FILA "
+             + (fila.getRowNum() + 1)
+             + " COLUMNA "
+             + (columna + 1)
+             + " TIPO="
+             + celda.getCellType()
+             + " VALOR_FORMATTER=["
+             + formatter.formatCellValue(celda)
+             + "]"
+         );
+     }
+
+
+     // =====================================================
+     // SOLO VALIDAR FECHA EXCEL SI LA CELDA ES NUMERICA
+     // =====================================================
+
+     if (celda.getCellType()
+             == org.apache.poi.ss.usermodel.CellType.NUMERIC
+         &&
+         DateUtil.isCellDateFormatted(celda)) {
+
+
+         try {
+
+             LocalDateTime fechaHora =
+                     celda
+                         .getLocalDateTimeCellValue();
+
+
+             // =============================================
+             // HORA INICIO / HORA FINAL
+             // =============================================
+
+             if (columna == 1 ||
+                 columna == 2) {
+
+
+                 String resultado =
+                         fechaHora.format(
+                             DateTimeFormatter.ofPattern(
+                                 "dd/MM/yyyy HH:mm:ss"
+                             )
+                         );
+
+
+                 System.out.println(
+                     "FECHA/HORA EXCEL CONVERTIDA: "
+                     + resultado
+                 );
+
+
+                 return resultado;
+             }
+
+
+             // =============================================
+             // FECHA NACIMIENTO
+             // =============================================
+
+             if (columna == 7) {
+
+
+                 String resultado =
+                         fechaHora
+                             .toLocalDate()
+                             .format(
+                                 DateTimeFormatter.ofPattern(
+                                     "dd/MM/yyyy"
+                                 )
+                             );
+
+
+                 System.out.println(
+                     "FECHA EXCEL CONVERTIDA: "
+                     + resultado
+                 );
+
+
+                 return resultado;
+             }
+
+
+         } catch (Exception e) {
+
+             System.err.println(
+                 "ERROR CONVIRTIENDO FECHA EN FILA "
+                 + (fila.getRowNum() + 1)
+                 + ", COLUMNA "
+                 + (columna + 1)
+                 + ": "
+                 + e.getMessage()
+             );
+         }
+     }
+
+
+     // =====================================================
+     // SI ES STRING, TEXTO O CUALQUIER OTRO TIPO
+     // LO DEVOLVEMOS TAL COMO SE VE EN EXCEL
+     // =====================================================
+
+     return formatter
+             .formatCellValue(celda)
+             .trim();
+ }
 
 
     // =========================================================
@@ -907,9 +1838,12 @@ public class PRECRMService {
 
             if (celda != null) {
 
+
                 String valor =
                         formatter
-                            .formatCellValue(celda)
+                            .formatCellValue(
+                                celda
+                            )
                             .trim();
 
 
@@ -936,6 +1870,7 @@ public class PRECRMService {
         if (valor == null ||
             valor.trim().isEmpty()) {
 
+
             return null;
         }
 
@@ -947,31 +1882,60 @@ public class PRECRMService {
         String[] formatos = {
 
             "dd/MM/yyyy HH:mm:ss",
+
             "dd/MM/yyyy HH:mm",
-            "d/M/yyyy HH:mm:ss",
-            "d/M/yyyy HH:mm",
+
+            "d/M/yyyy H:mm:ss",
+
+            "d/M/yyyy H:mm",
+
             "MM/dd/yyyy HH:mm:ss",
-            "MM/dd/yyyy HH:mm"
+
+            "MM/dd/yyyy HH:mm",
+
+            "M/d/yyyy H:mm:ss",
+
+            "M/d/yyyy H:mm",
+
+            "M/d/yyyy h:mm:ss a",
+
+            "M/d/yyyy h:mm a",
+
+            "yyyy-MM-dd HH:mm:ss",
+
+            "yyyy-MM-dd HH:mm",
+
+            "yyyy-MM-dd'T'HH:mm:ss"
         };
 
 
         for (String formato : formatos) {
 
+
             try {
+
 
                 return LocalDateTime.parse(
                     fecha,
-                    DateTimeFormatter.ofPattern(
-                        formato
-                    )
+                    DateTimeFormatter
+                        .ofPattern(
+                            formato
+                        )
                 );
 
-            } catch (
-                DateTimeParseException e) {
 
-                // Probar siguiente formato
+            } catch (DateTimeParseException e) {
+
+                // Intentar siguiente formato
             }
         }
+
+
+        System.err.println(
+            "NO SE PUDO CONVERTIR FECHA/HORA: ["
+            + valor
+            + "]"
+        );
 
 
         return null;
@@ -1001,7 +1965,17 @@ public class PRECRMService {
 
             "dd/MM/yyyy",
             "d/M/yyyy",
-            "MM/dd/yyyy"
+
+            "MM/dd/yyyy",
+            "M/d/yyyy",
+
+            "dd/MM/yy",
+            "d/M/yy",
+
+            "MM/dd/yy",
+            "M/d/yy",
+
+            "yyyy-MM-dd"
         };
 
 
@@ -1016,12 +1990,18 @@ public class PRECRMService {
                     )
                 );
 
-            } catch (
-                DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
 
                 // Probar siguiente formato
             }
         }
+
+
+        System.err.println(
+            "NO SE PUDO CONVERTIR FECHA: ["
+            + valor
+            + "]"
+        );
 
 
         return null;
@@ -1039,25 +2019,45 @@ public class PRECRMService {
         if (valor == null ||
             valor.trim().isEmpty()) {
 
+
             return null;
         }
 
 
         try {
 
+
             String monto =
-                    valor.trim()
-                         .replace("$", "")
-                         .replace(",", "")
-                         .replace(" ", "");
+                    valor
+                        .trim()
+                        .replace(
+                            "$",
+                            ""
+                        )
+                        .replace(
+                            ",",
+                            ""
+                        )
+                        .replace(
+                            " ",
+                            ""
+                        );
 
 
             return new BigDecimal(
-                    monto
+                monto
             );
 
 
         } catch (NumberFormatException e) {
+
+
+            System.err.println(
+                "NO SE PUDO CONVERTIR MONTO: ["
+                + valor
+                + "]"
+            );
+
 
             return null;
         }
@@ -1071,18 +2071,11 @@ public class PRECRMService {
     public String obtenerUltimoArchivoProcesado() {
 
 
-       /* Optional<PRECRMCarga> ultimaCarga =
-                cargaRepository
-                    .findTopByOrderByFechaProcesamientoDesc();*/
-
-
-        /*if (ultimaCarga.isPresent()) {
-
-            return ultimaCarga
-                    .get()
-                    .getNombreArchivo();
-        }*/
-
+        /*
+         * Por el momento permanece desactivado.
+         * Lo reactivaremos cuando terminemos
+         * el procesamiento completo.
+         */
 
         return null;
     }
@@ -1095,29 +2088,9 @@ public class PRECRMService {
     public String obtenerUltimoProcesamiento() {
 
 
-     /*   Optional<PRECRMCarga> ultimaCarga =
-                cargaRepository
-                    .findTopByOrderByFechaProcesamientoDesc();*/
-
-
-       /* if (ultimaCarga.isPresent() &&
-            ultimaCarga.get()
-                       .getFechaProcesamiento()
-                       != null) {
-
-
-            DateTimeFormatter formato =
-                    DateTimeFormatter.ofPattern(
-                        "dd/MM/yyyy HH:mm"
-                    );
-
-
-            return ultimaCarga
-                    .get()
-                    .getFechaProcesamiento()
-                    .format(formato);
-        }*/
-
+        /*
+         * Por el momento permanece desactivado.
+         */
 
         return null;
     }
@@ -1132,10 +2105,15 @@ public class PRECRMService {
 
 
         Path carpeta =
-                Paths.get(rutaArchivos);
+                Paths.get(
+                    rutaArchivos
+                );
 
 
-        if (!Files.exists(carpeta)) {
+        if (!Files.exists(
+                carpeta
+            )) {
+
 
             throw new IOException(
                 "La ruta configurada para PRE-CRM "
@@ -1145,7 +2123,10 @@ public class PRECRMService {
         }
 
 
-        if (!Files.isDirectory(carpeta)) {
+        if (!Files.isDirectory(
+                carpeta
+            )) {
+
 
             throw new IOException(
                 "La ruta configurada para PRE-CRM "
@@ -1156,5 +2137,4 @@ public class PRECRMService {
 
         return carpeta;
     }
-
 }

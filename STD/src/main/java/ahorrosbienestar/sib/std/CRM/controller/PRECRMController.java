@@ -202,10 +202,10 @@ public class PRECRMController {
         /*
          * Al regresar a /precrm:
          *
-         * 1. Detecta el archivo.
-         * 2. Lo lee.
-         * 3. Lo procesa.
-         * 4. Lo registra en BD.
+         * Detecta el archivo.
+         * Lo lee.
+         * Lo procesa.
+         * Lo registra en BD.
          */
         return "redirect:/precrm";
     }

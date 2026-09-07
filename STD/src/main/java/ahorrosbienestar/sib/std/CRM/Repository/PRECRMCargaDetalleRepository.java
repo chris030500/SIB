@@ -9,4 +9,9 @@ import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
 public interface PRECRMCargaDetalleRepository
         extends JpaRepository<PRECRMCargaDetalle, Long> {
 
+    boolean existsByNombreProspectoIgnoreCaseAndTelefonoContactoAndResultadoCarga(
+            String nombreProspecto,
+            String telefonoContacto,
+            String resultadoCarga
+    );
 }
