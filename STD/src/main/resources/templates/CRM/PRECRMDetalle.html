@@ -883,54 +883,52 @@
 
                                         <!-- USUARIO -->
 
-                                        <td th:text="${gestion.usuarioGestion}">
-                                            -
-                                        </td>
+										<td th:text="${gestion.usuarioGestion != null
+										                      ? gestion.usuarioGestion
+										                      : '-'}">
+
+										            -
+
+										        </td>
 
 
 
                                         <!-- FECHA -->
 
-                                        <td th:text="${gestion.fechaGestion != null
-                                                      ? #temporals.format(
-                                                            gestion.fechaGestion,
-                                                            'dd/MM/yyyy HH:mm'
-                                                        )
-                                                      : '-'}">
+										<td th:text="${gestion.fechaGestion != null
+										                      ? #temporals.format(
+										                            gestion.fechaGestion,
+										                            'dd/MM/yyyy'
+										                        )
+										                      : '-'}">
 
-                                            -
+										            -
 
-                                        </td>
+										        </td>
 
 
 
                                         <!-- COMENTARIO -->
 
-                                        <td th:text="${gestion.comentario != null
-                                                      ? gestion.comentario
-                                                      : '-'}">
+										<td th:text="${gestion.comentario != null
+										                      ? gestion.comentario
+										                      : '-'}">
 
-                                            -
+										            -
 
-                                        </td>
+										        </td>
 
 
 
                                         <!-- TIPO GESTION -->
 
-                                        <td>
+										<td th:text="${gestion.tipoGestion != null
+										              ? gestion.tipoGestion
+										              : '-'}">
 
-                                            <span class="badge badge-primary"
+										    -
 
-                                                  th:text="${gestion.tipoGestion != null
-                                                           ? gestion.tipoGestion
-                                                           : '-'}">
-
-                                                -
-
-                                            </span>
-
-                                        </td>
+										</td>
 
 
                                     </tr>
@@ -941,21 +939,19 @@
                                     <!-- SIN GESTIONES                     -->
                                     <!-- ================================= -->
 
-                                    <tr th:if="${gestiones == null
-                                                || #lists.isEmpty(gestiones)}">
+									<tr th:if="${gestiones == null
+									                || #lists.isEmpty(gestiones)}">
 
 
-                                        <td colspan="4"
-                                            class="text-center
-                                                   text-muted
-                                                   py-4">
+									        <td colspan="4"
+									            class="text-center text-muted py-4">
 
-                                            Aún no existen gestiones registradas.
+									            Aún no existen gestiones registradas.
 
-                                        </td>
+									        </td>
 
 
-                                    </tr>
+									    </tr>
 
 
                                 </tbody>
@@ -1381,30 +1377,138 @@
                         </thead>
 
 
-                        <tbody>
+						<tbody>
 
 
-                            <!-- ================================= -->
-                            <!-- SE CONECTARA EN EL SIGUIENTE PASO -->
-                            <!-- ================================= -->
+						    <!-- ================================================= -->
+						    <!-- HISTORIAL REGISTRADO                              -->
+						    <!-- ================================================= -->
 
-                            <tr>
-
-
-                                <td colspan="8"
-                                    class="text-center
-                                           text-muted
-                                           py-3">
-
-                                    Aún no existen cambios de estatus registrados.
-
-                                </td>
+						    <tr th:each="historial : ${historialEstatus}">
 
 
-                            </tr>
+						        <!-- ESTATUS ANTERIOR -->
+
+						        <td th:text="${historial.estatusAnterior != null
+						                      ? historial.estatusAnterior
+						                      : '-'}">
+
+						            -
+
+						        </td>
 
 
-                        </tbody>
+						        <!-- ESTATUS NUEVO -->
+
+						        <td th:text="${historial.estatusNuevo != null
+						                      ? historial.estatusNuevo
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- FECHA INICIO ETAPA -->
+
+						        <td th:text="${historial.fechaInicioEtapa != null
+						                      ? #temporals.format(
+						                            historial.fechaInicioEtapa,
+						                            'dd/MM/yyyy HH:mm'
+						                        )
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- FECHA CAMBIO -->
+
+						        <td th:text="${historial.fechaCambio != null
+						                      ? #temporals.format(
+						                            historial.fechaCambio,
+						                            'dd/MM/yyyy HH:mm'
+						                        )
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- FECHA LIMITE -->
+
+						        <td th:text="${historial.fechaLimite != null
+						                      ? #temporals.format(
+						                            historial.fechaLimite,
+						                            'dd/MM/yyyy HH:mm'
+						                        )
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- DIAS OBJETIVO -->
+
+						        <td th:text="${historial.diasObjetivo != null
+						                      ? historial.diasObjetivo
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- USUARIO -->
+
+						        <td th:text="${historial.usuarioCambio != null
+						                      ? historial.usuarioCambio
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						        <!-- COMENTARIO -->
+
+						        <td th:text="${historial.comentario != null
+						                      ? historial.comentario
+						                      : '-'}">
+
+						            -
+
+						        </td>
+
+
+						    </tr>
+
+
+						    <!-- ================================================= -->
+						    <!-- SIN HISTORIAL                                     -->
+						    <!-- ================================================= -->
+
+						    <tr th:if="${historialEstatus == null
+						                || #lists.isEmpty(historialEstatus)}">
+
+
+						        <td colspan="8"
+						            class="text-center
+						                   text-muted
+						                   py-3">
+
+						            Aún no existen cambios de estatus registrados.
+
+						        </td>
+
+
+						    </tr>
+
+
+						</tbody>
 
 
                     </table>

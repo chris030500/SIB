@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PathVariable;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
 
 
 @Controller
@@ -499,16 +501,26 @@ public class PRECRMController {
             @RequestParam("estatus")
             String estatus,
 
+            Principal principal,
+
             RedirectAttributes redirectAttributes) {
 
 
         try {
 
 
+            String usuario =
+                    principal != null
+                    ? principal.getName()
+                    : "SISTEMA";
+
+
             precrmService
                 .actualizarEstatusSospechoso(
                     pkSospechoso,
-                    estatus
+                    estatus,
+                    usuario,
+                    "DETALLE"
                 );
 
 
@@ -605,6 +617,12 @@ public class PRECRMController {
 		            .obtenerGestionesSospechoso(
 		                pkSospechoso
 		            );
+		
+		List<PRECRMHistorialEstatus> historialEstatus =
+		        precrmService
+		            .obtenerHistorialEstatusSospechoso(
+		                pkSospechoso
+		            );
 
 
 		model.addAttribute(
@@ -623,6 +641,11 @@ public class PRECRMController {
 		    "gestiones",
 		    gestiones
 		);
+		
+		model.addAttribute(
+			    "historialEstatus",
+			    historialEstatus
+			);
 
 
      model.addAttribute(

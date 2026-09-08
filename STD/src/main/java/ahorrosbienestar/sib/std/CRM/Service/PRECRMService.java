@@ -37,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaDetalleRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMGestionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.PRECRMHistorialEstatusRepository;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMSospechosoRepository;
 import ahorrosbienestar.sib.std.CRM.dto.PRECRMRegistroDTO;
@@ -61,6 +63,8 @@ public class PRECRMService {
 
     @Autowired
     private PRECRMGestionRepository gestionRepository;
+    @Autowired
+    private PRECRMHistorialEstatusRepository historialEstatusRepository;
 
     // =========================================================
     // CONSTRUCTOR
@@ -2155,106 +2159,182 @@ private String limpiarFiltro(
 
 @Transactional
 public void actualizarEstatusSospechoso(
-     Long pkSospechoso,
-     String nuevoEstatus) {
+        Long pkSospechoso,
+        String nuevoEstatus,
+        String usuario,
+        String origenCambio) {
 
 
- PRECRMSospechoso sospechoso =
-         sospechosoRepository
-             .findById(pkSospechoso)
-             .orElseThrow(
-                 () -> new IllegalArgumentException(
-                     "No se encontró el sospechoso."
-                 )
-             );
+    PRECRMSospechoso sospechoso =
+            sospechosoRepository
+                .findById(pkSospechoso)
+                .orElseThrow(
+                    () -> new IllegalArgumentException(
+                        "No se encontró el sospechoso."
+                    )
+                );
 
 
- String estatusActual =
-         sospechoso.getEstatus();
+    String estatusAnterior =
+            sospechoso.getEstatus();
 
 
- // =====================================================
- // OBTENER EL UNICO SIGUIENTE ESTATUS PERMITIDO
- // =====================================================
+    // =====================================================
+    // VALIDAR SIGUIENTE ESTATUS
+    // =====================================================
 
- String siguienteEstatus =
-         obtenerSiguienteEstatus(
-             estatusActual
-         );
-
-
- if (siguienteEstatus == null) {
-
-     throw new IllegalArgumentException(
-         "El sospechoso ya se encuentra "
-         + "en la última etapa."
-     );
- }
+    String estatusPermitido =
+            obtenerSiguienteEstatusPantalla(
+                estatusAnterior
+            );
 
 
- if (!siguienteEstatus.equals(nuevoEstatus)) {
+    if (estatusPermitido == null) {
 
-     throw new IllegalArgumentException(
-         "No es posible cambiar de "
-         + estatusActual
-         + " a "
-         + nuevoEstatus
-         + "."
-     );
- }
+        throw new IllegalArgumentException(
+            "El sospechoso ya se encuentra en la etapa final."
+        );
+    }
 
 
- LocalDateTime ahora =
-         LocalDateTime.now();
+    if (!estatusPermitido.equals(nuevoEstatus)) {
+
+        throw new IllegalArgumentException(
+            "El cambio de estatus solicitado no está permitido."
+        );
+    }
 
 
- // =====================================================
- // ACTUALIZAR ESTATUS
- // =====================================================
-
- sospechoso.setEstatus(
-     nuevoEstatus
- );
-
-//=====================================================
-//NUEVA FECHA DE INICIO DE ETAPA
-//=====================================================
-
-sospechoso.setFechaInicioEtapa(
-  ahora
-);
-
- // =====================================================
- // ULTIMA ACTUALIZACION
- // =====================================================
-
- sospechoso.setFechaUltimaActualizacion(
-     ahora
- );
+    LocalDateTime ahora =
+            LocalDateTime.now();
 
 
- // =====================================================
- // CALCULAR PROXIMA GESTION
- // =====================================================
+    // =====================================================
+    // GUARDAR HISTORIAL ANTES DE MODIFICAR SOSPECHOSO
+    // =====================================================
 
- sospechoso.setFechaProximaGestion(
-     calcularProximaGestion(
-         nuevoEstatus,
-         ahora
-     )
- );
- 
- sospechoso.setDiasRestantes(
-		    obtenerDiasPorEstatus(
-		        nuevoEstatus
-		    )
-		);
+    PRECRMHistorialEstatus historial =
+            new PRECRMHistorialEstatus();
 
 
- sospechosoRepository
-     .saveAndFlush(
-         sospechoso
-     );
+    historial.setFkSospechoso(
+        pkSospechoso
+    );
+
+
+    historial.setEstatusAnterior(
+        estatusAnterior
+    );
+
+
+    historial.setEstatusNuevo(
+        nuevoEstatus
+    );
+
+
+    /*
+     * Guardamos cuándo inició la etapa
+     * que estamos terminando.
+     */
+    historial.setFechaInicioEtapa(
+        sospechoso.getFechaInicioEtapa()
+    );
+
+
+    historial.setFechaCambio(
+        ahora
+    );
+
+
+    /*
+     * La fecha próxima que tenía el sospechoso
+     * representa el límite de la etapa anterior.
+     */
+    historial.setFechaLimite(
+        sospechoso.getFechaProximaGestion()
+    );
+
+
+    /*
+     * Días objetivo de la etapa que termina.
+     */
+    historial.setDiasObjetivo(
+        obtenerDiasPorEstatus(
+            estatusAnterior
+        )
+    );
+
+
+    historial.setUsuarioCambio(
+        usuario
+    );
+
+
+    historial.setOrigenCambio(
+        origenCambio
+    );
+
+
+    historial.setComentario(
+        null
+    );
+
+
+    historialEstatusRepository
+        .saveAndFlush(
+            historial
+        );
+
+
+    // =====================================================
+    // ACTUALIZAR ESTADO ACTUAL DEL SOSPECHOSO
+    // =====================================================
+
+    sospechoso.setEstatus(
+        nuevoEstatus
+    );
+
+
+    sospechoso.setFechaInicioEtapa(
+        ahora
+    );
+
+
+    sospechoso.setFechaUltimaActualizacion(
+        ahora
+    );
+
+
+    sospechoso.setFechaProximaGestion(
+        calcularFechaProximaGestion(
+            nuevoEstatus,
+            ahora
+        )
+    );
+
+
+    sospechoso.setDiasRestantes(
+        obtenerDiasPorEstatus(
+            nuevoEstatus
+        )
+    );
+
+
+    sospechosoRepository
+        .saveAndFlush(
+            sospechoso
+        );
+}
+
+public List<PRECRMHistorialEstatus>
+obtenerHistorialEstatusSospechoso(
+    Long pkSospechoso) {
+
+
+return historialEstatusRepository
+    .findByFkSospechosoOrderByFechaCambioDesc(
+        pkSospechoso
+    );
 }
 
 
