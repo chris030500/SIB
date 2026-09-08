@@ -89,74 +89,45 @@ function subirArchivoPRECRM(input) {
 
 
 // =========================================================
-// CAMBIAR ESTATUS DEL SOSPECHOSO
+// CONFIRMAR AVANCE DE ESTATUS DESDE DETALLE
 // =========================================================
 
-function abrirCambioEstatus(boton) {
+function confirmarAvanceEstatusPRECRM(boton) {
+
 
     const pkSospechoso =
-        boton.getAttribute("data-id");
-
-    const folio =
-        boton.getAttribute("data-folio");
-
-    const nombre =
-        boton.getAttribute("data-nombre");
-
-    const estatusActual =
-        boton.getAttribute("data-estatus");
-
-
-    // =====================================================
-    // OBTENER SIGUIENTE ESTATUS
-    // =====================================================
-
-    const siguiente =
-        obtenerSiguienteEstatusPRECRM(
-            estatusActual
+        boton.getAttribute(
+            "data-id"
         );
 
 
-    // =====================================================
-    // YA NO HAY SIGUIENTE ETAPA
-    // =====================================================
-
-    if (!siguiente) {
-
-        Swal.fire({
-
-            icon: "info",
-
-            title: "Proceso concluido",
-
-            text:
-                "El sospechoso ya se encuentra "
-                + "en la última etapa."
-
-        });
-
-        return;
-    }
+    const nombre =
+        boton.getAttribute(
+            "data-nombre"
+        );
 
 
-    // =====================================================
-    // CONFIRMAR CAMBIO
-    // =====================================================
+    const estatusActual =
+        boton.getAttribute(
+            "data-estatus-actual"
+        );
+
+
+    const siguienteEstatus =
+        boton.getAttribute(
+            "data-siguiente-estatus"
+        );
+
 
     Swal.fire({
 
         icon: "question",
 
-        title: "Actualizar estatus",
+        title: "Avanzar de etapa",
 
         html:
 
             "<div class='text-left'>" +
-
-                "<p>" +
-                    "<strong>Folio:</strong> "
-                    + folio +
-                "</p>" +
 
                 "<p>" +
                     "<strong>Sospechoso:</strong> "
@@ -171,32 +142,34 @@ function abrirCambioEstatus(boton) {
                 "</p>" +
 
                 "<p>" +
-                    "<strong>Nuevo estatus:</strong> "
-                    + obtenerNombreEstatusPRECRM(
-                        siguiente
-                    ) +
+                    "<strong>Nuevo estatus:</strong> " +
+                    "<span class='text-success'>" +
+                        obtenerNombreEstatusPRECRM(
+                            siguienteEstatus
+                        ) +
+                    "</span>" +
                 "</p>" +
 
             "</div>",
 
-        showCancelButton: true,
+        showCancelButton:
+            true,
 
         confirmButtonText:
-            "Cambiar a "
-            + obtenerNombreEstatusPRECRM(
-                siguiente
-            ),
+            "Sí, avanzar",
 
         cancelButtonText:
             "Cancelar"
 
     }).then((result) => {
 
+
         if (result.isConfirmed) {
+
 
             document
                 .getElementById(
-                    "pkSospechosoCambio"
+                    "pkSospechosoDetalle"
                 )
                 .value =
                 pkSospechoso;
@@ -204,15 +177,15 @@ function abrirCambioEstatus(boton) {
 
             document
                 .getElementById(
-                    "estatusCambio"
+                    "nuevoEstatusDetalle"
                 )
                 .value =
-                siguiente;
+                siguienteEstatus;
 
 
             document
                 .getElementById(
-                    "formCambioEstatus"
+                    "formAvanzarEstatusDetalle"
                 )
                 .submit();
 

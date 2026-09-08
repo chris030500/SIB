@@ -28,7 +28,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaDetalleRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.PRECRMGestionRepository;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
 import ahorrosbienestar.sib.std.CRM.Repository.PRECRMSospechosoRepository;
 import ahorrosbienestar.sib.std.CRM.dto.PRECRMRegistroDTO;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
@@ -57,6 +59,8 @@ public class PRECRMService {
 
     private final PRECRMSospechosoRepository sospechosoRepository;
 
+    @Autowired
+    private PRECRMGestionRepository gestionRepository;
 
     // =========================================================
     // CONSTRUCTOR
@@ -2536,6 +2540,167 @@ public String obtenerSiguienteEstatusPantalla(
       default:
           return null;
   }
+}
+
+//=========================================================
+//GUARDAR GESTION DEL SOSPECHOSO
+//=========================================================
+
+@Transactional
+public void guardarGestion(
+     Long pkSospechoso,
+     String tipoGestion,
+     String comentario,
+     LocalDateTime fechaProximoSeguimiento,
+     LocalDateTime fechaCita,
+     String usuario) {
+
+
+ // =====================================================
+ // VALIDAR SOSPECHOSO
+ // =====================================================
+
+ PRECRMSospechoso sospechoso =
+         sospechosoRepository
+             .findById(pkSospechoso)
+             .orElseThrow(
+                 () -> new IllegalArgumentException(
+                     "No se encontró el sospechoso."
+                 )
+             );
+
+
+ // =====================================================
+ // VALIDAR TIPO DE GESTION
+ // =====================================================
+
+ if (tipoGestion == null ||
+     tipoGestion.trim().isEmpty()) {
+
+     throw new IllegalArgumentException(
+         "Debe seleccionar un tipo de gestión."
+     );
+ }
+
+
+ // =====================================================
+ // VALIDAR COMENTARIO
+ // =====================================================
+
+ if (comentario == null ||
+     comentario.trim().isEmpty()) {
+
+     throw new IllegalArgumentException(
+         "Debe capturar un comentario."
+     );
+ }
+
+
+ LocalDateTime ahora =
+         LocalDateTime.now();
+
+
+ // =====================================================
+ // CREAR GESTION
+ // =====================================================
+
+ PRECRMGestion gestion =
+         new PRECRMGestion();
+
+
+ gestion.setFkSospechoso(
+     pkSospechoso
+ );
+
+
+ gestion.setTipoGestion(
+     tipoGestion
+ );
+
+
+ gestion.setComentario(
+     comentario.trim()
+ );
+
+
+ gestion.setFechaProximoSeguimiento(
+     fechaProximoSeguimiento
+ );
+
+
+ // Fecha de cita solamente tiene sentido
+ // en CITA_AGENDADA
+
+ if ("CITA_AGENDADA".equals(
+         sospechoso.getEstatus())) {
+
+     gestion.setFechaCita(
+         fechaCita
+     );
+
+ } else {
+
+     gestion.setFechaCita(
+         null
+     );
+ }
+
+
+ gestion.setUsuarioGestion(
+     usuario
+ );
+
+
+ gestion.setFechaGestion(
+     ahora
+ );
+
+
+ gestionRepository
+     .saveAndFlush(
+         gestion
+     );
+
+
+ // =====================================================
+ // ACTUALIZAR SOSPECHOSO
+ // =====================================================
+
+ sospechoso.setFechaUltimaActualizacion(
+     ahora
+ );
+
+
+ // Si el usuario programó un seguimiento,
+ // éste pasa a ser la próxima gestión.
+
+ if (fechaProximoSeguimiento != null) {
+
+     sospechoso.setFechaProximaGestion(
+         fechaProximoSeguimiento
+     );
+
+ }
+
+
+ sospechosoRepository
+     .saveAndFlush(
+         sospechoso
+     );
+}
+
+//=========================================================
+//OBTENER BITACORA DEL SOSPECHOSO
+//=========================================================
+
+public List<PRECRMGestion> obtenerGestionesSospechoso(
+     Long pkSospechoso) {
+
+
+ return gestionRepository
+         .findByFkSospechosoOrderByFechaGestionDesc(
+             pkSospechoso
+         );
 }
 
 }

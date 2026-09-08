@@ -852,7 +852,6 @@
 
 		                <th>Última actualización</th>
 
-		                <th>Acciones</th>
 
 		            </tr>
 
@@ -957,29 +956,6 @@
 
 						</td>
 
-
-						<!-- ACCIONES -->
-
-						<td>
-
-						    <button type="button"
-						            class="btn btn-sm btn-outline-primary"
-						            title="Cambiar estatus"
-						            th:attr="
-						                data-id=${sospechoso.pkSospechoso},
-						                data-folio=${sospechoso.folio},
-						                data-nombre=${sospechoso.nombre},
-						                data-estatus=${sospechoso.estatus}
-						            "
-						            onclick="abrirCambioEstatus(this)">
-
-						        <i class="bi bi-eye"></i>
-
-						    </button>
-
-						</td>
-
-
 		            </tr>
 
 
@@ -991,7 +967,7 @@
 		                        || #lists.isEmpty(sospechosos)}">
 
 
-		                <td colspan="9"
+		                <td colspan="8"
 		                    class="text-center text-muted">
 
 		                    No se encontraron sospechosos registrados.
@@ -1009,28 +985,6 @@
 
 
 		</div>
-		
-		<!-- ===================================================== -->
-		<!-- FORMULARIO CAMBIO DE ESTATUS                          -->
-		<!-- ===================================================== -->
-
-		<form id="formCambioEstatus"
-		      th:action="@{/precrm/actualizarEstatus}"
-		      method="post"
-		      style="display:none;">
-
-
-		    <input type="hidden"
-		           id="pkSospechosoCambio"
-		           name="pkSospechoso">
-
-
-		    <input type="hidden"
-		           id="estatusCambio"
-		           name="estatus">
-
-
-		</form>
 
         </div>
 

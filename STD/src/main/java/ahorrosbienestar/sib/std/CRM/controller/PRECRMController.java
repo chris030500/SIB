@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
-
+import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -487,11 +487,11 @@ public class PRECRMController {
     }
     
     // =========================================================
-    // Boton acciones
+    // ACTUALIZAR ESTATUS DESDE DETALLE DEL SOSPECHOSO
     // =========================================================
     
-    @PostMapping("/actualizarEstatus")
-    public String actualizarEstatus(
+    @PostMapping("/detalle/actualizarEstatus")
+    public String actualizarEstatusDesdeDetalle(
 
             @RequestParam("pkSospechoso")
             Long pkSospechoso,
@@ -504,6 +504,7 @@ public class PRECRMController {
 
         try {
 
+
             precrmService
                 .actualizarEstatusSospechoso(
                     pkSospechoso,
@@ -514,24 +515,26 @@ public class PRECRMController {
             redirectAttributes
                 .addFlashAttribute(
                     "mensajeExito",
-                    "El estatus del sospechoso "
-                    + "se actualizó correctamente."
+                    "El sospechoso avanzó correctamente "
+                    + "a la siguiente etapa."
                 );
 
 
         } catch (Exception e) {
+
 
             redirectAttributes
                 .addFlashAttribute(
                     "mensajeError",
                     e.getMessage()
                 );
+
         }
 
 
-        return "redirect:/precrm/seguimiento";
+        return "redirect:/precrm/detalle/"
+                + pkSospechoso;
     }
-    
     
  // =========================================================
  // DETALLE DEL SOSPECHOSO
@@ -583,36 +586,43 @@ public class PRECRMController {
          Model model) {
 
 
-     PRECRMSospechoso sospechoso =
-             precrmService
-                 .obtenerSospechosoPorId(
-                     pkSospechoso
-                 );
+	 PRECRMSospechoso sospechoso =
+		        precrmService
+		            .obtenerSospechosoPorId(
+		                pkSospechoso
+		            );
 
 
-     String siguienteEstatus =
-             precrmService
-                 .obtenerSiguienteEstatusPantalla(
-                     sospechoso.getEstatus()
-                 );
+		String siguienteEstatus =
+		        precrmService
+		            .obtenerSiguienteEstatusPantalla(
+		                sospechoso.getEstatus()
+		            );
 
 
-     model.addAttribute(
-         "catalogo",
-         CATALOGO_CRM
-     );
+		List<PRECRMGestion> gestiones =
+		        precrmService
+		            .obtenerGestionesSospechoso(
+		                pkSospechoso
+		            );
 
 
-     model.addAttribute(
-         "sospechoso",
-         sospechoso
-     );
+		model.addAttribute(
+		    "sospechoso",
+		    sospechoso
+		);
 
 
-     model.addAttribute(
-         "siguienteEstatus",
-         siguienteEstatus
-     );
+		model.addAttribute(
+		    "siguienteEstatus",
+		    siguienteEstatus
+		);
+
+
+		model.addAttribute(
+		    "gestiones",
+		    gestiones
+		);
 
 
      model.addAttribute(
@@ -624,5 +634,93 @@ public class PRECRMController {
 
      return "CRM/PRECRMDetalle";
  }
+ 
+//=========================================================
+//GUARDAR GESTION DEL SOSPECHOSO
+//=========================================================
+
+@PostMapping("/detalle/guardarGestion")
+public String guardarGestion(
+
+      @RequestParam("pkSospechoso")
+      Long pkSospechoso,
+
+      @RequestParam("tipoGestion")
+      String tipoGestion,
+
+      @RequestParam("comentario")
+      String comentario,
+
+      @RequestParam(
+          value = "fechaProximoSeguimiento",
+          required = false
+      )
+      @DateTimeFormat(
+          iso = DateTimeFormat.ISO.DATE_TIME
+      )
+      LocalDateTime fechaProximoSeguimiento,
+
+      @RequestParam(
+          value = "fechaCita",
+          required = false
+      )
+      @DateTimeFormat(
+          iso = DateTimeFormat.ISO.DATE_TIME
+      )
+      LocalDateTime fechaCita,
+
+      Principal principal,
+
+      RedirectAttributes redirectAttributes) {
+
+
+  try {
+
+
+      String usuario =
+              principal != null
+              ? principal.getName()
+              : "SISTEMA";
+
+
+      precrmService
+          .guardarGestion(
+
+              pkSospechoso,
+
+              tipoGestion,
+
+              comentario,
+
+              fechaProximoSeguimiento,
+
+              fechaCita,
+
+              usuario
+          );
+
+
+      redirectAttributes
+          .addFlashAttribute(
+              "mensajeExito",
+              "La gestión se registró correctamente."
+          );
+
+
+  } catch (Exception e) {
+
+
+      redirectAttributes
+          .addFlashAttribute(
+              "mensajeError",
+              e.getMessage()
+          );
+
+  }
+
+
+  return "redirect:/precrm/detalle/"
+          + pkSospechoso;
+}
 
 }
