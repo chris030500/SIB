@@ -74,9 +74,14 @@ public class PRECRMSospechoso {
     @Column(name = "ESTATUS", nullable = false)
     private String estatus;
     
+    @Column(name = "FECHA_INICIO_ETAPA")
+    private LocalDateTime fechaInicioEtapa;
+    
     @Column(name = "FECHA_PROXIMA_GESTION")
     private LocalDateTime fechaProximaGestion;
 
+    @Column(name = "DIAS_RESTANTES")
+    private Integer diasRestantes;
 
     @Column(name = "FECHA_ULTIMA_ACTUALIZACION")
     private LocalDateTime fechaUltimaActualizacion;
@@ -271,6 +276,21 @@ public class PRECRMSospechoso {
                 estatus;
     }
     
+    public LocalDateTime getFechaInicioEtapa() {
+
+        return fechaInicioEtapa;
+
+    }
+
+
+    public void setFechaInicioEtapa(
+            LocalDateTime fechaInicioEtapa) {
+
+        this.fechaInicioEtapa =
+                fechaInicioEtapa;
+
+    }
+    
     public LocalDateTime getFechaProximaGestion() {
 
         return fechaProximaGestion;
@@ -283,6 +303,21 @@ public class PRECRMSospechoso {
 
         this.fechaProximaGestion =
                 fechaProximaGestion;
+
+    }
+    
+    public Integer getDiasRestantes() {
+
+        return diasRestantes;
+
+    }
+
+
+    public void setDiasRestantes(
+            Integer diasRestantes) {
+
+        this.diasRestantes =
+                diasRestantes;
 
     }
 

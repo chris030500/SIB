@@ -847,6 +847,8 @@
 		                <th>Estatus</th>
 
 		                <th>Próxima gestión</th>
+						
+						<th>Días restantes</th>
 
 		                <th>Última actualización</th>
 
@@ -878,11 +880,20 @@
 
 		                <!-- NOMBRE -->
 
-		                <td th:text="${sospechoso.nombre}">
+						<td>
 
-		                    -
+						    <a th:href="@{/precrm/detalle/{id}
+						                 (id=${sospechoso.pkSospechoso})}"
 
-		                </td>
+						       th:text="${sospechoso.nombre}"
+
+						       class="text-primary font-weight-bold">
+
+						        Nombre del sospechoso
+
+						    </a>
+
+						</td>
 
 
 		                <!-- TELEFONO -->
@@ -922,7 +933,16 @@
 						    -
 
 						</td>
+						
+						<!-- DIAS RESTANTES -->
 
+						<td th:text="${sospechoso.diasRestantes != null
+						              ? sospechoso.diasRestantes
+						              : '-'}">
+
+						    -
+
+						</td>
 
 						<!-- ULTIMA ACTUALIZACION -->
 
@@ -971,7 +991,7 @@
 		                        || #lists.isEmpty(sospechosos)}">
 
 
-		                <td colspan="8"
+		                <td colspan="9"
 		                    class="text-center text-muted">
 
 		                    No se encontraron sospechosos registrados.

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base-layout}">
+
+
+<head th:replace="layouts/base-layout :: head">
+
+    <meta charset="UTF-8">
+
+    <title>
+        Detalle del Sospechoso
+    </title>
+
+</head>
+
+
+<body>
+
+
+<section class="content"
+         layout:fragment="page-content">
+
+
+    <div class="border p-2 card">
+
+
+        <!-- ================================================= -->
+        <!-- TITULO                                            -->
+        <!-- ================================================= -->
+
+        <div class="bg-info text-white
+                    text-center py-3 rounded mb-3">
+
+            <h2 class="mb-0 font-weight-bold">
+
+                PRE CRM
+
+            </h2>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- REGRESAR                                          -->
+        <!-- ================================================= -->
+
+        <div class="d-flex justify-content-end mb-3">
+
+            <a th:href="@{/precrm/seguimiento}"
+               class="btn btn-secondary">
+
+                <i class="bi bi-arrow-left"></i>
+
+                Regresar
+
+            </a>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- SELECCIONAR SOSPECHOSO                             -->
+        <!-- ================================================= -->
+
+        <div class="border rounded p-3 mb-3">
+
+
+            <div class="row align-items-end">
+
+
+                <div class="col-md-6">
+
+                    <label>
+                        Seleccionar sospechoso
+                    </label>
+
+
+                    <select id="selectorSospechoso"
+                            class="form-control">
+
+
+                        <option value="">
+
+                            Seleccione un sospechoso
+
+                        </option>
+
+
+                        <option th:each="s : ${sospechosos}"
+
+                                th:value="${s.pkSospechoso}"
+
+                                th:selected="${sospechoso != null
+                                             && s.pkSospechoso
+                                             == sospechoso.pkSospechoso}"
+
+                                th:text="${s.folio
+                                         + ' - '
+                                         + s.nombre}">
+
+                        </option>
+
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <button type="button"
+                            class="btn btn-primary"
+                            onclick="abrirDetalleSospechoso()">
+
+                        Consultar
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- SIN SOSPECHOSO SELECCIONADO                        -->
+        <!-- ================================================= -->
+
+        <div th:if="${sospechoso == null}"
+             class="alert alert-info text-center">
+
+            Seleccione un sospechoso para consultar su detalle.
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- DETALLE                                           -->
+        <!-- ================================================= -->
+
+        <th:block th:if="${sospechoso != null}">
+
+
+		<!-- ===================================================== -->
+		<!-- RESUMEN DEL SOSPECHOSO                                -->
+		<!-- ===================================================== -->
+
+		<div class="border rounded p-3 mb-3"
+		     th:if="${sospechoso != null}">
+
+
+		    <!-- ================================================= -->
+		    <!-- PRIMERA FILA                                      -->
+		    <!-- ================================================= -->
+
+		    <div class="row">
+
+
+		        <!-- FOLIO -->
+
+		        <div class="col-lg-2 col-md-4 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-shield-check
+		                              text-primary
+		                              mr-3"
+		                       style="font-size:28px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Folio
+		                        </small>
+
+		                        <strong th:text="${sospechoso.folio}">
+		                            -
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- NOMBRE -->
+
+		        <div class="col-lg-4 col-md-8 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-person
+		                              text-primary
+		                              mr-3"
+		                       style="font-size:28px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Nombre
+		                        </small>
+
+		                        <strong th:text="${sospechoso.nombre}">
+		                            -
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+				<!-- ============================================= -->
+				<!-- CLASIFICACION                                 -->
+				<!-- ============================================= -->
+
+				<div class="col-lg-2 col-md-4 mb-3">
+
+				    <div class="border rounded p-3 h-100 text-center">
+
+				        <small class="text-muted d-block mb-2">
+				            Clasificación
+				        </small>
+
+				        <div class="font-weight-bold"
+				             th:text="${sospechoso.clasificacion != null
+				                       ? sospechoso.clasificacion
+				                       : '-'}">
+
+				            -
+
+				        </div>
+
+				    </div>
+
+				</div>
+
+
+				<!-- ============================================= -->
+				<!-- ESTATUS ACTUAL                                -->
+				<!-- ============================================= -->
+
+				<div class="col-lg-2 col-md-4 mb-3">
+
+				    <div class="border rounded p-3 h-100 text-center">
+
+				        <small class="text-muted d-block mb-2">
+				            Estatus actual
+				        </small>
+
+				        <div class="font-weight-bold"
+				             th:text="${sospechoso.estatus != null
+				                       ? sospechoso.estatus
+				                       : '-'}">
+
+				            -
+
+				        </div>
+
+				    </div>
+
+				</div>
+
+
+				<!-- ============================================= -->
+				<!-- SIGUIENTE ESTATUS                             -->
+				<!-- ============================================= -->
+
+				<div class="col-lg-2 col-md-4 mb-3">
+
+				    <div class="border rounded p-3 h-100 text-center">
+
+				        <small class="text-muted d-block mb-2">
+				            Siguiente estatus
+				        </small>
+
+				        <div class="font-weight-bold"
+				             th:text="${siguienteEstatus != null
+				                       ? siguienteEstatus
+				                       : 'Proceso concluido'}">
+
+				            -
+
+				        </div>
+
+				    </div>
+
+				</div>
+
+
+		    <!-- ================================================= -->
+		    <!-- SEGUNDA FILA                                      -->
+		    <!-- ================================================= -->
+
+		    <div class="row">
+
+
+		        <!-- COLABORADOR -->
+
+		        <div class="col-lg-3 col-md-6 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-person-badge
+		                              text-primary
+		                              mr-3"
+		                       style="font-size:25px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Colaborador responsable
+		                        </small>
+
+
+		                        <strong>
+		                            Pendiente de asignación
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- SUCURSAL -->
+
+		        <div class="col-lg-3 col-md-6 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-building
+		                              text-primary
+		                              mr-3"
+		                       style="font-size:25px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Sucursal
+		                        </small>
+
+
+		                        <strong th:text="${sospechoso.sucursalOrigen}">
+		                            -
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- FECHA REGISTRO -->
+
+		        <div class="col-lg-3 col-md-6 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-calendar
+		                              text-primary
+		                              mr-3"
+		                       style="font-size:25px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Fecha de registro
+		                        </small>
+
+
+		                        <strong
+		                            th:text="${sospechoso.fechaRegistro != null
+		                                     ? #temporals.format(
+		                                           sospechoso.fechaRegistro,
+		                                           'dd/MM/yyyy HH:mm'
+		                                       )
+		                                     : '-'}">
+		                            -
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- ULTIMA ACTUALIZACION -->
+
+		        <div class="col-lg-3 col-md-6 mb-3">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center">
+
+		                    <i class="bi bi-clock
+		                              text-secondary
+		                              mr-3"
+		                       style="font-size:25px;">
+		                    </i>
+
+
+		                    <div>
+
+		                        <small class="text-muted d-block">
+		                            Última actualización
+		                        </small>
+
+
+		                        <strong
+		                            th:text="${sospechoso.fechaUltimaActualizacion != null
+		                                     ? #temporals.format(
+		                                           sospechoso.fechaUltimaActualizacion,
+		                                           'dd/MM/yyyy HH:mm'
+		                                       )
+		                                     : '-'}">
+		                            -
+		                        </strong>
+
+		                    </div>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		    </div>
+
+
+
+		    <!-- ================================================= -->
+		    <!-- TERCERA FILA - CONTROL DE TIEMPOS                  -->
+		    <!-- ================================================= -->
+
+		    <div class="row">
+
+
+		        <!-- INICIO ETAPA -->
+
+		        <div class="col-md-4 mb-2">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <small class="text-muted d-block mb-1">
+		                    Inicio de etapa
+		                </small>
+
+
+		                <strong
+		                    th:text="${sospechoso.fechaInicioEtapa != null
+		                             ? #temporals.format(
+		                                   sospechoso.fechaInicioEtapa,
+		                                   'dd/MM/yyyy HH:mm'
+		                               )
+		                             : '-'}">
+
+		                    -
+
+		                </strong>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- PROXIMA GESTION -->
+
+		        <div class="col-md-4 mb-2">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <small class="text-muted d-block mb-1">
+		                    Próxima gestión
+		                </small>
+
+
+		                <strong
+		                    th:text="${sospechoso.fechaProximaGestion != null
+		                             ? #temporals.format(
+		                                   sospechoso.fechaProximaGestion,
+		                                   'dd/MM/yyyy HH:mm'
+		                               )
+		                             : '-'}">
+
+		                    -
+
+		                </strong>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- DIAS RESTANTES -->
+
+		        <div class="col-md-4 mb-2">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <small class="text-muted d-block mb-1">
+		                    Días restantes
+		                </small>
+
+
+		                <strong
+		                    th:text="${sospechoso.diasRestantes != null
+		                             ? sospechoso.diasRestantes
+		                             : '-'}">
+
+		                    -
+
+		                </strong>
+
+		            </div>
+
+		        </div>
+
+
+		    </div>
+
+
+		</div>
+
+
+
+            <!-- ============================================= -->
+            <!-- DATOS ORIGINALES                              -->
+            <!-- ============================================= -->
+
+            <div class="border rounded p-3">
+
+
+                <h5 class="mb-3">
+
+                    <i class="bi bi-file-earmark-text text-primary"></i>
+
+                    Datos originales del formulario
+
+                </h5>
+
+
+                <div class="row">
+
+
+                    <!-- NOMBRE -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Nombre
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.nombre}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- FECHA NACIMIENTO -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Fecha de nacimiento
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+
+                               th:value="${sospechoso.fechaNacimiento != null
+                                         ? #temporals.format(
+                                               sospechoso.fechaNacimiento,
+                                               'dd/MM/yyyy'
+                                           )
+                                         : '-'}"
+
+                               readonly>
+
+                    </div>
+
+
+                    <!-- TELEFONO -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Teléfono
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.telefonoPrincipal}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- CORREO -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Correo
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.correo}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- FUENTE -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Fuente
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.fuenteOrigen}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- PRODUCTO -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Producto
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.productoInteres}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- MONTO -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Monto estimado
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.montoInteres}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- SUCURSAL -->
+
+                    <div class="col-md-6 form-group">
+
+                        <label>
+                            Sucursal origen
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               th:value="${sospechoso.sucursalOrigen}"
+                               readonly>
+
+                    </div>
+
+
+                    <!-- OBSERVACIONES -->
+
+                    <div class="col-md-12 form-group">
+
+                        <label>
+                            Observaciones del formulario
+                        </label>
+
+                        <textarea class="form-control"
+                                  rows="3"
+                                  readonly
+                                  th:text="${sospechoso.observaciones}">
+                        </textarea>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </th:block>
+
+
+    </div>
+
+
+</section>
+
+
+
+<th:block layout:fragment="page-scripts">
+
+    <script th:src="@{/js/jquery-3.5.1.js}">
+    </script>
+
+    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}">
+    </script>
+
+    <script th:src="@{/js/CRM/PRECRM.js}">
+    </script>
+
+</th:block>
+
+
+</body>
+
+</html>

@@ -28,6 +28,8 @@ import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PathVariable;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
 
 
 @Controller
@@ -529,5 +531,98 @@ public class PRECRMController {
 
         return "redirect:/precrm/seguimiento";
     }
+    
+    
+ // =========================================================
+ // DETALLE DEL SOSPECHOSO
+ // ACCESO DESDE ACCESOS RAPIDOS
+ // =========================================================
+
+ @GetMapping("/detalle")
+ public String mostrarDetalleSospechoso(
+         Model model) {
+
+
+     model.addAttribute(
+         "catalogo",
+         CATALOGO_CRM
+     );
+
+
+     // No hay sospechoso seleccionado todavía
+
+     model.addAttribute(
+         "sospechoso",
+         null
+     );
+
+
+     // Lista para poder seleccionar uno
+     // desde el acceso rápido
+
+     model.addAttribute(
+         "sospechosos",
+         precrmService
+             .obtenerSospechososActivos()
+     );
+
+
+     return "CRM/PRECRMDetalle";
+ }
+ 
+//=========================================================
+//DETALLE DEL SOSPECHOSO
+//ACCESO DESDE LA TABLA
+//=========================================================
+ @GetMapping("/detalle/{pkSospechoso}")
+ public String mostrarDetalleSospechosoSeleccionado(
+
+         @PathVariable("pkSospechoso")
+         Long pkSospechoso,
+
+         Model model) {
+
+
+     PRECRMSospechoso sospechoso =
+             precrmService
+                 .obtenerSospechosoPorId(
+                     pkSospechoso
+                 );
+
+
+     String siguienteEstatus =
+             precrmService
+                 .obtenerSiguienteEstatusPantalla(
+                     sospechoso.getEstatus()
+                 );
+
+
+     model.addAttribute(
+         "catalogo",
+         CATALOGO_CRM
+     );
+
+
+     model.addAttribute(
+         "sospechoso",
+         sospechoso
+     );
+
+
+     model.addAttribute(
+         "siguienteEstatus",
+         siguienteEstatus
+     );
+
+
+     model.addAttribute(
+         "sospechosos",
+         precrmService
+             .obtenerSospechososActivos()
+     );
+
+
+     return "CRM/PRECRMDetalle";
+ }
 
 }

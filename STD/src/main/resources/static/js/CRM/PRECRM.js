@@ -316,3 +316,62 @@ function obtenerNombreEstatusPRECRM(
     }
 
 }
+
+// =========================================================
+// ABRIR DETALLE DEL SOSPECHOSO
+// =========================================================
+
+function abrirDetalleSospechoso() {
+
+    const selector =
+        document.getElementById(
+            "selectorSospechoso"
+        );
+
+
+    if (!selector ||
+        !selector.value) {
+
+        Swal.fire({
+
+            icon: "warning",
+
+            title: "Selecciona un sospechoso",
+
+            text:
+                "Debes seleccionar un sospechoso "
+                + "para consultar su información."
+
+        });
+
+        return;
+    }
+
+
+    window.location.href =
+        obtenerContextPathPRECRM()
+        + "/precrm/detalle/"
+        + selector.value;
+}
+
+
+
+// =========================================================
+// CONTEXT PATH
+// =========================================================
+
+function obtenerContextPathPRECRM() {
+
+    const path =
+        window.location.pathname;
+
+
+    if (path.startsWith("/STD/")) {
+
+        return "/STD";
+
+    }
+
+
+    return "";
+}

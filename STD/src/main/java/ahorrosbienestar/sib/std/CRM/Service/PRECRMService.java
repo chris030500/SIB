@@ -1182,14 +1182,44 @@ public class PRECRMService {
         // TODO SOSPECHOSO NUEVO INICIA COMO REGISTRADO
         // =====================================================
 
+        LocalDateTime ahora =
+                LocalDateTime.now();
+
+
         sospechoso.setEstatus(
             "REGISTRADO"
         );
 
 
         sospechoso.setFechaRegistro(
-            LocalDateTime.now()
+            ahora
         );
+
+
+        sospechoso.setFechaInicioEtapa(
+            ahora
+        );
+
+
+        sospechoso.setFechaUltimaActualizacion(
+            ahora
+        );
+
+
+     // REGISTRADO tiene 7 días
+     // para pasar a SEGUIMIENTO
+        
+        sospechoso.setFechaProximaGestion(
+        	    calcularFechaProximaGestion(
+        	        "REGISTRADO",
+        	        ahora
+        	    )
+        	);
+        sospechoso.setDiasRestantes(
+        	    obtenerDiasPorEstatus(
+        	        "REGISTRADO"
+        	    )
+        	);
 
 
         sospechoso.setActivo(
@@ -1211,6 +1241,58 @@ public class PRECRMService {
             + sospechoso.getFolio()
         );
     }
+    
+ // =========================================================
+ // OBTENER DIAS DISPONIBLES POR ESTATUS
+ // =========================================================
+
+ private Integer obtenerDiasPorEstatus(
+         String estatus) {
+
+
+     if (estatus == null) {
+
+         return null;
+     }
+
+
+     switch (estatus) {
+
+         case "REGISTRADO":
+
+             return 7;
+
+
+         case "SEGUIMIENTO":
+
+             return 3;
+
+
+         case "CITA_AGENDADA":
+
+             return 3;
+
+
+         case "COTIZACION":
+
+             return 2;
+
+
+         case "SOLICITUD":
+
+             return 3;
+
+
+         case "CONCLUIDO":
+
+             return null;
+
+
+         default:
+
+             return null;
+     }
+ }
 
 
     // =========================================================
@@ -2130,6 +2212,13 @@ public void actualizarEstatusSospechoso(
      nuevoEstatus
  );
 
+//=====================================================
+//NUEVA FECHA DE INICIO DE ETAPA
+//=====================================================
+
+sospechoso.setFechaInicioEtapa(
+  ahora
+);
 
  // =====================================================
  // ULTIMA ACTUALIZACION
@@ -2150,6 +2239,12 @@ public void actualizarEstatusSospechoso(
          ahora
      )
  );
+ 
+ sospechoso.setDiasRestantes(
+		    obtenerDiasPorEstatus(
+		        nuevoEstatus
+		    )
+		);
 
 
  sospechosoRepository
@@ -2157,6 +2252,98 @@ public void actualizarEstatusSospechoso(
          sospechoso
      );
 }
+
+
+//=========================================================
+//CALCULAR FECHA DE PROXIMA GESTION POR ESTATUS
+//=========================================================
+
+private LocalDateTime calcularFechaProximaGestion(
+     String estatus,
+     LocalDateTime fechaInicioEtapa) {
+
+
+ if (estatus == null ||
+     fechaInicioEtapa == null) {
+
+     return null;
+ }
+
+
+ switch (estatus) {
+
+
+     // =================================================
+     // REGISTRADO
+     // Tiene 7 dias para pasar a SEGUIMIENTO
+     // =================================================
+
+     case "REGISTRADO":
+
+         return fechaInicioEtapa
+                 .plusDays(7);
+
+
+     // =================================================
+     // SEGUIMIENTO
+     // Tiene 3 dias para pasar a CITA AGENDADA
+     // =================================================
+
+     case "SEGUIMIENTO":
+
+         return fechaInicioEtapa
+                 .plusDays(3);
+
+
+     // =================================================
+     // CITA AGENDADA
+     // Tiene 3 dias para pasar a COTIZACION
+     // =================================================
+
+     case "CITA_AGENDADA":
+
+         return fechaInicioEtapa
+                 .plusDays(3);
+
+
+     // =================================================
+     // COTIZACION
+     // Tiene 2 dias para pasar a SOLICITUD
+     // =================================================
+
+     case "COTIZACION":
+
+         return fechaInicioEtapa
+                 .plusDays(2);
+
+
+     // =================================================
+     // SOLICITUD
+     // Tiene 3 dias para concluir
+     // =================================================
+
+     case "SOLICITUD":
+
+         return fechaInicioEtapa
+                 .plusDays(3);
+
+
+     // =================================================
+     // CONCLUIDO
+     // Ya no tiene proxima gestion
+     // =================================================
+
+     case "CONCLUIDO":
+
+         return null;
+
+
+     default:
+
+         return null;
+ }
+}
+
 
 //=========================================================
 //SIGUIENTE ESTATUS
@@ -2292,4 +2479,63 @@ private LocalDateTime calcularProximaGestion(
 
         return carpeta;
     }
+    
+ // =========================================================
+ // OBTENER DETALLE DEL SOSPECHOSO
+ // =========================================================
+
+ public PRECRMSospechoso obtenerSospechosoPorId(
+         Long pkSospechoso) {
+
+
+     return sospechosoRepository
+             .findById(
+                 pkSospechoso
+             )
+             .orElseThrow(
+                 () -> new IllegalArgumentException(
+                     "No se encontró el sospechoso."
+                 )
+             );
+ }
+ 
+//=========================================================
+//OBTENER SIGUIENTE ESTATUS PARA MOSTRAR EN PANTALLA
+//=========================================================
+
+public String obtenerSiguienteEstatusPantalla(
+      String estatusActual) {
+
+
+  if (estatusActual == null) {
+
+      return null;
+  }
+
+
+  switch (estatusActual) {
+
+      case "REGISTRADO":
+          return "SEGUIMIENTO";
+
+      case "SEGUIMIENTO":
+          return "CITA_AGENDADA";
+
+      case "CITA_AGENDADA":
+          return "COTIZACION";
+
+      case "COTIZACION":
+          return "SOLICITUD";
+
+      case "SOLICITUD":
+          return "CONCLUIDO";
+
+      case "CONCLUIDO":
+          return null;
+
+      default:
+          return null;
+  }
+}
+
 }
