@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +17,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
+import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
 
 
 @Controller
@@ -252,7 +255,184 @@ public class PRECRMController {
     }
 
 
+ // =========================================================
+ // PANTALLA SEGUIMIENTO DE SOSPECHOSOS
+ // =========================================================
 
+ @GetMapping("/seguimiento")
+ public String mostrarSeguimiento(
+
+         @RequestParam(
+             required = false
+         )
+         String folio,
+
+         @RequestParam(
+             required = false
+         )
+         String nombre,
+
+         @RequestParam(
+             required = false
+         )
+         String telefono,
+
+         @RequestParam(
+             required = false
+         )
+         String clasificacion,
+
+         @RequestParam(
+             required = false
+         )
+         String estatus,
+
+         @RequestParam(
+             required = false
+         )
+         @DateTimeFormat(
+             iso = DateTimeFormat.ISO.DATE
+         )
+         LocalDate fechaRegistro,
+
+         Model model) {
+
+
+     model.addAttribute(
+         "catalogo",
+         CATALOGO_CRM
+     );
+
+
+     // =====================================================
+     // BUSCAR SOSPECHOSOS
+     // =====================================================
+
+     List<PRECRMSospechoso> sospechosos =
+             precrmService
+                 .buscarSospechosos(
+
+                     folio,
+
+                     nombre,
+
+                     telefono,
+
+                     clasificacion,
+
+                     estatus,
+
+                     fechaRegistro
+                 );
+
+
+     model.addAttribute(
+         "sospechosos",
+         sospechosos
+     );
+
+
+     // =====================================================
+     // CONSERVAR FILTROS EN PANTALLA
+     // =====================================================
+
+     model.addAttribute(
+         "filtroFolio",
+         folio
+     );
+
+
+     model.addAttribute(
+         "filtroNombre",
+         nombre
+     );
+
+
+     model.addAttribute(
+         "filtroTelefono",
+         telefono
+     );
+
+
+     model.addAttribute(
+         "filtroClasificacion",
+         clasificacion
+     );
+
+
+     model.addAttribute(
+         "filtroEstatus",
+         estatus
+     );
+
+
+     model.addAttribute(
+         "filtroFechaRegistro",
+         fechaRegistro
+     );
+
+
+     // =====================================================
+     // RESUMEN DEL EMBUDO
+     // POR AHORA SIGUE SIENDO GENERAL
+     // =====================================================
+
+     model.addAttribute(
+         "totalRegistrados",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "REGISTRADO"
+             )
+     );
+
+
+     model.addAttribute(
+         "totalSeguimiento",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "SEGUIMIENTO"
+             )
+     );
+
+
+     model.addAttribute(
+         "totalCitaAgendada",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "CITA_AGENDADA"
+             )
+     );
+
+
+     model.addAttribute(
+         "totalCotizacion",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "COTIZACION"
+             )
+     );
+
+
+     model.addAttribute(
+         "totalSolicitud",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "SOLICITUD"
+             )
+     );
+
+
+     model.addAttribute(
+         "totalConcluidos",
+         precrmService
+             .contarSospechososPorEstatus(
+                 "CONCLUIDO"
+             )
+     );
+
+
+     return "CRM/PRECRMSeguimiento";
+ }
     // =========================================================
     // SUBIR ARCHIVO MANUALMENTE
     // =========================================================

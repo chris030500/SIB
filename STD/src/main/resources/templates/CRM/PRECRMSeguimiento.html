@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base-layout}">
+
+<!-- DES-26-0020 PRE CRM -->
+<!-- andrea.orduno -->
+
+
+<head th:replace="layouts/base-layout :: head">
+
+    <meta charset="UTF-8">
+
+    <title>
+        Seguimiento de Sospechosos
+    </title>
+
+    <link th:href="@{/vendor/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+</head>
+
+
+<body>
+
+
+<section class="content"
+         layout:fragment="page-content">
+
+
+    <!-- ===================================================== -->
+    <!-- CONTENEDOR PRINCIPAL                                  -->
+    <!-- ===================================================== -->
+
+    <div class="border p-2 card">
+
+
+        <!-- ================================================= -->
+        <!-- TITULO PRE CRM                                   -->
+        <!-- ================================================= -->
+
+        <div class="bg-info text-white
+                    text-center py-3 rounded mb-3">
+
+            <h2 class="mb-0 font-weight-bold">
+                PRE CRM
+            </h2>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- BOTON REGRESAR                                   -->
+        <!-- ================================================= -->
+
+        <div class="d-flex justify-content-end mb-3">
+
+            <a th:href="@{/precrm}"
+               class="btn btn-secondary">
+
+                <i class="bi bi-arrow-left"></i>
+
+                Regresar
+
+            </a>
+
+        </div>
+
+
+
+		<!-- ===================================================== -->
+		<!-- FILTROS                                               -->
+		<!-- ===================================================== -->
+
+		<div class="border rounded p-3 mb-3">
+
+
+		    <div class="d-flex align-items-center mb-3">
+
+		        <i class="bi bi-funnel text-primary fs-4 mr-2"></i>
+
+		        <h5 class="mb-0 mr-2">
+		            FILTROS
+		        </h5>
+
+
+		        <small class="text-muted">
+
+		            <strong>
+		                Vista restringida:
+		            </strong>
+
+		            solo muestra los registros asignados
+
+		        </small>
+
+		    </div>
+
+
+		    <form th:action="@{/precrm/seguimiento}"
+		          method="get">
+
+
+		        <div class="row">
+
+
+		            <!-- ========================================= -->
+		            <!-- FOLIO                                     -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroFolio">
+		                    Folio
+		                </label>
+
+
+		                <input type="text"
+		                       id="filtroFolio"
+		                       name="folio"
+		                       class="form-control"
+		                       placeholder="Buscar folio"
+		                       th:value="${filtroFolio}">
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- NOMBRE                                    -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroNombre">
+		                    Nombre
+		                </label>
+
+
+		                <input type="text"
+		                       id="filtroNombre"
+		                       name="nombre"
+		                       class="form-control"
+		                       placeholder="Nombre"
+		                       th:value="${filtroNombre}">
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- TELEFONO                                  -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroTelefono">
+		                    Teléfono
+		                </label>
+
+
+		                <input type="text"
+		                       id="filtroTelefono"
+		                       name="telefono"
+		                       class="form-control"
+		                       placeholder="Buscar teléfono"
+		                       th:value="${filtroTelefono}">
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- CLASIFICACION                             -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroClasificacion">
+		                    Clasificación
+		                </label>
+
+
+		                <select id="filtroClasificacion"
+		                        name="clasificacion"
+		                        class="form-control">
+
+
+		                    <option value=""
+		                            th:selected="${filtroClasificacion == null
+		                                         || filtroClasificacion == ''}">
+
+		                        Todas
+
+		                    </option>
+
+
+		                    <option value="Frio"
+		                            th:selected="${filtroClasificacion == 'Frio'}">
+
+		                        Frío
+
+		                    </option>
+
+
+		                    <option value="Caliente"
+		                            th:selected="${filtroClasificacion == 'Caliente'}">
+
+		                        Caliente
+
+		                    </option>
+
+
+		                    <option value="Digital"
+		                            th:selected="${filtroClasificacion == 'Digital'}">
+
+		                        Digital
+
+		                    </option>
+
+
+		                    <option value="Referido"
+		                            th:selected="${filtroClasificacion == 'Referido'}">
+
+		                        Referido
+
+		                    </option>
+
+
+		                </select>
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- ESTATUS                                   -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroEstatus">
+		                    Estatus
+		                </label>
+
+
+		                <select id="filtroEstatus"
+		                        name="estatus"
+		                        class="form-control">
+
+
+		                    <option value=""
+		                            th:selected="${filtroEstatus == null
+		                                         || filtroEstatus == ''}">
+
+		                        Todos
+
+		                    </option>
+
+
+		                    <option value="REGISTRADO"
+		                            th:selected="${filtroEstatus == 'REGISTRADO'}">
+
+		                        Registrado
+
+		                    </option>
+
+
+		                    <option value="SEGUIMIENTO"
+		                            th:selected="${filtroEstatus == 'SEGUIMIENTO'}">
+
+		                        Seguimiento
+
+		                    </option>
+
+
+		                    <option value="CITA_AGENDADA"
+		                            th:selected="${filtroEstatus == 'CITA_AGENDADA'}">
+
+		                        Cita agendada
+
+		                    </option>
+
+
+		                    <option value="COTIZACION"
+		                            th:selected="${filtroEstatus == 'COTIZACION'}">
+
+		                        Cotización
+
+		                    </option>
+
+
+		                    <option value="SOLICITUD"
+		                            th:selected="${filtroEstatus == 'SOLICITUD'}">
+
+		                        Solicitud
+
+		                    </option>
+
+
+		                    <option value="CONCLUIDO"
+		                            th:selected="${filtroEstatus == 'CONCLUIDO'}">
+
+		                        Concluidos
+
+		                    </option>
+
+
+		                </select>
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- FECHA REGISTRO                            -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label for="filtroFechaRegistro">
+		                    Fecha de registro
+		                </label>
+
+
+		                <input type="date"
+		                       id="filtroFechaRegistro"
+		                       name="fechaRegistro"
+		                       class="form-control"
+		                       th:value="${filtroFechaRegistro}">
+
+		            </div>
+
+
+		        </div>
+
+
+		        <div class="row mt-3">
+
+
+		            <!-- ========================================= -->
+		            <!-- ULTIMA ACTUALIZACION                     -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-2">
+
+		                <label>
+		                    Última actualización
+		                </label>
+
+
+		                <input type="date"
+		                       class="form-control"
+		                       disabled
+		                       title="Se habilitará al incorporar la fecha de última actualización">
+
+		            </div>
+
+
+		            <!-- ========================================= -->
+		            <!-- BOTONES                                   -->
+		            <!-- ========================================= -->
+
+		            <div class="col-md-4
+		                        d-flex
+		                        align-items-end">
+
+
+		                <a th:href="@{/precrm/seguimiento}"
+		                   class="btn btn-outline-primary mr-2">
+
+		                    Limpiar
+
+		                </a>
+
+
+		                <button type="submit"
+		                        class="btn btn-primary">
+
+		                    Buscar
+
+		                </button>
+
+
+		            </div>
+
+
+		        </div>
+
+
+		    </form>
+
+
+		</div>
+        <!-- ================================================= -->
+        <!-- RESUMEN DEL EMBUDO                               -->
+        <!-- ================================================= -->
+
+        <div class="border rounded p-3 mb-3">
+
+
+            <div class="d-flex align-items-center mb-3">
+
+                <i class="bi bi-funnel text-primary fs-4 mr-2"></i>
+
+                <h5 class="mb-0">
+                    RESUMEN DEL EMBUDO
+                </h5>
+
+            </div>
+
+
+            <div class="row">
+
+
+                <!-- REGISTRADO -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#d9e8ff;
+                                border-color:#5b9cff !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-files
+                                      text-primary
+                                      fs-3 mr-2"></i>
+
+                            <span>
+                                Registrado
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalRegistrados != null
+						              ? totalRegistrados
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SEGUIMIENTO -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#fff3d9;
+                                border-color:#ffb020 !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-chat-left-text
+                                      text-warning
+                                      fs-3 mr-2"></i>
+
+                            <span>
+                                Seguimiento
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalSeguimiento != null
+						              ? totalSeguimiento
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CITA AGENDADA -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#e3f8df;
+                                border-color:#5dcc45 !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-calendar-event
+                                      text-success
+                                      fs-3 mr-2"></i>
+
+                            <span>
+                                Cita agendada
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalCitaAgendada != null
+						              ? totalCitaAgendada
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COTIZACION -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#f4dcff;
+                                border-color:#d45bff !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-receipt
+                                      fs-3 mr-2"
+                               style="color:#c13cff;"></i>
+
+                            <span>
+                                Cotización
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalCotizacion != null
+						              ? totalCotizacion
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SOLICITUD -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#fff1d6;
+                                border-color:#ffb020 !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-file-earmark-text
+                                      text-warning
+                                      fs-3 mr-2"></i>
+
+                            <span>
+                                Solicitud
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalSolicitud != null
+						              ? totalSolicitud
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONCLUIDOS -->
+
+                <div class="col-md-2">
+
+                    <div class="border rounded p-3 text-center"
+                         style="background:#daf5ff;
+                                border-color:#38c9ef !important;">
+
+                        <div class="d-flex justify-content-center
+                                    align-items-center mb-2">
+
+                            <i class="bi bi-check-circle
+                                      text-info
+                                      fs-3 mr-2"></i>
+
+                            <span>
+                                Concluidos
+                            </span>
+
+                        </div>
+
+						<h2 class="mb-0"
+						    th:text="${totalConcluidos != null
+						              ? totalConcluidos
+						              : 0}">
+
+						    0
+
+						</h2>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- PESTAÑAS POR ETAPAS                              -->
+        <!-- ================================================= -->
+
+        <div class="border rounded p-3 mb-3">
+
+
+            <div class="d-flex align-items-center mb-3">
+
+                <i class="bi bi-people text-primary fs-3 mr-2"></i>
+
+                <h3 class="mb-0">
+                    Pestañas por etapas
+                </h3>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- PESTAÑAS                                     -->
+            <!-- ============================================= -->
+
+            <ul class="nav nav-tabs mb-3"
+                id="tabsEtapas">
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Todos
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Registrado
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link active"
+                       href="#">
+
+                        Seguimiento
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Cita agendada
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Cotización
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Solicitud
+
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="#">
+
+                        Concluidos
+
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+
+
+            <!-- ============================================= -->
+            <!-- TABLA                                        -->
+            <!-- ============================================= -->
+
+            <div class="table-responsive">
+
+
+                <table class="table table-bordered
+                              table-sm text-center mb-0">
+
+
+                    <thead class="thead-light">
+
+                        <tr>
+
+                            <th>
+                                Folio
+                            </th>
+
+                            <th>
+                                Nombre
+                            </th>
+
+                            <th>
+                                Teléfono
+                            </th>
+
+                            <th>
+                                Clasificación
+                            </th>
+
+                            <th>
+                                Estatus
+                            </th>
+
+                            <th>
+                                Próxima gestión
+                            </th>
+
+                            <th>
+                                Última actualización
+                            </th>
+
+                            <th>
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+					<tbody>
+
+
+					    <!-- ================================================= -->
+					    <!-- SOSPECHOSOS REALES                               -->
+					    <!-- ================================================= -->
+
+					    <tr th:each="sospechoso : ${sospechosos}">
+
+
+					        <!-- FOLIO -->
+
+					        <td th:text="${sospechoso.folio}">
+
+					            -
+
+					        </td>
+
+
+					        <!-- NOMBRE -->
+
+					        <td th:text="${sospechoso.nombre}">
+
+					            -
+
+					        </td>
+
+
+					        <!-- TELEFONO -->
+
+					        <td th:text="${sospechoso.telefonoPrincipal}">
+
+					            -
+
+					        </td>
+
+
+					        <!-- CLASIFICACION -->
+
+					        <td>
+
+
+					            <!-- CALIENTE -->
+
+					            <span th:if="${#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Caliente')}"
+					                  class="badge badge-danger px-3 py-2"
+					                  th:text="${sospechoso.clasificacion}">
+
+					                Caliente
+
+					            </span>
+
+
+					            <!-- FRIO -->
+
+					            <span th:if="${#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Frio')}"
+					                  class="badge badge-warning px-3 py-2"
+					                  th:text="${sospechoso.clasificacion}">
+
+					                Frio
+
+					            </span>
+
+
+					            <!-- DIGITAL -->
+
+					            <span th:if="${#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Digital')}"
+					                  class="badge badge-success px-3 py-2"
+					                  th:text="${sospechoso.clasificacion}">
+
+					                Digital
+
+					            </span>
+
+
+					            <!-- REFERIDO -->
+
+					            <span th:if="${#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Referido')}"
+					                  class="badge badge-info px-3 py-2"
+					                  th:text="${sospechoso.clasificacion}">
+
+					                Referido
+
+					            </span>
+
+
+					            <!-- CUALQUIER OTRA -->
+
+					            <span th:if="${sospechoso.clasificacion != null
+					                          && !#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Caliente')
+					                          && !#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Frio')
+					                          && !#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Digital')
+					                          && !#strings.equalsIgnoreCase(
+					                                sospechoso.clasificacion,
+					                                'Referido')}"
+					                  class="badge badge-secondary px-3 py-2"
+					                  th:text="${sospechoso.clasificacion}">
+
+					                -
+
+					            </span>
+
+
+					        </td>
+
+
+					        <!-- ESTATUS -->
+
+					        <td>
+
+					            <span class="badge badge-primary px-3 py-2"
+					                  th:text="${sospechoso.estatus}">
+
+					                REGISTRADO
+
+					            </span>
+
+					        </td>
+
+
+					        <!-- PROXIMA GESTION -->
+
+					        <td class="text-muted">
+
+					            -
+
+					        </td>
+
+
+					        <!-- ULTIMA ACTUALIZACION -->
+
+					        <td class="text-muted">
+
+					            -
+
+					        </td>
+
+
+					        <!-- ACCIONES -->
+
+					        <td>
+
+					            <button type="button"
+					                    class="btn btn-sm btn-outline-primary">
+
+					                <i class="bi bi-eye"></i>
+
+					            </button>
+
+					        </td>
+
+
+					    </tr>
+
+
+					    <!-- ================================================= -->
+					    <!-- SIN REGISTROS                                    -->
+					    <!-- ================================================= -->
+
+					    <tr th:if="${sospechosos == null
+					                || #lists.isEmpty(sospechosos)}">
+
+
+					        <td colspan="8"
+					            class="text-center text-muted">
+
+					            No se encontraron sospechosos registrados.
+
+					        </td>
+
+
+					    </tr>
+
+
+					</tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- SCRIPTS                                               -->
+<!-- ===================================================== -->
+
+<th:block layout:fragment="page-scripts">
+
+    <script th:src="@{/js/jquery-3.5.1.js}"></script>
+
+    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}">
+    </script>
+
+    <script th:src="@{/vendor/axiosNew/axios.min.js}">
+    </script>
+
+</th:block>
+
+
+</body>
+
+</html>

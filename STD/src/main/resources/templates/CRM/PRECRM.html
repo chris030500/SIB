@@ -393,103 +393,170 @@
 		</div>
 
 
-        <!-- ===================================================== -->
-        <!--                    ACCESOS RAPIDOS                     -->
-        <!-- ===================================================== -->
+		<!-- ===================================================== -->
+		<!--                 ACCESOS RAPIDOS                       -->
+		<!-- ===================================================== -->
 
-        <div class="border p-3 card mb-3">
+		<div class="border p-3 card mb-3">
 
-
-            <h5 class="mb-3">
-                ACCESOS RÁPIDOS
-            </h5>
-
-
-            <div class="row">
+		    <h4 class="mb-3">
+		        ACCESOS RÁPIDOS
+		    </h4>
 
 
-                <!-- SEGUIMIENTO DE SOSPECHOSOS -->
-
-                <div class="col-md-4">
-
-                    <button type="button"
-                            id="btnSeguimiento"
-                            class="btn btn-outline-secondary w-100 text-start p-3">
-
-                        <div class="d-flex align-items-center">
-
-                            <i class="bi bi-people-fill text-primary fs-4 me-3"></i>
-
-                            <strong class="flex-grow-1">
-                                Seguimiento de sospechosos
-                            </strong>
-
-                            <i class="bi bi-chevron-right"></i>
-
-                        </div>
-
-                    </button>
-
-                </div>
+		    <div class="row">
 
 
+		        <!-- ============================================= -->
+		        <!-- SEGUIMIENTO DE SOSPECHOSOS                   -->
+		        <!-- ============================================= -->
 
-                <!-- DETALLE DEL SOSPECHOSO -->
+		        <div class="col-md-4">
 
-                <div class="col-md-4">
+		            <a th:href="@{/precrm/seguimiento}"
+		               class="text-decoration-none text-dark">
 
-                    <button type="button"
-                            id="btnDetalleSospechoso"
-                            class="btn btn-outline-secondary w-100 text-start p-3">
+		                <div class="border rounded p-3 h-100">
 
-                        <div class="d-flex align-items-center">
+		                    <div class="d-flex align-items-center justify-content-between">
 
-                            <i class="bi bi-person-fill text-success fs-4 me-3"></i>
+		                        <div class="d-flex align-items-center">
 
-                            <strong class="flex-grow-1">
-                                Detalle del sospechoso
-                            </strong>
+		                            <div class="me-3">
 
-                            <i class="bi bi-chevron-right"></i>
+		                                <i class="bi bi-people-fill
+		                                          text-primary
+		                                          fs-3">
+		                                </i>
 
-                        </div>
-
-                    </button>
-
-                </div>
-
+		                            </div>
 
 
-                <!-- REPORTES Y CONSULTA -->
+		                            <div>
 
-                <div class="col-md-4">
+		                                <strong>
+		                                    Seguimiento de
+		                                    <br>
+		                                    sospechosos
+		                                </strong>
 
-                    <button type="button"
-                            id="btnReportes"
-                            class="btn btn-outline-secondary w-100 text-start p-3">
+		                            </div>
 
-                        <div class="d-flex align-items-center">
-
-                            <i class="bi bi-bar-chart-fill text-primary fs-4 me-3"></i>
-
-                            <strong class="flex-grow-1">
-                                Reportes y consulta
-                            </strong>
-
-                            <i class="bi bi-chevron-right"></i>
-
-                        </div>
-
-                    </button>
-
-                </div>
+		                        </div>
 
 
-            </div>
+		                        <div>
 
-        </div>
+		                            <i class="bi bi-chevron-right
+		                                      text-secondary">
+		                            </i>
+
+		                        </div>
+
+		                    </div>
+
+		                </div>
+
+		            </a>
+
+		        </div>
 
 
+		        <!-- ============================================= -->
+		        <!-- DETALLE DEL SOSPECHOSO                       -->
+		        <!-- ============================================= -->
+
+		        <div class="col-md-4">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center justify-content-between">
+
+		                    <div class="d-flex align-items-center">
+
+		                        <div class="me-3">
+
+		                            <i class="bi bi-person-fill
+		                                      text-success
+		                                      fs-3">
+		                            </i>
+
+		                        </div>
+
+
+		                        <div>
+
+		                            <strong>
+		                                Detalle del
+		                                <br>
+		                                sospechoso
+		                            </strong>
+
+		                        </div>
+
+		                    </div>
+
+
+		                    <i class="bi bi-chevron-right
+		                              text-secondary">
+		                    </i>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		        <!-- ============================================= -->
+		        <!-- REPORTES Y CONSULTA                          -->
+		        <!-- ============================================= -->
+
+		        <div class="col-md-4">
+
+		            <div class="border rounded p-3 h-100">
+
+		                <div class="d-flex align-items-center justify-content-between">
+
+		                    <div class="d-flex align-items-center">
+
+		                        <div class="me-3">
+
+		                            <i class="bi bi-bar-chart-fill
+		                                      text-primary
+		                                      fs-3">
+		                            </i>
+
+		                        </div>
+
+
+		                        <div>
+
+		                            <strong>
+		                                Reportes y
+		                                <br>
+		                                consulta
+		                            </strong>
+
+		                        </div>
+
+		                    </div>
+
+
+		                    <i class="bi bi-chevron-right
+		                              text-secondary">
+		                    </i>
+
+		                </div>
+
+		            </div>
+
+		        </div>
+
+
+		    </div>
+
+		</div>
 
 		<!-- ===================================================== -->
 		<!--              DETALLE DE INCIDENCIAS                   -->
