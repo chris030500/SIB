@@ -2075,9 +2075,7 @@ public void actualizarEstatusSospechoso(
 
  PRECRMSospechoso sospechoso =
          sospechosoRepository
-             .findById(
-                 pkSospechoso
-             )
+             .findById(pkSospechoso)
              .orElseThrow(
                  () -> new IllegalArgumentException(
                      "No se encontró el sospechoso."
@@ -2085,34 +2083,47 @@ public void actualizarEstatusSospechoso(
              );
 
 
+ String estatusActual =
+         sospechoso.getEstatus();
+
+
  // =====================================================
- // VALIDAR ESTATUS PERMITIDO
+ // OBTENER EL UNICO SIGUIENTE ESTATUS PERMITIDO
  // =====================================================
 
- List<String> estatusPermitidos =
-         List.of(
-             "REGISTRADO",
-             "SEGUIMIENTO",
-             "CITA_AGENDADA",
-             "COTIZACION",
-             "SOLICITUD",
-             "CONCLUIDO"
+ String siguienteEstatus =
+         obtenerSiguienteEstatus(
+             estatusActual
          );
 
 
- if (nuevoEstatus == null ||
-     !estatusPermitidos.contains(
-         nuevoEstatus
-     )) {
+ if (siguienteEstatus == null) {
 
      throw new IllegalArgumentException(
-         "El estatus seleccionado no es válido."
+         "El sospechoso ya se encuentra "
+         + "en la última etapa."
      );
  }
 
 
+ if (!siguienteEstatus.equals(nuevoEstatus)) {
+
+     throw new IllegalArgumentException(
+         "No es posible cambiar de "
+         + estatusActual
+         + " a "
+         + nuevoEstatus
+         + "."
+     );
+ }
+
+
+ LocalDateTime ahora =
+         LocalDateTime.now();
+
+
  // =====================================================
- // ACTUALIZAR
+ // ACTUALIZAR ESTATUS
  // =====================================================
 
  sospechoso.setEstatus(
@@ -2120,10 +2131,123 @@ public void actualizarEstatusSospechoso(
  );
 
 
+ // =====================================================
+ // ULTIMA ACTUALIZACION
+ // =====================================================
+
+ sospechoso.setFechaUltimaActualizacion(
+     ahora
+ );
+
+
+ // =====================================================
+ // CALCULAR PROXIMA GESTION
+ // =====================================================
+
+ sospechoso.setFechaProximaGestion(
+     calcularProximaGestion(
+         nuevoEstatus,
+         ahora
+     )
+ );
+
+
  sospechosoRepository
      .saveAndFlush(
          sospechoso
      );
+}
+
+//=========================================================
+//SIGUIENTE ESTATUS
+//=========================================================
+
+private String obtenerSiguienteEstatus(
+     String estatusActual) {
+
+
+ if (estatusActual == null) {
+
+     return null;
+ }
+
+
+ switch (estatusActual) {
+
+     case "REGISTRADO":
+         return "SEGUIMIENTO";
+
+     case "SEGUIMIENTO":
+         return "CITA_AGENDADA";
+
+     case "CITA_AGENDADA":
+         return "COTIZACION";
+
+     case "COTIZACION":
+         return "SOLICITUD";
+
+     case "SOLICITUD":
+         return "CONCLUIDO";
+
+     default:
+         return null;
+ }
+}
+
+
+//=========================================================
+//CALCULAR PROXIMA GESTION
+//=========================================================
+
+private LocalDateTime calcularProximaGestion(
+     String nuevoEstatus,
+     LocalDateTime fechaActualizacion) {
+
+
+ switch (nuevoEstatus) {
+
+     case "SEGUIMIENTO":
+
+         // Seguimiento -> Cita agendada
+         // 3 días
+         return fechaActualizacion
+                 .plusDays(3);
+
+
+     case "CITA_AGENDADA":
+
+         // Cita -> Cotización
+         // 3 días
+         return fechaActualizacion
+                 .plusDays(3);
+
+
+     case "COTIZACION":
+
+         // Cotización -> Solicitud
+         // 2 días
+         return fechaActualizacion
+                 .plusDays(2);
+
+
+     case "SOLICITUD":
+
+         // Solicitud -> Concluido
+         // 3 días
+         return fechaActualizacion
+                 .plusDays(3);
+
+
+     case "CONCLUIDO":
+
+         // Ya no existe siguiente gestión
+         return null;
+
+
+     default:
+
+         return null;
+ }
 }
 
 

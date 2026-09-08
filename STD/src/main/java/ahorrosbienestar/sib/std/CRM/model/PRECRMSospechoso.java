@@ -73,6 +73,13 @@ public class PRECRMSospechoso {
 
     @Column(name = "ESTATUS", nullable = false)
     private String estatus;
+    
+    @Column(name = "FECHA_PROXIMA_GESTION")
+    private LocalDateTime fechaProximaGestion;
+
+
+    @Column(name = "FECHA_ULTIMA_ACTUALIZACION")
+    private LocalDateTime fechaUltimaActualizacion;
 
 
     @Column(name = "FECHA_REGISTRO", nullable = false)
@@ -262,6 +269,37 @@ public class PRECRMSospechoso {
 
         this.estatus =
                 estatus;
+    }
+    
+    public LocalDateTime getFechaProximaGestion() {
+
+        return fechaProximaGestion;
+
+    }
+
+
+    public void setFechaProximaGestion(
+            LocalDateTime fechaProximaGestion) {
+
+        this.fechaProximaGestion =
+                fechaProximaGestion;
+
+    }
+
+
+    public LocalDateTime getFechaUltimaActualizacion() {
+
+        return fechaUltimaActualizacion;
+
+    }
+
+
+    public void setFechaUltimaActualizacion(
+            LocalDateTime fechaUltimaActualizacion) {
+
+        this.fechaUltimaActualizacion =
+                fechaUltimaActualizacion;
+
     }
 
 

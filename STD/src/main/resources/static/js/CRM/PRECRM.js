@@ -107,6 +107,42 @@ function abrirCambioEstatus(boton) {
         boton.getAttribute("data-estatus");
 
 
+    // =====================================================
+    // OBTENER SIGUIENTE ESTATUS
+    // =====================================================
+
+    const siguiente =
+        obtenerSiguienteEstatusPRECRM(
+            estatusActual
+        );
+
+
+    // =====================================================
+    // YA NO HAY SIGUIENTE ETAPA
+    // =====================================================
+
+    if (!siguiente) {
+
+        Swal.fire({
+
+            icon: "info",
+
+            title: "Proceso concluido",
+
+            text:
+                "El sospechoso ya se encuentra "
+                + "en la última etapa."
+
+        });
+
+        return;
+    }
+
+
+    // =====================================================
+    // CONFIRMAR CAMBIO
+    // =====================================================
+
     Swal.fire({
 
         icon: "question",
@@ -114,73 +150,45 @@ function abrirCambioEstatus(boton) {
         title: "Actualizar estatus",
 
         html:
+
             "<div class='text-left'>" +
 
-                "<p class='mb-1'>" +
-                    "<strong>Folio:</strong> " +
-                    folio +
+                "<p>" +
+                    "<strong>Folio:</strong> "
+                    + folio +
                 "</p>" +
 
-                "<p class='mb-3'>" +
-                    "<strong>Sospechoso:</strong> " +
-                    nombre +
+                "<p>" +
+                    "<strong>Sospechoso:</strong> "
+                    + nombre +
                 "</p>" +
 
-                "<p class='mb-1'>" +
-                    "<strong>Estatus actual:</strong> " +
-                    estatusActual +
+                "<p>" +
+                    "<strong>Estatus actual:</strong> "
+                    + obtenerNombreEstatusPRECRM(
+                        estatusActual
+                    ) +
+                "</p>" +
+
+                "<p>" +
+                    "<strong>Nuevo estatus:</strong> "
+                    + obtenerNombreEstatusPRECRM(
+                        siguiente
+                    ) +
                 "</p>" +
 
             "</div>",
 
-        input: "select",
-
-        inputOptions: {
-
-            "REGISTRADO":
-                "Registrado",
-
-            "SEGUIMIENTO":
-                "Seguimiento",
-
-            "CITA_AGENDADA":
-                "Cita agendada",
-
-            "COTIZACION":
-                "Cotización",
-
-            "SOLICITUD":
-                "Solicitud",
-
-            "CONCLUIDO":
-                "Concluido"
-
-        },
-
-        inputValue:
-            estatusActual,
-
-        inputPlaceholder:
-            "Seleccione un estatus",
-
-        showCancelButton:
-            true,
+        showCancelButton: true,
 
         confirmButtonText:
-            "Guardar cambio",
+            "Cambiar a "
+            + obtenerNombreEstatusPRECRM(
+                siguiente
+            ),
 
         cancelButtonText:
-            "Cancelar",
-
-        inputValidator: (value) => {
-
-            if (!value) {
-
-                return "Debe seleccionar un estatus.";
-
-            }
-
-        }
+            "Cancelar"
 
     }).then((result) => {
 
@@ -199,7 +207,7 @@ function abrirCambioEstatus(boton) {
                     "estatusCambio"
                 )
                 .value =
-                result.value;
+                siguiente;
 
 
             document
@@ -211,5 +219,100 @@ function abrirCambioEstatus(boton) {
         }
 
     });
+
+}
+
+
+
+// =========================================================
+// OBTENER SIGUIENTE ESTATUS PRE CRM
+// =========================================================
+
+function obtenerSiguienteEstatusPRECRM(
+        estatusActual) {
+
+
+    switch (estatusActual) {
+
+        case "REGISTRADO":
+
+            return "SEGUIMIENTO";
+
+
+        case "SEGUIMIENTO":
+
+            return "CITA_AGENDADA";
+
+
+        case "CITA_AGENDADA":
+
+            return "COTIZACION";
+
+
+        case "COTIZACION":
+
+            return "SOLICITUD";
+
+
+        case "SOLICITUD":
+
+            return "CONCLUIDO";
+
+
+        default:
+
+            return null;
+
+    }
+
+}
+
+
+
+// =========================================================
+// NOMBRE PARA MOSTRAR
+// =========================================================
+
+function obtenerNombreEstatusPRECRM(
+        estatus) {
+
+
+    switch (estatus) {
+
+        case "REGISTRADO":
+
+            return "Registrado";
+
+
+        case "SEGUIMIENTO":
+
+            return "Seguimiento";
+
+
+        case "CITA_AGENDADA":
+
+            return "Cita agendada";
+
+
+        case "COTIZACION":
+
+            return "Cotización";
+
+
+        case "SOLICITUD":
+
+            return "Solicitud";
+
+
+        case "CONCLUIDO":
+
+            return "Concluido";
+
+
+        default:
+
+            return estatus;
+
+    }
 
 }

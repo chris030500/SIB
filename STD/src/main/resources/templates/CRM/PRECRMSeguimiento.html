@@ -912,15 +912,29 @@
 
 						<!-- PROXIMA GESTION -->
 
-						<td class="text-muted">
+						<td th:text="${sospechoso.fechaProximaGestion != null
+						              ? #temporals.format(
+						                    sospechoso.fechaProximaGestion,
+						                    'dd/MM/yyyy HH:mm'
+						                )
+						              : '-'}">
+
 						    -
+
 						</td>
 
 
 						<!-- ULTIMA ACTUALIZACION -->
 
-						<td class="text-muted">
+						<td th:text="${sospechoso.fechaUltimaActualizacion != null
+						              ? #temporals.format(
+						                    sospechoso.fechaUltimaActualizacion,
+						                    'dd/MM/yyyy HH:mm'
+						                )
+						              : '-'}">
+
 						    -
+
 						</td>
 
 
