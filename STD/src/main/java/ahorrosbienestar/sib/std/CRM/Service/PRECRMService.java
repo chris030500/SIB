@@ -2063,6 +2063,70 @@ private String limpiarFiltro(
 }
 
 
+//=========================================================
+//ACTUALIZAR ESTATUS DEL SOSPECHOSO
+//=========================================================
+
+@Transactional
+public void actualizarEstatusSospechoso(
+     Long pkSospechoso,
+     String nuevoEstatus) {
+
+
+ PRECRMSospechoso sospechoso =
+         sospechosoRepository
+             .findById(
+                 pkSospechoso
+             )
+             .orElseThrow(
+                 () -> new IllegalArgumentException(
+                     "No se encontró el sospechoso."
+                 )
+             );
+
+
+ // =====================================================
+ // VALIDAR ESTATUS PERMITIDO
+ // =====================================================
+
+ List<String> estatusPermitidos =
+         List.of(
+             "REGISTRADO",
+             "SEGUIMIENTO",
+             "CITA_AGENDADA",
+             "COTIZACION",
+             "SOLICITUD",
+             "CONCLUIDO"
+         );
+
+
+ if (nuevoEstatus == null ||
+     !estatusPermitidos.contains(
+         nuevoEstatus
+     )) {
+
+     throw new IllegalArgumentException(
+         "El estatus seleccionado no es válido."
+     );
+ }
+
+
+ // =====================================================
+ // ACTUALIZAR
+ // =====================================================
+
+ sospechoso.setEstatus(
+     nuevoEstatus
+ );
+
+
+ sospechosoRepository
+     .saveAndFlush(
+         sospechoso
+     );
+}
+
+
     // =========================================================
     // OBTENER RUTA
     // =========================================================

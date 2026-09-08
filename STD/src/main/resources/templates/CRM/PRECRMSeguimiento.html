@@ -821,153 +821,182 @@
 
 
 
-            <!-- ============================================= -->
-            <!-- TABLA                                        -->
-            <!-- ============================================= -->
+		<!-- ============================================= -->
+		<!-- TABLA DE SOSPECHOS                            -->
+		<!-- ============================================= -->
 
-			<div class="table-responsive">
+		<div class="table-responsive">
 
 
-			    <table class="table table-bordered
-			                  table-sm text-center mb-0">
+		    <table class="table table-bordered
+		                  table-sm text-center mb-0">
 
 
-			        <thead class="thead-light">
+		        <thead class="thead-light">
 
-			            <tr>
+		            <tr>
 
-			                <th>Folio</th>
+		                <th>Folio</th>
 
-			                <th>Nombre</th>
+		                <th>Nombre</th>
 
-			                <th>Teléfono</th>
+		                <th>Teléfono</th>
 
-			                <th>Clasificación</th>
+		                <th>Clasificación</th>
 
-			                <th>Estatus</th>
+		                <th>Estatus</th>
 
-			                <th>Próxima gestión</th>
+		                <th>Próxima gestión</th>
 
-			                <th>Última actualización</th>
+		                <th>Última actualización</th>
 
-			                <th>Acciones</th>
+		                <th>Acciones</th>
 
-			            </tr>
+		            </tr>
 
-			        </thead>
+		        </thead>
 
 
-			        <tbody>
+		        <tbody>
 
-						    <!-- ================================================= -->
-						    <!-- SOSPECHOSOS REALES                               -->
-						    <!-- ================================================= -->
 
-						    <tr th:each="sospechoso : ${sospechosos}">
+		            <!-- ================================================= -->
+		            <!-- SOSPECHOSOS REALES                               -->
+		            <!-- ================================================= -->
 
+		            <tr th:each="sospechoso : ${sospechosos}">
 
-						        <!-- FOLIO -->
 
-						        <td th:text="${sospechoso.folio}">
+		                <!-- FOLIO -->
 
-						            -
+		                <td th:text="${sospechoso.folio}">
 
-						        </td>
+		                    -
 
+		                </td>
 
-						        <!-- NOMBRE -->
 
-						        <td th:text="${sospechoso.nombre}">
+		                <!-- NOMBRE -->
 
-						            -
+		                <td th:text="${sospechoso.nombre}">
 
-						        </td>
+		                    -
 
+		                </td>
 
-						        <!-- TELEFONO -->
 
-						        <td th:text="${sospechoso.telefonoPrincipal}">
+		                <!-- TELEFONO -->
 
-						            -
+		                <td th:text="${sospechoso.telefonoPrincipal}">
 
-						        </td>
+		                    -
 
+		                </td>
 
-								<!-- CLASIFICACION -->
 
-								<td th:text="${sospechoso.clasificacion}">
-								                   -
-								               </td>
+		                <!-- CLASIFICACION -->
 
+		                <td th:text="${sospechoso.clasificacion}">
 
-						        <!-- ESTATUS -->
+		                    -
 
-						        <td th:text="${sospechoso.estatus}">
+		                </td>
 
-						            -
 
-						        </td>
+						<!-- ESTATUS -->
 
+						<td th:text="${sospechoso.estatus}">
+						    -
+						</td>
 
-						        <!-- PROXIMA GESTION -->
 
-						        <td class="text-muted">
+						<!-- PROXIMA GESTION -->
 
-						            -
+						<td class="text-muted">
+						    -
+						</td>
 
-						        </td>
 
+						<!-- ULTIMA ACTUALIZACION -->
 
-						        <!-- ULTIMA ACTUALIZACION -->
+						<td class="text-muted">
+						    -
+						</td>
 
-						        <td class="text-muted">
 
-						            -
+						<!-- ACCIONES -->
 
-						        </td>
+						<td>
 
+						    <button type="button"
+						            class="btn btn-sm btn-outline-primary"
+						            title="Cambiar estatus"
+						            th:attr="
+						                data-id=${sospechoso.pkSospechoso},
+						                data-folio=${sospechoso.folio},
+						                data-nombre=${sospechoso.nombre},
+						                data-estatus=${sospechoso.estatus}
+						            "
+						            onclick="abrirCambioEstatus(this)">
 
-						        <!-- ACCIONES -->
+						        <i class="bi bi-eye"></i>
 
-						        <td>
+						    </button>
 
-						            <button type="button"
-						                    class="btn btn-sm btn-outline-primary">
+						</td>
 
-						                <i class="bi bi-eye"></i>
 
-						            </button>
+		            </tr>
 
-						        </td>
 
+		            <!-- ================================================= -->
+		            <!-- SIN REGISTROS                                    -->
+		            <!-- ================================================= -->
 
-						    </tr>
+		            <tr th:if="${sospechosos == null
+		                        || #lists.isEmpty(sospechosos)}">
 
 
-						    <!-- ================================================= -->
-						    <!-- SIN REGISTROS                                    -->
-						    <!-- ================================================= -->
+		                <td colspan="8"
+		                    class="text-center text-muted">
 
-						    <tr th:if="${sospechosos == null
-						                || #lists.isEmpty(sospechosos)}">
+		                    No se encontraron sospechosos registrados.
 
+		                </td>
 
-						        <td colspan="8"
-						            class="text-center text-muted">
 
-						            No se encontraron sospechosos registrados.
+		            </tr>
 
-						        </td>
 
+		        </tbody>
 
-						    </tr>
 
+		    </table>
 
-						</tbody>
 
-                </table>
+		</div>
+		
+		<!-- ===================================================== -->
+		<!-- FORMULARIO CAMBIO DE ESTATUS                          -->
+		<!-- ===================================================== -->
 
-            </div>
+		<form id="formCambioEstatus"
+		      th:action="@{/precrm/actualizarEstatus}"
+		      method="post"
+		      style="display:none;">
+
+
+		    <input type="hidden"
+		           id="pkSospechosoCambio"
+		           name="pkSospechoso">
+
+
+		    <input type="hidden"
+		           id="estatusCambio"
+		           name="estatus">
+
+
+		</form>
 
         </div>
 
@@ -988,6 +1017,8 @@
 
     <script th:src="@{/vendor/axiosNew/axios.min.js}">
     </script>
+	
+	<script th:src="@{/js/CRM/PRECRM.js}"></script>
 
 </th:block>
 

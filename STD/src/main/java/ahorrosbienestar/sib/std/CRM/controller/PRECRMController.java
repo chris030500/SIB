@@ -25,6 +25,9 @@ import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
 
 import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
 import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -479,6 +482,52 @@ public class PRECRMController {
          * Lo registra en BD.
          */
         return "redirect:/precrm";
+    }
+    
+    // =========================================================
+    // Boton acciones
+    // =========================================================
+    
+    @PostMapping("/actualizarEstatus")
+    public String actualizarEstatus(
+
+            @RequestParam("pkSospechoso")
+            Long pkSospechoso,
+
+            @RequestParam("estatus")
+            String estatus,
+
+            RedirectAttributes redirectAttributes) {
+
+
+        try {
+
+            precrmService
+                .actualizarEstatusSospechoso(
+                    pkSospechoso,
+                    estatus
+                );
+
+
+            redirectAttributes
+                .addFlashAttribute(
+                    "mensajeExito",
+                    "El estatus del sospechoso "
+                    + "se actualizó correctamente."
+                );
+
+
+        } catch (Exception e) {
+
+            redirectAttributes
+                .addFlashAttribute(
+                    "mensajeError",
+                    e.getMessage()
+                );
+        }
+
+
+        return "redirect:/precrm/seguimiento";
     }
 
 }
