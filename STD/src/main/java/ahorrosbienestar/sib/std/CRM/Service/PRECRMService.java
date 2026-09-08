@@ -1894,15 +1894,50 @@ public class PRECRMService {
  // OBTENER SOSPECHOSOS ACTIVOS
  // =========================================================
 
- public List<PRECRMSospechoso>
-         obtenerSospechososActivos() {
+    public List<PRECRMSospechoso>
+    obtenerSospechososActivos() {
 
 
-     return sospechosoRepository
-             .findByActivoOrderByFechaRegistroDesc(
-                 1
-             );
- }
+List<PRECRMSospechoso> sospechosos =
+        sospechosoRepository
+            .findByActivoOrderByFechaRegistroDesc(
+                1
+            );
+
+
+System.out.println(
+    "======================================"
+);
+
+System.out.println(
+    "SOSPECHOSOS RECUPERADOS DE BD"
+);
+
+
+for (PRECRMSospechoso s
+        : sospechosos) {
+
+    System.out.println(
+        "FOLIO: "
+        + s.getFolio()
+        + " | NOMBRE: "
+        + s.getNombre()
+        + " | CLASIFICACION: ["
+        + s.getClasificacion()
+        + "] | ESTATUS: ["
+        + s.getEstatus()
+        + "]"
+    );
+}
+
+
+System.out.println(
+    "======================================"
+);
+
+
+return sospechosos;
+}
 
 
  // =========================================================

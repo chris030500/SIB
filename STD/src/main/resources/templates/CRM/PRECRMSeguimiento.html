@@ -627,117 +627,197 @@
 
 
 
-        <!-- ================================================= -->
-        <!-- PESTAÑAS POR ETAPAS                              -->
-        <!-- ================================================= -->
+		<!-- ===================================================== -->
+		<!-- PESTAÑAS POR ETAPAS                                   -->
+		<!-- ===================================================== -->
 
-        <div class="border rounded p-3 mb-3">
-
-
-            <div class="d-flex align-items-center mb-3">
-
-                <i class="bi bi-people text-primary fs-3 mr-2"></i>
-
-                <h3 class="mb-0">
-                    Pestañas por etapas
-                </h3>
-
-            </div>
+		<ul class="nav nav-tabs mb-3"
+		    id="tabsEtapas">
 
 
-            <!-- ============================================= -->
-            <!-- PESTAÑAS                                     -->
-            <!-- ============================================= -->
+		    <!-- ================================================= -->
+		    <!-- TODOS                                             -->
+		    <!-- ================================================= -->
 
-            <ul class="nav nav-tabs mb-3"
-                id="tabsEtapas">
+		    <li class="nav-item">
 
+		        <a th:class="${filtroEstatus == null
+		                      || filtroEstatus == ''}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
 
-                <li class="nav-item">
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
 
-                    <a class="nav-link"
-                       href="#">
+		            Todos
 
-                        Todos
+		        </a>
 
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#">
-
-                        Registrado
-
-                    </a>
-
-                </li>
+		    </li>
 
 
-                <li class="nav-item">
+		    <!-- ================================================= -->
+		    <!-- REGISTRADO                                        -->
+		    <!-- ================================================= -->
 
-                    <a class="nav-link active"
-                       href="#">
+		    <li class="nav-item">
 
-                        Seguimiento
+		        <a th:class="${filtroEstatus == 'REGISTRADO'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
 
-                    </a>
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='REGISTRADO',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
 
-                </li>
+		            Registrado
 
+		        </a>
 
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#">
-
-                        Cita agendada
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link"
-                       href="#">
-
-                        Cotización
-
-                    </a>
-
-                </li>
+		    </li>
 
 
-                <li class="nav-item">
+		    <!-- ================================================= -->
+		    <!-- SEGUIMIENTO                                       -->
+		    <!-- ================================================= -->
 
-                    <a class="nav-link"
-                       href="#">
+		    <li class="nav-item">
 
-                        Solicitud
+		        <a th:class="${filtroEstatus == 'SEGUIMIENTO'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
 
-                    </a>
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='SEGUIMIENTO',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
 
-                </li>
+		            Seguimiento
+
+		        </a>
+
+		    </li>
 
 
-                <li class="nav-item">
+		    <!-- ================================================= -->
+		    <!-- CITA AGENDADA                                     -->
+		    <!-- ================================================= -->
 
-                    <a class="nav-link"
-                       href="#">
+		    <li class="nav-item">
 
-                        Concluidos
+		        <a th:class="${filtroEstatus == 'CITA_AGENDADA'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
 
-                    </a>
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='CITA_AGENDADA',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
 
-                </li>
+		            Cita agendada
+
+		        </a>
+
+		    </li>
 
 
-            </ul>
+		    <!-- ================================================= -->
+		    <!-- COTIZACION                                        -->
+		    <!-- ================================================= -->
+
+		    <li class="nav-item">
+
+		        <a th:class="${filtroEstatus == 'COTIZACION'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
+
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='COTIZACION',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
+
+		            Cotización
+
+		        </a>
+
+		    </li>
+
+
+		    <!-- ================================================= -->
+		    <!-- SOLICITUD                                         -->
+		    <!-- ================================================= -->
+
+		    <li class="nav-item">
+
+		        <a th:class="${filtroEstatus == 'SOLICITUD'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
+
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='SOLICITUD',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
+
+		            Solicitud
+
+		        </a>
+
+		    </li>
+
+
+		    <!-- ================================================= -->
+		    <!-- CONCLUIDOS                                        -->
+		    <!-- ================================================= -->
+
+		    <li class="nav-item">
+
+		        <a th:class="${filtroEstatus == 'CONCLUIDO'}
+		                     ? 'nav-link active'
+		                     : 'nav-link'"
+
+		           th:href="@{/precrm/seguimiento(
+		                folio=${filtroFolio},
+		                nombre=${filtroNombre},
+		                telefono=${filtroTelefono},
+		                clasificacion=${filtroClasificacion},
+		                estatus='CONCLUIDO',
+		                fechaRegistro=${filtroFechaRegistro}
+		           )}">
+
+		            Concluidos
+
+		        </a>
+
+		    </li>
+
+
+		</ul>
 
 
 
@@ -745,252 +825,151 @@
             <!-- TABLA                                        -->
             <!-- ============================================= -->
 
-            <div class="table-responsive">
+			<div class="table-responsive">
 
 
-                <table class="table table-bordered
-                              table-sm text-center mb-0">
+			    <table class="table table-bordered
+			                  table-sm text-center mb-0">
 
 
-                    <thead class="thead-light">
+			        <thead class="thead-light">
 
-                        <tr>
+			            <tr>
 
-                            <th>
-                                Folio
-                            </th>
+			                <th>Folio</th>
 
-                            <th>
-                                Nombre
-                            </th>
+			                <th>Nombre</th>
 
-                            <th>
-                                Teléfono
-                            </th>
+			                <th>Teléfono</th>
 
-                            <th>
-                                Clasificación
-                            </th>
+			                <th>Clasificación</th>
 
-                            <th>
-                                Estatus
-                            </th>
+			                <th>Estatus</th>
 
-                            <th>
-                                Próxima gestión
-                            </th>
+			                <th>Próxima gestión</th>
 
-                            <th>
-                                Última actualización
-                            </th>
+			                <th>Última actualización</th>
 
-                            <th>
-                                Acciones
-                            </th>
+			                <th>Acciones</th>
 
-                        </tr>
+			            </tr>
 
-                    </thead>
+			        </thead>
 
 
-					<tbody>
+			        <tbody>
 
+						    <!-- ================================================= -->
+						    <!-- SOSPECHOSOS REALES                               -->
+						    <!-- ================================================= -->
 
-					    <!-- ================================================= -->
-					    <!-- SOSPECHOSOS REALES                               -->
-					    <!-- ================================================= -->
+						    <tr th:each="sospechoso : ${sospechosos}">
 
-					    <tr th:each="sospechoso : ${sospechosos}">
 
+						        <!-- FOLIO -->
 
-					        <!-- FOLIO -->
+						        <td th:text="${sospechoso.folio}">
 
-					        <td th:text="${sospechoso.folio}">
+						            -
 
-					            -
+						        </td>
 
-					        </td>
 
+						        <!-- NOMBRE -->
 
-					        <!-- NOMBRE -->
+						        <td th:text="${sospechoso.nombre}">
 
-					        <td th:text="${sospechoso.nombre}">
+						            -
 
-					            -
+						        </td>
 
-					        </td>
 
+						        <!-- TELEFONO -->
 
-					        <!-- TELEFONO -->
+						        <td th:text="${sospechoso.telefonoPrincipal}">
 
-					        <td th:text="${sospechoso.telefonoPrincipal}">
+						            -
 
-					            -
+						        </td>
 
-					        </td>
 
+								<!-- CLASIFICACION -->
 
-					        <!-- CLASIFICACION -->
+								<td th:text="${sospechoso.clasificacion}">
+								                   -
+								               </td>
 
-					        <td>
 
+						        <!-- ESTATUS -->
 
-					            <!-- CALIENTE -->
+						        <td th:text="${sospechoso.estatus}">
 
-					            <span th:if="${#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Caliente')}"
-					                  class="badge badge-danger px-3 py-2"
-					                  th:text="${sospechoso.clasificacion}">
+						            -
 
-					                Caliente
+						        </td>
 
-					            </span>
 
+						        <!-- PROXIMA GESTION -->
 
-					            <!-- FRIO -->
+						        <td class="text-muted">
 
-					            <span th:if="${#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Frio')}"
-					                  class="badge badge-warning px-3 py-2"
-					                  th:text="${sospechoso.clasificacion}">
+						            -
 
-					                Frio
+						        </td>
 
-					            </span>
 
+						        <!-- ULTIMA ACTUALIZACION -->
 
-					            <!-- DIGITAL -->
+						        <td class="text-muted">
 
-					            <span th:if="${#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Digital')}"
-					                  class="badge badge-success px-3 py-2"
-					                  th:text="${sospechoso.clasificacion}">
+						            -
 
-					                Digital
+						        </td>
 
-					            </span>
 
+						        <!-- ACCIONES -->
 
-					            <!-- REFERIDO -->
+						        <td>
 
-					            <span th:if="${#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Referido')}"
-					                  class="badge badge-info px-3 py-2"
-					                  th:text="${sospechoso.clasificacion}">
+						            <button type="button"
+						                    class="btn btn-sm btn-outline-primary">
 
-					                Referido
+						                <i class="bi bi-eye"></i>
 
-					            </span>
+						            </button>
 
+						        </td>
 
-					            <!-- CUALQUIER OTRA -->
 
-					            <span th:if="${sospechoso.clasificacion != null
-					                          && !#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Caliente')
-					                          && !#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Frio')
-					                          && !#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Digital')
-					                          && !#strings.equalsIgnoreCase(
-					                                sospechoso.clasificacion,
-					                                'Referido')}"
-					                  class="badge badge-secondary px-3 py-2"
-					                  th:text="${sospechoso.clasificacion}">
+						    </tr>
 
-					                -
 
-					            </span>
+						    <!-- ================================================= -->
+						    <!-- SIN REGISTROS                                    -->
+						    <!-- ================================================= -->
 
+						    <tr th:if="${sospechosos == null
+						                || #lists.isEmpty(sospechosos)}">
 
-					        </td>
 
+						        <td colspan="8"
+						            class="text-center text-muted">
 
-					        <!-- ESTATUS -->
+						            No se encontraron sospechosos registrados.
 
-					        <td>
+						        </td>
 
-					            <span class="badge badge-primary px-3 py-2"
-					                  th:text="${sospechoso.estatus}">
 
-					                REGISTRADO
+						    </tr>
 
-					            </span>
 
-					        </td>
-
-
-					        <!-- PROXIMA GESTION -->
-
-					        <td class="text-muted">
-
-					            -
-
-					        </td>
-
-
-					        <!-- ULTIMA ACTUALIZACION -->
-
-					        <td class="text-muted">
-
-					            -
-
-					        </td>
-
-
-					        <!-- ACCIONES -->
-
-					        <td>
-
-					            <button type="button"
-					                    class="btn btn-sm btn-outline-primary">
-
-					                <i class="bi bi-eye"></i>
-
-					            </button>
-
-					        </td>
-
-
-					    </tr>
-
-
-					    <!-- ================================================= -->
-					    <!-- SIN REGISTROS                                    -->
-					    <!-- ================================================= -->
-
-					    <tr th:if="${sospechosos == null
-					                || #lists.isEmpty(sospechosos)}">
-
-
-					        <td colspan="8"
-					            class="text-center text-muted">
-
-					            No se encontraron sospechosos registrados.
-
-					        </td>
-
-
-					    </tr>
-
-
-					</tbody>
+						</tbody>
 
                 </table>
 
             </div>
 
         </div>
-
-
-    </div>
 
 </section>
 
