@@ -258,7 +258,7 @@ public class precrmController {
       incidencias
   );
 
-        return "CRM/PRECRM";
+  return "CRM/precrm";
     }
 
 
@@ -266,7 +266,7 @@ public class precrmController {
  // PANTALLA SEGUIMIENTO DE SOSPECHOSOS
  // =========================================================
 
- @GetMapping("/seguimiento")
+    @GetMapping("/seguimientosospechosos")
  public String mostrarSeguimiento(
 
          @RequestParam(
@@ -438,7 +438,7 @@ public class precrmController {
      );
 
 
-     return "CRM/PRECRMSeguimiento";
+     return "CRM/precrmSeguimientoSos";
  }
     // =========================================================
     // SUBIR ARCHIVO MANUALMENTE
@@ -544,7 +544,7 @@ public class precrmController {
         }
 
 
-        return "redirect:/precrm/detalle/"
+        return "redirect:/precrm/detallesospechosos/"
                 + pkSospechoso;
     }
     
@@ -553,7 +553,7 @@ public class precrmController {
  // ACCESO DESDE ACCESOS RAPIDOS
  // =========================================================
 
- @GetMapping("/detalle")
+    @GetMapping("/detallesospechosos")
  public String mostrarDetalleSospechoso(
          Model model) {
 
@@ -582,14 +582,14 @@ public class precrmController {
      );
 
 
-     return "CRM/PRECRMDetalle";
+     return "CRM/precrmDetalleSos";
  }
  
 //=========================================================
 //DETALLE DEL SOSPECHOSO
 //ACCESO DESDE LA TABLA
 //=========================================================
- @GetMapping("/detalle/{pkSospechoso}")
+    @GetMapping("/detallesospechosos/{pkSospechoso}")
  public String mostrarDetalleSospechosoSeleccionado(
 
          @PathVariable("pkSospechoso")
@@ -655,7 +655,7 @@ public class precrmController {
      );
 
 
-     return "CRM/PRECRMDetalle";
+     return "CRM/precrmDetalleSos";
  }
  
 //=========================================================
@@ -742,7 +742,7 @@ public String guardarGestion(
   }
 
 
-  return "redirect:/precrm/detalle/"
+  return "redirect:/precrm/detallesospechosos/"
           + pkSospechoso;
 }
 

@@ -321,10 +321,10 @@ function abrirDetalleSospechoso() {
     }
 
 
-    window.location.href =
-        obtenerContextPathPRECRM()
-        + "/precrm/detalle/"
-        + selector.value;
+	window.location.href =
+	    obtenerContextPathPRECRM()
+	    + "/precrm/detallesospechosos/"
+	    + selector.value;
 }
 
 

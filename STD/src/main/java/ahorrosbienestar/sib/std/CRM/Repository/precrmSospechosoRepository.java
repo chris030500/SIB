@@ -39,7 +39,7 @@ public interface precrmSospechosoRepository
 
     @Query("""
         SELECT s
-        FROM PRECRMSospechoso s
+        FROM precrmSospechoso s
         WHERE s.activo = 1
 
         AND (
