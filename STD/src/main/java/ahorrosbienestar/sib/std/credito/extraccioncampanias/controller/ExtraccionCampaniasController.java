@@ -354,6 +354,14 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		return procesosCampaniasRepository.contarProcesosExtraccion(tipoCampania);
 	}
 	
+	//valida si existe un proceso ejecutandose no activa boton de WS
+	@GetMapping("/api/countProceso")
+    @ResponseBody
+	public int countProceso() {
+
+		return procesosCampaniasRepository.contarProcesos();
+	}
+	
 	@GetMapping("/api/countDepuracionBc")
     @ResponseBody
     public int contarProcesosDepuracionBc() {
