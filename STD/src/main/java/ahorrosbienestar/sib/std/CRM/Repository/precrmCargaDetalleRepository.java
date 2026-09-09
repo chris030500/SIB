@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
+import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
 
 
 @Repository
-public interface PRECRMCargaDetalleRepository
-        extends JpaRepository<PRECRMCargaDetalle, Long> {
+public interface precrmCargaDetalleRepository
+        extends JpaRepository<precrmCargaDetalle, Long> {
 
 
     boolean existsByNombreProspectoIgnoreCaseAndTelefonoContactoAndResultadoCarga(
@@ -20,7 +20,7 @@ public interface PRECRMCargaDetalleRepository
     );
 
 
-    List<PRECRMCargaDetalle>
+    List<precrmCargaDetalle>
         findByFkCargaAndResultadoCargaInOrderByFilaExcelAsc(
             Long fkCarga,
             List<String> resultados

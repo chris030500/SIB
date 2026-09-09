@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
+import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
 
 
 @Repository
-public interface PRECRMHistorialEstatusRepository
-        extends JpaRepository<PRECRMHistorialEstatus, Long> {
+public interface precrmHistorialEstatusRepository
+        extends JpaRepository<precrmHistorialEstatus, Long> {
 
 
-    List<PRECRMHistorialEstatus>
+    List<precrmHistorialEstatus>
         findByFkSospechosoOrderByFechaCambioDesc(
             Long fkSospechoso
         );

@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TBL_PRECRM_SOSPECHOSO")
-public class PRECRMSospechoso {
+public class precrmSospechoso {
 
 
     @Id

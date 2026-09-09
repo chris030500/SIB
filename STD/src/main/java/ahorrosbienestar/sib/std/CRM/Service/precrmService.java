@@ -34,46 +34,46 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaDetalleRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.PRECRMCargaRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.PRECRMGestionRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.PRECRMHistorialEstatusRepository;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
-import ahorrosbienestar.sib.std.CRM.Repository.PRECRMSospechosoRepository;
-import ahorrosbienestar.sib.std.CRM.dto.PRECRMRegistroDTO;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaDetalleRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmGestionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmHistorialEstatusRepository;
+import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
+import ahorrosbienestar.sib.std.CRM.model.precrmGestion;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmSospechosoRepository;
+import ahorrosbienestar.sib.std.CRM.dto.precrmRegistroDTO;
+import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
+import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
+import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 
 
 @Service
-public class PRECRMService {
+public class precrmService {
 
 
     @Value("${precrm.ruta-archivos}")
     private String rutaArchivos;
 
 
-    private final PRECRMCargaRepository cargaRepository;
+    private final precrmCargaRepository cargaRepository;
 
-    private final PRECRMCargaDetalleRepository detalleRepository;
+    private final precrmCargaDetalleRepository detalleRepository;
 
-    private final PRECRMSospechosoRepository sospechosoRepository;
+    private final precrmSospechosoRepository sospechosoRepository;
 
     @Autowired
-    private PRECRMGestionRepository gestionRepository;
+    private precrmGestionRepository gestionRepository;
     @Autowired
-    private PRECRMHistorialEstatusRepository historialEstatusRepository;
+    private precrmHistorialEstatusRepository historialEstatusRepository;
 
     // =========================================================
     // CONSTRUCTOR
     // =========================================================
 
-    public PRECRMService(
-            PRECRMCargaRepository cargaRepository,
-            PRECRMCargaDetalleRepository detalleRepository,
-            PRECRMSospechosoRepository sospechosoRepository) {
+    public precrmService(
+    		precrmCargaRepository cargaRepository,
+    		precrmCargaDetalleRepository detalleRepository,
+    		precrmSospechosoRepository sospechosoRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -389,7 +389,7 @@ public class PRECRMService {
     // LEER ARCHIVO
     // =========================================================
 
-    public List<PRECRMRegistroDTO> leerArchivo(
+    public List<precrmRegistroDTO> leerArchivo(
             Path archivo)
             throws IOException {
 
@@ -399,7 +399,7 @@ public class PRECRMService {
         );
 
 
-        List<PRECRMRegistroDTO> registros =
+        List<precrmRegistroDTO> registros =
                 new ArrayList<>();
 
 
@@ -433,8 +433,8 @@ public class PRECRMService {
                 }
 
 
-                PRECRMRegistroDTO registro =
-                        new PRECRMRegistroDTO();
+                precrmRegistroDTO registro =
+                        new precrmRegistroDTO();
 
 
                 registro.setFilaExcel(
@@ -614,7 +614,7 @@ public class PRECRMService {
         // 2. LEER EXCEL
         // =====================================================
 
-        List<PRECRMRegistroDTO> registros =
+        List<precrmRegistroDTO> registros =
                 leerArchivo(
                     archivo
                 );
@@ -640,8 +640,8 @@ public class PRECRMService {
         // 4. CREAR CABECERA
         // =====================================================
 
-        PRECRMCarga carga =
-                new PRECRMCarga();
+        precrmCarga carga =
+                new precrmCarga();
 
 
         carga.setNombreArchivo(
@@ -725,7 +725,7 @@ public class PRECRMService {
         // 6. RECORRER EXCEL
         // =====================================================
 
-        for (PRECRMRegistroDTO registro
+        for (precrmRegistroDTO registro
                 : registros) {
 
 
@@ -859,8 +859,8 @@ public class PRECRMService {
             // 7. CREAR DETALLE
             // =================================================
 
-            PRECRMCargaDetalle detalle =
-                    new PRECRMCargaDetalle();
+            precrmCargaDetalle detalle =
+                    new precrmCargaDetalle();
 
 
             detalle.setFkCarga(
@@ -1087,7 +1087,7 @@ public class PRECRMService {
     // =========================================================
 
     private void insertarSospechoso(
-            PRECRMCargaDetalle detalle) {
+    		precrmCargaDetalle detalle) {
 
 
         /*
@@ -1108,8 +1108,8 @@ public class PRECRMService {
         }
 
 
-        PRECRMSospechoso sospechoso =
-                new PRECRMSospechoso();
+        precrmSospechoso sospechoso =
+                new precrmSospechoso();
 
 
         // =====================================================
@@ -1323,7 +1323,7 @@ public class PRECRMService {
     // =========================================================
 
     private boolean esNoViable(
-            PRECRMRegistroDTO registro) {
+    		precrmRegistroDTO registro) {
 
 
         return registro.getEstatus() != null
@@ -1342,7 +1342,7 @@ public class PRECRMService {
     // =========================================================
 
     private String obtenerErroresRegistro(
-            PRECRMRegistroDTO registro) {
+    		precrmRegistroDTO registro) {
 
 
         List<String> errores =
@@ -1499,7 +1499,7 @@ public class PRECRMService {
     // =========================================================
 
     private String generarClaveDuplicado(
-            PRECRMRegistroDTO registro) {
+    		precrmRegistroDTO registro) {
 
 
         String nombre =
@@ -1885,7 +1885,7 @@ public class PRECRMService {
     // ULTIMA CARGA
     // =========================================================
 
-    public PRECRMCarga obtenerUltimaCarga() {
+    public precrmCarga obtenerUltimaCarga() {
 
 
         return cargaRepository
@@ -1898,11 +1898,11 @@ public class PRECRMService {
     // INCIDENCIAS ULTIMO PROCESAMIENTO
     // =========================================================
 
-    public List<PRECRMCargaDetalle>
+    public List<precrmCargaDetalle>
         obtenerIncidenciasUltimoProcesamiento() {
 
 
-        PRECRMCarga ultimaCarga =
+        	precrmCarga ultimaCarga =
                 obtenerUltimaCarga();
 
 
@@ -1934,7 +1934,7 @@ public class PRECRMService {
     public String obtenerUltimoArchivoProcesado() {
 
 
-        PRECRMCarga ultimaCarga =
+    	precrmCarga ultimaCarga =
                 obtenerUltimaCarga();
 
 
@@ -1956,7 +1956,7 @@ public class PRECRMService {
     public String obtenerUltimoProcesamiento() {
 
 
-        PRECRMCarga ultimaCarga =
+    	precrmCarga ultimaCarga =
                 obtenerUltimaCarga();
 
 
@@ -1984,11 +1984,11 @@ public class PRECRMService {
  // OBTENER SOSPECHOSOS ACTIVOS
  // =========================================================
 
-    public List<PRECRMSospechoso>
+    public List<precrmSospechoso>
     obtenerSospechososActivos() {
 
 
-List<PRECRMSospechoso> sospechosos =
+List<precrmSospechoso> sospechosos =
         sospechosoRepository
             .findByActivoOrderByFechaRegistroDesc(
                 1
@@ -2004,7 +2004,7 @@ System.out.println(
 );
 
 
-for (PRECRMSospechoso s
+for (precrmSospechoso s
         : sospechosos) {
 
     System.out.println(
@@ -2050,7 +2050,7 @@ return sospechosos;
 //BUSCAR SOSPECHOSOS CON FILTROS
 //=========================================================
 
-public List<PRECRMSospechoso> buscarSospechosos(
+public List<precrmSospechoso> buscarSospechosos(
       String folio,
       String nombre,
       String telefono,
@@ -2165,7 +2165,7 @@ public void actualizarEstatusSospechoso(
         String origenCambio) {
 
 
-    PRECRMSospechoso sospechoso =
+	precrmSospechoso sospechoso =
             sospechosoRepository
                 .findById(pkSospechoso)
                 .orElseThrow(
@@ -2213,8 +2213,8 @@ public void actualizarEstatusSospechoso(
     // GUARDAR HISTORIAL ANTES DE MODIFICAR SOSPECHOSO
     // =====================================================
 
-    PRECRMHistorialEstatus historial =
-            new PRECRMHistorialEstatus();
+    precrmHistorialEstatus historial =
+            new precrmHistorialEstatus();
 
 
     historial.setFkSospechoso(
@@ -2326,7 +2326,7 @@ public void actualizarEstatusSospechoso(
         );
 }
 
-public List<PRECRMHistorialEstatus>
+public List<precrmHistorialEstatus>
 obtenerHistorialEstatusSospechoso(
     Long pkSospechoso) {
 
@@ -2568,7 +2568,7 @@ private LocalDateTime calcularProximaGestion(
  // OBTENER DETALLE DEL SOSPECHOSO
  // =========================================================
 
- public PRECRMSospechoso obtenerSospechosoPorId(
+ public precrmSospechoso obtenerSospechosoPorId(
          Long pkSospechoso) {
 
 
@@ -2640,7 +2640,7 @@ public void guardarGestion(
  // VALIDAR SOSPECHOSO
  // =====================================================
 
- PRECRMSospechoso sospechoso =
+	precrmSospechoso sospechoso =
          sospechosoRepository
              .findById(pkSospechoso)
              .orElseThrow(
@@ -2684,8 +2684,8 @@ public void guardarGestion(
  // CREAR GESTION
  // =====================================================
 
- PRECRMGestion gestion =
-         new PRECRMGestion();
+ precrmGestion gestion =
+         new precrmGestion();
 
 
  gestion.setFkSospechoso(
@@ -2773,7 +2773,7 @@ public void guardarGestion(
 //OBTENER BITACORA DEL SOSPECHOSO
 //=========================================================
 
-public List<PRECRMGestion> obtenerGestionesSospechoso(
+public List<precrmGestion> obtenerGestionesSospechoso(
      Long pkSospechoso) {
 
 

@@ -1,6 +1,6 @@
 package ahorrosbienestar.sib.std.CRM.dto;
 
-public class PRECRMRegistroDTO {
+public class precrmRegistroDTO {
 
     private int filaExcel;
 

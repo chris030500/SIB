@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TBL_PRECRM_HISTORIAL_ESTATUS")
-public class PRECRMHistorialEstatus {
+public class precrmHistorialEstatus {
 
 
     @Id

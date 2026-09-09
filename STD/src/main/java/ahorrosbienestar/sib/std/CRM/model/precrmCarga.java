@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TBL_PRECRM_CARGA")
-public class PRECRMCarga {
+public class precrmCarga {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

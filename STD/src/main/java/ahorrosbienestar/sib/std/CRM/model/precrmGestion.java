@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TBL_PRECRM_GESTION")
-public class PRECRMGestion {
+public class precrmGestion {
 
 
     @Id

@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
+import ahorrosbienestar.sib.std.CRM.model.precrmGestion;
 
 
 @Repository
-public interface PRECRMGestionRepository
-        extends JpaRepository<PRECRMGestion, Long> {
+public interface precrmGestionRepository
+        extends JpaRepository<precrmGestion, Long> {
 
 
-    List<PRECRMGestion>
+    List<precrmGestion>
         findByFkSospechosoOrderByFechaGestionDesc(
             Long fkSospechoso
         );

@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
+import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 
 
 @Repository
-public interface PRECRMSospechosoRepository
-        extends JpaRepository<PRECRMSospechoso, Long> {
+public interface precrmSospechosoRepository
+        extends JpaRepository<precrmSospechoso, Long> {
 
 
     boolean existsByFkCargaDetalle(
@@ -21,7 +21,7 @@ public interface PRECRMSospechosoRepository
     );
 
 
-    List<PRECRMSospechoso>
+    List<precrmSospechoso>
         findByActivoOrderByFechaRegistroDesc(
             Integer activo
         );
@@ -84,7 +84,7 @@ public interface PRECRMSospechosoRepository
 
         ORDER BY s.fechaRegistro DESC
     """)
-    List<PRECRMSospechoso> buscarSospechosos(
+    List<precrmSospechoso> buscarSospechosos(
 
         @Param("folio")
         String folio,

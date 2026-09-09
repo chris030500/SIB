@@ -20,29 +20,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMCarga;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMCargaDetalle;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMGestion;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
-import ahorrosbienestar.sib.std.CRM.Service.PRECRMService;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
+import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
+import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
+import ahorrosbienestar.sib.std.CRM.model.precrmGestion;
+import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
+import ahorrosbienestar.sib.std.CRM.Service.precrmService;
+import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PathVariable;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMSospechoso;
-import ahorrosbienestar.sib.std.CRM.model.PRECRMHistorialEstatus;
+import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
+import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
 
 
 @Controller
 @RequestMapping("/precrm")
-public class PRECRMController {
+public class precrmController {
 
-    private final PRECRMService precrmService;
+    private final precrmService precrmService;
 
 
-    public PRECRMController(
-            PRECRMService precrmService) {
+    public precrmController(
+    		precrmService precrmService) {
 
         System.out.println(
             ">>> CONSTRUYENDO PRECRMController"
@@ -173,7 +173,7 @@ public class PRECRMController {
      // RESULTADO DEL ULTIMO PROCESAMIENTO
      // =========================================================
 
-     PRECRMCarga ultimaCarga =
+        precrmCarga ultimaCarga =
              precrmService.obtenerUltimaCarga();
 
 
@@ -248,7 +248,7 @@ public class PRECRMController {
   // DETALLE DE INCIDENCIAS
   // =========================================================
 
-  List<PRECRMCargaDetalle> incidencias =
+  List<precrmCargaDetalle> incidencias =
           precrmService
               .obtenerIncidenciasUltimoProcesamiento();
 
@@ -315,7 +315,7 @@ public class PRECRMController {
      // BUSCAR SOSPECHOSOS
      // =====================================================
 
-     List<PRECRMSospechoso> sospechosos =
+     List<precrmSospechoso> sospechosos =
              precrmService
                  .buscarSospechosos(
 
@@ -598,7 +598,7 @@ public class PRECRMController {
          Model model) {
 
 
-	 PRECRMSospechoso sospechoso =
+	 precrmSospechoso sospechoso =
 		        precrmService
 		            .obtenerSospechosoPorId(
 		                pkSospechoso
@@ -612,13 +612,13 @@ public class PRECRMController {
 		            );
 
 
-		List<PRECRMGestion> gestiones =
+		List<precrmGestion> gestiones =
 		        precrmService
 		            .obtenerGestionesSospechoso(
 		                pkSospechoso
 		            );
 		
-		List<PRECRMHistorialEstatus> historialEstatus =
+		List<precrmHistorialEstatus> historialEstatus =
 		        precrmService
 		            .obtenerHistorialEstatusSospechoso(
 		                pkSospechoso
