@@ -41,7 +41,9 @@ public class precrmSospechoso {
 
     @Column(name = "TELEFONO_PRINCIPAL", nullable = false)
     private String telefonoPrincipal;
-
+    
+    @Column(name = "VC_TELEFONO_ALTERNO")
+    private String telefonoAlterno;
 
     @Column(name = "CORREO")
     private String correo;
@@ -170,6 +172,18 @@ public class precrmSospechoso {
 
         this.telefonoPrincipal =
                 telefonoPrincipal;
+    }
+    
+    public String getTelefonoAlterno() {
+        return telefonoAlterno;
+    }
+
+
+    public void setTelefonoAlterno(
+            String telefonoAlterno) {
+
+        this.telefonoAlterno =
+        		telefonoAlterno;
     }
 
 

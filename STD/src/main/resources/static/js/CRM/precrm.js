@@ -348,3 +348,100 @@ function obtenerContextPathPRECRM() {
 
     return "";
 }
+
+
+// =========================================================
+// CONFIRMAR REGISTRO DE TELEFONO ALTERNO
+// =========================================================
+
+function confirmarTelefonoAlternoPRECRM(boton) {
+
+    const pkSospechoso =
+        boton.getAttribute("data-id");
+
+    const folio =
+        boton.getAttribute("data-folio");
+
+    const nombre =
+        boton.getAttribute("data-nombre");
+
+    const telefonoOriginal =
+        boton.getAttribute("data-telefono");
+
+    const sucursal =
+        boton.getAttribute("data-sucursal");
+
+    const telefonoAlterno =
+        boton.getAttribute("data-telefono-alterno");
+
+
+    Swal.fire({
+
+        icon: "warning",
+
+        title: "Agregar teléfono alterno",
+
+        text:
+            "El teléfono alterno deberá registrarse únicamente "
+            + "cuando el número proporcionado originalmente sea incorrecto. "
+            + "¿Desea agregar un teléfono alterno?",
+
+        showCancelButton: true,
+
+        confirmButtonText: "Continuar",
+
+        cancelButtonText: "Cancelar"
+
+    }).then((result) => {
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+
+        document.getElementById(
+            "pkSospechosoTelefonoAlterno"
+        ).value = pkSospechoso;
+
+
+        document.getElementById(
+            "folioTelefonoAlterno"
+        ).textContent = folio || "-";
+
+
+        document.getElementById(
+            "nombreTelefonoAlterno"
+        ).textContent = nombre || "-";
+
+
+        document.getElementById(
+            "telefonoOriginalAlterno"
+        ).textContent = telefonoOriginal || "-";
+
+
+        document.getElementById(
+            "sucursalTelefonoAlterno"
+        ).textContent = sucursal || "-";
+
+
+        document.getElementById(
+            "nuevoTelefonoAlterno"
+        ).value =
+            telefonoAlterno &&
+            telefonoAlterno !== "null"
+                ? telefonoAlterno
+                : "";
+
+
+        const modal =
+            new bootstrap.Modal(
+                document.getElementById(
+                    "modalTelefonoAlternoPRECRM"
+                )
+            );
+
+        modal.show();
+
+    });
+
+}

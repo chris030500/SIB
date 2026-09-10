@@ -47,6 +47,7 @@ import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
 import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 
 
+
 @Service
 public class precrmService {
 
@@ -275,6 +276,28 @@ public class precrmService {
 
 
         return destino;
+    }
+    
+    public void actualizarTelefonoAlterno(
+            Long pkSospechoso,
+            String telefonoAlterno) {
+
+        precrmSospechoso sospechoso =
+            sospechosoRepository
+                .findById(pkSospechoso)
+                .orElseThrow(() ->
+                    new RuntimeException(
+                        "No se encontró el sospechoso."
+                    )
+                );
+
+        sospechoso.setTelefonoAlterno(
+            telefonoAlterno
+        );
+
+        sospechosoRepository.save(
+            sospechoso
+        );
     }
 
 
@@ -2782,5 +2805,7 @@ public List<precrmGestion> obtenerGestionesSospechoso(
              pkSospechoso
          );
 }
+
+
 
 }

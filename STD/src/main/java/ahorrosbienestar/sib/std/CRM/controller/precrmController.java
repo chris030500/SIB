@@ -657,6 +657,86 @@ public class precrmController {
 
      return "CRM/precrmDetalleSos";
  }
+    
+ // =========================================================
+ // GUARDAR TELEFONO ALTERNO DEL SOSPECHOSO
+ // =========================================================
+
+ // =========================================================
+ // GUARDAR TELEFONO ALTERNO DEL SOSPECHOSO
+ // =========================================================
+
+ @PostMapping("/detalle/telefonoAlterno")
+ public String guardarTelefonoAlterno(
+         @RequestParam("pkSospechoso")
+         Long pkSospechoso,
+
+         @RequestParam("telefonoAlterno")
+         String telefonoAlterno,
+
+         RedirectAttributes redirectAttributes) {
+
+     try {
+
+         // Quitar espacios al inicio y final
+         telefonoAlterno =
+             telefonoAlterno != null
+                 ? telefonoAlterno.trim()
+                 : "";
+
+
+         // VALIDAR VACIO
+         if (telefonoAlterno.isEmpty()) {
+
+             redirectAttributes.addFlashAttribute(
+                 "errorTelefonoAlterno",
+                 "Debe ingresar un teléfono alterno."
+             );
+
+             return "redirect:/precrm/detallesospechosos/"
+                     + pkSospechoso;
+         }
+
+
+         // VALIDAR LONGITUD
+         if (telefonoAlterno.length() > 20) {
+
+             redirectAttributes.addFlashAttribute(
+                 "errorTelefonoAlterno",
+                 "El teléfono alterno no puede exceder 20 caracteres."
+             );
+
+             return "redirect:/precrm/detallesospechosos/"
+                     + pkSospechoso;
+         }
+
+
+         // GUARDAR
+         precrmService.actualizarTelefonoAlterno(
+             pkSospechoso,
+             telefonoAlterno
+         );
+
+
+         redirectAttributes.addFlashAttribute(
+             "exitoTelefonoAlterno",
+             "Teléfono alterno registrado correctamente."
+         );
+
+
+     } catch (Exception e) {
+
+         // NO MOSTRAR EL ERROR SQL COMPLETO
+         redirectAttributes.addFlashAttribute(
+             "errorTelefonoAlterno",
+             "No fue posible guardar el teléfono alterno."
+         );
+     }
+
+
+     return "redirect:/precrm/detallesospechosos/"
+             + pkSospechoso;
+ }
  
 //=========================================================
 //GUARDAR GESTION DEL SOSPECHOSO

@@ -681,21 +681,73 @@
 
                         <!-- TELEFONO -->
 
-                        <div class="form-group mb-2">
+						<div class="form-group mb-2">
 
-                            <label class="mb-1">
-                                Teléfono
-                            </label>
+						    <label class="mb-1">
+						        Teléfono original
+						    </label>
+
+						    <input type="text"
+						           class="form-control form-control-sm"
+						           th:value="${sospechoso.telefonoPrincipal}"
+						           readonly>
+
+						</div>
 
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.telefonoPrincipal}"
-                                   readonly>
+						<!-- TELEFONO ALTERNO -->
+						<div class="form-group mb-2">
 
-                        </div>
+						    <label class="mb-1">
+						        Teléfono alterno
+						    </label>
+
+						    <div class="input-group input-group-sm">
+
+						        <input type="text"
+						               id="telefonoAlternoDetalle"
+						               class="form-control"
+						               th:value="${sospechoso.telefonoAlterno}"
+						               readonly>
+
+						        <div class="input-group-append">
+
+						            <button type="button"
+						                    class="btn btn-primary"
+
+						                    th:attr="
+						                        data-id=${sospechoso.pkSospechoso},
+						                        data-folio=${sospechoso.folio},
+						                        data-nombre=${sospechoso.nombre},
+						                        data-telefono=${sospechoso.telefonoPrincipal},
+						                        data-sucursal=${sospechoso.sucursalOrigen},
+						                        data-telefono-alterno=${sospechoso.telefonoAlterno}
+						                    "
+
+						                    onclick="confirmarTelefonoAlternoPRECRM(this)">
+
+						                <i class="bi bi-pencil-square"></i>
+
+						            </button>
+
+						        </div>
+
+						    </div>
 
 
+						    <!-- MENSAJE SOLO PARA TELEFONO ALTERNO -->
+
+						    <small th:if="${exitoTelefonoAlterno != null}"
+						           class="text-success d-block mt-1"
+						           th:text="${exitoTelefonoAlterno}">
+						    </small>
+
+						    <small th:if="${errorTelefonoAlterno != null}"
+						           class="text-danger d-block mt-1"
+						           th:text="${errorTelefonoAlterno}">
+						    </small>
+
+						</div>
 
                         <!-- CORREO -->
 
@@ -1518,7 +1570,245 @@
 
 
             </div>
+			
+			<!-- ===================================================== -->
+			<!-- MODAL TELEFONO ALTERNO                                -->
+			<!-- ===================================================== -->
 
+			<div class="modal fade"
+			     id="modalTelefonoAlternoPRECRM"
+			     tabindex="-1"
+			     aria-labelledby="tituloModalTelefonoAlternoPRECRM"
+			     aria-hidden="true">
+
+			    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+			        <div class="modal-content">
+
+
+			            <!-- ================================================= -->
+			            <!-- CABECERA                                          -->
+			            <!-- ================================================= -->
+
+			            <div class="modal-header bg-info text-white">
+
+			                <h5 class="modal-title font-weight-bold"
+			                    id="tituloModalTelefonoAlternoPRECRM">
+
+			                    REGISTRAR TELÉFONO ALTERNO
+
+			                </h5>
+
+			                <button type="button"
+			                        class="btn-close"
+			                        data-bs-dismiss="modal"
+			                        aria-label="Cerrar">
+			                </button>
+
+			            </div>
+
+
+			            <!-- ================================================= -->
+			            <!-- FORMULARIO                                        -->
+			            <!-- ================================================= -->
+
+			            <form id="formTelefonoAlternoPRECRM"
+			                  th:action="@{/precrm/detalle/telefonoAlterno}"
+			                  method="post">
+
+
+			                <div class="modal-body">
+
+
+			                    <!-- ========================================= -->
+			                    <!-- ID DEL SOSPECHOSO                         -->
+			                    <!-- ========================================= -->
+
+			                    <input type="hidden"
+			                           id="pkSospechosoTelefonoAlterno"
+			                           name="pkSospechoso">
+
+
+			                    <!-- ========================================= -->
+			                    <!-- MENSAJE INFORMATIVO                       -->
+			                    <!-- ========================================= -->
+
+			                    <div class="alert alert-primary">
+
+			                        <i class="bi bi-info-circle mr-1"></i>
+
+			                        El teléfono original no se reemplaza ni
+			                        desaparece. Se mantiene la trazabilidad
+			                        del registro.
+
+			                    </div>
+
+
+			                    <!-- ========================================= -->
+			                    <!-- INFORMACION DEL SOSPECHOSO                -->
+			                    <!-- ========================================= -->
+
+			                    <div class="border rounded p-3 mb-3">
+
+			                        <h6 class="font-weight-bold mb-3">
+
+			                            <i class="bi bi-person-circle mr-1"></i>
+
+			                            Información del sospechoso
+
+			                        </h6>
+
+
+			                        <div class="row">
+
+
+			                            <!-- FOLIO -->
+
+			                            <div class="col-md-3 mb-3">
+
+			                                <small class="text-muted d-block">
+			                                    Folio
+			                                </small>
+
+			                                <strong id="folioTelefonoAlterno">
+			                                    -
+			                                </strong>
+
+			                            </div>
+
+
+			                            <!-- NOMBRE -->
+
+			                            <div class="col-md-3 mb-3">
+
+			                                <small class="text-muted d-block">
+			                                    Nombre
+			                                </small>
+
+			                                <strong id="nombreTelefonoAlterno">
+			                                    -
+			                                </strong>
+
+			                            </div>
+
+
+			                            <!-- TELEFONO ORIGINAL -->
+
+			                            <div class="col-md-3 mb-3">
+
+			                                <small class="text-muted d-block">
+			                                    Teléfono original
+			                                </small>
+
+			                                <strong id="telefonoOriginalAlterno">
+			                                    -
+			                                </strong>
+
+			                            </div>
+
+
+			                            <!-- SUCURSAL -->
+
+			                            <div class="col-md-3 mb-3">
+
+			                                <small class="text-muted d-block">
+			                                    Sucursal
+			                                </small>
+
+			                                <strong id="sucursalTelefonoAlterno">
+			                                    -
+			                                </strong>
+
+			                            </div>
+
+
+			                        </div>
+
+			                    </div>
+
+
+			                    <!-- ========================================= -->
+			                    <!-- CAPTURA DE TELEFONO ALTERNO               -->
+			                    <!-- ========================================= -->
+
+			                    <div class="form-group">
+
+			                        <label for="nuevoTelefonoAlterno"
+			                               class="font-weight-bold">
+
+			                            Teléfono alterno
+
+			                        </label>
+
+
+			                        <input type="text"
+			                               id="nuevoTelefonoAlterno"
+			                               name="telefonoAlterno"
+			                               class="form-control"
+			                               maxlength="20"
+			                               inputmode="numeric"
+			                               autocomplete="off"
+			                               placeholder="Ingrese el teléfono alterno"
+
+			                               oninput="
+			                                   this.value =
+			                                       this.value
+			                                           .replace(/[^0-9]/g, '')
+			                                           .slice(0, 20);
+			                               "
+
+			                               required>
+
+
+			                        <small class="form-text text-muted">
+
+			                            Capture únicamente números.
+			                            Máximo 20 caracteres.
+
+			                        </small>
+
+			                    </div>
+
+
+			                </div>
+
+
+			                <!-- ================================================= -->
+			                <!-- PIE DEL MODAL                                     -->
+			                <!-- ================================================= -->
+
+			                <div class="modal-footer">
+
+			                    <button type="button"
+			                            class="btn btn-secondary"
+			                            data-bs-dismiss="modal">
+
+			                        <i class="bi bi-x-circle mr-1"></i>
+
+			                        Cancelar
+
+			                    </button>
+
+
+			                    <button type="submit"
+			                            class="btn btn-primary">
+
+			                        <i class="bi bi-save mr-1"></i>
+
+			                        Guardar teléfono alterno
+
+			                    </button>
+
+			                </div>
+
+
+			            </form>
+
+			        </div>
+
+			    </div>
+
+			</div>
 
         </th:block>
 
