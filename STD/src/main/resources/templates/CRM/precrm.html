@@ -475,24 +475,18 @@
 
 		                        <!-- DUPLICADO -->
 
-		                        <span
-		                            th:if="${incidencia.resultadoCarga == 'DUPLICADO'}"
-		                            class="badge bg-warning text-dark">
-
-		                            Duplicado
-
-		                        </span>
+								<span th:if="${incidencia.resultadoCarga == 'DUPLICADO'}"
+								      class="badge badge-warning">
+								    Duplicado
+								</span>
 
 
 		                        <!-- ERROR -->
 
-		                        <span
-		                            th:if="${incidencia.resultadoCarga == 'ERROR'}"
-		                            class="badge bg-danger">
-
-		                            Error
-
-		                        </span>
+								<span th:if="${incidencia.resultadoCarga == 'ERROR'}"
+								      class="badge badge-danger">
+								    Error
+								</span>
 
 
 		                    </td>

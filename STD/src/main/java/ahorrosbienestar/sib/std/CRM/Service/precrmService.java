@@ -72,9 +72,9 @@ public class precrmService {
     // =========================================================
 
     public precrmService(
-    		precrmCargaRepository cargaRepository,
-    		precrmCargaDetalleRepository detalleRepository,
-    		precrmSospechosoRepository sospechosoRepository) {
+            precrmCargaRepository cargaRepository,
+            precrmCargaDetalleRepository detalleRepository,
+            precrmSospechosoRepository sospechosoRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -84,8 +84,23 @@ public class precrmService {
 
         this.sospechosoRepository =
                 sospechosoRepository;
-    }
+        
+        System.out.println(
+        	    "PRECRM SERVICE CLASS = "
+        	    + precrmService.class
+        	        .getProtectionDomain()
+        	        .getCodeSource()
+        	        .getLocation()
+        	);
 
+        	System.out.println(
+        	    "PRECRM SERVICE RESOURCE = "
+        	    + precrmService.class
+        	        .getResource(
+        	            "precrmService.class"
+        	        )
+        	);
+    }
 
     // =========================================================
     // ENCABEZADOS ESPERADOS DEL EXCEL
@@ -605,7 +620,7 @@ public class precrmService {
             String usuario)
             throws IOException {
 
-
+        
         String nombreArchivo =
                 archivo.getFileName()
                        .toString();
@@ -759,25 +774,21 @@ public class precrmService {
 
             // =================================================
             // NO VIABLE
+            // Se considera incidencia / error de procesamiento
+            // y NO genera sospechoso
             // =================================================
 
-            if (esNoViable(
-                    registro
-                )) {
-
+            if (esNoViable(registro)) {
 
                 resultado =
-                        "NO_VIABLE";
-
+                        "ERROR";
 
                 motivo =
-                        "Registro marcado como No viable "
-                        + "desde origen";
+                        "Registro no viable. "
+                        + "El sospechoso no será incorporado al PRE CRM.";
 
-
-                totalNoViables++;
+                totalErrores++;
             }
-
 
             // =================================================
             // VALIDAR ERRORES
@@ -1004,30 +1015,51 @@ public class precrmService {
             );
 
 
-            // =================================================
-            // 8. INSERTAR DETALLE
-            // =================================================
+         // =================================================
+         // 8. INSERTAR DETALLE
+         // =================================================
 
-            detalle =
-                detalleRepository
-                    .saveAndFlush(
-                        detalle
-                    );
+         System.out.println(
+             ">>> PRECRM DEBUG | FILA: "
+             + registro.getFilaExcel()
+             + " | ESTATUS ORIGEN: ["
+             + registro.getEstatus()
+             + "] | RESULTADO: ["
+             + resultado
+             + "] | MOTIVO: ["
+             + motivo
+             + "]"
+         );
+
+         detalle =
+             detalleRepository
+                 .saveAndFlush(
+                     detalle
+                 );
+
+         System.out.println(
+             ">>> PRECRM DESPUES SAVE | FILA: "
+             + detalle.getFilaExcel()
+             + " | RESULTADO: ["
+             + detalle.getResultadoCarga()
+             + "] | MOTIVO: ["
+             + detalle.getMotivoResultado()
+             + "]"
+         );
 
 
             // =================================================
             // 9. SI ES CARGADO → CREAR SOSPECHOSO
             // =================================================
 
-            if ("CARGADO".equals(
-                    resultado
-                )) {
+         if ("CARGADO".equals(
+        	        resultado
+        	    )) {
 
-
-                insertarSospechoso(
-                    detalle
-                );
-            }
+        	    insertarSospechoso(
+        	        detalle
+        	    );
+        	}
         }
 
 
@@ -1917,30 +1949,25 @@ public class precrmService {
     }
 
 
-    // =========================================================
-    // INCIDENCIAS ULTIMO PROCESAMIENTO
-    // =========================================================
+ // =========================================================
+ // INCIDENCIAS ULTIMO PROCESAMIENTO
+ // =========================================================
 
     public List<precrmCargaDetalle>
-        obtenerIncidenciasUltimoProcesamiento() {
+    obtenerIncidenciasUltimoProcesamiento() {
 
-
-        	precrmCarga ultimaCarga =
+        precrmCarga ultimaCarga =
                 obtenerUltimaCarga();
 
-
         if (ultimaCarga == null) {
-
             return new ArrayList<>();
         }
-
 
         List<String> resultados =
                 List.of(
                     "DUPLICADO",
                     "ERROR"
                 );
-
 
         return detalleRepository
                 .findByFkCargaAndResultadoCargaInOrderByFilaExcelAsc(
