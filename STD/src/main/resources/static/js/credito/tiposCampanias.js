@@ -59,6 +59,7 @@ function buscarCampanias() {
         cargarChecksEsRenovacion(0);
         //cargarChecksEsRenovacionOferta(0);
         cargarChecksActiva(0);
+		porceAvanceTiempo();
         cargarTipoBuro(0);
         //let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
 		cargarCatalogoProductos([]);
@@ -240,6 +241,7 @@ input.addEventListener('input', function () {
                 cargarChecksActiva(data.i_activa_oferta);
                 let arraySeleccionados = data.vc_productos ? data.vc_productos.split(',') : [];
 				cargarCatalogoProductos(arraySeleccionados);
+				porceAvanceTiempo();
                 //cargarCatalogoProductos(data.vc_productos);
             })
             .catch(error => {
@@ -491,6 +493,24 @@ function cargarChecksActiva(valorSeleccionado) {
             console.error('Error al cargar catálogos', err);
         }
     });
+}
+
+//cargar opcion % DE AVANCE (TIEMPO)
+function porceAvanceTiempo() {
+	$.ajax({
+	        url: newUrlBase + 'credito/api/porceAvanceTiempo',
+	        type: 'GET',
+	        success: function(data) {
+	            console.log("Datos recibidos:", data);
+
+	            if (data && data.length > 0) {
+	                $('#porceAvanceTiem').val(data[0].v_valor);
+	            }
+	        },
+	        error: function(err) {
+	            console.error('Error al cargar porcentaje de avance tiempo', err);
+	        }
+	    });
 }
 
 function esEntero(valor) {
