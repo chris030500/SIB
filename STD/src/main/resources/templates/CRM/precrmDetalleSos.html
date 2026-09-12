@@ -606,723 +606,732 @@
 
 
 
-            <!-- ================================================= -->
-            <!-- OPERACION DEL SOSPECHOSO                          -->
-            <!-- ================================================= -->
+			<!-- ================================================= -->
+			<!-- OPERACION DEL SOSPECHOSO                          -->
+			<!-- ================================================= -->
 
-            <div class="row">
+			<div class="row">
 
 
+			    <!-- ============================================= -->
+			    <!-- REGISTRAR GESTION                             -->
+			    <!-- ============================================= -->
 
-                <!-- ============================================= -->
-                <!-- DATOS ORIGINALES                              -->
-                <!-- ============================================= -->
+			    <div class="col-lg-4 mb-3">
 
-                <div class="col-lg-4 mb-3">
+			        <div class="border rounded p-3 h-100">
 
-                    <div class="border rounded p-3 h-100">
 
+			            <h5 class="mb-3">
 
-                        <h5 class="mb-3">
+			                <i class="bi bi-pencil-square
+			                          text-primary
+			                          mr-2">
+			                </i>
 
-                            <i class="bi bi-file-earmark-text
-                                      text-primary
-                                      mr-2">
-                            </i>
+			                Registrar gestión
 
-                            Datos originales del formulario
+			            </h5>
 
-                        </h5>
 
+			            <!-- ===================================== -->
+			            <!-- FORMULARIO DE GESTION                 -->
+			            <!-- ===================================== -->
 
+			            <form id="formGestionPRECRM"
+			                  th:action="@{/precrm/detalle/guardarGestion}"
+			                  method="post">
 
-                        <!-- NOMBRE -->
 
-                        <div class="form-group mb-2">
+			                <!-- PK SOSPECHOSO -->
 
-                            <label class="mb-1">
-                                Nombre
-                            </label>
+			                <input type="hidden"
+			                       id="pkSospechosoGestion"
+			                       name="pkSospechoso"
+			                       th:value="${sospechoso.pkSospechoso}">
 
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.nombre}"
-                                   readonly>
+			                <!-- ================================= -->
+			                <!-- TIPO DE GESTION                   -->
+			                <!-- ================================= -->
 
-                        </div>
+			                <div class="form-group row
+			                            align-items-center mb-3">
 
 
+			                    <label class="col-md-5 mb-0">
 
-                        <!-- FECHA NACIMIENTO -->
+			                        Tipo de gestión
 
-                        <div class="form-group mb-2">
+			                    </label>
 
-                            <label class="mb-1">
-                                Fecha de nacimiento
-                            </label>
 
+			                    <div class="col-md-7">
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
 
-                                   th:value="${sospechoso.fechaNacimiento != null
-                                             ? #temporals.format(
-                                                   sospechoso.fechaNacimiento,
-                                                   'dd/MM/yyyy'
-                                               )
-                                             : '-'}"
+			                        <select id="tipoGestion"
+			                                name="tipoGestion"
+			                                class="form-control
+			                                       form-control-sm"
+			                                required>
 
-                                   readonly>
 
-                        </div>
+			                            <option value="">
 
+			                                Seleccione
 
+			                            </option>
 
-                        <!-- TELEFONO -->
 
-						<div class="form-group mb-2">
+			                            <option value="LLAMADA">
 
-						    <label class="mb-1">
-						        Teléfono original
-						    </label>
+			                                Llamada
 
-						    <input type="text"
-						           class="form-control form-control-sm"
-						           th:value="${sospechoso.telefonoPrincipal}"
-						           readonly>
+			                            </option>
 
-						</div>
 
+			                            <option value="WHATSAPP">
 
-						<!-- TELEFONO ALTERNO -->
-						<div class="form-group mb-2">
+			                                WhatsApp
 
-						    <label class="mb-1">
-						        Teléfono alterno
-						    </label>
+			                            </option>
 
-						    <div class="input-group input-group-sm">
 
-						        <input type="text"
-						               id="telefonoAlternoDetalle"
-						               class="form-control"
-						               th:value="${sospechoso.telefonoAlterno}"
-						               readonly>
+			                            <option value="CORREO">
 
-						        <div class="input-group-append">
+			                                Correo electrónico
 
-						            <button type="button"
-						                    class="btn btn-primary"
+			                            </option>
 
-						                    th:attr="
-						                        data-id=${sospechoso.pkSospechoso},
-						                        data-folio=${sospechoso.folio},
-						                        data-nombre=${sospechoso.nombre},
-						                        data-telefono=${sospechoso.telefonoPrincipal},
-						                        data-sucursal=${sospechoso.sucursalOrigen},
-						                        data-telefono-alterno=${sospechoso.telefonoAlterno}
-						                    "
 
-						                    onclick="confirmarTelefonoAlternoPRECRM(this)">
+			                            <option value="VISITA">
 
-						                <i class="bi bi-pencil-square"></i>
+			                                Visita
 
-						            </button>
+			                            </option>
 
-						        </div>
 
-						    </div>
+			                            <option value="CITA">
 
+			                                Cita
 
-						    <!-- MENSAJE SOLO PARA TELEFONO ALTERNO -->
+			                            </option>
 
-						    <small th:if="${exitoTelefonoAlterno != null}"
-						           class="text-success d-block mt-1"
-						           th:text="${exitoTelefonoAlterno}">
-						    </small>
 
-						    <small th:if="${errorTelefonoAlterno != null}"
-						           class="text-danger d-block mt-1"
-						           th:text="${errorTelefonoAlterno}">
-						    </small>
+			                            <option value="OTRO">
 
-						</div>
+			                                Otro
 
-                        <!-- CORREO -->
+			                            </option>
 
-                        <div class="form-group mb-2">
 
-                            <label class="mb-1">
-                                Correo
-                            </label>
+			                        </select>
 
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.correo}"
-                                   readonly>
+			                    </div>
 
-                        </div>
 
+			                </div>
 
 
-                        <!-- FUENTE -->
+			                <!-- ================================= -->
+			                <!-- COMENTARIO                        -->
+			                <!-- ================================= -->
 
-                        <div class="form-group mb-2">
+			                <div class="form-group row mb-3">
 
-                            <label class="mb-1">
-                                Fuente
-                            </label>
 
+			                    <label class="col-md-5">
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.fuenteOrigen}"
-                                   readonly>
+			                        Comentario
 
-                        </div>
+			                    </label>
 
 
+			                    <div class="col-md-7">
 
-                        <!-- PRODUCTO -->
 
-                        <div class="form-group mb-2">
+			                        <textarea id="comentarioGestion"
+			                                  name="comentario"
+			                                  class="form-control
+			                                         form-control-sm"
+			                                  rows="5"
+			                                  maxlength="1000"
+			                                  required>
+			                        </textarea>
 
-                            <label class="mb-1">
-                                Producto
-                            </label>
 
+			                    </div>
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.productoInteres}"
-                                   readonly>
 
-                        </div>
+			                </div>
 
 
+			                <!-- ================================= -->
+			                <!-- PROXIMO SEGUIMIENTO               -->
+			                <!-- ================================= -->
 
-                        <!-- MONTO -->
+			                <div class="form-group row
+			                            align-items-center mb-3">
 
-                        <div class="form-group mb-2">
 
-                            <label class="mb-1">
-                                Monto estimado
-                            </label>
+			                    <label class="col-md-5 mb-0">
 
+			                        Próximo
+			                        <br>
+			                        seguimiento
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
+			                    </label>
 
-                                   th:value="${sospechoso.montoInteres != null
-                                             ? sospechoso.montoInteres
-                                             : '-'}"
 
-                                   readonly>
+			                    <div class="col-md-7">
 
-                        </div>
 
+			                        <input type="datetime-local"
+			                               id="fechaProximoSeguimiento"
+			                               name="fechaProximoSeguimiento"
+			                               class="form-control
+			                                      form-control-sm">
 
 
-                        <!-- SUCURSAL -->
+			                    </div>
 
-                        <div class="form-group mb-2">
 
-                            <label class="mb-1">
-                                Sucursal origen
-                            </label>
+			                </div>
 
 
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:value="${sospechoso.sucursalOrigen}"
-                                   readonly>
+			                <!-- ================================= -->
+			                <!-- FECHA DE CITA                     -->
+			                <!-- SOLO CITA_AGENDADA                -->
+			                <!-- ================================= -->
 
-                        </div>
+			                <div class="form-group row
+			                            align-items-center mb-3"
+			                     th:if="${sospechoso.estatus
+			                             == 'CITA_AGENDADA'}">
 
 
+			                    <label class="col-md-5 mb-0">
 
-                        <!-- OBSERVACIONES -->
+			                        Fecha de cita
 
-                        <div class="form-group mb-0">
+			                    </label>
 
-                            <label class="mb-1">
-                                Observaciones del formulario
-                            </label>
 
+			                    <div class="col-md-7">
 
-                            <textarea class="form-control form-control-sm"
-                                      rows="3"
-                                      readonly
-                                      th:text="${sospechoso.observaciones}">
-                            </textarea>
 
-                        </div>
+			                        <input type="datetime-local"
+			                               id="fechaCita"
+			                               name="fechaCita"
+			                               class="form-control
+			                                      form-control-sm">
 
 
-                    </div>
+			                    </div>
 
-                </div>
 
+			                </div>
 
 
-                <!-- ============================================= -->
-                <!-- BITACORA DE SEGUIMIENTO                       -->
-                <!-- ============================================= -->
+			                <!-- ================================= -->
+			                <!-- GUARDAR GESTION                   -->
+			                <!-- ================================= -->
 
-                <div class="col-lg-4 mb-3">
+			                <button type="submit"
+			                        id="btnGuardarGestionPRECRM"
+			                        class="btn btn-primary
+			                               btn-block
+			                               font-weight-bold
+			                               mb-2">
 
-                    <div class="border rounded p-3 h-100">
 
+			                    <i class="bi bi-save mr-1"></i>
 
-                        <h5 class="mb-3">
+			                    Guardar gestión
 
-                            <i class="bi bi-journal-text
-                                      text-primary
-                                      mr-2">
-                            </i>
 
-                            Bitácora de seguimiento
+			                </button>
 
-                        </h5>
 
+			                <!-- ================================= -->
+			                <!-- AVANZAR DE ESTATUS                -->
+			                <!-- ================================= -->
 
+			                <button type="button"
+			                        th:if="${siguienteEstatus != null}"
+			                        class="btn btn-success
+			                               btn-block
+			                               font-weight-bold"
+			                        th:attr="
+			                            data-id=${sospechoso.pkSospechoso},
+			                            data-nombre=${sospechoso.nombre},
+			                            data-estatus-actual=${sospechoso.estatus},
+			                            data-siguiente-estatus=${siguienteEstatus}
+			                        "
+			                        onclick="confirmarAvanceEstatusPRECRM(this)">
 
-                        <div class="table-responsive">
 
+			                    <i class="bi bi-arrow-right-circle mr-1"></i>
 
-                            <table class="table
-                                          table-sm
-                                          table-borderless
-                                          mb-0">
+			                    Avanzar a
 
+			                    <span th:text="${siguienteEstatus}">
 
-                                <thead>
+			                        siguiente etapa
 
-                                    <tr>
+			                    </span>
 
-                                        <th>
-                                            Usuario
-                                        </th>
 
-                                        <th>
-                                            Fecha y hora
-                                        </th>
+			                </button>
 
-                                        <th>
-                                            Comentario
-                                        </th>
 
-                                        <th>
-                                            Tipo de gestión
-                                        </th>
+			                <!-- ================================= -->
+			                <!-- PROCESO CONCLUIDO                 -->
+			                <!-- ================================= -->
 
-                                    </tr>
+			                <div th:if="${siguienteEstatus == null}"
+			                     class="alert alert-success
+			                            text-center mt-2 mb-0">
 
-                                </thead>
 
+			                    <i class="bi bi-check-circle mr-1"></i>
 
-                                <tbody>
+			                    Proceso concluido
 
 
-                                    <!-- ================================= -->
-                                    <!-- GESTIONES REGISTRADAS             -->
-                                    <!-- ================================= -->
+			                </div>
 
-                                    <tr th:each="gestion : ${gestiones}">
 
+			            </form>
 
-                                        <!-- USUARIO -->
 
-										<td th:text="${gestion.usuarioGestion != null
-										                      ? gestion.usuarioGestion
-										                      : '-'}">
+			        </div>
 
-										            -
+			    </div>
 
-										        </td>
 
 
+			    <!-- ============================================= -->
+			    <!-- BITACORA DE SEGUIMIENTO                       -->
+			    <!-- ============================================= -->
 
-                                        <!-- FECHA -->
+			    <div class="col-lg-4 mb-3">
 
-										<td th:text="${gestion.fechaGestion != null
-										                      ? #temporals.format(
-										                            gestion.fechaGestion,
-										                            'dd/MM/yyyy'
-										                        )
-										                      : '-'}">
+			        <div class="border rounded p-3 h-100">
 
-										            -
 
-										        </td>
+			            <h5 class="mb-3">
 
+			                <i class="bi bi-journal-text
+			                          text-primary
+			                          mr-2">
+			                </i>
 
+			                Bitácora de seguimiento
 
-                                        <!-- COMENTARIO -->
+			            </h5>
 
-										<td th:text="${gestion.comentario != null
-										                      ? gestion.comentario
-										                      : '-'}">
 
-										            -
+			            <div class="table-responsive">
 
-										        </td>
 
+			                <table class="table
+			                              table-sm
+			                              table-borderless
+			                              mb-0">
 
 
-                                        <!-- TIPO GESTION -->
+			                    <thead>
 
-										<td th:text="${gestion.tipoGestion != null
-										              ? gestion.tipoGestion
-										              : '-'}">
+			                        <tr>
 
-										    -
+			                            <th>
 
-										</td>
+			                                Usuario
 
+			                            </th>
 
-                                    </tr>
+			                            <th>
 
+			                                Fecha y hora
 
+			                            </th>
 
-                                    <!-- ================================= -->
-                                    <!-- SIN GESTIONES                     -->
-                                    <!-- ================================= -->
+			                            <th>
 
-									<tr th:if="${gestiones == null
-									                || #lists.isEmpty(gestiones)}">
+			                                Comentario
 
+			                            </th>
 
-									        <td colspan="4"
-									            class="text-center text-muted py-4">
+			                            <th>
 
-									            Aún no existen gestiones registradas.
+			                                Tipo de gestión
 
-									        </td>
+			                            </th>
 
+			                        </tr>
 
-									    </tr>
+			                    </thead>
 
 
-                                </tbody>
+			                    <tbody>
 
 
-                            </table>
+			                        <!-- ================================= -->
+			                        <!-- GESTIONES REGISTRADAS             -->
+			                        <!-- ================================= -->
 
+			                        <tr th:each="gestion : ${gestiones}">
 
-                        </div>
 
+			                            <!-- USUARIO -->
 
-                    </div>
+			                            <td th:text="${gestion.usuarioGestion != null
+			                                          ? gestion.usuarioGestion
+			                                          : '-'}">
+			                                -
+			                            </td>
 
-                </div>
 
+			                            <!-- FECHA -->
 
+			                            <td th:text="${gestion.fechaGestion != null
+			                                          ? #temporals.format(
+			                                                gestion.fechaGestion,
+			                                                'dd/MM/yyyy'
+			                                            )
+			                                          : '-'}">
+			                                -
+			                            </td>
 
-                <!-- ============================================= -->
-                <!-- REGISTRAR GESTION                             -->
-                <!-- ============================================= -->
 
-                <div class="col-lg-4 mb-3">
+			                            <!-- COMENTARIO -->
 
-                    <div class="border rounded p-3 h-100">
+			                            <td th:text="${gestion.comentario != null
+			                                          ? gestion.comentario
+			                                          : '-'}">
+			                                -
+			                            </td>
 
 
-                        <h5 class="mb-3">
+			                            <!-- TIPO GESTION -->
 
-                            <i class="bi bi-pencil-square
-                                      text-primary
-                                      mr-2">
-                            </i>
+			                            <td th:text="${gestion.tipoGestion != null
+			                                          ? gestion.tipoGestion
+			                                          : '-'}">
+			                                -
+			                            </td>
 
-                            Registrar gestión
 
-                        </h5>
+			                        </tr>
 
 
+			                        <!-- ================================= -->
+			                        <!-- SIN GESTIONES                     -->
+			                        <!-- ================================= -->
 
-                        <!-- ===================================== -->
-                        <!-- FORMULARIO DE GESTION                 -->
-                        <!-- ===================================== -->
+			                        <tr th:if="${gestiones == null
+			                                    || #lists.isEmpty(gestiones)}">
 
-                        <form id="formGestionPRECRM"
-                              th:action="@{/precrm/detalle/guardarGestion}"
-                              method="post">
 
+			                            <td colspan="4"
+			                                class="text-center text-muted py-4">
 
+			                                Aún no existen gestiones registradas.
 
-                            <!-- PK SOSPECHOSO -->
+			                            </td>
 
-                            <input type="hidden"
-                                   id="pkSospechosoGestion"
-                                   name="pkSospechoso"
-                                   th:value="${sospechoso.pkSospechoso}">
 
+			                        </tr>
 
 
-                            <!-- ================================= -->
-                            <!-- TIPO DE GESTION                   -->
-                            <!-- ================================= -->
+			                    </tbody>
 
-                            <div class="form-group row
-                                        align-items-center mb-3">
 
+			                </table>
 
-                                <label class="col-md-5 mb-0">
 
-                                    Tipo de gestión
+			            </div>
 
-                                </label>
 
+			        </div>
 
-                                <div class="col-md-7">
+			    </div>
 
 
-                                    <select id="tipoGestion"
-                                            name="tipoGestion"
-                                            class="form-control
-                                                   form-control-sm"
-                                            required>
 
+			    <!-- ============================================= -->
+			    <!-- DATOS ORIGINALES                              -->
+			    <!-- ============================================= -->
 
-                                        <option value="">
-                                            Seleccione
-                                        </option>
+			    <div class="col-lg-4 mb-3">
 
+			        <div class="border rounded p-3 h-100">
 
-                                        <option value="LLAMADA">
-                                            Llamada
-                                        </option>
 
+			            <h5 class="mb-3">
 
-                                        <option value="WHATSAPP">
-                                            WhatsApp
-                                        </option>
+			                <i class="bi bi-file-earmark-text
+			                          text-primary
+			                          mr-2">
+			                </i>
 
+			                Datos originales del formulario
 
-                                        <option value="CORREO">
-                                            Correo electrónico
-                                        </option>
+			            </h5>
 
 
-                                        <option value="VISITA">
-                                            Visita
-                                        </option>
+			            <!-- NOMBRE -->
 
+			            <div class="form-group mb-2">
 
-                                        <option value="CITA">
-                                            Cita
-                                        </option>
+			                <label class="mb-1">
 
+			                    Nombre
 
-                                        <option value="OTRO">
-                                            Otro
-                                        </option>
+			                </label>
 
 
-                                    </select>
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.nombre}"
+			                       readonly>
 
+			            </div>
 
-                                </div>
 
+			            <!-- FECHA NACIMIENTO -->
 
-                            </div>
+			            <div class="form-group mb-2">
 
+			                <label class="mb-1">
 
+			                    Fecha de nacimiento
 
-                            <!-- ================================= -->
-                            <!-- COMENTARIO                        -->
-                            <!-- ================================= -->
+			                </label>
 
-                            <div class="form-group row mb-3">
 
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.fechaNacimiento != null
+			                                 ? #temporals.format(
+			                                       sospechoso.fechaNacimiento,
+			                                       'dd/MM/yyyy'
+			                                   )
+			                                 : '-'}"
+			                       readonly>
 
-                                <label class="col-md-5">
+			            </div>
 
-                                    Comentario
 
-                                </label>
+			            <!-- TELEFONO -->
 
+			            <div class="form-group mb-2">
 
-                                <div class="col-md-7">
+			                <label class="mb-1">
 
+			                    Teléfono original
 
-                                    <textarea id="comentarioGestion"
-                                              name="comentario"
-                                              class="form-control
-                                                     form-control-sm"
-                                              rows="5"
-                                              maxlength="1000"
-                                              required>
-                                    </textarea>
+			                </label>
 
 
-                                </div>
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.telefonoPrincipal}"
+			                       readonly>
 
+			            </div>
 
-                            </div>
 
+			            <!-- TELEFONO ALTERNO -->
 
+			            <div class="form-group mb-2">
 
-                            <!-- ================================= -->
-                            <!-- PROXIMO SEGUIMIENTO               -->
-                            <!-- ================================= -->
+			                <label class="mb-1">
 
-                            <div class="form-group row
-                                        align-items-center mb-3">
+			                    Teléfono alterno
 
+			                </label>
 
-                                <label class="col-md-5 mb-0">
 
-                                    Próximo
-                                    <br>
-                                    seguimiento
+			                <div class="input-group input-group-sm">
 
-                                </label>
 
+			                    <input type="text"
+			                           id="telefonoAlternoDetalle"
+			                           class="form-control"
+			                           th:value="${sospechoso.telefonoAlterno}"
+			                           readonly>
 
-                                <div class="col-md-7">
 
+			                    <div class="input-group-append">
 
-                                    <input type="datetime-local"
-                                           id="fechaProximoSeguimiento"
-                                           name="fechaProximoSeguimiento"
-                                           class="form-control
-                                                  form-control-sm">
 
+			                        <button type="button"
+			                                class="btn btn-primary"
+			                                th:attr="
+			                                    data-id=${sospechoso.pkSospechoso},
+			                                    data-folio=${sospechoso.folio},
+			                                    data-nombre=${sospechoso.nombre},
+			                                    data-telefono=${sospechoso.telefonoPrincipal},
+			                                    data-sucursal=${sospechoso.sucursalOrigen},
+			                                    data-telefono-alterno=${sospechoso.telefonoAlterno}
+			                                "
+			                                onclick="confirmarTelefonoAlternoPRECRM(this)">
 
-                                </div>
+			                            <i class="bi bi-pencil-square"></i>
 
+			                        </button>
 
-                            </div>
 
+			                    </div>
 
 
-                            <!-- ================================= -->
-                            <!-- FECHA DE CITA                     -->
-                            <!-- SOLO CITA_AGENDADA                -->
-                            <!-- ================================= -->
+			                </div>
 
-                            <div class="form-group row
-                                        align-items-center mb-3"
 
-                                 th:if="${sospechoso.estatus
-                                         == 'CITA_AGENDADA'}">
+			                <!-- MENSAJE SOLO PARA TELEFONO ALTERNO -->
 
+			                <small th:if="${exitoTelefonoAlterno != null}"
+			                       class="text-success d-block mt-1"
+			                       th:text="${exitoTelefonoAlterno}">
+			                </small>
 
-                                <label class="col-md-5 mb-0">
 
-                                    Fecha de cita
+			                <small th:if="${errorTelefonoAlterno != null}"
+			                       class="text-danger d-block mt-1"
+			                       th:text="${errorTelefonoAlterno}">
+			                </small>
 
-                                </label>
 
+			            </div>
 
-                                <div class="col-md-7">
 
+			            <!-- CORREO -->
 
-                                    <input type="datetime-local"
-                                           id="fechaCita"
-                                           name="fechaCita"
-                                           class="form-control
-                                                  form-control-sm">
+			            <div class="form-group mb-2">
 
+			                <label class="mb-1">
 
-                                </div>
+			                    Correo
 
+			                </label>
 
-                            </div>
 
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.correo}"
+			                       readonly>
 
+			            </div>
 
-                            <!-- ================================= -->
-                            <!-- GUARDAR GESTION                   -->
-                            <!-- ================================= -->
 
-                            <button type="submit"
-                                    id="btnGuardarGestionPRECRM"
-                                    class="btn btn-primary
-                                           btn-block
-                                           font-weight-bold
-                                           mb-2">
+			            <!-- FUENTE -->
 
+			            <div class="form-group mb-2">
 
-                                <i class="bi bi-save mr-1"></i>
+			                <label class="mb-1">
 
-                                Guardar gestión
+			                    Fuente
 
+			                </label>
 
-                            </button>
 
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.fuenteOrigen}"
+			                       readonly>
 
+			            </div>
 
-                            <!-- ================================= -->
-                            <!-- AVANZAR DE ESTATUS                -->
-                            <!-- ================================= -->
 
-                            <button type="button"
+			            <!-- PRODUCTO -->
 
-                                    th:if="${siguienteEstatus != null}"
+			            <div class="form-group mb-2">
 
-                                    class="btn btn-success
-                                           btn-block
-                                           font-weight-bold"
+			                <label class="mb-1">
 
-                                    th:attr="
-                                        data-id=${sospechoso.pkSospechoso},
-                                        data-nombre=${sospechoso.nombre},
-                                        data-estatus-actual=${sospechoso.estatus},
-                                        data-siguiente-estatus=${siguienteEstatus}
-                                    "
+			                    Producto
 
-                                    onclick="confirmarAvanceEstatusPRECRM(this)">
+			                </label>
 
 
-                                <i class="bi bi-arrow-right-circle mr-1"></i>
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.productoInteres}"
+			                       readonly>
 
-                                Avanzar a
+			            </div>
 
-                                <span th:text="${siguienteEstatus}">
 
-                                    siguiente etapa
+			            <!-- MONTO -->
 
-                                </span>
+			            <div class="form-group mb-2">
 
+			                <label class="mb-1">
 
-                            </button>
+			                    Monto estimado
 
+			                </label>
 
 
-                            <!-- ================================= -->
-                            <!-- PROCESO CONCLUIDO                 -->
-                            <!-- ================================= -->
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.montoInteres != null
+			                                 ? sospechoso.montoInteres
+			                                 : '-'}"
+			                       readonly>
 
-                            <div th:if="${siguienteEstatus == null}"
-                                 class="alert alert-success
-                                        text-center mt-2 mb-0">
+			            </div>
 
 
-                                <i class="bi bi-check-circle mr-1"></i>
+			            <!-- SUCURSAL -->
 
-                                Proceso concluido
+			            <div class="form-group mb-2">
 
+			                <label class="mb-1">
 
-                            </div>
+			                    Sucursal origen
 
+			                </label>
 
-                        </form>
 
+			                <input type="text"
+			                       class="form-control form-control-sm"
+			                       th:value="${sospechoso.sucursalOrigen}"
+			                       readonly>
 
-                    </div>
+			            </div>
 
-                </div>
 
+			            <!-- OBSERVACIONES -->
 
-            </div>
+			            <div class="form-group mb-0">
 
+			                <label class="mb-1">
 
+			                    Observaciones del formulario
 
+			                </label>
+
+
+			                <textarea class="form-control form-control-sm"
+			                          rows="3"
+			                          readonly
+			                          th:text="${sospechoso.observaciones}">
+			                </textarea>
+
+			            </div>
+
+
+			        </div>
+
+			    </div>
+
+
+			</div>
+			
             <!-- ================================================= -->
             <!-- FORMULARIO OCULTO PARA AVANZAR ESTATUS            -->
             <!-- ================================================= -->
