@@ -870,3 +870,309 @@ $(document).ready(function() {
 
 
 });
+
+// =========================================================
+// DATATABLE
+// CONFIGURACION DE SUCURSALES PRE CRM
+// =========================================================
+
+$(document).ready(function() {
+
+
+    // =====================================================
+    // CONFIGURACION GENERAL
+    // =====================================================
+
+    const configuracionDataTableSucursales = {
+
+        pageLength: 10,
+
+        lengthMenu: [
+            [10, 25, 50, -1],
+            [10, 25, 50, "Todos"]
+        ],
+
+        ordering: true,
+
+        searching: true,
+
+        info: true,
+
+        paging: true,
+
+        autoWidth: false,
+
+
+        language: {
+
+            decimal: "",
+
+            emptyTable:
+                "No hay información disponible",
+
+            info:
+                "Mostrando _START_ a _END_ de _TOTAL_ registros",
+
+            infoEmpty:
+                "Mostrando 0 a 0 de 0 registros",
+
+            infoFiltered:
+                "(filtrado de _MAX_ registros totales)",
+
+            lengthMenu:
+                "Mostrar _MENU_ registros",
+
+            loadingRecords:
+                "Cargando...",
+
+            processing:
+                "Procesando...",
+
+            search:
+                "Buscar:",
+
+            zeroRecords:
+                "No se encontraron resultados",
+
+            paginate: {
+
+                first:
+                    "Primero",
+
+                last:
+                    "Último",
+
+                next:
+                    "Siguiente",
+
+                previous:
+                    "Anterior"
+            }
+
+        }
+
+    };
+
+
+    // =====================================================
+    // SUCURSALES DISPONIBLES
+    // =====================================================
+
+    if (
+        $("#tablaSucursalesDisponibles").length > 0
+        &&
+        !$.fn.DataTable.isDataTable(
+            "#tablaSucursalesDisponibles"
+        )
+    ) {
+
+
+        $("#tablaSucursalesDisponibles")
+            .DataTable({
+
+                ...configuracionDataTableSucursales,
+
+
+                // =========================================
+                // COLUMNA AGREGAR
+                // NO ORDENA / NO BUSCA
+                // =========================================
+
+                columnDefs: [
+
+                    {
+                        targets: 1,
+                        orderable: false,
+                        searchable: false
+                    }
+
+                ]
+
+            });
+
+    }
+
+
+    // =====================================================
+    // SUCURSALES HABILITADAS PRE CRM
+    // =====================================================
+
+    if (
+        $("#tablaSucursalesPrecrm").length > 0
+        &&
+        !$.fn.DataTable.isDataTable(
+            "#tablaSucursalesPrecrm"
+        )
+    ) {
+
+
+        $("#tablaSucursalesPrecrm")
+            .DataTable({
+
+                ...configuracionDataTableSucursales,
+
+
+                // =========================================
+                // COLUMNA QUITAR
+                // NO ORDENA / NO BUSCA
+                // =========================================
+
+                columnDefs: [
+
+                    {
+                        targets: 0,
+                        orderable: false,
+                        searchable: false
+                    }
+
+                ]
+
+            });
+
+    }
+
+
+});
+
+// =========================================================
+// CONFIRMAR RETIRO DE SUCURSAL PRE CRM
+// =========================================================
+
+function confirmarQuitarSucursalPRECRM(boton) {
+
+
+    // =====================================================
+    // OBTENER FORMULARIO
+    // =====================================================
+
+    const formulario =
+        boton.closest("form");
+
+
+    if (!formulario) {
+
+        return;
+    }
+
+
+    // =====================================================
+    // MOSTRAR CONFIRMACION
+    // =====================================================
+
+    Swal.fire({
+
+        icon: "warning",
+
+        title: "Quitar sucursal",
+
+        text:
+            "¿Desea quitar esta sucursal de PRE CRM?",
+
+        showCancelButton: true,
+
+        confirmButtonText:
+            "Sí, quitar",
+
+        cancelButtonText:
+            "Cancelar",
+
+        reverseButtons: true
+
+    }).then((result) => {
+
+
+        // =================================================
+        // CONFIRMADO
+        // =================================================
+
+        if (result.isConfirmed) {
+
+            formulario.submit();
+
+        }
+
+    });
+
+}
+
+// =========================================================
+// CONFIRMAR RETIRO DE ACCESO DE USUARIO PRE CRM
+// =========================================================
+
+window.confirmarQuitarUsuarioPRECRM = function(boton) {
+
+    const formulario =
+        boton.closest("form");
+
+    if (!formulario) {
+        return;
+    }
+
+    const usuario =
+        boton.getAttribute(
+            "data-usuario"
+        ) || "el usuario";
+
+    Swal.fire({
+        icon: "warning",
+        title: "Quitar acceso",
+        html:
+            "¿Desea quitar el acceso de "
+            + "<strong>"
+            + usuario
+            + "</strong>?",
+        showCancelButton: true,
+        confirmButtonText: "Sí, quitar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            formulario.submit();
+        }
+
+    });
+
+};
+
+
+// =========================================================
+// CONFIRMAR RETIRO DE SUCURSAL PRE CRM
+// =========================================================
+
+window.confirmarQuitarSucursalPRECRM = function(boton) {
+
+    const formulario =
+        boton.closest("form");
+
+    if (!formulario) {
+        return;
+    }
+
+    const sucursal =
+        boton.getAttribute(
+            "data-sucursal"
+        ) || "la sucursal";
+
+    Swal.fire({
+        icon: "warning",
+        title: "Quitar sucursal",
+        html:
+            "¿Desea quitar la sucursal "
+            + "<strong>"
+            + sucursal
+            + "</strong>"
+            + " de PRE CRM?",
+        showCancelButton: true,
+        confirmButtonText: "Sí, quitar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            formulario.submit();
+        }
+
+    });
+
+};

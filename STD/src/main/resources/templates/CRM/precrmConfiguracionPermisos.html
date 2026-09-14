@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base-layout}">
+
+
+<head th:replace="layouts/base-layout :: head">
+
+    <meta charset="UTF-8">
+
+    <title>
+        PRE CRM - Configuración
+    </title>
+
+</head>
+
+
+<body>
+
+
+<section class="content"
+         layout:fragment="page-content">
+
+
+    <div class="border p-2 card">
+
+
+        <!-- ================================================= -->
+        <!-- TITULO                                           -->
+        <!-- ================================================= -->
+
+        <div class="bg-info
+                    text-white
+                    text-center
+                    py-2
+                    rounded
+                    mb-3">
+
+            <h2 class="mb-0">
+                PRE CRM
+            </h2>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- ENCABEZADO                                       -->
+        <!-- ================================================= -->
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    mb-3">
+
+
+            <div>
+
+                <h4 class="mb-1">
+
+                    <i class="bi bi-gear
+                              text-primary
+                              mr-2">
+                    </i>
+
+                    Configuración PRE CRM
+
+                </h4>
+
+
+                <small class="text-muted">
+
+                    Administre usuarios,
+                    sucursales y regiones
+                    utilizadas por PRE CRM.
+
+                </small>
+
+            </div>
+
+
+            <a th:href="@{/precrm}"
+               class="btn btn-secondary">
+
+                <i class="bi bi-arrow-left mr-1"></i>
+
+                Regresar
+
+            </a>
+
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- MENSAJES                                         -->
+        <!-- ================================================= -->
+
+        <div th:if="${mensajeExito != null}"
+             class="alert alert-success">
+
+            <i class="bi bi-check-circle mr-1"></i>
+
+            <span th:text="${mensajeExito}">
+            </span>
+
+        </div>
+
+
+        <div th:if="${mensajeError != null}"
+             class="alert alert-danger">
+
+            <i class="bi bi-exclamation-triangle mr-1"></i>
+
+            <span th:text="${mensajeError}">
+            </span>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- PESTAÑAS                                         -->
+        <!-- ================================================= -->
+
+        <ul class="nav nav-tabs mb-4">
+
+
+            <!-- ============================================= -->
+            <!-- USUARIOS                                      -->
+            <!-- ============================================= -->
+
+            <li class="nav-item">
+
+                <a class="nav-link"
+                   th:classappend="${tabActiva == 'usuarios'}
+                                   ? ' active'
+                                   : ''"
+                   th:href="@{/precrm/configuracionpermisos(tab='usuarios')}">
+
+                    <i class="bi bi-people mr-1"></i>
+
+                    Usuarios
+
+                </a>
+
+            </li>
+
+
+
+            <!-- ============================================= -->
+            <!-- SUCURSALES                                    -->
+            <!-- ============================================= -->
+
+            <li class="nav-item">
+
+                <a class="nav-link"
+                   th:classappend="${tabActiva == 'sucursales'}
+                                   ? ' active'
+                                   : ''"
+                   th:href="@{/precrm/configuracionpermisos(tab='sucursales')}">
+
+                    <i class="bi bi-building mr-1"></i>
+
+                    Sucursales
+
+                </a>
+
+            </li>
+
+
+
+            <!-- ============================================= -->
+            <!-- REGIONES                                      -->
+            <!-- ============================================= -->
+
+            <li class="nav-item">
+
+                <a class="nav-link"
+                   th:classappend="${tabActiva == 'regiones'}
+                                   ? ' active'
+                                   : ''"
+                   th:href="@{/precrm/configuracionpermisos(tab='regiones')}">
+
+                    <i class="bi bi-geo-alt mr-1"></i>
+
+                    Regiones
+
+                </a>
+
+            </li>
+
+
+        </ul>
+
+
+
+
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+        <!-- PESTAÑA USUARIOS                                 -->
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+
+        <div th:if="${tabActiva == 'usuarios'}">
+
+
+            <fieldset class="border p-3">
+
+
+                <legend class="float-none w-auto p-2">
+
+                    Pantallas PRE CRM
+
+                </legend>
+
+
+                <div class="alert alert-info">
+
+                    <i class="bi bi-info-circle mr-1"></i>
+
+                    Seleccione los usuarios que tendrán
+                    acceso a cada funcionalidad de PRE CRM.
+
+                </div>
+
+
+
+                <div class="table-responsive">
+
+
+                    <table class="table
+                                  table-bordered
+                                  align-middle">
+
+
+                        <thead class="thead-light">
+
+
+                        <tr>
+
+                            <th style="width:35%;">
+
+                                Pantalla / funcionalidad
+
+                            </th>
+
+
+                            <th style="width:65%;">
+
+                                Usuarios autorizados
+
+                            </th>
+
+                        </tr>
+
+
+                        </thead>
+
+
+
+                        <tbody>
+
+
+                        <!-- ===================================== -->
+                        <!-- FUNCIONALIDAD                        -->
+                        <!-- ===================================== -->
+
+                        <tr th:each="funcionalidad : ${funcionalidades}">
+
+
+                            <!-- ================================= -->
+                            <!-- NOMBRE DE LA PANTALLA             -->
+                            <!-- ================================= -->
+
+                            <td class="align-top">
+
+
+                                <div class="font-weight-bold"
+                                     th:text="${funcionalidad.nombreFuncionalidad}">
+
+                                    Pantalla
+
+                                </div>
+
+
+                                <small class="text-muted"
+                                       th:if="${funcionalidad.descripcion != null}"
+                                       th:text="${funcionalidad.descripcion}">
+
+                                    Descripción
+
+                                </small>
+
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- USUARIOS                          -->
+                            <!-- ================================= -->
+
+                            <td>
+
+
+                                <!-- ============================= -->
+                                <!-- FORM AGREGAR                  -->
+                                <!-- ============================= -->
+
+                                <form th:action="@{/precrm/configuracionpermisos/asignar}"
+                                      method="post"
+                                      class="mb-2">
+
+
+                                    <input type="hidden"
+                                           name="fkFuncionalidad"
+                                           th:value="${funcionalidad.pkFuncionalidad}">
+
+
+                                    <div class="input-group">
+
+
+                                        <input type="search"
+                                               class="form-control"
+                                               name="usuario"
+                                               autocomplete="off"
+                                               placeholder="Buscar Usuario"
+                                               th:list="'usuariosPRECRM-'
+                                                       + ${funcionalidad.pkFuncionalidad}"
+                                               required>
+
+
+                                        <datalist th:id="'usuariosPRECRM-'
+                                                         + ${funcionalidad.pkFuncionalidad}">
+
+
+                                            <option th:each="usuario : ${usuarios}"
+                                                    th:value="${usuario.vc_nombre_usuario}"
+                                                    th:text="${usuario.vc_nombre_usuario}">
+
+                                            </option>
+
+
+                                        </datalist>
+
+
+
+                                        <div class="input-group-append">
+
+
+                                            <button type="submit"
+                                                    class="btn btn-primary">
+
+                                                <i class="bi bi-plus-circle mr-1"></i>
+
+                                                Agregar
+
+                                            </button>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </form>
+
+
+
+                                <!-- ============================= -->
+                                <!-- USUARIOS ASIGNADOS            -->
+                                <!-- ============================= -->
+
+                                <div class="list-group">
+
+
+                                    <th:block th:each="asignacion : ${asignaciones}">
+
+
+                                        <div th:if="${asignacion.fkFuncionalidad
+                                                    == funcionalidad.pkFuncionalidad}"
+                                             class="list-group-item
+                                                    list-group-item-action
+                                                    d-flex
+                                                    justify-content-between
+                                                    align-items-center">
+
+
+                                            <div>
+
+
+                                                <i class="bi bi-person-circle
+                                                          text-primary
+                                                          mr-2">
+                                                </i>
+
+
+                                                <span th:text="${asignacion.usuario}">
+
+                                                    usuario
+
+                                                </span>
+
+
+                                            </div>
+
+
+
+                                            <!-- ================= -->
+                                            <!-- ELIMINAR USUARIO  -->
+                                            <!-- ================= -->
+
+                                            <form th:action="@{/precrm/configuracionpermisos/quitarUsuario}"
+                                                  method="post"
+                                                  class="m-0">
+
+
+                                                <input type="hidden"
+                                                       name="usuario"
+                                                       th:value="${asignacion.usuario}">
+
+
+                                                <input type="hidden"
+                                                       name="fkFuncionalidad"
+                                                       th:value="${funcionalidad.pkFuncionalidad}">
+
+
+													   <button type="button"
+													           class="btn btn-sm btn-danger"
+													           title="Quitar acceso"
+													           th:data-usuario="${asignacion.usuario}"
+													           onclick="confirmarQuitarUsuarioPRECRM(this);">
+
+													       X
+
+													   </button>
+
+
+                                            </form>
+
+
+                                        </div>
+
+
+                                    </th:block>
+
+
+                                </div>
+
+
+
+                                <!-- ============================= -->
+                                <!-- TEXTO AYUDA                   -->
+                                <!-- ============================= -->
+
+                                <small class="text-muted">
+
+                                    Agregue los usuarios que tendrán
+                                    acceso a esta funcionalidad.
+
+                                </small>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </fieldset>
+
+
+        </div>
+
+
+
+
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+        <!-- PESTAÑA SUCURSALES                               -->
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+
+        <div th:if="${tabActiva == 'sucursales'}">
+
+
+            <fieldset class="border p-3">
+
+
+                <legend class="float-none w-auto p-2">
+
+                    Sucursales PRE CRM
+
+                </legend>
+
+
+
+                <div class="alert alert-info">
+
+                    <i class="bi bi-info-circle mr-1"></i>
+
+                    Seleccione las sucursales que
+                    participarán en la operación de PRE CRM.
+
+                </div>
+
+
+
+                <div class="row">
+
+
+                    <!-- ===================================== -->
+                    <!-- SUCURSALES DISPONIBLES               -->
+                    <!-- ===================================== -->
+
+                    <div class="col-md-6">
+
+
+                        <div class="card h-100">
+
+
+                            <div class="card-header">
+
+                                <strong>
+
+                                    <i class="bi bi-building mr-1"></i>
+
+                                    Sucursales disponibles
+
+                                </strong>
+
+                            </div>
+
+
+
+                            <div class="card-body p-0">
+
+
+                                <!-- ========================= -->
+                                <!-- SIN SUCURSALES            -->
+                                <!-- ========================= -->
+
+                                <div th:if="${#lists.isEmpty(sucursalesDisponibles)}"
+                                     class="text-center
+                                            text-muted
+                                            p-4">
+
+                                    <i class="bi bi-info-circle mr-1"></i>
+
+                                    No existen sucursales
+                                    disponibles.
+
+                                </div>
+
+
+
+                                <!-- ========================= -->
+                                <!-- TABLA DISPONIBLES         -->
+                                <!-- ========================= -->
+
+								<div th:if="${!#lists.isEmpty(sucursalesDisponibles)}"
+								     class="table-responsive">
+
+
+								    <table id="tablaSucursalesDisponibles"
+								           class="table
+								                  table-hover
+								                  table-striped
+								                  table-bordered
+								                  mb-0"
+								           style="width:100%;">
+
+
+								        <thead class="thead-light">
+
+								        <tr>
+
+								            <th>
+								                Sucursal
+								            </th>
+
+								            <th class="text-center"
+								                style="width:100px;">
+
+								                Agregar
+
+								            </th>
+
+								        </tr>
+
+								        </thead>
+
+
+								        <tbody>
+
+
+								        <tr th:each="sucursal : ${sucursalesDisponibles}">
+
+
+								            <td>
+
+								                <div class="font-weight-bold"
+								                     th:text="${sucursal['nombreSucursal']}">
+
+								                    Sucursal
+
+								                </div>
+
+
+								                <small class="text-muted"
+								                       th:if="${sucursal['tipoSucursal'] != null
+								                               and
+								                               sucursal['tipoSucursal'] != ''}"
+								                       th:text="${sucursal['tipoSucursal']}">
+
+								                    Tipo de sucursal
+
+								                </small>
+
+								            </td>
+
+
+								            <td class="text-center align-middle">
+
+
+								                <form th:action="@{/precrm/configuracionpermisos/sucursal/activar}"
+								                      method="post"
+								                      class="m-0">
+
+
+								                    <input type="hidden"
+								                           name="fkSucursal"
+								                           th:value="${sucursal['pkIdSucursal']}">
+
+
+								                    <button type="submit"
+								                            class="btn btn-sm btn-success"
+								                            title="Agregar sucursal a PRE CRM">
+
+								                        <i class="bi bi-chevron-right"></i>
+
+								                    </button>
+
+
+								                </form>
+
+
+								            </td>
+
+
+								        </tr>
+
+
+								        </tbody>
+
+
+								    </table>
+
+
+								</div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                    <!-- ===================================== -->
+                    <!-- SUCURSALES HABILITADAS               -->
+                    <!-- ===================================== -->
+
+                    <div class="col-md-6">
+
+
+                        <div class="card h-100">
+
+
+                            <div class="card-header
+                                        bg-light">
+
+                                <strong>
+
+                                    <i class="bi bi-check-circle
+                                              text-success
+                                              mr-1">
+                                    </i>
+
+                                    Sucursales habilitadas PRE CRM
+
+                                </strong>
+
+                            </div>
+
+
+
+                            <div class="card-body p-0">
+
+
+                                <!-- ========================= -->
+                                <!-- SIN SUCURSALES            -->
+                                <!-- ========================= -->
+
+                                <div th:if="${#lists.isEmpty(sucursalesPrecrm)}"
+                                     class="text-center
+                                            text-muted
+                                            p-4">
+
+                                    <i class="bi bi-info-circle mr-1"></i>
+
+                                    Aún no existen sucursales
+                                    habilitadas para PRE CRM.
+
+                                </div>
+
+
+
+                                <!-- ========================= -->
+                                <!-- TABLA HABILITADAS         -->
+                                <!-- ========================= -->
+
+								<div th:if="${!#lists.isEmpty(sucursalesPrecrm)}"
+								     class="table-responsive">
+
+
+								    <table id="tablaSucursalesPrecrm"
+								           class="table
+								                  table-hover
+								                  table-striped
+								                  table-bordered
+								                  mb-0"
+								           style="width:100%;">
+
+
+								        <thead class="thead-light">
+
+								        <tr>
+
+
+								            <th class="text-center"
+								                style="width:100px;">
+
+								                Quitar
+
+								            </th>
+
+
+								            <th>
+								                Sucursal
+								            </th>
+
+
+								        </tr>
+
+								        </thead>
+
+
+								        <tbody>
+
+
+								        <tr th:each="sucursal : ${sucursalesPrecrm}">
+
+
+								            <td class="text-center align-middle">
+
+
+								                <form th:action="@{/precrm/configuracionpermisos/sucursal/desactivar}"
+								                      method="post"
+								                      class="m-0">
+
+
+								                    <input type="hidden"
+								                           name="fkSucursal"
+								                           th:value="${sucursal['pkIdSucursal']}">
+
+
+														   <button type="button"
+														           class="btn btn-sm btn-danger"
+														           title="Quitar sucursal de PRE CRM"
+														           th:data-sucursal="${sucursal['nombreSucursal']}"
+														           onclick="confirmarQuitarSucursalPRECRM(this);">
+
+														       <i class="bi bi-chevron-left"></i>
+
+														   </button>
+
+								                </form>
+
+
+								            </td>
+
+
+								            <td>
+
+								                <div class="font-weight-bold"
+								                     th:text="${sucursal['nombreSucursal']}">
+
+								                    Sucursal
+
+								                </div>
+
+
+								                <small class="text-muted"
+								                       th:if="${sucursal['tipoSucursal'] != null
+								                               and
+								                               sucursal['tipoSucursal'] != ''}"
+								                       th:text="${sucursal['tipoSucursal']}">
+
+								                    Tipo de sucursal
+
+								                </small>
+
+								            </td>
+
+
+								        </tr>
+
+
+								        </tbody>
+
+
+								    </table>
+
+
+								</div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </fieldset>
+
+
+        </div>
+
+
+
+
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+        <!-- PESTAÑA REGIONES                                 -->
+        <!-- ================================================= -->
+        <!-- ================================================= -->
+
+        <div th:if="${tabActiva == 'regiones'}">
+
+
+            <fieldset class="border p-3">
+
+
+                <legend class="float-none w-auto p-2">
+
+                    Regiones PRE CRM
+
+                </legend>
+
+
+                <div class="alert alert-info mb-0">
+
+                    <i class="bi bi-info-circle mr-1"></i>
+
+                    La configuración de regiones
+                    se incorporará en esta sección.
+
+                </div>
+
+
+            </fieldset>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+
+<!-- ===================================================== -->
+<!-- SCRIPTS                                              -->
+<!-- ===================================================== -->
+
+<th:block layout:fragment="page-scripts">
+
+
+    <script th:src="@{/js/jquery-3.5.1.js}">
+    </script>
+	
+	<script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}">
+	</script>
+	
+	<script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}">
+	</script>
+
+	<script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}">
+	</script>
+	
+	<script th:src="@{/js/CRM/precrm.js}">
+	</script>
+
+
+</th:block>
+
+
+</body>
+
+
+</html>

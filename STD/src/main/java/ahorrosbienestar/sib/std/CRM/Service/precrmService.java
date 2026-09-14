@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -47,9 +48,17 @@ import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
 import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 import ahorrosbienestar.sib.std.CRM.model.precrmCatalogoReporte;
 import ahorrosbienestar.sib.std.CRM.model.precrmReporteDescarga;
+import ahorrosbienestar.sib.std.CRM.model.precrmFuncionalidad;
+import ahorrosbienestar.sib.std.CRM.model.precrmPermiso;
+import ahorrosbienestar.sib.std.CRM.model.precrmUsuarioPermiso;
+import ahorrosbienestar.sib.std.CRM.model.precrmSucursalConfig;
 
 import ahorrosbienestar.sib.std.CRM.Repository.precrmCatalogoReporteRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmReporteDescargaRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmFuncionalidadRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmPermisoRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioPermisoRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmSucursalConfigRepository;
 
 
 
@@ -75,6 +84,14 @@ public class precrmService {
     private precrmCatalogoReporteRepository catalogoReporteRepository;
     @Autowired
     private precrmReporteDescargaRepository reporteDescargaRepository;
+    @Autowired
+    private precrmFuncionalidadRepository funcionalidadRepository;
+    @Autowired
+    private precrmPermisoRepository permisoRepository;
+    @Autowired
+    private precrmUsuarioPermisoRepository usuarioPermisoRepository;
+    @Autowired
+    private precrmSucursalConfigRepository sucursalConfigRepository;
 
     // =========================================================
     // CONSTRUCTOR
@@ -3046,6 +3063,718 @@ registrarDescargaError(
          descarga
      );
 
+}
+
+//=========================================================
+//OBTENER FUNCIONALIDADES ACTIVAS
+//=========================================================
+
+public List<precrmFuncionalidad>
+obtenerFuncionalidadesActivas() {
+
+ return funcionalidadRepository
+     .findByActivoOrderByOrdenAsc(
+         1
+     );
+}
+
+//=========================================================
+//OBTENER PERMISOS ACTIVOS
+//=========================================================
+
+public List<precrmPermiso>
+obtenerPermisosActivos() {
+
+ return permisoRepository
+     .findByActivo(
+         1
+     );
+}
+
+//=========================================================
+//OBTENER ASIGNACIONES ACTIVAS
+//=========================================================
+
+public List<precrmUsuarioPermiso>
+obtenerAsignacionesPermisosActivas() {
+
+ return usuarioPermisoRepository
+     .findByActivo(
+         1
+     );
+}
+
+//=========================================================
+//ASIGNAR ACCESO A USUARIO
+//=========================================================
+
+@Transactional
+public precrmUsuarioPermiso
+asignarPermisoUsuario(
+
+     String usuario,
+     Long fkFuncionalidad,
+     Long fkPermiso,
+     String usuarioAdministrador) {
+
+
+ // =====================================================
+ // NORMALIZAR USUARIOS
+ // =====================================================
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+ usuarioAdministrador =
+     normalizarUsuarioPRECRM(
+         usuarioAdministrador
+     );
+
+
+ // =====================================================
+ // VALIDAR USUARIO
+ // =====================================================
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     throw new RuntimeException(
+         "Debe seleccionar un usuario."
+     );
+ }
+
+
+ // =====================================================
+ // VALIDAR FUNCIONALIDAD
+ // =====================================================
+
+ precrmFuncionalidad funcionalidad =
+     funcionalidadRepository
+         .findById(
+             fkFuncionalidad
+         )
+         .orElseThrow(
+             () ->
+                 new RuntimeException(
+                     "No se encontró la funcionalidad seleccionada."
+                 )
+         );
+
+
+ if (
+     funcionalidad.getActivo() == null
+     || funcionalidad.getActivo() != 1
+ ) {
+
+     throw new RuntimeException(
+         "La funcionalidad seleccionada no está activa."
+     );
+ }
+
+
+ // =====================================================
+ // VALIDAR PERMISO
+ // =====================================================
+
+ precrmPermiso permiso =
+     permisoRepository
+         .findById(
+             fkPermiso
+         )
+         .orElseThrow(
+             () ->
+                 new RuntimeException(
+                     "No se encontró el permiso de acceso."
+                 )
+         );
+
+
+ if (
+     permiso.getActivo() == null
+     || permiso.getActivo() != 1
+ ) {
+
+     throw new RuntimeException(
+         "El permiso de acceso no está activo."
+     );
+ }
+
+
+ // =====================================================
+ // BUSCAR SI YA EXISTE
+ // =====================================================
+
+ Optional<precrmUsuarioPermiso>
+     relacionExistente =
+         usuarioPermisoRepository
+             .findByUsuarioAndFkFuncionalidadAndFkPermiso(
+
+                 usuario,
+
+                 fkFuncionalidad,
+
+                 fkPermiso
+             );
+
+
+ // =====================================================
+ // SI YA EXISTE
+ // =====================================================
+
+ if (relacionExistente.isPresent()) {
+
+
+     precrmUsuarioPermiso relacion =
+         relacionExistente.get();
+
+
+     // YA ESTA ACTIVO
+     if (
+         relacion.getActivo() != null
+         && relacion.getActivo() == 1
+     ) {
+
+         throw new RuntimeException(
+             "El usuario ya tiene acceso a esta funcionalidad."
+         );
+     }
+
+
+     // REACTIVAR ACCESO
+
+     relacion.setActivo(
+         1
+     );
+
+     relacion.setFechaModificacion(
+         LocalDateTime.now()
+     );
+
+     relacion.setUsuarioModificacion(
+         usuarioAdministrador
+     );
+
+
+     return usuarioPermisoRepository
+         .saveAndFlush(
+             relacion
+         );
+ }
+
+
+ // =====================================================
+ // CREAR NUEVA ASIGNACION
+ // =====================================================
+
+ precrmUsuarioPermiso nuevaRelacion =
+     new precrmUsuarioPermiso();
+
+
+ nuevaRelacion.setUsuario(
+     usuario
+ );
+
+ nuevaRelacion.setFkFuncionalidad(
+     fkFuncionalidad
+ );
+
+ nuevaRelacion.setFkPermiso(
+     fkPermiso
+ );
+
+ nuevaRelacion.setActivo(
+     1
+ );
+
+ nuevaRelacion.setFechaAlta(
+     LocalDateTime.now()
+ );
+
+ nuevaRelacion.setUsuarioAlta(
+     usuarioAdministrador
+ );
+
+ nuevaRelacion.setFechaModificacion(
+     null
+ );
+
+ nuevaRelacion.setUsuarioModificacion(
+     null
+ );
+
+
+ return usuarioPermisoRepository
+     .saveAndFlush(
+         nuevaRelacion
+     );
+}
+
+//=========================================================
+//QUITAR ACCESO DE USUARIO A FUNCIONALIDAD
+//=========================================================
+
+@Transactional
+public void quitarUsuarioFuncionalidad(
+
+     String usuario,
+     Long fkFuncionalidad,
+     String usuarioAdministrador) {
+
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+ usuarioAdministrador =
+     normalizarUsuarioPRECRM(
+         usuarioAdministrador
+     );
+
+
+ // =====================================================
+ // OBTENER RELACIONES ACTIVAS
+ // =====================================================
+
+ List<precrmUsuarioPermiso> relaciones =
+     usuarioPermisoRepository
+         .findByUsuarioAndFkFuncionalidadAndActivo(
+
+             usuario,
+
+             fkFuncionalidad,
+
+             1
+         );
+
+
+ if (
+     relaciones == null
+     || relaciones.isEmpty()
+ ) {
+
+     throw new RuntimeException(
+         "El usuario no tiene acceso activo "
+         + "a esta funcionalidad."
+     );
+ }
+
+
+ // =====================================================
+ // DESACTIVAR
+ // =====================================================
+
+ for (
+     precrmUsuarioPermiso relacion
+     : relaciones
+ ) {
+
+
+     relacion.setActivo(
+         0
+     );
+
+     relacion.setFechaModificacion(
+         LocalDateTime.now()
+     );
+
+     relacion.setUsuarioModificacion(
+         usuarioAdministrador
+     );
+ }
+
+
+ usuarioPermisoRepository
+     .saveAll(
+         relaciones
+     );
+
+
+ usuarioPermisoRepository
+     .flush();
+}
+
+//=========================================================
+//VALIDAR SI USUARIO TIENE ACCESO A FUNCIONALIDAD
+//=========================================================
+
+public boolean usuarioTieneAcceso(
+
+     String usuario,
+     String claveFuncionalidad) {
+
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     return false;
+ }
+
+
+ // =====================================================
+ // BUSCAR FUNCIONALIDAD
+ // =====================================================
+
+ precrmFuncionalidad funcionalidad =
+     funcionalidadRepository
+         .findByClaveFuncionalidad(
+             claveFuncionalidad
+         );
+
+
+ if (
+     funcionalidad == null
+     || funcionalidad.getActivo() == null
+     || funcionalidad.getActivo() != 1
+ ) {
+
+     return false;
+ }
+
+
+ // =====================================================
+ // BUSCAR PERMISO ACCESO
+ // =====================================================
+
+ precrmPermiso permisoAcceso =
+     permisoRepository
+         .findByClavePermiso(
+             "ACCESO"
+         );
+
+
+ if (
+     permisoAcceso == null
+     || permisoAcceso.getActivo() == null
+     || permisoAcceso.getActivo() != 1
+ ) {
+
+     return false;
+ }
+
+
+ // =====================================================
+ // VALIDAR RELACION
+ // =====================================================
+
+ return usuarioPermisoRepository
+     .existsByUsuarioAndFkFuncionalidadAndFkPermisoAndActivo(
+
+         usuario,
+
+         funcionalidad
+             .getPkFuncionalidad(),
+
+         permisoAcceso
+             .getPkPermiso(),
+
+         1
+     );
+}
+
+//=========================================================
+//NORMALIZAR USUARIO PRE CRM
+//=========================================================
+
+private String normalizarUsuarioPRECRM(
+     String usuario) {
+
+
+ if (usuario == null) {
+
+     return null;
+ }
+
+
+ return usuario
+     .trim()
+     .toLowerCase();
+}
+
+//=========================================================
+//OBTENER SUCURSALES DISPONIBLES PARA PRE CRM
+//=========================================================
+
+public List<Map<String, Object>>
+obtenerSucursalesDisponiblesPRECRM() {
+
+ return sucursalConfigRepository
+     .obtenerSucursalesDisponibles();
+}
+
+//=========================================================
+//OBTENER SUCURSALES ACTIVAS EN PRE CRM
+//=========================================================
+
+public List<Map<String, Object>>
+obtenerSucursalesActivasPRECRM() {
+
+ return sucursalConfigRepository
+     .obtenerSucursalesPrecrm();
+}
+
+//=========================================================
+//ACTIVAR SUCURSAL EN PRE CRM
+//=========================================================
+
+@Transactional
+public precrmSucursalConfig activarSucursalPRECRM(
+
+     Integer fkSucursal,
+     String usuario) {
+
+
+ // =====================================================
+ // VALIDAR SUCURSAL
+ // =====================================================
+
+ if (fkSucursal == null) {
+
+     throw new RuntimeException(
+         "Debe seleccionar una sucursal."
+     );
+ }
+
+
+ // =====================================================
+ // NORMALIZAR USUARIO
+ // =====================================================
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     usuario =
+         "sistema";
+ }
+
+
+ // =====================================================
+ // BUSCAR SI YA EXISTE CONFIGURACION
+ // =====================================================
+
+ Optional<precrmSucursalConfig>
+     configuracionExistente =
+         sucursalConfigRepository
+             .findByFkSucursal(
+                 fkSucursal
+             );
+
+
+ // =====================================================
+ // YA EXISTE
+ // =====================================================
+
+ if (configuracionExistente.isPresent()) {
+
+
+     precrmSucursalConfig configuracion =
+         configuracionExistente.get();
+
+
+     // ===============================================
+     // YA ESTA ACTIVA
+     // ===============================================
+
+     if (
+         configuracion.getActivoPrecrm() != null
+         && configuracion.getActivoPrecrm() == 1
+     ) {
+
+         return configuracion;
+     }
+
+
+     // ===============================================
+     // REACTIVAR
+     // ===============================================
+
+     configuracion.setActivoPrecrm(
+         1
+     );
+
+     configuracion.setFechaModificacion(
+         LocalDateTime.now()
+     );
+
+     configuracion.setUsuarioModificacion(
+         usuario
+     );
+
+
+     return sucursalConfigRepository
+         .saveAndFlush(
+             configuracion
+         );
+ }
+
+
+ // =====================================================
+ // PRIMERA VEZ QUE SE AGREGA
+ // =====================================================
+
+ precrmSucursalConfig nuevaConfiguracion =
+     new precrmSucursalConfig();
+
+
+ nuevaConfiguracion.setFkSucursal(
+     fkSucursal
+ );
+
+ nuevaConfiguracion.setActivoPrecrm(
+     1
+ );
+
+ nuevaConfiguracion.setFechaAlta(
+     LocalDateTime.now()
+ );
+
+ nuevaConfiguracion.setUsuarioAlta(
+     usuario
+ );
+
+
+ return sucursalConfigRepository
+     .saveAndFlush(
+         nuevaConfiguracion
+     );
+}
+
+//=========================================================
+//DESACTIVAR SUCURSAL DE PRE CRM
+//=========================================================
+
+@Transactional
+public precrmSucursalConfig desactivarSucursalPRECRM(
+
+     Integer fkSucursal,
+     String usuario) {
+
+
+ // =====================================================
+ // VALIDAR SUCURSAL
+ // =====================================================
+
+ if (fkSucursal == null) {
+
+     throw new RuntimeException(
+         "Debe seleccionar una sucursal."
+     );
+ }
+
+
+ // =====================================================
+ // NORMALIZAR USUARIO
+ // =====================================================
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     usuario =
+         "sistema";
+ }
+
+
+ // =====================================================
+ // BUSCAR CONFIGURACION
+ // =====================================================
+
+ precrmSucursalConfig configuracion =
+     sucursalConfigRepository
+         .findByFkSucursal(
+             fkSucursal
+         )
+         .orElseThrow(
+             () ->
+                 new RuntimeException(
+                     "La sucursal seleccionada "
+                     + "no se encuentra configurada en PRE CRM."
+                 )
+         );
+
+
+ // =====================================================
+ // VALIDAR SI YA ESTA INACTIVA
+ // =====================================================
+
+ if (
+     configuracion.getActivoPrecrm() == null
+     || configuracion.getActivoPrecrm() == 0
+ ) {
+
+     return configuracion;
+ }
+
+
+ // =====================================================
+ // DESACTIVAR
+ // =====================================================
+
+ configuracion.setActivoPrecrm(
+     0
+ );
+
+ configuracion.setFechaModificacion(
+     LocalDateTime.now()
+ );
+
+ configuracion.setUsuarioModificacion(
+     usuario
+ );
+
+
+ return sucursalConfigRepository
+     .saveAndFlush(
+         configuracion
+     );
+}
+
+//=========================================================
+//VALIDAR SI UNA SUCURSAL ESTA ACTIVA EN PRE CRM
+//=========================================================
+
+public boolean sucursalActivaPRECRM(
+     Integer fkSucursal) {
+
+
+ if (fkSucursal == null) {
+
+     return false;
+ }
+
+
+ return sucursalConfigRepository
+     .existsByFkSucursalAndActivoPrecrm(
+         fkSucursal,
+         1
+     );
 }
 
 }

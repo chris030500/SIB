@@ -32,6 +32,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PathVariable;
 import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
 import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
+import ahorrosbienestar.sib.std.usuarios.model.Usuario;
+import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 
 
 @Controller
@@ -39,24 +41,30 @@ import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
 public class precrmController {
 
     private final precrmService precrmService;
+    private final IUsuarioRepository iUsuarioRepository;
 
 
     public precrmController(
-            precrmService precrmService) {
+            precrmService precrmService,
+            IUsuarioRepository iUsuarioRepository) {
 
         System.out.println(
             "=========================================="
         );
 
         System.out.println(
-            ">>> PRECRM CONTROLLER NUEVO 11-09-2026 <<<"
+            ">>> PRECRM CONTROLLER NUEVO <<<"
         );
 
         System.out.println(
             "=========================================="
         );
 
-        this.precrmService = precrmService;
+        this.precrmService =
+            precrmService;
+
+        this.iUsuarioRepository =
+            iUsuarioRepository;
     }
 
 
@@ -878,6 +886,435 @@ public String guardarGestion(
 
   return "redirect:/precrm/detallesospechosos/"
           + pkSospechoso;
+}
+
+//=========================================================
+//PANTALLA CONFIGURACION DE ACCESOS PRE CRM
+//=========================================================
+
+@GetMapping("/configuracionpermisos")
+public String mostrarConfiguracionPermisos(
+
+        @RequestParam(
+            value = "tab",
+            required = false,
+            defaultValue = "usuarios"
+        )
+        String tab,
+
+        Model model) {
+
+
+    model.addAttribute(
+        "catalogo",
+        CATALOGO_CRM
+    );
+
+
+    // =====================================================
+    // PESTAÑA ACTIVA
+    // =====================================================
+
+    model.addAttribute(
+        "tabActiva",
+        tab
+    );
+
+
+    // =====================================================
+    // FUNCIONALIDADES
+    // =====================================================
+
+    model.addAttribute(
+        "funcionalidades",
+        precrmService
+            .obtenerFuncionalidadesActivas()
+    );
+
+
+    // =====================================================
+    // USUARIOS
+    // =====================================================
+
+    List<Usuario> usuarios =
+        iUsuarioRepository.findAll();
+
+    model.addAttribute(
+        "usuarios",
+        usuarios
+    );
+
+
+    // =====================================================
+    // ASIGNACIONES DE USUARIOS
+    // =====================================================
+
+    model.addAttribute(
+        "asignaciones",
+        precrmService
+            .obtenerAsignacionesPermisosActivas()
+    );
+
+
+    // =====================================================
+    // SUCURSALES DISPONIBLES
+    // =====================================================
+
+    model.addAttribute(
+        "sucursalesDisponibles",
+        precrmService
+            .obtenerSucursalesDisponiblesPRECRM()
+    );
+
+
+    // =====================================================
+    // SUCURSALES PRE CRM
+    // =====================================================
+
+    model.addAttribute(
+        "sucursalesPrecrm",
+        precrmService
+            .obtenerSucursalesActivasPRECRM()
+    );
+
+
+    return "CRM/precrmConfiguracionPermisos";
+}
+
+//=========================================================
+// AUTORIZAR USUARIO EN FUNCIONALIDAD PRE CRM
+// =========================================================
+
+@PostMapping("/configuracionpermisos/asignar")
+public String asignarAccesoUsuario(
+
+        @RequestParam("usuario")
+        String usuario,
+
+        @RequestParam("fkFuncionalidad")
+        Long fkFuncionalidad,
+
+        Principal principal,
+
+        RedirectAttributes redirectAttributes) {
+
+
+    try {
+
+        if (
+            usuario == null
+            || usuario.trim().isEmpty()
+        ) {
+
+            throw new RuntimeException(
+                "Debe seleccionar un usuario."
+            );
+        }
+
+
+        usuario =
+            usuario.trim();
+
+
+        List<Usuario> usuariosEncontrados =
+            iUsuarioRepository
+                .findByNombreUsuario(
+                    usuario
+                );
+
+
+        if (
+            usuariosEncontrados == null
+            || usuariosEncontrados.isEmpty()
+        ) {
+
+            throw new RuntimeException(
+                "El usuario seleccionado no existe."
+            );
+        }
+
+
+        var permisoAcceso =
+            precrmService
+                .obtenerPermisosActivos()
+                .stream()
+                .filter(
+                    permiso ->
+                        "ACCESO"
+                            .equalsIgnoreCase(
+                                permiso.getClavePermiso()
+                            )
+                )
+                .findFirst()
+                .orElseThrow(
+                    () ->
+                        new RuntimeException(
+                            "No se encuentra configurado "
+                            + "el permiso ACCESO."
+                        )
+                );
+
+
+        String usuarioAdministrador =
+            principal != null
+            ? principal.getName()
+            : "SISTEMA";
+
+
+        precrmService
+            .asignarPermisoUsuario(
+
+                usuario,
+
+                fkFuncionalidad,
+
+                permisoAcceso
+                    .getPkPermiso(),
+
+                usuarioAdministrador
+            );
+
+
+        redirectAttributes
+            .addFlashAttribute(
+
+                "mensajeExito",
+
+                "El usuario "
+                + usuario
+                + " fue autorizado correctamente."
+            );
+
+
+    } catch (Exception e) {
+
+
+        redirectAttributes
+            .addFlashAttribute(
+
+                "mensajeError",
+
+                e.getMessage()
+            );
+    }
+
+
+    return "redirect:/precrm/configuracionpermisos";
+}
+
+//=========================================================
+//QUITAR USUARIO DE FUNCIONALIDAD PRE CRM
+//=========================================================
+
+@PostMapping("/configuracionpermisos/quitarUsuario")
+public String quitarUsuarioFuncionalidad(
+
+     @RequestParam("usuario")
+     String usuario,
+
+     @RequestParam("fkFuncionalidad")
+     Long fkFuncionalidad,
+
+     Principal principal,
+
+     RedirectAttributes redirectAttributes) {
+
+
+ try {
+
+
+     // =================================================
+     // USUARIO QUE REALIZA LA MODIFICACION
+     // =================================================
+
+     String usuarioAdministrador =
+         principal != null
+         ? principal.getName()
+         : "SISTEMA";
+
+
+     // =================================================
+     // QUITAR ACCESO
+     // =================================================
+
+     precrmService
+         .quitarUsuarioFuncionalidad(
+
+             usuario,
+
+             fkFuncionalidad,
+
+             usuarioAdministrador
+         );
+
+
+     // =================================================
+     // MENSAJE
+     // =================================================
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeExito",
+
+             "El acceso del usuario "
+             + usuario
+             + " fue retirado correctamente."
+         );
+
+
+ } catch (Exception e) {
+
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeError",
+
+             e.getMessage()
+         );
+ }
+
+
+ return "redirect:/precrm/configuracionpermisos";
+}
+
+//=========================================================
+//ACTIVAR SUCURSAL EN PRE CRM
+//=========================================================
+
+@PostMapping("/configuracionpermisos/sucursal/activar")
+public String activarSucursalPRECRM(
+
+     @RequestParam("fkSucursal")
+     Integer fkSucursal,
+
+     Principal principal,
+
+     RedirectAttributes redirectAttributes) {
+
+
+ try {
+
+
+     // =================================================
+     // USUARIO QUE REALIZA EL MOVIMIENTO
+     // =================================================
+
+     String usuario =
+         principal != null
+         ? principal.getName()
+         : "SISTEMA";
+
+
+     // =================================================
+     // ACTIVAR
+     // =================================================
+
+     precrmService
+         .activarSucursalPRECRM(
+             fkSucursal,
+             usuario
+         );
+
+
+     // =================================================
+     // MENSAJE
+     // =================================================
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeExito",
+
+             "La sucursal fue habilitada "
+             + "correctamente para PRE CRM."
+         );
+
+
+ } catch (Exception e) {
+
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeError",
+
+             e.getMessage()
+         );
+ }
+
+
+ return "redirect:/precrm/configuracionpermisos?tab=sucursales";
+}
+
+//=========================================================
+//DESACTIVAR SUCURSAL DE PRE CRM
+//=========================================================
+
+@PostMapping("/configuracionpermisos/sucursal/desactivar")
+public String desactivarSucursalPRECRM(
+
+     @RequestParam("fkSucursal")
+     Integer fkSucursal,
+
+     Principal principal,
+
+     RedirectAttributes redirectAttributes) {
+
+
+ try {
+
+
+     // =================================================
+     // USUARIO QUE REALIZA EL MOVIMIENTO
+     // =================================================
+
+     String usuario =
+         principal != null
+         ? principal.getName()
+         : "SISTEMA";
+
+
+     // =================================================
+     // DESACTIVAR
+     // =================================================
+
+     precrmService
+         .desactivarSucursalPRECRM(
+             fkSucursal,
+             usuario
+         );
+
+
+     // =================================================
+     // MENSAJE
+     // =================================================
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeExito",
+
+             "La sucursal fue retirada "
+             + "correctamente de PRE CRM."
+         );
+
+
+ } catch (Exception e) {
+
+
+     redirectAttributes
+         .addFlashAttribute(
+
+             "mensajeError",
+
+             e.getMessage()
+         );
+ }
+
+
+ return "redirect:/precrm/configuracionpermisos?tab=sucursales";
 }
 
 }
