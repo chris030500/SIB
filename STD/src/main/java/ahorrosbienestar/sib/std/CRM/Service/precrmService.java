@@ -45,6 +45,11 @@ import ahorrosbienestar.sib.std.CRM.dto.precrmRegistroDTO;
 import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
 import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
 import ahorrosbienestar.sib.std.CRM.model.precrmSospechoso;
+import ahorrosbienestar.sib.std.CRM.model.precrmCatalogoReporte;
+import ahorrosbienestar.sib.std.CRM.model.precrmReporteDescarga;
+
+import ahorrosbienestar.sib.std.CRM.Repository.precrmCatalogoReporteRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmReporteDescargaRepository;
 
 
 
@@ -66,6 +71,10 @@ public class precrmService {
     private precrmGestionRepository gestionRepository;
     @Autowired
     private precrmHistorialEstatusRepository historialEstatusRepository;
+    @Autowired
+    private precrmCatalogoReporteRepository catalogoReporteRepository;
+    @Autowired
+    private precrmReporteDescargaRepository reporteDescargaRepository;
 
     // =========================================================
     // CONSTRUCTOR
@@ -2833,6 +2842,210 @@ public List<precrmGestion> obtenerGestionesSospechoso(
          );
 }
 
+//=========================================================
+//OBTENER CATALOGO DE REPORTES ACTIVOS
+//=========================================================
 
+public List<precrmCatalogoReporte>
+obtenerCatalogoReportes() {
+
+ return catalogoReporteRepository
+     .findByActivoOrderByOrdenAsc(
+         1
+     );
+
+}
+
+//=========================================================
+//OBTENER HISTORIAL DE DESCARGAS
+//=========================================================
+
+public List<precrmReporteDescarga>
+obtenerHistorialDescargas() {
+
+ return reporteDescargaRepository
+     .findAllByOrderByFechaDescargaDesc();
+
+}
+
+//=========================================================
+//OBTENER REPORTE POR ID
+//=========================================================
+
+public precrmCatalogoReporte
+obtenerReportePorId(
+     Long pkReporte) {
+
+ return catalogoReporteRepository
+     .findById(
+         pkReporte
+     )
+     .orElseThrow(
+         () -> new RuntimeException(
+             "No se encontró el reporte seleccionado."
+         )
+     );
+
+}
+
+//=========================================================
+//OBTENER REPORTE POR CLAVE
+//=========================================================
+
+public precrmCatalogoReporte
+obtenerReportePorClave(
+     String claveReporte) {
+
+ precrmCatalogoReporte reporte =
+     catalogoReporteRepository
+         .findByClaveReporte(
+             claveReporte
+         );
+
+
+ if (reporte == null) {
+
+     throw new RuntimeException(
+         "No se encontró la configuración "
+         + "del reporte: "
+         + claveReporte
+     );
+
+ }
+
+
+ return reporte;
+
+}
+
+//=========================================================
+//REGISTRAR DESCARGA EXITOSA
+//=========================================================
+
+public precrmReporteDescarga
+registrarDescargaExitosa(
+     Long fkReporte,
+     String usuario,
+     String nombreArchivo,
+     Integer totalRegistros) {
+
+
+ precrmReporteDescarga descarga =
+     new precrmReporteDescarga();
+
+
+ descarga.setFkReporte(
+     fkReporte
+ );
+
+
+ descarga.setUsuario(
+     usuario
+ );
+
+
+ descarga.setFechaDescarga(
+     LocalDateTime.now()
+ );
+
+
+ descarga.setNombreArchivo(
+     nombreArchivo
+ );
+
+
+ descarga.setEstatusDescarga(
+     "EXITOSO"
+ );
+
+
+ descarga.setTotalRegistros(
+     totalRegistros
+ );
+
+
+ descarga.setMensajeError(
+     null
+ );
+
+
+ return reporteDescargaRepository
+     .saveAndFlush(
+         descarga
+     );
+
+}
+
+//=========================================================
+//REGISTRAR ERROR EN GENERACION DE REPORTE
+//=========================================================
+
+public precrmReporteDescarga
+registrarDescargaError(
+     Long fkReporte,
+     String usuario,
+     String nombreArchivo,
+     String mensajeError) {
+
+
+ precrmReporteDescarga descarga =
+     new precrmReporteDescarga();
+
+
+ descarga.setFkReporte(
+     fkReporte
+ );
+
+
+ descarga.setUsuario(
+     usuario
+ );
+
+
+ descarga.setFechaDescarga(
+     LocalDateTime.now()
+ );
+
+
+ descarga.setNombreArchivo(
+     nombreArchivo
+ );
+
+
+ descarga.setEstatusDescarga(
+     "ERROR"
+ );
+
+
+ descarga.setTotalRegistros(
+     0
+ );
+
+
+ if (
+     mensajeError != null
+     && mensajeError.length() > 1000
+ ) {
+
+     mensajeError =
+         mensajeError.substring(
+             0,
+             1000
+         );
+
+ }
+
+
+ descarga.setMensajeError(
+     mensajeError
+ );
+
+
+ return reporteDescargaRepository
+     .saveAndFlush(
+         descarga
+     );
+
+}
 
 }

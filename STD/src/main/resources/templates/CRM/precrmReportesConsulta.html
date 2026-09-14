@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base-layout}">
+
+
+<head th:replace="layouts/base-layout :: head">
+
+    <meta charset="UTF-8">
+
+    <title>
+        PRE CRM - Reportes y consulta
+    </title>
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- CONTENIDO PRINCIPAL                                   -->
+<!-- ===================================================== -->
+
+<section class="content"
+         layout:fragment="page-content">
+
+
+    <div class="border p-2 card">
+
+
+        <!-- ================================================= -->
+        <!-- TITULO                                            -->
+        <!-- ================================================= -->
+
+        <div class="bg-info
+                    text-white
+                    text-center
+                    py-2
+                    rounded
+                    mb-3">
+
+            <h2 class="mb-0">
+
+                PRE CRM
+
+            </h2>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ENCABEZADO                                        -->
+        <!-- ================================================= -->
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    mb-3">
+
+
+            <div>
+
+                <h4 class="mb-1">
+
+                    <i class="bi bi-file-earmark-bar-graph
+                              text-primary
+                              mr-2">
+                    </i>
+
+                    Reportes y consulta
+
+                </h4>
+
+
+                <small class="text-muted">
+
+                    Seleccione el reporte que desea generar
+                    y descargar.
+
+                </small>
+
+            </div>
+
+
+            <!-- REGRESAR -->
+
+            <div>
+
+                <a th:href="@{/precrm}"
+                   class="btn btn-secondary">
+
+                    <i class="bi bi-arrow-left mr-1"></i>
+
+                    Regresar
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- MENSAJES                                         -->
+        <!-- ================================================= -->
+
+        <div th:if="${mensajeExito != null}"
+             class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-check-circle mr-1"></i>
+
+            <span th:text="${mensajeExito}">
+                Operación realizada correctamente.
+            </span>
+
+
+            <button type="button"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="Cerrar">
+
+                <span aria-hidden="true">
+                    &times;
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <div th:if="${mensajeError != null}"
+             class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle mr-1"></i>
+
+            <span th:text="${mensajeError}">
+                Ocurrió un error.
+            </span>
+
+
+            <button type="button"
+                    class="close"
+                    data-dismiss="alert"
+                    aria-label="Cerrar">
+
+                <span aria-hidden="true">
+                    &times;
+                </span>
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- GENERACION DE REPORTE                            -->
+        <!-- ================================================= -->
+
+        <div class="border
+                    rounded
+                    p-3
+                    mb-4">
+
+
+            <!-- TITULO BLOQUE -->
+
+            <div class="d-flex
+                        align-items-center
+                        mb-4">
+
+
+                <i class="bi bi-download
+                          text-primary
+                          mr-2"
+                   style="font-size:24px;">
+                </i>
+
+
+                <h5 class="mb-0">
+
+                    Descargar reporte
+
+                </h5>
+
+
+            </div>
+
+
+
+            <!-- ============================================= -->
+            <!-- SELECTOR DE REPORTE                           -->
+            <!-- ============================================= -->
+
+            <div class="row
+                        align-items-end
+                        justify-content-center">
+
+
+                <div class="col-lg-7
+                            col-md-8
+                            mb-3">
+
+
+                    <label for="reporteSeleccionado"
+                           class="font-weight-bold">
+
+                        Reporte
+
+                    </label>
+
+
+                    <select id="reporteSeleccionado"
+                            name="reporteSeleccionado"
+                            class="form-control">
+
+
+                        <option value="">
+
+                            Seleccione un reporte
+
+                        </option>
+
+
+                        <!-- ================================= -->
+                        <!-- CATALOGO DESDE BASE DE DATOS     -->
+                        <!-- ================================= -->
+
+                        <option th:each="reporte : ${reportes}"
+                                th:value="${reporte.pkReporte}"
+                                th:text="${reporte.nombreReporte}"
+                                th:data-clave="${reporte.claveReporte}"
+                                th:data-descripcion="${reporte.descripcion}">
+
+                            Reporte
+
+                        </option>
+
+
+                    </select>
+
+
+                    <!-- DESCRIPCION DEL REPORTE -->
+
+                    <small id="descripcionReportePRECRM"
+                           class="form-text
+                                  text-muted
+                                  mt-2">
+
+                        Seleccione una opción para consultar
+                        la descripción del reporte.
+
+                    </small>
+
+
+                </div>
+
+
+
+                <!-- ========================================= -->
+                <!-- BOTON DESCARGAR                           -->
+                <!-- ========================================= -->
+
+                <div class="col-lg-3
+                            col-md-4
+                            mb-3">
+
+
+                    <button type="button"
+                            id="btnDescargarReportePRECRM"
+                            class="btn
+                                   btn-primary
+                                   btn-block
+                                   font-weight-bold"
+                            disabled>
+
+
+                        <i class="bi bi-download mr-1"></i>
+
+                        Descargar reporte
+
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- HISTORIAL DE DESCARGAS                           -->
+        <!-- ================================================= -->
+
+        <div class="border
+                    rounded
+                    p-3
+                    mb-3">
+
+
+            <!-- TITULO -->
+
+            <div class="d-flex
+                        align-items-center
+                        mb-3">
+
+
+                <i class="bi bi-clock-history
+                          text-primary
+                          mr-2"
+                   style="font-size:24px;">
+                </i>
+
+
+                <h5 class="mb-0">
+
+                    Historial de descargas
+
+                </h5>
+
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- TABLA HISTORIAL                                   -->
+            <!-- ================================================= -->
+
+            <div class="table-responsive">
+
+
+                <table id="tablaHistorialReportesPRECRM"
+                       class="table
+                              table-bordered
+                              table-sm
+                              text-center
+                              mb-0">
+
+
+                    <thead class="thead-light">
+
+
+                        <tr>
+
+
+                            <th>
+
+                                Reporte
+
+                            </th>
+
+
+                            <th>
+
+                                Usuario
+
+                            </th>
+
+
+                            <th>
+
+                                Fecha de descarga
+
+                            </th>
+
+
+                            <th>
+
+                                Archivo
+
+                            </th>
+
+
+                            <th>
+
+                                Registros
+
+                            </th>
+
+
+                            <th>
+
+                                Estatus
+
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        <!-- ===================================== -->
+                        <!-- HISTORIAL REAL                        -->
+                        <!-- ===================================== -->
+
+                        <tr th:each="descarga : ${historialDescargas}">
+
+
+                            <!-- ================================= -->
+                            <!-- REPORTE                           -->
+                            <!-- ================================= -->
+
+                            <td>
+
+
+                                <span th:if="${descarga.reporte != null}"
+                                      th:text="${descarga.reporte.nombreReporte}">
+
+                                    Reporte
+
+                                </span>
+
+
+                                <span th:if="${descarga.reporte == null}">
+
+                                    -
+
+                                </span>
+
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- USUARIO                           -->
+                            <!-- ================================= -->
+
+                            <td th:text="${descarga.usuario != null
+                                          ? descarga.usuario
+                                          : '-'}">
+
+                                -
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- FECHA DESCARGA                    -->
+                            <!-- ================================= -->
+
+                            <td th:text="${descarga.fechaDescarga != null
+                                          ? #temporals.format(
+                                                descarga.fechaDescarga,
+                                                'dd/MM/yyyy HH:mm:ss'
+                                            )
+                                          : '-'}">
+
+                                -
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- NOMBRE ARCHIVO                    -->
+                            <!-- ================================= -->
+
+                            <td th:text="${descarga.nombreArchivo != null
+                                          ? descarga.nombreArchivo
+                                          : '-'}">
+
+                                -
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- TOTAL REGISTROS                   -->
+                            <!-- ================================= -->
+
+                            <td th:text="${descarga.totalRegistros != null
+                                          ? descarga.totalRegistros
+                                          : '-'}">
+
+                                -
+
+                            </td>
+
+
+
+                            <!-- ================================= -->
+                            <!-- ESTATUS                           -->
+                            <!-- ================================= -->
+
+                            <td>
+
+
+                                <!-- EXITOSO -->
+
+                                <span th:if="${descarga.estatusDescarga
+                                             == 'EXITOSO'}"
+                                      class="badge badge-success">
+
+                                    Exitoso
+
+                                </span>
+
+
+
+                                <!-- ERROR -->
+
+                                <span th:if="${descarga.estatusDescarga
+                                             == 'ERROR'}"
+                                      class="badge badge-danger"
+                                      th:title="${descarga.mensajeError != null
+                                                ? descarga.mensajeError
+                                                : 'Error durante la generación'}">
+
+                                    Error
+
+                                </span>
+
+
+
+                                <!-- OTRO ESTATUS -->
+
+                                <span th:if="${descarga.estatusDescarga != null
+                                             && descarga.estatusDescarga
+                                                != 'EXITOSO'
+                                             && descarga.estatusDescarga
+                                                != 'ERROR'}"
+                                      class="badge badge-secondary"
+                                      th:text="${descarga.estatusDescarga}">
+
+                                    -
+
+                                </span>
+
+
+
+                                <!-- SIN ESTATUS -->
+
+                                <span th:if="${descarga.estatusDescarga == null}"
+                                      class="badge badge-secondary">
+
+                                    -
+
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- SCRIPTS                                               -->
+<!-- ===================================================== -->
+
+<th:block layout:fragment="page-scripts">
+
+
+    <!-- JQUERY -->
+
+    <script th:src="@{/js/jquery-3.5.1.js}">
+    </script>
+
+
+
+    <!-- ================================================= -->
+    <!-- DATATABLE                                         -->
+    <!-- ================================================= -->
+
+    <script th:src="@{/vendor/datatablesNew/jquery.dataTables.min.js}">
+    </script>
+
+
+    <script th:src="@{/vendor/datatablesNew/dataTables.bootstrap.min.js}">
+    </script>
+
+
+
+    <!-- ================================================= -->
+    <!-- SWEET ALERT                                       -->
+    <!-- ================================================= -->
+
+    <script th:src="@{/vendor/sweetalertNew/sweetalert2.all.min.js}">
+    </script>
+
+
+
+    <!-- ================================================= -->
+    <!-- AXIOS                                             -->
+    <!-- ================================================= -->
+
+    <script th:src="@{/vendor/axiosNew/axios.min.js}">
+    </script>
+
+
+
+    <!-- ================================================= -->
+    <!-- JS PRE CRM REPORTES                               -->
+    <!-- ================================================= -->
+
+    <script th:src="@{/js/CRM/precrmReportes.js}">
+    </script>
+
+
+</th:block>
+
+
+</body>
+
+</html>

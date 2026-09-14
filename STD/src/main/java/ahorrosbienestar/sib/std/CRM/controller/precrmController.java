@@ -667,9 +667,55 @@ public class precrmController {
  }
     
  // =========================================================
- // GUARDAR TELEFONO ALTERNO DEL SOSPECHOSO
+ // PANTALLA REPORTES Y CONSULTA
  // =========================================================
 
+ @GetMapping("/reportesconsulta")
+ public String mostrarReportesConsulta(
+         Model model) {
+
+
+     // =====================================================
+     // CATALOGO GENERAL DEL MODULO PRE CRM
+     // =====================================================
+
+     model.addAttribute(
+         "catalogo",
+         CATALOGO_CRM
+     );
+
+
+     // =====================================================
+     // CATALOGO DE REPORTES ACTIVOS
+     // LLENA LA LISTA DESPLEGABLE
+     // =====================================================
+
+     model.addAttribute(
+         "reportes",
+         precrmService
+             .obtenerCatalogoReportes()
+     );
+
+
+     // =====================================================
+     // HISTORIAL DE DESCARGAS
+     // =====================================================
+
+     model.addAttribute(
+         "historialDescargas",
+         precrmService
+             .obtenerHistorialDescargas()
+     );
+
+
+     // =====================================================
+     // VISTA
+     // =====================================================
+
+     return "CRM/precrmReportesConsulta";
+
+ }
+    
  // =========================================================
  // GUARDAR TELEFONO ALTERNO DEL SOSPECHOSO
  // =========================================================
