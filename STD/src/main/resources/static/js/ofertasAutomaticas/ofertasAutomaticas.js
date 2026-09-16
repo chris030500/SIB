@@ -462,11 +462,14 @@ var basesID = 0;
 function modalParametros(data) {
 	console.log(data);
 	basesID = data.pk_id_base;
+	document.getElementById("restriccionesCampania").style.display = "block";
 	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
 	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
 	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;
 	document.getElementById("hFinalProceso").value = data.vc_hora_fin_proceso;
 	document.getElementById("mPeriodoEjecucion").value = data.vc_periodo_ejecucion_proceso;
+	document.getElementById("gestionSinRestriccionReus").checked = data.i_gestion_sin_restriccion_reus === 1;
+	document.getElementById("gestionSinRestriccionPublicidad").checked = data.i_gestion_sin_restriccion_publicidad === 1;
 
 
 	if (data.pk_id_base == idBaseFidelidad) {
@@ -487,6 +490,8 @@ function limpiarParametros() {
 	document.getElementById("hFinalProceso").value = "";
 	document.getElementById("mPeriodoEjecucion").value = "";
 	document.getElementById("rutaArchivo").value = "";
+	document.getElementById("gestionSinRestriccionReus").checked = false;
+	document.getElementById("gestionSinRestriccionPublicidad").checked = false;
 	
 }
 var url = "";
@@ -649,6 +654,13 @@ function validarDatosParams() {
 		}
 	} else {
 		url = url + "&rutaArchivo=" + encodeURIComponent(document.getElementById('rutaArchivo').value);
+	}
+
+	if (basesID > 0) {
+		url = url + "&gestionSinRestriccionReus="
+			+ (document.getElementById("gestionSinRestriccionReus").checked ? 1 : 0);
+		url = url + "&gestionSinRestriccionPublicidad="
+			+ (document.getElementById("gestionSinRestriccionPublicidad").checked ? 1 : 0);
 	}
 
 	return correcto;
@@ -1119,8 +1131,9 @@ function peticionDatosProceso(url){
 
 var procesoGestionID = 0;
 function modalGestion(data) {
- 	console.log(data);
- 	procesoGestionID = data.pk_id_gestion;
+	console.log(data);
+	procesoGestionID = data.pk_id_gestion;
+	document.getElementById("restriccionesCampania").style.display = "none";
  	document.getElementById("dComienzoProceso").value = data.vc_dia_inicio_proceso;
  	document.getElementById("dFinalProceso").value = data.vc_dia_fin_proceso;
  	document.getElementById("hComienzoProceso").value = data.vc_hora_inicio_proceso;

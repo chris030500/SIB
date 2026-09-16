@@ -89,9 +89,11 @@ public class BasesService {
     }
 
 	public int actParams(Integer basesID, String dComienzoProceso, String dFinalProceso, String hComienzoProceso,
-			String hFinalProceso, String mPeriodoEjecucion, String rutaArchivo) {
+			String hFinalProceso, String mPeriodoEjecucion, String rutaArchivo,
+			int gestionSinRestriccionReus, int gestionSinRestriccionPublicidad) {
 		// TODO Auto-generated method stub
-		return iBasesRepository.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,mPeriodoEjecucion,rutaArchivo);
+		return iBasesRepository.actParams(basesID,dComienzoProceso,dFinalProceso,hComienzoProceso,hFinalProceso,
+				mPeriodoEjecucion,rutaArchivo,gestionSinRestriccionReus,gestionSinRestriccionPublicidad);
 	}
 
 	public Bases obtBase(Integer id) {
