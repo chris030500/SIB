@@ -308,7 +308,25 @@ public class precrmController {
             )
             LocalDate fechaRegistro,
 
-            Model model) {
+            Model model,
+            Principal principal) {
+    	
+        // =====================================================
+        // VALIDAR ACCESO A SEGUIMIENTO
+        // =====================================================
+
+        String usuario =
+                principal != null
+                ? principal.getName()
+                : null;
+
+
+        if (!precrmService.tieneAcceso(
+                usuario,
+                "SEGUIMIENTO")) {
+
+            return "redirect:/precrm";
+        }
 
 
         model.addAttribute(
@@ -619,128 +637,225 @@ public class precrmController {
  // =========================================================
 
     @GetMapping("/detallesospechosos")
- public String mostrarDetalleSospechoso(
-         Model model) {
+    public String mostrarDetalleSospechoso(
+            Model model,
+            Principal principal) {
 
 
-     model.addAttribute(
-         "catalogo",
-         CATALOGO_CRM
-     );
-     
-     model.addAttribute(
-    	        "tiposGestion",
-    	        precrmService.obtenerTiposGestionActivos()
-    	    );
+        String usuario =
+                principal != null
+                ? principal.getName()
+                : null;
 
 
-     // No hay sospechoso seleccionado todavía
+        
+        // =====================================================
+        // VALIDAR ACCESO A DETALLE
+        // =====================================================
 
-     model.addAttribute(
-         "sospechoso",
-         null
-     );
+        if (!precrmService.tieneAcceso(
+                usuario,
+                "DETALLE")) {
 
-
-     // Lista para poder seleccionar uno
-     // desde el acceso rápido
-
-     model.addAttribute(
-         "sospechosos",
-         precrmService
-             .obtenerSospechososActivos()
-     );
+            return "redirect:/precrm";
+        }
 
 
-     return "CRM/precrmDetalleSos";
- }
+        model.addAttribute(
+            "catalogo",
+            CATALOGO_CRM
+        );
+
+
+        model.addAttribute(
+            "tiposGestion",
+            precrmService
+                .obtenerTiposGestionActivos()
+        );
+
+
+        model.addAttribute(
+            "sospechoso",
+            null
+        );
+
+
+        model.addAttribute(
+            "sospechosos",
+            precrmService
+                .obtenerSospechososActivos()
+        );
+
+
+        return "CRM/precrmDetalleSos";
+    }
  
 //=========================================================
 //DETALLE DEL SOSPECHOSO
 //ACCESO DESDE LA TABLA
 //=========================================================
     @GetMapping("/detallesospechosos/{pkSospechoso}")
- public String mostrarDetalleSospechosoSeleccionado(
+    public String mostrarDetalleSospechosoSeleccionado(
 
-         @PathVariable("pkSospechoso")
-         Long pkSospechoso,
+            @PathVariable("pkSospechoso")
+            Long pkSospechoso,
 
-         Model model) {
+            Model model,
 
-
-	 precrmSospechoso sospechoso =
-		        precrmService
-		            .obtenerSospechosoPorId(
-		                pkSospechoso
-		            );
+            Principal principal) {
 
 
-		String siguienteEstatus =
-		        precrmService
-		            .obtenerSiguienteEstatusPantalla(
-		                sospechoso.getEstatus()
-		            );
+        // =====================================================
+        // OBTENER USUARIO AUTENTICADO
+        // =====================================================
+
+        String usuario =
+                principal != null
+                ? principal.getName()
+                : null;
 
 
-		List<precrmGestion> gestiones =
-		        precrmService
-		            .obtenerGestionesSospechoso(
-		                pkSospechoso
-		            );
-		
-		List<precrmHistorialEstatus> historialEstatus =
-		        precrmService
-		            .obtenerHistorialEstatusSospechoso(
-		                pkSospechoso
-		            );
+        // =====================================================
+        // VALIDAR ACCESO A LA FUNCIONALIDAD DETALLE
+        // =====================================================
+
+        if (!precrmService.tieneAcceso(
+                usuario,
+                "DETALLE")) {
+
+            return "redirect:/precrm";
+        }
 
 
-		model.addAttribute(
-		    "sospechoso",
-		    sospechoso
-		);
+        // =====================================================
+        // CATALOGO GENERAL
+        // =====================================================
+
+        model.addAttribute(
+            "catalogo",
+            CATALOGO_CRM
+        );
 
 
-		model.addAttribute(
-		    "siguienteEstatus",
-		    siguienteEstatus
-		);
+        // =====================================================
+        // OBTENER SOSPECHOSO
+        // =====================================================
+
+        precrmSospechoso sospechoso =
+                precrmService
+                    .obtenerSospechosoPorId(
+                        pkSospechoso
+                    );
 
 
-		model.addAttribute(
-		    "gestiones",
-		    gestiones
-		);
-		
-		model.addAttribute(
-			    "historialEstatus",
-			    historialEstatus
-			);
+        // =====================================================
+        // SIGUIENTE ESTATUS
+        // =====================================================
+
+        String siguienteEstatus =
+                precrmService
+                    .obtenerSiguienteEstatusPantalla(
+                        sospechoso.getEstatus()
+                    );
 
 
-     model.addAttribute(
-         "sospechosos",
-         precrmService
-             .obtenerSospechososActivos()
-     );
-     
-     model.addAttribute(
-    		    "tiposGestion",
-    		    precrmService.obtenerTiposGestionActivos()
-    		);
+        // =====================================================
+        // GESTIONES
+        // =====================================================
+
+        List<precrmGestion> gestiones =
+                precrmService
+                    .obtenerGestionesSospechoso(
+                        pkSospechoso
+                    );
 
 
-     return "CRM/precrmDetalleSos";
- }
+        // =====================================================
+        // HISTORIAL DE ESTATUS
+        // =====================================================
+
+        List<precrmHistorialEstatus> historialEstatus =
+                precrmService
+                    .obtenerHistorialEstatusSospechoso(
+                        pkSospechoso
+                    );
+
+
+        // =====================================================
+        // DATOS PARA LA PANTALLA
+        // =====================================================
+
+        model.addAttribute(
+            "sospechoso",
+            sospechoso
+        );
+
+
+        model.addAttribute(
+            "siguienteEstatus",
+            siguienteEstatus
+        );
+
+
+        model.addAttribute(
+            "gestiones",
+            gestiones
+        );
+
+
+        model.addAttribute(
+            "historialEstatus",
+            historialEstatus
+        );
+
+
+        // =====================================================
+        // LISTA DE SOSPECHOSOS
+        // POR AHORA SIGUE MOSTRANDO TODOS LOS ACTIVOS
+        // =====================================================
+
+        model.addAttribute(
+            "sospechosos",
+            precrmService
+                .obtenerSospechososActivos()
+        );
+
+
+        // =====================================================
+        // CATALOGO DE TIPOS DE GESTION
+        // =====================================================
+
+        model.addAttribute(
+            "tiposGestion",
+            precrmService
+                .obtenerTiposGestionActivos()
+        );
+
+
+        return "CRM/precrmDetalleSos";
+    }
     
  // =========================================================
  // PANTALLA REPORTES Y CONSULTA
  // =========================================================
 
- @GetMapping("/reportesconsulta")
- public String mostrarReportesConsulta(
-         Model model) {
+    @GetMapping("/reportesconsulta")
+    public String mostrarReportesConsulta(
+            Model model,
+            Principal principal) {
 
+        String usuario =
+                principal != null
+                ? principal.getName()
+                : null;
+
+
+        if (!precrmService.tieneAcceso(
+                usuario,
+                "REPORTES")) {
+
+            return "redirect:/precrm";
+        }
 
      // =====================================================
      // CATALOGO GENERAL DEL MODULO PRE CRM
@@ -961,8 +1076,21 @@ public String mostrarConfiguracionPermisos(
         )
         String tab,
 
-        Model model) {
+        Model model,
+        Principal principal) {
 
+    String usuario =
+            principal != null
+            ? principal.getName()
+            : null;
+
+
+    if (!precrmService.tieneAcceso(
+            usuario,
+            "CONFIGURACION")) {
+
+        return "redirect:/precrm";
+    }
 
     model.addAttribute(
         "catalogo",

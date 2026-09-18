@@ -87,6 +87,8 @@ public class precrmService {
     private final precrmEstatusRepository estatusRepository;
     
     private final precrmTipoGestionRepository tipoGestionRepository;
+    
+    private final precrmUsuarioPermisoRepository usuarioPermisoRepository;
 
     @Autowired
     private precrmGestionRepository gestionRepository;
@@ -101,8 +103,6 @@ public class precrmService {
     @Autowired
     private precrmPermisoRepository permisoRepository;
     @Autowired
-    private precrmUsuarioPermisoRepository usuarioPermisoRepository;
-    @Autowired
     private precrmSucursalConfigRepository sucursalConfigRepository;
 
     // =========================================================
@@ -115,7 +115,8 @@ public class precrmService {
             precrmSospechosoRepository sospechosoRepository,
             precrmClasificacionRepository clasificacionRepository,
             precrmEstatusRepository estatusRepository,
-            precrmTipoGestionRepository tipoGestionRepository) {
+            precrmTipoGestionRepository tipoGestionRepository,
+            precrmUsuarioPermisoRepository usuarioPermisoRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -134,6 +135,9 @@ public class precrmService {
         
         this.tipoGestionRepository =
                 tipoGestionRepository;
+        
+        this.usuarioPermisoRepository =
+                usuarioPermisoRepository;
         
         System.out.println(
         	    "PRECRM SERVICE CLASS = "
@@ -3839,6 +3843,30 @@ obtenerTiposGestionActivos() {
          .findByActivoOrderByOrdenAsc(
              1
          );
+}
+
+//=========================================================
+//VALIDAR ACCESO A UNA FUNCIONALIDAD PRE CRM
+//=========================================================
+
+public boolean tieneAcceso(
+     String usuario,
+     String funcionalidad) {
+
+ if (usuario == null ||
+     usuario.trim().isEmpty() ||
+     funcionalidad == null ||
+     funcionalidad.trim().isEmpty()) {
+
+     return false;
+ }
+
+ return usuarioPermisoRepository
+         .contarPermisoActivo(
+             usuario.trim(),
+             funcionalidad.trim(),
+             "ACCESO"
+         ) > 0;
 }
 
 }
