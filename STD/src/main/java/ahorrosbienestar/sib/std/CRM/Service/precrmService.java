@@ -52,6 +52,9 @@ import ahorrosbienestar.sib.std.CRM.model.precrmFuncionalidad;
 import ahorrosbienestar.sib.std.CRM.model.precrmPermiso;
 import ahorrosbienestar.sib.std.CRM.model.precrmUsuarioPermiso;
 import ahorrosbienestar.sib.std.CRM.model.precrmSucursalConfig;
+import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
+import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
+import ahorrosbienestar.sib.std.CRM.model.precrmTipoGestion;
 
 import ahorrosbienestar.sib.std.CRM.Repository.precrmCatalogoReporteRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmReporteDescargaRepository;
@@ -59,6 +62,9 @@ import ahorrosbienestar.sib.std.CRM.Repository.precrmFuncionalidadRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmPermisoRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioPermisoRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmSucursalConfigRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmClasificacionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmEstatusRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmTipoGestionRepository;
 
 
 
@@ -75,6 +81,12 @@ public class precrmService {
     private final precrmCargaDetalleRepository detalleRepository;
 
     private final precrmSospechosoRepository sospechosoRepository;
+    
+    private final precrmClasificacionRepository clasificacionRepository;
+
+    private final precrmEstatusRepository estatusRepository;
+    
+    private final precrmTipoGestionRepository tipoGestionRepository;
 
     @Autowired
     private precrmGestionRepository gestionRepository;
@@ -100,7 +112,10 @@ public class precrmService {
     public precrmService(
             precrmCargaRepository cargaRepository,
             precrmCargaDetalleRepository detalleRepository,
-            precrmSospechosoRepository sospechosoRepository) {
+            precrmSospechosoRepository sospechosoRepository,
+            precrmClasificacionRepository clasificacionRepository,
+            precrmEstatusRepository estatusRepository,
+            precrmTipoGestionRepository tipoGestionRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -110,6 +125,15 @@ public class precrmService {
 
         this.sospechosoRepository =
                 sospechosoRepository;
+        
+        this.clasificacionRepository =
+                clasificacionRepository;
+
+        this.estatusRepository =
+                estatusRepository;
+        
+        this.tipoGestionRepository =
+                tipoGestionRepository;
         
         System.out.println(
         	    "PRECRM SERVICE CLASS = "
@@ -3775,6 +3799,46 @@ public boolean sucursalActivaPRECRM(
          fkSucursal,
          1
      );
+}
+
+//=========================================================
+//OBTENER CLASIFICACIONES ACTIVAS
+//=========================================================
+
+public List<precrmClasificacion>
+obtenerClasificacionesActivas() {
+
+ return clasificacionRepository
+         .findByActivoOrderByOrdenAsc(
+             1
+         );
+}
+
+
+//=========================================================
+//OBTENER ESTATUS ACTIVOS
+//=========================================================
+
+public List<precrmEstatus>
+obtenerEstatusActivos() {
+
+ return estatusRepository
+         .findByActivoOrderByOrdenAsc(
+             1
+         );
+}
+
+//=========================================================
+//OBTENER TIPOS DE GESTION ACTIVOS
+//=========================================================
+
+public List<precrmTipoGestion>
+obtenerTiposGestionActivos() {
+
+ return tipoGestionRepository
+         .findByActivoOrderByOrdenAsc(
+             1
+         );
 }
 
 }

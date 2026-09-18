@@ -669,64 +669,21 @@
 			                    <div class="col-md-7">
 
 
-			                        <select id="tipoGestion"
-			                                name="tipoGestion"
-			                                class="form-control
-			                                       form-control-sm"
-			                                required>
+									<select id="tipoGestion"
+									        name="tipoGestion"
+									        class="form-control form-control-sm"
+									        required>
 
+									    <option value="">
+									        Seleccione
+									    </option>
 
-			                            <option value="">
+									    <option th:each="tipo : ${tiposGestion}"
+									            th:value="${tipo.clave}"
+									            th:text="${tipo.nombre}">
+									    </option>
 
-			                                Seleccione
-
-			                            </option>
-
-
-			                            <option value="LLAMADA">
-
-			                                Llamada
-
-			                            </option>
-
-
-			                            <option value="WHATSAPP">
-
-			                                WhatsApp
-
-			                            </option>
-
-
-			                            <option value="CORREO">
-
-			                                Correo electrónico
-
-			                            </option>
-
-
-			                            <option value="VISITA">
-
-			                                Visita
-
-			                            </option>
-
-
-			                            <option value="CITA">
-
-			                                Cita
-
-			                            </option>
-
-
-			                            <option value="OTRO">
-
-			                                Otro
-
-			                            </option>
-
-
-			                        </select>
-
+									</select>
 
 			                    </div>
 

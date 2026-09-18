@@ -182,53 +182,21 @@
 		                </label>
 
 
-		                <select id="filtroClasificacion"
-		                        name="clasificacion"
-		                        class="form-control">
+						<select id="filtroClasificacion"
+						        name="clasificacion"
+						        class="form-control">
+								
+								<option value="">
+								    Todas
+								</option>
 
+						    <option th:each="clasificacion : ${clasificaciones}"
+						            th:value="${clasificacion.clave}"
+						            th:text="${clasificacion.nombre}"
+						            th:selected="${filtroClasificacion == clasificacion.clave}">
+						    </option>
 
-		                    <option value=""
-		                            th:selected="${filtroClasificacion == null
-		                                         || filtroClasificacion == ''}">
-
-		                        Todas
-
-		                    </option>
-
-
-		                    <option value="Frio"
-		                            th:selected="${filtroClasificacion == 'Frio'}">
-
-		                        Frío
-
-		                    </option>
-
-
-		                    <option value="Caliente"
-		                            th:selected="${filtroClasificacion == 'Caliente'}">
-
-		                        Caliente
-
-		                    </option>
-
-
-		                    <option value="Digital"
-		                            th:selected="${filtroClasificacion == 'Digital'}">
-
-		                        Digital
-
-		                    </option>
-
-
-		                    <option value="Referido"
-		                            th:selected="${filtroClasificacion == 'Referido'}">
-
-		                        Referido
-
-		                    </option>
-
-
-		                </select>
+						</select>
 
 		            </div>
 
@@ -244,69 +212,21 @@
 		                </label>
 
 
-		                <select id="filtroEstatus"
-		                        name="estatus"
-		                        class="form-control">
+						<select id="filtroEstatus"
+						        name="estatus"
+						        class="form-control">
+								
+								<option value="">
+								    Todos
+								</option>
 
+						    <option th:each="estatus : ${estatusPrecrm}"
+						            th:value="${estatus.clave}"
+						            th:text="${estatus.nombre}"
+						            th:selected="${filtroEstatus == estatus.clave}">
+						    </option>
 
-		                    <option value=""
-		                            th:selected="${filtroEstatus == null
-		                                         || filtroEstatus == ''}">
-
-		                        Todos
-
-		                    </option>
-
-
-		                    <option value="REGISTRADO"
-		                            th:selected="${filtroEstatus == 'REGISTRADO'}">
-
-		                        Registrado
-
-		                    </option>
-
-
-		                    <option value="SEGUIMIENTO"
-		                            th:selected="${filtroEstatus == 'SEGUIMIENTO'}">
-
-		                        Seguimiento
-
-		                    </option>
-
-
-		                    <option value="CITA_AGENDADA"
-		                            th:selected="${filtroEstatus == 'CITA_AGENDADA'}">
-
-		                        Cita agendada
-
-		                    </option>
-
-
-		                    <option value="COTIZACION"
-		                            th:selected="${filtroEstatus == 'COTIZACION'}">
-
-		                        Cotización
-
-		                    </option>
-
-
-		                    <option value="SOLICITUD"
-		                            th:selected="${filtroEstatus == 'SOLICITUD'}">
-
-		                        Solicitud
-
-		                    </option>
-
-
-		                    <option value="CONCLUIDO"
-		                            th:selected="${filtroEstatus == 'CONCLUIDO'}">
-
-		                        Concluidos
-
-		                    </option>
-
-
-		                </select>
+						</select>
 
 		            </div>
 

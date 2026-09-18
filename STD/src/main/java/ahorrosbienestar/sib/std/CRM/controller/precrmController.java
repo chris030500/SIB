@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
 import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
+import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
+import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
 import ahorrosbienestar.sib.std.CRM.model.precrmGestion;
 import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
 import ahorrosbienestar.sib.std.CRM.Service.precrmService;
@@ -283,179 +285,226 @@ public class precrmController {
  // =========================================================
 
     @GetMapping("/seguimientosospechosos")
- public String mostrarSeguimiento(
+    public String mostrarSeguimiento(
 
-         @RequestParam(
-             required = false
-         )
-         String folio,
+            @RequestParam(required = false)
+            String folio,
 
-         @RequestParam(
-             required = false
-         )
-         String nombre,
+            @RequestParam(required = false)
+            String nombre,
 
-         @RequestParam(
-             required = false
-         )
-         String telefono,
+            @RequestParam(required = false)
+            String telefono,
 
-         @RequestParam(
-             required = false
-         )
-         String clasificacion,
+            @RequestParam(required = false)
+            String clasificacion,
 
-         @RequestParam(
-             required = false
-         )
-         String estatus,
+            @RequestParam(required = false)
+            String estatus,
 
-         @RequestParam(
-             required = false
-         )
-         @DateTimeFormat(
-             iso = DateTimeFormat.ISO.DATE
-         )
-         LocalDate fechaRegistro,
+            @RequestParam(required = false)
+            @DateTimeFormat(
+                iso = DateTimeFormat.ISO.DATE
+            )
+            LocalDate fechaRegistro,
 
-         Model model) {
+            Model model) {
 
 
-     model.addAttribute(
-         "catalogo",
-         CATALOGO_CRM
-     );
+        model.addAttribute(
+            "catalogo",
+            CATALOGO_CRM
+        );
 
 
-     // =====================================================
-     // BUSCAR SOSPECHOSOS
-     // =====================================================
+        // =====================================================
+        // CATALOGOS DE FILTROS
+        // =====================================================
 
-     List<precrmSospechoso> sospechosos =
-             precrmService
-                 .buscarSospechosos(
-
-                     folio,
-
-                     nombre,
-
-                     telefono,
-
-                     clasificacion,
-
-                     estatus,
-
-                     fechaRegistro
-                 );
+        List<precrmClasificacion> clasificaciones =
+                precrmService
+                    .obtenerClasificacionesActivas();
 
 
-     model.addAttribute(
-         "sospechosos",
-         sospechosos
-     );
+        List<precrmEstatus> estatusPrecrm =
+                precrmService
+                    .obtenerEstatusActivos();
 
 
-     // =====================================================
-     // CONSERVAR FILTROS EN PANTALLA
-     // =====================================================
+        // =====================================================
+        // VALIDACION TEMPORAL EN CONSOLA
+        // =====================================================
 
-     model.addAttribute(
-         "filtroFolio",
-         folio
-     );
+        System.out.println(
+            "======================================"
+        );
 
+        System.out.println(
+            "CLASIFICACIONES RECUPERADAS: "
+            + clasificaciones.size()
+        );
 
-     model.addAttribute(
-         "filtroNombre",
-         nombre
-     );
-
-
-     model.addAttribute(
-         "filtroTelefono",
-         telefono
-     );
+        System.out.println(
+            "ESTATUS RECUPERADOS: "
+            + estatusPrecrm.size()
+        );
 
 
-     model.addAttribute(
-         "filtroClasificacion",
-         clasificacion
-     );
+        for (precrmEstatus e : estatusPrecrm) {
+
+            System.out.println(
+                "ESTATUS: "
+                + e.getClave()
+                + " - "
+                + e.getNombre()
+            );
+        }
 
 
-     model.addAttribute(
-         "filtroEstatus",
-         estatus
-     );
+        System.out.println(
+            "======================================"
+        );
 
 
-     model.addAttribute(
-         "filtroFechaRegistro",
-         fechaRegistro
-     );
+        // =====================================================
+        // ENVIAR CATALOGOS AL HTML
+        // =====================================================
+
+        model.addAttribute(
+            "clasificaciones",
+            clasificaciones
+        );
 
 
-     // =====================================================
-     // RESUMEN DEL EMBUDO
-     // POR AHORA SIGUE SIENDO GENERAL
-     // =====================================================
-
-     model.addAttribute(
-         "totalRegistrados",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "REGISTRADO"
-             )
-     );
+        model.addAttribute(
+            "estatusPrecrm",
+            estatusPrecrm
+        );
 
 
-     model.addAttribute(
-         "totalSeguimiento",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "SEGUIMIENTO"
-             )
-     );
+        // =====================================================
+        // BUSCAR SOSPECHOSOS
+        // =====================================================
+
+        List<precrmSospechoso> sospechosos =
+                precrmService
+                    .buscarSospechosos(
+                        folio,
+                        nombre,
+                        telefono,
+                        clasificacion,
+                        estatus,
+                        fechaRegistro
+                    );
 
 
-     model.addAttribute(
-         "totalCitaAgendada",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "CITA_AGENDADA"
-             )
-     );
+        model.addAttribute(
+            "sospechosos",
+            sospechosos
+        );
 
 
-     model.addAttribute(
-         "totalCotizacion",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "COTIZACION"
-             )
-     );
+        // =====================================================
+        // CONSERVAR FILTROS EN PANTALLA
+        // =====================================================
+
+        model.addAttribute(
+            "filtroFolio",
+            folio
+        );
 
 
-     model.addAttribute(
-         "totalSolicitud",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "SOLICITUD"
-             )
-     );
+        model.addAttribute(
+            "filtroNombre",
+            nombre
+        );
 
 
-     model.addAttribute(
-         "totalConcluidos",
-         precrmService
-             .contarSospechososPorEstatus(
-                 "CONCLUIDO"
-             )
-     );
+        model.addAttribute(
+            "filtroTelefono",
+            telefono
+        );
 
 
-     return "CRM/precrmSeguimientoSos";
- }
+        model.addAttribute(
+            "filtroClasificacion",
+            clasificacion
+        );
+
+
+        model.addAttribute(
+            "filtroEstatus",
+            estatus
+        );
+
+
+        model.addAttribute(
+            "filtroFechaRegistro",
+            fechaRegistro
+        );
+
+
+        // =====================================================
+        // RESUMEN DEL EMBUDO
+        // POR AHORA SIGUE SIENDO GENERAL
+        // =====================================================
+
+        model.addAttribute(
+            "totalRegistrados",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "REGISTRADO"
+                )
+        );
+
+
+        model.addAttribute(
+            "totalSeguimiento",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "SEGUIMIENTO"
+                )
+        );
+
+
+        model.addAttribute(
+            "totalCitaAgendada",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "CITA_AGENDADA"
+                )
+        );
+
+
+        model.addAttribute(
+            "totalCotizacion",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "COTIZACION"
+                )
+        );
+
+
+        model.addAttribute(
+            "totalSolicitud",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "SOLICITUD"
+                )
+        );
+
+
+        model.addAttribute(
+            "totalConcluidos",
+            precrmService
+                .contarSospechososPorEstatus(
+                    "CONCLUIDO"
+                )
+        );
+
+
+        return "CRM/precrmSeguimientoSos";
+    }
     // =========================================================
     // SUBIR ARCHIVO MANUALMENTE
     // =========================================================
@@ -578,6 +627,11 @@ public class precrmController {
          "catalogo",
          CATALOGO_CRM
      );
+     
+     model.addAttribute(
+    	        "tiposGestion",
+    	        precrmService.obtenerTiposGestionActivos()
+    	    );
 
 
      // No hay sospechoso seleccionado todavía
@@ -669,6 +723,11 @@ public class precrmController {
          precrmService
              .obtenerSospechososActivos()
      );
+     
+     model.addAttribute(
+    		    "tiposGestion",
+    		    precrmService.obtenerTiposGestionActivos()
+    		);
 
 
      return "CRM/precrmDetalleSos";
