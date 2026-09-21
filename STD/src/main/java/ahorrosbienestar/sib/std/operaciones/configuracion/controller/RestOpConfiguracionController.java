@@ -252,16 +252,16 @@ public class RestOpConfiguracionController {
 			logger.info("se encontró el telefono: " + idTelefono);
 
 			model.setVc_telefono(
-					dto.getTelefono() != model.getVc_telefono() ? dto.getTelefono() : model.getVc_telefono());
+					!java.util.Objects.equals(dto.getTelefono(), model.getVc_telefono()) ? dto.getTelefono() : model.getVc_telefono());
 			model.setVc_extension(
-					dto.getExtension() != model.getVc_extension() ? dto.getExtension() : model.getVc_extension());
+					!java.util.Objects.equals(dto.getExtension(), model.getVc_extension()) ? dto.getExtension() : model.getVc_extension());
 			model.setVc_correo_electronico(
-					dto.getCorreoElectronico() != model.getVc_correo_electronico() ? dto.getCorreoElectronico()
+					!java.util.Objects.equals(dto.getCorreoElectronico(), model.getVc_correo_electronico()) ? dto.getCorreoElectronico()
 							: model.getVc_correo_electronico());
-			model.setVc_comentarios(dto.getComentarios() != model.getVc_comentarios() ? dto.getComentarios()
+			model.setVc_comentarios(!java.util.Objects.equals(dto.getComentarios(), model.getVc_comentarios()) ? dto.getComentarios()
 					: model.getVc_comentarios());
 			model.setDt_fecha_modificacion(fechaLocal);
-			model.setUsuario(usuario != model.getUsuario() ? usuario : model.getUsuario());
+			model.setUsuario(!java.util.Objects.equals(usuario, model.getUsuario()) ? usuario : model.getUsuario());
 			telefonoService.save(model);
 			respuesta.put("mensaje", "Teléfono actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -482,12 +482,12 @@ public class RestOpConfiguracionController {
 			logger.info("se encotró el usuario");
 			model = codigoAccionService.buscarCodigoAccion(idCodigoAccion);
 			logger.info("se encontró el código: " + model.getVc_descripcion());
-			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+			model.setVc_codigo(!java.util.Objects.equals(dto.getCodigo(), model.getVc_codigo()) ? dto.getCodigo() : model.getVc_codigo());
+			model.setVc_descripcion(!java.util.Objects.equals(dto.getDescripcion(), model.getVc_descripcion()) ? dto.getDescripcion()
 					: model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setI_usuario_modificacion(
-					usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
+					!java.util.Objects.equals(usuario, model.getI_usuario_modificacion()) ? usuario : model.getI_usuario_modificacion());
 			codigoAccionService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);
@@ -677,12 +677,12 @@ public class RestOpConfiguracionController {
 			logger.info("se encotró el usuario");
 			model = codigoResultadoService.buscarCodigoResultado(idCodigoResultado);
 			logger.info("se encontró el código: " + model.getVc_descripcion());
-			model.setVc_codigo(dto.getCodigo() != model.getVc_codigo() ? dto.getCodigo() : model.getVc_codigo());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+			model.setVc_codigo(!java.util.Objects.equals(dto.getCodigo(), model.getVc_codigo()) ? dto.getCodigo() : model.getVc_codigo());
+			model.setVc_descripcion(!java.util.Objects.equals(dto.getDescripcion(), model.getVc_descripcion()) ? dto.getDescripcion()
 					: model.getVc_descripcion());
 			model.setDt_fecha_modificacion(fechaLocal);
 			model.setI_usuario_modificacion(
-					usuario != model.getI_usuario_modificacion() ? usuario : model.getI_usuario_modificacion());
+					!java.util.Objects.equals(usuario, model.getI_usuario_modificacion()) ? usuario : model.getI_usuario_modificacion());
 			codigoResultadoService.save(model);
 			respuesta.put("mensaje", "Código actualizado");
 			return ResponseEntity.ok(respuesta);

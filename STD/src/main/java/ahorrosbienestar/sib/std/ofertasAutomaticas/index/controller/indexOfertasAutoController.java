@@ -166,6 +166,10 @@ public class indexOfertasAutoController {
         if (principal instanceof UserDetails) {
             userDetails = (UserDetails) principal;
         }
+
+        if (userDetails == null) {
+            return Constantes.RUTA_ERROR;
+        }
         
         if(validarAcceso(userDetails.getUsername())== 1){
             Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
@@ -272,6 +276,9 @@ public class indexOfertasAutoController {
             LocalDateTime localDateTime = LocalDateTime.now();
  
             Optional<Bases> tipoBase = basesService.findById(base);
+            if (!tipoBase.isPresent()) {
+                return "La base seleccionada no es válida.";
+            }
  
             // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
             // HH:mm:ss");
@@ -287,9 +294,9 @@ public class indexOfertasAutoController {
             if (id != null) {
                 logger.info("Entro en id!=null");
                 Optional<ClasificacionBases> clasificacionExistente = clasificacionBasesService.findById(id);
-                logger.info("clasificacionExistente: " + clasificacionExistente.get().getPk_id_clasificacion());
                 if (clasificacionExistente.isPresent()) {
                     ClasificacionBases clasificacionBases = clasificacionExistente.get();
+                    logger.info("clasificacionExistente: " + clasificacionBases.getPk_id_clasificacion());
                     clasificacionBases.setVc_nombre_clasificacion(nomClasificacion.toUpperCase());
                     clasificacionBases.setVc_abreviacion_clasificacion(abrevacion.toUpperCase());
                     clasificacionBases.setVc_codigo_clasificacion(codigoClasificacion.toUpperCase());
@@ -922,6 +929,10 @@ public class indexOfertasAutoController {
         ArrayList<String> respuesta = new ArrayList<String>();
         Optional<Bases> bases = basesService.findById(idBase);
         try {
+            if (!bases.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No existe la base con idBase: " + idBase);
+            }
             if(files.length > 0) {
                 for(MultipartFile file: files) {
                      byte[] bytes = file.getBytes();

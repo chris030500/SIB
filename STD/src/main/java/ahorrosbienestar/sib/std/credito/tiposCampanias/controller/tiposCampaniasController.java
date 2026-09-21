@@ -294,7 +294,7 @@ public class tiposCampaniasController {
 		    ParamBuroCreditoModel registroParamBC = 
 			        paramBuroCreditoService.obtParamBuro(idCamapania);
 		    
-		    if(registroParamBC.getTipoEvaluacion() != tipoBuro) {
+		    if(!java.util.Objects.equals(registroParamBC.getTipoEvaluacion(), tipoBuro)) {
 		    	paramBuroCreditoService.inactivarBC(idCamapania);		    
 		    }
 
